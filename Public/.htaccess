@@ -1,10 +1,10 @@
 # .htaccess file for Smartest installations that use Apache
 
-AuthUserFile /etc/htpasswd                                          
+#AuthUserFile /etc/htpasswd                                          
 # AuthGroupFile /etc/htgroup                                          
-AuthName "Clarity Capital Websites"
-AuthType Basic
-require user cesc
+#AuthName "Clarity Capital Websites"
+#AuthType Basic
+#require user cesc
 
 php_flag magic_quotes_gpc off
 php_flag register_globals off

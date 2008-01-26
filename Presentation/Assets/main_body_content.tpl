@@ -1,1 +1,0 @@
-{placeholder name="main-body-text"}
