@@ -1,8 +1,0 @@
-# AddType application/x-httpd-php *
-RewriteEngine on
-# If the requested file or directory don't exist then redirect to the
-# index.php and request the file. It will fetch it from the database
-# or generate a "not found" message
-# RewriteCond %{REQUEST_FILENAME} !-d # Was a directory requested?
-# RewriteCond %{REQUEST_FILENAME} !-f # or a file? If not then redirect
-RewriteRule \.(gif|jpg|jpeg|png)$ thumbnail.php
