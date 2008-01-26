@@ -1,0 +1,1 @@
+{asset id=$raw_value}

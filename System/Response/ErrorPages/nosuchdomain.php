@@ -1,0 +1,1 @@
+No website is currently configured at the domain <?php echo $_SERVER['HTTP_HOST']; ?>.

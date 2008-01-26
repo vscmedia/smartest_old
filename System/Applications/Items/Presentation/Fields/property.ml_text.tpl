@@ -1,0 +1,2 @@
+<div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
+<textarea name="item[{$property.id}]" rows="3" cols="20" style="width:350px;height:80px">{$value}</textarea>

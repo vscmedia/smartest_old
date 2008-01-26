@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+
+<colorschemes>
+  
+  <scheme id="SM_ICS_DEFAULT">
+    <name>Sunrise (Default)</name>
+    <icon role="item_large"></icon>
+    <icon role="item_small"></icon>
+  </scheme>
+  
+</colorschemes>

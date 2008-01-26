@@ -1,0 +1,1 @@
+<script language="javascript" type="text/javascript" src="{$domain}Resources/Javascript/{$asset_info.url}"></script>

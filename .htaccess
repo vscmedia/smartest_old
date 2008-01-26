@@ -1,0 +1,16 @@
+# AuthUserFile /etc/htpasswd                                          
+# AuthGroupFile /etc/htgroup                                          
+# AuthName "Smartest Development"                                               
+# AuthType Basic                              
+# require group smartest
+
+# php_value session.name "SMARTEST"
+
+# AddType application/x-httpd-php *
+
+# php_value include_path ".:Libraries/Smarty/:Libraries/Pear/:/usr/share/php/smartest/:Libraries/Plugins/"
+
+# php_value display_errors 1
+
+# RewriteEngine on
+# RewriteRule !^(Resources) index.php

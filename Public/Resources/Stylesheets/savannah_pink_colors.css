@@ -1,0 +1,20 @@
+div#page-content{
+    background-color:#dbb5ae;
+}
+
+td#left-column div.menu-box, td#left-column div.menu-box-bottom{
+    background-color:#c78384;
+    color:#692f30;
+}
+
+div#breadcrumbs a, ul.custom-search-links li a{
+    color:#692f30;
+}
+
+td#central-column{
+    background-color:#fff;
+}
+
+td#left-column div.menu-box h4, td#left-column div.menu-box-bottom h4{
+    color:#fff;
+}

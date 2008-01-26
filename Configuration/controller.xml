@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<controller xmlns="http://users.visudo.com/eddie/PHP-Controller" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://users.visudo.com/eddie/PHP-Controller controller.xsd">
+  <modules>Applications/:System/Applications/</modules>
+  <catch-all>false</catch-all>
+	<domain-path></domain-path>
+  
+  <!--<authentication>
+    <name>authentication</name> 
+    <class>Authentication</class>
+    <template>Authentication</template>
+    <login-forward method-name="login">pages</login-forward>
+    <logout-forward method-name="logout">authentication</logout-forward>    
+  </authentication>-->
+	
+<!-- /////////////////////////// ADD CUSTOM MODULES HERE //////////////////////////// -->
+
+  <namespace>
+    <name>html</name>
+    <default-namespace>1</default-namespace>
+    <prefix></prefix>
+    <use-templates>1</use-templates>
+    <mode>NS_NONE</mode>
+  </namespace>
+  
+  <namespace>
+    <name>dev</name>
+    <default-namespace>0</default-namespace>
+    <prefix>dev_</prefix>
+    <use-templates>1</use-templates>
+    <mode>NS_NONE</mode>
+  </namespace>
+  
+  <namespace>
+    <name>xml</name>
+    <default-namespace>0</default-namespace>
+    <prefix>xml_</prefix>
+    <use-templates>1</use-templates>
+    <mode>NS_TEMPLATE</mode>
+  </namespace>
+  
+  <namespace>
+    <name>json</name>
+    <default-namespace>0</default-namespace>
+    <prefix>json_</prefix>
+    <use-templates>1</use-templates>
+    <mode>NS_NONE</mode>
+  </namespace>
+  
+  <namespace>
+    <name>ui</name>
+    <default-namespace>0</default-namespace>
+    <prefix>ui_</prefix>
+    <use-templates>1</use-templates>
+    <mode>NS_NONE</mode>
+  </namespace>
+  
+  <module>
+    <name>test</name>
+    <class>Test</class>
+    <template>Test</template>
+    <default-method>testMethod</default-method>
+    <form-forward method-name="addPageAction" method-type="POST">pages</form-forward>
+    <!--<role>Administrator</role>-->
+  </module>
+  
+<!-- ////////////////// DO NOT EDIT OR REMOVE FROM HERE DOWNWARDS /////////////////// -->
+<!-- /////////////// FUTURE RELEASES WILL SEE THIS IN A SEPARATE FILE /////////////// -->
+  
+  <module>
+    <name>website</name>
+    <class>CmsFrontEnd</class>
+    <template>Website</template>
+    <label>CMS Output Viewer</label>
+    <default-method>renderPageFromUrl</default-method>
+    <default-page>1</default-page>
+    <alias match="search">searchDomain</alias>
+    <alias match="tags/$tag.html">renderPageFromId?tag=true&amp;tag_name=$tag</alias>
+    <alias match="tags/$tag/feed">renderSiteTagSimpleRssFeed?tag_name=$tag</alias>
+    <alias match="download/$url.$suffix">downloadAsset?url=$url&amp;suffix=$suffix</alias>
+  </module>
+  
+  <module>
+    <name>websitemanager</name>
+    <label>Flat Page Editor</label>
+    <class>Pages</class>
+    <template>Pages</template>
+    <default-method>siteList</default-method>
+    <!--<form-forward method-name="setCurrentSite" method-type="GET">websitemanager/getSitePages?site_id=$site_id</form-forward>
+    <alias match="smartest/website/page/edit/$page">editPage?page_id=$page</alias>
+    <alias match="smartest/website/page/add/child/$site/$parent">addPage?site_id=$site&amp;parent_id=$parent</alias>
+    <alias match="smartest/website/page/add/$site">addPage?site_id=$site</alias>
+    <alias match="smartest/website/page/assets/$pageid">getPageAssets?page_id=$pageid</alias>
+    <alias match="smartest/website/sites/$siteid">getSitePages?site_id=$siteid</alias>-->
+    <alias match="smartest/pages">sitePages</alias>
+    <!--<role>Administrator</role>-->
+  </module>
+  
+  <module>
+    <name>desktop</name>
+    <label>Smartest User "Desktop"</label>
+    <class>Desktop</class>
+    <default-method>startPage</default-method>
+    <template>Desktop</template>
+    <alias match="smartest">startPage</alias>
+    <alias match="smartest/search">startSearch</alias>
+    <alias match="smartest/search/results">searchResults</alias>
+    <alias match="smartest/todo">todoList</alias>
+    <alias match="smartest/settings">editSite</alias>
+  </module>
+  
+  <module>
+    <name>metadata</name>
+    <label>Meta-data Management Tools</label>
+    <class>MetaData</class>
+    <template>MetaData</template>
+    <default-method>startPage</default-method>
+    <alias match="smartest/fields">listFields</alias>
+    <alias match="smartest/tags">listTags</alias>
+  </module>
+  
+  <module>
+    <name>assets</name>
+    <label>Assets Library</label>
+    <description>This application is for the management of media assets used on static pages.</description>
+    <class>Assets</class>
+    <template>Assets</template>
+    <default-method>getAssetTypes</default-method>
+    <alias match="smartest/assets/types">getAssetTypes</alias>
+    <alias match="smartest/assets">getAssetTypes</alias>
+    
+    <!--<role>Administrator</role>-->
+  </module>
+  
+  <module>
+    <name>templates</name>
+    <class>Templates</class>
+    <template>Templates</template>
+    <default-method>startPage</default-method>
+    <alias match="smartest/templates/assets">getTemplateAssets</alias>
+    <alias match="smartest/templates">startPage</alias>
+    <!--<role>Administrator</role>-->
+  </module>
+
+  <module>
+    <name>datamanager</name>
+    <class>Items</class>
+    <template>Items</template>
+    <default-method>startPage</default-method>
+    
+    <!--<form-forward method-name="insertItemClass" method-type="POST">datamanager</form-forward>
+    <form-forward method-name="insertItemClassSettings" method-type="POST">datamanager/</form-forward>
+    <form-forward method-name="updateItemClassProperty" method-type="POST">datamanager/getItemClassMembers?class_id=$class_id</form-forward>
+    <form-forward method-name="removeProperty" method-type="POST">datamanager/getItemClassProperties?class_id=$class_id</form-forward>    
+    <form-forward method-name="deleteProperty" method-type="GET">datamanager/getItemClassProperties?class_id=$class_id</form-forward>   
+    <form-forward method-name="insertItem" method-type="POST">datamanager/getItemClassMembers?class_id=$class_id</form-forward>
+    <form-forward method-name="updateItemClass" method-type="POST">datamanager/getItemClassProperties?class_id=$class_id</form-forward>
+    <form-forward method-name="updateItem" method-type="POST">datamanager/editItem?item_id=$item_id&amp;success=true</form-forward>
+    <form-forward method-name="deleteItem" method-type="GET">datamanager/getItemClassMembers?class_id=$class_id</form-forward>    
+    <form-forward method-name="duplicateItem" method-type="GET">datamanager/getItemClassMembers?class_id=$class_id</form-forward>    
+    <form-forward method-name="insertImportData" method-type="POST">datamanager/</form-forward>
+    <form-forward method-name="deleteItemClass" method-type="GET">datamanager</form-forward>-->
+    
+    <alias match="smartest/data">startPage</alias>
+    <alias match="smartest/models">getItemClasses</alias>
+    <alias match="smartest/models/browse/$model">getItemClassMembers?class_id=$model</alias>
+    <!--<role>Administrator</role>-->
+  </module>
+  
+  <module>
+    <name>loginscreen</name>
+    <class>Login</class>
+    <template>Login</template>
+    <default-method>loginScreen</default-method>
+    <alias match="smartest/login">loginScreen</alias>
+    <alias match="smartest/logout">doLogOut</alias>
+    <!--<role>Administrator</role>-->
+  </module>
+
+  <module>
+    <name>sets</name>
+    <class>Sets</class>
+    <template>Sets</template>
+    <default-method>startPage</default-method>
+    <form-forward method-name="insertRule" method-type="POST">sets/editSet?set_id=$set_id</form-forward>
+    <form-forward method-name="deleteRule" method-type="POST">sets/editSet?set_id=$set_id</form-forward>
+    <form-forward method-name="transferItem" method-type="POST">sets/editSet?set_id=$set_id</form-forward>
+    <form-forward method-name="updateDataExportFeed" method-type="POST">sets/getDataExports</form-forward>
+    <alias match="smartest/sets">startPage</alias>
+	<ajax>true</ajax>
+  </module>
+
+  <module>
+    <name>modeltemplates</name>
+    <class>Schemas</class>
+    <template>Schemas</template>
+    <default-method>startPage</default-method>
+    <form-forward method-name="updateSchemaVocabulary" method-type="POST">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward>
+    <form-forward method-name="removeSchemaElement" method-type="POST">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward>
+    <form-forward method-name="deleteSchemaElement" method-type="GET">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward>
+    <form-forward method-name="insertSchemaVocabulary" method-type="POST">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward>
+    <form-forward method-name="insertSchemaVocabularyNode" method-type="POST">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward>
+    <form-forward method-name="createSchemaAction" method-type="POST">modeltemplates/</form-forward>
+    <form-forward method-name="removeSchema" method-type="POST">modeltemplates/</form-forward>
+    <form-forward method-name="duplicateSchemaAction" method-type="GET">modeltemplates/</form-forward>
+    <form-forward method-name="renameSchemaAction" method-type="POST">modeltemplates/</form-forward>
+    <form-forward method-name="insertAttribute" method-type="POST">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward> 
+    <form-forward method-name="updateAttribute" method-type="POST">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward> 
+    <form-forward method-name="deleteAttribute" method-type="GET">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward> 
+    <form-forward method-name="setRepeatElement" method-type="GET">modeltemplates/schemaDefinition?schema_id=$schema_id</form-forward> 
+    <form-forward method-name="updateGeneral" method-type="POST">settings</form-forward>
+    <form-forward method-name="addUserAction" method-type="POST">settings</form-forward>
+    <alias match="smartest/schemas">startPage</alias>
+  </module>
+  
+  <module>
+    <name>settings</name>
+    <class>Settings</class>
+    <template>Settings</template>
+    <default-method>startPage</default-method>
+    <!--<alias match="smartest/settings">startPage</alias>-->
+    <alias match="smartest/users">listUsers</alias>
+	<ajax>true</ajax>
+  </module>
+  
+  <module>
+    <name>dropdowns</name>
+    <class>Dropdowns</class>
+    <template>Dropdowns</template>
+    <default-method>startPage</default-method>    
+    <form-forward method-name="insertDropDown" method-type="POST">smartest/dropdowns</form-forward>
+    <form-forward method-name="updateDropDown" method-type="POST">smartest/dropdowns</form-forward>
+    <form-forward method-name="deleteDropDown" method-type="GET">smartest/dropdowns</form-forward>
+    <form-forward method-name="insertDropDownValue" method-type="POST">dropdowns/viewDropDown?drop_down=$drop_down_id</form-forward>
+    <form-forward method-name="updateDropDownValue" method-type="POST">dropdowns/viewDropDown?drop_down=$drop_down_id</form-forward>
+    <form-forward method-name="deleteDropDownValue" method-type="GET">dropdowns/viewDropDown?drop_down=$drop_down</form-forward>
+    <form-forward method-name="updateDropDownOrder" method-type="POST">dropdowns/viewDropDown?drop_down=$drop_down_id</form-forward>
+    <alias match="smartest/dropdowns">startPage</alias>
+    <!--<role>Administrator</role>-->
+  </module>
+  
+  <module>
+    <name>help</name>
+    <class>Help</class>
+    <template>Help</template>
+    <default-method>startPage</default-method>
+    <alias match="smartest/help/guide">guideContentsPage</alias>
+    <!--<role>Administrator</role>-->
+  </module>
+
+  <module>
+    <name>xmlexport</name>
+    <class>XmlExport</class>
+    <template>XmlExport</template>
+    <default-method>exit</default-method>
+    <alias match="smartest/$schema/$model/$set/$export">exportData?schema=$schema&amp;model=$model&amp;set=$set&amp;dataexport=$export</alias>
+    <alias match="smartest/$schema/$model/$set/$export.xml">exportData?schema=$schema&amp;model=$model&amp;set=$set&amp;dataexport=$export</alias>
+    <!--<role>Administrator</role>-->
+  </module>
+
+</controller>

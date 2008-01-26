@@ -1,0 +1,47 @@
+# .htaccess file for Smartest installations that use Apache
+
+AuthUserFile /etc/htpasswd                                          
+# AuthGroupFile /etc/htgroup                                          
+AuthName "Clarity Capital Websites"
+AuthType Basic
+require user cesc
+
+php_flag magic_quotes_gpc off
+php_flag register_globals off
+php_flag session.auto_start off
+php_value session.name "SMARTEST"
+php_value display_errors 1
+
+# php_value mbstring.language "Neutral"	# Set default language to Neutral(UTF-8) (default)
+# php_value mbstring.internal_encoding = UTF-8 # Set default internal encoding to UTF-8
+# php_value mbstring.encoding_translation	= On #  HTTP input encoding translation is enabled
+# php_value mbstring.http_input	= auto # Set HTTP input character set dectection to auto
+# php_value mbstring.http_output = UTF-8 # Set HTTP output encoding to UTF-8
+# php_value mbstring.detect_order = auto # Set default character encoding detection order to auto
+# php_value mbstring.substitute_character	= none # Do not print invalid characters
+# php_value default_charset = UTF-8		# Default character set for auto content type header
+
+Options +FollowSymLinks +ExecCGI
+
+<IfModule mod_rewrite.c>
+  
+  # allow for files with any dot suffix or none at all to be processed by PHP
+  AddType application/x-httpd-php *
+  
+  # Activate mod_rewrite
+  RewriteEngine On
+
+  # This line is important if you are running other apps in sub directories
+  RewriteBase /
+
+  # Forward anything that doesn't correspond toa real file to Smartest
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)$ index.php [QSA,L]
+  
+  # People trying to browse around the resources dir should be forwarded to Smartest
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteCond %{REQUEST_URI} ^/Resources/
+  RewriteRule ^(.*)$ index.php [QSA,L]
+  
+</IfModule>

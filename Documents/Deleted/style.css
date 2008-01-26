@@ -1,0 +1,254 @@
+.text{
+	color: #555;
+	font-family: lucida grande,verdana,sans-serif;
+	font-size: 12px;
+} 
+
+.blue_text{
+	color: #1267C9;
+	font-family: lucida grande,verdana,sans-serif;
+	font-size: 12px;
+} 
+
+.navigation_link{
+	color: #FFF;
+	font-family: lucida grande,verdana,sans-serif;
+	font-size: 12px;
+	text-decoration: none;
+	padding: 4px;
+}
+
+.navigation_link:hover{
+	color: #FFF;
+	font-family: lucida grande,verdana,sans-serif;
+	font-size: 12px;
+	text-decoration: none;
+	padding: 4px;
+	background-color: #1267C9;
+}
+
+.sub_navigation_link{
+	color: #1267C9;
+	font-family: lucida grande,verdana,sans-serif;
+	font-size: 12px;
+	text-decoration: none;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.sub_navigation_link:hover{
+	color:#1267C9;
+	font-family:lucida grande,verdana,sans-serif;
+	font-size:12px;
+	text-decoration:underline;
+	padding:4px;
+}
+
+.notify-success{
+	color:#1c0;
+	font-family:lucida grande,verdana,sans-serif;
+	font-size:12px;text-decoration:none;
+	padding:4px;
+	padding-left:20px;
+	background-image:url(/Resources/Icons/accept.png);
+	background-repeat:no-repeat;
+	background-position:center left;
+	background-color:#eee;
+	display:block;
+	margin-top:4px;
+	margin-bottom:10px;
+	border:1px solid #ccc;
+}
+
+.notify-failure{
+	color:#ea3535;
+	font-family:lucida grande,verdana,sans-serif;
+	font-size:12px;text-decoration:none;
+	padding:4px;
+	padding-left:20px;
+	background-image:url(/Resources/Icons/exclamation.png);
+	background-repeat:no-repeat;
+	background-position:center left;
+	background-color:#eee;
+	display:block;
+	margin-top:4px;
+	margin-bottom:10px;
+	border:1px solid #ccc;
+}
+
+a{
+	color:#F4842A;
+	text-decoration:none
+}
+
+a:hover{
+	color:#F4842A;
+	text-decoration:underline
+}
+
+a.topnav{
+	color:#555;
+	text-decoration:none;
+	font-weight:bold;
+}
+
+a.topnav:hover{
+	color:#555;
+	text-decoration:underline;
+	font-weight:bold;
+}
+
+a.prefpane-tab{
+	padding:7px;
+	border:1px solid #999;
+	border-bottom: 0px;
+	background-color:#eee;
+}
+
+a.prefpane-tab:hover{
+	padding:7px;
+	border:1px solid #999;
+	border-bottom: 0px;
+	background-color:#fff;
+}
+
+a.right-nav-link{
+	color:#444;
+	text-decoration:none;
+	width:100%;
+	display:block
+}
+
+a.mainpanel-link{
+	color:#444;
+	text-decoration:none
+}
+
+
+td.right-nav-td{
+	font-family:lucida grande,verdana,sans-serif;
+	font-size:12px;
+	padding-left:5px
+}
+
+td.right-nav-td:hover{
+	font-family:lucida grande,verdana,sans-serif;
+	font-size:12px;
+	padding-left:5px;
+	background-color:#ddf
+}
+
+tr.mainpanel-row-ccf{
+	height:25px;
+	background-color:#ccf
+}
+
+tr.mainpanel-row-ddd{
+	height:25px;
+	background-color:#ddd
+}
+
+tr.mainpanel-row-fff{
+	height:25px;
+	background-color:#fff
+}
+
+ul.actions-list{
+	list-style-type:none;
+	padding:0px;
+	width:250px;
+	border:1px solid #ccc;
+	margin-top:0px;
+}
+
+ul.actions-list li{
+	height:22px;
+	display:block;
+}
+
+li.permanent-action{
+	
+}
+
+li.disabled-action{
+	color:#ccc;
+}
+
+li.enabled-action{
+	
+}
+
+ul.options-grid{
+	padding:0px;
+	width:100%;
+	border:0px;
+	list-style-type:none;
+	width:100%;
+	text-align:left;
+	margin:0px;
+}
+
+li.option{
+	display:block;
+	width:110px;
+	height:110px;
+	float:left;
+	cursor:pointer;
+	background-color:#fff;
+	text-align:center;
+	border:1px solid #fff;
+	padding:0px;
+}
+
+li.option:hover{
+	background-color:#fff;
+	background-image:url(/Resources/Images/option_bg_on.gif);
+	background-repeat:no-repeat;
+	border:1px solid #fff;
+	padding:0px;
+}
+
+li.option img{
+	display:block;
+	margin-top:25px;
+	margin-left:auto;
+	margin-right:auto;
+	width:40px;
+	height:40px;
+}
+
+li.selected-option{
+	display:block;
+	width:110px;
+	height:110px;
+	float:left;
+	cursor:pointer;
+	background-color:#fff;
+	background-image:url(/Resources/Images/selectedOption_bg_off.gif);
+	background-repeat:no-repeat;
+	text-align:center;
+	border:1px solid #fff;
+	padding:0px;
+}
+
+li.selected-option:hover{
+	background-color:#fff;
+	background-image:url(/Resources/Images/selectedOption_bg_on.gif);
+	background-repeat:no-repeat;
+	border:1px solid #fff;
+	padding:0px;
+}
+
+li.selected-option img{
+	display:block;
+	margin-top:25px;
+	margin-left:auto;
+	margin-right:auto;
+	width:40px;
+	height:40px;
+}
+
+h3{
+	margin-top:0px;
+	margin-bottom:10px;
+}

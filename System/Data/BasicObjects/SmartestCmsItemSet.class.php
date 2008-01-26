@@ -1,0 +1,268 @@
+<?php
+
+class SmartestCmsItemSet extends SmartestDataObject{
+    
+    protected $_set_members = array();
+    protected $_set_member_ids = array();
+    protected $_set_member_slugs = array();
+    protected $_conditions = array();
+    protected $_fetch_attempted = false;
+    protected $_model = null;
+    
+	protected function __objectConstruct(){
+		
+		$this->addPropertyAlias('ModelId', 'itemclass_id');
+		$this->_table_prefix = 'set_';
+		$this->_table_name = 'Sets';
+		
+	}
+	
+	public function setType($type){
+	    if(!$this->_came_from_database){
+	        $this->_properties['type'] = $type;
+	        $this->_modified_properties['type'] = $type;
+	        return true;
+	    }else{
+	        return false;
+	    }
+	}
+	
+	public function getMembers($draft=false, $refresh=false, $limit=null){
+	    // calculate which items are in the set and assign to $_set_members.
+	    
+	    if($refresh || !$this->_fetch_attempted){
+	    
+	        if($this->getType() == 'STATIC'){
+	        
+    	        $model = new SmartestModel;
+    	        $model->hydrate($this->getModelId());
+    	        $class_name = $model->getClassName();
+	        
+    	        $sql = "SELECT setlookup_item_id FROM SetsItemsLookup WHERE setlookup_set_id='".$this->getId()."' ORDER BY setlookup_order ASC";
+    	        $results = $this->database->queryToArray($sql);
+	            
+	            $cardinality = 0;
+	            
+    	        foreach($results as $lookup){
+	                
+	                if(($limit && is_numeric($limit) && $cardinality <= $limit) || !$limit){
+	                
+    	                $item = new $class_name;
+    	                $item->hydrate($lookup['setlookup_item_id'], $draft);
+    	            
+    	                // var_dump($item->isHydrated());
+	            
+    	                if($item->isHydrated()){
+    	                    $this->_set_members[] = $item;
+    	                    $this->_set_members_ids[] = $item->getId();
+    	                    $this->_set_members_webids[] = $item->getWebid();
+    	                    $this->_set_members_slugs[] = $item->getSlug();
+    	                }
+    	            
+    	                $cardinality++;
+    	            
+	                }
+    	        }
+    	        
+    	        // print_r($this->_set_members_ids);
+	        
+    	        $this->_fetch_attempted = true;
+	        
+    	    }else if($this->getType() == 'DYNAMIC'){
+	            
+	            $model = $this->getModel();
+	            
+	            // get members if the set is dynamic
+	            $q = new SmartestQuery($model->getId());
+	            
+	            $data_source = $this->getDataSourceSiteId();
+	            
+	            $site_id = $this->getCurrentSiteId();
+                
+	            if($data_source){
+	                if(is_numeric($data_source)){
+	                    $q->setSiteId($data_source);
+                    }else if($data_source == 'CURRENT' && is_numeric($site_id)){
+                        // echo $site_id;
+                        $q->setSiteId($site_id);
+                    }else if($data_source == 'ALL'){
+                        // do nothing, and the query will know it's looking at all sites
+                    }
+	            }
+	            
+	            // get conditions
+	            foreach($this->getConditions() as $c){
+	                $q->add($c->getItempropertyId(), $c->getValue(), $c->getOperator(), $draft);
+	            }
+	            
+	            $result = $q->doSelect($draft);
+	            
+	            if($this->getSortField()){
+	                $result->sort($this->getSortField(), $this->getSortDirection());
+	            }
+	            
+	            $this->_set_members = $result->getItems($limit);
+	            
+	            foreach($this->_set_members as $item){
+	                
+	                $this->_set_members_ids[] = $item->getId();
+	                $this->_set_members_webids[] = $item->getWebid();
+	                $this->_set_members_slugs[] = $item->getSlug();
+	                
+	            }
+	            
+	            $this->_fetch_attempted = true;
+	            
+    	    }
+	    
+        }
+	    
+	    return $this->_set_members;
+	}
+	
+	public function getMemberIds($draft=false, $refresh=false){
+	    
+	    $this->getMembers($draft=false, $refresh=false);
+	    return $this->_set_member_ids;
+	    
+	}
+	
+	public function getItem($field, $value){
+	    
+	    foreach($this->_set_members as $item){
+	        
+	        if($field == 'id'){
+	            $compare = $item->getId();
+	        }else if($field == 'slug'){
+    	        $compare = $item->getSlug();
+            }else if($field == 'webid'){
+	            $compare = $item->getWebid();
+            }
+            
+            if($value == $compare){
+                return $item;
+            }
+	    
+        }
+        
+        return null;
+        
+	}
+	
+	public function getMembersAsArrays($draft=false, $refresh=false){
+	    
+	    $members = $this->getMembers($draft, $refresh);
+	    
+	    // print_r($draft);
+	    
+	    $result = array();
+	    
+	    foreach($members as $item){
+	        $result[] = $item->__toArray($draft);
+	    }
+	    
+	    return $result;
+	    
+	}
+	
+	public function __toArray($get_members=true){
+	    $result = parent::__toArray();
+	    
+	    if($get_members){
+	        $result['_members'] = $this->getMembersAsArrays();
+        }
+        
+	    return $result;
+	}
+	
+	public function getModel(){
+	    // return $this->getItemclass();
+	    if(!$this->_model){
+	        
+	        $model = new SmartestModel;
+	        
+	        $model->hydrate($this->getItemclassId());
+	        $this->_model = $model;
+        }
+        
+        return $this->_model;
+	}
+	
+	public function getConditions(){
+	    
+	    if($this->getType != 'STATIC'){
+	        
+	        $this->_conditions = array();
+	        
+	        $sql = "SELECT * FROM SetRules WHERE setrule_set_id='".$this->getId()."'";
+	        $result = $this->database->queryToArray($sql);
+	    
+	        foreach($result as $c){
+	            $condition = new SmartestDynamicDataSetCondition;
+	            $condition->hydrate($c);
+	            $this->_conditions[] = $condition;
+	        }
+	        
+	        return $this->_conditions;
+	        
+        }
+	}
+	
+	public function getConditionsAsArrays(){
+	    $conditions = $this->getConditions();
+	    
+	    $result = array();
+	    
+	    foreach($conditions as $c){
+	        $result[] = $c->__toArray();
+	    }
+	    
+	    return $result;
+	    
+	}
+	
+	public function hasItem($field, $value){
+	    
+	    // make sure the set is populated
+	    $this->getMembers();
+	    
+	    // print_r($this->_set_members_ids);
+	    
+	    // echo $field.' '.$value;
+	    
+	    if($field == "id"){
+	        $tmp_array = $this->_set_members_ids;
+	    }else if($field == "slug"){
+            $tmp_array = $this->_set_members_slugs;
+        }else if($field == 'webid'){
+            // echo $compare.' ';
+	        $tmp_array = $this->_set_members_webids;
+        }else{
+    	    // create an empty array to avoid E_WARNING
+    	    $tmp_array = array();
+    	}
+    	
+    	// print_r($this->_set_members_webids);
+    	
+    	if(in_array($value, $tmp_array)){
+    	    $has_it = true;
+    	}else{
+    	    $has_it = false;
+    	}
+    	
+    	// print_r($tmp_array);
+    	// var_dump($has_it);
+    	
+    	return $has_it;
+    	
+	}
+	
+	function compile(){
+	    return $this->__toArray();
+	}
+	
+	/* public function hasPropertyOfId($id){
+	    
+	}*/
+
+}

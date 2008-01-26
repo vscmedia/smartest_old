@@ -1,0 +1,1 @@
+<link rel="stylesheet" href="{$domain}Resources/Assets/{$asset_info.url}" />

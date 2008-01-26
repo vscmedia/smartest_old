@@ -1,0 +1,1 @@
+{if $render_data.link_href}<a href="{$render_data.link_href}">{/if}<img src="{$domain}Resources/Images/{$asset_info.url}" alt="{$render_data.alt_text}"{if $render_data.style} style="{$render_data.style}"{/if}{if $render_data.id} id="{$render_data.id}"{/if}{if $render_data.class} class="{$render_data.class}"{/if} />{if $render_data.link_href}</a>{/if}

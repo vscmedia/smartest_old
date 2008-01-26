@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+<datatypes>
+    
+    <type id="SM_DATATYPE_NUMERIC" valuetype="string">
+        
+        <label>Number</label>
+        <description>A numeric value in standard notation such as an integer or decimal. Scientific notation, fractions and logarithms are not supported.</description>
+        <usage>field,itemproperty</usage>
+        <class>SmartestNumber</class>
+        <long>false</long>
+        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
+        
+    </type>
+    
+    <type id="SM_DATATYPE_SL_TEXT" valuetype="string">
+        
+        <label>Single-line Text</label>
+        <description>Short piece of text such as first or last name. Maximum 255 characters.</description>
+        <usage>field,itemproperty</usage>
+        <class>SmartestString</class>
+        <long>true</long>
+        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
+        
+    </type>
+    
+    <type id="SM_DATATYPE_ML_TEXT" valuetype="string">
+        <label>Multi-line Plain Text</label>
+        <description>Longer piece of text (255 chars or more) where formatting is not important.</description>
+        <usage>itemproperty</usage>
+        <class>SmartestString</class>
+        <long>false</long>
+        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
+        
+    </type>
+    
+    <type id="SM_DATATYPE_BOOLEAN" valuetype="string">
+        <label>Boolean</label>
+        <description>A simple True/False value.</description>
+        <usage>field,itemproperty</usage>
+        <class>SmartestBoolean</class>
+        <long>false</long>
+        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
+        
+    </type>
+    
+    <type id="SM_DATATYPE_ASSET" valuetype="foreignkey">
+        
+        <label>File</label>
+        <description>Behaves exactly as a placeholder on a static page.</description>
+        <usage>itemproperty</usage>
+        <long>false</long>
+        
+        <filter>
+          <typesource type="smartest:assettypes" />
+          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" />
+        </filter>
+        
+        <menu value="id" display="stringid" />
+        
+        <render template="System/Applications/Items/Presentation/CMS/property.asset.tpl" />
+        
+        <class>SmartestAsset</class>
+        
+    </type>
+    
+    <type id="SM_DATATYPE_ASSET_DOWNLOAD" valuetype="foreignkey">
+        
+        <label>File Download</label>
+        <description>Creates a link that will cause the selected file to be downloaded.</description>
+        <usage>itemproperty</usage>
+        <long>false</long>
+        
+        <filter>
+          <typesource type="smartest:assettypes" />
+          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" />
+        </filter>
+        
+        <menu value="id" display="stringid" />
+        
+        <render template="System/Applications/Items/Presentation/CMS/property.download.tpl" />
+        
+        <class>SmartestAsset</class>
+        
+    </type>
+    
+    <!--<type id="SM_DATATYPE_CONTAINER" valuetype="foreignkey">
+        <label>CMS Container</label>
+        <description>Behaves exactly as a container on a static page.</description>
+        <usage>itemproperty</usage>
+        <filter>xml:assettypes.xml;id(=SM_ASSETTYPE_CONTAINER_TEMPLATE)/db:Assets.asset_type</filter>
+        <entitytype>Assets:id,stringid</entitytype>
+        <class>SmartestContainer</class>
+    </type>-->
+    
+    <type id="SM_DATATYPE_CMS_ITEM" valuetype="foreignkey">
+        
+        <label>CMS Item</label>
+        <description>A single item from any model.</description>
+        <usage>itemproperty</usage>
+        <long>false</long>
+        
+        <filter>
+          <typesource type="db" table="ItemClasses" matchfield="id" />
+          <entitysource type="db" table="Items" matchfield="itemclass_id" sitefield="item_site_id" sharedfield="item_shared" class="SmartestItem" />
+        </filter>
+        
+        <render template="System/Applications/Items/Presentation/CMS/property.cms_item.tpl" />
+        
+        <menu value="id" display="name" />
+        
+        <class>SmartestCmsItem</class>
+        
+    </type>
+    
+    <type id="SM_DATATYPE_CMS_ITEM_SET" valuetype="foreignkey">
+        
+        <label>CMS Item Set</label>
+        <description>A group of items belonging to the same model, defined in the data manager. This is a data relationship and doesn't define how the set is displayed.</description>
+        <usage>itemproperty</usage>
+        <entitytype>Sets:id,label</entitytype>
+        <long>false</long>
+        
+        <filter>
+          <entitysource type="db" table="Sets" sitefield="set_site_id" sharedfield="set_shared" class="SmartestCmsItemSet" />
+        </filter>
+        
+        <render template="System/Applications/Items/Presentation/CMS/property.cms_item_set.tpl" />
+        
+        <menu value="id" display="name" />
+        
+        <class>SmartestCmsItemSet</class>
+        
+    </type>
+    
+    <type id="SM_DATATYPE_DROPDOWN_MENU" valuetype="foreignkey">
+        
+        <label>Dropdown Menu</label>
+        <description>A value from one of the dropdown menus defined in the dropdown menu editor.</description>
+        <usage>field,itemproperty</usage>
+        <long>false</long>
+        
+        <filter>
+          <typesource type="db" table="DropDowns" matchfield="id" />
+          <entitysource type="db" table="DropDownValues" matchfield="dropdown_id" />
+        </filter>
+        
+        <render template="System/Applications/Items/Presentation/CMS/property.dropdown_menu.tpl" />
+        
+        <menu value="id" display="label" />
+        
+        <class>SmartestDropdownMenu</class>
+    </type>
+    
+    <type id="SM_DATATYPE_HEX_COLOR" valuetype="string">
+      
+        <label>RGB Color</label>
+        <description>A color</description>
+        <usage>field,itemproperty</usage>
+        <class>SmartestRgbColor</class>
+        <long>false</long>
+        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
+        
+    </type>
+    
+    <type id="SM_DATATYPE_URL" valuetype="string">
+        
+        <label>Uniform Resource Locator</label>
+        <description>Points either to exterior files on the web (starting with http://) or files stored locally on the filesystem.</description>
+        <usage>field,itemproperty</usage>
+        <class>SmartestUrl</class>
+        <long>false</long>
+        <render template="System/Applications/Items/Presentation/CMS/property.url.tpl" />
+        
+    </type>
+    
+    <type id="SM_DATATYPE_TIMESTAMP" valuetype="string">
+        
+        <label>Date and Time</label>
+        <description>An exact point in time - year, month, day, hour, minute, and second.</description>
+        <usage>field,itemproperty,feed</usage>
+        <class>SmartestDateTime</class>
+        <long>false</long>
+        <render template="System/Applications/Items/Presentation/CMS/property.timestamp.tpl" />
+        
+    </type>
+    
+    <type id="SM_DATATYPE_DATE" valuetype="string">
+        
+        <label>Date only</label>
+        <description>A date that specifies year, month, and day of the month, but not the time.</description>
+        <usage>field,itemproperty,feed</usage>
+        <class>SmartestDateTime</class>
+        <long>false</long>
+        <render template="System/Applications/Items/Presentation/CMS/property.date.tpl" />
+        
+    </type>
+    
+</datatypes>

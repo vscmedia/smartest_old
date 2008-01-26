@@ -1,0 +1,2 @@
+.visudoLinkBlueBox:hover{text-align: left; color: #555555; font-family: Lucida Grande,sans-serif; font-size: 12px; text-decoration: underline; font-weight: normal}
+.visudoCurrentClientsTitle{text-align: left; color: #1747A5; font-family: Lucida Grande,sans-serif; font-size: 14px; text-decoration: none;}

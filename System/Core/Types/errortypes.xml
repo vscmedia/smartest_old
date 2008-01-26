@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+
+<errortypes>
+  
+  <type id="SM_ERROR_UNKNOWN" code="0">
+    <label>Unknown</label>
+    <level>FATAL</level>
+  </type>
+  
+  <type id="SM_ERROR_PERMISSION_DENIED" code="1">
+    <label>Could not write to file: Permission denied</label>
+  </type>
+  
+  <type id="SM_ERROR_DATABASE" code="2">
+    <label>Could not connect to database</label>
+  </type>
+  
+  <type id="SM_UNKNOWN_PRIMARY_KEY" code="3">
+    <label>Supplied ID was not recognized</label>
+  </type>
+  
+  <type id="SM_ERROR_UNSAFE_WRITABLE_FILE" code="4">
+    <label>Could not write to file: Permission denied</label>
+  </type>
+  
+</errortypes>

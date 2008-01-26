@@ -1,0 +1,83 @@
+ul.tree-parent-node-open{
+	list-style-type:none;
+	margin:0px;
+	padding:0px;
+	/*padding-left:15px;*/
+	margin-left:16px;
+	background-image:url(/Resources/Images/top.gif);
+	background-repeat:no-repeat;
+	/*border:1px solid #000;*/
+}
+
+ul.tree-parent-node-closed{
+	list-style-type:none;
+	margin:0px;
+	padding:0px;
+	/*padding-left:15px;*/
+	margin-left:16px;
+	background-image:url(/Resources/Images/top.gif);
+	background-repeat:no-repeat;
+	display:none;
+}
+
+ul.tree-parent-node-open li.first, ul.tree-parent-node-closed li.first{
+	background-image:url(/Resources/Images/first.gif);
+	background-repeat:no-repeat;
+	margin:0px;
+	/*border:1px solid #0f0;*/
+	/*padding-left:15px;*/
+}
+
+ul.tree-parent-node-open li.middle, ul.tree-parent-node-closed li.middle{
+	background-image:url(/Resources/Images/middle.gif);
+	background-repeat:repeat-y;
+	margin:0px;
+	/*border:1px solid #f90;*/
+	/*padding-left:15px;*/
+}
+
+ul.tree-parent-node-open li.last, ul.tree-parent-node-closed li.last{
+	background-image:url(/Resources/Images/last.gif);
+	background-repeat:no-repeat;
+	margin:0px;
+	/*border:1px solid #f00;*/
+	/*padding-left:15px;*/
+}
+
+ul.tree-parent-node-open li a.option, ul.tree-parent-node-closed li a.option{
+	color:#333;
+	text-decoration:none;
+	font-size:11px;
+	/*display:block;*/
+	/*margin-left:15px;*/
+}
+
+ul.tree-parent-node-open li a.option:hover, ul.tree-parent-node-closed li a.option:hover{
+	color:#333;
+	text-decoration:none;
+	font-size:11px;
+	/*display:block;*/
+	/*margin-left:15px;*/
+}
+
+ul.tree-parent-node-open li a.selected-option, ul.tree-parent-node-closed li a.selected-option{
+	color:#f60;
+	text-decoration:none;
+	font-size:11px;
+	/*display:block;*/
+	/*margin-left:15px;*/
+}
+
+ul.tree-parent-node-open li a.selected-option:hover, ul.tree-parent-node-closed li a.selected-option:hover{
+	color:#f60;
+	text-decoration:none;
+	font-size:11px;
+	/*display:block;*/
+	/*margin-left:15px;*/
+}
+
+ul#tree-root{
+	padding-left:0px;
+	margin-left:0px;
+	background-image:none;
+}

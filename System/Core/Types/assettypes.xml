@@ -1,0 +1,244 @@
+<?xml version="1.0" ?>
+
+<assettypes>
+    
+    <type id="SM_ASSETTYPE_RICH_TEXT" category="user_text">
+        <label>Rich Text/Static HTML</label>
+        <description>A static piece of HTML. Designed to provide formatting in text.</description>
+        <class>SmartestTextAsset</class>
+        <editable>true</editable>
+        <icon>text.gif</icon>
+        <render template="System/Applications/Assets/Presentation/CMS/display.rich_text.tpl" />
+        <storage type="database" />
+        <suffix mime="text/html">html</suffix>
+        <suffix mime="text/html">htm</suffix>
+    </type>
+    
+    <type id="SM_ASSETTYPE_PLAIN_TEXT" category="user_text">
+        <label>Plain Text</label>
+        <description>Plain, static unformatted text.</description>
+        <editable>true</editable>
+        <class>SmartestTextAsset</class>
+        <storage type="database" />
+        <icon>text.gif</icon>
+        <render template="System/Applications/Assets/Presentation/CMS/display.plain_text.tpl" />
+        <suffix mime="text/plain">txt</suffix>
+    </type>
+    
+    <type id="SM_ASSETTYPE_SL_TEXT" category="user_text">
+        <label>Single-line Text</label>
+        <description>Short piece of text such as first or last name. Maximum 255 characters.</description>
+        <class>SmartestTextAsset</class>
+        <editable>true</editable>
+        <storage type="database" />
+        <icon>text.gif</icon>
+        <render template="System/Applications/Assets/Presentation/CMS/display.sl_text.tpl" />
+        <suffix mime="text/plain">txt</suffix>
+        <param name="link_href" type="SM_DATATYPE_URL" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_CONTAINER_TEMPLATE" category="user_text" visible="false">
+        <label>Dynamic HTML Template</label>
+        <description>Dynamic HTML template that can be rendered by the Smartest presentation layer</description>
+        <editable>true</editable>
+        <icon>text.gif</icon>
+        <storage type="file" location="Presentation/Assets/" />
+        <class>SmartestContainerTemplateAsset</class>
+        <suffix mime="application/octet-stream">tpl</suffix>
+    </type>
+    
+    <type id="SM_ASSETTYPE_JPEG_IMAGE" category="image">
+        <label>JPEG Image</label>
+        <description>An image in JPEG format.</description>
+        <class>SmartestImageAsset</class>
+        <icon>image.gif</icon>
+        <storage type="file" location="Public/Resources/Images/" />
+        <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
+        <suffix mime="image/jpeg">jpg</suffix>
+        <suffix mime="image/jpeg">jpeg</suffix>
+        <param name="link_href" type="SM_DATATYPE_URL" />
+        <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
+        <param name="id" type="SM_DATATYPE_SL_TEXT" required="false" />
+        <param name="class" type="SM_DATATYPE_SL_TEXT" required="false" />
+        <param name="style" type="SM_DATATYPE_SL_TEXT" required="false" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_PNG_IMAGE" category="image">
+        <label>PNG Image</label>
+        <description>An image in PNG format.</description>
+        <class>SmartestImageAsset</class>
+        <storage type="file" location="Public/Resources/Images/" />
+        <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
+        <icon>image.gif</icon>
+        <suffix mime="image/png">png</suffix>
+        <param name="link_href" type="SM_DATATYPE_URL" />
+        <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
+        <param name="id" type="SM_DATATYPE_SL_TEXT" required="false" />
+        <param name="class" type="SM_DATATYPE_SL_TEXT" required="false" />
+        <param name="style" type="SM_DATATYPE_SL_TEXT" required="false" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_GIF_IMAGE" category="image">
+        <label>GIF Image</label>
+        <description>An image in GIF format.</description>
+        <class>SmartestImageAsset</class>
+        <storage type="file" location="Public/Resources/Images/" />
+        <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
+        <icon>image.gif</icon>
+        <suffix mime="image/gif">gif</suffix>
+        <param name="link_href" type="SM_DATATYPE_URL" required="false" />
+        <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
+        <param name="id" type="SM_DATATYPE_SL_TEXT" required="false" />
+        <param name="class" type="SM_DATATYPE_SL_TEXT" required="false" />
+        <param name="style" type="SM_DATATYPE_SL_TEXT" required="false" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_JAVASCRIPT" category="browser_instructions">
+        <label>Javascript</label>
+        <description>A javascript file.</description>
+        <editable>true</editable>
+        <class>SmartestAsset</class>
+        <storage type="file" location="Public/Resources/Javascript/" />
+        <render template="System/Applications/Assets/Presentation/CMS/display.javascript.tpl" />
+        <icon>generic.gif</icon>
+        <suffix mime="text/javascript">js</suffix>
+        <param name="inline" type="SM_DATATYPE_BOOLEAN" default="false" required="false" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_STYLESHEET" category="browser_instructions">
+        <label>Cascading Stylesheet</label>
+        <description>A CSS file.</description>
+        <editable>true</editable>
+        <class>SmartestAsset</class>
+        <storage type="file" location="Public/Resources/Stylesheets/" />
+        <render template="System/Applications/Assets/Presentation/CMS/display.stylesheet.tpl" />
+        <icon>generic.gif</icon>
+        <suffix mime="text/css">css</suffix>
+        <param name="inline" type="SM_DATATYPE_BOOLEAN" default="false" required="false" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_QUICKTIME_MOVIE" category="embedded">
+        <label>Quicktime Movie</label>
+        <description>A movie saved in any of Apple's proprietary QuickTime formats</description>
+        <class>SmartestAsset</class>
+        <icon>generic.gif</icon>
+        <storage type="file" location="Public/Resources/Assets/" />
+        <render template="System/Applications/Assets/Presentation/CMS/display.quicktime.tpl" />
+        <suffix mime="video/quicktime">mov</suffix>
+        <suffix mime="video/quicktime">qt</suffix>
+        <param name="width" type="SM_DATATYPE_NUMERIC" required="true" />
+        <param name="height" type="SM_DATATYPE_NUMERIC" required="true" />
+        <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="true" required="false" />
+        <param name="show_controller" type="SM_DATATYPE_BOOLEAN" default="true" required="false" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_MPEG_MOVIE" category="embedded">
+        <label>MPEG Movie</label>
+        <description>A movie saved in and MPEG format.</description>
+        <class>SmartestAsset</class>
+        <icon>generic.gif</icon>
+        <storage type="file" location="Public/Resources/Assets/" />
+        <render template="System/Applications/Assets/Presentation/CMS/display.mpeg.tpl" />
+        <suffix mime="video/mpeg">mpg</suffix>
+        <param name="width" type="SM_DATATYPE_NUMERIC" required="true" />
+        <param name="height" type="SM_DATATYPE_NUMERIC" required="true" />
+        <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="true" required="false" />
+        <param name="show_controller" type="SM_DATATYPE_BOOLEAN" default="true" required="false" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_MP3" category="embedded">
+      <label>MP3 Audio</label>
+      <description>A MPEG Layer-3 File</description>
+      <class>SmartestAsset</class>
+      <icon>generic.gif</icon>
+      <storage type="file" location="Documents/Downloads/" />
+      <suffix mime="audio/mpeg">mp3</suffix>
+      <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_SHOCKWAVE_FLASH" category="embedded">
+        <label>Shockwave Flash</label>
+        <description>A published Adobe Flash file</description>
+        <class>SmartestAsset</class>
+        <icon>generic.gif</icon>
+        <storage type="file" location="Public/Resources/Assets/" />
+        <suffix mime="application/x-shockwave-flash">swf</suffix>
+        <render template="System/Applications/Assets/Presentation/CMS/display.flash.tpl" />
+        <param name="width" type="SM_DATATYPE_NUMERIC" />
+        <param name="height" type="SM_DATATYPE_NUMERIC" />
+        <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="true" />
+        <param name="show_controller" type="SM_DATATYPE_BOOLEAN" default="true" />
+        <param name="quality" type="SM_DATATYPE_SL_TEXT" default="High" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_FLASH_VIDEO" category="embedded">
+        <label>Flash Video</label>
+        <description>A file in Flash Video format</description>
+        <class>SmartestAsset</class>
+        <icon>generic.gif</icon>
+        <storage type="file" location="Public/Resources/Assets/" />
+        <suffix mime="video/x-flv">flv</suffix>
+        <render template="System/Applications/Assets/Presentation/CMS/display.flash_video.tpl" />
+        <param name="width" type="SM_DATATYPE_NUMERIC" />
+        <param name="height" type="SM_DATATYPE_NUMERIC" />
+        <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="true" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_WMV" category="embedded">
+        <label>Windows Media Video (WMV)</label>
+        <description>A movie saved in Microsoft's proprietary WMV format</description>
+        <class>SmartestAsset</class>
+        <icon>generic.gif</icon>
+        <storage type="file" location="Public/Resources/Assets/" />
+        <render template="System/Applications/Assets/Presentation/CMS/display.wmv.tpl" />
+        <suffix mime="application/x-ms-wmv">wmv</suffix>
+        <param name="width" type="SM_DATATYPE_NUMERIC" />
+        <param name="height" type="SM_DATATYPE_NUMERIC" />
+        <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="True" />
+        <param name="auto_rewind" type="SM_DATATYPE_BOOLEAN" default="False" />
+        <param name="show_controller" type="SM_DATATYPE_BOOLEAN" default="True" />
+        <param name="show_display" type="SM_DATATYPE_BOOLEAN" default="False" />
+        <param name="show_status_bar" type="SM_DATATYPE_BOOLEAN" default="True" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_PDF" category="other">
+      <label>Adobe PDF</label>
+      <description>A document in PDF format</description>
+      <class>SmartestAsset</class>
+      <icon>generic.gif</icon>
+      <storage type="file" location="Documents/Downloads/" />
+      <suffix mime="application/pdf">pdf</suffix>
+      <render template="System/Applications/Assets/Presentation/CMS/display.default.tpl" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_MS_WORD" category="other">
+      <label>Microsoft Word</label>
+      <description>A document in Microsoft Word format</description>
+      <class>SmartestAsset</class>
+      <icon>generic.gif</icon>
+      <storage type="file" location="Documents/Downloads/" />
+      <suffix mime="application/vnd.ms-word">doc</suffix>
+      <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_MS_EXCEL" category="other">
+      <label>Microsoft Excel Spreadsheet</label>
+      <description>A document in XLS Spreadsheet format</description>
+      <class>SmartestAsset</class>
+      <icon>generic.gif</icon>
+      <storage type="file" location="Documents/Downloads/" />
+      <suffix mime="application/vnd.ms-excel">xls</suffix>
+      <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_MS_POWERPOINT" category="other">
+      <label>Microsoft Powerpoint</label>
+      <description>A document in Microsoft Powerpoint format</description>
+      <class>SmartestAsset</class>
+      <icon>generic.gif</icon>
+      <storage type="file" location="Documents/Downloads/" />
+      <suffix mime="application/vnd.ms-powerpoint">ppt</suffix>
+      <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
+    </type>
+    
+</assettypes>

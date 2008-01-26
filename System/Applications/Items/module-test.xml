@@ -1,0 +1,23 @@
+<module>
+    <template>Items</template>
+    <default-method>startPage</default-method>
+    
+    <form-forward method-name="insertItemClass" method-type="POST">datamanager</form-forward>
+    <form-forward method-name="insertItemClassSettings" method-type="POST">datamanager/</form-forward>
+    <form-forward method-name="insertItemClassProperty" method-type="POST">datamanager/getItemClassProperties?class_id=$class_id</form-forward>
+    <form-forward method-name="updateItemClassProperty" method-type="POST">datamanager/getItemClassMembers?class_id=$class_id</form-forward>
+    <form-forward method-name="removeProperty" method-type="POST">datamanager/getItemClassProperties?class_id=$class_id</form-forward>    
+    <form-forward method-name="deleteProperty" method-type="GET">datamanager/getItemClassProperties?class_id=$class_id</form-forward>   
+    <form-forward method-name="insertItem" method-type="POST">datamanager/getItemClassMembers?class_id=$class_id</form-forward>
+    <form-forward method-name="updateItemClass" method-type="POST">datamanager/getItemClassProperties?class_id=$class_id</form-forward>
+    <form-forward method-name="updateItem" method-type="POST">datamanager/editItem?item_id=$item_id&amp;success=true</form-forward>
+    <form-forward method-name="deleteItem" method-type="GET">datamanager/getItemClassMembers?class_id=$class_id</form-forward>    
+    <form-forward method-name="duplicateItem" method-type="GET">datamanager/getItemClassMembers?class_id=$class_id</form-forward>    
+    <form-forward method-name="insertImportData" method-type="POST">datamanager/</form-forward>
+    <form-forward method-name="deleteItemClass" method-type="GET">datamanager</form-forward>
+    
+    <alias match="smartest/data">startPage</alias>
+    <alias match="smartest/models">getItemClasses</alias>
+    <alias match="smartest/models/browse/$model">getItemClassMembers?class_id=$model</alias>
+
+  </module>

@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+
+<placeholdertypes>
+  
+  <type id="SM_ASSETCLASS_RICH_TEXT">
+    <label>Formatted Text</label>
+    <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_TEXT">
+    <label>Any Text, Formatted or Unformatted</label>
+    <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+    <accept>SM_ASSETTYPE_PLAIN_TEXT</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_STATIC_IMAGE">
+    <label>A static image of any format</label>
+    <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
+    <linkable>true</linkable>
+  </type>
+  
+  <type id="SM_ASSETCLASS_SHOCKWAVE_FLASH">
+    <label>Formatted Text</label>
+    <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_HOMEPAGE_SPLASH">
+    <label>Homepage Splash (High-impact, high compatibility)</label>
+    <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
+    <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
+    <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_MOVIE">
+    <label>A movie in any format</label>
+    <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
+    <accept>SM_ASSETTYPE_MPEG_MOVIE</accept>
+    <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
+    <accept>SM_ASSETTYPE_WMV</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_DOWNLOAD">
+    <label>A file that must be downloaded</label>
+    <accept>SM_ASSETTYPE_PDF</accept>
+    <accept>SM_ASSETTYPE_MS_WORD</accept>
+    <accept>SM_ASSETTYPE_MS_EXCEL</accept>
+    <accept>SM_ASSETTYPE_MS_POWERPOINT</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_CONTAINER">
+    <label>A Container</label>
+    <accept>SM_ASSETTYPE_CONTAINER_TEMPLATE</accept>
+  </type>
+  
+</placeholdertypes>

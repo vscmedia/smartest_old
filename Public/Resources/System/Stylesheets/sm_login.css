@@ -1,0 +1,72 @@
+body {
+  border: none;
+}
+
+body	{
+  background-color: #40484a;
+  /* background:url(/Resources/Images/System/smartest_login_bg.gif); */
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+body, td {
+  font: 13px "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
+}
+
+textarea, input.textInput, select {
+  background: #f4f4f4;
+  border: 1px solid #b2b2b2;
+  color: #000;
+  font:  13px Verdana, Arial, Helvetica, sans-serif;
+  margin: 1px;
+  padding: 3px;
+  /* background:url(/Resources/Images/System/smartest_login_bg.gif); */
+}
+
+.submit, .editform th, #postcustomsubmit {
+  text-align: right;
+}
+
+#login {
+  background: #fff;
+  border: 1px solid #a2a2a2;
+  margin: 5em auto;
+  padding: 1.5em;
+  width: 25em;
+}
+
+#login #login_error {
+  background: #c00;
+  border: 1px solid #a40000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  padding: .5em;
+  text-align: center;
+}
+
+#login h1 {
+  margin-top: 0;
+}
+
+#login h1 a {
+  display: block;
+  text-indent: -1000px;
+  height: 20px;
+  border-bottom: none;
+}
+
+#login input {
+  padding: 3px;
+}
+
+
+#login #username, #password {
+  font-size: 1.7em;
+  width: 80%;
+}
+
+#login #submit {
+  font-size: 1.4em;
+}

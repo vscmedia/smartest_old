@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xml>
+
+<library name="pear">
+  <location>Libraries/pear/</location>
+  <label>PEAR</label>
+  <author>Various</author>
+  <suffix>.php</suffix>
+</library>
+
+<library name="smarty">
+  <location>Libraries/Smarty/</location>
+  <label>Smarty</label>
+  <author>Various</author>
+  <suffix>.class.php</suffix>
+</library>
+
+<library name="tlog">
+  <location>Libraries/Tlog/</location>
+  <label>TLog</label>
+  <author>Matt Robinson</author>
+  <suffix>.class.php</suffix>
+</library>
+
+<library name="smartest">
+  <location>Libraries/Plugins/Smartest/</location>
+  <label>Smartest Libraries</label>
+  <author>Marcus Gilroy-Ware</author>
+  <suffix>.class.php</suffix>
+  <prefix>Smartest</prefix>
+</library>
+
+</xml>

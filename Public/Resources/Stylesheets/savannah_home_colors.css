@@ -1,0 +1,28 @@
+div#page-content{
+    background-color:#d9e2ec;
+/*    background-image:url('/Resources/Images/d9e2ec.gif'); */
+/*    background-color:#ccccff; */
+/*    background-color:url('/Resources/Images/savannah_blue.gif'); */
+}
+
+td#left-column div.menu-box, td#left-column div.menu-box-bottom{
+    background-color:#a1bedf;
+/*    background-color:#99aaff; */
+    color:#0a55ac;
+}
+
+div#breadcrumbs a, ul.custom-search-links li a{
+    color:#0a55ac;
+}
+
+td#central-column{
+    background-color:#fff;
+}
+
+td#left-column div.menu-box h4, td#left-column div.menu-box-bottom h4{
+    color:#fff;
+}
+
+div#central-column-content ul{
+    list-style-image:url(/Resources/Images/savannah_home_page_bullet.gif);
+}
