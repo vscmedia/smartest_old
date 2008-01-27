@@ -7,9 +7,9 @@ then
 fi
 
 
-find . | grep -v svn | xargs chown www-data:admin
+# find . | grep -v svn | xargs chown www-data:admin
 
-find . -type d | xargs chmod 770
+find . -type d | xargs chmod 777
 find . -type f | grep -v svn | xargs chmod 666
-find Applications -type f | grep -v svn | xargs chmod 460
-find System/Applications -type f | grep -v svn | xargs chmod 460
+find Applications -type f | grep -v svn | xargs chmod 464
+find System/Applications -type f | grep -v svn | xargs chmod 464
