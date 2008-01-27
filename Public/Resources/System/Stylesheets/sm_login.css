@@ -4,7 +4,7 @@ body {
 
 body	{
   background-color: #40484a;
-  /* background:url(/Resources/Images/System/smartest_login_bg.gif); */
+  /* background:url(/Resources/System/Images/smartest_login_bg.gif); */
   color: #000;
   margin: 0;
   padding: 0;
@@ -21,7 +21,7 @@ textarea, input.textInput, select {
   font:  13px Verdana, Arial, Helvetica, sans-serif;
   margin: 1px;
   padding: 3px;
-  /* background:url(/Resources/Images/System/smartest_login_bg.gif); */
+  /* background:url(/Resources/System/Images/smartest_login_bg.gif); */
 }
 
 .submit, .editform th, #postcustomsubmit {

@@ -54,22 +54,22 @@
       {rdelim}
     
     	div.form-section-label{ldelim}
-    	{*	background-image:url('{$domain}Resources/Images/form_section_label_bg.gif'); *}
+    	{*	background-image:url('{$domain}Resources/System/Images/form_section_label_bg.gif'); *}
     		background-repeat:repeat-x;
     	{rdelim}
     	
     	div.buttons-bar{ldelim}
-    		background-image:url('{$domain}Resources/Images/admin_button_bar_bg.gif');
+    		background-image:url('{$domain}Resources/System/Images/admin_button_bar_bg.gif');
     		background-repeat:repeat-x;
     	{rdelim}
     	
     	div#admin-menu ul li.off{ldelim}
-		{*	background-image:url('{$domain}Resources/Images/admin_left_nav_bg_off.gif');
+		{*	background-image:url('{$domain}Resources/System/Images/admin_left_nav_bg_off.gif');
 			background-repeat:repeat-x; *}
 		{rdelim}
 		
 		div#admin-menu ul li.on{ldelim}
-			background-image:url('{$domain}Resources/Images/admin_left_nav_bg_on.gif');
+			background-image:url('{$domain}Resources/System/Images/admin_left_nav_bg_on.gif');
 			background-repeat:repeat-x;
 		{rdelim}
     	
@@ -78,7 +78,7 @@
   </head>
   <body>
   
-    <div id="top-strip" style="background-image:url({$domain}Resources/Images/admin_top_bar_bg.gif)">
+    <div id="top-strip" style="background-image:url({$domain}Resources/System/Images/admin_top_bar_bg.gif)">
       {image file="admin_top_bar_logo.gif"}
     </div>
     
