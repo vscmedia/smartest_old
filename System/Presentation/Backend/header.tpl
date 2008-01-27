@@ -79,7 +79,7 @@
   <body>
   
     <div id="top-strip" style="background-image:url({$domain}Resources/System/Images/admin_top_bar_bg.gif)">
-      {image file="admin_top_bar_logo.gif"}
+      <img src="{$domain}Resources/System/Images/admin_top_bar_logo.gif" alt="Smartest" border="0" />
     </div>
     
     {*adminbutton type="url" object="smartest/logout" text="Log Out"}, <a href="{$domain}smartest/users">My Account</a>*}
