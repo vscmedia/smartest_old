@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Shell wrapper for Smartest (based on Phing shell wrapper)
+# (Based on the one provided with Symfony)
+#
+# This script will do the following:
+# - check for PHP_COMMAND env, if found, use it.
+#   - if not found assume php is on the path
+# - check for SYMFONY_HOME env, if found use it
+#   - if not look for it
+# - check for PHP_CLASSPATH, if found use it
+#   - if not found set it using SYMFONY_HOME/lib
+
+if [ -z "$SMARTEST_HOME" ] ; then
+  SMARTEST_HOME="/usr/share/php"
+fi
+
+if (test -z "$PHP_COMMAND") ; then
+  # echo "WARNING: PHP_COMMAND environment not set. (Assuming php on PATH)"
+  export PHP_COMMAND=php
+fi
+
+if (test -z "$PHP_CLASSPATH") ; then
+  PHP_CLASSPATH=$SMARTEST_HOME/lib
+  export PHP_CLASSPATH
+fi
+
+$PHP_COMMAND -d html_errors=off -qC $SMARTEST_HOME/smartest.php $*

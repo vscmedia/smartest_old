@@ -200,6 +200,7 @@ class SmartestMysql implements SmartestDataAccessClass{
 		
 		$this->lastQuery = $querystring;
 		array_push($this->queryHistory, $querystring."; ".$error);
+		
 	}
 	
 	public function specificQuery($wantedField, $qualifyingField, $qualifyingValue, $table){

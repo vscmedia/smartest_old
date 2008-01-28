@@ -697,7 +697,7 @@ class SmartestResponse{
 	
 	function prepareContent(){
 		
-		$this->checkUnwritablePermissions();
+		// $this->checkUnwritablePermissions();
 		
 		try{
 			SmartestQuery::init();
@@ -863,9 +863,9 @@ class SmartestResponse{
 		}
 		
 		if(defined("SM_DEVELOPER_MODE") && @SM_DEVELOPER_MODE == true && SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-			$preview_css = '	<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/Stylesheets/System/sm_preview_main.css" />
+			$preview_css = '	<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/System/Stylesheets/sm_preview_main.css" />
 	<!--[if IE 6]>
-	<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/Stylesheets/System/sm_preview_ie6.css" />
+	<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/System/Stylesheets/sm_preview_ie6.css" />
 	<![endif]-->
 ';
 			$html = str_replace('</head>', $preview_css.'</head>', $html);
