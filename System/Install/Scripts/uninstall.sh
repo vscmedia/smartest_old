@@ -20,3 +20,4 @@ rm -rf Configuration/system.ini
 rm -rf Configuration/units.ini
 rm -rf Presentation/Masters/default.tpl
 rm -rf Public/.htaccess
+rm -rf System/SqlScripts/mysetup.sql

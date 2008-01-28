@@ -29,5 +29,5 @@ chmod 777 ./System/Install/Scripts/database.php
 php ./System/Install/Scripts/database.php
 echo "Set up database."
 
-find System/Cache/Data -type f | grep -v svn | xargs chmod 666
-find System/Cache/Includes -type f | grep -v svn | xargs chmod 666
+# find System/Cache/Data -type f | grep -v svn | xargs chmod 666
+# find System/Cache/Includes -type f | grep -v svn | xargs chmod 666

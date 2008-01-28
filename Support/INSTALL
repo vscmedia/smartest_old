@@ -1,0 +1,5 @@
+Installing Smartest should be very simple.
+
+1) create an empty database, and a user that has permission to create tables there.
+2) chdir to the main Smartest dir and run: sudo bash System/Install/Scripts/install.sh
+3) there's no step three

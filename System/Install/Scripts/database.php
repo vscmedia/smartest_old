@@ -136,7 +136,7 @@ if(!file_exists(SM_ROOT_DIR."Configuration/database.ini")){
         $setup = str_replace("__USERNAME__", $install_details['u'], $setup);
         $setup = str_replace("__PASSWORD__", md5($install_details['p']), $setup);
         $setup = str_replace("__EMAIL__", $install_details['e'], $setup);
-        $setup = str_replace("__TITLE__", $install_details['s'], $setup);
+        $setup = str_replace("__TITLE__", $install_details['n'], $setup);
         $setup = str_replace("__DOMAIN__", $install_details['d'], $setup);
         $setup = str_replace("__SITE_ROOT__", SM_ROOT_DIR, $setup);
         $setup = str_replace("__NOW__", time(), $setup);
