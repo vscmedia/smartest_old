@@ -10,7 +10,7 @@ function toggleParentNodeFromOpenState(node_id){
 			new Effect.Appear(list_id, { duration: 0.4 });
 		}
 		
-		document.getElementById('toggle_'+node_id).src = sm_domain+'Resources/Images/open.gif';
+		document.getElementById('toggle_'+node_id).src = sm_domain+'Resources/System/Images/open.gif';
 		treeNodes[list_id] = 1;
 	}else{
 		
@@ -20,7 +20,7 @@ function toggleParentNodeFromOpenState(node_id){
 			new Effect.Fade(list_id, { duration: 0.4 });
 		}
 		
-		document.getElementById('toggle_'+node_id).src = sm_domain+'Resources/Images/close.gif';
+		document.getElementById('toggle_'+node_id).src = sm_domain+'Resources/System/Images/close.gif';
 		treeNodes[list_id] = 0;
 	}
 }
@@ -37,7 +37,7 @@ function toggleParentNodeFromClosedState(node_id){
 			new Effect.Fade(list_id, { duration: 0.4 });
 		}
 		
-		document.getElementById('toggle_'+node_id).src = sm_domain+'Resources/Images/close.gif';
+		document.getElementById('toggle_'+node_id).src = sm_domain+'Resources/System/Images/close.gif';
 		treeNodes[list_id] = 0;
 	}else{
 		
@@ -47,7 +47,7 @@ function toggleParentNodeFromClosedState(node_id){
 			new Effect.Appear(list_id, { duration: 0.4 });
 		}
 		
-		document.getElementById('toggle_'+node_id).src = sm_domain+'Resources/Images/open.gif';
+		document.getElementById('toggle_'+node_id).src = sm_domain+'Resources/System/Images/open.gif';
 		treeNodes[list_id] = 1;
 	}
 }

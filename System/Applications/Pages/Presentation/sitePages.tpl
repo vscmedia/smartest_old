@@ -36,10 +36,10 @@ function viewPage(){
 {capture name=indent assign=doubleIndent}{math equation="x*y+z" x=30 y=$page.treeLevel z=40}{/capture}
 {if isset($content.data[0].info.site_name) }
   <tr class="mainpanel-row-{cycle values="ddd,fff"}" id="page_{$page.info.webid}" ondblclick="window.location='{$domain}{$section}/getPageAssets?page_id={$page.info.webid}&amp;site_id={$content.data[0].info.site_id}'"><!-- onmouseover="this.style.backgroundColor='#f90'" onmouseout="this.style.backgroundColor='{cycle name="return" values="fff,ddd"}'-->
-    <td style="padding-left:{$indent}px;cursor:pointer" onclick="setSelectedItem('{$page.info.webid}', '{$page.info.title|escape:quotes}', '{cycle name="returnValue" values="ddd,fff"}');" class="text"><img src="{$domain}Resources/Images/spacer.gif" style="width:1px;height:22px;display:inline" border="0" alt="" />{if $page.info.type != "NORMAL"}<img src="{$domain}Resources/Icons/page_gear.gif" border="0" alt="">{else}{if $page.treeLevel == 0}<img src="{$domain}Resources/Icons/world.png" border="0" alt="">{else}<img src="{$domain}Resources/Icons/page.gif" border="0" alt="">{/if}{/if} <a href="javascript:void(0);" class="mainpanel-link">{$page.info.title}</a>{if $page.treeLevel == 1 && $page.info.type == "NORMAL"} (Section page){/if}</td></tr>
+    <td style="padding-left:{$indent}px;cursor:pointer" onclick="setSelectedItem('{$page.info.webid}', '{$page.info.title|escape:quotes}', '{cycle name="returnValue" values="ddd,fff"}');" class="text"><img src="{$domain}Resources/System/Images/spacer.gif" style="width:1px;height:22px;display:inline" border="0" alt="" />{if $page.info.type != "NORMAL"}<img src="{$domain}Resources/Icons/page_gear.gif" border="0" alt="">{else}{if $page.treeLevel == 0}<img src="{$domain}Resources/Icons/world.png" border="0" alt="">{else}<img src="{$domain}Resources/Icons/page.gif" border="0" alt="">{/if}{/if} <a href="javascript:void(0);" class="mainpanel-link">{$page.info.title}</a>{if $page.treeLevel == 1 && $page.info.type == "NORMAL"} (Section page){/if}</td></tr>
 {else}
   <tr style="background-color:#{cycle values="ddd,fff"};height:22px">
-    <td><img src="{$domain}Resources/Images/spacer.gif" style="width:1px;height:22px;display:inline" border="0" alt="" />There are no pages yet. Click <a href="{$domain}{$section}addPage">here</a> to add one.</td></tr>
+    <td><img src="{$domain}Resources/System/Images/spacer.gif" style="width:1px;height:22px;display:inline" border="0" alt="" />There are no pages yet. Click <a href="{$domain}{$section}addPage">here</a> to add one.</td></tr>
 {/if}
 {/foreach}
 
@@ -55,9 +55,9 @@ function viewPage(){
     <li {if $smarty.foreach.$foreach_name.last}class="last"{elseif $smarty.foreach.$foreach_name.first}class="first"{else}class="middle"{/if}>
       
       {if !empty($page.child_items) || !empty($page.children)}
-      <a href="javascript:toggleParentNodeFromOpenState('{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}')"><img src="{$domain}Resources/Images/open.gif" alt="" border="0" id="toggle_{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}" /></a>
+      <a href="javascript:toggleParentNodeFromOpenState('{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}')"><img src="{$domain}Resources/System/Images/open.gif" alt="" border="0" id="toggle_{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}" /></a>
       {else}
-      <img src="{$domain}Resources/Images/blank.gif" alt="" border="0" />
+      <img src="{$domain}Resources/System/Images/blank.gif" alt="" border="0" />
       {/if}
       
       <a id="item_{$page.info.webid}" class="option" href="javascript:nothing()" onclick="setSelectedItem('{$page.info.webid}', '{$page.info.title|escape:quotes}', '{if $page.info.type == 'ITEMCLASS'}meta-page{else}static-page{/if}');" ondblclick="window.location='{$domain}{$section}/openPage?page_id={$page.info.webid}&amp;site_id={$content.data[0].info.site_id}'">		 
@@ -71,7 +71,7 @@ function viewPage(){
            {*   {foreach from=$page.child_items item="child_item" name="child_item_list" }
             <li {if $smarty.foreach.child_item_list.last && empty($page.children)}class="last"{elseif $smarty.foreach.child_item_list.first}class="first"{else}class="middle"{/if}>
             
-            <img src="{$domain}Resources/Images/blank.gif" alt="" border="0" />
+            <img src="{$domain}Resources/System/Images/blank.gif" alt="" border="0" />
             <a id="{$page.info.webid}_{$child_item.webid}" class="option" onclick="setSelectedItem('{$page.info.webid}_{$child_item.webid}', '{$child_item.name|escape:quotes}', 'set-member')"><img src="{$domain}Resources/Icons/package.png" alt="" border="0" />&nbsp;{$child_item.name}</a>
             
             </li>
