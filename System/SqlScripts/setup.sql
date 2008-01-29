@@ -31,7 +31,7 @@ INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_descrip
 INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_description`) VALUES (17, 'permission', 'publish_approved_items', 'Publish changes to items that have been modified, and those modifications accepted.');
 INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_description`) VALUES (19, 'permission', 'publish_all_items', 'Publish changed items even if they have not been approved.');
 INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_description`) VALUES (20, 'permission', 'modify_site_parameters', 'Edit site parameters.');
-INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_description`) VALUES (21, 'permission', 'site_access', 'To see the contents of a site; to open it in order to work on it.');
+INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_description`) VALUES (21, 'permission', 'site_access', 'To see the contents of a site. To open it in order to work on it.');
 INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_description`) VALUES (22, 'permission', 'modify_other_user_details', 'Edit the details of other users.');
 INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_description`) VALUES (23, 'permission', 'grant_site_access', 'Grant access to a site to another user.');
 INSERT INTO `UserTokens` (`token_id`, `token_type`, `token_code`, `token_description`) VALUES (24, 'permission', 'grant_global_permissions', 'Permission to grant permissions that will persist across all sites.');
