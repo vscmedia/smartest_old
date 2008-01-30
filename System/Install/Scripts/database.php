@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
 define('SM_ROOT_DIR', getcwd().DIRECTORY_SEPARATOR);
@@ -101,9 +101,9 @@ if(!file_exists(SM_ROOT_DIR."Configuration/database.ini")){
     
     $details = getDetailsFromUser();
     
-    if(file_exists(SM_ROOT_DIR."Configuration/database-sample.ini")){
+    if(file_exists(SM_ROOT_DIR."System/Install/Samples/database-sample.ini")){
         
-        $config = file_get_contents(SM_ROOT_DIR."Configuration/database-sample.ini");
+        $config = file_get_contents(SM_ROOT_DIR."System/Install/Samples/database-sample.ini");
         $config = str_replace("__USERNAME__", $details['u'], $config);
         $config = str_replace("__PASSWORD__", $details['p'], $config);
         $config = str_replace("__DATABASE__", $details['d'], $config);
@@ -161,7 +161,7 @@ if(!file_exists(SM_ROOT_DIR."Configuration/database.ini")){
         file_put_contents(SM_ROOT_DIR."System/Install/install.log", $setup);
         
     }else{
-        fwrite(STDOUT, "* ERROR: ".SM_ROOT_DIR."Configuration/database-sample.ini could not be found! \n");
+        fwrite(STDOUT, "* ERROR: ".SM_ROOT_DIR."System/Install/Samples/database-sample.ini could not be found! \n");
         exit(0);
     }
     

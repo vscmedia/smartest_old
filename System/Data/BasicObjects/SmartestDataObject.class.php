@@ -12,6 +12,7 @@ class SmartestDataObject{
 	protected $_table_name = '';
 	protected $_came_from_database = false;
 	protected $database;
+	protected $_last_query = '';
 	
 	public function __construct(){
 		
@@ -297,7 +298,7 @@ class SmartestDataObject{
 		    // }else{
 		    
 			    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='$id'";
-		
+		        $this->_last_query = $sql;
 			    $result = $this->database->queryToArray($sql, $file, $line);
 		
 			    if(count($result)){
@@ -326,7 +327,7 @@ class SmartestDataObject{
 	public function hydrateBy($field, $value, $draft=false){
 	    
 	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix.$field." = '".$value."'";
-	    
+	    $this->_last_query = $sql;
 	    $result = $this->database->queryToArray($sql, $file, $line);
 
 	    if(count($result)){
@@ -373,7 +374,7 @@ class SmartestDataObject{
 			}
 		
 			$sql .= " WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
-			
+			$this->_last_query = $sql;
 			$this->database->rawQuery($sql);
 			
 		}else{
@@ -404,8 +405,9 @@ class SmartestDataObject{
 			}
 			
 			$sql .= ')';
-			
+			$this->_last_query = $sql;
 			$id = $this->database->query($sql);
+			
 			$this->_properties['id'] = $id;
 			$this->generatePropertiesLookup();
 			$this->_came_from_database = true;
@@ -416,6 +418,7 @@ class SmartestDataObject{
 	
 	public function delete(){
 		$sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->getId()."' LIMIT 1";
+		$this->_last_query = $sql;
 		$this->database->rawQuery($sql);
 		$this->_came_from_database = false;
 	}
@@ -436,6 +439,14 @@ class SmartestDataObject{
         }
         
         return $site_id;
+	}
+	
+	public function getLastQuery(){
+	    return $this->_last_query;
+	}
+	
+	public function getDbConnectionLastQuery(){
+	    return $this->database->getLastQuery();
 	}
 	
 	/* public static function retrieveAllAsRawArrays(){

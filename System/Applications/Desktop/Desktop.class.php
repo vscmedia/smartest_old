@@ -183,16 +183,19 @@ class Desktop extends SmartestApplication{
         $site->setRoot($post['site_root']);
         $site->setAdminEmail($post['site_admin_email']);
         $site->setAutomaticUrls('OFF');
-	    // $site->setLanguage
 	    $site->save();
+	    
+	    $this->addUserMessage($site->getLastQuery());
 	    
 	    $home_page = new SmartestPage;
 	    $home_page->setTitle($post['site_home_page_title']);
 	    $home_page->setName(SmartestStringHelper::toSlug($post['site_home_page_title']));
 	    $home_page->setWebid(SmartestStringHelper::random(32));
 	    $home_page->setSiteId($site->getId());
+	    $home_page->setCreatedbyUserid($this->getUser->getId());
 	    $home_page->save();
 	    $site->setTopPageId($home_page->getId());
+	    $this->addUserMessage($home_page->getLastQuery());
 	    
 	    $error_page = new SmartestPage;
 	    $error_page->setTitle($post['site_error_page_title']);
@@ -200,8 +203,32 @@ class Desktop extends SmartestApplication{
 	    $error_page->setSiteId($site->getId());
 	    $error_page->setParent($home_page->getId());
 	    $error_page->setWebid(SmartestStringHelper::random(32));
+	    $error_page->setCreatedbyUserid($this->getUser->getId());
 	    $error_page->save();
 	    $site->setErrorPageId($error_page->getId());
+	    $this->addUserMessage($error_page->getLastQuery());
+	    
+	    $tag_page = new SmartestPage;
+	    $tag_page->setTitle('Tagged Content');
+	    $tag_page->setName('tag');
+	    $tag_page->setSiteId($site->getId());
+	    $tag_page->setParent($home_page->getId());
+	    $tag_page->setWebid(SmartestStringHelper::random(32));
+	    $tag_page->setCreatedbyUserid($this->getUser->getId());
+	    $tag_page->save();
+	    $this->addUserMessage($tag_page->getLastQuery());
+	    $site->setTagPageId($tag_page->getId());
+	    
+	    $search_page = new SmartestPage;
+	    $search_page->setTitle('Search Results');
+	    $search_page->setName('search');
+	    $search_page->setSiteId($site->getId());
+	    $search_page->setParent($home_page->getId());
+	    $search_page->setWebid(SmartestStringHelper::random(32));
+	    $search_page->setCreatedbyUserid($this->getUser->getId());
+	    $search_page->save();
+	    $this->addUserMessage($search_page->getLastQuery());
+	    $site->setTagPageId($search_page->getId());
 	    
 	    $logo_upload = new SmartestUploadHelper('site_logo');
 	    $logo_upload->setUploadDirectory(SM_ROOT_DIR.'Public/Resources/Images/SiteLogos/');
@@ -226,9 +253,11 @@ class Desktop extends SmartestApplication{
 		    $this->getUser()->addToken('modify_user_permissions', $site->getId());
 		}
 		
+		
+		
 		// $this->openSite(array('site_id'=>$site->getId()));
-		$this->addUserMessageToNextRequest("The site has successfully been created. You must now log out and back in again to start editing.");
-		$this->redirect("/smartest");
+		// $this->addUserMessageToNextRequest("The site has successfully been created. You must now log out and back in again to start editing.");
+		// $this->redirect("/smartest");
 	    
 	}
     

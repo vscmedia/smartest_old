@@ -262,6 +262,11 @@ class SmartestMysql implements SmartestDataAccessClass{
 
 	}
 	
+	// this function added because $lastQuery is going to become a protected property.
+	public function getLastQuery(){
+	    return $this->lastQuery;
+	}
+	
 	public function getDebugInfo(){
 		return $this->queryHistory;
 	}
