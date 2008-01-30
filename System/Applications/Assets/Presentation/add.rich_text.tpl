@@ -10,7 +10,7 @@
 
   <div id="uploader_link">or, alternatively, <a href="javascript:showUploader();">upload a file</a>.</div>
 
-<script language="javascript" type="text/javascript" src="{$domain}Resources/Javascript/System/tiny_mce/tiny_mce.js"></script>
+<script language="javascript" type="text/javascript" src="{$domain}Resources/System/Javascript/tiny_mce/tiny_mce.js"></script>
 
 <script language="javascript" type="text/javascript">
 {literal}

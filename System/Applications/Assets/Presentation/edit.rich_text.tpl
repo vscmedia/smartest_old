@@ -23,7 +23,7 @@
         
 </form>
 
-<script language="javascript" type="text/javascript" src="{$domain}Resources/Javascript/System/tiny_mce/tiny_mce.js"></script>
+<script language="javascript" type="text/javascript" src="{$domain}Resources/System/Javascript/tiny_mce/tiny_mce.js"></script>
 
 <script language="javascript" type="text/javascript">
 
