@@ -4,7 +4,7 @@ SmartestHelper::register('FileSystem');
 
 class SmartestFileSystemHelper extends SmartestHelper{
 
-	static function getDirectoryContents($directory){
+	static function getDirectoryContents($directory, $show_invisible=false){
 	
 		$files = array();
 		
@@ -15,7 +15,9 @@ class SmartestFileSystemHelper extends SmartestHelper{
 			while (false !== ($file = readdir($res))) {
         		
         		if($file != '.' && $file != '..'){
-        			$files[] = $file;
+        		    if($show_invisible || $file{0} != '.'){
+    		            $files[] = $file;
+    		        }
         		}
         		
 			}
