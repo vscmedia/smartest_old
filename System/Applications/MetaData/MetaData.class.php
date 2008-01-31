@@ -228,7 +228,7 @@ class MetaData extends SmartestApplication{
 		
     		if($field->hydrateBy($lookup_field, $value)){
 		
-    		    print_r($field);
+    		    // print_r($field);
 		
         		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");
         		// $sql = "SELECT pagepropertyvalue_draft_value FROM PagePropertyValues WHERE pagepropertyvalue_page_id ='$page_id' AND pagepropertyvalue_pageproperty_id='$pageproperty_id'";

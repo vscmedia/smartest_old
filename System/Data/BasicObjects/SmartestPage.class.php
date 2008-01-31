@@ -299,8 +299,14 @@ class SmartestPage extends SmartestDataObject{
     	        return $urls[0]->getUrl();
 	        
     	    }else{
-    	        // No urls have been defined. Return a dynamic one.
-    	        $url = 'website/renderPageFromId?page_id='.$this->getWebid();
+    	        // No urls have been defined.
+    	        if($this->isHomePage()){
+    	            // Return "/"
+    	            $url = '';
+    	        }else{
+    	            // Return a dynamic one.
+    	            $url = 'website/renderPageFromId?page_id='.$this->getWebid();
+	            }
     	    }
 	    
         // }
@@ -552,6 +558,10 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function isSearchPage(){
 	    return ($this->getSite()->getSearchPageId() == $this->getId());
+	}
+	
+	public function isHomePage(){
+	    return ($this->getSite()->getTopPageId() == $this->getId());
 	}
 	
 	public function touch(){

@@ -199,6 +199,22 @@ class SmartestEngine extends Smarty{
         
     }
     
+    public function renderEditFieldButton($field_name, $params){
+        
+        $markup = '<!--edit link-->';
+        
+        if(is_array($this->_page_rendering_data) && is_array($this->_page_rendering_data['fields'])){
+        
+            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+		        $markup = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".SM_CONTROLLER_DOMAIN."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+	        }
+	    
+        }
+        
+        return $markup;
+        
+    }
+    
     public function renderList($list_name, $params){
         
         $list = new SmartestCmsItemList;
@@ -264,19 +280,13 @@ class SmartestEngine extends Smarty{
             $link_helper->parse($to);
             
             return $link_helper->getMarkup();
-            /* }else{
-                if($this->draft_mode){
-                    return  $link_helper->getErrorMessage();
-                }
-            } */
-        
         }
         
     }
     
     public function renderUrl($to, $params){
         
-        // used by the tinymce url helper
+        // used by the tinymce url helper, as well as the {url} template helper.
         
         if(strlen($to)){
             

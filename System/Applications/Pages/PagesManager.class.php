@@ -1297,9 +1297,9 @@ class PagesManager{
 	public function getTemplateFieldNames($template_file_path){
 		if(is_file($template_file_path)){
 			if($template_contents = file_get_contents($template_file_path)){
-				$regexp = preg_match_all("/\{field.+name=\"([\w-_]+?)\".*\}/i", $template_contents, $matches);
+				$regexp = preg_match_all("/\{(edit_)?field.+name=\"([\w-_]+?)\".*\}/i", $template_contents, $matches);
 
-				$foundClasses = $matches[1];
+				$foundClasses = $matches[2];
 
 				return $foundClasses;
 			}else{

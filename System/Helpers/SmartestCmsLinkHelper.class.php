@@ -219,7 +219,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     
     public function parseContent($with){
         if(substr($with, 0, 6) == 'image:'){
-            return '<img src="'.substr($with, 6).'" alt="'.$this->getContent(true).'" />';
+            return '<img src="'.SM_CONTROLLER_DOMAIN.'Resources/Images/'.substr($with, 6).'" alt="'.$this->getContent(true).'" />';
         }else{
             return $with;
         }
