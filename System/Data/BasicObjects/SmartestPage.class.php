@@ -384,6 +384,8 @@ class SmartestPage extends SmartestDataObject{
 		    $sql .= " AND page_is_published = 'TRUE'";
 		}
 		
+		$sql .= " ORDER BY page_order_index, page_id ASC";
+		
 		$result = $this->database->queryToArray($sql);
 	    $i = 0;
 	    

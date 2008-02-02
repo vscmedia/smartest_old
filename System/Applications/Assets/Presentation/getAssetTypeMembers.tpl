@@ -18,7 +18,7 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
 <a href="#" onclick="setView('grid', 'options_grid')">Icons</a>
 </div>
 
-<ul class="options-list" style="margin-top:0px" id="options_grid">
+<ul class="options-grid" style="margin-top:0px" id="options_grid">
 {foreach from=$assets item="asset"}
 
 <li>
