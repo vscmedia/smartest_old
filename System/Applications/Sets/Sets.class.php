@@ -94,16 +94,40 @@ class Sets extends SmartestApplication{
 	            $this->send($set->__toArray(), 'set');
 	            $this->send(true, 'show_form');
 	            $this->send($set->getModel()->getPropertiesAsArrays(), 'properties');
+	            $this->setTitle('Edit Dynamic Set');
 	            
 	            $formTemplateInclude = "editSet.dynamic.tpl";
 	        
 	        }else{
 	            
 	            // fetch all item ids
+	            $all_items = $set->getModel()->getSimpleItemsAsArrays($this->getSite()->getId());
 	            
 	            // fetch set member item ids (and create objects for form)
+	            $set_member_ids = $set->getMemberIds();
 	            
 	            // do the math
+	            $set_member_arrays = array();
+	            
+	            foreach($all_items as $key=>$item){
+	                
+	                // if the item is in the set
+	                if(in_array($item['id'], $set_member_ids)){
+	                    // copy the item to the set members array
+	                    $set_member_arrays[] = $item;
+	                    // unset it in the original list
+	                    unset($all_items[$key]);
+	                }
+	                
+	            }
+	            
+	            // print_r($all_items);
+	            // print_r($set_member_ids);
+	            
+	            $this->send($set->__toArray(), 'set');
+	            $this->send($set_member_arrays, 'members');
+	            $this->send($all_items, 'non_members');
+	            $this->setTitle('Edit Static Set');
 	            
 	            $formTemplateInclude = "editSet.static.tpl";
 	            
@@ -248,15 +272,17 @@ class Sets extends SmartestApplication{
 		
 		    if($post['transferAction'] == 'add'){
 			    // $this->manager->addItemToStaticSet($post['available_items'], $post['set_id']);
-			    $items = $post['available_items'];
+			    $item_ids = (isset($post['available_items']) && is_array($post['available_items'])) ? $post['available_items'] : array();
+			    $set->addItems($item_ids);
 		    }else{
 			    // $this->manager->removeItemFromStaticSet($post['used_items'], $post['set_id']);
-			    $items = $post['used_items'];
+			    $item_ids = (isset($post['available_items']) && is_array($post['available_items'])) ? $post['available_items'] : array();
+			    $set->removeItems($item_ids);
 		    }
 		
 	    }
 		
-		// $this->formForward();
+		$this->formForward();
 	}
 	
 	function previewSet($get){     

@@ -207,6 +207,29 @@ class SmartestModel extends SmartestDataObject{
         
     }
     
+    public function getItemIds($site_id=''){
+        
+        $sql = "SELECT item_id FROM Items WHERE item_itemclass_id='".$this->getId()."' AND item_deleted != 1";
+        
+        if(is_numeric($site_id)){
+            $sql .= " AND item_site_id='".$site_id."'";
+        }
+        
+        $sql .= " ORDER BY item_name";
+        
+        $result = $this->database->queryToArray($sql);
+        $items = array();
+        
+        foreach($result as $db_array){
+            // $item = new SmartestItem;
+            // $item->hydrate($db_array);
+            $items[] = $db_array['item_id'];
+        }
+        
+        return $items;
+        
+    }
+    
     public function getMetaPages(){
         
         $sql = "SELECT * FROM Pages WHERE page_type='ITEMCLASS' AND page_dataset_id='".$this->getId()."' and page_deleted != 1";

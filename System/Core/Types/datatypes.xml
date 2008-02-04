@@ -101,7 +101,7 @@
         
         <filter>
           <typesource type="db" table="ItemClasses" matchfield="id" />
-          <entitysource type="db" table="Items" matchfield="itemclass_id" sitefield="item_site_id" sharedfield="item_shared" class="SmartestItem" />
+          <entitysource type="db" table="Items" matchfield="item_itemclass_id" sitefield="item_site_id" sharedfield="item_shared" class="SmartestItem" />
         </filter>
         
         <render template="System/Applications/Items/Presentation/CMS/property.cms_item.tpl" />

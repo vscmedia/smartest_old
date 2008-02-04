@@ -308,15 +308,20 @@ class SetsManager{
 		$sql ="UPDATE PairingDetails SET setting_value='".$vocabulary_value."' WHERE paring_id='".$paring_id."' AND setting_id= '".$vocabulary_id."' LIMIT 1";//echo $sql;
 		return $this->database->rawQuery($sql);	
 	}
+	
 	function addItemToStaticSet($items,$set_id){
+		
 		foreach($items as $key=>$value){
-		$count_query="SELECT * FROM SetsItemsLookup WHERE setlookup_set_id=$set_id";
-		$count_result=$this->database->howMany($count_query);
-		$count=$count_result+1;
-		$sql="INSERT INTO SetsItemsLookup (setlookup_set_id,setlookup_item_id,setlookup_order) VALUES ('$set_id','$value','$count')";
-		$this->database->rawQuery($sql);
+		    
+		    $count_query="SELECT * FROM SetsItemsLookup WHERE setlookup_set_id=$set_id";
+		    $count_result=$this->database->howMany($count_query);
+		    $count=$count_result+1;
+		    $sql="INSERT INTO SetsItemsLookup (setlookup_set_id,setlookup_item_id,setlookup_order) VALUES ('$set_id','$value','$count')";
+		    $this->database->rawQuery($sql);
+		    
 		}
 	}
+	
 	function removeItemFromStaticSet($items,$set_id){
 		foreach($items as $key=>$value){
 	$sql="DELETE FROM SetsItemsLookup WHERE setlookup_set_id = '$set_id' AND setlookup_item_id='$value' ";

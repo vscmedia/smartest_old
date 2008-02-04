@@ -4,6 +4,7 @@ class SmartestCmsItemSet extends SmartestDataObject{
     
     protected $_set_members = array();
     protected $_set_member_ids = array();
+    protected $_set_member_webids = array();
     protected $_set_member_slugs = array();
     protected $_conditions = array();
     protected $_fetch_attempted = false;
@@ -27,6 +28,62 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	    }
 	}
 	
+	public function addItems($item_ids){
+	    
+	    foreach($item_ids as $key=>$id){
+
+		    $this->addItem($id);
+		    
+        }
+	}
+	
+	public function addItem($id, $safe=false){
+	    
+	    if($this->getType() == 'STATIC'){
+	    
+	        if($safe){
+	            $count_query  = "SELECT setlookup_id FROM SetsItemsLookup WHERE setlookup_set_id='".$set_id."' AND setlookup_item_id='".$id."'";
+	            $count        = $this->database->howMany($count_query);
+            }else{
+                $count = 0;
+            }
+	    
+	        if($count == 0){
+	            $sql = "INSERT INTO SetsItemsLookup (setlookup_set_id, setlookup_item_id) VALUES ('".$this->getId()."','".$id."')";
+	            $this->database->rawQuery($sql);
+            }
+        
+        }
+	    
+	}
+	
+	public function removeItems($item_ids){
+	    
+	    foreach($item_ids as $key=>$id){
+
+		    $this->removeItem($id);
+		    
+        }
+	}
+	
+	public function removeItem($id, $limit=true){
+	    
+	    if($this->getType() == 'STATIC'){
+	    
+	        if($count == 0){
+	            $sql = "DELETE FROM SetsItemsLookup WHERE setlookup_set_id='".$this->getId()."' AND setlookup_item_id='".$id."'";
+	            
+	            if($limit){
+	                $sql .= ' LIMIT 1';
+	            }
+	            
+	            $this->database->rawQuery($sql);
+            }
+        
+        }
+	    
+	}
+	
 	public function getMembers($draft=false, $refresh=false, $limit=null){
 	    // calculate which items are in the set and assign to $_set_members.
 	    
@@ -39,6 +96,7 @@ class SmartestCmsItemSet extends SmartestDataObject{
     	        $class_name = $model->getClassName();
 	        
     	        $sql = "SELECT setlookup_item_id FROM SetsItemsLookup WHERE setlookup_set_id='".$this->getId()."' ORDER BY setlookup_order ASC";
+    	        
     	        $results = $this->database->queryToArray($sql);
 	            
 	            $cardinality = 0;
@@ -49,22 +107,21 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	                
     	                $item = new $class_name;
     	                $item->hydrate($lookup['setlookup_item_id'], $draft);
-    	            
+    	                
     	                // var_dump($item->isHydrated());
 	            
     	                if($item->isHydrated()){
-    	                    $this->_set_members[] = $item;
-    	                    $this->_set_members_ids[] = $item->getId();
-    	                    $this->_set_members_webids[] = $item->getWebid();
-    	                    $this->_set_members_slugs[] = $item->getSlug();
+    	                    $this->_set_members[$cardinality] = $item;
+    	                    $this->_set_member_ids[$cardinality] = $item->getId();
+    	                    $this->_set_member_webids[$cardinality] = $item->getWebid();
+    	                    $this->_set_member_slugs[$cardinality] = $item->getSlug();
+    	                    $cardinality++;
     	                }
-    	            
-    	                $cardinality++;
+    	                
+    	                // print_r($this->_set_member_ids);
     	            
 	                }
     	        }
-    	        
-    	        // print_r($this->_set_members_ids);
 	        
     	        $this->_fetch_attempted = true;
 	        
@@ -105,9 +162,9 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	            
 	            foreach($this->_set_members as $item){
 	                
-	                $this->_set_members_ids[] = $item->getId();
-	                $this->_set_members_webids[] = $item->getWebid();
-	                $this->_set_members_slugs[] = $item->getSlug();
+	                $this->_set_member_ids[] = $item->getId();
+	                $this->_set_member_webids[] = $item->getWebid();
+	                $this->_set_member_slugs[] = $item->getSlug();
 	                
 	            }
 	            
@@ -122,7 +179,7 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	
 	public function getMemberIds($draft=false, $refresh=false){
 	    
-	    $this->getMembers($draft=false, $refresh=false);
+	    $this->getMembers($draft, $refresh);
 	    return $this->_set_member_ids;
 	    
 	}
@@ -226,23 +283,23 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	    // make sure the set is populated
 	    $this->getMembers();
 	    
-	    // print_r($this->_set_members_ids);
+	    // print_r($this->_set_member_ids);
 	    
 	    // echo $field.' '.$value;
 	    
 	    if($field == "id"){
-	        $tmp_array = $this->_set_members_ids;
+	        $tmp_array = $this->_set_member_ids;
 	    }else if($field == "slug"){
-            $tmp_array = $this->_set_members_slugs;
+            $tmp_array = $this->_set_member_slugs;
         }else if($field == 'webid'){
             // echo $compare.' ';
-	        $tmp_array = $this->_set_members_webids;
+	        $tmp_array = $this->_set_member_webids;
         }else{
     	    // create an empty array to avoid E_WARNING
     	    $tmp_array = array();
     	}
     	
-    	// print_r($this->_set_members_webids);
+    	// print_r($this->_set_member_webids);
     	
     	if(in_array($value, $tmp_array)){
     	    $has_it = true;

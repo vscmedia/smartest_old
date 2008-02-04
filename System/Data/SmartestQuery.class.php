@@ -159,7 +159,7 @@ class SmartestQuery{
 				}else{
 					// build extensible class
 					if(SmartestObjectModelHelper::buildClassFile($class_id, $class_name)){
-						include SM_ROOT_DIR.'System/Data/ObjectModel/'.$class_name.'.class.php';
+						include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
 					}else{
 						throw new SmartestException('Could not auto-generate model class: '.$class_name, SM_ERROR_MODEL);
 					}

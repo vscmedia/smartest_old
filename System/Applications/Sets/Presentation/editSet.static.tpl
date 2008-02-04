@@ -33,7 +33,7 @@ function executeTransfer(){
 <form action="{$domain}sets/transferItem" method="post" name="transferForm">
   
   <input type="hidden" id="transferAction" name="transferAction" value="" /> 
-  <input type="hidden" name="set_id" value="{$set.set_id}" />
+  <input type="hidden" name="set_id" value="{$set.id}" />
   
   <table width="100%" border="0" cellpadding="0" cellspacing="5" style="border:1px solid #ccc">
     <tr>
@@ -42,8 +42,8 @@ function executeTransfer(){
 
 		<select name="available_items[]"  id="available_items" size="2" multiple style="width:270px; height:300px;"  onclick="setMode('add')"  >
     
-    {foreach from=$items key="key" item="value"}
-		<option value="{$values.item_id}" >{$value.item_name}</option>
+    {foreach from=$non_members key="key" item="item"}
+		<option value="{$item.id}" >{$item.name}</option>
 		{/foreach}
 		
 		</select>
@@ -56,9 +56,9 @@ function executeTransfer(){
      <td align="center">
         <div style="text-align:left">Items Belonging to this set:</div>
  	<select name="used_items[]"  id='used_items' size="2" multiple style="width:270px; height:300px" onclick="setMode('remove')" >	
-	{foreach from=$set_items key=key item=value}
-	<option value="{$value.item_id}"  >{$value.item_name}</option>
-	{/foreach}
+	  {foreach from=$members key="key" item="item"}
+		<option value="{$item.id}" >{$item.name}</option>
+		{/foreach}
         </select>
 	</td>
    </tr>
