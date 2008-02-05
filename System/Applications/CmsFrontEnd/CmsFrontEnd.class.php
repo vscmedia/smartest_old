@@ -72,14 +72,12 @@ class CmsFrontEnd extends SmartestApplication{
 		    
 		    if(isset($get['tag_name'])){
 		        
-		        // echo $get['tag_name'];
+		        // Page is a list of tagged content, not a real page.
 		        
 		        $tag_identifier = SmartestStringHelper::toSlug($get['tag_name']);
         	    $tag = new SmartestTag;
 
         	    if($tag->hydrateBy('name', $tag_identifier)){
-        	        
-        	        /*  */
         	        
         	        $tag_page_id = $this->_site->getTagPageId();
         	        
@@ -87,12 +85,8 @@ class CmsFrontEnd extends SmartestApplication{
                     $p->hydrate($tag_page_id);
                     $p->assignTag($tag);
                     
-                    // print_r($p);
-                    
                     $this->_page = $p;
                     $this->send($this->_page, '_page');
-                    
-                    // print_r($this->_page->__toArray());
 
         	    }else{
         	        $objects = array();

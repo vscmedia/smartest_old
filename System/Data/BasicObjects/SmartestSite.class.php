@@ -115,12 +115,20 @@ class SmartestSite extends SmartestDataObject{
 	    $search_query_words = preg_split('/[^\w]+/', $query);
 	    
 	    $pages = array();
-	    $pages_sql = "SELECT * FROM Pages WHERE page_site_id='".$this->getId()."' AND page_deleted != 'TRUE' AND page_id !='".$this->getSearchPageId()."' AND page_id !='".$this->getTagPageId()."'";
+	    $pages_sql = "SELECT * FROM Pages WHERE page_site_id='".$this->getId()."' AND page_deleted != 'TRUE' AND page_id !='".$this->getSearchPageId()."' AND page_id !='".$this->getTagPageId()."' AND page_type='NORMAL'";
 	    
-	    foreach($search_query_words as $word){
+	    if(count($search_query_words) > 0){
+	        $pages_sql .= ' AND ';
+	    }
 	    
-	        $pages_sql .= " AND page_search_field LIKE '%".$word."%'";
-	    
+	    foreach($search_query_words as $key=>$word){
+	        
+	        if($key > 0){
+	            $pages_sql .= "OR ";
+	        }
+	        
+	        $pages_sql .= "(page_search_field LIKE '%".$word."%' OR page_title LIKE '%".$word."%') ";
+	        
         }
         
         if(count($search_query_words)){
@@ -136,13 +144,23 @@ class SmartestSite extends SmartestDataObject{
         }
         
         $items = array();
-	    $items_sql = "SELECT * FROM Items WHERE item_site_id='".$this->getId()."' AND item_deleted != 'TRUE'";
+	    $items_sql = "SELECT * FROM Items WHERE item_site_id='".$this->getId()."' AND item_deleted=0 AND item_public='TRUE'";
 	    
-	    foreach($search_query_words as $word){
+	    if(count($search_query_words) > 0){
+	        $items_sql .= ' AND ';
+	    }
 	    
-	        $pages_sql .= " AND item_search_field LIKE '%".$word."%'";
-	    
+	    foreach($search_query_words as $key=>$word){
+	        
+	        if($key > 0){
+	            $items_sql .= "OR ";
+	        }
+	        
+	        $items_sql .= "(item_search_field LIKE '%".$word."%' OR item_name LIKE '%".$word."%') ";
+	        
         }
+        
+        // echo $items_sql;
         
         if(count($search_query_words)){
             $items_result = $this->database->queryToArray($items_sql);

@@ -84,8 +84,14 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	    
 	}
 	
-	public function getMembers($draft=false, $refresh=false, $limit=null){
+	public function getMembers($draft=false, $refresh=false, $limit=null, $query_data=''){
 	    // calculate which items are in the set and assign to $_set_members.
+	    
+	    if(!is_array($query_data)){
+	        $query_data = array();
+	    }
+	    
+	    // print_r($query_data);
 	    
 	    if($refresh || !$this->_fetch_attempted){
 	    
@@ -149,7 +155,22 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	            
 	            // get conditions
 	            foreach($this->getConditions() as $c){
-	                $q->add($c->getItempropertyId(), $c->getValue(), $c->getOperator(), $draft);
+	                
+	                $final_value = $c->getValue();
+	                
+	                if(SmartestStringHelper::startsWith($final_value, ':')){
+	                    
+	                    $keys = array_keys($query_data);
+	                    $position = array_search(substr($final_value, 1), $keys);
+	                    
+	                    if($position !== false){
+	                        $final_value = $query_data[$keys[$position]];
+	                    }else{
+	                        $final_value = '';
+	                    }
+	                }
+	                
+	                $q->add($c->getItempropertyId(), $final_value, $c->getOperator(), $draft);
 	            }
 	            
 	            $result = $q->doSelect($draft);

@@ -82,7 +82,7 @@ class SmartestTag extends SmartestDataObject{
         
         if(!$this->_item_lookup_attempted[$site_id]){
         
-            $sql = "SELECT * FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK'";
+            $sql = "SELECT * FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK' AND item_deleted = '0'";
             
             if(is_numeric($site_id)){
                 $sql .= " AND item_site_id='".$site_id."'";
@@ -91,6 +91,8 @@ class SmartestTag extends SmartestDataObject{
             if(!$draft){
                 $sql .= " AND item_public='TRUE'";
             }
+            
+            // echo $sql;
             
             $result = $this->database->queryToArray($sql);
             
@@ -242,7 +244,7 @@ class SmartestTag extends SmartestDataObject{
         
     }
     
-    public function getObjectsOnSiteAsArrays($site_id, $draft=false){
+    public function getObjectsOnSiteAsArrays($site_id, $draft){
         
         $objects = $this->getObjectsOnSite($site_id, $draft);
         $arrays = array();

@@ -14,25 +14,28 @@
 
 <script language="javascript" type="text/javascript">
 {literal}
+
 tinyMCE.init({
 	mode : "exact",
 	elements : "tpl_textArea",
 	theme : "advanced",
-	plugins : "paste",
-	theme_advanced_buttons3_add_before : "tablecontrols,separator",
+	plugins : "ibrowser,paste",
+	theme_advanced_buttons3_add_before : "ibrowser,separator",
 	theme_advanced_buttons3_add : "paste,pasteword,selectall",
 	theme_advanced_disable : "image,styleprops",
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_resizing : true,
-	theme_advanced_toolbar_align : "left",
+	theme_advanced_toolbar_align : "center",
 	convert_fonts_to_spans : true,
 	paste_use_dialog : true,
-	paste_remove_spans : true,
-	paste_remove_styles: true,
-	paste_strip_class_attributes: true,
-	relative_urls : false,
+  paste_remove_spans : true,
+  paste_remove_styles: true,
+  paste_strip_class_attributes: true,
+  relative_urls : false,
   remove_script_host : true,
 {/literal}  document_base_url : "{$domain}" {literal}
   
-});{/literal}
+});
+
+{/literal}
 </script>

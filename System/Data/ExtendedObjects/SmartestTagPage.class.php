@@ -23,7 +23,7 @@ class SmartestTagPage extends SmartestPage{
     public function fetchRenderingData(){
         
         $data = parent::fetchRenderingData();
-        $data['tagged_objects'] = $this->_tag->getObjectsOnSiteAsArrays($this->getSite()->getId(), true);
+        $data['tagged_objects'] = $this->_tag->getObjectsOnSiteAsArrays($this->getSite()->getId(), false);
         // print_r($data);
         return $data;
         
@@ -35,6 +35,10 @@ class SmartestTagPage extends SmartestPage{
         // $data['formatted_title'] = "";
         $data['tag'] = $this->_tag->__toArray();
         return $data;
+    }
+    
+    public function getCacheAsHtml(){
+        return 'FALSE';
     }
     
 }

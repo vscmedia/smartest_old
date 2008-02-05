@@ -221,8 +221,6 @@ class SmartestModel extends SmartestDataObject{
         $items = array();
         
         foreach($result as $db_array){
-            // $item = new SmartestItem;
-            // $item->hydrate($db_array);
             $items[] = $db_array['item_id'];
         }
         

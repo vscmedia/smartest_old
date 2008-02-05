@@ -233,6 +233,34 @@ class SmartestStringHelper extends SmartestHelper{
 		
 	}
 	
+	static function parseNameValueString($string){
+	    
+	    $pairs = explode(';', $string);
+	    $data = array();
+	    
+	    foreach($pairs as $nvp){
+	        $parts = explode(':', $nvp);
+	        $data[trim($parts[0])] = trim($parts[1]);
+	    }
+	    
+	    return $data;
+	}
+	
+	
+	static function toNameValueString($array){
+	    if(!is_array($array)){
+	        return '0:'.$array;
+	    }else{
+	        $string = '';
+	        
+	        foreach($array as $key=>$value){
+	            $string .= $key.':'.$value.';';
+	        }
+	        
+	        return $string;
+	    }
+	}
+	
 	static function toHtmlEntities($string){
     	return htmlentities($string, ENT_QUOTES, 'UTF-8') ;
     }

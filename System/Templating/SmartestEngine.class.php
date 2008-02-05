@@ -327,6 +327,15 @@ class SmartestEngine extends Smarty{
                 
             default:
                 
+                // echo $params['query_vars'];
+                
+                if(isset($params['query_vars'])){
+                    $query_vars = SmartestStringHelper::parseNameValueString($params['query_vars']);
+                    // print_r($query_vars);
+                }else{
+                    $query_vars = array();
+                }
+                
                 $set = new SmartestCmsItemSet;
                 
                 if(isset($params['limit']) && is_numeric($params['limit'])){
@@ -336,7 +345,7 @@ class SmartestEngine extends Smarty{
                 }
 
         		if($set->hydrateBy('name', $name)){
-        		    $items = $set->getMembers($this->draft_mode, false, $limit);
+        		    $items = $set->getMembers($this->draft_mode, false, $limit, $query_vars);
         		    // $items = array();
         		}else{
         		    $items = array();
@@ -353,7 +362,7 @@ class SmartestEngine extends Smarty{
  		
     }
     
-    public function renderAsset($params){
+    public function renderAsset($params, $path='none'){
        
         // print_r($params);
         
@@ -376,7 +385,15 @@ class SmartestEngine extends Smarty{
     			        @$params['render_data']['style'] .= $params['style'];
     			    }
                     
-                    $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('asset_info'=>$asset->__toArray(), 'render_data'=>@$params['render_data'])));
+                    // print_r($asset->__toArray());
+                    
+                    if($path == 'file'){
+                        echo $asset->getUrl();
+                    }else if($path == 'full'){
+                        echo $asset->getFullWebPath();
+                    }else{
+                        $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('asset_info'=>$asset->__toArray(), 'render_data'=>@$params['render_data'])));
+                    }
                     
                     if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
         			    
@@ -416,6 +433,12 @@ class SmartestEngine extends Smarty{
     
     public function renderItemPropertyValue($params){
         
+        if(isset($params['path'])){
+            $path = (!in_array($params['path'], array('file', 'full'))) ? 'none' : $params['path'];
+        }else{
+            $path = 'none';
+        }
+        
         if(isset($params["name"]) && strlen($params["name"])){
             
             $requested_property_name = $params["name"];
@@ -438,42 +461,45 @@ class SmartestEngine extends Smarty{
                             $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
                             
                             // echo $render_template;
+                            
+                            
                         
                             if(is_file($render_template)){
-                            
+                    
                                 if($this->draft_mode){
                                     $value = $property->getData()->getDraftContent();
                                 }else{
                                     $value = $property->getData()->getContent();
                                 }
-                                
+                    
                                 // print_r($property->getData());
-                                
+                    
                                 $render_data = array();
-                                
+                    
                                 //this is a hack for image attributes
                                 if($params['style']){
                                     $render_data['style'] = $params['style'];
                                 }
-                                
+                    
                                 if($params['id']){
                                     $render_data['id'] = $params['id'];
                                 }
-                                
+                    
                                 if($params['class']){
                                     $render_data['class'] = $params['class'];
                                 }
-                                
+                    
                                 // It's more direct to do this, though not quite so extensible. We can update this later.
                                 if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
-                                    $this->renderAsset(array('id'=>$value, 'render_data'=>$render_data));
+                                    $this->renderAsset(array('id'=>$value, 'render_data'=>$render_data), $path);
                                 }else{
                                     $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('raw_value'=>$value, 'render_data'=>$render_data)));
                                 }
-                            
+                        
                             }else{
                                 return "Error: ".$render_template." is missing.";
                             }
+                            
                         
                             // return "Found Property: ".$requested_property_name;
                         
@@ -503,7 +529,7 @@ class SmartestEngine extends Smarty{
                         $property_type_info = $property->getTypeInfo();
                     
                         $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
-                    
+                        
                         if(is_file($render_template)){
                         
                             if($this->draft_mode){
@@ -511,8 +537,15 @@ class SmartestEngine extends Smarty{
                             }else{
                                 $value = $property->getData()->getContent();
                             }
-                        
-                            $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('raw_value'=>$value)));
+                            
+                            // It's more direct to do this, though not quite so extensible. We can update this later.
+                            if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                                $this->renderAsset(array('id'=>$value, 'render_data'=>$render_data), $path);
+                            }else{
+                                $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('raw_value'=>$value, 'render_data'=>$render_data)));
+                            }
+                            
+                            // $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('raw_value'=>$value)));
                         
                         }else{
                             return "Error: ".$render_template." is missing.";
@@ -548,6 +581,15 @@ class SmartestEngine extends Smarty{
         	return null;
         }
 	} */
+	
+	public function renderSiteMap(){
+	    
+	    $pagesTree = $this->page->getSite()->getPagesTree(true);
+	    $this->_tpl_vars['site_tree'] = $pagesTree;
+	    $file = SM_ROOT_DIR."Presentation/Special/sitemap.tpl";
+	    $this->_smarty_include(array('smarty_include_tpl_file'=>$file, 'smarty_include_vars'=>array()));
+
+	}
 	
 	public function getUserAgent(){
 	    return SmartestPersistentObject::get('userAgent');

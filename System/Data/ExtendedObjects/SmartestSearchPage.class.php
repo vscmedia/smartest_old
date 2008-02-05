@@ -39,6 +39,7 @@ class SmartestSearchPage extends SmartestPage{
         
         $data = parent::fetchRenderingData();
         $data['search_results'] = $this->getResultsAsArrays();
+        $data['num_search_results'] = count($data['search_results']);
         // print_r($data);
         return $data;
         
