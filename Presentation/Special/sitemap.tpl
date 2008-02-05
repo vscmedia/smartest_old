@@ -5,7 +5,7 @@
     {capture name="foreach_id" assign="foreach_id"}{if $page.info.id}{$page.info.id}{else}0{/if}{/capture}
     {foreach from=$list item="page" name=$foreach_name}
     
-    {if $page.info.type == 'NORMAL'}<li {if $smarty.foreach.$foreach_name.last}class="last"{elseif $smarty.foreach.$foreach_name.first}class="first"{else}class="middle"{/if}>
+    {if $page.info.type == 'NORMAL' && $page.info.is_published == 'TRUE'}<li {if $smarty.foreach.$foreach_name.last}class="last"{elseif $smarty.foreach.$foreach_name.first}class="first"{else}class="middle"{/if}>
       
       <a id="item_{$page.info.webid}" class="option" href="{$page.info.url}">		 
         <img border="0" src="{$domain}Resources/Icons/page.gif" />{$page.info.title}</a>
