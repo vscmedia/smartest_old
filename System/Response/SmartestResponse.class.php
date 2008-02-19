@@ -4,21 +4,19 @@
 
 mb_http_output("UTF-8");
 mb_http_input("UTF-8");
-// mb_detect_order("UTF-8, ISO-8859-1, ASCII");
 mb_internal_encoding("UTF-8");
 
 // echo "é";
 
 // These two files can't be included using the include optimisation because it depends on their already having been included
 
+define('SM_INFO_VERSION_NUMBER', '0.3.5a');
 define('SM_START_TIME', microtime(true));
 
 require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
 require SM_ROOT_DIR.'System/Helpers/SmartestHelper.class.php';
 
 SmartestHelper::loadAll();
-
-
 
 SmartestFileSystemHelper::include_group(
 
@@ -549,6 +547,7 @@ class SmartestResponse{
 		// print_r($extensions);
 		
 		$dependencies = array(
+		    "dom",
 			"PDO",
 			"pdo_mysql",
 			"pdo_sqlite",

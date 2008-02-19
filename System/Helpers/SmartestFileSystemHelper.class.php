@@ -2,21 +2,31 @@
 
 SmartestHelper::register('FileSystem');
 
+define('SM_DIR_SCAN_ALL', 0);
+define('SM_DIR_SCAN_FILES', 1);
+define('SM_DIR_SCAN_DIRECTORIES', 2);
+
 class SmartestFileSystemHelper extends SmartestHelper{
 
-	static function getDirectoryContents($directory, $show_invisible=false){
+	static function getDirectoryContents($directory, $show_invisible=false, $type=0){
 	
 		$files = array();
 		
 		if(is_dir($directory)){
-		
+		    
+		    if(!SmartestStringHelper::endsWith($directory, '/')){
+    		    $directory .= '/';
+    		}
+		    
 			$res = opendir($directory);
 			
 			while (false !== ($file = readdir($res))) {
         		
         		if($file != '.' && $file != '..'){
         		    if($show_invisible || $file{0} != '.'){
-    		            $files[] = $file;
+        		        if($type===0 || ($type===1 && is_file($directory.$file)) || ($type===2 && is_dir($directory.$file))){
+    		                $files[] = utf8_encode($file);
+		                }
     		        }
         		}
         		

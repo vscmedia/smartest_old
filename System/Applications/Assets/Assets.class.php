@@ -157,6 +157,66 @@ class Assets extends SmartestApplication{
 		}
 	}
 	
+	public function detectNewUploads(){
+	    
+	    $h = new SmartestAssetsLibraryHelper;
+	    $database = SmartestPersistentObject::get('db:main');
+	    
+	    // first, get the folders where uploads will be found, and match those to types
+	    $location_types = $h->getTypeCodesByStorageLocation();
+	    $locations = array_keys($location_types);
+	    $types = $h->getTypes();
+	    $location_types_info = $location_types;
+	    
+	    foreach($location_types_info as $path => &$l){
+	        foreach($l as &$type){
+	            $type = $types[$type];
+	            // $type['comma_separated_list'] = implode(', ', );
+	        }
+	    }
+	    
+	    $this->send($location_types_info, 'types_info');
+	    // print_r($location_types_info);
+	    
+	    // now, get a list of the file names for each location that can be found in the database
+	    foreach($location_types as $location => $types){
+            
+            $sql = "SELECT asset_url FROM Assets WHERE asset_type IN ('".implode("', '", $types)."')";
+            $result = $database->queryToArray($sql);
+            $db_files[$location] = array();
+            
+            foreach($result as $f){
+                if(strlen($f['asset_url'])){
+                    $db_files[$location][] = $f['asset_url'];
+                }
+            }
+        }
+        
+        // now, get a list of the file names for each location, whether or not they can be found in the database.
+        foreach($locations as $location){
+            
+            $disk_files[$location] = array();
+            $disk_files[$location] = SmartestFileSystemHelper::getDirectoryContents($location, false, SM_DIR_SCAN_FILES);
+            
+        }
+        
+        // now, compare the list of what is found in each location with what exists in the database for those types.
+        foreach($locations as $location){
+            
+            $new_files[$location] = array();
+            foreach($disk_files[$location] as $file_on_disk){
+                // if the file is not in the database,
+                if(!in_array($file_on_disk, $db_files[$location])){
+                    // it is a new file.
+                    $new_files[$location][] = $file_on_disk;
+                }
+            }
+        }
+        
+        $this->send($new_files, 'new_files');
+        
+	}
+	
 	function addAsset($get){
 		
 		$asset_type = $get['asset_type'];

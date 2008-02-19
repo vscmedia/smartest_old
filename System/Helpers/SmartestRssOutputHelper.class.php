@@ -7,6 +7,7 @@ class SmartestRssOutputHelper{
     protected $_limit = 15;
     protected $_items = array();
     protected $_domObject;
+    protected $_domRootTagElement;
     protected $_title;
     protected $_author;
     protected $_data_array = array();
@@ -23,51 +24,39 @@ class SmartestRssOutputHelper{
     }
     
     public function getXml(){
-        // $xml = new DomDocument;
         
-        
-        
-        // if(class_exists('DOMDocument')){
-		//	$this->_domObject = new DOMDocument('1.0');
-	    //    $this->_domObject->formatOutput = true;
-		//	$this->_domObject->loadXML();
-	    // }
+        if(class_exists('DOMDocument')){
+			
+			$this->_domObject = new DOMDocument('1.0');
+	        $this->_domObject->formatOutput = true;
+			$this->_domObject->loadXML('<?xml version="1.0" encoding="UTF-8" ?'.'><!-- generator="Smartest '.SM_INFO_VERSION_NUMBER.'" --><rss version="2.0" />');
 	    
-	    // $rss = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?'.'><!-- generator="Smartest 0.6.5" --><rss version="2.0" />');
+	        $this->_domRootTagElement = $this->_domObject->getElementsByTagName('rss')->item(0);
+    	    $channel = $this->_domObject->createElement("channel");
+    	    $this->_domRootTagElement->appendChild($channel);
 	    
-	    // $channel = new SimpleXMLElement("<channel />");
+    	    $author = $this->_domObject->createElement("author");
+    	    $author_text = $this->_domObject->createTextNode($this->getAuthor());
+    	    $author->appendChild($author_text);
 	    
-	    // $rootTagElement = $this->_domObject->getElementsByTagName('rss')->item(0);
-	    // $channel = $this->_domObject->createElement("channel");
-	    // $rootTagElement->appendChild($channel);
-	    // return $this->_domObject->saveXml();
-        // $rss = 
-        
-        $this->_data_array = array();
-        
-        $options = array(
-          XML_SERIALIZER_OPTION_INDENT        => '  ',
-          XML_SERIALIZER_OPTION_RETURN_RESULT => true,
-          "defaultTagName" => "item"
-        );
-        
-        $serializer = new XML_Serializer($options);
-        
-        $this->_data_array['channel'] = array(
-            'author'=>$this->getAuthor(),
-            'title'=>$this->getTitle(),
-            'generator'=>'Smartest v 0.6.5'
-        );
-        
-        $this->addItems();
-        
-        $serializer->setOption("rootName", "rss");
-        // $serializer->setOption("scalarAsAttributes", true);
-        $serializer->setOption("rootAttributes", array("version" => '0.9'));
-        
-        if($serializer->serialize($this->_data_array)){
-            return $serializer->getSerializedData();
+    	    $title = $this->_domObject->createElement("title");
+    	    $title_text = $this->_domObject->createTextNode($this->getTitle());
+    	    $title->appendChild($title_text);
+	    
+    	    $generator = $this->_domObject->createElement("generator");
+    	    $generator_text = $this->_domObject->createTextNode('Smartest v'.SM_INFO_VERSION_NUMBER);
+    	    $generator->appendChild($generator_text);
+	    
+    	    $channel->appendChild($author);
+    	    $channel->appendChild($title);
+    	    $channel->appendChild($generator);
+	    
+    	    $this->addItems();
+	    
+    	    return $this->_domObject->saveXml();
+	    
         }
+        
     }
     
     public function send(){
@@ -104,17 +93,31 @@ class SmartestRssOutputHelper{
     
     public function addItems(){
         
-        $data = array();
-        
         foreach($this->_items as $object){
-            $item = array();
-            $item['title'] = $object->getTitle();
-            $item['description'] = $object->getDescription();
-            $item['pubDate'] = date('r', $object->getDate());
-            $this->_data_array['channel'][] = $item;
+        
+            $channel = $this->_domObject->getElementsByTagName('channel')->item(0);
+	        $item = $this->_domObject->createElement("item");
+	        
+	        $title = $this->_domObject->createElement("title");
+	        $title_text = $this->_domObject->createTextNode($object->getTitle());
+	        $title->appendChild($title_text);
+	        
+	        $description = $this->_domObject->createElement("description");
+	        $description_text = $this->_domObject->createTextNode($object->getDescription());
+	        $description->appendChild($description_text);
+	    
+	        $pubDate = $this->_domObject->createElement("pubDate");
+	        $pubDate_text = $this->_domObject->createTextNode(date('r', $object->getDate()));
+	        $pubDate->appendChild($pubDate_text);
+	        
+	        $item->appendChild($title);
+    	    $item->appendChild($description);
+    	    $item->appendChild($pubDate);
+	        
+	        $channel->appendChild($item);
+	    
         }
         
-        return $data;
     }
     
 }

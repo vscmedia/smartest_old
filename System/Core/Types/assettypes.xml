@@ -151,7 +151,7 @@
       <description>A MPEG Layer-3 File</description>
       <class>SmartestAsset</class>
       <icon>generic.gif</icon>
-      <storage type="file" location="Documents/Downloads/" />
+      <storage type="file" location="Public/Resources/Assets/" />
       <suffix mime="audio/mpeg">mp3</suffix>
       <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
     </type>

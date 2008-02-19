@@ -1,7 +1,7 @@
 <div id="work-area">
 
 <h3>Media Assets</h3>
-<a name="top"></a>
+
 <div class="text" style="margin-bottom:10px">Double click an icon below to see assets in that category.</div>
 
 <form id="pageViewForm" method="get" action="">
@@ -26,6 +26,11 @@
 </div>
 
 <div id="actions-area">
+
+  <ul class="actions-list" id="non-specific-actions">
+    <li><b>Options</b></li>
+  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/detectNewUploads'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_magnify.png" border="0" alt=""> Detect Newly Uploaded Files</a></li>
+  </ul>
 
 <ul class="actions-list" id="item-specific-actions" style="display:none">
   <li><b>Selected Asset Type</b></li>
