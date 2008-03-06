@@ -133,6 +133,14 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 	}
 	
+	static function isFalse($string){
+	    if(in_array(strtolower($string), array('false', 'off', '0'))){
+	        return true;
+	    }else{
+	        return false;
+	    }
+	}
+	
 	static function endsWith($word, $symbol){
 	    if(mb_strlen($word)){
 	        $pos = (mb_strlen($word) - 1);
