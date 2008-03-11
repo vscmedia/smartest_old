@@ -1,11 +1,11 @@
 <div id="work-area">
 
 <h3>Data Manager</h3>
-<a name="top"></a>
+
 <div class="instruction">What would you like to do?</div>
 
 <ul class="basic-list">
-  <li><a href="{$domain}smartest/models">Create and edit items</a></li>
+  <li><a href="{$domain}smartest/models">Create and edit items or models</a></li>
   <li><a href="{$domain}smartest/sets">Organise items into sets</a></li>
   {* <li><a href="{$domain}smartest/schemas">Edit &amp; Create XML Schemas</a></li> *}
   <li><a href="{$domain}smartest/fields">Manage CMS page fields</a></li>

@@ -1,6 +1,6 @@
 <ul class="tabset">
     <li{if $method == "editPage"} class="current"{/if}><a href="{$domain}{$section}/editPage?page_id={$smarty.get.page_id}">Page Properties</a></li>
-    <li{if $method == "pageAssets"} class="current"{/if}><a href="{$domain}{$section}/pageAssets?page_id={$smarty.get.page_id}">Element Structure</a></li>
+    <li{if $method == "pageAssets"} class="current"{/if}><a href="{$domain}{$section}/pageAssets?page_id={$smarty.get.page_id}">Elements Tree</a></li>
     <li{if $method == "pageTags"} class="current"{/if}><a href="{$domain}{$section}/pageTags?page_id={$smarty.get.page_id}">Tags</a></li>
     <li{if $method == "preview"} class="current"{/if}><a href="{$domain}{$section}/preview?page_id={$smarty.get.page_id}">Preview</a></li>
 </ul>

@@ -1,6 +1,6 @@
 <div id="work-area">
 
-<h3>Media Assets</h3>
+<h3>Files Repository</h3>
 
 <div class="text" style="margin-bottom:10px">Double click an icon below to see assets in that category.</div>
 
@@ -26,16 +26,16 @@
 </div>
 
 <div id="actions-area">
-
+  
+  <ul class="actions-list" id="item-specific-actions" style="display:none">
+    <li><b>Selected File Type</b></li>
+  	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('getAssetTypeMembers'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Show me all of this type</a></li>
+  	<li class="permanent-action"><a href="#" onclick="workWithItem('addAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add another one of this type</a></li>
+  </ul>
+  
   <ul class="actions-list" id="non-specific-actions">
-    <li><b>Options</b></li>
+    <li><b>Repository Options</b></li>
   	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/detectNewUploads'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_magnify.png" border="0" alt=""> Detect Newly Uploaded Files</a></li>
   </ul>
-
-<ul class="actions-list" id="item-specific-actions" style="display:none">
-  <li><b>Selected Asset Type</b></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('getAssetTypeMembers'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Show me all of this type</a></li>
-	<li class="permanent-action"><a href="#" onclick="workWithItem('addAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add another one of this type</a></li>
-</ul>
 
 </div>

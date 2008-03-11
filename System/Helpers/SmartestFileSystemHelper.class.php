@@ -102,6 +102,57 @@ class SmartestFileSystemHelper extends SmartestHelper{
 		
 	}
 	
+	static function getFileSize($file_path){
+	    if(file_exists(utf8_decode($file_path))){
+	        $size = filesize($file_path);
+	        return $size;
+	    }else{
+	        return false;
+	    }
+	}
+	
+	static function getFileSizeFormatted($file_path){
+	    
+	    $size = self::getFileSize($file_path);
+	    
+	    if($size === false){
+	        return false;
+	    }else{
+	        // size is in bytes
+	        if($size >= 1024){
+	            // convert to kilobytes
+	            $new_size = $size/1024;
+	            
+	            if($new_size >= 1024){
+	                // convert to megabytes
+	                $new_size = $new_size/1024;
+	                
+	                if($new_size >= 1024){
+    	                // convert to gigabytes
+    	                $new_size = $new_size/1024;
+    	                
+                        if($new_size >= 1024){
+        	                // convert to terrabytes
+        	                $new_size = $new_size/1024;
+                            return number_format($new_size, 3, '.', ',').' TB';
+                        }else{
+                            return number_format($new_size, 2, '.', ',').' GB';
+                        }
+
+                    }else{
+                        return number_format($new_size, 1, '.', ',').' MB';
+                    }
+	                
+                }else{
+                    return number_format($new_size, 1, '.', ',').' KB';
+                }
+                
+	        }else{
+	            return $size.' Bytes';
+	        }
+	    }
+	}
+	
 	static function isSafeFileName($file_path, $intended_dir=''){
 	    
 	    if(!strlen($intended_dir)){

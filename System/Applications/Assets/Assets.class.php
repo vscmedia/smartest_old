@@ -217,6 +217,59 @@ class Assets extends SmartestApplication{
         
 	}
 	
+	function enterNewFileData($get, $post){
+	    
+	    $h = new SmartestAssetsLibraryHelper;
+	    $location_types = $h->getTypeCodesByStorageLocation();
+	    
+	    if(isset($post['new_files']) && is_array($post['new_files'])){
+	        $new_files = $post['new_files'];
+	    }else{
+	        $new_files = array();
+	    }
+	    
+	    $files_array = array();
+	    $i = 0;
+	    
+	    foreach($new_files as $f){
+	        $files_array[$i] = array();
+	        $type = $h->getTypeInfoBySuffix(SmartestStringHelper::getDotSuffix($f));
+	        $files_array[$i]['current_directory'] = dirname($f).'/';
+	        $files_array[$i]['filename'] = basename($f);
+	        $files_array[$i]['type_code'] = $type['id'];
+	        $files_array[$i]['type_label'] = $type['label'];
+	        $files_array[$i]['size'] = SmartestFileSystemHelper::getFileSizeFormatted(SM_ROOT_DIR.$f);
+	        $files_array[$i]['correct_directory'] = $type['storage']['location'];
+	        $i++;
+	    }
+	    
+	    $this->send($files_array, 'files');
+	    
+	}
+	
+	function createAssetsFromNewUploads($get, $post){
+	    
+	    if(isset($post['new_files']) && is_array($post['new_files'])){
+	        $new_files = $post['new_files'];
+	    }else{
+	        $new_files = array();
+	    }
+	    
+	    foreach($new_files as $nf){
+	        $a = new SmartestAsset;
+	        $a->setType($nf['type']);
+	        $a->setSiteId($this->getSite()->getId());
+	        $a->setShared(isset($nf['shared']) ? 1 : 0);
+	        $a->setWebid(SmartestStringHelper::random(32));
+	        $a->setStringid(SmartestStringHelper::toVarName($nf['name']));
+	        $a->setUrl(basename($nf['filename']));
+	        $a->save();
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
 	function addAsset($get){
 		
 		$asset_type = $get['asset_type'];

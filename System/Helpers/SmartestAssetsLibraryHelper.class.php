@@ -4,6 +4,7 @@ class SmartestAssetsLibraryHelper{
     
     protected $database;
     protected $types;
+    protected $typesSuffixesMap = array();
     
     public function __construct(){
         $this->database = SmartestPersistentObject::get('db:main');
@@ -49,6 +50,53 @@ class SmartestAssetsLibraryHelper{
         }
         
         return $location_types;
+        
+    }
+    
+    public function getTypeInfoBySuffix($suffix){
+        
+        $suffix = strtolower($suffix);
+        
+        if(array_key_exists($suffix, $this->typesSuffixesMap)){
+            return $this->typesSuffixesMap[$suffix];
+        }else{
+        
+            foreach($this->getTypes() as $code => $type){
+                // print_r($type_info);
+                // if(){
+                foreach($type['suffix'] as $s){
+                    if(strtolower($s['_content']) == $suffix){
+                        $this->typesSuffixesMap[$suffix] = $type;
+                        return $type;
+                    }
+                }    
+                //}
+            }
+        
+        }
+        
+    }
+    
+    public function getTypeCodeBySuffix($suffix){
+        
+        $suffix = strtolower($suffix);
+        
+        if(array_key_exists($suffix, $this->typesSuffixesMap)){
+            return $this->typesSuffixesMap[$suffix]['id'];
+        }else{
+        
+            foreach($this->getTypes() as $code => $type){
+                
+                foreach($type['suffix'] as $s){
+                    if(strtolower($s['_content']) == $suffix){
+                        $this->typesSuffixesMap[$suffix] = $type;
+                        return $type['id'];
+                    }
+                }
+                
+            }
+        
+        }
         
     }
     
