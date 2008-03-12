@@ -35,6 +35,8 @@ class SmartestAssetClass extends SmartestDataObject{
 	        $this->_type_info = $types[$this->getType()];
         }
         
+        // var_dump($this->getType());
+        
         return $this->_type_info;
 	}
 

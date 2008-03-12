@@ -51,6 +51,8 @@ class SmartestContainer extends SmartestAssetClass{
 	    
 	    $args = func_get_args();
 	    
+	    // var_dump($args);
+	    
 	    if(count($args)){
 	        
 	        // detect whether we are being passed an array of types, or a list of arguments

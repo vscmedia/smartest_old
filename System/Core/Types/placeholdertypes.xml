@@ -11,6 +11,13 @@
     <label>Any Text, Formatted or Unformatted</label>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
     <accept>SM_ASSETTYPE_PLAIN_TEXT</accept>
+    <accept>SM_ASSETTYPE_SL_TEXT</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_HEADLINE">
+    <label>Items that can be used as headlines.</label>
+    <accept>SM_ASSETTYPE_SL_TEXT</accept>
+    <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
   </type>
   
   <type id="SM_ASSETCLASS_STATIC_IMAGE">
