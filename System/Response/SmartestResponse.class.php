@@ -369,6 +369,12 @@ class SmartestResponse{
 			$this->error($e->getMessage(), $e->getCode());
 		}
 		
+		$module_smarty_plugins_dir = SM_ROOT_DIR.$this->controller->getModuleDirectory().'Presentation/Plugins/';
+		
+		if(is_dir($module_smarty_plugins_dir)){
+		    $smarty->plugins_dir[] = $module_smarty_plugins_dir;
+		}
+		
 		SmartestPersistentObject::set('presentationLayer', $this->smarty);
 		
 		try{
