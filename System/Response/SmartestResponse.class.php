@@ -58,6 +58,8 @@ SmartestFileSystemHelper::include_group(
 	'Library/Quince/QuinceException.class.php',
 	'Library/Quince/QuinceBase.interface.php',
 	'System/Templating/SmartestEngine.class.php',
+	'System/Templating/SmartestInterfaceBuilder.class.php',
+	'System/Templating/SmartestWebPageBuilder.class.php',
 	'System/Templating/SmartyManager.class.php',
 	'System/Controller/SmartestController.class.php',
 	'System/Templating/SmartestTemplateHelper.class.php',
@@ -347,7 +349,19 @@ class SmartestResponse{
 		
 		$this->_log("Starting presentation layer...");
 		
-		$smarty_manager = new SmartyManager();
+		if($this->isSystemClass()){
+		    if($this->isWebsitePage()){
+		        $templateLayerContext = 'WebPageBuilder';
+		    }else{
+		        $templateLayerContext = 'InterfaceBuilder';
+		    }
+		}else{
+		    $templateLayerContext = 'Normal';
+		}
+		
+		// echo $templateLayerContext;
+		
+		$smarty_manager = new SmartyManager($templateLayerContext);
 		
 		try{
 			$this->smarty = $smarty_manager->initialize();
@@ -536,7 +550,8 @@ class SmartestResponse{
 	
 	public function isWebsitePage(){
 	    
-	    return in_array(SM_CONTROLLER_METHOD, array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage'));
+	    // echo $this->controller->getMethodName();
+	    return in_array($this->controller->getMethodName(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage'));
 	    
 	}
 	
@@ -696,8 +711,6 @@ class SmartestResponse{
 	
 	function prepareContent(){
 		
-		// $this->checkUnwritablePermissions();
-		
 		try{
 			SmartestQuery::init();
 		}catch(SmartestException $e){
@@ -710,15 +723,11 @@ class SmartestResponse{
 			$this->error($e->getMessage(), $e->getCode());
 		}
 		
-		// print_r($this->controller->getDebugContent());
-		
 		try{
 			$this->controller->performAction();
 		}catch(SmartestException $e){
 			$this->error($e->getMessage(), $e->getCode());
 		}
-		
-		// print_r($this->database);
 		
 		$this->errorStack->display();
 			

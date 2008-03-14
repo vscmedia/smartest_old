@@ -3,8 +3,20 @@
 <assettypes>
     
     <type id="SM_ASSETTYPE_RICH_TEXT" category="user_text">
-        <label>Rich Text/Static HTML</label>
-        <description>A static piece of HTML. Designed to provide formatting in text.</description>
+        <label>Formatted Text</label>
+        <description>Formatted text without images.</description>
+        <class>SmartestTextAsset</class>
+        <editable>true</editable>
+        <icon>text.gif</icon>
+        <render template="System/Applications/Assets/Presentation/CMS/display.rich_text.tpl" />
+        <storage type="database" />
+        <suffix mime="text/html">html</suffix>
+        <suffix mime="text/html">htm</suffix>
+    </type>
+    
+    <type id="SM_ASSETTYPE_COMPOUND_TEXT" category="user_text">
+        <label>Rich Text w/ Images</label>
+        <description>Formatted text with support for "spaces".</description>
         <class>SmartestTextAsset</class>
         <editable>true</editable>
         <icon>text.gif</icon>

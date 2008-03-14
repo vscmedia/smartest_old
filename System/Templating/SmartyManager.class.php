@@ -27,11 +27,14 @@ if(!class_exists('SmartestEngine')){
 class SmartyManager {
 
 	private $options = array();
+	private $context = null;
 	private $smartyObj;
 	
-	public function __construct(){
+	public function __construct($context=null){
 		if($this->options = parse_ini_file(SM_ROOT_DIR.'Configuration/smarty.ini')){
-			
+			if($context){
+			    $this->context = $context;
+			}
 		}else{
 			throw new SmartestException("Config file ".SM_ROOT_DIR.'Configuration/smarty.ini'." could not be parsed.", 104);
 		}
@@ -68,7 +71,16 @@ class SmartyManager {
 			}
 		}
     
-		$smartyObj = new SmartestEngine();
+        if($this->context == 'InterfaceBuilder'){
+		    $smartyObj = new SmartestInterfaceBuilder();
+		}else if($this->context == 'WebPageBuilder'){
+		    $smartyObj = new SmartestWebPageBuilder();
+		}else{
+		    $smartyObj = new SmartestEngine();
+		}
+		
+		// echo get_class($smartyObj);
+		
 		$smartyObj->template_dir = SM_ROOT_DIR.$this->options['default_templates_dir'];
 		$smartyObj->compile_dir = SM_ROOT_DIR.$this->options['templates_cache'];
 		$smartyObj->cache_dir = SM_ROOT_DIR.$this->options['cache'];

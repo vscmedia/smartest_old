@@ -859,7 +859,7 @@ class PagesManager{
 	public function getTemplatePlaceholderNames($template_file_path){
 		if(is_file($template_file_path)){
 			if($template_contents = file_get_contents($template_file_path)){
-				$regexp = preg_match_all("/\{placeholder.+name=\"([\w-_]+)\".*\}|with=\"placeholder:([\w-_]+)\"/i", $template_contents, $matches);
+				$regexp = preg_match_all("/<\?sm:placeholder.+name=\"([\w-_]+)\".*:\?>|with=\"placeholder:([\w-_]+)\"/i", $template_contents, $matches);
 				
 				// loop through two different syntaxes to get all named placeholders
 				
@@ -880,7 +880,7 @@ class PagesManager{
 		if(is_file($template_file_path)){
 			
 			if($template_contents = file_get_contents($template_file_path)){
-				$regexp = preg_match("/\{placeholder.+name=\"([\w-_]+)\".*\}|with=\"placeholder:([\w-_]+)\"/i", $template_contents);
+				$regexp = preg_match("/<\?sm:placeholder.+name=\"([\w-_]+)\".*:\?>|with=\"placeholder:([\w-_]+)\"/i", $template_contents);
 				$tag='placeholder';
 			}else{
 				$tag='container';
@@ -894,7 +894,7 @@ class PagesManager{
 		if(is_file($template_file_path)){
 			if($template_contents = file_get_contents($template_file_path)){
 
-				$regexp = preg_match_all("/\{container.+name=\"([\w-_]+)\".*(instance=\"([\w-_]+)\")?\}/i", $template_contents, $matches);
+				$regexp = preg_match_all("/\<\?sm:container.+name=\"([\w-_]+)\".*(instance=\"([\w-_]+)\")?:\?>/i", $template_contents, $matches);
 				// print_r($matches);
 				// print_r($this->getTemplateTags($template_file_path));
 				$foundClasses = $matches[1];
@@ -914,7 +914,7 @@ class PagesManager{
 			
 			if($template_contents = file_get_contents($template_file_path)){
 
-				$regexp = preg_match_all("/\{([\w_]{2,})([^\}]+)?\}/i", $template_contents, $matches);
+				$regexp = preg_match_all("/<\?sm:([\w_]{2,})([^\}]+)?:\?>/i", $template_contents, $matches);
 				$completeTags = $matches[0];
 				$foundTags = $matches[1];
 				$tags = array();
@@ -1198,7 +1198,7 @@ class PagesManager{
 	public function getTemplateListNames($template_file_path){
 		if(is_file($template_file_path)){
 			if($template_contents = file_get_contents($template_file_path)){
-				$regexp = preg_match_all("/\{list.+name=\"([\w-_]+?)\".*\}/i", $template_contents, $matches);
+				$regexp = preg_match_all("/<\?sm:list.+name=\"([\w-_]+?)\".*:\?>/i", $template_contents, $matches);
 
 				$foundClasses = $matches[1];
 
@@ -1297,7 +1297,7 @@ class PagesManager{
 	public function getTemplateFieldNames($template_file_path){
 		if(is_file($template_file_path)){
 			if($template_contents = file_get_contents($template_file_path)){
-				$regexp = preg_match_all("/\{(edit_)?field.+name=\"([\w-_]+?)\".*\}/i", $template_contents, $matches);
+				$regexp = preg_match_all("/<\?sm:(edit_)?field.+name=\"([\w-_]+?)\".*:\?>/i", $template_contents, $matches);
 
 				$foundClasses = $matches[2];
 
