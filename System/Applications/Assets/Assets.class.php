@@ -129,20 +129,22 @@ class Assets extends SmartestApplication{
 			$assets = $this->manager->getAssetsByTypeCode($code, $this->getSite()->getId());	
 		}
 		
-		// print_r($assets);
-		
 		$types_array = SmartestDataUtility::getAssetTypes();
 		
-		// print_r($types_array[$code]);
-		
 		if(in_array($code, array_keys($types_array))){
+		    
 		    $type = $types_array[$code];
 		    $this->send('editableasset', 'sidebartype');
+		    
+		    if(isset($type['source-editable']) && SmartestStringHelper::toRealBool($type['source-editable'])){
+		        $this->send(true, 'allow_source_edit');
+		    }else{
+		        $this->send(false, 'allow_source_edit');
+		    }
+		    
 		}else{
 		    $this->send('noneditableasset', 'sidebartype');
 		}
-		
-		// $type_information = $this->manager->getAss
 		
 		$this->send($type['label'], 'type_label');
 		$this->send($type['id'], 'type_code');
@@ -520,11 +522,7 @@ class Assets extends SmartestApplication{
     
     function editAsset($get, $post){
 
-		// $asset_id  = $this->manager->getNumericAssetId($get['asset_id']);
 		$asset_id = $get['asset_id'];
-		// $assettype_code = $get['assettype_code'];
-		// $asset_details = $this->manager->getAssetById($asset_id);
-		// $assettype_code = $asset_details["assettype_code"];
 
 		if(!isset($get['from'])){
 		    $this->setFormReturnUri();
@@ -534,22 +532,13 @@ class Assets extends SmartestApplication{
 
 		if($asset->hydrate($asset_id)){
 
-			// print_r();
 			$assettype_code = $asset->getType();
 			$types_data = SmartestDataUtility::getAssetTypes();
 			$default_params = $asset->getDefaultParams();
 
-			// print_r($default_params);
-
 			if(array_key_exists($assettype_code, $types_data)){
 
-			    // print_r($asset_details);
-
-    			// echo $asset_id;
-
-    			$asset_type = $types_data[$assettype_code];
-
-    			// print_r($asset_type);
+			    $asset_type = $types_data[$assettype_code];
 
     			if(isset($asset_type['editable']) && $asset_type['editable'] != 'false'){
 
@@ -557,18 +546,31 @@ class Assets extends SmartestApplication{
 
     			    if($asset_type['storage']['type'] == 'database'){
     			        if($asset->usesTextFragment()){
-    			            $content = htmlentities(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8');
-			            }
+    			            // $content = utf8_encode(htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8'));
+    			            $content = htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8');
+    			        }
 			        }else{
 			            $file = SM_ROOT_DIR.$asset_type['storage'].$asset->getUrl();
-			            $content = htmlentities(SmartestFileSystemHelper::load($asset->getFullPathOnDisk(), true), ENT_COMPAT, 'UTF-8');
+			            $content = htmlspecialchars(SmartestFileSystemHelper::load($asset->getFullPathOnDisk()), ENT_COMPAT, 'UTF-8');
 			        }
-
-			        // echo $asset->getFullPathName();
-
-			        // echo $content;
-
-    			    $this->send($content, 'textfragment_content');
+                    
+                    if(isset($asset_type['source-editable']) && SmartestStringHelper::toRealBool($asset_type['source-editable'])){
+        		        $this->send(true, 'allow_source_edit');
+        		    }else{
+        		        $this->send(false, 'allow_source_edit');
+        		    }
+        		    
+        		    if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
+        		        $this->send(true, 'show_publish');
+        		        $this->send(true, 'show_attachments');
+        		    }else{
+        		        $this->send(false, 'show_publish');
+        		        $this->send(false, 'show_attachments');
+        		    }
+                    
+                    $content = SmartestStringHelper::protectSmartestTags($content);
+                    
+			        $this->send($content, 'textfragment_content');
     			    // print_r($this->getPresentationLayer()->_tpl_vars);
 
 			    }else{
@@ -580,72 +582,6 @@ class Assets extends SmartestApplication{
     			$this->send($asset_type, 'asset_type');
     			$this->send($asset->__toArray(), 'asset');
 
-    			// print_r($asset->__toArray());
-
-    			// echo $formTemplateInclude;
-
-    			/* if($assettype_code=='SM_ASSETTYPE_RICH_TEXT' || $assettype_code=='SM_ASSETTYPE_PLAIN_TEXT' || $assettype_code=='SM_ASSETTYPE_SL_TEXT'){
-    				$fragment_content = $this->manager->getFragment($asset_id);
-    			}
-
-    			// echo $fragment_content;
-    			switch($assettype_code){
-
-    			    case "SM_ASSETTYPE_STYLESHEET":
-        				$file_name = $this->manager->getFileName($asset_id);
-        				$file = SM_ROOT_DIR.'Public/Resources/Stylesheets/'.$file_name;
-        				$fh = fopen($file, 'r');
-        				$contents = fread($fh,filesize($file));fclose($fh);
-        				//$text_highlighter=& Text_Highlighter::factory("CSS");
-        				//$contents=$text_highlighter->highlight($content);
-        				break;
-
-        			case "SM_ASSETTYPE_JAVASCRIPT":
-        				$file_name = $this->manager->getFileName($asset_id);
-        				$file = SM_ROOT_DIR.'Public/Resources/Javascript/'.$file_name;
-        				$fh = fopen($file, 'r');
-        				$contents=fread($fh,filesize($file));fclose($fh);
-        				break;
-
-    			}
-
-    			if(in_array(strtolower($assettype_code), array("SM_ASSETTYPE_STYLESHEET", "SM_ASSETTYPE_JAVASCRIPT", "SM_ASSETTYPE_PLAIN_TEXT", "SM_ASSETTYPE_RICH_TEXT"))){
-    				// Allow the user to make the edit.
-    				$assetTypeExists = "true";
-    				$formTemplateInclude = "editAsset.".strtolower(substr($assettype_code, 13)).".tpl";
-    				$this->setTitle("Editing Asset | ".$asset_details["asset_stringid"]);
-    			}else{
-    				// The requested asset type doesn't exist. 
-    				$assetTypeExists = "false";
-    				$formTemplateInclude = "editAsset.default.tpl";
-    				$this->setTitle("Please Try Again");
-    			}
-
-    			if($assettype_code=='LINE' || $assettype_code=='TEXT' || $assettype_code=='HTML'){
-    				return array(
-    					"fragment_content"=>htmlentities($fragment_content, ENT_COMPAT, 'UTF-8'),
-    //                    "fragment_content"=>$fragment_content,
-    					"asset_details"=>$asset_details,
-    					"asset_id"=>$asset_id,
-    					"assettype_code"=>$assettype_code,
-    					"formTemplateInclude"=>$formTemplateInclude
-    				);
-    			}else if($assettype_code=='TMPL' || $assettype_code=='CSS' || $assettype_code=='JSCR'){
-    				return array(
-    					"details"=>$contents,
-    					"asset_details"=>$asset_details,
-    					"asset_id"=>$asset_id,
-    					"assettype_code"=>$assettype_code,
-    					"formTemplateInclude"=>$formTemplateInclude
-    				);
-    			}else{
-    				return array(
-    					"asset_details"=>$asset_details,
-    					"asset_id"=>$asset_id,
-    					"assettype_code"=>$assettype_code,
-    					"formTemplateInclude"=>$formTemplateInclude
-    				);
-    			} */
 
 		    }else{
 		        // asset type is not supported
@@ -654,6 +590,166 @@ class Assets extends SmartestApplication{
 		}else{
 		    // asset ID was not recognised
 		}
+	}
+	
+	function editTextFragmentSource($get, $post){
+
+		$asset_id = $get['asset_id'];
+
+		if(!isset($get['from'])){
+		    $this->setFormReturnUri();
+		}
+
+		$asset = new SmartestAsset;
+
+		if($asset->hydrate($asset_id)){
+
+			$assettype_code = $asset->getType();
+			$types_data = SmartestDataUtility::getAssetTypes();
+			$default_params = $asset->getDefaultParams();
+
+			if(array_key_exists($assettype_code, $types_data)){
+
+			    $asset_type = $types_data[$assettype_code];
+
+    			if(isset($asset_type['editable']) && $asset_type['editable'] != 'false'){
+
+    			    $formTemplateInclude = "edit.".strtolower(substr($assettype_code, 13)).".tpl";
+
+    			    if($asset_type['storage']['type'] == 'database'){
+    			        if($asset->usesTextFragment()){
+    			            // $content = utf8_encode(htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8'));
+    			            $content = htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8');
+    			        }
+			        }else{
+			            $file = SM_ROOT_DIR.$asset_type['storage'].$asset->getUrl();
+			            $content = htmlspecialchars(SmartestFileSystemHelper::load($asset->getFullPathOnDisk()), ENT_COMPAT, 'UTF-8');
+			        }
+
+			        $this->send($content, 'textfragment_content');
+			        
+			        if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
+        		        $this->send(true, 'show_publish');
+        		        $this->send(true, 'show_attachments');
+        		    }else{
+        		        $this->send(false, 'show_publish');
+        		        $this->send(false, 'show_attachments');
+        		    }
+    			    
+			    }else{
+			        $formTemplateInclude = "edit.default.tpl";
+			    }
+
+    			$this->send($formTemplateInclude, "formTemplateInclude");
+    			$this->setTitle('Edit Asset | '.$asset_type['label']);
+    			$this->send($asset_type, 'asset_type');
+    			$this->send($asset->__toArray(), 'asset');
+
+		    }else{
+		        // asset type is not supported
+		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.');
+		    }
+
+		}else{
+		    // asset ID was not recognised
+		    $this->addUserMessage('The asset ID was not recognized.');
+		}
+	}
+	
+	function publishTextAsset($get){
+	    $asset_id = $get['asset_id'];
+
+		$asset = new SmartestAsset;
+
+		if($asset->hydrate($asset_id)){
+		    
+		    $assettype_code = $asset->getType();
+			$types_data = SmartestDataUtility::getAssetTypes();
+
+			if(array_key_exists($assettype_code, $types_data)){
+		        
+		        $asset_type = $types_data[$assettype_code];
+		        
+		        if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
+	                if($asset->getTextFragment()->publish()){
+	                    $this->addUserMessageToNextRequest('The file has been successfully published.');
+                    }else{
+                        $this->addUserMessageToNextRequest('There was an error publishing file. Please check file permissions.');
+                    }
+	            }else{
+	                
+	            }
+		        
+		    }else{
+    		    // asset type is not supported
+    		    $this->addUserMessageToNextRequest('The asset type \''.$assettype_code.'\' is not supported.');
+    	    }
+
+    	}else{
+		    // asset ID was not recognised
+		    $this->addUserMessageToNextRequest('The asset ID was not recognized.');
+    	}
+    	
+    	$this->formForward();
+		
+	}
+	
+	function previewParsableTextFragment($get){
+	    
+	}
+	
+	function textFragmentElements($get){
+	    
+	    $asset_id = $get['asset_id'];
+
+		if(!isset($get['from'])){
+		    $this->setFormReturnUri();
+		}
+
+		$asset = new SmartestAsset;
+
+		if($asset->hydrate($asset_id)){
+
+			$assettype_code = $asset->getType();
+			$types_data = SmartestDataUtility::getAssetTypes();
+			$default_params = $asset->getDefaultParams();
+
+			if(array_key_exists($assettype_code, $types_data)){
+
+			    $asset_type = $types_data[$assettype_code];
+
+    			if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
+
+    			    $attachments = $asset->getTextFragment()->getAttachmentsAsArrays();
+			        $this->send($attachments, 'attachments');
+			        
+			        if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
+        		        $this->send(true, 'show_preview');
+        		        $this->send(true, 'show_attachments');
+        		    }else{
+        		        $this->send(false, 'show_preview');
+        		        $this->send(false, 'show_attachments');
+        		    }
+    			    
+			    }else{
+			        // $formTemplateInclude = "edit.default.tpl";
+			    }
+
+    			$this->send($formTemplateInclude, "formTemplateInclude");
+    			$this->setTitle('Attached Files');
+    			$this->send($asset_type, 'asset_type');
+    			$this->send($asset->__toArray(), 'asset');
+
+		    }else{
+		        // asset type is not supported
+		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.');
+		    }
+
+		}else{
+		    // asset ID was not recognised
+		    $this->addUserMessage('The asset ID was not recognized.');
+		}
+	    
 	}
 
 	function updateAsset($get, $post){
@@ -669,6 +765,7 @@ class Assets extends SmartestApplication{
 
 		    if($asset->usesTextFragment()){
 		        $content = $post['asset_content'];
+		        $content = SmartestStringHelper::unProtectSmartestTags($content);
 		        $asset->setContent($content);
 	        }
 
@@ -676,14 +773,109 @@ class Assets extends SmartestApplication{
 		    $this->addUserMessageToNextRequest("The file has been successfully updated.");
 
 		}else{
-		    $this->addUserMessageToNextRequest("The media asset you are trying to update no longer exists or has been deleted by another user.");
+		    $this->addUserMessageToNextRequest("The file you are trying to update no longer exists or has been deleted by another user.");
 		}
 		
   		$this->formForward();
 
 	}
+	
+	public function defineAttachment($get){
+	    
+	    $asset_id = $get['asset_id'];
+        $attachment_name = SmartestStringHelper::toVarName($get['attachment']);
+        $this->send($attachment_name, 'attachment_name');
+        
+		$asset = new SmartestAsset;
 
-	function deleteAssetConfirm($get){
+		if($asset->hydrate($asset_id)){
+
+			$assettype_code = $asset->getType();
+			$types_data = SmartestDataUtility::getAssetTypes();
+			
+			if(array_key_exists($assettype_code, $types_data)){
+                
+                $attachable_files = $this->manager->getAttachableFilesAsArrays($this->getSite()->getId());
+                $this->send($attachable_files, 'files');
+                
+                $current_def = $asset->getTextFragment()->getAttachmentCurrentDefinition($attachment_name);
+                
+                // var_dump($current_def);
+                
+                $this->send($asset->getTextFragment()->getId(), 'textfragment_id');
+                
+                $attached_asset_id = $current_def->getAttachedAssetId();
+                $this->send($attached_asset_id, 'attached_asset_id');
+                
+                $alignment = $current_def->getAlignment();
+                $this->send($alignment, 'alignment');
+                
+                $caption = $current_def->getCaption();
+                $this->send($caption, 'caption');
+                
+                $caption_alignment = $current_def->getCaptionAlignment();
+                $this->send($caption_alignment, 'caption_alignment');
+                
+                $float = $current_def->getFloat();
+                $this->send($float, 'float');
+                
+                $border = $current_def->getBorder();
+                $this->send($border, 'border');
+                
+			    $asset_type = $types_data[$assettype_code];
+
+    			$this->send($formTemplateInclude, "formTemplateInclude");
+    			$this->setTitle('Define Attachment: '.$attachment_name);
+    			$this->send($asset_type, 'asset_type');
+    			$this->send($asset->__toArray(), 'asset');
+
+		    }else{
+		        // asset type is not supported
+		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.');
+		    }
+
+		}else{
+		    // asset ID was not recognised
+		    $this->addUserMessage('The asset ID was not recognized.');
+		}
+	    
+	}
+	
+	public function updateAttachmentDefinition($get, $post){
+	    
+	    $textfragment_id = $post['textfragment_id'];
+	    $attachment_name = SmartestStringHelper::toVarName($post['attachment_name']);
+	    
+	    $tf = new SmartestTextFragment;
+	    
+	    if($tf->hydrate($textfragment_id)){
+	        
+	        $current_def = $tf->getAttachmentCurrentDefinition($attachment_name);
+	        
+	        if(!$current_def->getTextFragmentId()){
+	            $current_def->setTextFragmentId($textfragment_id);
+	        }
+	        
+	        $current_def->setAttachedAssetId((int) $post['attached_file_id']);
+	        $current_def->setAttachmentName($attachment_name);
+	        $current_def->setCaption(htmlentities($post['attached_file_caption']));
+	        $current_def->setAlignment(SmartestStringHelper::toVarName($post['attached_file_alignment']));
+	        $current_def->setCaptionAlignment(SmartestStringHelper::toVarName($post['attached_file_caption_alignment']));
+	        $current_def->setFloat(isset($post['attached_file_float']));
+	        $current_def->setBorder(isset($post['attached_file_border']));
+	        
+	        $current_def->save();
+	        
+	    }else{
+	        $this->addUserMessage('The textfragment ID was not recognized.');
+	    }
+	    
+	    
+	    $this->formForward();
+	    
+	}
+
+	public function deleteAssetConfirm($get){
 
 		$asset_id = $get['asset_id'];
 
@@ -762,7 +954,7 @@ class Assets extends SmartestApplication{
 			$newfilename=$this->manager->getUniqueName($oldfilename);
 
 			if($assettype_code=='TMPL'){
-				$path = SM_ROOT_DIR.'Presentation/Assets/';
+				$path = SM_ROOT_DIR.'Presentation/Layouts/';
 			}
 
 			if($assettype_code=='JPEG' || $assettype_code=='GIF' || $assettype_code=='PNG'){
@@ -828,6 +1020,17 @@ class Assets extends SmartestApplication{
 		    $this->formForward();
 		}
 
+	}
+	
+	function getAssetGroupContents($get){
+	    
+	    $group_id = (int) $get[''];
+	    
+	    $q = new SmartestManyToManyQuery("SM_MTMLOOKUP_ASSET_GROUPS");
+	    $q->addTargetEntityByIndex(1);
+	    $q->addQualifyingEntityByIndex(2, $group_id);
+	    $assets = $q->retrieve();
+	    
 	}
 		
 }

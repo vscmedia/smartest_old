@@ -16,9 +16,14 @@
 <div id="edit-form-layout">
   
   <div class="edit-form-row">
-    <div class="form-section-label">Title:</div>
+    <div class="form-section-label">Title</div>
     	<input type="text" name="page_title" value="{$pageInfo.title}" style="width:200px" />
     	{if !$pageInfo.title}<div>You must have a title! </div>{/if}
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Name</div>
+    {$pageInfo.name}
   </div>
   
   <div class="edit-form-row">

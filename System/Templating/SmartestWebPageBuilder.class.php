@@ -5,11 +5,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
     protected $templateHelper;
 	protected $page;
 	protected $_page_rendering_data = array();
+	protected $_page_rendering_data_retrieved = false;
 	protected $draft_mode = false;
 	
-	public function __construct(){
+	public function __construct($pid){
 	    
-	    parent::__construct();
+	    parent::__construct($pid);
+	    
+	    $this->_context = SM_CONTEXT_CONTENT_PAGE;
 	    
 	    $this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/WebPageBuilder/";
 	    $this->left_delimiter = '<?sm:';
@@ -21,15 +24,44 @@ class SmartestWebPageBuilder extends SmartestEngine{
         return $this->page;
     }
     
+    public function assignPage($page){
+        $this->page = $page;
+    }
+    
+    public function setPageRenderingData($data){
+        $this->_page_rendering_data = &$data;
+        $this->_page_rendering_data_retrieved = true;
+    }
+    
     public function getDraftMode(){
         return $this->draft_mode;
     }
+    
+    public function setDraftMode($mode){
+        $this->draft_mode = SmartestStringHelper::toRealBool($mode);
+    }
+    
+    public function startChildProcess($pid, $type=''){
+        
+        if($this->_page_rendering_data_retrieved){
+        
+	        $cp = parent::startChildProcess($pid);
+	        $cp->setDraftMode($this->draft_mode);
+	        $cp->assignPage($this->page);
+	        $cp->setPageRenderingData($this->_page_rendering_data);
+	        
+            return $this->_child_processes[$pid];
+        
+        }
+	}
     
     public function renderPage($page, $draft_mode=false){
 	    
 	    $this->page = $page;
 	    $this->draft_mode = $draft_mode;
-	    $this->_page_rendering_data = $this->page->fetchRenderingData($draft_mode);
+	    // $this->_page_rendering_data = $this->page->fetchRenderingData($draft_mode);
+	    // $this->_page_rendering_data_retrieved = true;
+	    $this->setPageRenderingData($this->page->fetchRenderingData($draft_mode));
 	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
 	    
 	    if($draft_mode){
@@ -47,31 +79,68 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function renderContainer($container_name, $params, $parent){
         
-        $container = new SmartestContainerDefinition;
+        // echo 'container:'.$container_name.', rendering process id:'.$this->getProcessId().', context:'.$this->_context.'<br />';
         
-        if($container->load($container_name, $this->getPage(), $this->draft_mode)){
+        if($this->_context == SM_CONTEXT_CONTENT_PAGE){
+        
+            $container = new SmartestContainerDefinition;
+        
+            if($container->load($container_name, $this->getPage(), $this->draft_mode)){
             
-            if($container->getTemplateFilePath()){
-                $this->_smarty_include(array('smarty_include_tpl_file'=>$container->getTemplateFilePath(), 'smarty_include_vars'=>array()));
+                if($container->getTemplateFilePath()){
+                    $this->_smarty_include(array('smarty_include_tpl_file'=>$container->getTemplateFilePath(), 'smarty_include_vars'=>array()));
+                }
+            
+                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+			    
+    			    $edit_link = '';
+			    
+    			    if(is_object($container->getTemplate())){
+    			        // TODO: Make it an admin-controlled setting as to whether containers are changeable in the preview screen
+    			        // $edit_link .= "<a title=\"Click to edit template: ".$container->getTemplate()->getUrl()."\" href=\"".SM_CONTROLLER_DOMAIN."templates/editTemplate?template_id=".$container->getTemplate()->getId()."&amp;type=SM_CONTAINER_TEMPLATE&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this template--></a>";
+    			    }
+			    
+    			    // $edit_link .= "<a title=\"Click to edit definition for container: ".$container_name."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
+			    
+    		    }else{
+    			    // $edit_link = "<!--edit link-->";
+    		    }
+		    
+    		    return $edit_link;
+            
+            }
+        
+        }else{
+            
+            if($this->draft_mode){
+                return "<br />ERROR: Container tag can only be used in page context.";
             }
             
-            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-			    
-			    $edit_link = '';
-			    
-			    if(is_object($container->getTemplate())){
-			        // TODO: Make it an admin-controlled setting as to whether containers are changeable in the preview screen
-			        // $edit_link .= "<a title=\"Click to edit template: ".$container->getTemplate()->getUrl()."\" href=\"".SM_CONTROLLER_DOMAIN."templates/editTemplate?template_id=".$container->getTemplate()->getId()."&amp;type=SM_CONTAINER_TEMPLATE&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this template--></a>";
-			    }
-			    
-			    // $edit_link .= "<a title=\"Click to edit definition for container: ".$container_name."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
-			    
-		    }else{
-			    // $edit_link = "<!--edit link-->";
-		    }
-		    
-		    return $edit_link;
-            
+        }
+        
+    }
+    
+    public function renderTemplateTag($requested_file){
+        
+        if(SmartestStringHelper::getDotSuffix($requested_file) != 'tpl'){
+	        $requested_file .= '.tpl';
+	    }
+        
+        $directories = array('Presentation/Layouts/', 'Presentation/Layout/');
+        
+        // $requested_file = SM_ROOT_DIR.'Presentation/Layouts/'.$name;
+	    
+	    if(file_exists($requested_file)){
+	        $render_process_id = SmartestStringHelper::toVarName('template_'.$name.'_'.substr(microtime(true), -6));
+	        $child = $this->startChildProcess($render_process_id);
+	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
+	        $content = $child->fetch($requested_file);
+	        $this->killChildProcess($child->getProcessId());
+	        return $content;
+        }else{
+            if($this->draft_mode){
+                return '<br />ERROR: Template \''.$requested_file.'\' not found';
+            }
         }
         
     }
@@ -82,7 +151,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
         $assetclass_types = SmartestDataUtility::getAssetClassTypes();
         
         if($asset_id = $placeholder->load($placeholder_name, $this->getPage(), $this->draft_mode)){
-            // return $placeholder->getMarkup();
             
             if(array_key_exists($placeholder->getType(), $assetclass_types)){
                 
@@ -90,7 +158,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	                // $type_info = $placeholder->getAsset($this->draft_mode)->getTypeInfo();
                 }
                 
-	            // print_r($placeholder->getAsset($this->draft_mode));
 	        }else{
 	            // some sort of error? unsupported type.
 	            return "Error: unsupported type";
@@ -102,8 +169,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	            $style = '';
 	        }
 	        
-	        // print_r($type_info['editable']);
-            
             if($this->draft_mode){
                 $rd = $placeholder->getDraftRenderData();
             }else{
@@ -150,25 +215,52 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
     }
     
-    public function renderField($field_name, $params){
+    public function renderAttachment($name){
         
-        // print_r($this->_page_rendering_data['fields']);
+        if(isset($name) && strlen($name)){
+            
+            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
+            $attachments = $this->getProperty('attachments');
+            
+            if(array_key_exists($name, $attachments)){
+                // print_r($attachments[$name]);
+                $attachments[$name]['div_width'] = (int) $attachments[$name]['asset']['width'] + 10;
+                $this->run($file, array('_textattachment'=>$attachments[$name]));
+            }else{
+                if($this->draft_mode){
+                    echo '<br />ERROR: Attachment \''.$name.'\' does not exist.';
+                }
+            }
+	        
+        }
+        
+    }
+    
+    public function renderField($field_name, $params){
         
         if(is_array($this->_page_rendering_data) && is_array($this->_page_rendering_data['fields'])){
             
-            $value = $this->_page_rendering_data['fields'][$field_name];
+            if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
             
-            // echo constant('SM_CONTROLLER_METHOD');
+                $value = $this->_page_rendering_data['fields'][$field_name];
             
-            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-			    $edit_link = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".SM_CONTROLLER_DOMAIN."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
-		    }else{
-			    $edit_link = '';
-		    }
+                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+    			    $edit_link = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".SM_CONTROLLER_DOMAIN."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+    		    }else{
+    			    $edit_link = '';
+    		    }
         
-            $value .= $edit_link;
+                $value .= $edit_link;
             
-            return $value;
+                return $value;
+            
+            }else{
+                
+                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+                    return '<br />NOTICE: field \''.$field_name.'\' does not exist on this site.';
+                }
+                
+            }
             
         }else{
             return null;
@@ -335,14 +427,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function renderAsset($params, $path='none'){
        
-        // print_r($params);
-        
-        // echo 'renderAsset';
-       
         if((isset($params['id']) && is_numeric($params['id'])) || (isset($params['name']) && strlen($params['name']))){
-            // retrieve asset by primary key
-            // return $params['id'];
-
+            
             $asset = new SmartestAsset;
             
             if($asset->hydrate($params['id']) || $asset->hydrateBy('stringid', $params['name'])){
@@ -363,15 +449,49 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     }else if($path == 'full'){
                         echo $asset->getFullWebPath();
                     }else{
-                        $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('asset_info'=>$asset->__toArray(), 'render_data'=>@$params['render_data'])));
+                        if($asset->usesTextFragment() && $asset->isParsable()){
+                            // parse the textfragment.
+                            
+                            $render_process_id = SmartestStringHelper::toVarName('textfragment_'.$asset->getStringid().'_'.substr(microtime(true), -6));
+                            
+                            $attachments = $asset->getTextFragment()->getAttachmentsAsArrays();
+                            
+                            // print_r($attachments);
+                            
+                            // If draft, check that a temporary preview copy has been created, and creat it if not
+                            if($this->draft_mode){
+                                if($asset->getTextFragment()->ensurePreviewFileExists()){
+                                    $child = $this->startChildProcess($render_process_id);
+                        	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
+                        	        $child->setProperty('asset', $asset);
+                        	        $child->setProperty('attachments', $attachments);
+                                    $content = $child->fetch($asset->getTextFragment()->getParsableFilePath(true));
+                        	        $this->killChildProcess($child->getProcessId());
+                        	        echo $content;
+                                }else{
+                                    echo '<br />ERROR: TextFragment render preview could not be created.';
+                                }
+                            }else{
+                            // otherwise parse local disk copy.
+                                if($asset->getTextFragment()->isPublished()){
+                        	        $child = $this->startChildProcess($render_process_id);
+                        	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
+                        	        $child->setProperty('asset', $asset);
+                        	        $child->setProperty('attachments', $attachments);
+                                    $content = $child->fetch($asset->getTextFragment()->getParsableFilePath());
+                        	        $this->killChildProcess($child->getProcessId());
+                        	        echo $content;
+                                }else{
+                                    echo "<!--Asset '".$asset->getStringid()."' not published-->";
+                                }
+                            }
+                            
+                        }else{
+                            $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('asset_info'=>$asset->__toArray(), 'render_data'=>@$params['render_data'])));
+                        }
                     }
                     
                     if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-        			    
-        			    // echo 'asset';
-        			    // echo $asset_type_info['editable'];
-        			    
-        			    
         			    
         			    if(isset($asset_type_info['editable']) && $asset_type_info['editable'] && $asset_type_info['editable'] != 'false'){
         			        $edit_link .= "<a title=\"Click to edit file: ".$asset->getUrl()." (".$asset->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."assets/editAsset?asset_id=".$asset->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
@@ -384,22 +504,20 @@ class SmartestWebPageBuilder extends SmartestEngine{
         		    echo $edit_link;
                     
                 }else{
-                    return "<br />Error: ".$render_template." does not exist";
+                    return "<br />ERROR: Template '".$render_template."' does not exist";
                 }
                 
             }else{
                 if($this->getDraftMode()){
-                    return "<br />Error: No asset was found with ID: ".$params['id'];
+                    return "<br />ERROR: No asset was found with ID: ".$params['id'];
                 }
             }
 
         }else{
             if($this->getDraftMode()){
-                return "<br />Error on {property} tag: either attributes 'id' or 'name' are properly defined.";
+                return "<br />ERROR: Could not render asset. Neither of attributes 'id' and 'name' are properly defined.";
             }
         }
-        
-        
     }
     
     public function renderItemPropertyValue($params){

@@ -30,9 +30,11 @@
 {literal}
 
 tinyMCE.init({
+  entity_encoding : "raw",
 	mode : "exact",
 	elements : "tpl_textArea",
 	theme : "advanced",
+	verify_html: false,
 	plugins : "ibrowser,paste",
 	theme_advanced_buttons3_add_before : "ibrowser,separator",
 	theme_advanced_buttons3_add : "paste,pasteword,selectall",

@@ -72,14 +72,12 @@ class SmartyManager {
 		}
     
         if($this->context == 'InterfaceBuilder'){
-		    $smartyObj = new SmartestInterfaceBuilder();
+		    $smartyObj = new SmartestInterfaceBuilder('_main');
 		}else if($this->context == 'WebPageBuilder'){
-		    $smartyObj = new SmartestWebPageBuilder();
+		    $smartyObj = new SmartestWebPageBuilder('_main');
 		}else{
-		    $smartyObj = new SmartestEngine();
+		    $smartyObj = new SmartestEngine('_main');
 		}
-		
-		// echo get_class($smartyObj);
 		
 		$smartyObj->template_dir = SM_ROOT_DIR.$this->options['default_templates_dir'];
 		$smartyObj->compile_dir = SM_ROOT_DIR.$this->options['templates_cache'];

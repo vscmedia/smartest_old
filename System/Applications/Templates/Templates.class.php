@@ -124,7 +124,7 @@ class Templates extends SmartestApplication{
 			
 		}else if($template_type == 'SM_CONTAINER_TEMPLATE'){
 		    
-    		$path = SM_ROOT_DIR."Presentation/Assets/";
+    		$path = SM_ROOT_DIR."Presentation/Layouts/";
     		
     	}
 		
@@ -238,7 +238,7 @@ class Templates extends SmartestApplication{
 			
 		}else if($template_type == 'SM_CONTAINER_TEMPLATE'){
     		
-    		$path = SM_ROOT_DIR."Presentation/Assets/";
+    		$path = SM_ROOT_DIR."Presentation/Layouts/";
     		$template = new SmartestAsset;
     		$title = 'Edit Container Template';
     		$show_form = true;
@@ -289,7 +289,7 @@ class Templates extends SmartestApplication{
 			
 		}else if($template_type=='SM_CONTAINER_TEMPLATE'){
 			
-			$path = SM_ROOT_DIR."Presentation/Assets/";
+			$path = SM_ROOT_DIR."Presentation/Layouts/";
 			$template = new SmartestAsset;
 			
 			if($template->hydrate($post['template_id'])){
@@ -340,7 +340,7 @@ class Templates extends SmartestApplication{
 			
 		}else if($template_type=='SM_CONTAINER_TEMPLATE'){
 			
-			$path = SM_ROOT_DIR."Presentation/Assets/";
+			$path = SM_ROOT_DIR."Presentation/Layouts/";
 			
 		}
 			
@@ -369,7 +369,7 @@ class Templates extends SmartestApplication{
 			
 		}else if($template_type=='SM_CONTAINER_TEMPLATE'){
 			
-			$path = SM_ROOT_DIR."Presentation/Assets/";
+			$path = SM_ROOT_DIR."Presentation/Layouts/";
 			$asset = new SmartestAsset;
 			$asset->hydrate($get['template_id']);
 			$template_name = $asset->getUrl();
@@ -442,7 +442,7 @@ class Templates extends SmartestApplication{
 			
 		}else if($template_type=='SM_CONTAINER_TEMPLATE'){
 			
-			$path = SM_ROOT_DIR."Presentation/Assets/";
+			$path = SM_ROOT_DIR."Presentation/Layouts/";
 			$asset = new SmartestAsset;
 			$asset->hydrate($get['template_id']);
 			$template_name = $asset->getUrl();
@@ -503,7 +503,7 @@ class Templates extends SmartestApplication{
 			
 		}else if($template_type=='SM_CONTAINER_TEMPLATE'){
 			
-			$path = SM_ROOT_DIR."Presentation/Assets/";
+			$path = SM_ROOT_DIR."Presentation/Layouts/";
 			$asset = new SmartestAsset;
 			$asset->hydrate($get['template_id']);
 			$template_name = $asset->getUrl();

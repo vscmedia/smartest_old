@@ -7,7 +7,7 @@ class SmartestContainerTemplateAsset extends SmartestAsset{
     
     public function getFile(){
         
-        $this->_base_dir = SM_ROOT_DIR.'Presentation/Assets/';
+        $this->_base_dir = SM_ROOT_DIR.'Presentation/Layouts/';
         
         if(!$this->_template_file){
             

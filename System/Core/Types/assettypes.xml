@@ -6,19 +6,9 @@
         <label>Formatted Text</label>
         <description>Formatted text without images.</description>
         <class>SmartestTextAsset</class>
+        <source-editable>true</source-editable>
         <editable>true</editable>
-        <icon>text.gif</icon>
-        <render template="System/Applications/Assets/Presentation/CMS/display.rich_text.tpl" />
-        <storage type="database" />
-        <suffix mime="text/html">html</suffix>
-        <suffix mime="text/html">htm</suffix>
-    </type>
-    
-    <type id="SM_ASSETTYPE_COMPOUND_TEXT" category="user_text">
-        <label>Rich Text w/ Images</label>
-        <description>Formatted text with support for "spaces".</description>
-        <class>SmartestTextAsset</class>
-        <editable>true</editable>
+        <parsable>true</parsable>
         <icon>text.gif</icon>
         <render template="System/Applications/Assets/Presentation/CMS/display.rich_text.tpl" />
         <storage type="database" />
@@ -54,7 +44,7 @@
         <description>Dynamic HTML template that can be rendered by the Smartest presentation layer</description>
         <editable>true</editable>
         <icon>text.gif</icon>
-        <storage type="file" location="Presentation/Assets/" />
+        <storage type="file" location="Presentation/Layouts/" />
         <class>SmartestContainerTemplateAsset</class>
         <suffix mime="application/octet-stream">tpl</suffix>
     </type>
@@ -64,6 +54,8 @@
         <description>An image in JPEG format.</description>
         <class>SmartestImageAsset</class>
         <icon>image.gif</icon>
+        <attachable>true</attachable>
+        <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Images/" />
         <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
         <suffix mime="image/jpeg">jpg</suffix>
@@ -79,9 +71,11 @@
         <label>PNG Image</label>
         <description>An image in PNG format.</description>
         <class>SmartestImageAsset</class>
+        <attachable>true</attachable>
+        <captionable>true</captionable>
+        <icon>image.gif</icon>
         <storage type="file" location="Public/Resources/Images/" />
         <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
-        <icon>image.gif</icon>
         <suffix mime="image/png">png</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" />
         <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
@@ -94,9 +88,11 @@
         <label>GIF Image</label>
         <description>An image in GIF format.</description>
         <class>SmartestImageAsset</class>
+        <attachable>true</attachable>
+        <captionable>true</captionable>
+        <icon>image.gif</icon>
         <storage type="file" location="Public/Resources/Images/" />
         <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
-        <icon>image.gif</icon>
         <suffix mime="image/gif">gif</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" required="false" />
         <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
@@ -134,6 +130,7 @@
         <description>A movie saved in any of Apple's proprietary QuickTime formats</description>
         <class>SmartestAsset</class>
         <icon>generic.gif</icon>
+        <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <render template="System/Applications/Assets/Presentation/CMS/display.quicktime.tpl" />
         <suffix mime="video/quicktime">mov</suffix>
@@ -149,6 +146,7 @@
         <description>A movie saved in and MPEG format.</description>
         <class>SmartestAsset</class>
         <icon>generic.gif</icon>
+        <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <render template="System/Applications/Assets/Presentation/CMS/display.mpeg.tpl" />
         <suffix mime="video/mpeg">mpg</suffix>
@@ -173,6 +171,7 @@
         <description>A published Adobe Flash file</description>
         <class>SmartestAsset</class>
         <icon>generic.gif</icon>
+        <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <suffix mime="application/x-shockwave-flash">swf</suffix>
         <render template="System/Applications/Assets/Presentation/CMS/display.flash.tpl" />
@@ -201,6 +200,7 @@
         <description>A movie saved in Microsoft's proprietary WMV format</description>
         <class>SmartestAsset</class>
         <icon>generic.gif</icon>
+        <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <render template="System/Applications/Assets/Presentation/CMS/display.wmv.tpl" />
         <suffix mime="application/x-ms-wmv">wmv</suffix>

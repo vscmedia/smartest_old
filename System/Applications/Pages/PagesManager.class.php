@@ -486,78 +486,17 @@ class PagesManager{
 		return $this->displayAssetClasses;
 		
 	}
-	
-	/* public function getTemplateAssetClasses($template_file_path, $page, $level=0, $draft){
-	    
-	    $placeholder_names  = $this->getTemplatePlaceholderNames($template_file_path);
-	    $list_names         = $this->getTemplateListNames($template_file_path);
-	    $field_names        = $this->getTemplateFieldNames($template_file_path);
-	    $container_names    = $this->getTemplateContainerNames($template_file_path);
-	    $i = 0;
-	    $page_elements      = array();
-	    
-	    foreach($placeholder_names as $placeholder_name){
-	        echo $placeholder_name.'<br />';
-	        $placeholder = new SmartestPlaceholder;
-	        
-	        if($placeholder->exists($placeholder_name, $page->getSiteId())){
-	            
-	            $page_elements[$i]['info'] = $placeholder->__toArray();
-	            $page_elements[$i]['info']['exists'] = true;
-	            
-	            $definition = new SmartestPlaceholderDefinition;
-	            
-	            if($definition->hasDefinition($placeholder->getId(), $page->getId())){
-	                
-	            }else{
-	                
-	            }
-	            
-	        }else{
-	            $page_elements[$i]['info']['name'] = $placeholder_name;
-	        }
-	        
-	        $page_elements[$i]['element_type'] = 'placeholder';
-	        
-	        $i++;
-	    }
-	    
-	    foreach($list_names as $list_name){
-	        echo $list_name.'<br />';
-	        $i++;
-	    }
-	    
-	    foreach($field_names as $field_name){
-	        echo $field_name.'<br />';
-	        $i++;
-	    }
-	    
-	    foreach($container_names as $container_name){
-	        echo $container_name.'<br />';
-	        $i++;
-	    }
-	    
-	} */
-	
-    public function getTemplateAssetClasses($template_file_path, $page, $level=0, $version="draft"){
-		// echo $template_file_path;
-
-		$placeholderNames = $this->getTemplatePlaceholderNames($template_file_path);
-		// $assetClassNames = $this->getTemplateAssetClassNames($template_file_path);
 		
-		// print_r($page);
-			
+    public function getTemplateAssetClasses($template_file_path, $page, $level=0, $version="draft"){
+		
+		$placeholderNames = $this->getTemplatePlaceholderNames($template_file_path);
+		
 		$i = 0;
 		$info = array();
 		
 		$site_id = $page->getSiteId();
 		
-		// echo $version;
-		
 		$version = ($version == 'live') ? 'live' : 'draft';
-		
-		/// $page_pk = $this->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
-		// echo $page_pk;
 			
 		if(is_array($placeholderNames)){
 		
@@ -589,12 +528,29 @@ class PagesManager{
 				}
 				
 				$info[$i]['info']['asset_id'] = $asset;
-				$info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
+				$assetObj = new SmartestAsset();
+				
+				if($assetObj->hydrate($asset)){
+				    
+				    $info[$i]['info']['asset_webid'] = $assetObj->getWebid();
+				    $info[$i]['info']['asset_type'] = $assetObj->getType();
+				    $info[$i]['info']['filename'] = $assetObj->getUrl();
+				    // print_r($assetObj->__toArray());
+				    
+				    if($assetObj->isParsable()){
+				        $info[$i]['children'] = $assetObj->getTextFragment()->getAttachmentsForElementsTree($level+1, $version);
+			        }
+				    
+				    // print_r($info[$i]);
+				}
+				
+				// $info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
+				// $info[$i]['info']['asset_type'] = $this->database->specificQuery("asset_type", "asset_id", $asset, "Assets");
 				
 				//if($info[$i]['info']['assetclass_type_code'] == 'LINE'|| $info[$i]['info']['assetclass_type_code'] == 'TEXT' || $info[$i]['info']['assetclass_type_code'] == 'HTML'){
 				//	$info[$i]['info']['filename'] = $this->database->specificQuery("asset_stringid", "asset_id", $asset, "Assets");
 				//}else{
-					$info[$i]['info']['filename'] = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
+				//	$info[$i]['info']['filename'] = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
 				//}
 				
 				$info[$i]['level'] = $level;
@@ -694,7 +650,7 @@ class PagesManager{
 						// $site_id = $this->database->specificQuery("page_site_id", "page_id", $page->getId(), "Pages");
 						
 						// $site_root = $this->database->specificQuery("site_root", "site_id", $site_id, "Sites");
-						$child_template_file = SM_ROOT_DIR."Presentation/Assets/".$child_template_file;
+						$child_template_file = SM_ROOT_DIR."Presentation/Layouts/".$child_template_file;
 						$info[$i]['children'] = $this->getTemplateAssetClasses($child_template_file, $page, $level+1, $version);
 						
 					}
@@ -1172,7 +1128,7 @@ class PagesManager{
 
 				if($assetClass['info']['type']=="container"&& $assetClass['info']['exists']=='true' ){
 					$template=$assetClass['info']['filename'];
-					$template_file = "Presentation/Assets/".$template;
+					$template_file = "Presentation/Layouts/".$template;
 					$listNames = $this->getTemplateListNames($template_file);
 					
 					if(is_array($listNames)){

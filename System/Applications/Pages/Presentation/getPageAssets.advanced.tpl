@@ -68,11 +68,13 @@ Viewing mode:
       {/if}
       <a id="item_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="{if $version == "draft"}javascript:setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}javascript:nothing();{/if}">		 
     {if $assetclass.info.exists == 'true'}
-        {* <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/{$assetclass.info.assetclass_type_code|lower}.{$assetclass.info.defined|lower}.png" /> *}
-
-
+        
 		{if $assetclass.info.defined == "PUBLISHED"}
+		  {if $assetclass.info.type == 'attachment'}
+		  <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/attach.png" />
+		  {else}
 		  <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/published_{$assetclass.info.type|lower}.gif" />
+		  {/if}
 		{elseif  $assetclass.info.defined == "DRAFT"}
 		  {if $version == "draft"}
 		    <img border="0" style="width:16px;height:16px;" title="This {$assetclass.info.type} is only defined in the draft version of the page" src="{$domain}Resources/Icons/draftonly_{$assetclass.info.type|lower}.gif" />
@@ -84,20 +86,21 @@ Viewing mode:
 		{/if}
 	
 	  <b>{$assetclass.info.assetclass_name}</b>
-	  {if $assetclass.info.type == 'placeholder'} ({$assetclass.info.assetclass_type_code|lower}){/if}
+	  {if $assetclass.info.type == 'placeholder'}{/if}
+	  
 	  {if $assetclass.info.filename != ""} : 
-	    {if $assetclass.info.assetclass_type_code == "JPEG" || $assetclass.info.assetclass_type_code == "PNG" || $assetclass.info.assetclass_type_code == "GIF"}
+	    {if $assetclass.info.asset_type == "SM_ASSETTYPE_JPEG_IMAGE" || $assetclass.info.asset_type == "SM_ASSETTYPE_PNG_IMAGE" || $assetclass.info.asset_type == "SM_ASSETTYPE_GIF_IMAGE"}
 	      <img src="{$domain}Resources/Icons/picture.png" style="border:0px" />
-	    {elseif $assetclass.info.assetclass_type_code == "TEXT"}
+	    {elseif $assetclass.info.asset_type == "SM_ASSETTYPE_PLAIN_TEXT"}
 	      <img src="{$domain}Resources/Icons/page_white_text.png" style="border:0px" />
-	    {elseif $assetclass.info.assetclass_type_code == "HTML"}
+	    {elseif $assetclass.info.asset_type == "SM_ASSETTYPE_RICH_TEXT"}
 	      <img src="{$domain}Resources/Icons/page_code.png" style="border:0px" />
 	    {else}
 	      
 	    {/if}
-	  {$assetclass.info.filename}
+	    {$assetclass.info.filename}
 	  {else}
-	    {* <i>undefined</i>*}
+	    
 	  {/if}
 	  
 	{else}
@@ -107,6 +110,8 @@ Viewing mode:
 	<img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/notexist_list.gif" />
 	{elseif $assetclass.info.type == "field"}
 	<img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/notexist_field.gif" />
+	{elseif $assetclass.info.type == "attachment"}
+	<img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/attach.png" />
 	{else}
 	<img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/notexist.gif" />
 	{/if}

@@ -125,6 +125,17 @@ class SmartestStringHelper extends SmartestHelper{
         return $new_string;
 	}
 	
+	static function toHash($string, $length=32, $type='MD5'){
+	    
+	    if($type == 'SHA1'){
+	        $hash = sha1($string);
+	    }else{
+	        $hash = md5($string);
+	    }
+	    
+	    return substr($hash, 0, $length);
+	}
+	
 	static function isMd5Hash($string){
 		if(preg_match("/^[0-9a-f]{32}$/", $string)){ // if
 			return true;
@@ -139,6 +150,14 @@ class SmartestStringHelper extends SmartestHelper{
 	    }else{
 	        return false;
 	    }
+	}
+	
+	static function toRealBool($string){
+	    if($string){
+	        return self::isFalse($string) ? false : true;
+        }else{
+            return false;
+        }
 	}
 	
 	static function endsWith($word, $symbol){
@@ -271,6 +290,31 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	static function toHtmlEntities($string){
     	return htmlentities($string, ENT_QUOTES, 'UTF-8') ;
+    }
+    
+    static function toXmlEntities($string){
+    	return htmlspecialchars($string, ENT_QUOTES, 'UTF-8') ;
+    }
+    
+    static function protectSmartestTags($string){
+        
+        $string = str_replace('<?sm:', '<!--PROTECTED-SMARTEST-TAG:', $string);
+        $string = str_replace('&lt;?sm:', '<!--PROTECTED-SMARTEST-TAG:', $string);
+        $string = str_replace(':?>', ':PROTECTED-SMARTEST-TAG-->', $string);
+        $string = str_replace(':?&gt;', ':PROTECTED-SMARTEST-TAG-->', $string);
+        
+        return $string;
+    }
+    
+    static function unProtectSmartestTags($string){
+        
+        $string = preg_replace('/([\w_]+)=&quot;([\w\s\._-]*)&quot;/i', '$1="$2"', $string);
+        $string = str_replace('<p><!--PROTECTED-SMARTEST-TAG:', '<?sm:', $string);
+        $string = str_replace(':PROTECTED-SMARTEST-TAG--></p>', ':?>', $string);
+        $string = str_replace('<!--PROTECTED-SMARTEST-TAG:', '<?sm:', $string);
+        $string = str_replace(':PROTECTED-SMARTEST-TAG-->', ':?>', $string);
+        
+        return $string;
     }
 
 }

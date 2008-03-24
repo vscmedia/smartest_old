@@ -527,6 +527,7 @@ class SmartestPage extends SmartestDataObject{
             }else{
                 $data['principal_item'] = array();
                 
+                // TODO: replace this code with code that will fetch "related" items
                 if($this->getDataSet() instanceof SmartestCmsItemSet){
                     $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
                     $data['data_set'] = $this->getDataSet()->__toArray();
@@ -544,6 +545,7 @@ class SmartestPage extends SmartestDataObject{
 	    $du = new SmartestDataUtility;
 	    $tags = $du->getTagsAsArrays();
 	    
+	    // TODO: add code here that will fetch "related" pages.
 	    $data['tags'] = $tags;
 	    $data['fields'] = $this->getPageFieldValuesAsAssociativeArray($draft_mode);
 	    $data['navigation'] = $this->getNavigationStructure($draft_mode);
@@ -749,14 +751,9 @@ class SmartestPage extends SmartestDataObject{
 	
 	function getNavigationStructure($draft_mode=false){
 		
-		// $site_id = $this->getSiteId();
-		// $sql = "SELECT site_top_page_id FROM Sites WHERE site_id='$site_id'";
-		// $result = $this->database->queryToArray($sql);
-		// $home_page_id = $result[0]['site_top_page_id'];
 		$home_page_id = $this->getSite()->getTopPageId();
 		$home_page = new SmartestPage;
 		$home_page->hydrate($home_page_id);
-		// $page_parent_id = $this->database->specificQuery("page_parent", "page_id", $page_id, "Pages");
 		
 		$this->getGrandParentPage();
 		

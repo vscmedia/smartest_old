@@ -7,40 +7,27 @@ class SmartestAsset extends SmartestDataObject{
     protected $_text_fragment;
     protected $_type_info = null;
     protected $_site;
+    protected $_image;
     
-    /* public function getTextFragment(){
-        
-        if(!$this->_text_fragment){
-            $tf = new SmartestTextFragment;
-            $tf->hydrate($this->getFragmentId());
-            $this->_text_fragment = $tf;
-        }
-        
-        return $this->_text_fragment;
-    } */
-
-	protected function __objectConstruct(){
+    protected function __objectConstruct(){
 		
 		$this->setTablePrefix('asset_');
 		$this->setTableName('Assets');
 		
 	}
 	
-	/* public function getType(){
-		if($this->getAssettypeId()){
-			if($type = $this->getAssettype()){
-				return $type->getCode();
-			}
-		}else{
-			return null;
-		}
-	} */
-	
 	public function __toArray(){
 	    $data = parent::__toArray();
 	    $data['text_content'] = $this->getContent();
 	    $data['type_info'] = $this->getTypeInfo();
 	    $data['default_parameters'] = $this->getDefaultParams();
+	    $data['full_path'] = $this->getFullPathOnDisk();
+	    
+	    if($this->isImage()){
+            $data['width'] = $this->getWidth();
+            $data['height'] = $this->getHeight();
+        }
+        
 	    return $data;
 	}
 	
@@ -58,6 +45,30 @@ class SmartestAsset extends SmartestDataObject{
 	            return null;
 	        }
 	    }
+	    
+	}
+	
+	public function getWidth(){
+	    
+	    if($this->isImage()){
+	        if(!$this->_image){
+		        $this->_image = new SmartestImage;
+	            $this->_image->loadFile($this->getFullPathOnDisk());
+	        }
+		    return $this->_image->getWidth();
+		}
+	    
+	}
+	
+	public function getHeight(){
+	    
+	    if($this->isImage()){
+	        if(!$this->_image){
+		        $this->_image = new SmartestImage;
+	            $this->_image->loadFile($this->getFullPathOnDisk());
+	        }
+		    return $this->_image->getHeight();
+		}
 	    
 	}
 	
@@ -183,7 +194,12 @@ class SmartestAsset extends SmartestDataObject{
 	
 	public function isEditable(){
 	    $info = $this->getTypeInfo();
-	    return (isset($info['editable']) && $info['editable'] && $info['editable'] != 'false');
+	    return (isset($info['editable']) && SmartestStringHelper::toRealBool($info['editable']));
+	}
+	
+	public function isParsable(){
+	    $info = $this->getTypeInfo();
+	    return (isset($info['parsable']) && SmartestStringHelper::toRealBool($info['parsable']));
 	}
 	
 	public function getFullPathOnDisk(){
@@ -209,6 +225,12 @@ class SmartestAsset extends SmartestDataObject{
 	    }
 	    
 	}
+	
+	public function isImage(){
+	    return in_array($this->getType(), array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'));
+	}
+	
+	
 	
 	public function getDefaultParams(){
 	    
@@ -313,7 +335,7 @@ class SmartestAsset extends SmartestDataObject{
 	    }
 	}
 	
-	public function getDisplayParameters(){
+	/* public function getDisplayParameters(){
 	    
 	    $info = $this->getTypeInfo();
 	    // return 
@@ -321,7 +343,56 @@ class SmartestAsset extends SmartestDataObject{
 	    
 	}
 	
-	public function renderAsMarkup($draft_mode=false, $params=''){
+	public function getParsableFilePath($draft_mode=false){
+	    if($draft_mode){
+	        $file_path = SM_ROOT_DIR.'System/Cache/TextFragments/Previews/tfpreview_'.SmartestStringHelper::toHash($this->getTextFragment()->getId(), 8, 'SHA1').'.tmp.tpl';
+	    }else{
+	        $file_path = SM_ROOT_DIR.'System/Cache/TextFragments/Live/tflive_'.SmartestStringHelper::toHash($this->getTextFragment()->getId(), 8, 'SHA1').'.tpl';
+	    }
+	    
+	    return $file_path;
+	}
+	
+	public function publish(){
+	    if($this->isParsable() && $this->usesTextFragment()){
+	        return SmartestFileSystemHelper::save($this->getParsableFilePath(), $this->getTextFragment()->getContent(), true);
+	    }
+	}
+	
+	public function isPublished(){
+	    return file_exists($this->getParsableFilePath());
+	}
+	
+	public function createPreviewFile(){
+	    if($this->isParsable() && $this->usesTextFragment()){
+	        $result = SmartestFileSystemHelper::save($this->getParsableFilePath(true), $this->getTextFragment()->getContent(), true);
+	        // print_r($this->getTextFragment()->getContent());
+	        // $result = file_put_contents($this->getParsableFilePath(true), $this->getTextFragment()->getContent());
+	        var_dump($result);
+	        return $result;
+	        // return true;
+	    }else{
+	        return false;
+	    }
+	}
+	
+	public function ensurePreviewFileExists(){
+	    if(!file_exists($this->getParsableFilePath(true))){
+	        return $this->createPreviewFile();
+	    }else{
+	        return true;
+	    }
+	} */
+	
+	/* public function renderMarkupInTextFragment($draft_mode=false){
+	    if($draft_mode){
+	        $file_path = SM_ROOT_DIR.'System/Cache/TextFragments/Previews/tfpreview_'.$this->getTextFragment()->getId().'.tmp.tpl';
+	    }else{
+	        $file_path = SM_ROOT_DIR.'System/Cache/TextFragments/Live/tfpreview_'.$this->getTextFragment()->getId().'.tmp.tpl';
+	    }
+	} */
+	
+	/* public function renderAsMarkup($draft_mode=false, $params=''){
 	    
 	    // TODO: 3rd-party media types
 	    
@@ -391,7 +462,7 @@ class SmartestAsset extends SmartestDataObject{
 	    }
 	    
 	    return $markup;
-	}
+	} */
 	
 	public function getLiveInstances(){
 	    

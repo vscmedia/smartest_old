@@ -11,7 +11,7 @@
       <div class="form-section-label">Choose a file to define this placeholder with</div>
       <select name="asset_id">
         {foreach from=$assets item="asset"}
-          <option value="{$asset.id}"{if $asset.id==$draft_asset_id} selected="selected"{/if}>{$asset.stringid}{if $asset.id==$live_asset_id} (live){/if}</option>
+          <option value="{$asset.id}"{if $asset.id==$draft_asset_id} selected="selected"{/if}>{if $asset.url}{$asset.url}{else}{$asset.stringid}{/if}{if $asset.id==$live_asset_id} - LIVE DEF{/if}</option>
         {/foreach}
       </select>
     </div>
@@ -34,7 +34,7 @@
   {foreach from=$assets item="asset"}
   <li>
       <a href="javascript:nothing()" class="option" id="item_{$asset.id}" onclick="setSelectedItem('{$asset.id}');" >
-      <img border="0" src="{$domain}Resources/Icons/page.png" />{$asset.stringid}</a>
+      <img border="0" src="{$domain}Resources/Icons/page.png" />{$asset.url}</a>
   </li>
   {/foreach}
   </ul> *}

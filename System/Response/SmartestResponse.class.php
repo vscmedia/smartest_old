@@ -52,6 +52,7 @@ SmartestFileSystemHelper::include_group(
 	'System/Data/DataQuery.class.php',
 	'System/Data/SmartestQuery.class.php',
 	'System/Data/SmartestQueryResultSet.class.php',
+	'System/Data/SmartestManyToManyQuery.class.php',
 	'System/Data/SmartestObjectModelHelper.class.php',
 	'System/Data/SmartestGenericListedObject.class.php',
 	'Library/Quince/Quince.class.php',
@@ -547,10 +548,10 @@ class SmartestResponse{
         $this->userInterfaceTemplate = $user_interface;
         $this->smarty->assign("template", $this->templateFile);
 		$this->smarty->assign("sm_app_templates_dir", SM_SYSTEM_APP_TEMPLATES_DIR);
-		$this->smarty->assign("sm_navigation", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Backend/navigation.tpl");
-		$this->smarty->assign("sm_header", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Backend/header.tpl");
-		$this->smarty->assign("sm_frame", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Backend/frame.tpl");
-		$this->smarty->assign("sm_footer", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Backend/footer.tpl");
+		$this->smarty->assign("sm_navigation", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/navigation.tpl");
+		$this->smarty->assign("sm_header", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/header.tpl");
+		$this->smarty->assign("sm_frame", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/frame.tpl");
+		$this->smarty->assign("sm_footer", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/footer.tpl");
 		
 	}
 	

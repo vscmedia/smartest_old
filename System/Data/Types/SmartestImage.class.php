@@ -4,15 +4,13 @@ class SmartestImage extends SmartestFile{
     
     protected $_resource;
     protected $_image_type;
+    protected $_width;
+    protected $_height;
     
     const JPEG = 'jpeg';
     const JPG = 'jpeg';
     const GIF = 'gif';
     const PNG = 'png';
-    
-    /* public function __typeConstruct($full_image_path=''){
-        
-    } */
     
     public function loadFile($file_path, $parse_image=true){
         if(is_file($file_path)){
@@ -65,10 +63,6 @@ class SmartestImage extends SmartestFile{
         
     }
     
-    /* public function getFilename($filename){
-        
-    }*/
-    
     public function setType($type){
         
     }
@@ -80,6 +74,32 @@ class SmartestImage extends SmartestFile{
     public function getThumbnail($max_width, $max_height, $refresh=false, $round_corners=false){
         $proposed_thumbnail_filename = SmartestStringHelper::removeDotSuffix($this->_current_file_path).'_'.$max_width.'_'.$max_height.'.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
         
+    }
+    
+    public function getWidth(){
+        if(isset($this->_width)){
+            return $this->_width;
+        }else{
+            // echo $this->getPath();
+            list($width, $height) = getimagesize($this->getPath(), $data);
+            // print_r($width);
+            $this->_width = $width;
+            $this->_height = $height;
+            return $this->_width;
+        }
+    }
+    
+    public function getHeight(){
+        if(isset($this->_height)){
+            return $this->_height;
+        }else{
+            // echo $this->getPath();
+            list($width, $height) = getimagesize($this->getPath(), $data);
+            // print_r($width);
+            $this->_width = $width;
+            $this->_height = $height;
+            return $this->_height;
+        }
     }
     
     public function getIptcData() { // retrieves IPTC data from the file

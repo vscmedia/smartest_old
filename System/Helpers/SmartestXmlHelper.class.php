@@ -31,10 +31,12 @@ class SmartestXmlHelper extends SmartestHelper{
 	    		if (PEAR::isError($result)) {
 					// ERROR: XML file could not be parsed: PEAR said "$result->getMessage()"
 					// echo 'xml file unparsable';
-					return false;
+					throw new SmartestException('Couldn\'t parse file: '.$filename.'. PEAR said: '.$result->getMessage());
+					// return false;
 	    		}else{
 	    			// load contents from xml file
 	    			$data = $unserialized->getUnserializedData();
+	    			// print_r($data);
 	    			return $data;
 	    		}
 	

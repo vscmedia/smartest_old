@@ -187,7 +187,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         
     }
     
-    public function getMarkup(){
+    /* public function getMarkup(){
         
         if($this->_asset){
             
@@ -213,7 +213,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
             
             return $string;
         }
-    }
+    } */
 	
 	public function getPlaceholder(){
 	    

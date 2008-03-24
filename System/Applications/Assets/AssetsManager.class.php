@@ -28,13 +28,9 @@ class AssetsManager {
 		);
 		
 		$processed_xml_data = SmartestDataUtility::getAssetTypes();
-		// print_r($processed_xml_data);
 		
 		if(is_array($processed_xml_data)){
 		    foreach($processed_xml_data as $type_array){
-		        /* switch(@$type_array['category']){
-		            case "": 
-		        } */
 		        if(isset($types[$type_array['category']])){
 		            $cat_array =& $types[$type_array['category']];
 		            if($type_array['id'] != 'SM_ASSETTYPE_CONTAINER_TEMPLATE'){
@@ -44,40 +40,11 @@ class AssetsManager {
 		    }
 	    }
 		
-		// print_r($types);
-		
-		/* $cats = $this->getAssetTypeCategories();
-		$types = array();
-		
-		foreach($cats as $category_id){
-			$types[$category_id] = $this->database->queryToArray("SELECT assettype_id, assettype_label, assettype_code, assettype_large_icon, assettype_cat_id, assettypecat_label FROM AssetTypes, AssetTypeCategories WHERE assettype_cat_id = assettypecat_id AND assettype_cat_id = '$category_id' AND assettype_code != 'TMPL'");
-		} */
-		
 		return $types;
 		
 	}
 	
-	public function getAssetTypeCategories(){
-		
-		$cats = $this->database->queryToArray("SELECT DISTINCT assettype_cat_id FROM AssetTypes");
-		$cat_ids = array();
-		
-		foreach($cats as $category){
-			$cat_ids[] = $category["assettype_cat_id"];
-		}
-		
-		return $cat_ids;
-	}
-	
 	public function getAssetTypeCodes(){
-		
-		/* $sql = "SELECT DISTINCT assettype_code FROM AssetTypes";
-		$result = $this->database->queryToArray($sql);
-		
-		$assetTypes = array();
-		foreach($result as $assetType){
-			$assetTypes[] = $assetType["assettype_code"];
-		} */
 		
 		$processed_xml_data = SmartestDataUtility::getAssetTypes();
 		
@@ -90,8 +57,6 @@ class AssetsManager {
 	
 		$assetTypes = $this->getAssetTypeCodes();
 		
-// 		print_r($assetTypes);
-// 		echo "<br>$code<br>";
 		if(in_array($code, $assetTypes)){
 			return true;
 		}else{
@@ -107,8 +72,7 @@ class AssetsManager {
 	public function insertAsset($webid, $stringid, $filename, $href, $type_id, $fragment_id){
 		
 		$sql = "INSERT INTO Assets (asset_webid, asset_stringid, asset_url, asset_href, asset_assettype_id, asset_fragment_id) VALUES ('$webid', '$stringid', '$filename', '$href', '$type_id', '$fragment_id')";
-// 		echo $sql;
-		
+	
 		if($fragment_id!=""){
 		    $textfragment_asset_id=$this->database->query($sql);
 		    return $textfragment_asset_id;
@@ -117,27 +81,70 @@ class AssetsManager {
 		}
 	}
 	
+	public function getAttachableAssetTypeCodes(){
+	    
+	    $processed_xml_data = SmartestDataUtility::getAssetTypes();
+	    $codes = array();
+	    
+	    foreach($processed_xml_data as $code=>$type){
+	        if(isset($type['attachable']) && SmartestStringHelper::toRealBool($type['attachable'])){
+	            $codes[] = $code;
+	        }
+	    }
+	    
+	    return $codes;
+	    
+	}
+	
+	public function getAttachableFiles($site_id=''){
+	    
+	    $attachable_type_codes = $this->getAttachableAssetTypeCodes();
+	    $sql = "SELECT * FROM Assets WHERE asset_deleted!='1'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared='1')";
+	    }
+	    
+	    $sql .= " AND asset_type IN ('".implode("', '", $attachable_type_codes)."') ORDER BY asset_stringid";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $assets = array();
+	    
+	    foreach($result as $a){
+	        $asset = new SmartestAsset;
+	        $asset->hydrate($a);
+	        $assets[] = $asset;
+	    }
+	    
+	    return $assets;
+	    
+	}
+	
+	public function getAttachableFilesAsArrays($site_id=''){
+	    
+	    $assets = $this->getAttachableFiles($site_id);
+	    
+	    $arrays = array();
+	    
+	    foreach($assets as $a){
+	        $arrays[] = $a->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
 	public function getAssetsByTypeCode($code, $site_id=''){
-		// $asset_type_id = $this->getAssetIdFromAssetTypeCode($code);
 		
 		$sql = "SELECT * FROM Assets WHERE asset_type='$code' AND asset_deleted != 1";
 		
 		if(is_numeric($site_id)){
-		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1)";
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_stringid";
 		}
 		
 		$assets = $this->database->queryToArray($sql);
 		
-// 		$asset_ids = array();
-
-// 		foreach($assets as $assets_item){
-// 
-// 			$asset_ids[] = $assets_item["asset_id"];
-// 			$asset_ids[] = $assets_item["asset_stringid"];
-// 			$asset_ids[] = $assets_item["asset_url"];
-// 			echo "dgfdfg ".$assets_item["asset_id"];
-// 		}
-		/*return $asset_ids;*/	
 		return $assets;
 	}
 	
