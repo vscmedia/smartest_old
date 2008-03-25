@@ -100,4 +100,86 @@ class SmartestAssetsLibraryHelper{
         
     }
     
+    public function getParsableAssetTypeCodes(){
+	    
+	    $processed_xml_data = SmartestDataUtility::getAssetTypes();
+	    $codes = array();
+	    
+	    foreach($processed_xml_data as $code=>$type){
+	        if(isset($type['parsable']) && SmartestStringHelper::toRealBool($type['parsable'])){
+	            $codes[] = $code;
+	        }
+	    }
+	    
+	    return $codes;
+	    
+	}
+    
+    public function getAttachableAssetTypeCodes(){
+	    
+	    $processed_xml_data = SmartestDataUtility::getAssetTypes();
+	    $codes = array();
+	    
+	    foreach($processed_xml_data as $code=>$type){
+	        if(isset($type['attachable']) && SmartestStringHelper::toRealBool($type['attachable'])){
+	            $codes[] = $code;
+	        }
+	    }
+	    
+	    return $codes;
+	    
+	}
+	
+	public function getAttachableFiles($site_id=''){
+	    
+	    $attachable_type_codes = $this->getAttachableAssetTypeCodes();
+	    $sql = "SELECT * FROM Assets WHERE asset_deleted!='1'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared='1')";
+	    }
+	    
+	    $sql .= " AND asset_type IN ('".implode("', '", $attachable_type_codes)."') ORDER BY asset_stringid";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $assets = array();
+	    
+	    foreach($result as $a){
+	        $asset = new SmartestAsset;
+	        $asset->hydrate($a);
+	        $assets[] = $asset;
+	    }
+	    
+	    return $assets;
+	    
+	}
+	
+	public function getAttachableFilesAsArrays($site_id=''){
+	    
+	    $assets = $this->getAttachableFiles($site_id);
+	    
+	    $arrays = array();
+	    
+	    foreach($assets as $a){
+	        $arrays[] = $a->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
+	public function getAssetsByTypeCode($code, $site_id=''){
+		
+		$sql = "SELECT * FROM Assets WHERE asset_type='$code' AND asset_deleted != 1";
+		
+		if(is_numeric($site_id)){
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_stringid";
+		}
+		
+		$assets = $this->database->queryToArray($sql);
+		
+		return $assets;
+	}
+    
 }

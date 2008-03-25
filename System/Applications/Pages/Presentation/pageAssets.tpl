@@ -62,6 +62,11 @@ function viewLivePage(){
   <li class="permanent-action"><a href="#" onclick="workWithItem('defineList');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define List Parameters</a></li>
 </ul>
 
+<ul class="invisible-actions-list" id="attachment-specific-actions" style="display:none">
+  <li><b>Attachment Options</b></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('editAttachment');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit Attachment Settings</a></li>
+</ul>
+
 <ul class="invisible-actions-list" id="field-specific-actions" style="display:none">
   <li><b>Field Options</b></li>
   <li class="permanent-action"><a href="#" onclick="workWithItem('editField');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define This Field</a></li>

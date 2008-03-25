@@ -83,7 +83,10 @@ class AssetsManager {
 	
 	public function getAttachableAssetTypeCodes(){
 	    
-	    $processed_xml_data = SmartestDataUtility::getAssetTypes();
+	    $helper = new SmartestAssetsLibraryHelper;
+	    return $helper->getAttachableAssetTypeCodes();
+	    
+	    /*$processed_xml_data = SmartestDataUtility::getAssetTypes();
 	    $codes = array();
 	    
 	    foreach($processed_xml_data as $code=>$type){
@@ -92,13 +95,16 @@ class AssetsManager {
 	        }
 	    }
 	    
-	    return $codes;
+	    return $codes; */
 	    
 	}
 	
 	public function getAttachableFiles($site_id=''){
 	    
-	    $attachable_type_codes = $this->getAttachableAssetTypeCodes();
+	    $helper = new SmartestAssetsLibraryHelper;
+	    return $helper->getAttachableFiles($site_id);
+	    
+	    /* $attachable_type_codes = $this->getAttachableAssetTypeCodes();
 	    $sql = "SELECT * FROM Assets WHERE asset_deleted!='1'";
 	    
 	    if(is_numeric($site_id)){
@@ -117,13 +123,16 @@ class AssetsManager {
 	        $assets[] = $asset;
 	    }
 	    
-	    return $assets;
+	    return $assets; */
 	    
 	}
 	
 	public function getAttachableFilesAsArrays($site_id=''){
 	    
-	    $assets = $this->getAttachableFiles($site_id);
+	    $helper = new SmartestAssetsLibraryHelper;
+	    return $helper->getAttachableFilesAsArrays($site_id);
+	    
+	    /* $assets = $this->getAttachableFiles($site_id);
 	    
 	    $arrays = array();
 	    
@@ -131,13 +140,16 @@ class AssetsManager {
 	        $arrays[] = $a->__toArray();
 	    }
 	    
-	    return $arrays;
+	    return $arrays; */
 	    
 	}
 	
 	public function getAssetsByTypeCode($code, $site_id=''){
 		
-		$sql = "SELECT * FROM Assets WHERE asset_type='$code' AND asset_deleted != 1";
+		$helper = new SmartestAssetsLibraryHelper;
+	    return $helper->getAssetsByTypeCode($code, $site_id);
+		
+		/* $sql = "SELECT * FROM Assets WHERE asset_type='$code' AND asset_deleted != 1";
 		
 		if(is_numeric($site_id)){
 		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_stringid";
@@ -145,7 +157,7 @@ class AssetsManager {
 		
 		$assets = $this->database->queryToArray($sql);
 		
-		return $assets;
+		return $assets; */
 	}
 	
 	public function getAssetById($asset_id){

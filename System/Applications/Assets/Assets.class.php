@@ -268,6 +268,8 @@ class Assets extends SmartestApplication{
 	        $a->save();
 	    }
 	    
+	    $this->addUserMessageToNextRequest(count($new_files)." file ".((count($new_files) == 1) ? " was " : "s were ")."successfully added to the repository.");
+	    
 	    $this->formForward();
 	    
 	}

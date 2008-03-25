@@ -539,6 +539,11 @@ class PagesManager{
 				    
 				    if($assetObj->isParsable()){
 				        $info[$i]['children'] = $assetObj->getTextFragment()->getAttachmentsForElementsTree($level+1, $version);
+				        foreach($info[$i]['children'] as $key => $attachment){
+				            $info[$i]['children'][$key]['info']['assetclass_id'] = $assetObj->getStringid().'/'.$attachment['info']['assetclass_id'];
+				            $info[$i]['children'][$key]['info']['assetclass_name'] = $info[$i]['children'][$key]['info']['assetclass_id'];
+				        }
+				        // print_r($info[$i]['children']);
 			        }
 				    
 				    // print_r($info[$i]);

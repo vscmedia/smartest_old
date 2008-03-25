@@ -1611,6 +1611,28 @@ class Pages extends SmartestApplication{
 	    
 	}
 	
+	public function editAttachment($get){
+	    
+	    $id = $get['assetclass_id'];
+	    $page_webid = $get['page_id'];
+	    $parts = explode('/', $id);
+	    $asset_stringid = $parts[0];
+	    $attachment = $parts[1];
+	    $asset = new SmartestAsset;
+	    
+	    if($asset->hydrateBy('stringid', $asset_stringid)){
+	        $this->redirect('/assets/defineAttachment?attachment='.$attachment.'&asset_id='.$asset->getId());
+	    }else{
+	        $page = new SmartestPage;
+	        if(strlen($page_webid) == 32){
+	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
+	            $this->addUserMessageToNextRequest("The attachment ID was not recognized.");
+	        }else{
+	            $this->redirect('/smartest/pages');
+	        }
+	    }
+	}
+	
 	function setPageTemplate($get){
 		$template_name = $get["template_name"];
 		$field = ($get["version"] == "live") ? "page_live_template" : "page_draft_template";

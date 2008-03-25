@@ -62,7 +62,7 @@ class SmartestTextFragment extends SmartestDataObject{
             $children = array();
             foreach($attachments as $key=>$a){
                 $child = array();
-                $child['info']['assetclass_id'] = $a['asset']['id'].'/'.$key;
+                $child['info']['assetclass_id'] = $key;
                 $child['info']['assetclass_name'] = $key;
                 $child['info']['type'] = 'attachment';
                 $child['info']['exists'] = 'true';
@@ -154,6 +154,7 @@ class SmartestTextFragment extends SmartestDataObject{
 	
 	public function save(){
 	    
+	    $this->setLastModified(time());
 	    $this->createPreviewFile();
 	    parent::save();
 	    

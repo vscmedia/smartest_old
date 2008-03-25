@@ -115,7 +115,7 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function getAssociatedObjects(){
-	    $sql = "SELECT pageitemlookup_item_id FROM PagesItemsLookup WHERE pageitemlookup_page_id=".$this->getId()."";
+	    // $sql = "SELECT pageitemlookup_item_id FROM PagesItemsLookup WHERE pageitemlookup_page_id=".$this->getId()."";
 	}
 		
 	public function publish(){
@@ -135,6 +135,11 @@ class SmartestPage extends SmartestDataObject{
 		$this->setIsPublished('TRUE');
 		$this->save();
 		
+		// publish all textfragments on the page
+		foreach($this->getParsableTextFragments() as $tf){
+		    $tf->publish();
+		}
+		
 		// now delete files in page cache?
 		$cache_files = SmartestFileSystemHelper::load(SM_ROOT_DIR."System/Cache/Pages/");
 		
@@ -151,6 +156,40 @@ class SmartestPage extends SmartestDataObject{
 	public function unpublish(){
 		$this->setIsPublished('FALSE');
 		$this->save();
+	}
+	
+	public function getTextFragments(){
+	    
+	    $sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->getId()."'";
+		$result = $this->database->queryToArray($sql);
+		$objects = array();
+		
+		foreach($result as $tfarray){
+		    $tf = new SmartestTextFragment;
+		    $tf->hydrate($tfarray);
+		    $objects[] = $tf;
+		}
+		
+		return $objects;
+	}
+	
+	public function getParsableTextFragments(){
+	    
+	    $helper = new SmartestAssetsLibraryHelper;
+		$codes = $helper->getParsableAssetTypeCodes();
+		
+		$sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->getId()."' AND Assets.asset_type IN ('".implode("', '", $codes)."')";
+		$result = $this->database->queryToArray($sql);
+		$objects = array();
+		
+		foreach($result as $tfarray){
+		    $tf = new SmartestTextFragment;
+		    $tf->hydrate($tfarray);
+		    $objects[] = $tf;
+		}
+		
+		return $objects;
+		
 	}
 	
 	public function getElementsAsList(){
