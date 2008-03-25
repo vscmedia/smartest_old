@@ -126,15 +126,23 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	        $requested_file .= '.tpl';
 	    }
         
-        $directories = array('Presentation/Layouts/', 'Presentation/Layout/');
+        $directories = array('Presentation/Layouts/');
+        
+        foreach($directories as $dir){
+            if(is_file(SM_ROOT_DIR.$dir.$requested_file)){
+                $file_found = true;
+                $template = SM_ROOT_DIR.$dir.$requested_file;
+                continue;
+            }
+        }
         
         // $requested_file = SM_ROOT_DIR.'Presentation/Layouts/'.$name;
 	    
-	    if(file_exists($requested_file)){
-	        $render_process_id = SmartestStringHelper::toVarName('template_'.$name.'_'.substr(microtime(true), -6));
+	    if($file_found){
+	        $render_process_id = SmartestStringHelper::toVarName('template_'.SmartestStringHelper::removeDotSuffix($requested_file).'_'.substr(microtime(true), -6));
 	        $child = $this->startChildProcess($render_process_id);
 	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
-	        $content = $child->fetch($requested_file);
+	        $content = $child->fetch($template);
 	        $this->killChildProcess($child->getProcessId());
 	        return $content;
         }else{
