@@ -227,17 +227,27 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         if(isset($name) && strlen($name)){
             
-            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
-            $attachments = $this->getProperty('attachments');
+            if($this->_context == SM_CONTEXT_DYNAMIC_TEXTFRAGMENT){
             
-            if(array_key_exists($name, $attachments)){
-                // print_r($attachments[$name]);
-                $attachments[$name]['div_width'] = (int) $attachments[$name]['asset']['width'] + 10;
-                $this->run($file, array('_textattachment'=>$attachments[$name]));
-            }else{
-                if($this->draft_mode){
-                    echo '<br />ERROR: Attachment \''.$name.'\' does not exist.';
+                $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
+                $attachments = $this->getProperty('attachments');
+            
+                if(array_key_exists($name, $attachments)){
+                    // print_r($attachments[$name]);
+                    $attachments[$name]['div_width'] = (int) $attachments[$name]['asset']['width'] + 10;
+                    $this->run($file, array('_textattachment'=>$attachments[$name]));
+                }else{
+                    if($this->draft_mode){
+                        echo '<br />ERROR: Attachment \''.$name.'\' does not exist.';
+                    }
                 }
+            
+            }else{
+                
+                if($this->draft_mode){
+                    echo '<br />ERROR: Attachment tags must be used only in text assets.';
+                }
+                
             }
 	        
         }

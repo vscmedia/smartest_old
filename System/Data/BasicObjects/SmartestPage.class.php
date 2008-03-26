@@ -151,6 +151,9 @@ class SmartestPage extends SmartestDataObject{
 		    }
 		}
 		
+		// finally, request the page to force the system to build and cache the new copy
+		SmartestHttpRequestHelper::getContent(SM_CONTROLLER_DOMAIN.$this->getDefaultUrl());
+		
 	}
 	
 	public function unpublish(){

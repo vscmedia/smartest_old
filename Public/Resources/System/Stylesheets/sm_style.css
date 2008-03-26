@@ -258,6 +258,43 @@ div#actions-area{
 	border-top:1px solid #aaa;
 }
 
+a.js-menu-activator{
+    color:#333;
+}
+
+a.js-menu-activator:hover;{
+    text-decoration:none;
+}
+
+div.js-menu{
+    background-color:#eee;
+    border:1px solid #999;
+}
+
+div.js-menu ul{
+    list-style-type:none;
+}
+
+div.js-menu ul li{
+    
+}
+
+div.js-menu ul li a{
+    color:#333;
+    cursor:default;
+}
+
+div.js-menu ul li a:hover{
+    background-color:#23f;
+    color:#fff;
+    text-decoration:none;
+}
+
+div.js-menu ul li span{
+    color:#999;
+    cursor:default;
+}
+
 ul#item-specific-actions{
 	
 }

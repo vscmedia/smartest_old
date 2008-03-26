@@ -239,4 +239,38 @@ class SmartestItem extends SmartestDataObject{
 	    
 	}
 	
+	public function getTextFragments(){
+	    
+	    $sql = "SELECT TextFragments.* FROM Items, Assets, ItemPropertyValues, TextFragments WHERE Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->getId()."'";
+		/* $result = $this->database->queryToArray($sql);
+		$objects = array();
+		
+		foreach($result as $tfarray){
+		    $tf = new SmartestTextFragment;
+		    $tf->hydrate($tfarray);
+		    $objects[] = $tf;
+		}
+		
+		return $objects; */
+	}
+	
+	public function getParsableTextFragments(){
+	    
+	    $helper = new SmartestAssetsLibraryHelper;
+		$codes = $helper->getParsableAssetTypeCodes();
+		
+		$sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->getId()."' AND Assets.asset_type IN ('".implode("', '", $codes)."')";
+		/* $result = $this->database->queryToArray($sql);
+		$objects = array();
+		
+		foreach($result as $tfarray){
+		    $tf = new SmartestTextFragment;
+		    $tf->hydrate($tfarray);
+		    $objects[] = $tf;
+		}
+		
+		return $objects; */
+		
+	}
+	
 }

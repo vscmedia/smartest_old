@@ -140,6 +140,17 @@ function setView(viewName, list_id){
 	}
 }
 
+function toggleMenuVisibility(menu_id){
+    var menu = $(menu_id);
+    if(menu.style.display='none'){
+        new Effect.BlindDown(menu_id, { duration: 0.3 });
+        // menu.style.display='block';
+    }else if(menu.style.display='block'){
+        new Effect.BlindUp(menu_id, { duration: 0.3 });
+        // menu.style.display='none';
+    }
+}
+
 function hideUserMessage(message_id){
 	// if(!getUIEffectsAreOk()){
 	//	document.getElementById(message_id).style.display = 'none';

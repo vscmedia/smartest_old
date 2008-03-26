@@ -108,6 +108,32 @@ div.top-pad{
 	height:30px;
 }
 
+div.js-menu{
+    width:200px;
+}
+
+div.js-menu ul{
+    margin:0px;
+    padding:0px;
+}
+
+div.js-menu ul li{
+    margin:0px;
+    padding:0px;
+}
+
+div.js-menu ul li a{
+    padding:3px;
+    margin:0px;
+    display:block;
+}
+
+div.js-menu ul li span{
+    padding:3px;
+    margin:0px;
+    display:block;
+}
+
 div#user-message-container{
 	position:absolute;
 	left:0px;
@@ -144,8 +170,8 @@ div#preview{
 	padding:3px;
 	text-align:right;
 	position:absolute;
-	top:140px;
-	left:160px;
+	top:144px;
+	left:158px;
 	right:10px;
 }
 
@@ -153,6 +179,13 @@ div#preview iframe{
 	display:block;
 	height:500px;
 	width:100%;
+}
+
+div#preview-actions-menu{
+    position:absolute;
+	top:143px;
+	left:158px;
+	z-index:100;
 }
 
 div.instruction{

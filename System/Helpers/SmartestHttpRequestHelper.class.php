@@ -34,13 +34,9 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 			if(is_array($res)){
 				foreach($res as $resource_url){
 					if($resource_url{0} == '/'){
-						// echo 'replaced '.$resource_url. ' with '.$protocol.$hostname.$resource_url.'<br />';
 						$page = str_replace($resource_url, $protocol.$hostname.$resource_url, $page);
 					}else{
-						// echo substr($resource_url, 0, $protocol_length).' '.$protocol.'<br />';
-						// echo $resource_url;
 						if(substr($resource_url, 0, $protocol_length) != $protocol){
-							// echo 'replaced '.$resource_url. ' with '.$protocol.$hostname.'/'.$resource_url.'<br />';
 							$page = str_replace($resource_url, $protocol.$hostname.'/'.$resource_url, $page);
 						}
 					}
