@@ -638,6 +638,8 @@ class Assets extends SmartestApplication{
         		        $this->send(false, 'show_attachments');
         		    }
     			    
+    			    $content = SmartestStringHelper::separateParagraphs($content);
+    			    
 			    }else{
 			        $formTemplateInclude = "edit.default.tpl";
 			    }

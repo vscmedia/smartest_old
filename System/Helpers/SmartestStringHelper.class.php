@@ -316,5 +316,10 @@ class SmartestStringHelper extends SmartestHelper{
         
         return $string;
     }
+    
+    static function separateParagraphs($string){
+        $string = str_replace('</p><p', "</p>\n\n<p", $string);
+        return $string;
+    }
 
 }

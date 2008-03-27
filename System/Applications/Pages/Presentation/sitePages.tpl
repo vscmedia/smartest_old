@@ -95,6 +95,8 @@ function viewPage(){
 
 	<li><b>Static Page Options</b></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('openPage'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This Page</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('movePageUp'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/arrow_up.png" border="0" alt=""> Move Up</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('movePageDown'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/arrow_down.png" border="0" alt=""> Move Down</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('addPage');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add a New Page</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deletePage');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt=""> Delete Page</a></li>
 	

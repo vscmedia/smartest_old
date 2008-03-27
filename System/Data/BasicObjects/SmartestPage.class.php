@@ -195,6 +195,70 @@ class SmartestPage extends SmartestDataObject{
 		
 	}
 	
+	public function moveUp(){
+	    $oi = (int) $this->getOrderIndex();
+	    if($oi > 0){
+	        if($pp = $this->getPreviousPage()){
+	            if($pp->getOrderIndex() == $oi){
+	                $this->setOrderIndex($oi - 1);
+	                $this->save();
+                }else{
+	                $this->setOrderIndex($pp->getOrderIndex());
+	                $this->save();
+	                $pp->setOrderIndex($oi);
+	                $pp->save();
+	            }
+	        }
+	    }else{
+	        if($pp = $this->getPreviousPage()){
+	            $pp->setOrderIndex(1);
+	            $pp->save();
+            }
+	    }
+	}
+	
+	public function moveDown(){
+	    $oi = $this->getOrderIndex();
+	    if($np = $this->getNextPage()){
+	        if($np->getOrderIndex() == $oi){
+	            $this->setOrderIndex($oi + 1);
+	            $this->save();
+            }else{
+	            $this->setOrderIndex($np->getOrderIndex());
+	            $this->save();
+	            $np->setOrderIndex($oi);
+	            $np->save();
+	        }
+	    }
+	}
+	
+	public function getPreviousPage(){
+	    $sql  = "SELECT * FROM Pages WHERE page_order_index < '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' ORDER BY page_order_index DESC LIMIT 1";
+	    // echo $sql;
+	    $result = $this->database->queryToArray($sql);
+	    if(count($result)){
+	        $pp = $result[0];
+	        $page = new SmartestPage;
+	        $page->hydrate($pp);
+	        return $page;
+	    }else{
+	        return null;
+	    }
+	}
+	
+	public function getNextPage(){
+	    $sql  = "SELECT * FROM Pages WHERE page_order_index > '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' ORDER BY page_order_index ASC LIMIT 1";
+	    $result = $this->database->queryToArray($sql);
+	    if(count($result)){
+	        $np = $result[0];
+	        $page = new SmartestPage;
+	        $page->hydrate($np);
+	        return $page;
+	    }else{
+	        return null;
+	    }
+	}
+	
 	public function getElementsAsList(){
 		
 	}

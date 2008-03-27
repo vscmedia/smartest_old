@@ -357,6 +357,36 @@ class Pages extends SmartestApplication{
 	    
 	}
 	
+	public function movePageUp($get){
+	    $page_webid = $get['page_id'];
+	    $page = new SmartestPage();
+	    
+	    if($page->hydrateBy('webid', $page_webid)){
+	        $page->moveUp();
+	        $this->addUserMessageToNextRequest("The page has been moved up.");
+	        SmartestCache::clear('site_pages_tree_'.$page->getSiteId(), true);
+	    }else{
+	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.");
+	    }
+	    
+	    $this->formForward();
+	}
+	
+	public function movePageDown($get){
+	    $page_webid = $get['page_id'];
+	    $page = new SmartestPage();
+	    
+	    if($page->hydrateBy('webid', $page_webid)){
+	        $page->moveDown();
+	        $this->addUserMessageToNextRequest("The page has been moved down.");
+	        SmartestCache::clear('site_pages_tree_'.$page->getSiteId(), true);
+	    }else{
+	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.");
+	    }
+	    
+	    $this->formForward();
+	}
+	
 	function preview($get){
 		
 		$this->setTitle('Page Preview');

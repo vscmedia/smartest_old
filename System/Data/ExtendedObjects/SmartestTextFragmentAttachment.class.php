@@ -71,7 +71,7 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
     }
     
     public function setCaption($caption){
-        $this->setContextDataField('caption', $caption);
+        $this->setContextDataField('caption', mysql_real_escape_string($caption));
     }
     
     public function getAlignment(){
