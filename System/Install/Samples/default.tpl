@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-	<title>{$this.page.formatted_title}</title>
+	<title><?sm:$this.page.formatted_title:?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 

@@ -10,7 +10,7 @@
         <editable>true</editable>
         <parsable>true</parsable>
         <icon>text.gif</icon>
-        <render template="System/Applications/Assets/Presentation/CMS/display.rich_text.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.rich_text.tpl" />
         <storage type="database" />
         <suffix mime="text/html">html</suffix>
         <suffix mime="text/html">htm</suffix>
@@ -23,7 +23,7 @@
         <class>SmartestTextAsset</class>
         <storage type="database" />
         <icon>text.gif</icon>
-        <render template="System/Applications/Assets/Presentation/CMS/display.plain_text.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.plain_text.tpl" />
         <suffix mime="text/plain">txt</suffix>
     </type>
     
@@ -34,7 +34,7 @@
         <editable>true</editable>
         <storage type="database" />
         <icon>text.gif</icon>
-        <render template="System/Applications/Assets/Presentation/CMS/display.sl_text.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.sl_text.tpl" />
         <suffix mime="text/plain">txt</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" />
     </type>
@@ -57,7 +57,7 @@
         <attachable>true</attachable>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Images/" />
-        <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.image.tpl" />
         <suffix mime="image/jpeg">jpg</suffix>
         <suffix mime="image/jpeg">jpeg</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" />
@@ -75,7 +75,7 @@
         <captionable>true</captionable>
         <icon>image.gif</icon>
         <storage type="file" location="Public/Resources/Images/" />
-        <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.image.tpl" />
         <suffix mime="image/png">png</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" />
         <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
@@ -92,7 +92,7 @@
         <captionable>true</captionable>
         <icon>image.gif</icon>
         <storage type="file" location="Public/Resources/Images/" />
-        <render template="System/Applications/Assets/Presentation/CMS/display.image.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.image.tpl" />
         <suffix mime="image/gif">gif</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" required="false" />
         <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
@@ -107,7 +107,7 @@
         <editable>true</editable>
         <class>SmartestAsset</class>
         <storage type="file" location="Public/Resources/Javascript/" />
-        <render template="System/Applications/Assets/Presentation/CMS/display.javascript.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.javascript.tpl" />
         <icon>generic.gif</icon>
         <suffix mime="text/javascript">js</suffix>
         <param name="inline" type="SM_DATATYPE_BOOLEAN" default="false" required="false" />
@@ -119,7 +119,7 @@
         <editable>true</editable>
         <class>SmartestAsset</class>
         <storage type="file" location="Public/Resources/Stylesheets/" />
-        <render template="System/Applications/Assets/Presentation/CMS/display.stylesheet.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.stylesheet.tpl" />
         <icon>generic.gif</icon>
         <suffix mime="text/css">css</suffix>
         <param name="inline" type="SM_DATATYPE_BOOLEAN" default="false" required="false" />
@@ -132,7 +132,7 @@
         <icon>generic.gif</icon>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
-        <render template="System/Applications/Assets/Presentation/CMS/display.quicktime.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.quicktime.tpl" />
         <suffix mime="video/quicktime">mov</suffix>
         <suffix mime="video/quicktime">qt</suffix>
         <param name="width" type="SM_DATATYPE_NUMERIC" required="true" />
@@ -148,7 +148,7 @@
         <icon>generic.gif</icon>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
-        <render template="System/Applications/Assets/Presentation/CMS/display.mpeg.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.mpeg.tpl" />
         <suffix mime="video/mpeg">mpg</suffix>
         <param name="width" type="SM_DATATYPE_NUMERIC" required="true" />
         <param name="height" type="SM_DATATYPE_NUMERIC" required="true" />
@@ -163,7 +163,7 @@
       <icon>generic.gif</icon>
       <storage type="file" location="Public/Resources/Assets/" />
       <suffix mime="audio/mpeg">mp3</suffix>
-      <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
+      <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
     </type>
     
     <type id="SM_ASSETTYPE_SHOCKWAVE_FLASH" category="embedded">
@@ -174,7 +174,7 @@
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <suffix mime="application/x-shockwave-flash">swf</suffix>
-        <render template="System/Applications/Assets/Presentation/CMS/display.flash.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.flash.tpl" />
         <param name="width" type="SM_DATATYPE_NUMERIC" />
         <param name="height" type="SM_DATATYPE_NUMERIC" />
         <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="true" />
@@ -189,7 +189,7 @@
         <icon>generic.gif</icon>
         <storage type="file" location="Public/Resources/Assets/" />
         <suffix mime="video/x-flv">flv</suffix>
-        <render template="System/Applications/Assets/Presentation/CMS/display.flash_video.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.flash_video.tpl" />
         <param name="width" type="SM_DATATYPE_NUMERIC" />
         <param name="height" type="SM_DATATYPE_NUMERIC" />
         <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="true" />
@@ -202,7 +202,7 @@
         <icon>generic.gif</icon>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
-        <render template="System/Applications/Assets/Presentation/CMS/display.wmv.tpl" />
+        <render template="System/Presentation/WebPageBuilder/display.wmv.tpl" />
         <suffix mime="application/x-ms-wmv">wmv</suffix>
         <param name="width" type="SM_DATATYPE_NUMERIC" />
         <param name="height" type="SM_DATATYPE_NUMERIC" />
@@ -220,7 +220,7 @@
       <icon>generic.gif</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/pdf">pdf</suffix>
-      <render template="System/Applications/Assets/Presentation/CMS/display.default.tpl" />
+      <render template="System/Presentation/WebPageBuilder/display.default.tpl" />
     </type>
     
     <type id="SM_ASSETTYPE_MS_WORD" category="other">
@@ -230,7 +230,7 @@
       <icon>generic.gif</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/vnd.ms-word">doc</suffix>
-      <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
+      <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
     </type>
     
     <type id="SM_ASSETTYPE_MS_EXCEL" category="other">
@@ -240,7 +240,7 @@
       <icon>generic.gif</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/vnd.ms-excel">xls</suffix>
-      <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
+      <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
     </type>
     
     <type id="SM_ASSETTYPE_MS_POWERPOINT" category="other">
@@ -250,7 +250,7 @@
       <icon>generic.gif</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/vnd.ms-powerpoint">ppt</suffix>
-      <render template="System/Applications/Assets/Presentation/CMS/display.download.tpl" />
+      <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
     </type>
     
 </assettypes>

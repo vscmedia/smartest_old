@@ -18,6 +18,7 @@ class SmartestAsset extends SmartestDataObject{
 	
 	public function __toArray(){
 	    $data = parent::__toArray();
+	    
 	    $data['text_content'] = $this->getContent();
 	    $data['type_info'] = $this->getTypeInfo();
 	    $data['default_parameters'] = $this->getDefaultParams();
@@ -160,7 +161,11 @@ class SmartestAsset extends SmartestDataObject{
 	
 	public function getContent(){
 	    if($this->getTextFragment()){
-	        return stripslashes($this->getTextFragment()->getContent());
+	        if($this->isParsable()){
+    	        return stripslashes($this->getTextFragment()->getContent());
+            }else{
+                return htmlspecialchars(stripslashes($this->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8');
+            }
 	    }else if($this->isEditable() && is_file($this->getFullPathOnDisk())){
 	        return SmartestFileSystemHelper::load($this->getFullPathOnDisk(), true);
 	    }else{

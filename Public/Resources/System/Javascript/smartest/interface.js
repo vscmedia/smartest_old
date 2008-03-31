@@ -158,3 +158,57 @@ function hideUserMessage(message_id){
 		new Effect.Fade(message_id, { duration: 0.5 });
 	// }
 }
+
+function getCaretPosition(textarea_id){
+    
+    var textArea = document.getElementById(textarea_id);
+    
+    if(sm_user_agent.appName == 'Explorer'){
+        // Internet Explorer
+        if(document.selection){
+            
+            var marker = "__SM_TEXT_MARKER__";
+            // var realSelectionRange	= document.selection.createRange();
+            // var otherSelectionRange = realSelectionRange.duplicate();
+            // var excapedText = 
+            var otherTextArea = Object.clone(textArea);
+            alert(otherTextArea);
+            // var caret_pos = 0;
+            
+            // create a real selection from the real textarea
+            var realSelectionRange	= document.selection.createRange();
+            
+            // create a fake copy
+            var otherSelectionRange = realSelectionRange.duplicate();
+            // otherSelectionRange.moveToElementText(otherTextArea);
+            
+            // put the marker right before it
+            // var otherSelectionRange.text = marker+otherSelectionRange.text;
+            
+            // alert its text
+            // alert(otherSelectionRange.text);
+            
+            var caret_pos = 0;
+        }else{
+            textarea.focus();
+            var caret_pos = textarea.value.length;
+        }
+        // var dul	= sel.duplicate();
+        // var len	= 0;
+        // alert(sel.text.length);
+        // alert(textarea);
+        // dul.moveToElementText(textarea);
+        // sel.text = c;
+        // len = (dul.text.indexOf(c));
+        // sel.moveStart('character', -1);
+        // sel.text = "";
+        // return len;
+        // var caret_pos = len;
+    }else{
+        // Gecko & Safari:
+        var caret_pos = textArea.selectionStart;
+    }
+    
+    return caret_pos;
+    
+}

@@ -362,18 +362,24 @@ class MetaData extends SmartestApplication{
 		$page_webid =$get['page_id'];
 		$page_id = $this->manager->getPageIdFromPageWebId($page_webid);
 		
+		$field = new SmartestPageField;
+		
 		if(!empty($get['assetclass_id'])){
-			$pageproperty_name = $get['assetclass_id'];
-			$pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $get['assetclass_id'], "PageProperties");
+		    $field_name = SmartestStringHelper::toVarName($get['assetclass_id']);
+			// $pageproperty_name = $get['assetclass_id'];
+			// $pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $get['assetclass_id'], "PageProperties");
+			$field->hydrateBy('name', $field_name);
 		}else{
-			$pageproperty_id = $get['pageproperty_id'];
-			$pageproperty_name = $this->manager->database->specificQuery("pageproperty_name", "pageproperty_id", $pageproperty_id, "PageProperties");
+		    $field_id = $get['pageproperty_id'];
+		    $field->hydrate($field_id);
+			// $pageproperty_id = $get['pageproperty_id'];
+			// $pageproperty_name = $this->manager->database->specificQuery("pageproperty_name", "pageproperty_id", $pageproperty_id, "PageProperties");
 		}
 		
 		// $pageproperty_id = $get['pageproperty_id'];
 		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");
 		
-		$pagepropertyvalue_id = $this->manager->getPropertyValueId($page_id, $pageproperty_id);
+		$pagepropertyvalue_id = $this->manager->getPropertyValueId($page_id, $field->getId());
 		
 		// $pageproperty_id = $get['pageproperty_id'];
 		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");

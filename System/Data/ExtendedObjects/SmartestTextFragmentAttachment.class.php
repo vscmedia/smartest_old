@@ -52,6 +52,7 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
             $data['float'] = $this->getFloat();
             $data['border'] = $this->getBorder();
             $data['asset'] = $this->_asset->__toArray();
+            $data['asset_object'] = $this->_asset;
         }
         
         return $data;

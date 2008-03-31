@@ -1,0 +1,1 @@
+Asset ID: <?sm:$asset_info.id:?>

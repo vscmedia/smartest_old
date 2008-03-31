@@ -1,0 +1,1 @@
+<link rel="stylesheet" href="<?sm:$domain:?>Resources/Assets/<?sm:$asset_info.url:?>" />

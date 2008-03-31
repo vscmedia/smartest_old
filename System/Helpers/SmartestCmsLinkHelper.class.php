@@ -357,7 +357,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             // put html together
             if($this->shouldOmitAnchorTag()){
                 
-                $markup = '<!--cold link-->'.$this->getContent();
+                $markup = '<!--cold link would have been to:'.$this->getUrl().'-->'.$this->getContent();
                 
             }else{
                 

@@ -1,1 +1,0 @@
-{$asset_info.id}

@@ -802,29 +802,33 @@ class Assets extends SmartestApplication{
                 $attachable_files = $this->manager->getAttachableFilesAsArrays($this->getSite()->getId());
                 $this->send($attachable_files, 'files');
                 
-                $current_def = $asset->getTextFragment()->getAttachmentCurrentDefinition($attachment_name);
+                $textfragment = $asset->getTextFragment();
                 
-                // var_dump($current_def);
+                if(is_object($textfragment)){
                 
-                $this->send($asset->getTextFragment()->getId(), 'textfragment_id');
+                    $current_def = $textfragment->getAttachmentCurrentDefinition($attachment_name);
                 
-                $attached_asset_id = $current_def->getAttachedAssetId();
-                $this->send($attached_asset_id, 'attached_asset_id');
+                    $this->send($asset->getTextFragment()->getId(), 'textfragment_id');
                 
-                $alignment = $current_def->getAlignment();
-                $this->send($alignment, 'alignment');
+                    $attached_asset_id = $current_def->getAttachedAssetId();
+                    $this->send($attached_asset_id, 'attached_asset_id');
                 
-                $caption = $current_def->getCaption();
-                $this->send($caption, 'caption');
+                    $alignment = $current_def->getAlignment();
+                    $this->send($alignment, 'alignment');
                 
-                $caption_alignment = $current_def->getCaptionAlignment();
-                $this->send($caption_alignment, 'caption_alignment');
+                    $caption = $current_def->getCaption();
+                    $this->send($caption, 'caption');
                 
-                $float = $current_def->getFloat();
-                $this->send($float, 'float');
+                    $caption_alignment = $current_def->getCaptionAlignment();
+                    $this->send($caption_alignment, 'caption_alignment');
                 
-                $border = $current_def->getBorder();
-                $this->send($border, 'border');
+                    $float = $current_def->getFloat();
+                    $this->send($float, 'float');
+                
+                    $border = $current_def->getBorder();
+                    $this->send($border, 'border');
+                
+                }
                 
 			    $asset_type = $types_data[$assettype_code];
 
