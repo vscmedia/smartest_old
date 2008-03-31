@@ -1,24 +1,24 @@
 <ul class="site-map" id="tree-root">
-  {defun name="menurecursion" list=$site_tree}
+  <?sm:defun name="menurecursion" list=$site_tree:?>
     
-    {capture name="foreach_name" assign="foreach_name"}list_{if $page.info.id}{$page.info.id}{else}0{/if}{/capture}
-    {capture name="foreach_id" assign="foreach_id"}{if $page.info.id}{$page.info.id}{else}0{/if}{/capture}
-    {foreach from=$list item="page" name=$foreach_name}
+    <?sm:capture name="foreach_name" assign="foreach_name":?>list_<?sm:if $page.info.id:?><?sm:$page.info.id:?><?sm:else:?>0<?sm:/if:?><?sm:/capture:?>
+    <?sm:capture name="foreach_id" assign="foreach_id":?><?sm:if $page.info.id:?><?sm:$page.info.id:?><?sm:else:?>0<?sm:/if:?><?sm:/capture:?>
+    <?sm:foreach from=$list item="page" name=$foreach_name:?>
     
-    {if $page.info.type == 'NORMAL' && $page.info.is_published == 'TRUE'}<li {if $smarty.foreach.$foreach_name.last}class="last"{elseif $smarty.foreach.$foreach_name.first}class="first"{else}class="middle"{/if}>
+    <?sm:if $page.info.type == 'NORMAL' && $page.info.is_published == 'TRUE':?><li <?sm:if $smarty.foreach.$foreach_name.last:?>class="last"<?sm:elseif $smarty.foreach.$foreach_name.first:?>class="first"<?sm:else:?>class="middle"<?sm:/if:?>>
       
-      <a id="item_{$page.info.webid}" class="option" href="{$page.info.url}">		 
-        <img border="0" src="{$domain}Resources/Icons/page.gif" />{$page.info.title}</a>
+      <a id="item_<?sm:$page.info.webid:?>" class="option" href="<?sm:$page.info.url:?>">		 
+        <img border="0" src="<?sm:$domain:?>Resources/Icons/page.gif" /><?sm:$page.info.title:?></a>
       
-      {if !empty($page.children)}
+      <?sm:if !empty($page.children):?>
       
-      <ul class="site-map" id="{$foreach_name}_{$smarty.foreach.$foreach_name.iteration}">
-        {fun name="menurecursion" list=$page.children}
+      <ul class="site-map" id="<?sm:$foreach_name:?>_<?sm:$smarty.foreach.$foreach_name.iteration:?>">
+        <?sm:fun name="menurecursion" list=$page.children:?>
       </ul>
       
-      {/if}
+      <?sm:/if:?>
       
-    </li>{/if}
-    {/foreach}
-  {/defun}
+    </li><?sm:/if:?>
+    <?sm:/foreach:?>
+  <?sm:/defun:?>
 </ul>

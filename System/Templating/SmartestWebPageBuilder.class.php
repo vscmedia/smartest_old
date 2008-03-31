@@ -46,7 +46,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
         if($this->_page_rendering_data_retrieved){
         
 	        $cp = parent::startChildProcess($pid);
-	        $cp->setDraftMode($this->draft_mode);
+	        $cp->setDraftMode($this->getDraftMode());
 	        $cp->assignPage($this->page);
 	        $cp->setPageRenderingData($this->_page_rendering_data);
 	        
@@ -58,7 +58,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
     public function renderPage($page, $draft_mode=false){
 	    
 	    $this->page = $page;
-	    $this->draft_mode = $draft_mode;
+	    $this->setDraftMode($draft_mode);
 	    // $this->_page_rendering_data = $this->page->fetchRenderingData($draft_mode);
 	    // $this->_page_rendering_data_retrieved = true;
 	    $this->setPageRenderingData($this->page->fetchRenderingData($draft_mode));
@@ -74,7 +74,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	        $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
 	    }
 	    
-	    $this->_smarty_include(array('smarty_include_tpl_file'=>$template, 'smarty_include_vars'=>array()));
+	    // $this->_smarty_include(array('smarty_include_tpl_file'=>$template, 'smarty_include_vars'=>array()));
+	    $this->run($template, array());
 	}
     
     public function renderContainer($container_name, $params, $parent){
@@ -85,10 +86,11 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
             $container = new SmartestContainerDefinition;
         
-            if($container->load($container_name, $this->getPage(), $this->draft_mode)){
+            if($container->load($container_name, $this->getPage(), $this->getDraftMode())){
             
                 if($container->getTemplateFilePath()){
-                    $this->_smarty_include(array('smarty_include_tpl_file'=>$container->getTemplateFilePath(), 'smarty_include_vars'=>array()));
+                    // $this->_smarty_include(array('smarty_include_tpl_file'=>$container->getTemplateFilePath(), 'smarty_include_vars'=>array()));
+                    $this->run($container->getTemplateFilePath(), array());
                 }
             
                 if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
@@ -112,7 +114,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         }else{
             
-            if($this->draft_mode){
+            if($this->getDraftMode()){
                 return "<br />ERROR: Container tag can only be used in page context.";
             }
             
@@ -146,7 +148,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	        $this->killChildProcess($child->getProcessId());
 	        return $content;
         }else{
-            if($this->draft_mode){
+            if($this->getDraftMode()){
                 return '<br />ERROR: Template \''.$requested_file.'\' not found';
             }
         }
@@ -158,11 +160,11 @@ class SmartestWebPageBuilder extends SmartestEngine{
         $placeholder = new SmartestPlaceholderDefinition;
         $assetclass_types = SmartestDataUtility::getAssetClassTypes();
         
-        if($asset_id = $placeholder->load($placeholder_name, $this->getPage(), $this->draft_mode)){
+        if($asset_id = $placeholder->load($placeholder_name, $this->getPage(), $this->getDraftMode())){
             
             if(array_key_exists($placeholder->getType(), $assetclass_types)){
                 
-                $asset = $placeholder->getAsset($this->draft_mode);
+                $asset = $placeholder->getAsset($this->getDraftMode());
                 
                 if(is_object($asset)){
                     
@@ -185,7 +187,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
         	            }
     	            }
                     
-                    if($this->draft_mode){
+                    if($this->getDraftMode()){
                         $rd = $placeholder->getDraftRenderData();
                     }else{
                         $rd = $placeholder->getLiveRenderData();
@@ -193,7 +195,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     
                     if($data = @unserialize($rd)){
                         $external_render_data = $data;
-                    }else if($data = $placeholder->getDefaultAssetRenderData($this->draft_mode)){
+                    }else if($data = $placeholder->getDefaultAssetRenderData($this->getDraftMode())){
                         $external_render_data = $data;
                     }else{
                         $external_render_data = array();
@@ -271,14 +273,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         // asset tag exists, but isn't defined.
                     }
                 }else{
-                    if($this->draft_mode){
+                    if($this->getDraftMode()){
                         echo '<br />ERROR: Attachment \''.$name.'\' does not exist.';
                     }
                 }
             
             }else{
                 
-                if($this->draft_mode){
+                if($this->getDraftMode()){
                     echo '<br />ERROR: Attachment tags must be used only in text assets.';
                 }
                 
@@ -340,25 +342,27 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         $list = new SmartestCmsItemList;
         
-        if($list->load($list_name, $this->getPage(), $this->draft_mode)){
+        if($list->load($list_name, $this->getPage(), $this->getDraftMode())){
             /* if($list->getTemplateFilePath()){
                 $this->_smarty_include(array('smarty_include_tpl_file'=>$container->getTemplateFilePath(), 'smarty_include_vars'=>array()));
             } */
             
-            if($list->hasRepeatingTemplate($this->draft_mode)){
+            if($list->hasRepeatingTemplate($this->getDraftMode())){
             
-                if($list->hasHeaderTemplate($this->draft_mode)){
-                    $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getHeaderTemplate($this->draft_mode), 'smarty_include_vars'=>array()));
-                    // echo $list->getHeaderTemplate($this->draft_mode);
+                if($list->hasHeaderTemplate($this->getDraftMode())){
+                    // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getHeaderTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
+                    // echo $list->getHeaderTemplate($this->getDraftMode());
+                    $this->run($list->getHeaderTemplate($this->getDraftMode()), array());
                 }
             
-                $data = $list->getItemsAsArrays($this->draft_mode);
+                $data = $list->getItemsAsArrays($this->getDraftMode());
                 
                 foreach($data as $item){
                     // print_r($item);
                     $this->_tpl_vars['item'] = $item;
-                    $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getRepeatingTemplate($this->draft_mode), 'smarty_include_vars'=>array()));
-                    // echo $list->getRepeatingTemplate($this->draft_mode);
+                    // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getRepeatingTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
+                    $this->run($list->getRepeatingTemplate($this->getDraftMode(), array()));
+                    // echo $list->getRepeatingTemplate($this->getDraftMode());
                 }
                 
                 foreach($data as $item){
@@ -372,9 +376,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
     			    echo $edit_link;
                 }
             
-                if($list->hasFooterTemplate($this->draft_mode)){
-                    $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getFooterTemplate($this->draft_mode), 'smarty_include_vars'=>array()));
-                    // echo $list->getFooterTemplate($this->draft_mode);
+                if($list->hasFooterTemplate($this->getDraftMode())){
+                    // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getFooterTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
+                    $this->run($list->getFooterTemplate($this->getDraftMode()), array());
+                    // echo $list->getFooterTemplate($this->getDraftMode());
                 }
                 
                 if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
@@ -397,7 +402,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             $preview_mode = (SM_CONTROLLER_METHOD == "renderEditableDraftPage") ? true : false;
             
-            $link_helper = new SmartestCmsLinkHelper($this->getPage(), $params, $this->draft_mode, $preview_mode);
+            $link_helper = new SmartestCmsLinkHelper($this->getPage(), $params, $this->getDraftMode(), $preview_mode);
             $link_helper->parse($to);
             
             return $link_helper->getMarkup();
@@ -413,7 +418,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             $preview_mode = (SM_CONTROLLER_METHOD == "renderEditableDraftPage") ? true : false;
             
-            $link_helper = new SmartestCmsLinkHelper($this->getPage(), $params, $this->draft_mode, $preview_mode);
+            $link_helper = new SmartestCmsLinkHelper($this->getPage(), $params, $this->getDraftMode(), $preview_mode);
             $link_helper->parse($to);
             
             return $link_helper->getUrl();
@@ -450,7 +455,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 
                 if(isset($params['query_vars'])){
                     $query_vars = SmartestStringHelper::parseNameValueString($params['query_vars']);
-                    // print_r($query_vars);
                 }else{
                     $query_vars = array();
                 }
@@ -464,26 +468,29 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }
 
         		if($set->hydrateBy('name', $name)){
-        		    $items = $set->getMembers($this->draft_mode, false, $limit, $query_vars);
-        		    // $items = array();
+        		    $items = $set->getMembers($this->getDraftMode(), false, $limit, $query_vars);
         		}else{
         		    $items = array();
         		}
 
          		return $items;
-         		
-                break;
         }
  		
     }
     
-    public function renderAsset($params, $path='none'){
-       
-        if((isset($params['id']) && is_numeric($params['id'])) || (isset($params['name']) && strlen($params['name']))){
+    public function renderAssetById($asset_id, $params, $path='none'){
+        
+        if(strlen($asset_id) && SmartestStringHelper::toRealBool($asset_id)){
+            
+            if(is_numeric($asset_id)){
+                $hydrateField = 'id';
+            }else{
+                $hydrateField = 'stringid';
+            }
             
             $asset = new SmartestAsset;
             
-            if($asset->hydrate($params['id']) || $asset->hydrateBy('stringid', $params['name'])){
+            if($asset->hydrateBy($hydrateField, $asset_id)){
                 
                 $render_data = array();
                 
@@ -503,8 +510,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
         	            }
     	            }
 	            }
-                
-                if($this->draft_mode){
+	            
+	            // $params['path'] = $path;
+	            
+	            /* if($this->getDraftMode()){
                     $rd = $placeholder->getDraftRenderData();
                 }else{
                     $rd = $placeholder->getLiveRenderData();
@@ -512,7 +521,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 
                 if($data = @unserialize($rd)){
                     $external_render_data = $data;
-                }else if($data = $placeholder->getDefaultAssetRenderData($this->draft_mode)){
+                }else if($data = $placeholder->getDefaultAssetRenderData($this->getDraftMode())){
                     $external_render_data = $data;
                 }else{
                     $external_render_data = array();
@@ -520,13 +529,13 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 
                 foreach($external_render_data as $key => $value){
                     $render_data[$key] = $value;
-                }
+                }*/
                 
-                return $this->_renderAssetObject($asset, $params, $render_data);
+                return $this->_renderAssetObject($asset, $params, $render_data, $path);
                 
             }else{
                 if($this->getDraftMode()){
-                    return "<br />ERROR: No Asset was found with ID: ".$params['id'];
+                    return "<br />ERROR: No asset could with ID or Name: ".$asset_id;
                 }
             }
 
@@ -537,24 +546,24 @@ class SmartestWebPageBuilder extends SmartestEngine{
         }
     }
     
-    public function _renderAssetObject($asset, $params, $render_data=''){
+    public function _renderAssetObject($asset, $params, $render_data='', $path='none'){
         
         $asset_type_info = $asset->getTypeInfo();
         $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
-        
-        // echo $render_template;
         
         if(!is_array($render_data)){
             $render_data = array();
         }
         
+        if(isset($path)){
+            $path = (!in_array($path, array('file', 'full'))) ? 'none' : $path;
+        }else{
+            $path = 'none';
+        }
+        
         if(file_exists($render_template)){
             
-            /* if(isset($params['style'])){
-		        $render_data['style'] .= $params['style'];
-		    } */
-		    
-		    if($asset->isImage()){
+            if($asset->isImage()){
 		        
 		        if(!$render_data['width']){
                     $render_data['width'] = $asset->getWidth();
@@ -577,7 +586,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     $attachments = $asset->getTextFragment()->getAttachmentsAsArrays();
                     
                     // If draft, check that a temporary preview copy has been created, and creat it if not
-                    if($this->draft_mode){
+                    if($this->getDraftMode()){
                         if($asset->getTextFragment()->ensurePreviewFileExists()){
                             $child = $this->startChildProcess($render_process_id);
                 	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
@@ -609,7 +618,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }
             }
             
-            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage" && $path == 'none'){
 			    
 			    if(isset($asset_type_info['editable']) && $asset_type_info['editable'] && $asset_type_info['editable'] != 'false'){
 			        $edit_link .= "<a title=\"Click to edit file: ".$asset->getUrl()." (".$asset->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."assets/editAsset?asset_id=".$asset->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
@@ -656,60 +665,40 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         
                             $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
                             
-                            // echo $render_template;
-                            
-                            
-                        
                             if(is_file($render_template)){
                     
-                                if($this->draft_mode){
+                                if($this->getDraftMode()){
                                     $value = $property->getData()->getDraftContent();
                                 }else{
                                     $value = $property->getData()->getContent();
                                 }
                     
-                                // print_r($property->getData());
-                    
-                                $render_data = array();
-                    
-                                //this is a hack for image attributes
-                                if($params['style']){
-                                    $render_data['style'] = $params['style'];
-                                }
-                    
-                                if($params['id']){
-                                    $render_data['id'] = $params['id'];
-                                }
-                    
-                                if($params['class']){
-                                    $render_data['class'] = $params['class'];
-                                }
-                    
-                                // It's more direct to do this, though not quite so extensible. We can update this later.
+                                // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
                                 if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
-                                    $this->renderAsset(array('id'=>$value, 'render_data'=>$render_data), $path);
+                                    if(SmartestStringHelper::toRealBool($value)){
+                                        return $this->renderAssetById($value, $params, $path);
+                                    }
                                 }else{
-                                    $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('raw_value'=>$value, 'render_data'=>$render_data)));
+                                    $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
                                 }
                         
                             }else{
-                                return "Error: ".$render_template." is missing.";
+                                if($this->getDraftMode()){
+                                    return "<br />ERROR: Render template '".$render_template."' is missing.";
+                                }
                             }
                             
-                        
-                            // return "Found Property: ".$requested_property_name;
-                        
                         }else{
-                            return "Unknown Property: ".$requested_property_name;
+                            return "<br />ERROR: Unknown Property: ".$requested_property_name;
                         }
                     }else{
-                        if($this->draft_mode){
-                            return "Error: Page Item failed to build.";
+                        if($this->getDraftMode()){
+                            return "<br />ERROR: Page Item failed to build.";
                         }
                     }
                 }else{
-                    if($this->draft_mode){
-                        return "Notice: {property} tag on static page being ignored.";
+                    if($this->getDraftMode()){
+                        return "<br />NOTICE: &lt;?sm:property:&gt; tag on static page being ignored.";
                     }
                 }
             
@@ -728,7 +717,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         
                         if(is_file($render_template)){
                         
-                            if($this->draft_mode){
+                            if($this->getDraftMode()){
                                 $value = $property->getData()->getDraftContent();
                             }else{
                                 $value = $property->getData()->getContent();
@@ -736,32 +725,32 @@ class SmartestWebPageBuilder extends SmartestEngine{
                             
                             // It's more direct to do this, though not quite so extensible. We can update this later.
                             if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
-                                $this->renderAsset(array('id'=>$value, 'render_data'=>$render_data), $path);
+                                if(SmartestStringHelper::toRealBool($value)){
+                                    return $this->renderAssetById($value, $params, $path);
+                                }
                             }else{
-                                $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('raw_value'=>$value, 'render_data'=>$render_data)));
+                                $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
                             }
                             
-                            // $this->_smarty_include(array('smarty_include_tpl_file'=>$render_template, 'smarty_include_vars'=>array('raw_value'=>$value)));
-                        
                         }else{
-                            return "Error: ".$render_template." is missing.";
+                            return "<br />ERROR: Render template '".$render_template."' is missing.";
                         }
                         
                     
                     }else{
-                        return "Unknown Property: ".$requested_property_name;
+                        return "<br />ERROR: Unknown Property: ".$requested_property_name;
                     }
                 }else{
-                    if($this->draft_mode){
-                        return "Error: repeated item is not an object.";
+                    if($this->getDraftMode()){
+                        return "<br />ERROR: Repeated item is not an object.";
                     }
                 }
                 
             }
             
         }else{
-            if($this->draft_mode && $this->_tpl_vars['this']['principal_item']){
-                return "Error: {property} tag missing required 'name' attribute";
+            if($this->getDraftMode() && $this->_tpl_vars['this']['principal_item']){
+                return "<br />ERROR: &lt;?sm:property:&gt; tag missing required 'name' attribute";
             }
         }
     }
@@ -771,7 +760,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    $pagesTree = $this->page->getSite()->getPagesTree(true);
 	    $this->_tpl_vars['site_tree'] = $pagesTree;
 	    $file = SM_ROOT_DIR."Presentation/Special/sitemap.tpl";
-	    $this->_smarty_include(array('smarty_include_tpl_file'=>$file, 'smarty_include_vars'=>array()));
+	    $this->run($file, array());
+	    // $this->_smarty_include(array('smarty_include_tpl_file'=>$file, 'smarty_include_vars'=>array()));
 
 	}
 	
@@ -790,7 +780,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
 		
 		if($result['header']!="" && is_file(SM_ROOT_DIR."Presentation/ListItems/".$result['header'])){
 			$header = "ListItems/".$result['header'];
-			$this->_smarty_include(array('smarty_include_tpl_file'=>$header, 'smarty_include_vars'=>array()));
+			// $this->_smarty_include(array('smarty_include_tpl_file'=>$header, 'smarty_include_vars'=>array()));
+			$this->run($header, array());
 		}
 		
 		if (is_array($items)){ 
@@ -800,24 +791,20 @@ class SmartestWebPageBuilder extends SmartestEngine{
 				$properties=$item['property_details'];	
 				$this->assign('name', $item_name);
 				$this->assign('properties', $properties);
-				$this->_smarty_include(array('smarty_include_tpl_file'=>$tpl_filename, 'smarty_include_vars'=>array()));
+				// $this->_smarty_include(array('smarty_include_tpl_file'=>$tpl_filename, 'smarty_include_vars'=>array()));
+				$this->run($tpl_filename, array());
 			}
 			
 		}
 		
 		if($result['footer']!="" && is_file(SM_ROOT_DIR."Presentation/ListItems/".$result['footer'])){
 			$footer="ListItems/".$result['footer'];
-			$this->_smarty_include(array('smarty_include_tpl_file'=>$footer, 'smarty_include_vars'=>array()));
+			// $this->_smarty_include(array('smarty_include_tpl_file'=>$footer, 'smarty_include_vars'=>array()));
+			$this->run($footer, array());
 		}
 		
 		return $result['html'];
 	}
-	
-	/* public function getItemDetails($params){
-		$set_name = $params['from'];
-		$items = $this->templateHelper->getItemDetails($set_name);
- 		return $items;
-	} */
 	
 	public function getLink($params){
 		return $this->templateHelper->getLink($params);
