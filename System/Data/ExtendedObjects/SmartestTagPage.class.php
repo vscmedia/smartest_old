@@ -8,13 +8,14 @@ class SmartestTagPage extends SmartestPage{
         $this->_tag = $tag;
     }
     
-    /* public function getTitle(){
+    public function getTitle(){
         if(is_object($this->_tag)){
-            return $this->_properties['title'].' | '.$this->_tag->getLabel();
+            // return $this->_properties['title'].' | '.$this->_tag->getLabel();
+            return "Pages Tagged With '".$this->_tag->getLabel()."'";
         }else{
             return $this->_properties['title'];
         }
-    } */
+    }
     
     public function getDefaultUrl(){
         return 'tags/'.$this->_tag->getName().'.html';
@@ -33,6 +34,7 @@ class SmartestTagPage extends SmartestPage{
         $data = parent::__toArray();
         // $data['tagged_objects'] = $this->_tag->getObjectsOnSiteAsArrays($this->getSite()->getId(), true);
         // $data['formatted_title'] = "";
+        $data['title'] = $this->getTitle();
         $data['tag'] = $this->_tag->__toArray();
         return $data;
     }

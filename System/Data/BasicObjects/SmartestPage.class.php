@@ -915,6 +915,14 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
+	public function getParentSite(){
+	    $sql = "SELECT * FROM Sites WHERE site_id='".$this->getSiteId()."'";
+        $result = $this->database->queryToArray($sql);
+        $s = new SmartestSite;
+        $s->hydrate($result[0]);
+        return $s;
+	}
+	
 	public function getFormattedTitle(){
 		
 		$format = $this->getSite()->getTitleFormat();

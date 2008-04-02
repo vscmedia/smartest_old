@@ -397,81 +397,99 @@ class Pages extends SmartestApplication{
 		
 		$content = array();
 		
-		$page_id = $this->manager->getPageIdFromPageWebId($get['page_id']);
+		// $page_id = $this->manager->getPageIdFromPageWebId($get['page_id']);
 		
 		$page_webid = $get['page_id'];
 		$page = new SmartestPage;
 		
 		if($page->hydrate($page_webid)){
 		    
+		    // $page_id = $page->getId();
+		    
 		    $this->send($page->__toArray(), 'page');
 		    
-		    if($page->getType() == 'NORMAL'){
-		        
-		        $this->send(true, 'show_iframe');
-		        $this->send(str_replace($_SERVER['HTTP_HOST'], $page->getSite()->getDomain(), SM_CONTROLLER_DOMAIN), 'site_domain');
-		        
-		    }else if($page->getType() == 'ITEMCLASS'){
-		        
-		        if($get['item_id'] && is_numeric($get['item_id'])){
-		            
-		            $item_id = $get['item_id'];
-		            
-		            $item = SmartestCmsItem::retrieveByPk($item_id);
-		            
-		            // var_dump($item);
-		            
-		            // print_r($item);
-		            
-		            if(is_object($item)){
-		                $this->send($item->__toArray(), 'item');
-		                $this->send(true, 'show_iframe');
-		                $this->send(str_replace($_SERVER['HTTP_HOST'], $page->getSite()->getDomain(), SM_CONTROLLER_DOMAIN), 'site_domain');
-		                // var_dump($item);
-		            }else{
-		                
-		                $this->send(false, 'show_iframe');
-		                
-		                $set = new SmartestCmsItemSet;
-		                
-		                if($set->hydrate($page->getDatasetId())){
-		                    
-		                    $items = $set->getMembersAsArrays(true);
-		                    $this->send($items, 'set_members');
-		                    $this->addUserMessage("Please choose an item to preview this page.");
-		                    $this->send(true, 'show_item_list');
-		                
-	                    }   
-		            }
-		            
-	            }else{
-	                
-	                $this->send(false, 'show_iframe');
-	                
-	                /* $set = new SmartestCmsItemSet;
-	                
-	                if($set->hydrate($page->getDatasetId())){
-	                    
-	                    $items = $set->getMembersAsArrays(true);
-	                    $this->send($items, 'set_members');
-	                    $this->addUserMessage("Please choose an item to preview this page.");
-	                    $this->send(true, 'show_item_list');
-	                
-	                } */
-	                
-	                $this->send(true, 'show_item_list');
-	                
-	                $model = new SmartestModel;
-	                
-	                if($model->hydrate($page->getDatasetId())){
-	                    $items  = $model->getSimpleItemsAsArrays();
-	                    $this->send($items, 'items');
-	                    $this->send($model->__toArray(), 'model');
-	                }else{
-	                    $this->send(array(), 'items');
-	                }
-	            }
+		    // $domain = str_replace($_SERVER['HTTP_HOST'], $page->getSite()->getDomain(), SM_CONTROLLER_DOMAIN);
+		    // echo $domain;
+		    $domain = 'http://'.$page->getParentSite()->getDomain();
+		    
+		    if(!SmartestStringHelper::endsWith('/', $domain)){
+		        $domain .= '/';
 		    }
+		    
+		    if($page->getDraftTemplate() && is_file(SM_ROOT_DIR.'Presentation/Masters/'.$page->getDraftTemplate())){
+		    
+		        if($page->getType() == 'NORMAL'){
+		        
+    		        $this->send(true, 'show_iframe');
+    		        $this->send($domain, 'site_domain');
+		        
+    		    }else if($page->getType() == 'ITEMCLASS'){
+		        
+    		        if($get['item_id'] && is_numeric($get['item_id'])){
+		            
+    		            $item_id = $get['item_id'];
+		            
+    		            $item = SmartestCmsItem::retrieveByPk($item_id);
+		            
+    		            // var_dump($item);
+		            
+    		            // print_r($item);
+		            
+    		            if(is_object($item)){
+    		                $this->send($item->__toArray(), 'item');
+    		                $this->send(true, 'show_iframe');
+    		                $this->send($domain, 'site_domain');
+    		                // var_dump($item);
+    		            }else{
+		                
+    		                $this->send(false, 'show_iframe');
+		                
+    		                $set = new SmartestCmsItemSet;
+		                
+    		                if($set->hydrate($page->getDatasetId())){
+		                    
+    		                    $items = $set->getMembersAsArrays(true);
+    		                    $this->send($items, 'set_members');
+    		                    $this->addUserMessage("Please choose an item to preview this page.");
+    		                    $this->send(true, 'show_item_list');
+		                
+    	                    }   
+    		            }
+		            
+    	            }else{
+	                
+    	                $this->send(false, 'show_iframe');
+	                
+    	                /* $set = new SmartestCmsItemSet;
+	                
+    	                if($set->hydrate($page->getDatasetId())){
+	                    
+    	                    $items = $set->getMembersAsArrays(true);
+    	                    $this->send($items, 'set_members');
+    	                    $this->addUserMessage("Please choose an item to preview this page.");
+    	                    $this->send(true, 'show_item_list');
+	                
+    	                } */
+	                
+    	                $this->send(true, 'show_item_list');
+	                
+    	                $model = new SmartestModel;
+	                
+    	                if($model->hydrate($page->getDatasetId())){
+    	                    $items  = $model->getSimpleItemsAsArrays();
+    	                    $this->send($items, 'items');
+    	                    $this->send($model->__toArray(), 'model');
+    	                }else{
+    	                    $this->send(array(), 'items');
+    	                }
+    	            }
+    		    }    	    
+    	    }else{
+    	        
+    	        $this->send(false, 'show_iframe');
+    	        $this->addUserMessage("The preview of this pages cannot be displayed because no master template is chosen.");
+    	        
+    	    }
 		    
 		    if($this->getUser()->hasToken('approve_page_changes') && $page->getChangesApproved() != 1){
     	        $this->send(true, 'show_approve_button');
