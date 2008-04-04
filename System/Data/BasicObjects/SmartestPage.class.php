@@ -693,15 +693,15 @@ class SmartestPage extends SmartestDataObject{
 	    // print_r($this->getSite());
 	    // echo 'tpid:'.$this->getSite()->getTagPageId();
 	    // echo 'id:'.$this->getId();
-	    return ($this->getSite()->getTagPageId() == $this->getId());
+	    return ($this->getParentSite()->getTagPageId() == $this->getId());
 	}
 	
 	public function isSearchPage(){
-	    return ($this->getSite()->getSearchPageId() == $this->getId());
+	    return ($this->getParentSite()->getSearchPageId() == $this->getId());
 	}
 	
 	public function isHomePage(){
-	    return ($this->getSite()->getTopPageId() == $this->getId());
+	    return ($this->getParentSite()->getTopPageId() == $this->getId());
 	}
 	
 	public function touch(){
@@ -759,7 +759,7 @@ class SmartestPage extends SmartestDataObject{
 		$site_id = $this->getSiteId();
 		
 		// FIRST GET A LIST OF ALL PAGES
-		$all_pages = $this->getSite()->getPagesList(true);
+		$all_pages = $this->getParentSite()->getPagesList(true);
 		
 		// print_r($all_pages);
 		
@@ -887,7 +887,7 @@ class SmartestPage extends SmartestDataObject{
 	
 	function getNavigationStructure($draft_mode=false){
 		
-		$home_page_id = $this->getSite()->getTopPageId();
+		$home_page_id = $this->getParentSite()->getTopPageId();
 		$home_page = new SmartestPage;
 		$home_page->hydrate($home_page_id);
 		
@@ -905,16 +905,14 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function getPageBreadCrumbs(){
 		
-		$home_page_id = $this->getSite()->getHomePage()->getId();
+		$home_page = $this->getParentSite()->getHomePage();
 		$breadcrumbs = array();
 		
 		$limit = 20;
 		
 		$page_id = $this->getId();
 		
-		while($home_page_id != $page_id && $limit > 0){
-			// $page = $this->getPageById($page_id);
-			// echo $home_page_id.'/'.$page_id.'<br />';
+		while($home_page->getId() != $page_id && $limit > 0){
 			$page = new SmartestPage;
 			$page->hydrate($page_id);
 			$breadcrumbs[] = $page->__toArray();
@@ -922,7 +920,7 @@ class SmartestPage extends SmartestDataObject{
 			$limit--;
 		}
 		
-		$breadcrumbs[] = $this->getSite()->getHomePage()->__toArray();
+		$breadcrumbs[] = $home_page->__toArray();
 		
 		krsort($breadcrumbs);
 		$result = array_values($breadcrumbs);
@@ -955,7 +953,7 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function getFormattedTitle(){
 		
-		$format = $this->getSite()->getTitleFormat();
+		$format = $this->getParentSite()->getTitleFormat();
 		
 		if($this->isTagPage() && is_object($this->_tag)){
 		    $half_way = str_replace('$page', $this->getTitle().' | '.$this->_tag->getLabel(), $format);
@@ -963,7 +961,7 @@ class SmartestPage extends SmartestDataObject{
 	        $half_way = str_replace('$page', $this->getTitle(), $format);
 	    }
 	    
-	    $title = str_replace('$site', $this->getSite()->getName(), $half_way);
+	    $title = str_replace('$site', $this->getParentSite()->getName(), $half_way);
 	    
 	    /* if($this->isTagPage() && is_object($this->_tag())){
 		    $title .= ' | '.$this->_tag->getLabel();

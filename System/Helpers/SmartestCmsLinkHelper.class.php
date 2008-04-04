@@ -1,6 +1,6 @@
 <?php
 
-SmartestHelper::register('Download');
+SmartestHelper::register('CmsLink');
 
 class SmartestCmsLinkHelper extends SmartestHelper{
     
@@ -16,6 +16,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     protected $_image_file = null;
     protected $_tag_name = null;
     protected $_download = null;
+    protected $_page_not_found = false;
     protected $_external_destination = null;
     protected $database;
     
@@ -62,10 +63,14 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                         $this->_page->hydrate($result[0]);
                         // success!
                     }else{
+                        $this->_page_not_found = true;
+                        $this->_error = true;
+                    }
+                    /* else{
                         $this->_error_message = 'Page not found';
                         $this->_error = true;
                         return false;
-                    }
+                    } */
                     
                 }else{
                     $this->_error_message = 'Link format invalid';
@@ -127,9 +132,11 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                         }
                         
                     }else{
-                        $this->_error_message = 'Page not found';
+                        // $this->_error_message = 'Page not found';
+                        // $this->_error = true;
+                        // return false;
                         $this->_error = true;
-                        return false;
+                        $this->_page_not_found = true;
                     }
                     
                 }else{
@@ -272,13 +279,21 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             case "page":
             
             if($this->_preview_mode){
-                return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid();
+                if($this->_page_not_found){
+                    return '#';
+                }else{
+                    return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid();
+                }
             }else{
                 if($this->_page->getIsPublished() == 'TRUE'){
-                    if($this->shouldUseId()){
-                        return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid();
+                    if($this->_page_not_found){
+                        return '#';
                     }else{
-                        return SM_CONTROLLER_DOMAIN.$this->_page->getDefaultUrl();
+                        if($this->shouldUseId()){
+                            return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid();
+                        }else{
+                            return SM_CONTROLLER_DOMAIN.$this->_page->getDefaultUrl();
+                        }
                     }
                 }else{
                     return '#';
@@ -349,7 +364,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     
     public function getMarkup(){
         
-        if($this->_error){
+        if($this->_error && !$this->_page_not_found){
             if($this->_draft_mode){
                 return '<strong>'.$this->_error_message.'</strong>';
             }else{
@@ -366,7 +381,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                 
                 // which of the params should be converted to html attributes
                 // Note the target and href attributes are dealt with separately below
-                $allowed_attributes = array('title', 'id', 'name', 'style', 'onclick', 'ondblclick', 'onmouseover', 'onmouseout');
+                $allowed_attributes = array('title', 'id', 'name', 'style', 'onclick', 'ondblclick', 'onmouseover', 'onmouseout', 'class');
                 
                 $markup = '<a href="'.$this->getUrl().'"';
                 
