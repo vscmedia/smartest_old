@@ -20,7 +20,10 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     protected $database;
     
     public function __construct($page='', $params='', $draft=false, $preview=false){
-        $this->_params = $params;
+        
+        if(is_array($params)){
+            $this->_params = $params;
+        }
         
         if(is_object($page)){
             $this->_host_page = $page;
@@ -357,14 +360,28 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             // put html together
             if($this->shouldOmitAnchorTag()){
                 
-                $markup = '<!--cold link would have been to:'.$this->getUrl().'-->'.$this->getContent();
+                $markup = '<!--cold link: would have been linked to:'.$this->getUrl().'-->'.$this->getContent();
                 
             }else{
                 
+                // which of the params should be converted to html attributes
+                // Note the target and href attributes are dealt with separately below
+                $allowed_attributes = array('title', 'id', 'name', 'style', 'onclick', 'ondblclick', 'onmouseover', 'onmouseout');
+                
                 $markup = '<a href="'.$this->getUrl().'"';
                 
-                if($this->_preview_mode){
+                foreach($this->_params as $attribute=>$value){
+                    if(in_array($attribute, $allowed_attributes)){
+                        $markup .=' '.$attribute.'="'.$value.'"';
+                    }
+                }
+                
+                if($this->_preview_mode && in_array($this->_type, array('page', 'metapage'))){
                     $markup .=' target="_top"';
+                }else{
+                    if(isset($this->_params['target'])){
+                        $markup .=' target="'.$this->_params['target'].'"';
+                    }
                 }
                 
                 $markup .='>'.$this->getContent().'</a>';

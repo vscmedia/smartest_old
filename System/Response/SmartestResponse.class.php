@@ -11,7 +11,6 @@ mb_internal_encoding("UTF-8");
 // These two files can't be included using the include optimisation because it depends on their already having been included
 
 define('SM_INFO_VERSION_NUMBER', '0.3.5a');
-define('SM_START_TIME', microtime(true));
 
 require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
 require SM_ROOT_DIR.'System/Helpers/SmartestHelper.class.php';
@@ -70,6 +69,8 @@ SmartestFileSystemHelper::include_group(
 	'Library/API/SmartestUser.class.php'
 
 );
+
+define('SM_START_TIME', microtime(true));
 
 class SmartestResponse{
 	
@@ -558,7 +559,7 @@ class SmartestResponse{
 	public function isWebsitePage(){
 	    
 	    // echo $this->controller->getMethodName();
-	    return in_array($this->controller->getMethodName(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage'));
+	    return in_array($this->controller->getMethodName(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage', 'searchDomain'));
 	    
 	}
 	

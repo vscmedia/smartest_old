@@ -10,6 +10,7 @@ class SmartestPage extends SmartestDataObject{
 	protected $_parent_page = null;
 	protected $_urls = array();
 	protected $_fields = array();
+	protected $_new_urls = array();
 	protected $displayPagesIndex = 0;
 	protected $displayPages = array();
 	protected $_site;
@@ -74,13 +75,11 @@ class SmartestPage extends SmartestDataObject{
 		parent::save();
 		
 		// Add URL
-		if(!$this->_save_url){
-			// TODO: Figure out how to handle the multiple URLS. which one is geing saved? See Bug #75
-		}else{
-			// for new pages it's not an issue
-			$sql = "INSERT INTO PageUrls (pageurl_page_id, pageurl_url) VALUES ('".$this->getId()."', '".$this->getUrl()."')";
-			$this->database->rawQuery($sql);
-			$this->_save_url = false;
+		foreach($this->_new_urls as $url_string){
+		    $url = new SmartestPageUrl;
+    	    $url->setUrl($url_string);
+    	    $url->setPageId($this->getId());
+    	    $url->save();
 		}
 		
 		// Add definitions from preset, if any
@@ -108,16 +107,11 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function addUrl($url_string){
-	    $url = new SmartestPageUrl;
-	    $url->setUrl($url_string);
-	    $url->setPageId($this->getId());
-	    $url->save();
+	    if(!in_array($url_string, $this->_new_urls)){
+	        $this->_new_urls[] = $url_string;
+	    }
 	}
 	
-	public function getAssociatedObjects(){
-	    // $sql = "SELECT pageitemlookup_item_id FROM PagesItemsLookup WHERE pageitemlookup_page_id=".$this->getId()."";
-	}
-		
 	public function publish(){
 	    
 	    // update database defs
@@ -195,45 +189,81 @@ class SmartestPage extends SmartestDataObject{
 		
 	}
 	
-	public function moveUp(){
-	    $oi = (int) $this->getOrderIndex();
-	    if($oi > 0){
-	        if($pp = $this->getPreviousPage()){
-	            if($pp->getOrderIndex() == $oi){
-	                $this->setOrderIndex($oi - 1);
-	                $this->save();
-                }else{
-	                $this->setOrderIndex($pp->getOrderIndex());
-	                $this->save();
-	                $pp->setOrderIndex($oi);
-	                $pp->save();
-	            }
+	public function getNextChildOrderIndex(){
+	    $children = $this->getPageChildren();
+	    if(count($children)){
+	        $bottom_child_array = end($children);
+	        $bottom_child = new SmartestPage;
+	        $bottom_child->hydrate($bottom_child_array);
+	        $oi = $bottom_child->getOrderIndex();
+	        $index = (int) $oi;
+	        return $index+1;
+        }else{
+            return 0;
+        }
+	}
+	
+	public function fixChildPageOrder($recursive=false){
+	    
+	    $children = $this->getPageChildren(true);
+	    
+	    if(count($children)){
+	        
+	        $order_index = 0;
+	        
+	        foreach($children as $child_array){
+	            
+	            $p = new SmartestPage;
+	            $p->hydrate($child_array);
+	            
+	            if(!SmartestStringHelper::toRealBool($p->getDeleted())){
+	            
+	                $p->setOrderIndex($order_index);
+	                $p->save();
+	                
+	                $order_index++;
+	                
+	                if($recursive){
+	                    $p->fixChildPageOrder();
+	                }
+                }
 	        }
-	    }else{
-	        if($pp = $this->getPreviousPage()){
-	            $pp->setOrderIndex(1);
-	            $pp->save();
-            }
+	    }
+	}
+	
+	public function moveUp(){
+	    
+	    $this->getParentPage()->fixChildPageOrder();
+	    
+	    $order_index = $this->getOrderIndex();
+	    $order_index = (int) $order_index;
+	    
+	    if($pp = $this->getPreviousPage()){
+	        $this->setOrderIndex($pp->getOrderIndex());
+            $this->save();
+            $pp->setOrderIndex($order_index);
+            $pp->save();
 	    }
 	}
 	
 	public function moveDown(){
-	    $oi = $this->getOrderIndex();
+	    
+	    $this->getParentPage()->fixChildPageOrder();
+	    
+	    $order_index = $this->getOrderIndex();
+	    $order_index = (int) $order_index;
+	    
 	    if($np = $this->getNextPage()){
-	        if($np->getOrderIndex() == $oi){
-	            $this->setOrderIndex($oi + 1);
-	            $this->save();
-            }else{
-	            $this->setOrderIndex($np->getOrderIndex());
-	            $this->save();
-	            $np->setOrderIndex($oi);
-	            $np->save();
-	        }
+	        $this->setOrderIndex($np->getOrderIndex());
+            $this->save();
+            $np->setOrderIndex($order_index);
+            $np->save();
 	    }
+	    
 	}
 	
 	public function getPreviousPage(){
-	    $sql  = "SELECT * FROM Pages WHERE page_order_index < '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' ORDER BY page_order_index DESC LIMIT 1";
+	    $sql  = "SELECT * FROM Pages WHERE page_order_index < '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' AND page_id !='".$this->getId()."' AND page_deleted !='TRUE' ORDER BY page_order_index DESC LIMIT 1";
 	    // echo $sql;
 	    $result = $this->database->queryToArray($sql);
 	    if(count($result)){
@@ -247,7 +277,7 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function getNextPage(){
-	    $sql  = "SELECT * FROM Pages WHERE page_order_index > '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' ORDER BY page_order_index ASC LIMIT 1";
+	    $sql  = "SELECT * FROM Pages WHERE page_order_index > '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' AND page_id !='".$this->getId()."' AND page_deleted !='TRUE' ORDER BY page_order_index ASC LIMIT 1";
 	    $result = $this->database->queryToArray($sql);
 	    if(count($result)){
 	        $np = $result[0];

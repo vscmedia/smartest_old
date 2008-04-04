@@ -15,7 +15,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    $this->_context = SM_CONTEXT_CONTENT_PAGE;
 	    
 	    $this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/WebPageBuilder/";
-	    $this->left_delimiter = '<?sm:';
+	    $this->left_delimiter = '<'.'?sm:';
 		$this->right_delimiter = ':?'.'>';
 	    
 	}
@@ -30,6 +30,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function setPageRenderingData($data){
         $this->_page_rendering_data = &$data;
+        $this->_tpl_vars['this'] = $this->_page_rendering_data;
         $this->_page_rendering_data_retrieved = true;
     }
     
@@ -43,6 +44,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function startChildProcess($pid, $type=''){
         
+        $pid = SmartestStringHelper::toVarName($pid);
+        
         if($this->_page_rendering_data_retrieved){
         
 	        $cp = parent::startChildProcess($pid);
@@ -54,12 +57,19 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         }
 	}
+	
+	public function raiseError($error_msg='Unknown Template Error'){
+	    if($this->getDraftMode()){
+	        $this->assign('_error_text', $error_msg);
+	        $error_markup = $this->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/markup_error.tpl");
+	        return $error_markup;
+        }
+	}
     
     public function renderPage($page, $draft_mode=false){
 	    
 	    $this->page = $page;
 	    $this->setDraftMode($draft_mode);
-	    // $this->_page_rendering_data = $this->page->fetchRenderingData($draft_mode);
 	    // $this->_page_rendering_data_retrieved = true;
 	    $this->setPageRenderingData($this->page->fetchRenderingData($draft_mode));
 	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
@@ -114,9 +124,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         }else{
             
-            if($this->getDraftMode()){
-                return "<br />ERROR: Container tag can only be used in page context.";
-            }
+            return $this->raiseError('Container tag can only be used in page context.');
             
         }
         
@@ -138,9 +146,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             }
         }
         
-        // $requested_file = SM_ROOT_DIR.'Presentation/Layouts/'.$name;
-	    
-	    if($file_found){
+        if($file_found){
 	        $render_process_id = SmartestStringHelper::toVarName('template_'.SmartestStringHelper::removeDotSuffix($requested_file).'_'.substr(microtime(true), -6));
 	        $child = $this->startChildProcess($render_process_id);
 	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
@@ -148,9 +154,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	        $this->killChildProcess($child->getProcessId());
 	        return $content;
         }else{
-            if($this->getDraftMode()){
-                return '<br />ERROR: Template \''.$requested_file.'\' not found';
-            }
+            return $this->raiseError('Template \''.$requested_file.'\' not found');
         }
         
     }
@@ -213,7 +217,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 
 	        }else{
 	            // some sort of error? unsupported type.
-	            return "<br />ERROR: Placeholder type '".$placeholder->getType()."' is unsupported";
+	            return $this->raiseError("Placeholder type '".$placeholder->getType()."' is unsupported");
+	            
 	        }
             
             // $html = $this->renderAsset(array('id'=>$asset_id, 'style'=>$style));
@@ -273,16 +278,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         // asset tag exists, but isn't defined.
                     }
                 }else{
-                    if($this->getDraftMode()){
-                        echo '<br />ERROR: Attachment \''.$name.'\' does not exist.';
-                    }
+                    echo $this->raiseError('Attachment \''.$name.'\' does not exist.');
                 }
             
             }else{
                 
-                if($this->getDraftMode()){
-                    echo '<br />ERROR: Attachment tags must be used only in text assets.';
-                }
+                echo $this->raiseError('Attachment tags must be used only in text files.');
                 
             }
 	        
@@ -310,9 +311,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             }else{
                 
-                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-                    return '<br />NOTICE: field \''.$field_name.'\' does not exist on this site.';
-                }
+                return $this->raiseError('Field \''.$field_name.'\' does not exist on this site.');
                 
             }
             
@@ -534,15 +533,15 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 return $this->_renderAssetObject($asset, $params, $render_data, $path);
                 
             }else{
-                if($this->getDraftMode()){
-                    return "<br />ERROR: No asset could with ID or Name: ".$asset_id;
-                }
+                
+                return $this->raiseError("No asset found with ID or Name: ".$asset_id);
+                
             }
 
         }else{
-            if($this->getDraftMode()){
-                return "<br />ERROR: Could not render asset. Neither of attributes 'id' and 'name' are properly defined.";
-            }
+            
+            return $this->raiseError("Could not render asset. Neither of attributes 'id' and 'name' are properly defined.");
+            
         }
     }
     
@@ -631,7 +630,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 		    echo $edit_link;
             
         }else{
-            echo "<br />ERROR: Render template '".$render_template."' not found.";
+            echo $this->raiseError("Render template '".$render_template."' not found.");
         }
         
     }
@@ -683,23 +682,19 @@ class SmartestWebPageBuilder extends SmartestEngine{
                                 }
                         
                             }else{
-                                if($this->getDraftMode()){
-                                    return "<br />ERROR: Render template '".$render_template."' is missing.";
-                                }
+                                return $this->raiseError("Render template '".$render_template."' is missing.");
                             }
                             
                         }else{
-                            return "<br />ERROR: Unknown Property: ".$requested_property_name;
+                            return $this->raiseError("Unknown Property: ".$requested_property_name);
                         }
                     }else{
-                        if($this->getDraftMode()){
-                            return "<br />ERROR: Page Item failed to build.";
-                        }
+                        return $this->raiseError("Page Item failed to build.");
                     }
                 }else{
-                    if($this->getDraftMode()){
-                        return "<br />NOTICE: &lt;?sm:property:&gt; tag on static page being ignored.";
-                    }
+                    
+                    return $this->raiseError("&lt;?sm:property:&gt; tag used on static page.");
+                    
                 }
             
             // for rendering the properties of an item in a list
@@ -733,24 +728,25 @@ class SmartestWebPageBuilder extends SmartestEngine{
                             }
                             
                         }else{
-                            return "<br />ERROR: Render template '".$render_template."' is missing.";
+                            return $this->raiseError("Render template '".$render_template."' is missing.");
                         }
                         
                     
                     }else{
-                        return "<br />ERROR: Unknown Property: ".$requested_property_name;
+                        return $this->raiseError("Unknown Property: ".$requested_property_name.".");
                     }
+                    
                 }else{
-                    if($this->getDraftMode()){
-                        return "<br />ERROR: Repeated item is not an object.";
-                    }
+                    
+                    return $this->raiseError("Repeated item is not an object.");
+                    
                 }
                 
             }
             
         }else{
-            if($this->getDraftMode() && $this->_tpl_vars['this']['principal_item']){
-                return "<br />ERROR: &lt;?sm:property:&gt; tag missing required 'name' attribute";
+            if($this->_tpl_vars['this']['principal_item']){
+                return $this->raiseError("&lt;?sm:property:&gt; tag missing required 'name' attribute.");
             }
         }
     }
@@ -763,6 +759,28 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    $this->run($file, array());
 	    // $this->_smarty_include(array('smarty_include_tpl_file'=>$file, 'smarty_include_vars'=>array()));
 
+	}
+	
+	public function renderGoogleAnalyticsTags($params){
+	    if(isset($params['id'])){
+	        
+	        if(isset($params['legacy']) && SmartestStringHelper::toRealBool($params['legacy']) == false){
+	            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/google_analytics_legacy.tpl';
+            }else{
+                $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/google_analytics.tpl';
+            }
+            
+            $render_process_id = 'google_analytics_'.$params['id'];
+	        $child = $this->startChildProcess($render_process_id);
+	        $child->assign('analytics_id', $params['id']);
+	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
+	        $content = $child->fetch($file);
+	        $this->killChildProcess($child->getProcessId());
+	        return $content;
+	        
+	    }else{
+	        return $this->raiseError("Google Analytics ID not supplied.");
+	    }
 	}
 	
 	public function getListData($listname){

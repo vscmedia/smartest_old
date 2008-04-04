@@ -389,8 +389,6 @@ class Pages extends SmartestApplication{
 	
 	function preview($get){
 		
-		$this->setTitle('Page Preview');
-		
 		if(!isset($get['from'])){
 		    $this->setFormReturnUri();
 	    }
@@ -422,6 +420,7 @@ class Pages extends SmartestApplication{
 		        
     		        $this->send(true, 'show_iframe');
     		        $this->send($domain, 'site_domain');
+    		        $this->setTitle('Page Preview | '.$page->getTitle());
 		        
     		    }else if($page->getType() == 'ITEMCLASS'){
 		        
@@ -439,21 +438,34 @@ class Pages extends SmartestApplication{
     		                $this->send($item->__toArray(), 'item');
     		                $this->send(true, 'show_iframe');
     		                $this->send($domain, 'site_domain');
+    		                $this->setTitle('Meta-Page Preview | '.$item->getName());
     		                // var_dump($item);
     		            }else{
 		                
     		                $this->send(false, 'show_iframe');
 		                
-    		                $set = new SmartestCmsItemSet;
-		                
-    		                if($set->hydrate($page->getDatasetId())){
-		                    
-    		                    $items = $set->getMembersAsArrays(true);
-    		                    $this->send($items, 'set_members');
-    		                    $this->addUserMessage("Please choose an item to preview this page.");
-    		                    $this->send(true, 'show_item_list');
-		                
-    	                    }   
+    		                /* $set = new SmartestCmsItemSet;
+
+        	                if($set->hydrate($page->getDatasetId())){
+
+        	                    $items = $set->getMembersAsArrays(true);
+        	                    $this->send($items, 'set_members');
+        	                    $this->addUserMessage("Please choose an item to preview this page.");
+        	                    $this->send(true, 'show_item_list');
+
+        	                } */
+
+        	                $this->send(true, 'show_item_list');
+
+        	                $model = new SmartestModel;
+
+        	                if($model->hydrate($page->getDatasetId())){
+        	                    $items  = $model->getSimpleItemsAsArrays();
+        	                    $this->send($items, 'items');
+        	                    $this->send($model->__toArray(), 'model');
+        	                }else{
+        	                    $this->send(array(), 'items');
+        	                }   
     		            }
 		            
     	            }else{
@@ -779,8 +791,8 @@ class Pages extends SmartestApplication{
 			SmartestPersistentObject::get('__newPage')->setChangesApproved(0);
 			SmartestPersistentObject::get('__newPage')->setSearchField(htmlentities(strip_tags($post['page_search_field']), ENT_COMPAT, 'UTF-8'));
 			
-			if(strlen($post['page_url'])){
-			    SmartestPersistentObject::get('__newPage')->setUrl($post['page_url']); 
+			if(strlen($post['page_url']) && substr($post['page_url'], 0, 18) != 'website/renderPage'){
+			    SmartestPersistentObject::get('__newPage')->addUrl($post['page_url']); 
 			    $url = $post['page_url'];
 		    }else{
 		        
@@ -788,10 +800,10 @@ class Pages extends SmartestApplication{
 		            // $default_url = 'website/renderPageFromId?page_id='.SmartestPersistentObject::get('__newPage')->getWebId().'&item_id=:long_id';
 		            // SmartestPersistentObject::get('__newPage')->getWebId().'.html');
 	            }else{
-	                $default_url = SmartestPersistentObject::get('__newPage')->getWebId().'.html';
+	                // $default_url = SmartestPersistentObject::get('__newPage')->getWebId().'.html';
 	            }
 	            
-	            SmartestPersistentObject::get('__newPage')->setUrl($default_url);
+	            // SmartestPersistentObject::get('__newPage')->setUrl($default_url);
 	            
 		    } 
 			
@@ -900,9 +912,6 @@ class Pages extends SmartestApplication{
 		
 		$this->send($template, "_stage_template");
 		
-		// print_r($site_info);
- 		
-		
 		$this->setTitle("Create A New Page");
 		
  		
@@ -919,6 +928,7 @@ class Pages extends SmartestApplication{
 	            
 	            $page =& SmartestPersistentObject::get('__newPage');
 	            
+	            $page->setOrderIndex($page->getParentPage()->getNextChildOrderIndex());
 	            $page->setCreated(time());
 	            $page->save();
 	            
@@ -2075,6 +2085,7 @@ class Pages extends SmartestApplication{
 		    
 		    if($page->hydrate($post['page_id'])){
 		        $page->addUrl($post['page_url']);
+		        $page->save();
 		        $this->addUserMessageToNextRequest("The new URL was successully added.");
 		    }else{
 		        $this->addUserMessageToNextRequest("The page ID was not recognized.");

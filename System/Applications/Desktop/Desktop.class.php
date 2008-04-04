@@ -192,6 +192,7 @@ class Desktop extends SmartestApplication{
 	    $home_page->setWebid(SmartestStringHelper::random(32));
 	    $home_page->setSiteId($site->getId());
 	    $home_page->setCreatedbyUserid($this->getUser()->getId());
+	    $home_page->setOrderIndex(0);
 	    $home_page->save();
 	    $site->setTopPageId($home_page->getId());
 	    // $this->addUserMessage($home_page->getLastQuery());
@@ -203,6 +204,7 @@ class Desktop extends SmartestApplication{
 	    $error_page->setParent($home_page->getId());
 	    $error_page->setWebid(SmartestStringHelper::random(32));
 	    $error_page->setCreatedbyUserid($this->getUser()->getId());
+	    $error_page->setOrderIndex(1024);
 	    $error_page->save();
 	    $site->setErrorPageId($error_page->getId());
 	    // $this->addUserMessage($error_page->getLastQuery());
@@ -214,6 +216,7 @@ class Desktop extends SmartestApplication{
 	    $tag_page->setParent($home_page->getId());
 	    $tag_page->setWebid(SmartestStringHelper::random(32));
 	    $tag_page->setCreatedbyUserid($this->getUser()->getId());
+	    $tag_page->setOrderIndex(1022);
 	    $tag_page->save();
 	    // $this->addUserMessage($tag_page->getLastQuery());
 	    $site->setTagPageId($tag_page->getId());
@@ -225,6 +228,7 @@ class Desktop extends SmartestApplication{
 	    $search_page->setParent($home_page->getId());
 	    $search_page->setWebid(SmartestStringHelper::random(32));
 	    $search_page->setCreatedbyUserid($this->getUser()->getId());
+	    $tag_page->setOrderIndex(1023);
 	    $search_page->save();
 	    // $this->addUserMessage($search_page->getLastQuery());
 	    $site->setTagPageId($search_page->getId());

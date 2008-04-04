@@ -1,0 +1,1 @@
+<br /><b>WARNING</b>: <?sm:$_error_text:?>
