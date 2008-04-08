@@ -179,7 +179,23 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         $render_data['height'] = $asset->getHeight();
                     }
                     
-                    foreach($params as $key => $value){
+                    if($this->getDraftMode()){
+                        $rd = $placeholder->getDraftRenderData();
+                    }else{
+                        $rd = $placeholder->getLiveRenderData();
+                    }
+                    
+                    if($data = @unserialize($rd)){
+                        $external_render_data = $data;
+                    }else{
+                        $external_render_data = array();
+                    }
+                    
+                    foreach($external_render_data as $key => $value){
+                        $render_data[$key] = $value;
+                    }
+        	        
+        	        foreach($params as $key => $value){
                         if($key != 'name'){
     	                    if(isset($params[$key])){
             	                $render_data[$key] = $value;
@@ -190,26 +206,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
             	            }
         	            }
     	            }
-                    
-                    if($this->getDraftMode()){
-                        $rd = $placeholder->getDraftRenderData();
-                    }else{
-                        $rd = $placeholder->getLiveRenderData();
-                    }
-                    
-                    if($data = @unserialize($rd)){
-                        $external_render_data = $data;
-                    }else if($data = $placeholder->getDefaultAssetRenderData($this->getDraftMode())){
-                        $external_render_data = $data;
-                    }else{
-                        $external_render_data = array();
-                    }
-                    
-                    foreach($external_render_data as $key => $value){
-                        $render_data[$key] = $value;
-                    }
-        	        
-        	        
                     
                     $this->_renderAssetObject($asset, $params, $render_data);
                     
@@ -571,6 +567,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 if(!$render_data['height']){
                     $render_data['height'] = $asset->getHeight();
                 }
+            }
+            
+            if(isset($params['style']) && strlen($params['style'])){
+                $render_data['style'] = $params['style'];
             }
             
             if($path == 'file'){
