@@ -489,14 +489,41 @@ class PagesManager{
 		
     public function getTemplateAssetClasses($template_file_path, $page, $level=0, $version="draft"){
 		
-		$placeholderNames = $this->getTemplatePlaceholderNames($template_file_path);
-		
 		$i = 0;
 		$info = array();
-		
 		$site_id = $page->getSiteId();
-		
 		$version = ($version == 'live') ? 'live' : 'draft';
+		
+		$fieldNames = $this->getTemplateFieldNames($template_file_path);
+			
+		if(is_array($fieldNames)){
+			
+			foreach($fieldNames as $fieldName){
+                
+                $field = new SmartestPageField;
+                // $field->hydrateBy('name', $fieldName);
+                // a simple 'hydrateBy' did not take into account that fields are not cross-site and multiple fields may exist of the same name (one for each site)
+                $correct_sql = "SELECT * FROM PageProperties WHERE pageproperty_name='".$fieldName."' AND pageproperty_site_id='".$site_id."'";
+                $result = $this->database->queryToArray($correct_sql);
+                $field->hydrate($result[0]);
+                
+				// $info[$i]['info']['exists'] = $this->getFieldExists($fieldName);
+				$info[$i]['info']['exists'] = (count($result) > 0) ? 'true' : 'false';
+				$info[$i]['info']['defined'] = $this->getFieldDefinedOnPage($fieldName, $page->getId());
+				$info[$i]['info']['assetclass_name'] = $fieldName;
+				$info[$i]['info']['assetclass_id'] = 'field_'.$field->getId();
+				
+				// beware - hack
+				$info[$i]['info']['asset_id'] = $field->getId();
+				$info[$i]['info']['type'] = "field";
+				$info[$i]['info']['level'] = $level;
+				
+				$i++;
+			}
+
+		}
+		
+		$placeholderNames = $this->getTemplatePlaceholderNames($template_file_path);
 			
 		if(is_array($placeholderNames)){
 		
@@ -504,19 +531,13 @@ class PagesManager{
 			    
 			    // $placeholder = new SmartestPlaceholder;
 			    
-				/* if($placeholder->exists($placeholderName, $page->getSiteId())){
-				    $info[$i]['info'] = $placeholder->__toArray();
-				    $info[$i]['info']['exists'] = 
-				}else{
-				    
-				} */
-				
 				$info[$i]['info'] = $this->getAssetClassInfo($placeholderName);
 				
 				$info[$i]['info']['exists'] = $this->getAssetClassExists($placeholderName);
 				$info[$i]['info']['defined'] = $this->getAssetClassDefinedOnPage($placeholderName, $page->getId());
 				
 				$info[$i]['info']['assetclass_name'] = $placeholderName;
+				$info[$i]['info']['assetclass_id'] = 'placeholder_'.$placeholderName;
 				$info[$i]['info']['type'] = "placeholder";
 				
 				if($version == "live"){
@@ -532,39 +553,38 @@ class PagesManager{
 				
 				if($assetObj->hydrate($asset)){
 				    
-				    $info[$i]['info']['asset_webid'] = $assetObj->getWebid();
-				    $info[$i]['info']['asset_type'] = $assetObj->getType();
-				    $info[$i]['info']['filename'] = $assetObj->getUrl();
+				    // $child = array();
+				    
+				    $child = $assetObj->getArrayForElementsTree($level);
 				    // print_r($assetObj->__toArray());
 				    
 				    if($assetObj->isParsable()){
-				        $info[$i]['children'] = $assetObj->getTextFragment()->getAttachmentsForElementsTree($level+1, $version);
-				        foreach($info[$i]['children'] as $key => $attachment){
-				            $info[$i]['children'][$key]['info']['assetclass_id'] = $assetObj->getStringid().'/'.$attachment['info']['assetclass_id'];
-				            $info[$i]['children'][$key]['info']['assetclass_name'] = $info[$i]['children'][$key]['info']['assetclass_id'];
+				        $child['children'] = $assetObj->getTextFragment()->getAttachmentsForElementsTree($level+2, $version);
+				        foreach($child['children'] as $key => $attachment){
+				            $child['children'][$key]['info']['assetclass_id'] = $assetObj->getStringid().'_'.$attachment['info']['assetclass_name'];
+				            $child['children'][$key]['info']['assetclass_name'] = $assetObj->getStringid().'_'.$attachment['info']['assetclass_name'];
+				            // print_r($child['children'][$key]);
+				            if(isset($child['children'][$key]['asset_object']) && is_object($child['children'][$key]['asset_object'])){
+				                $child_asset = $child['children'][$key]['asset_object'];
+				                $child_asset_array = $child_asset->getArrayForElementsTree($level+2);
+				                $child['children'][$key]['children'] = array($child_asset_array);
+				            }
 				        }
-				        // print_r($info[$i]['children']);
 			        }
 				    
-				    // print_r($info[$i]);
+				    $info[$i]['children'] = array($child);
 				}
 				
-				// $info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
-				// $info[$i]['info']['asset_type'] = $this->database->specificQuery("asset_type", "asset_id", $asset, "Assets");
-				
-				//if($info[$i]['info']['assetclass_type_code'] == 'LINE'|| $info[$i]['info']['assetclass_type_code'] == 'TEXT' || $info[$i]['info']['assetclass_type_code'] == 'HTML'){
-				//	$info[$i]['info']['filename'] = $this->database->specificQuery("asset_stringid", "asset_id", $asset, "Assets");
-				//}else{
-				//	$info[$i]['info']['filename'] = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
-				//}
-				
 				$info[$i]['level'] = $level;
+				
+				// print_r($info[$i]);
+				
 				$i++;
 			}
 		
 		}
 		
-		$listNames = $this->getTemplateListNames($template_file_path);
+		/* $listNames = $this->getTemplateListNames($template_file_path);
 			
 		if(is_array($listNames)){
 			
@@ -578,91 +598,66 @@ class PagesManager{
 				$i++;
 			}
 
-		}
-		
-		$fieldNames = $this->getTemplateFieldNames($template_file_path);
-			
-		if(is_array($fieldNames)){
-			
-			foreach($fieldNames as $fieldName){
-                
-                $field = new SmartestPageField;
-                // $field->hydrateBy('name', $fieldName);
-                // a simple 'hydrateBy' did not take into account that fields are not cross-site and multiple fields may exist of the same name (one for each site)
-                $correct_sql = "SELECT * FROM PageProperties WHERE pageproperty_name='".$fieldName."' AND pageproperty_site_id='".$site_id."'";
-                $result = $this->database->queryToArray($correct_sql);
-                $field->hydrate($result[0]);
-                // echo $correct_sql;
-                
-                
-				// $info[$i]['info']['exists'] = $this->getFieldExists($fieldName);
-				$info[$i]['info']['exists'] = (count($result) > 0) ? 'true' : 'false';
-				$info[$i]['info']['defined'] = $this->getFieldDefinedOnPage($fieldName, $page->getId());
-				$info[$i]['info']['assetclass_name'] = $fieldName;
-				$info[$i]['info']['assetclass_id'] = $field->getId();
-				
-				// beware - hack
-				$info[$i]['info']['asset_id'] = $field->getId();
-				$info[$i]['info']['type'] = "field";
-				$info[$i]['info']['level'] = $level;
-				
-				$i++;
-			}
-
-		}
+		} */
 
 		$containerNames = $this->getTemplateContainerNames($template_file_path);
-		
-		// echo $template_file_path;
-		// print_r($containerNames);
 		
 		if(is_array($containerNames)){
 		
 			foreach($containerNames as $containerName){
-			
-				$info[$i]['info'] = $this->getAssetClassInfo($containerName);
-				$info[$i]['info']['exists'] = $this->getAssetClassExists($containerName);
-				$info[$i]['info']['defined'] = $this->getAssetClassDefinedOnPage($containerName, $page->getId());
+			    
+			    $container = new SmartestContainer;
+			    
+			    if($container->hydrateBy('name', $containerName)){
+			    
+				    $info[$i]['info'] = $this->getAssetClassInfo($containerName);
+				    // $info[$i]['info']['exists'] = $this->getContainerExists($containerName);
+				    $info[$i]['info']['exists'] = 'true';
+				    $info[$i]['info']['defined'] = $this->getAssetClassDefinedOnPage($containerName, $page->getId());
+				
+			    }else{
+			        $info[$i]['info']['exists'] = 'false';
+			        $info[$i]['info']['defined'] = 'UNDEFINED';
+			    }
+				
 				$info[$i]['info']['assetclass_name'] = $containerName;
+				$info[$i]['info']['assetclass_id'] = 'container_'.$containerName;
 				$info[$i]['info']['type'] = "container";
 				
 				$info[$i]['level'] = $level;
 				
-				// print_r($info[$i]['info']);
-				
 				if($info[$i]['info']['assetclass_type'] == 'SM_ASSETCLASS_CONTAINER'){
 					
-					// echo $version;
-					
 					if($version == "live"){
-						// $asset = $this->getAssetClassLiveDefinition($info[$i]['info']['assetclass_name'], $this->getPageIdFromPageWebId($page_webid));
 						$asset = $this->getAssetClassLiveDefinition($info[$i]['info']['assetclass_name'], $page->getId());
 					}else{
-						// $asset = $this->getAssetClassDraftDefinition($info[$i]['info']['assetclass_name'], $this->getPageIdFromPageWebId($page_webid));
 						$asset = $this->getAssetClassDraftDefinition($info[$i]['info']['assetclass_name'], $page->getId());
-						// echo $asset;
 					}
 					
-					$info[$i]['info']['asset_id'] = $asset;
-					$info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
+					$assetObj = new SmartestContainerTemplateAsset();
 					
-					$child_template_file = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
+					if($assetObj->hydrate($asset)){
 					
-					$info[$i]['info']['filename'] = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
+					    $info[$i]['info']['asset_id'] = $asset;
+					    // $info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
+					    $info[$i]['info']['asset_webid'] = $assetObj->getWebid();
+					    
+					    // $child_template_file = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
+					    $child_template_file = SM_ROOT_DIR."Presentation/Layouts/".$assetObj->getUrl();
+					    $info[$i]['info']['filename'] = '';
+					    
+					    // $info[$i]['info']['filename'] = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
+	                    $child = $assetObj->getArrayForElementsTree($level+1);
+	                    $child['children'] = $this->getTemplateAssetClasses($child_template_file, $page, $level+2, $version);
+	                    $info[$i]['children'] = array($child);
 					
-					if($child_template_file != $template_file_path){
-						
-						// $site_id = $this->database->specificQuery("page_site_id", "page_id", $page->getId(), "Pages");
-						
-						// $site_root = $this->database->specificQuery("site_root", "site_id", $site_id, "Sites");
-						$child_template_file = SM_ROOT_DIR."Presentation/Layouts/".$child_template_file;
-						$info[$i]['children'] = $this->getTemplateAssetClasses($child_template_file, $page, $level+1, $version);
-						
-					}
+				    }
+				    
+				    $i++;
 				
 				}
 			
-				$i++;
+				
 			}
 		
 		}

@@ -25,4 +25,20 @@ class SmartestContainerTemplateAsset extends SmartestAsset{
         
     }
     
+    public function getArrayForElementsTree($level){
+	    
+	    $info = array();
+	    $info['asset_id'] = $this->getId();
+	    $info['asset_webid'] = $this->getWebid();
+	    $info['asset_type'] = $this->getType();
+	    $info['assetclass_name'] = $this->getStringid();
+	    $info['assetclass_id'] = 'asset_'.$this->getId();
+	    $info['defined'] = 'PUBLISHED';
+	    $info['exists'] = 'true';
+	    $info['filename'] = $this->getUrl();
+	    $info['type'] = 'template';
+	    $level++;
+	    return array('info'=>$info, 'level'=>$level);
+	}
+    
 }

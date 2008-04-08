@@ -48,13 +48,13 @@ return true;
 
 {foreach from=$elements item="element" key="key"}
   
-{if $element.info.exists == 'true'}
+{if $element.info.exists == 'true' && in_array($element.info.type, array("container", "placeholder", "field"))}
   <tr>
     <td style="width:20px">
       <input type="checkbox" name="{$element.info.type}[]" value="{$element.info.assetclass_id}" id="element_{$key}" {if in_array($element.info.defined, array("PUBLISHED", "DRAFT")) }checked="checked"{else}disabled="disabled"{/if} />
     </td>
     
-    <td>
+    <td>{$element.info.type}
 {if $element.info.defined == "PUBLISHED"}
 		  <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/published_{$element.info.type|lower}.gif" />
 {elseif  $element.info.defined == "DRAFT"}

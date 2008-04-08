@@ -1,1 +1,1 @@
-{asset id=$raw_value}
+<?sm:asset id=$raw_value:?>

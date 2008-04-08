@@ -1,2 +1,2 @@
-{capture name="_date" assign="_date"}{$raw_value.Y}-{$raw_value.M}-{$raw_value.D}{/capture}
-{humandate inputdate=$_date}
+<?sm:capture name="_date" assign="_date":?><?sm:$raw_value.Y:?>-<?sm:$raw_value.M:?>-<?sm:$raw_value.D:?><?sm:/capture:?>
+<?sm:humandate inputdate=$_date:?>

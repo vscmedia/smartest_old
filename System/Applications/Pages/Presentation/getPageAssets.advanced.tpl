@@ -1,6 +1,5 @@
 <h3>Elements used on page: {$page.title}</h3>
 
-<a name="top"></a>
 <div class="instruction">Double click a placeholder to set its content, or choose from the options on the right.</div>
 
 <form id="pageViewForm" method="get" action="">
@@ -48,6 +47,7 @@ Viewing mode:
 {if !empty($assets)}
 
 <ul class="tree-parent-node-open" id="tree-root">
+  <li><img border="0" src="{$domain}Resources/Icons/page.png" />Current Page: {$page.title}</li>
   {defun name="menurecursion" list=$assets}
     
     {capture name="foreach_name" assign="foreach_name"}list_{if $assetclass.info.assetclass_id}{$assetclass.info.assetclass_id}{else}0{/if}{/capture}
@@ -55,24 +55,31 @@ Viewing mode:
     
     {foreach from=$list item="assetclass" name=$foreach_name}
     
-    {if $smarty.foreach.$foreach_name.iteration == 1 && $foreach_id == 0}
-    <li><img border="0" src="{$domain}Resources/Icons/page.png" />Current Page: {$page.title}</li>
-    {/if}
-    
     <li {if $smarty.foreach.$foreach_name.last}class="last"{elseif $smarty.foreach.$foreach_name.first}class="first"{else}class="middle"{/if}>
     {if ($assetclass.info.defined == "PUBLISHED" || $assetclass.info.defined == "DRAFT") && in_array($assetclass.info.assetclass_type, array("SM_ASSETTYPE_JAVASCRIPT", "SM_ASSETTYPE_STYLESHEET", "SM_ASSETTYPE_RICH_TEXT", "SM_ASSETTYPE_PLAIN_TEXT", "SM_ASSETTYPE_SL_TEXT")) && $version == "draft"}<a href="{$domain}assets/editAsset?asset_id={$assetclass.info.asset_id}&amp;from=pageAssets" style="float:right;display:block;margin-right:5px;">Edit This File</a>{/if}
       {if !empty($assetclass.children)}
-      <a href="#" onclick="toggleParentNodeFromOpenState('{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}')"><img src="{$domain}Resources/System/Images/open.gif" alt="" border="0" id="toggle_{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}" /></a>
+      <a href="{dud_link}" onclick="toggleParentNodeFromOpenState('{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}')"><img src="{$domain}Resources/System/Images/open.gif" alt="" border="0" id="toggle_{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}" /></a>
       {else}
       <img src="{$domain}Resources/System/Images/blank.gif" alt="" border="0" />
-      {/if}
-      <a id="item_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="{if $version == "draft"}javascript:setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}javascript:nothing();{/if}">		 
+      {/if}<a id="item_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="{if $version == "draft"}javascript:setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}javascript:nothing();{/if}">		 
     {if $assetclass.info.exists == 'true'}
         
 		{if $assetclass.info.defined == "PUBLISHED"}
 		  {if $assetclass.info.type == 'attachment'}
 		  <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/attach.png" />
-		  {else}
+		  {elseif $assetclass.info.type == 'asset'}
+		    {if $assetclass.info.asset_type == "SM_ASSETTYPE_JPEG_IMAGE" || $assetclass.info.asset_type == "SM_ASSETTYPE_PNG_IMAGE" || $assetclass.info.asset_type == "SM_ASSETTYPE_GIF_IMAGE"}
+	        <img src="{$domain}Resources/Icons/picture.png" style="border:0px" />
+	      {elseif $assetclass.info.asset_type == "SM_ASSETTYPE_PLAIN_TEXT"}
+	        <img src="{$domain}Resources/Icons/page_white_text.png" style="border:0px" />
+	      {elseif $assetclass.info.asset_type == "SM_ASSETTYPE_RICH_TEXT"}
+	        <img src="{$domain}Resources/Icons/style.png" style="border:0px" />
+	      {else}
+	        <img src="{$domain}Resources/Icons/page_white.png" style="border:0px" />
+	      {/if}
+		  {elseif $assetclass.info.type == 'template'}
+  		  <img src="{$domain}Resources/Icons/page_white_code.png" style="border:0px" />
+      {else}
 		  <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/published_{$assetclass.info.type|lower}.gif" />
 		  {/if}
 		{elseif  $assetclass.info.defined == "DRAFT"}
@@ -88,16 +95,7 @@ Viewing mode:
 	  <b>{$assetclass.info.assetclass_name}</b>
 	  {if $assetclass.info.type == 'placeholder'}{/if}
 	  
-	  {if $assetclass.info.filename != ""} : 
-	    {if $assetclass.info.asset_type == "SM_ASSETTYPE_JPEG_IMAGE" || $assetclass.info.asset_type == "SM_ASSETTYPE_PNG_IMAGE" || $assetclass.info.asset_type == "SM_ASSETTYPE_GIF_IMAGE"}
-	      <img src="{$domain}Resources/Icons/picture.png" style="border:0px" />
-	    {elseif $assetclass.info.asset_type == "SM_ASSETTYPE_PLAIN_TEXT"}
-	      <img src="{$domain}Resources/Icons/page_white_text.png" style="border:0px" />
-	    {elseif $assetclass.info.asset_type == "SM_ASSETTYPE_RICH_TEXT"}
-	      <img src="{$domain}Resources/Icons/page_code.png" style="border:0px" />
-	    {else}
-	      
-	    {/if}
+	  {if $assetclass.info.filename != ""}
 	    {$assetclass.info.filename}
 	  {else}
 	    
@@ -141,7 +139,3 @@ Viewing mode:
 </ul>
 {/if}
 </div>
-
-<!-- Key: <div style="display:inline"><img src="{$domain}Resources/Icons/flag_green.png" alt="" />Published&nbsp;&nbsp;
-<img src="{$domain}Resources/Icons/flag_yellow.png" alt="" />Draft Only&nbsp;&nbsp;
-<img src="{$domain}Resources/Icons/flag_red.png" alt="" />Undefined</div>-->

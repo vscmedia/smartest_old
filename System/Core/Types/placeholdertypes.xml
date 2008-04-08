@@ -46,6 +46,7 @@
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
     <accept>SM_ASSETTYPE_MPEG_MOVIE</accept>
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
+    <accept>SM_ASSETTYPE_FLASH_VIDEO</accept>
     <accept>SM_ASSETTYPE_WMV</accept>
   </type>
   

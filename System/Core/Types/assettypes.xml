@@ -192,7 +192,6 @@
         <render template="System/Presentation/WebPageBuilder/display.flash_video.tpl" />
         <param name="width" type="SM_DATATYPE_NUMERIC" />
         <param name="height" type="SM_DATATYPE_NUMERIC" />
-        <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="true" />
     </type>
     
     <type id="SM_ASSETTYPE_WMV" category="embedded">

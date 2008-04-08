@@ -38,11 +38,16 @@ class SmartestContainer extends SmartestAssetClass{
 	    
 	}
 	
-	public function isLinkable(){
+	public function hydrateBy($field, $value){
+	    $sql = "SELECT * FROM AssetClasses WHERE ".$this->_table_prefix.$field."='".$value."' AND ".$this->_table_prefix."type='SM_ASSETCLASS_CONTAINER' AND (".$this->_table_prefix."site_id='".$this->getSite()->getId()."' OR ".$this->_table_prefix."shared='1')";
+	    $result = $this->database->queryToArray($sql);
 	    
-	    $type = $this->getTypeInfo();
-	    return (isset($type['linkable']) && $type['linkable'] && strtolower($type['linkable']) != 'false') ? true : false;
-	    
+	    if(count($result)){
+	        parent::hydrate($result[0]);
+	        return true;
+	    }else{
+	        return false;
+	    }
 	}
 	
 	public function getAssetsByType(){
@@ -73,8 +78,6 @@ class SmartestContainer extends SmartestAssetClass{
             
             $sql = "SELECT * FROM Assets WHERE asset_type IN (";
             
-            // var_dump($types);
-            
             foreach($types as $key => $t){
                 
                 if($key > 0){
@@ -92,8 +95,6 @@ class SmartestContainer extends SmartestAssetClass{
             }
             
             $sql .= ' ORDER BY asset_stringid';
-            
-            // echo $sql;
             
             $result = $this->database->queryToArray($sql);
             $official_types = SmartestDataUtility::getAssetTypes();

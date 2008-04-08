@@ -4,6 +4,8 @@
   
   {if $show_result}
   
+  {if count($deleted_files) || count($failed_files) || count($untouched_files)}
+  
   <div class="instruction">Result:</div>
   
   <ul class="basic-list">
@@ -18,6 +20,18 @@
     {/foreach}
   </ul>
   
+  {else}
+  
+  <p>The cache is currently empty.</p>
+  
   {/if}
+  
+  {/if}
+  
+  <div class="edit-form-row">
+    <div class="buttons-bar">
+      <input type="button" value="OK" onclick="window.location='{$domain}smartest/pages'" />
+    </div>
+  </div>
   
 </div>

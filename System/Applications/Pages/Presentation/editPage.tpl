@@ -2,7 +2,7 @@
 
 {if $allow_edit}
 
-{load_interface file="editPage.tabs.tpl"}
+{load_interface file="edit_tabs.tpl"}
 
 {load_interface file="editPage.form.tpl"}
 

@@ -307,9 +307,17 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             // print_r($this->_page);
             
             if($this->_preview_mode){
-                return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getId();
+                if(is_object($this->_page)){
+                    return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getId();
+                }else{
+                    return '#';
+                }
             }else if($this->shouldUseId()){
-                return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getWebid();
+                if(is_object($this->_page)){
+                    return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getWebid();
+                }else{
+                    return '#';
+                }
             }else{
                 if(is_object($this->_page) && is_object($this->_item)){
                     $template_url = SM_CONTROLLER_DOMAIN.$this->_page->getDefaultUrl();

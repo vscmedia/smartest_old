@@ -1,6 +1,6 @@
 <div id="work-area">
   
-  {load_interface file="editPage.tabs.tpl"}
+  {load_interface file="edit_tabs.tpl"}
   
   <h3>Tags</h3>
   <div class="instruction">Choose which tags this page is attached to.</div>

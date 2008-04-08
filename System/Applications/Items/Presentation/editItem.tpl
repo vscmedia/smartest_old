@@ -1,6 +1,6 @@
 <div id="work-area">
 
-{load_interface file="editItem.tabs.tpl"}
+{load_interface file="edit_tabs.tpl"}
 
 <h3><a href="{$domain}{$section}">Data Manager</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$item._model.id}">{$item._model.plural_name}</a> &gt; Edit {$item._model.name}</h3>
 
@@ -23,8 +23,6 @@
   {else}
     Not Published <input type="button" value="Publish" onclick="window.location='{$domain}{$section}/publishItem?item_id={$item.id}'" />
   {/if}
-{*  <label for="item_is_public">Published</label><input type="radio" id="item_is_public" name="item_is_public" value="TRUE" {if $item.public == "TRUE"} checked="true"{/if} />
-  <label for="item_is_not_public">Not Published</label><input type="radio" id="item_is_not_public" name="item_is_public" value="FALSE"{if $item.public == "FALSE"} checked="true"{/if} /> *}
 </div>
 
 <div class="edit-form-row">

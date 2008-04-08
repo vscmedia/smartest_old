@@ -1,1 +1,1 @@
-{$raw_value}
+<?sm:$raw_value:?>

@@ -170,15 +170,12 @@ class CmsFrontEndManager{
     							// unset($template_url_parts[$key]);
     							
     							if($url_placeholder == ":id"){
-    							    // $identifying_field = "ID";
     							    $page->setIdentifyingFieldName("id");
     							    $page->setIdentifyingFieldValue($actual_url_parts[$i]);
     							}else if($url_placeholder == ":name"){
-    							    // $identifying_field = "SLUG";
     							    $page->setIdentifyingFieldName("slug");
     							    $page->setIdentifyingFieldValue($actual_url_parts[$i]);
     							}else if($url_placeholder == ":long_id"){
-        							// $identifying_field = "SLUG";
         							$page->setIdentifyingFieldName("webid");
         							$page->setIdentifyingFieldValue($actual_url_parts[$i]);
         						}

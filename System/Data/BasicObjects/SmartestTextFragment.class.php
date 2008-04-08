@@ -42,14 +42,16 @@ class SmartestTextFragment extends SmartestDataObject{
         
     }
     
-    public function getAttachmentsAsArrays(){
+    public function getAttachmentsAsArrays($include_objects=false){
         
         $attachments = $this->getAttachments();
         $arrays = array();
         
         foreach($attachments as $name => $object){
+            
             $arrays[$name] = $object->__toArray();
             $arrays[$name]['_name'] = $name;
+            
         }
         
         return $arrays;
@@ -58,22 +60,29 @@ class SmartestTextFragment extends SmartestDataObject{
     
     public function getAttachmentsForElementsTree($level, $version){
         if($version == 'draft'){
-            $attachments = $this->getAttachmentsAsArrays();
+            
+            $attachments = $this->getAttachmentsAsArrays(true);
             $children = array();
+            
             foreach($attachments as $key=>$a){
+                
                 $child = array();
-                $child['info']['assetclass_id'] = $key;
-                $child['info']['assetclass_name'] = $key;
-                $child['info']['type'] = 'attachment';
-                $child['info']['exists'] = 'true';
-                $child['info']['defined'] = 'PUBLISHED';
                 $child['info']['asset_id'] = $a['asset']['id'];
                 $child['info']['asset_webid'] = $a['asset']['webid'];
                 $child['info']['asset_type'] = $a['asset']['type'];
-                $child['info']['filename'] = $a['asset']['url'];
+                $child['info']['assetclass_name'] = $key;
+                $child['info']['assetclass_id'] = $key;
+                $child['info']['defined'] = 'PUBLISHED';
+                $child['info']['exists'] = 'true';
+                $child['info']['filename'] = '';
+                $child['info']['type'] = 'attachment';
+                
+                $child['asset_object'] = $a['asset_object'];
                 $children[] = $child;
             }
+            
             return $children;
+            
         }else{
             return array();
         }

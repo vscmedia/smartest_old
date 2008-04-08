@@ -16,7 +16,7 @@ class SmartestAsset extends SmartestDataObject{
 		
 	}
 	
-	public function __toArray(){
+	public function __toArray($include_object=false){
 	    $data = parent::__toArray();
 	    
 	    $data['text_content'] = $this->getContent();
@@ -27,6 +27,10 @@ class SmartestAsset extends SmartestDataObject{
 	    if($this->isImage()){
             $data['width'] = $this->getWidth();
             $data['height'] = $this->getHeight();
+        }
+        
+        if($include_object){
+            $data['_object'] = $this;
         }
         
 	    return $data;
@@ -340,134 +344,21 @@ class SmartestAsset extends SmartestDataObject{
 	    }
 	}
 	
-	/* public function getDisplayParameters(){
+	public function getArrayForElementsTree($level){
 	    
-	    $info = $this->getTypeInfo();
-	    // return 
-	    // print_r($info);
-	    
+	    $info = array();
+	    $info['asset_id'] = $this->getId();
+	    $info['asset_webid'] = $this->getWebid();
+	    $info['asset_type'] = $this->getType();
+	    $info['assetclass_name'] = $this->getStringid();
+	    $info['assetclass_id'] = 'asset_'.$this->getId();
+	    $info['defined'] = 'PUBLISHED';
+	    $info['exists'] = 'true';
+	    $info['filename'] = $this->getUrl();
+	    $info['type'] = 'asset';
+	    $level++;
+	    return array('info'=>$info, 'level'=>$level);
 	}
-	
-	public function getParsableFilePath($draft_mode=false){
-	    if($draft_mode){
-	        $file_path = SM_ROOT_DIR.'System/Cache/TextFragments/Previews/tfpreview_'.SmartestStringHelper::toHash($this->getTextFragment()->getId(), 8, 'SHA1').'.tmp.tpl';
-	    }else{
-	        $file_path = SM_ROOT_DIR.'System/Cache/TextFragments/Live/tflive_'.SmartestStringHelper::toHash($this->getTextFragment()->getId(), 8, 'SHA1').'.tpl';
-	    }
-	    
-	    return $file_path;
-	}
-	
-	public function publish(){
-	    if($this->isParsable() && $this->usesTextFragment()){
-	        return SmartestFileSystemHelper::save($this->getParsableFilePath(), $this->getTextFragment()->getContent(), true);
-	    }
-	}
-	
-	public function isPublished(){
-	    return file_exists($this->getParsableFilePath());
-	}
-	
-	public function createPreviewFile(){
-	    if($this->isParsable() && $this->usesTextFragment()){
-	        $result = SmartestFileSystemHelper::save($this->getParsableFilePath(true), $this->getTextFragment()->getContent(), true);
-	        // print_r($this->getTextFragment()->getContent());
-	        // $result = file_put_contents($this->getParsableFilePath(true), $this->getTextFragment()->getContent());
-	        var_dump($result);
-	        return $result;
-	        // return true;
-	    }else{
-	        return false;
-	    }
-	}
-	
-	public function ensurePreviewFileExists(){
-	    if(!file_exists($this->getParsableFilePath(true))){
-	        return $this->createPreviewFile();
-	    }else{
-	        return true;
-	    }
-	} */
-	
-	/* public function renderMarkupInTextFragment($draft_mode=false){
-	    if($draft_mode){
-	        $file_path = SM_ROOT_DIR.'System/Cache/TextFragments/Previews/tfpreview_'.$this->getTextFragment()->getId().'.tmp.tpl';
-	    }else{
-	        $file_path = SM_ROOT_DIR.'System/Cache/TextFragments/Live/tfpreview_'.$this->getTextFragment()->getId().'.tmp.tpl';
-	    }
-	} */
-	
-	/* public function renderAsMarkup($draft_mode=false, $params=''){
-	    
-	    // TODO: 3rd-party media types
-	    
-	    switch($this->getType()){
-	        
-	        case "SM_ASSETTYPE_RICH_TEXT":
-            $markup = stripslashes($this->getTextFragment()->getContent());
-            break;
-            
-            case "SM_ASSETTYPE_PLAIN_TEXT":
-            case "SM_ASSETTYPE_SL_TEXT":
-            $markup = htmlentities(stripslashes($this->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8');
-            break;
-	        
-	        case "SM_ASSETTYPE_JAVASCRIPT":
-	        $markup = '<script language="javascript" type="text/javascript" src="'.SM_CONTROLLER_DOMAIN.'Resources/Javascript/'.$this->getUrl().'"></script>';
-	        break;
-	        
-	        case "SM_ASSETTYPE_STYLESHEET":
-	        $markup = '<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/Stylesheets/'.$this->getUrl().'" />';
-	        break;
-	        
-	        case "SM_ASSETTYPE_QUICKTIME_MOVIE":
-	        
-	        $full_path = SM_CONTROLLER_DOMAIN.'Resources/Assets/'.$this->getUrl();
-	        $autostart = $this->getAutoPlay() ? "true" : "false";
-	        
-	        $markup = "<object classid=\"clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B\" width=\"{$this->getWidth()}\" height=\"{$this->getHeight()}\" codebase=\"http://www.apple.com/qtactivex/qtplugin.cab\">
-            <param name=\"src\" value=\"{$full_path}\" />
-            <param name=\"controller\" value=\"true\" />
-            <param name=\"target\" value=\"myself\" />
-            <param name=\"autoplay\" value=\"true\" />
-            <param name=\"qtsrc\" value=\"{$full_path}\" />
-            <param name=\"pluginspage\" value=\"http://www.apple.com/quicktime/download/\" />
-            <embed controller=\"true\" width=\"{$this->getWidth()}\" height=\"{$this->getHeight()}\" target=\"myself\" 
-            qtsrc=\"{$full_path}\" 
-            src=\"{$full_path}\" 
-            bgcolor=\"#FFFFFF\" border=\"0\" autoplay=\"true\" pluginspage=\"http://www.apple.com/quicktime/download/indext.html\"></embed>		
-            </object>";
-            
-	        break;
-	        
-	        case "SM_ASSETTYPE_MPEG_MOVIE":
-	        
-	        break;
-	        
-	        case "SM_ASSETTYPE_SHOCKWAVE_FLASH":
-	        
-	        break;
-	        
-	        case "SM_ASSETTYPE_WMV":
-	        
-	        $full_path = SM_CONTROLLER_DOMAIN.'Resources/Assets/'.$this->getUrl();
-	        $autostart = $this->getAutoPlay() ? "True" : "False";
-	        
-	        $markup = "<object width=\"{$this->getWidth()}\" height=\"{$this->getHeight()}\" classid=\"CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95\" id=\"mediaplayer1\">
-            <param name=\"Filename\" value=\"{$full_path}\">
-            <param name=\"AutoStart\" value=\"{$autostart}\">
-            <param name=\"ShowControls\" value=\"True\">
-            <param name=\"ShowStatusBar\" value=\"False\">
-            <param name=\"ShowDisplay\" value=\"False\">
-            <param name=\"AutoRewind\" value=\"False\">
-            <embed type=\"application/x-mplayer2\" pluginspage=\"http://www.microsoft.com/Windows/Downloads/Contents/MediaPlayer/\" width=\"{$this->getWidth()}\" height=\"{$this->getHeight()}\" src=\"{$full_path}\" filename=\"{$full_path}\" autostart=\"True\" showcontrols=\"True\" showstatusbar=\"False\" showdisplay=\"False\" autorewind=\"True\"></embed> 
-            </object>";
-	        
-	        break;
-	    }
-	    
-	    return $markup;
-	} */
 	
 	public function getLiveInstances(){
 	    
@@ -571,6 +462,14 @@ class SmartestAsset extends SmartestDataObject{
 	
 	public function getIsDraft(){
 	    return $this->_draft_mode;
+	}
+	
+	public function getDefaultParameterValues(){
+	    if($data = @unserialize($this->getParameterDefaults())){
+	        return $data;
+	    }else{
+	        return $this->getParameterDefaults();
+	    }
 	}
 
 }

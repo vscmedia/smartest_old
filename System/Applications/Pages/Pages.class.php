@@ -421,6 +421,8 @@ class Pages extends SmartestApplication{
     		        $this->send(true, 'show_iframe');
     		        $this->send($domain, 'site_domain');
     		        $this->setTitle('Page Preview | '.$page->getTitle());
+    		        $this->send(false, 'show_edit_item_option');
+                    $this->send(false, 'show_publish_item_option');
 		        
     		    }else if($page->getType() == 'ITEMCLASS'){
 		        
@@ -430,18 +432,29 @@ class Pages extends SmartestApplication{
 		            
     		            $item = SmartestCmsItem::retrieveByPk($item_id);
 		            
-    		            // var_dump($item);
-		            
-    		            // print_r($item);
-		            
     		            if(is_object($item)){
     		                $this->send($item->__toArray(), 'item');
     		                $this->send(true, 'show_iframe');
     		                $this->send($domain, 'site_domain');
     		                $this->setTitle('Meta-Page Preview | '.$item->getName());
-    		                // var_dump($item);
+    		                
+    		                if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved() == 1) || $this->getUser()->hasToken('publish_all_items')){
+                    	        $this->send(true, 'show_publish_item_option');
+                    	    }else{
+                    	        $this->send(false, 'show_publish_item_option');
+                    	    }
+                    	    
+                    	    if($this->getUser()->hasToken('modify_items')){
+                    	        $this->send(true, 'show_edit_item_option');
+                    	    }else{
+                    	        $this->send(true, 'show_false_item_option');
+                    	    }
+    		                
     		            }else{
-		                
+		                    
+		                    $this->send(false, 'show_edit_item_option');
+		                    $this->send(false, 'show_publish_item_option');
+		                    
     		                $this->send(false, 'show_iframe');
 		                
     		                /* $set = new SmartestCmsItemSet;
@@ -454,18 +467,20 @@ class Pages extends SmartestApplication{
         	                    $this->send(true, 'show_item_list');
 
         	                } */
-
-        	                $this->send(true, 'show_item_list');
+                            
+                            $this->send(true, 'show_item_list');
 
         	                $model = new SmartestModel;
 
         	                if($model->hydrate($page->getDatasetId())){
-        	                    $items  = $model->getSimpleItemsAsArrays();
+        	                    $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
         	                    $this->send($items, 'items');
         	                    $this->send($model->__toArray(), 'model');
         	                }else{
         	                    $this->send(array(), 'items');
-        	                }   
+        	                }
+        	                
+        	                $this->setTitle('Meta-Page Preview | Choose '.$model->getName().' to Continue');
     		            }
 		            
     	            }else{
@@ -482,18 +497,20 @@ class Pages extends SmartestApplication{
     	                    $this->send(true, 'show_item_list');
 	                
     	                } */
-	                
-    	                $this->send(true, 'show_item_list');
+	                    
+	                    $this->send(true, 'show_item_list');
 	                
     	                $model = new SmartestModel;
 	                
     	                if($model->hydrate($page->getDatasetId())){
-    	                    $items  = $model->getSimpleItemsAsArrays();
+    	                    $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
     	                    $this->send($items, 'items');
     	                    $this->send($model->__toArray(), 'model');
     	                }else{
     	                    $this->send(array(), 'items');
     	                }
+    	                
+    	                $this->setTitle('Meta-Page Preview | Choose '.$model->getName().' to Continue');
     	            }
     		    }    	    
     	    }else{
@@ -514,6 +531,8 @@ class Pages extends SmartestApplication{
     	    }else{
     	        $this->send(false, 'show_publish_button');
     	    }
+    	    
+    	    
 		    
 		}else{
 		    $this->addUserMessage("The page ID was not recognised.");
@@ -623,23 +642,6 @@ class Pages extends SmartestApplication{
 	    $this->addUserMessageToNextRequest($num_held_pages." pages were released.");
 	    $this->redirect('/smartest/pages');
 	}
-	
-	/* function getSitePages($get){
-		
-		$site_id = $get['site_id'];
-		$saved_url_status = $get['saved_url_status'];
-		$pagesTree = $this->manager->getPagesTree($site_id);
-		
-		if(strlen($site_id) > 0){
-			$result = $this->manager->getSerialisedPageTree($pagesTree);
-		}else{
-			$result = array();
-		}
-		
-		$this->smarty->assign("sectionName", "Site Pages");
-		
-		return array("data"=>$result, "count"=>count($result), "tree"=>$pagesTree,"saved_url_status"=>$saved_url_status);
-	} */
 	
 	function addPage($get, $post){
 		
@@ -1024,16 +1026,6 @@ class Pages extends SmartestApplication{
             $this->addUserMessageToNextRequest('There was an error updating page ID '.$post['page_id'].'.');
         }
         
-        // print_r($page);
-        
-		/*if($this->manager->updatePage($post)){
-			// return true;
-			$this->addUserMessageToNextRequest('The page was successfully updated.');
-		}else{
-			// return false;
-			$this->addUserMessageToNextRequest('There was an error updating the page.');
-		}*/
-		
 		$this->formForward();
 
 	}
@@ -1066,10 +1058,6 @@ class Pages extends SmartestApplication{
     		    $template_name = $page->getDraftTemplate();
     		}
     		
-    		 // print_r($version);
-		
-    		// print_r($assetClasses);
-    		
     		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
     		    $allow_release = true;
     		}else{
@@ -1083,17 +1071,6 @@ class Pages extends SmartestApplication{
     		// $sub_template = ($mode == "basic") ? "getPageAssets.basic.tpl" : "getPageAssets.advanced.tpl";
 		    $sub_template = "getPageAssets.advanced.tpl";
 		
-    		/* return array(
-    			"assets"=>$assetClasses["tree"], 
-    			"definedAssets"=>$definedAssets, 
-    			"page"=>$page, 
-    			"templates"=>$templates, 
-    			"templateMenuField"=>$page[$field],
-    			"site_id"=>$site_id,
-    			"version"=>$version,
-    			"sub_template"=>($mode == "basic") ? "getPageAssets.basic.tpl" : "getPageAssets.advanced.tpl"
-    		); */
-    		
     		$this->send($assetClasses["tree"], "assets");
     		$this->send($definedAssets, "definedAssets");
     		$this->send($page->__toArray(), "page");
@@ -1384,7 +1361,7 @@ class Pages extends SmartestApplication{
 	            // $assets = $this->manager->getAssetsByTypeAsArrays('SM_ASSETTYPE_CONTAINER_TEMPLATE');
 	            // print_r($assets);
 	            $assets = $container->getPossibleAssetsAsArrays();
-	            // print_r($assets);
+	            // print_r($container);
 	            
 	            $this->send($assets, 'templates');
 	            $this->send($page->__toArray(), 'page');
@@ -1462,7 +1439,9 @@ class Pages extends SmartestApplication{
 	    
 	    $this->setTitle('Define Placeholder');
 	    
-	    $page = new SmartestPage;
+	    // print_r($types_array);
+        
+        $page = new SmartestPage;
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        
@@ -1473,40 +1452,21 @@ class Pages extends SmartestApplication{
 	            $this->setTitle('Define Placeholder | '.$placeholder_name);
 	            
 	            $types_array = SmartestDataUtility::getAssetTypes();
-
-        		// print_r($types_array[$code]);
-
-        		$type = $types_array[$placeholder->getType()];
-	            
-	            if(isset($type['param'])){
-
-        	        $raw_xml_params = $type['param'];
-
-        	        foreach($raw_xml_params as $rxp){
-        	            if(isset($rxp['default'])){
-        	                $params[$rxp['name']] = $rxp['default'];
-                        }else{
-                            $params[$rxp['name']] = '';
-                        }
-        	        }
-
-        	    }else{
-        	        $params = array();
-        	    }
-
-    		    
-	            $definition = new SmartestPlaceholderDefinition;
-	            
-	            if($definition->load($placeholder_name, $page)){
+                
+                $definition = new SmartestPlaceholderDefinition;
+                
+                if($definition->load($placeholder_name, $page, true)){
 	                
-	                if($render_data = unserialize($definition->getDraftRenderData())){
-	                    if(is_array($render_data) && is_array($params)){
+	                $is_defined = true;
+	                
+	                if($existing_render_data = unserialize($definition->getDraftRenderData())){
+	                    if(is_array($existing_render_data) && is_array($params)){
 	                        
 	                        // $render_data = @unserialize($render_data);
 	                        
 	                        foreach($params as $key => $value){
-	                            if(isset($render_data[$key])){
-	                                $params[$key] = $render_data[$key];
+	                            if(isset($existing_render_data[$key])){
+	                                $params[$key] = $existing_render_data[$key];
 	                            }
 	                        }
                         }
@@ -1514,24 +1474,92 @@ class Pages extends SmartestApplication{
 	                
 	                $this->send($definition->getDraftAssetId(), 'draft_asset_id');
 	                $this->send($definition->getLiveAssetId(), 'live_asset_id');
-	                $this->send(true, 'is_defined');
 	                
 	            }else{
-	                // placeholder has no live definition
-	                // print_r($definition);
+	                $is_defined = false;
 	                $this->send($definition->getDraftAssetId(), 'draft_asset_id');
-	                // $this->send($definition->getDraftAssetId(), 'draft_asset_id');
-	                $this->send(false, 'is_defined');
+	                $existing_render_data = array();
 	            }
 	            
-	            // print_r($params);
+	            // print_r($definition);
+	            
+	            $this->send($is_defined, 'is_defined');
+                
+                $asset = new SmartestAsset;
+                
+                if($get['chosen_asset_id']){
+                    $chosen_asset_id = (int) $get['chosen_asset_id'];
+                    $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
+        	    }else{
+        	        if($is_defined){
+        	            // if asset is chosen
+        	            $chosen_asset_id = $definition->getDraftAssetId();
+        	            $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
+        	        }else{
+        	            // No asset choasen. don't show params or 'continue' button
+        	            $chosen_asset_id = 0;
+        	            $chosen_asset_exists = false;
+        	        }
+        	    }
+        	    
+        	    if($chosen_asset_exists){
+        	        
+        	        $this->send($asset->__toArray(), 'asset');
+        	        
+        	        $type = $types_array[$asset->getType()];
+        	        
+        	        if(isset($type['param'])){
+
+            	        $raw_xml_params = $type['param'];
+
+            	        foreach($raw_xml_params as $rxp){
+            	            
+            	            if(isset($rxp['default'])){
+            	                $params[$rxp['name']]['xml_default'] = $rxp['default'];
+            	                $params[$rxp['name']]['value'] = $rxp['default'];
+                            }else{
+                                $params[$rxp['name']]['xml_default'] = '';
+                                $params[$rxp['name']]['value'] = '';
+                            }
+                            
+                            $params[$rxp['name']]['type'] = $rxp['type'];
+                            $params[$rxp['name']]['asset_default'] = '';
+            	        }
+            	        
+            	        $this->send($type, 'asset_type');
+
+            	    }else{
+            	        $params = array();
+            	    }
+            	    
+            	    $asset_params = $asset->getDefaultParameterValues();
+            	    
+            	    foreach($params as $key=>$p){
+            	        // default values from xml are set above.
+            	        
+            	        // next, set values from asset
+            	        if(isset($asset_params[$key]) && strlen($asset_params[$key])){
+            	            $params[$key]['value'] = $asset_params[$key];
+            	            $params[$key]['asset_default'] = $asset_params[$key];
+            	        }
+            	        
+            	        // then, override any values that already exist
+            	        if(isset($existing_render_data[$key]) && strlen($existing_render_data[$key])){
+            	            $params[$key]['value'] = $existing_render_data[$key];
+            	        }
+        	        }
+        	        
+            	    $this->send(true, 'valid_definition');
+            	    
+    	        }else{
+    	            
+    	            $this->send(false, 'valid_definition');
+    	            
+    	        }
 	            
 	            $this->send($params, 'params');
 	            
-	            // $assets = $this->manager->getAssetsByTypeAsArrays($types);
 	            $assets = $placeholder->getPossibleAssetsAsArrays();
-	            
-	            // print_r($assets);
 	            
 	            $this->send($assets, 'assets');
 	            $this->send($page->__toArray(), 'page');
@@ -1681,7 +1709,7 @@ class Pages extends SmartestApplication{
 	    if($asset->hydrateBy('stringid', $asset_stringid)){
 	        $this->redirect('/assets/defineAttachment?attachment='.$attachment.'&asset_id='.$asset->getId());
 	    }else{
-	        $page = new SmartestPage;
+	        // $page = new SmartestPage;
 	        if(strlen($page_webid) == 32){
 	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
 	            $this->addUserMessageToNextRequest("The attachment ID was not recognized.");
@@ -1689,6 +1717,42 @@ class Pages extends SmartestApplication{
 	            $this->redirect('/smartest/pages');
 	        }
 	    }
+	}
+	
+	public function editFile($get){
+	    
+	    $id = $get['assetclass_id'];
+	    $page_webid = $get['page_id'];
+	    $asset = new SmartestAsset;
+	    
+	    if($asset->hydrateBy('stringid', $id)){
+            $this->redirect('/assets/editAsset?assettype_code='.$asset->getType().'&asset_id='.$asset->getId().'&from=pageAssets');
+        }else{
+            if(strlen($page_webid) == 32){
+	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
+	            $this->addUserMessageToNextRequest("The file ID was not recognized.");
+	        }else{
+	            $this->redirect('/smartest/pages');
+	        }
+        }
+	}
+	
+	public function editTemplate($get){
+	    
+	    $id = $get['assetclass_id'];
+	    $page_webid = $get['page_id'];
+	    $asset = new SmartestContainerTemplateAsset;
+	    
+	    if($asset->hydrateBy('stringid', $id)){
+            $this->redirect('/templates/editTemplate?type=SM_CONTAINER_TEMPLATE&template_id='.$asset->getId().'&from=pageAssets');
+        }else{
+            if(strlen($page_webid) == 32){
+	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
+	            $this->addUserMessageToNextRequest("The template ID was not recognized.");
+	        }else{
+	            $this->redirect('/smartest/pages');
+	        }
+        }
 	}
 	
 	function setPageTemplate($get){

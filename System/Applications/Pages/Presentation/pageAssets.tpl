@@ -30,7 +30,7 @@ function viewLivePage(){
 
 {if $allow_edit}
 
-{load_interface file="editPage.tabs.tpl"}
+{load_interface file="edit_tabs.tpl"}
 
 {load_interface file=$sub_template}
 
@@ -65,6 +65,16 @@ function viewLivePage(){
 <ul class="invisible-actions-list" id="attachment-specific-actions" style="display:none">
   <li><b>Attachment Options</b></li>
   <li class="permanent-action"><a href="#" onclick="workWithItem('editAttachment');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit Attachment Settings</a></li>
+</ul>
+
+<ul class="invisible-actions-list" id="asset-specific-actions" style="display:none">
+  <li><b>File Options</b></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('editFile');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit This File</a></li>
+</ul>
+
+<ul class="invisible-actions-list" id="template-specific-actions" style="display:none">
+  <li><b>Template Options</b></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('editTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit This Template</a></li>
 </ul>
 
 <ul class="invisible-actions-list" id="field-specific-actions" style="display:none">
