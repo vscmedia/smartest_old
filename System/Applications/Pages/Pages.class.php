@@ -1511,7 +1511,7 @@ class Pages extends SmartestApplication{
         	        if(isset($type['param'])){
 
             	        $raw_xml_params = $type['param'];
-
+                        $params = array();
             	        foreach($raw_xml_params as $rxp){
             	            
             	            if(isset($rxp['default'])){
