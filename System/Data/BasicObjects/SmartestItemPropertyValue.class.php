@@ -147,6 +147,18 @@ class SmartestItemPropertyValue extends SmartestDataObject{
                 $this->_modified_properties['content'] = $this->_properties['draft_content'];
                 $this->save();
             }
+            
+            if($this->getProperty()->getDatatype() == 'SM_DATATYPE_ASSET'){
+                
+                $asset = new SmartestAsset;
+                $asset->hydrate($this->_properties['content']);
+                
+                if($asset->isEditable() && $asset->isParsable()){
+                    $asset->getTextFragment()->publish();
+                }
+                
+            }
+            
         }
     }
     

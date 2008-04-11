@@ -42,7 +42,7 @@ class SmartestItemProperty extends SmartestDataObject{
         }
 	}
 	
-	public function hydrateValueFromIpvObject($ipv_object){
+	public function hydrateValueFromIpvObject(SmartestItemPropertyValue $ipv_object){
 	    if($ipv_object instanceof SmartestItemPropertyValue){
 	        $this->_value = $ipv_object;
         }
@@ -87,11 +87,9 @@ class SmartestItemProperty extends SmartestDataObject{
         }else{
             
             if($this->isForeignKey()){
+	            
 	            $info = $this->getTypeInfo();
-	            // print_r($info);
-	            // echo "tried ";
 	            $filter = $this->getForeignKeyFilter();
-	            // echo $filter;
 	            
 	            if($info['filter']['entitysource']['type'] == 'db'){
 	                
@@ -114,7 +112,6 @@ class SmartestItemProperty extends SmartestDataObject{
 	                    // echo $sql;
 	                    
 	                    $result = $this->database->queryToArray($sql);
-	                
 	                    $options = array();
 	                    
 	                    foreach($result as $raw_array){
@@ -130,7 +127,7 @@ class SmartestItemProperty extends SmartestDataObject{
 	                
 	                }else{
 	                        
-	                    throw new SmartestException("Foreign key data object class not defined or doesn't exist for property datatype: ".$this->getDatatype());
+	                    throw new SmartestException("Foreign key data object class '".$info['filter']['entitysource']['class']."' not defined or doesn't exist for property datatype: ".$this->getDatatype());
 	                        
 	                }
 	                
@@ -142,8 +139,8 @@ class SmartestItemProperty extends SmartestDataObject{
 	            }
 	            
 	            $this->_possible_values_retrieval_attempted = true;
-	            
 	            return $this->_possible_values;
+	            
 	        }else{
 	            $this->_possible_values_retrieval_attempted = true;
 	            return array();

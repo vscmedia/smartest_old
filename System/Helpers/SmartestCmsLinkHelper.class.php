@@ -193,8 +193,6 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                     $key = $asset_lookup['key'];
                 }
                 
-                // print_r($asset_lookup);
-                
                 $this->_download = new SmartestAsset;
                 
                 if($this->_download->hydrateBy($key, $asset_lookup['value'])){
@@ -229,7 +227,13 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     
     public function parseContent($with){
         if(substr($with, 0, 6) == 'image:'){
-            return '<img src="'.SM_CONTROLLER_DOMAIN.'Resources/Images/'.substr($with, 6).'" alt="'.$this->getContent(true).'" />';
+            $with = '<img src="'.SM_CONTROLLER_DOMAIN.'Resources/Images/'.substr($with, 6).'"';
+            if(isset($this->_params['alt'])){
+                $with .= ' alt="'.$this->_params['alt'].'" />';
+            }else{
+                $with .= ' alt="'.$this->getContent(true).'" />';
+            }
+            return $with;
         }else{
             return $with;
         }
@@ -399,7 +403,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                     }
                 }
                 
-                if($this->_preview_mode && in_array($this->_type, array('page', 'metapage'))){
+                if($this->_preview_mode && in_array($this->_type, array('page', 'metapage')) && SmartestStringHelper::toRealBool($this->_page->getIsPublished())){
                     $markup .=' target="_top"';
                 }else{
                     if(isset($this->_params['target'])){

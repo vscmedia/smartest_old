@@ -25,18 +25,18 @@
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
-    <linkable>true</linkable>
   </type>
   
   <type id="SM_ASSETCLASS_SHOCKWAVE_FLASH">
-    <label>Formatted Text</label>
+    <label>Adobe Flash content</label>
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
   </type>
   
   <type id="SM_ASSETCLASS_HOMEPAGE_SPLASH">
-    <label>Homepage Splash (High-impact, high compatibility)</label>
+    <label>Homepage splash (high-impact, high compatibility)</label>
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
+    <accept>SM_ASSETTYPE_FLASH_VIDEO</accept>
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
   </type>
@@ -45,7 +45,6 @@
     <label>A movie in any format</label>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
     <accept>SM_ASSETTYPE_MPEG_MOVIE</accept>
-    <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
     <accept>SM_ASSETTYPE_FLASH_VIDEO</accept>
     <accept>SM_ASSETTYPE_WMV</accept>
   </type>

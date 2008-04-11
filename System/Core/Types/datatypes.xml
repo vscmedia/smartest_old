@@ -53,6 +53,7 @@
         <filter>
           <typesource type="smartest:assettypes" />
           <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" />
+          <condition field="asset_deleted" value="1" operator="NOT_EQUAL" />
         </filter>
         
         <menu value="id" display="stringid" />
@@ -141,14 +142,14 @@
         
         <filter>
           <typesource type="db" table="DropDowns" matchfield="id" />
-          <entitysource type="db" table="DropDownValues" matchfield="dropdown_id" />
+          <entitysource type="db" table="DropDownValues" matchfield="dropdownvalue_dropdown_id" class="SmartestDropdownOption" />
         </filter>
         
         <render template="System/Applications/Items/Presentation/CMS/property.dropdown_menu.tpl" />
+        <menu value="value" display="label" />
         
-        <menu value="id" display="label" />
+        <class>SmartestDropdown</class>
         
-        <class>SmartestDropdownMenu</class>
     </type>
     
     <type id="SM_DATATYPE_HEX_COLOR" valuetype="string">

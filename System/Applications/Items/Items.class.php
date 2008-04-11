@@ -374,7 +374,9 @@ class Items extends SmartestApplication{
 	    
 	    if($item->getIsHeld() && $item->getHeldBy() != $this->getUser()->getId()){
 	        // item is being edited by somebody else
-	        $this->addUserMessageToNextRequest('The item is already being edited by somebody else.');
+	        $u = new SmartestUser;
+	        $u->hydrate($item->getHeldBy());
+	        $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.');
 	        $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
 	    }else{
 	        if($this->getUser()->hasToken('modify_items')){

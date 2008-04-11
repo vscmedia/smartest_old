@@ -223,10 +223,6 @@ class PagesManager{
 	    $list = array();
 	    
 	    foreach($raw_list as $page_array){
-	        // print_r($page_array);
-	        // $page = new SmartestPage;
-	        // $page->hydrate($page_array['info']);
-	        // $p = $page->__toArray();
 	        $p = $page_array['info'];
 	        $p['tree_level'] = $page_array['treeLevel'];
 	        $list[] = $p;
