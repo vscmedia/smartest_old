@@ -374,6 +374,10 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         }
     }
     
+    public function getType(){
+        return $this->_type;
+    }
+    
     public function getMarkup(){
         
         if($this->_error && !$this->_page_not_found){

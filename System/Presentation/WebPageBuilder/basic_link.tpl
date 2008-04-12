@@ -1,0 +1,1 @@
+<?sm:if $_link_show_anchor:?><a href="<?sm:$_link_url:?>"<?sm:$_link_parameters:?>><?sm:$_link_contents:?></a><?sm:else:?><!--cold link: would have been linked to: --><?sm:$_link_contents:?><?sm:/if:?>

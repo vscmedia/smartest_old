@@ -2,7 +2,9 @@
 
 function smarty_function_breadcrumbs($params, &$smarty){
 	
-	if($smarty->_tpl_vars['this']['navigation']['breadcrumbs']){
+	return $smarty->renderBreadcrumbs($params);
+	
+	/* if($smarty->_tpl_vars['this']['navigation']['breadcrumbs']){
 		
 		$breadcrumbs = $smarty->_tpl_vars['this']['navigation']['breadcrumbs'];
 		$separator = (isset($params['separator'])) ? $params['separator'] : "&gt;&gt;";
@@ -43,5 +45,5 @@ function smarty_function_breadcrumbs($params, &$smarty){
 		return $string;
 	}else{
 		return $smarty->raiseError("Automatic breadcrumbing failed.");
-	}
+	} */
 }

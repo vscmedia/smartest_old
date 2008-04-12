@@ -375,22 +375,21 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	    
 	    return $data;
-	}
+	} */
 	
 	
 	static function toAttributeString($array){
 	    if(!is_array($array)){
-	        return '0:'.$array;
+	        return '';
 	    }else{
-	        $string = '';
 	        
 	        foreach($array as $key=>$value){
-	            $string .= $key.':'.$value.';';
+	            $string .= ' '.$key.'="'.$value.'"';
 	        }
 	        
 	        return $string;
 	    }
-	} */
+	}
 	
 	static function toHtmlEntities($string){
     	return htmlentities($string, ENT_QUOTES, 'UTF-8') ;

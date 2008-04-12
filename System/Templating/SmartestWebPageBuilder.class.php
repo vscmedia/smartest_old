@@ -391,6 +391,52 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     }
     
+    public function renderBreadcrumbs($params){
+        
+        if($this->_tpl_vars['this']['navigation']['breadcrumbs']){
+
+    		$breadcrumbs = $this->_tpl_vars['this']['navigation']['breadcrumbs'];
+    		$separator = (isset($params['separator'])) ? $params['separator'] : "&gt;&gt;";
+    		$string = "";
+
+    		$link_params = array();
+
+    		if(isset($params['linkclass'])){
+    		    $link_params['class'] = $params['linkclass'];
+    		}
+
+    		$link_params['goCold'] = 'true';
+
+    		foreach($breadcrumbs as $key => $page){
+
+    			if($page['type'] == 'ITEMCLASS'){
+
+    			    if(is_object($this->getPage()->getPrincipalItem())){
+    			        $id = $this->getPage()->getPrincipalItem()->getId();
+    			        $to = 'metapage:webid='.$page['webid'].':id='.$id;
+    			    }else{
+    			        $to = 'page:webid='.$page['webid'];
+    			    }
+
+    			}else{
+    		        $to = 'page:webid='.$page['webid'];
+    		    }
+
+    			$text = $this->renderLink($to, $link_params);
+
+    			if($key > 0){
+    				$string .= " $separator ";
+    			}
+
+    			$string .= $text;
+    		}
+
+    		return $string;
+    	}else{
+    		return $this->raiseError("Automatic breadcrumbing failed - navigation data not present.");
+    	}
+    }
+    
     public function renderLink($to, $params){
         
         if(strlen($to)){
@@ -399,8 +445,55 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             $link_helper = new SmartestCmsLinkHelper($this->getPage(), $params, $this->getDraftMode(), $preview_mode);
             $link_helper->parse($to);
+            $render_data = array();
             
-            return $link_helper->getMarkup();
+            $url = $link_helper->getUrl();
+            $contents = $link_helper->getContent();
+            
+            $attributes = array();
+            $allowed_attributes = array('title', 'id', 'name', 'style', 'onclick', 'ondblclick', 'onmouseover', 'onmouseout', 'class');
+            
+            foreach($params as $name=>$value){
+                if(in_array($name, $allowed_attributes)){
+                    $attributes[$name] = $value;
+                }
+            }
+            
+            if($this->getDraftMode() && ($link_helper->getType() == 'page' || $link_helper->getType() == 'metapage')){
+                $attributes['target'] = '_top';
+            }
+            
+            if($this->getDraftMode() && ($link_helper->getType() == 'external')){
+                $attributes['onclick'] = "return confirm('You will be taken to an external page. Continue?')";
+                $attributes['target'] = '_top';
+            }
+            
+            $attribute_string = SmartestStringHelper::toAttributeString($attributes);
+            
+            $render_process_id = 'dynamic_link_'.substr(md5($url), 0, 8);
+            $child = $this->startChildProcess($render_process_id);
+	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
+	        
+	        if($link_helper->shouldOmitAnchorTag()){
+	            $show_anchor = false;
+	        }else{
+	            $show_anchor = true;
+	        }
+	        
+	        $child->assign('_link_url', $url);
+	        $child->assign('_link_contents', $contents);
+	        $child->assign('_link_parameters', $attribute_string);
+	        $child->assign('_link_show_anchor', $show_anchor);
+            
+            $html = $child->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/basic_link.tpl");
+            $this->killChildProcess($child->getProcessId());
+	        
+	        return $html;
+            
+        }else{
+            
+            $this->raiseError('Link could not be built. "to" field not properly defined.');
+            
         }
         
     }
