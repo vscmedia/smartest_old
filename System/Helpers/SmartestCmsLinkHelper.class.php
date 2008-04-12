@@ -198,7 +198,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                 if($this->_download->hydrateBy($key, $asset_lookup['value'])){
                     // success!
                 }else{
-                    echo 'Asset not found';
+                    // echo 'Asset not found';
                     $this->_error_message = 'Asset not found';
                     $this->_error = true;
                     return false;

@@ -598,6 +598,8 @@ class PagesManager{
 
 		$containerNames = $this->getTemplateContainerNames($template_file_path);
 		
+		// print_r($containerNames);
+		
 		if(is_array($containerNames)){
 		
 			foreach($containerNames as $containerName){
@@ -614,11 +616,14 @@ class PagesManager{
 			    }else{
 			        $info[$i]['info']['exists'] = 'false';
 			        $info[$i]['info']['defined'] = 'UNDEFINED';
+			        
 			    }
 				
 				$info[$i]['info']['assetclass_name'] = $containerName;
 				$info[$i]['info']['assetclass_id'] = 'container_'.$containerName;
 				$info[$i]['info']['type'] = "container";
+				
+				// print_r($info[$i]);
 				
 				$info[$i]['level'] = $level;
 				
@@ -649,15 +654,17 @@ class PagesManager{
 					
 				    }
 				    
-				    $i++;
+				    
 				
 				}
-			
+			    
+			    $i++;
 				
 			}
 		
 		}
 		
+		// print_r($info);
 		return $info;
 	}
 	
