@@ -401,7 +401,7 @@ class SmartestStringHelper extends SmartestHelper{
     
     static function protectSmartestTags($string){
         
-        $string = preg_replace('/([\w_]+)=&(amp;)?quot;([\w\s\.:_-]*)&(amp;)?quot;/i', '$1="$2"', $string);
+        $string = preg_replace('/([\w_]+)=&(amp;)?quot;([\w\s\.:_-]*)&(amp;)?quot;/i', '$1="$3"', $string);
         
         $string = str_replace('<?sm:', '<!--PROTECTED-SMARTEST-TAG:', $string);
         $string = str_replace('&lt;?sm:', '<!--PROTECTED-SMARTEST-TAG:', $string);
@@ -413,7 +413,8 @@ class SmartestStringHelper extends SmartestHelper{
     
     static function unProtectSmartestTags($string){
         
-        $string = preg_replace('/([\w_]+)=&(amp;)?quot;([^&]*)&(amp;)?quot;/i', '$1="$2"', $string);
+        $string = preg_replace('/([\w_]+)=&(amp;)?quot;([^&]*)&(amp;)?quot;/i', '$1="$3"', $string);
+        
         $string = str_replace('<p><!--PROTECTED-SMARTEST-TAG:', '<?sm:', $string);
         $string = str_replace(':PROTECTED-SMARTEST-TAG--></p>', ':?>', $string);
         $string = str_replace('<!--PROTECTED-SMARTEST-TAG:', '<?sm:', $string);

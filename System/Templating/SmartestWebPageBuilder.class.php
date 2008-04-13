@@ -445,6 +445,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             $link_helper = new SmartestCmsLinkHelper($this->getPage(), $params, $this->getDraftMode(), $preview_mode);
             $link_helper->parse($to);
+            
             $render_data = array();
             
             $url = $link_helper->getUrl();
@@ -459,7 +460,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }
             }
             
-            if($this->getDraftMode() && ($link_helper->getType() == 'page' || $link_helper->getType() == 'metapage')){
+            if($this->getDraftMode() && ($link_helper->getType() == 'page' || $link_helper->getType() == 'metapage') && $url != '#'){
                 $attributes['target'] = '_top';
             }
             

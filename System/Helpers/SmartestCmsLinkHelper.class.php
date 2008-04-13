@@ -380,7 +380,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     
     public function getMarkup(){
         
-        if($this->_error && !$this->_page_not_found){
+        /* if($this->_error && !$this->_page_not_found){
             if($this->_draft_mode){
                 return '<strong>'.$this->_error_message.'</strong>';
             }else{
@@ -421,7 +421,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
         }
         
-        return $markup;
+        return $markup; */
         
     }
     
