@@ -33,6 +33,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         $this->database = SmartestPersistentObject::get('db:main');
         $this->_draft_mode = $draft;
         $this->_preview_mode = $preview;
+        
     }
     
     public function parse($link){
@@ -312,13 +313,21 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             if($this->_preview_mode){
                 if(is_object($this->_page)){
-                    return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getId();
+                    if(is_object($this->_item)){
+                        return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getId();
+                    }else{
+                        return '#';
+                    }
                 }else{
                     return '#';
                 }
             }else if($this->shouldUseId()){
                 if(is_object($this->_page)){
-                    return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getWebid();
+                    if(is_object($this->_item)){
+                        return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getWebid();
+                    }else{
+                        return '#';
+                    }
                 }else{
                     return '#';
                 }

@@ -1159,20 +1159,13 @@ class Items extends SmartestApplication{
 		    $model->setWebid(SmartestStringHelper::random(16));
 		    $model->save();
 		    $this->addUserMessageToNextRequest("The new model has been saved. Now add some properties.");
-		    // echo "/".SM_CONTROLLER_MODULE."/addPropertyToClass?class_id=".$model->getId();
+		    SmartestCache::clear('model_class_names', true);
+		    SmartestCache::clear('model_id_name_lookup', true);
 		    $this->redirect("/".SM_CONTROLLER_MODULE."/addPropertyToClass?class_id=".$model->getId());
 	    }else{
 	        $this->addUserMessageToNextRequest("The model name \'".$post['itemclass_name']."\' is not valid.");
 	        $this->formForward();
 	    }
-		
-		// $itemclass_name = $post['itemclass_name'];
-		// $itemclass_plural_name = $post['itemclass_plural_name'];
-		// $itemclass_varname = $this->_string->toVarName($itemclass_name);
-		// $itemclass_webid = $this->getRandomString("16");
-		// $itemclass_schema_id = $post['itemclass_schema_id']; 
-		// $itemclass_userid = $post['user_id'];
-		// $class_id=$this->manager->setItemClasses($itemclass_name,$itemclass_plural_name,$itemclass_webid,$itemclass_schema_id,$itemclass_varname,$itemclass_userid);
 		
 	}
   
@@ -1187,18 +1180,14 @@ class Items extends SmartestApplication{
 		
 		$property = new SmartestItemProperty;
 		
-		// $old_name = $property->getName();
-		// if(){
-		    $property->setName($post['itemproperty_name']);
-		    $property->setVarname(SmartestStringHelper::toVarName($property->getName()));
-		    $property->setDatatype($post['itemproperty_datatype']);
-		    $property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
-		    $property->setItemclassId($model->getId());
-	    //  }
+		
+		$property->setName($post['itemproperty_name']);
+		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
+		$property->setDatatype($post['itemproperty_datatype']);
+		$property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
+		$property->setItemclassId($model->getId());
 	    
-	    /* if($get['type']){
-	        $this->send(true, 'show');
-	    } */
+	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
 	    
 	    $this->addUserMessageToNextRequest("Your new property has been added.");
 	    

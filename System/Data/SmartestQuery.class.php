@@ -137,6 +137,8 @@ class SmartestQuery{
 				
 			}
 			
+			// print_r($modelnames);
+			
 			foreach($modelnames as $class_id => $class_name){
 				
 				// echo 'Loading Auto OM Class: auto'.$class_name.'<br />';

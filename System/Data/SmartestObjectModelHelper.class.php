@@ -10,7 +10,7 @@ class SmartestObjectModelHelper{
 		
 			$file = str_replace('__THISCLASSNAME__', $className, $file);
 			$file = str_replace('__AUTOCLASSNAME__', 'auto'.$className, $file);
-			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
+			$file = str_replace('__TIME__', date("Y-m-d H:i:s"), $file);
 		
 			file_put_contents(SM_ROOT_DIR.'Library/ObjectModel/'.$className.'.class.php', $file);
 			
@@ -26,7 +26,7 @@ class SmartestObjectModelHelper{
 		
 		$className = $name;
 		$constants = '';
-		$model = new SmartestModel();
+		$model = new SmartestModel;
 		$model->hydrate($id);
 		
 		foreach($model->getProperties() as $property){
@@ -39,8 +39,7 @@ class SmartestObjectModelHelper{
 			}
 			
 			$new_constant = 'const '.$constant_name.' = '.$constant_value.";\n";
-			// echo $new_constant;
-			// print_r($property);
+			
 			$constants .= $new_constant;
 			
 		}

@@ -720,7 +720,7 @@ class SmartestResponse{
 	function prepareContent(){
 		
 		try{
-			SmartestQuery::init();
+			SmartestQuery::init(true);
 		}catch(SmartestException $e){
 			$this->error($e->getMessage(), $e->getCode());
 		}
