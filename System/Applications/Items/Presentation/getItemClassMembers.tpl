@@ -72,10 +72,11 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Model Options</b></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}'">Add a New {$model.name}</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}'">Add a new {$model.name}</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="window.location='{$domain}{$section}/releaseUserHeldItems?class_id={$model.id}'">Release all {$model.plural_name}</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/package_small.png"> <a href="{dud_link}" onclick="window.location='{$domain}{$section}/editModel?class_id={$model.id}'">Get Model Info</a></li>
-{* <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/importData?class_id={$itemBaseValues.itemclass_id}';"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Import Data</a></li> *}
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/information.png"> <a href="{dud_link}" onclick="window.location='{$domain}{$section}/editModel?class_id={$model.id}'">Get model info</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/information.png"> <a href="{dud_link}" onclick="window.location='{$domain}sets/addSet?class_id={$model.id}'">Create a new set from this model</a></li>
+{* <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/importData?class_id={$itemBaseValues.itemclass_id}';"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Import data from CSV</a></li> *}
 </ul>
 
 </div>

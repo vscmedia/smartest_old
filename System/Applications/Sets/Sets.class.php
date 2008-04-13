@@ -266,8 +266,6 @@ class Sets extends SmartestApplication{
 		$set_id = $post['set_id'];
 		$set = new SmartestCmsItemSet;
 		
-		print_r($post);
-		
 		if($set->hydrate($set_id) && $set->getType() == "STATIC"){
 		
 		    if($post['transferAction'] == 'add'){
