@@ -1,10 +1,10 @@
 <?php
 
-function smarty_function__asset_from_object($params, &$smarty){
+function smarty_function__asset_from_object($params, &$smartest_engine){
     
     if(isset($params['object']) && ($params['object'] instanceof SmartestAsset)){
     
-        $smarty->_renderAssetObject($params['object'], $params);
+        $smartest_engine->_renderAssetObject($params['object'], $params);
         
     }
     

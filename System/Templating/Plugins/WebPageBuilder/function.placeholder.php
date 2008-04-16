@@ -6,10 +6,10 @@
  * @subpackage page manager
  */
 
-function smarty_function_placeholder($params, &$smarty){
+function smarty_function_placeholder($params, &$smartest_engine){
 	if(@$params['name']){
-		// return $smarty->getAssetClass($params['name'], $params);
-		return $smarty->renderPlaceholder($params['name'], $params, $smarty->getPage());
+		// return $smartest_engine->getAssetClass($params['name'], $params);
+		return $smartest_engine->renderPlaceholder($params['name'], $params, $smartest_engine->getPage());
 	}else{
 		return null;
 	}

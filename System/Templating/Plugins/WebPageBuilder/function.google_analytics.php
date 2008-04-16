@@ -1,7 +1,7 @@
 <?php
 
-function smarty_function_google_analytics($params, &$smarty){
+function smarty_function_google_analytics($params, &$smartest_engine){
 
-	return $smarty->renderGoogleAnalyticsTags($params);
+	return $smartest_engine->renderGoogleAnalyticsTags($params);
 
 }

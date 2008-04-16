@@ -1,6 +1,6 @@
 <?php
 
-function smarty_function_cms_page($params, &$smarty){
+function smarty_function_cms_page($params, &$smartest_engine){
     if(isset($params['page']) && is_object($params['page'])){
         
         if(isset($params['draft']) && $params['draft'] && strtolower($params['draft']) != 'false'){
@@ -9,8 +9,6 @@ function smarty_function_cms_page($params, &$smarty){
             $draft_mode = false;
         }
         
-        // print_r($draft_mode);
-        
-        return $smarty->renderPage($params['page'], $draft_mode);
+        return $smartest_engine->renderPage($params['page'], $draft_mode);
     }
 }

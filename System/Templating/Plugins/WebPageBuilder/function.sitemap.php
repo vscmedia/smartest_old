@@ -1,7 +1,7 @@
 <?php
 
-function smarty_function_sitemap($params, &$smarty){
+function smarty_function_sitemap($params, &$smartest_engine){
     
-    return $smarty->renderSiteMap();
+    return $smartest_engine->renderSiteMap();
     
 }

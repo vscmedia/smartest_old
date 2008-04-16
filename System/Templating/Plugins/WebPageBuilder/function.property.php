@@ -1,7 +1,7 @@
 <?php
 
-function smarty_function_property($params, &$smarty){
+function smarty_function_property($params, &$smartest_engine){
     
-    return $smarty->renderItemPropertyValue($params);
+    return $smartest_engine->renderItemPropertyValue($params);
     
 }

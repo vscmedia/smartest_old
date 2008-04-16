@@ -1,7 +1,7 @@
 <?php
 
-function smarty_function_attachment($params, &$smarty){
+function smarty_function_attachment($params, &$smartest_engine){
     
-    return $smarty->renderAttachment($params['name']);
+    return $smartest_engine->renderAttachment($params['name']);
     
 }

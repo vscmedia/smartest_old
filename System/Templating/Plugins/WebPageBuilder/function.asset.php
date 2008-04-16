@@ -1,6 +1,6 @@
 <?php
 
-function smarty_function_asset($params, &$smarty){
+function smarty_function_asset($params, &$smartest_engine){
     
     if(isset($params['id']) && is_numeric($params['id'])){
         $asset_id = $params['id'];
@@ -14,6 +14,6 @@ function smarty_function_asset($params, &$smarty){
         $path = 'none';
     }
     
-    return $smarty->renderAssetById($asset_id, $params, $path);
+    return $smartest_engine->renderAssetById($asset_id, $params, $path);
     
 }

@@ -6,11 +6,11 @@
  * @subpackage page manager
  */
 
-function smarty_block_repeat($params, $content, &$smarty, &$repeat){
+function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	
 	if ($repeat) {
 	
-		$items = $smarty->getRepeatBlockData($params);
+		$items = $smartest_engine->getRepeatBlockData($params);
 		$index = 0;
 		
 		if($params['limit'] > 0){
@@ -21,8 +21,8 @@ function smarty_block_repeat($params, $content, &$smarty, &$repeat){
 
 	}else{
 		
-		$items = array_pop($smarty->_set_items_res);
-    	$index = array_pop($smarty->_set_items_index)+1;
+		$items = array_pop($smartest_engine->_set_items_res);
+    	$index = array_pop($smartest_engine->_set_items_index)+1;
     	
 	}
 	
@@ -35,9 +35,9 @@ function smarty_block_repeat($params, $content, &$smarty, &$repeat){
 		
 		// $properties["_name"] = $item["item_name"];
 		// $properties["_id"] = $item["item_id"];
-		$smarty->assign("repeated_item", $properties);
-		$smarty->_set_items_res[] = &$items;
-		$smarty->_set_items_index[] = &$index;
+		$smartest_engine->assign("repeated_item", $properties);
+		$smartest_engine->_set_items_res[] = &$items;
+		$smartest_engine->_set_items_index[] = &$index;
 		
 	}else{
 	    
@@ -47,6 +47,6 @@ function smarty_block_repeat($params, $content, &$smarty, &$repeat){
 	
 	echo $content;
 	
-	$smarty->assign("repeated_item_object", $item);
+	$smartest_engine->assign("repeated_item_object", $item);
 	// echo "repeated_item_object".$item->getName();
 }
