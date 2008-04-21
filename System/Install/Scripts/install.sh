@@ -2,7 +2,7 @@
 
 if [ $UID -ne 0 ]
 then
-  echo "You must run this script as root."
+  echo "You must run this script as root in order to proceed."
   exit
 fi
 
