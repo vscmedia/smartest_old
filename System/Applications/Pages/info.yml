@@ -1,0 +1,5 @@
+app:
+  name: websitemanager
+  label: Pages Manager
+  class: Pages
+  description: 

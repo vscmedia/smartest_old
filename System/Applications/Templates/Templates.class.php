@@ -1,16 +1,9 @@
 <?php
   
-// include any needed files - optional of course.
 include_once SM_ROOT_DIR."System/Applications/Assets/AssetsManager.class.php";
 
-// Extend SmartestApplication
-// not strictly required if you like to do everything by hand, but no good reason not to.
-// Gives access to DataManager API
-// Gives access to Controller values and templating object
-class Templates extends SmartestApplication{
+class Templates extends SmartestSystemApplication{
 
-	// ModuleBase already has a constructor, so if you want your class to have a constructor,
-	// put it here called __moduleConstruct() and ModuleBase will call it.
 	private $AssetsManager;
 	
 	function __moduleConstruct(){
@@ -28,8 +21,6 @@ class Templates extends SmartestApplication{
 		$this->setFormReturnUri();
 		
 		$templates = $this->AssetsManager->getAssetsByTypeCode("SM_ASSETTYPE_CONTAINER_TEMPLATE", $this->getSite()->getId());
-		
-		// $templates = $this->manager->getTemplates
 		
 		if(count($templates)){
 			// return array("assetList"=>$assetTypeMembers);

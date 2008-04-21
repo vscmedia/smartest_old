@@ -1,8 +1,6 @@
 <?php
 
-// require_once("System/Applicati/CmsPageContentHelper.class.php");
-
-class CmsFrontEnd extends SmartestApplication{
+class CmsFrontEnd extends SmartestSystemApplication{
 
 	// protected $smarty;
 	public $url;

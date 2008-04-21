@@ -2,12 +2,14 @@
 
 {if $display == "desktop"}
 
-<table cellpadding="0" cellspacing="0" width="100%" border="0" style="margin-bottom:10px">
+{* <table cellpadding="0" cellspacing="0" width="100%" border="0" style="margin-bottom:10px">
   <tr style="height:60px">
     <td style="width:60px"><img src="{$domain}Resources/Images/SiteLogos/{$site.logo_image_file}" /></td>
-    <td valign="top"><h3 style="margin:0px;margin-left:8px">Welcome to the {$site.name} administration interface</h3></td>
+    <td valign="top"></td>
   </tr>
-</table>
+</table> *}
+
+<h3>Welcome to the {$site.name} administration interface</h3>
 
 <div class="instruction">What would you like to do?</div>
 

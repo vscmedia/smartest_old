@@ -20,7 +20,7 @@ function viewPage(){
 
 <div id="work-area">
 
-<h3>Website Manager</h3>
+<h3>Site Hierarchy</h3>
 <a name="top"></a>
 <div class="instruction">Double click a page to edit or click once and choose from the options on the right.</div>
 

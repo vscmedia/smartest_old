@@ -11,10 +11,6 @@ form{
 	width:100%;
 }
 
-/* ul{
-	overflow:visible;
-} */
-
 div{
 	text-align:left;
 }
@@ -80,6 +76,15 @@ div#work-area{
 	padding-left:160px;
 }
 
+div#work-area h3{
+/*     margin-right:330px;
+	float:left;
+	width:100%; */
+	margin:0px;
+	margin-bottom:10px;
+    padding:9px;
+}
+
 div#work-area textarea#tpl_textArea{
 	height:400px;
 	width:100%;
@@ -134,31 +139,45 @@ div.js-menu ul li span{
     display:block;
 }
 
-div#user-message-container{
+/* div#user-message-container-outer{
 	position:absolute;
 	left:0px;
-	top:120px;
+	top:100px;
 	z-index:100;
 	text-align:center;
 	width:100%;
 	display:block;
 }
 
+div#user-message-container-inner{
+    margin-left:180px;
+	margin-right:auto;
+} */
+
 div.user-message{
 	width:450px;
 	height:110px;
-	margin-left:auto;
-	margin-right:auto;
+	position:absolute;
+	padding:12px 12px 0 10px;
+	margin-bottom:10px;
+}
+
+div.user-message img{
+    float:left;
+}
+
+div.user-message-text{
+    margin-left:70px;
+    margin-top:17px;
 }
 
 input.user-message-dismiss{
 	display:block;
 	float:right;
-	margin:60px 10px 10px 0;
+	margin:80px 0 10px 0;
 }
 
 ul#item-specific-actions{
-/* 	display:none; */
 	margin-bottom:10px;
 	padding-bottom:10px;
 }

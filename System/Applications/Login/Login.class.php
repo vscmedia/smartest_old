@@ -1,6 +1,6 @@
 <?php
 
-class Login extends SmartestApplication{
+class Login extends SmartestSystemApplication{
 	
 	function startPage(){
 		$this->setTitle("Start Page");

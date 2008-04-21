@@ -1,6 +1,6 @@
 <?php
 
-class MetaData extends SmartestApplication{
+class MetaData extends SmartestSystemApplication{
 
 	function __moduleConstruct(){
 		
@@ -10,7 +10,6 @@ class MetaData extends SmartestApplication{
 	    $this->setFormReturnUri();
 	    $du = new SmartestDataUtility;
 	    $tags = $du->getTagsAsArrays();
-	    // print_r($tags);
 	    $this->send($tags, 'tags');
 	    
 	}
@@ -36,13 +35,11 @@ class MetaData extends SmartestApplication{
 		if($property->hydrate($field_id)){
 		    $property->clearAllDefinitions();
 		    $property->delete();
-		    $this->addUserMessageToNextRequest('The property has been deleted.');
+		    $this->addUserMessageToNextRequest('The property has been deleted.', SmartestUserMessage::SUCCESS);
 		}else{
-		    $this->addUserMessageToNextRequest('The property ID was not recognised.');
+		    $this->addUserMessageToNextRequest('The property ID was not recognised.', SmartestUserMessage::ERROR);
 		    
 		}
-		
-		// print_r($property);
 		
 		$this->formForward();
 		
@@ -62,7 +59,7 @@ class MetaData extends SmartestApplication{
 	        $this->send($field->__toArray(), 'field');
 	        $this->send($definitions, 'definitions');
 	    }else{
-	        $this->addUserMessageToNextRequest("The field ID was not recognised.");
+	        $this->addUserMessageToNextRequest("The field ID was not recognised.", SmartestUserMessage::ERROR);
 	        $this->formForward();
 	    }
 	    
@@ -76,9 +73,9 @@ class MetaData extends SmartestApplication{
 		
 		if($property->hydrate($field_id)){
 		    $property->clearAllDefinitions();
-		    $this->addUserMessageToNextRequest('All values of the property have been deleted.');
+		    $this->addUserMessageToNextRequest('All values of the property have been deleted.', SmartestUserMessage::SUCCESS);
 		}else{
-		    $this->addUserMessageToNextRequest('The property ID was not recognised.');
+		    $this->addUserMessageToNextRequest('The property ID was not recognised.', SmartestUserMessage::ERROR);
 		    
 		}
 		
@@ -165,14 +162,14 @@ class MetaData extends SmartestApplication{
 		
     	    }else{
     	        
-    	        $this->addUserMessageToNextRequest('The specified field doesn\'t exist');
+    	        $this->addUserMessageToNextRequest('The specified field doesn\'t exist', SmartestUserMessage::INFO);
     	        $this->formForward();
     	        
     	    }
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('The page ID wasn\'t recognized.');
+            $this->addUserMessageToNextRequest('The page ID wasn\'t recognized.', SmartestUserMessage::ERROR);
 	        $this->formForward();
             
         }
@@ -243,7 +240,7 @@ class MetaData extends SmartestApplication{
         		$def->setPagepropertyId($field->getId());
         		$def->save();
         		
-        		$this->addUserMessageToNextRequest('The page field has been updated');
+        		$this->addUserMessageToNextRequest('The page field has been updated', SmartestUserMessage::SUCCESS);
     	        $this->formForward();
         		
         		// print_r($def);
@@ -263,14 +260,14 @@ class MetaData extends SmartestApplication{
     	    }else{
     	        
     	        
-    	        $this->addUserMessageToNextRequest('The specified field doesn\'t exist');
+    	        $this->addUserMessageToNextRequest('The specified field doesn\'t exist', SmartestUserMessage::INFO);
     	        // $this->formForward();
     	        
     	    }
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('The page ID wasn\'t recognized.');
+            $this->addUserMessageToNextRequest('The page ID wasn\'t recognized.', SmartestUserMessage::ERROR);
 	        // $this->formForward();
             
         }
@@ -405,14 +402,14 @@ class MetaData extends SmartestApplication{
 	    $tag = new SmartestTag;
 	    
 	    if($tag->hydrateBy('name', $tag_name)){
-	        $this->addUserMessageToNextRequest("A tag with that name already exists.");
+	        $this->addUserMessageToNextRequest("A tag with that name already exists.", SmartestUserMessage::WARNING);
 	        $this->formForward();
 	    }else{
 	        $tag->setName($tag_name);
 	        $tag->setLabel(addslashes($tag_label));
 	        $tag->save();
 	        // print_r($tag);
-	        $this->addUserMessageToNextRequest("Tag was successfully added.");
+	        $this->addUserMessageToNextRequest("Tag was successfully added.", SmartestUserMessage::SUCCESS);
 	        $this->formForward();
 	    }
 	    
@@ -428,7 +425,7 @@ class MetaData extends SmartestApplication{
 	        // print_r($objects);
 	    }else{
 	        $objects = array();
-	        $this->addUserMessage("This tag does not exist.");
+	        $this->addUserMessage("This tag does not exist.", SmartestUserMessage::WARNING);
 	    }
 	    
 	    $this->send($objects, 'objects');

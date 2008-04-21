@@ -1,6 +1,6 @@
 <?php
 
-class Desktop extends SmartestApplication{
+class Desktop extends SmartestSystemApplication{
     
     function __moduleConstruct(){
         
@@ -14,7 +14,10 @@ class Desktop extends SmartestApplication{
             $this->setTitle('Start Page');
             $this->send('desktop', 'display');
             $this->send($this->getSite()->__toArray(), 'site');
-            // print_r($this->getSite());
+            
+            // for($i=0;$i<10;$i++){
+            //    $this->addUserMessage("Message", SmartestUserMessage::WARNING);
+            // }
             
         }else{
             $this->setTitle('Choose a Site');
@@ -80,7 +83,7 @@ class Desktop extends SmartestApplication{
 		    // return array("sitedetails"=>$sitedetails);
 	    }else{
 	        
-	        $this->addUserMessageToNextRequest('You must have an open site to open eddit settings.');
+	        $this->addUserMessageToNextRequest('You must have an open site to open edit settings.', SmartestUserMessage::INFO);
 	        $this->redirect('/smartest');
 	        
 	    }
@@ -146,7 +149,7 @@ class Desktop extends SmartestApplication{
 		        }
 	        }else{
 	            
-	            $this->addUserMessageToNextRequest('You don\'t have permission to access that site. This action has been logged.');
+	            $this->addUserMessageToNextRequest('You don\'t have permission to access that site. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
 	            $this->redirect('/smartest');
 	            
 	        }
@@ -168,7 +171,7 @@ class Desktop extends SmartestApplication{
 	        $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/Masters/');
 	        $this->send($templates, 'templates');
 	    }else{
-	        $this->addUserMessageToNextRequest('You don\'t have permission to create new sites. This action has been logged.');
+	        $this->addUserMessageToNextRequest('You don\'t have permission to create new sites. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
             $this->redirect('/smartest');
 	    }
 	}
@@ -257,7 +260,7 @@ class Desktop extends SmartestApplication{
 		}
 		
 		$this->openSite(array('site_id'=>$site->getId()));
-		$this->addUserMessageToNextRequest("The site has successfully been created. You must now log out and back in again to start editing.");
+		$this->addUserMessageToNextRequest("The site has successfully been created. You must now log out and back in again to start editing.", SmartestUserMessage::SUCCESS);
 		$this->redirect("/smartest");
 	    
 	}

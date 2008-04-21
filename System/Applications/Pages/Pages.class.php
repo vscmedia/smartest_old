@@ -16,7 +16,7 @@ include_once "Managers/SetsManager.class.php";
 include_once "Managers/TemplatesManager.class.php";
 include_once "System/Applications/MetaData/MetaDataManager.class.php";
 
-class Pages extends SmartestApplication{
+class Pages extends SmartestSystemApplication{
 	
 	var $setsManager;
 	var $templatesManager;
@@ -58,9 +58,9 @@ class Pages extends SmartestApplication{
     	                $editing_user = new SmartestUser;
 	                
     	                if($editing_user->hydrate($page->getHeldBy())){
-    	                    $this->addUserMessageToNextRequest($editing_user->__toString().' is already editing this page.');
+    	                    $this->addUserMessageToNextRequest($editing_user->__toString().' is already editing this page.', SmartestUserMessage::ACCESS_DENIED);
     	                }else{
-    	                    $this->addUserMessageToNextRequest('Another user is already editing this page.');
+    	                    $this->addUserMessageToNextRequest('Another user is already editing this page.', SmartestUserMessage::ACCESS_DENIED);
     	                }
 	                
     	                $this->redirect('/smartest/pages');
@@ -80,7 +80,7 @@ class Pages extends SmartestApplication{
 		        
 	            }else{
 	                
-	                $this->addUserMessageToNextRequest('You don\'t have permission to edit pages.');
+	                $this->addUserMessageToNextRequest('You don\'t have permission to edit pages.', SmartestUserMessage::ACCESS_DENIED);
 	                
 	                if(SmartestSession::hasData('current_open_project')){
 	                    $this->redirect('/smartest/pages');
@@ -122,13 +122,13 @@ class Pages extends SmartestApplication{
                     $page->setIsHeld(0);
                     $page->setHeldBy('');
                     $page->save();
-                    $this->addUserMessageToNextRequest("The page has been released.");
+                    $this->addUserMessageToNextRequest("The page has been released.", SmartestUserMessage::SUCCESS);
                 }else{
                     //  the page
-                    $this->addUserMessageToNextRequest("The page couldn't be released because another user is editing.");
+                    $this->addUserMessageToNextRequest("The page couldn't be released because another user is editing it.", SmartestUserMessage::WARNING);
                 }
             }else{
-                $this->addUserMessageToNextRequest("The page is not currently held by another user.");
+                $this->addUserMessageToNextRequest("The page is not currently held by another user.", SmartestUserMessage::INFO);
             }
             
         }
@@ -188,13 +188,13 @@ class Pages extends SmartestApplication{
             
             }else{
 
-                $this->addUserMessageToNextRequest('You don\'t have permission to clear the page cache for this site.');
+                $this->addUserMessageToNextRequest('You don\'t have permission to clear the page cache for this site.', SmartestUserMessage::ACCESS_DENIED);
                 $this->redirect('/smartest/pages');
 
             }
             
         }else{
-            $this->addUserMessageToNextRequest('No site selected.');
+            $this->addUserMessageToNextRequest('No site selected.', SmartestUserMessage::ERROR);
             $this->redirect('/smartest');
         }
 	    
@@ -311,14 +311,14 @@ class Pages extends SmartestApplication{
 		
     	    }else{
 	        
-    	        $this->addUserMessage('You don\'t have permission to modify page properties.');
+    	        $this->addUserMessage('You don\'t have permission to modify page properties.', SmartestUserMessage::ACCESS_DENIED);
     	        $this->send($editorContent, "pageInfo");
     	        $this->send(false, 'allow_edit');
 	        
     	    }
 	    
         }else{
-            $this->addUserMessageToNextRequest('The page ID was not recognized.');
+            $this->addUserMessageToNextRequest('The page ID was not recognized.', SmartestUserMessage::ERROR);
             $this->redirect("/smartest");
         }
 		
@@ -334,15 +334,15 @@ class Pages extends SmartestApplication{
 	        if($this->getUser()->hasToken('approve_page_changes')){
 	        
 	            $page->setChangesApproved(1);
-	            $this->addUserMessageToNextRequest("The changes to this page have been approved.");
+	            $this->addUserMessageToNextRequest("The changes to this page have been approved.", SmartestUserMessage::SUCCESS);
 	            $page->save();
 	        
 	        }else{
-	            $this->addUserMessageToNextRequest("You don't have sufficient permissions to approve pages.");
+	            $this->addUserMessageToNextRequest("You don't have sufficient permissions to approve pages.", SmartestUserMessage::ACCESS_DENIED);
 	        }
 	        
 	    }else{
-	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.");
+	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.", SmartestUserMessage::ERROR);
 	    }
 	    
 	    $this->formForward();
@@ -363,10 +363,10 @@ class Pages extends SmartestApplication{
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        $page->moveUp();
-	        $this->addUserMessageToNextRequest("The page has been moved up.");
+	        $this->addUserMessageToNextRequest("The page has been moved up.", SmartestUserMessage::SUCCESS);
 	        SmartestCache::clear('site_pages_tree_'.$page->getSiteId(), true);
 	    }else{
-	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.");
+	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.", SmartestUserMessage::ERROR);
 	    }
 	    
 	    $this->formForward();
@@ -378,10 +378,10 @@ class Pages extends SmartestApplication{
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        $page->moveDown();
-	        $this->addUserMessageToNextRequest("The page has been moved down.");
+	        $this->addUserMessageToNextRequest("The page has been moved down.", SmartestUserMessage::SUCCESS);
 	        SmartestCache::clear('site_pages_tree_'.$page->getSiteId(), true);
 	    }else{
-	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.");
+	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.", SmartestUserMessage::ERROR);
 	    }
 	    
 	    $this->formForward();
@@ -516,7 +516,7 @@ class Pages extends SmartestApplication{
     	    }else{
     	        
     	        $this->send(false, 'show_iframe');
-    	        $this->addUserMessage("The preview of this pages cannot be displayed because no master template is chosen.");
+    	        $this->addUserMessage("The preview of this page cannot be displayed because no master template is chosen.", SmartestUserMessage::WARNING);
     	        
     	    }
 		    
@@ -535,7 +535,7 @@ class Pages extends SmartestApplication{
     	    
 		    
 		}else{
-		    $this->addUserMessage("The page ID was not recognised.");
+		    $this->addUserMessage("The page ID was not recognised.", SmartestUserMessage::ERROR);
 		    $this->send(false, 'show_iframe');
 		}
 		
@@ -568,13 +568,13 @@ class Pages extends SmartestApplication{
 		    SmartestCache::clear('site_pages_tree_'.$site_id, true);
 		    
 		    // make sure user is notified
-		    $this->addUserMessageToNextRequest("The page has been successfully moved to the trash.");
+		    $this->addUserMessageToNextRequest("The page has been successfully moved to the trash.", SmartestUserMessage::SUCCESS);
 		    
 		    // log deletion
     		$this->log("Page '".$title."' was deleted by user '".$this->_user['username']."'");
 		    
 		}else{
-		    $this->addUserMessageToNextRequest("There was an error deleting the page.");
+		    $this->addUserMessageToNextRequest("There was an error deleting the page.", SmartestUserMessage::ERROR);
 		}
 		
 		//forward
@@ -629,7 +629,7 @@ class Pages extends SmartestApplication{
 		}else{
 		    
 		    // $this->send(false, "site_recognised");
-	        $this->addUserMessageToNextRequest("You must choose a site first.");
+	        $this->addUserMessageToNextRequest("You must choose a site first.", SmartestUserMessage::INFO);
 	        $this->redirect('/smartest');
 		    
 		}
@@ -639,7 +639,7 @@ class Pages extends SmartestApplication{
 	    
 	    $num_held_pages = $this->getUser()->getNumHeldPages($this->getSite()->getId());
 	    $this->getUser()->releasePages($this->getSite()->getId());
-	    $this->addUserMessageToNextRequest($num_held_pages." pages were released.");
+	    $this->addUserMessageToNextRequest($num_held_pages." pages were released.", SmartestUserMessage::SUCCESS);
 	    $this->redirect('/smartest/pages');
 	}
 	
@@ -677,7 +677,7 @@ class Pages extends SmartestApplication{
 		    $site_id = $this->getSite()->getId();
 		    $site_info = $this->getSite()->__toArray();
 		}else{
-		    $this->addUserMessageToNextRequest("You must have chosen a site to work on before adding pages.");
+		    $this->addUserMessageToNextRequest("You must have chosen a site to work on before adding pages.", SmartestUserMessage::INFO);
 		    $this->redirect("/smartest");
 		}
 		
@@ -966,22 +966,22 @@ class Pages extends SmartestApplication{
     		    switch($post['destination']){
 			
         			case "SITEMAP":
-        			$this->addUserMessageToNextRequest("Your page was successfully added.");
+        			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
         			$this->redirect('/smartest/pages');
         			break;
 			
         			case "ELEMENTS":
-        			$this->addUserMessageToNextRequest("Your page was successfully added.");
+        			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
         			$this->redirect($this->domain.$this->module."/pageAssets?page_id=".$page_webid);
         			break;
 			
         			case "EDIT":
-        			$this->addUserMessageToNextRequest("Your page was successfully added.");
+        			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
         			$this->redirect($this->domain.$this->module."/openPage?page_id=".$page_webid);
         			break;
 			
         			case "PREVIEW":
-        			$this->addUserMessageToNextRequest("Your page was successfully added.");
+        			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
         			$this->redirect($this->domain.$this->module."/preview?page_id=".$page_webid);
     			    break;
     			
@@ -989,14 +989,14 @@ class Pages extends SmartestApplication{
     		
 		    }else{
 		        
-		        $this->addUserMessageToNextRequest("The new page expired from the session.");
+		        $this->addUserMessageToNextRequest("The new page expired from the session.", SmartestUserMessage::WARNING);
     		    $this->redirect('/smartest');
 		        
 		    }
 		
 		}else{
 		    
-		    $this->addUserMessageToNextRequest("You must have selected a site.");
+		    $this->addUserMessageToNextRequest("You must select a site before adding pages.", SmartestUserMessage::INFO);
 		    $this->redirect('/smartest');
 		    
 		}
@@ -1020,10 +1020,10 @@ class Pages extends SmartestApplication{
             $page->setMetaDescription(addslashes(strip_tags($post['page_meta_description'])));
             $page->save();
             SmartestCache::clear('site_pages_tree_'.$page->getSiteId(), true);
-            $this->addUserMessageToNextRequest('The page was successfully updated.');
+            $this->addUserMessageToNextRequest('The page was successfully updated.', SmartestUserMessage::SUCCESS);
             
         }else{
-            $this->addUserMessageToNextRequest('There was an error updating page ID '.$post['page_id'].'.');
+            $this->addUserMessageToNextRequest('There was an error updating page ID '.$post['page_id'].'.', SmartestUserMessage::ERROR);
         }
         
 		$this->formForward();
@@ -1083,7 +1083,7 @@ class Pages extends SmartestApplication{
 		
 	    }else{
 	        
-	        $this->addUserMessage('You don\'t have permission to modify pages.');
+	        $this->addUserMessage('You don\'t have permission to modify pages.', SmartestUserMessage::ACCESS_DENIED);
 	        $this->send(false, 'allow_edit');
 	        
 	    }
@@ -1127,7 +1127,7 @@ class Pages extends SmartestApplication{
 	        $this->send($page->__toArray(), 'page');
 	        
 	    }else{
-	        $this->addUserMessage('The page ID has not been recognized.');
+	        $this->addUserMessage('The page ID has not been recognized.', SmartestUserMessage::ERROR);
 	    }
 	    
 	}
@@ -1158,12 +1158,12 @@ class Pages extends SmartestApplication{
                     
                 }
                 
-                $this->addUserMessageToNextRequest('The tags on this page were successfully updated.');
+                $this->addUserMessageToNextRequest('The tags on this page were successfully updated.', SmartestUserMessage::SUCCESS);
                 
             }else{
                 // clear all page tags
                 $page->clearTags();
-                $this->addUserMessageToNextRequest('The tags on this page were successfully removed.');
+                $this->addUserMessageToNextRequest('The tags on this page were successfully removed.', SmartestUserMessage::SUCCESS);
             }
         
         }else{
@@ -1271,7 +1271,7 @@ class Pages extends SmartestApplication{
 		
 		if($num_elements > 0){
 		    $preset->save();
-		    $this->addUserMessageToNextRequest("The new preset has been created.");
+		    $this->addUserMessageToNextRequest("The new preset has been created.", SmartestUserMessage::SUCCESS);
 		}
 		
 		$this->formForward();
@@ -1414,17 +1414,17 @@ class Pages extends SmartestApplication{
                 $page->setModified(time());
                 $page->save();
 	            
-	            $this->addUserMessageToNextRequest('The container was updated.');
+	            $this->addUserMessageToNextRequest('The container was updated.', SmartestUserMessage::SUCCESS);
 	            
 	        }else{
 	            
-	            $this->addUserMessageToNextRequest('The specified container doesn\'t exist');
+	            $this->addUserMessageToNextRequest('The specified container doesn\'t exist', SmartestUserMessage::ERROR);
 	            
 	        }
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('The specified page doesn\'t exist');
+            $this->addUserMessageToNextRequest('The specified page doesn\'t exist', SmartestUserMessage::ERROR);
             
         }
         
@@ -1622,17 +1622,17 @@ class Pages extends SmartestApplication{
                 $page->setModified(time());
                 $page->save();
 	            
-	            $this->addUserMessageToNextRequest('The placeholder was updated.');
+	            $this->addUserMessageToNextRequest('The placeholder was updated.', SmartestUserMessage::SUCCESS);
 	            
 	        }else{
 	            
-	            $this->addUserMessageToNextRequest('The specified placeholder doesn\'t exist');
+	            $this->addUserMessageToNextRequest('The specified placeholder doesn\'t exist', SmartestUserMessage::ERROR);
 	            
 	        }
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('The specified page doesn\'t exist');
+            $this->addUserMessageToNextRequest('The specified page doesn\'t exist', SmartestUserMessage::ERROR);
             
         }
         
@@ -1667,12 +1667,12 @@ class Pages extends SmartestApplication{
 	                // $definition->delete();
 	                $definition->setDraftAssetId('');
 	                $definition->save();
-	                $this->addUserMessageToNextRequest('The placeholder definition was removed.');
+	                $this->addUserMessageToNextRequest('The placeholder definition was removed.', SmartestUserMessage::SUCCESS);
 	                
 	            }else{
 	                
 	                // wasn't already defined
-	                $this->addUserMessageToNextRequest('The placeholder wasn\'t defined to start with.');
+	                $this->addUserMessageToNextRequest('The placeholder wasn\'t defined to start with.', SmartestUserMessage::INFO);
 	                
 	                
 	            }
@@ -1683,13 +1683,13 @@ class Pages extends SmartestApplication{
 	            
 	        }else{
 	            
-	            $this->addUserMessageToNextRequest('The specified placeholder doesn\'t exist');
+	            $this->addUserMessageToNextRequest('The specified placeholder doesn\'t exist', SmartestUserMessage::ERROR);
 	            
 	        }
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('The specified page doesn\'t exist');
+            $this->addUserMessageToNextRequest('The specified page doesn\'t exist', SmartestUserMessage::ERROR);
             
         }
         
@@ -1712,7 +1712,7 @@ class Pages extends SmartestApplication{
 	        // $page = new SmartestPage;
 	        if(strlen($page_webid) == 32){
 	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
-	            $this->addUserMessageToNextRequest("The attachment ID was not recognized.");
+	            $this->addUserMessageToNextRequest("The attachment ID was not recognized.", SmartestUserMessage::ERROR);
 	        }else{
 	            $this->redirect('/smartest/pages');
 	        }
@@ -1730,7 +1730,7 @@ class Pages extends SmartestApplication{
         }else{
             if(strlen($page_webid) == 32){
 	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
-	            $this->addUserMessageToNextRequest("The file ID was not recognized.");
+	            $this->addUserMessageToNextRequest("The file ID was not recognized.", SmartestUserMessage::ERROR);
 	        }else{
 	            $this->redirect('/smartest/pages');
 	        }
@@ -1748,7 +1748,7 @@ class Pages extends SmartestApplication{
         }else{
             if(strlen($page_webid) == 32){
 	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
-	            $this->addUserMessageToNextRequest("The template ID was not recognized.");
+	            $this->addUserMessageToNextRequest("The template ID was not recognized.", SmartestUserMessage::ERROR);
 	        }else{
 	            $this->redirect('/smartest/pages');
 	        }
@@ -1872,9 +1872,9 @@ class Pages extends SmartestApplication{
 	            $this->send($page->getWebId(), "page_id");
 	            
 	            if((boolean) $page->getChangesApproved()){
-		            $this->addUserMessage('You can\'t publish this page because you don\'t have permission to publish pages.');
+		            $this->addUserMessage('You can\'t publish this page because you don\'t have permission to publish pages.', SmartestUserMessage::ACCESS_DENIED);
 		        }else{
-		            $this->addUserMessage('You can\'t publish this page because the changes on it haven\'t yet been approved and you don\'t have permission to override approval.');
+		            $this->addUserMessage('You can\'t publish this page because the changes on it haven\'t yet been approved and you don\'t have permission to override approval.', SmartestUserMessage::ACCESS_DENIED);
 		        }
 	            
 	        }
@@ -1904,14 +1904,14 @@ class Pages extends SmartestApplication{
 		        $this->manager->publishPage($page->getWebid()); */
 		        
 		        $page->publish();
-		        $this->addUserMessageToNextRequest('The page has been successfully published.');
+		        $this->addUserMessageToNextRequest('The page has been successfully published.', SmartestUserMessage::SUCCESS);
 		        
 	        }else{
 	            
 	            if((boolean) $page->getChangesApproved()){
-		            $this->addUserMessageToNextRequest('The page could not be published because you don\'t have permission to publish pages');
+		            $this->addUserMessageToNextRequest('The page could not be published because you don\'t have permission to publish pages', SmartestUserMessage::ACCESS_DENIED);
 		        }else{
-		            $this->addUserMessageToNextRequest('The page could not be published because the changes on it haven\'t yet been approved and you don\'t have permission to approve pages');
+		            $this->addUserMessageToNextRequest('The page could not be published because the changes on it haven\'t yet been approved and you don\'t have permission to approve pages', SmartestUserMessage::ACCESS_DENIED);
 		        }
 	            
 	        }
@@ -1929,7 +1929,7 @@ class Pages extends SmartestApplication{
 		    $page->unpublish();
 		}
 		
-		$this->addUserMessageToNextRequest('The page has been un-published. No other changes have been made.');
+		$this->addUserMessageToNextRequest('The page has been un-published. No other changes have been made.', SmartestUserMessage::SUCCESS);
 		
 		$this->formForward();
 		
@@ -1986,7 +1986,7 @@ class Pages extends SmartestApplication{
             
         }else{
             // page was not found
-            $this->addUserMessageToNextRequest("The page ID was not recognised.");
+            $this->addUserMessageToNextRequest("The page ID was not recognised.", SmartestUserMessage::ERROR);
             $this->formForward();
         }
         
@@ -2029,12 +2029,12 @@ class Pages extends SmartestApplication{
             
             if($list->load($list_name, $page, true)){
                 // this list was already defined
-                $this->addUserMessageToNextRequest("The list \"".$list_name."\" was updated successfully.");
+                $this->addUserMessageToNextRequest("The list \"".$list_name."\" was updated successfully.", SmartestUserMessage::SUCCESS);
             }else{
                 // this is a new list
                 $list->setName($post['list_name']);
                 $list->setPageId($page->getId());
-                $this->addUserMessageToNextRequest("The list \"".$list_name."\" was defined successfully.");
+                $this->addUserMessageToNextRequest("The list \"".$list_name."\" was defined successfully.", SmartestUserMessage::SUCCESS);
             }
             
             $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/ListItems/');
@@ -2074,7 +2074,7 @@ class Pages extends SmartestApplication{
             
         }else{
             // page was not found
-            $this->addUserMessageToNextRequest("The page ID was not recognised.");
+            $this->addUserMessageToNextRequest("The page ID was not recognised.", SmartestUserMessage::ERROR);
             $this->formForward();
         }
 	    
@@ -2142,7 +2142,7 @@ class Pages extends SmartestApplication{
 		$url = new SmartestPageUrl;
 		
 		if($url->existsOnSite($post['page_url'], $this->getSite()->getId())){
-		    $this->addUserMessageToNextRequest("That URL already exists.");
+		    $this->addUserMessageToNextRequest("That URL already exists.", SmartestUserMessage::WARNING);
 		}else{
 		    
 		    $page = new SmartestPage;
@@ -2150,9 +2150,9 @@ class Pages extends SmartestApplication{
 		    if($page->hydrate($post['page_id'])){
 		        $page->addUrl($post['page_url']);
 		        $page->save();
-		        $this->addUserMessageToNextRequest("The new URL was successully added.");
+		        $this->addUserMessageToNextRequest("The new URL was successully added.", SmartestUserMessage::SUCCESS);
 		    }else{
-		        $this->addUserMessageToNextRequest("The page ID was not recognized.");
+		        $this->addUserMessageToNextRequest("The page ID was not recognized.", SmartestUserMessage::ERROR);
 		    }
 		    
 		}
@@ -2232,11 +2232,11 @@ class Pages extends SmartestApplication{
 		    // $page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
 		    // $this->manager->deletePageUrl($page_id,$pageurl_id,$page_url);
 		    $url->delete();
-		    $this->addUserMessageToNextRequest("The URL has been successfully deleted.");
+		    $this->addUserMessageToNextRequest("The URL has been successfully deleted.", SmartestUserMessage::SUCCESS);
 		
 	    }else{
 	        
-	        $this->addUserMessageToNextRequest("The URL ID was not recognized.");
+	        $this->addUserMessageToNextRequest("The URL ID was not recognized.", SmartestUserMessage::ERROR);
 	        
 	    }
 	    

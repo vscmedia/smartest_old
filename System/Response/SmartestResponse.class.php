@@ -65,6 +65,7 @@ SmartestFileSystemHelper::include_group(
 	'System/Templating/SmartestTemplateHelper.class.php',
 	'System/Base/SmartestBaseProcess.class.php',
 	'System/Base/SmartestBaseApplication.class.php',
+	'System/Base/SmartestSystemApplication.class.php',
 	'Library/API/SmartestApplication.class.php',
 	'Library/API/SmartestUser.class.php'
 

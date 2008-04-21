@@ -1,14 +1,14 @@
 <?php
 
-include_once 'System/Helpers/ItemsHelper.class.php';
+// include_once 'System/Helpers/ItemsHelper.class.php';
 include_once "Managers/SchemasManager.class.php";
 
-class Sets extends SmartestApplication{
+class Sets extends SmartestSystemApplication{
 
 	var $itemsManager;
 	
 	function __moduleConstruct(){
-		$this->itemsManager = new ItemsHelper();
+		// $this->itemsManager = new ItemsHelper();
 		$this->SchemasManager = new SchemasManager();	
 	}
 	
@@ -121,9 +121,6 @@ class Sets extends SmartestApplication{
 	                
 	            }
 	            
-	            // print_r($all_items);
-	            // print_r($set_member_ids);
-	            
 	            $this->send($set->__toArray(), 'set');
 	            $this->send($set_member_arrays, 'members');
 	            $this->send($all_items, 'non_members');
@@ -132,8 +129,6 @@ class Sets extends SmartestApplication{
 	            $formTemplateInclude = "editSet.static.tpl";
 	            
 	        }
-	        
-	        // print_r($set->getModel()->getPropertiesAsArrays());
 	        
 	        $this->send($set->getModel()->__toArray(), 'model');
 	        $this->send($formTemplateInclude, 'formTemplateInclude');
@@ -145,49 +140,6 @@ class Sets extends SmartestApplication{
 	    
 	    $this->setFormReturnUri();
 	    
-		/* if($post){
-			
-			$type=mysql_real_escape_string($post['set_type']);
-			$set_name=mysql_real_escape_string($post['set_name']);
-			$set_varname=$this->_string->toVarName($set_name);
-			$model_id=mysql_real_escape_string($post['model_select']);
-			$set_id=$this->manager->insertSet($set_name,$model_id,$type,$set_varname);
-			
-			if($type== 'DYNAMIC'){	
-				$itemproperty_id=mysql_real_escape_string($post['itemproperty_id']);
-				$condition=mysql_real_escape_string($post['condition']);
-				$value=mysql_real_escape_string($post['value']);	
-				$this->manager->addSetRule($set_id, "", $itemproperty_id, strtoupper($condition), $value);
-			}
-			
-		}else{
-			$set_id=$get['set_id'];
-		}
-		
-		$models = $this->itemsManager->getItemClasses(); 		
-		$set = $this->manager->getSet($set_id);      	
-		$rules = $this->manager->getSetRules($set_id);      	
-		$model_id = $set['itemclass_id'];
-		$properties = null;
-		
-		if(is_numeric($model_id)){
-			$properties = $this->itemsManager->getItemClassProperties($model_id); 	
-			$items = $this->itemsManager->getAvailableItemsInClass($model_id,$set_id); 
-		}
-		
-		$set_type=$set['set_type'];
-		
-		if($set_id==''  || $set_type==''){
-			$set_type='error';
-		}else{
-		    $set_items=$this->manager->previewSet($set_id,$set_type,$model_id);
-		}
-		
-		
-		$formTemplateInclude = "editSet.".strtolower($set_type).".tpl";
-		return (array("add"=> $get['add'], "rules"=>$rules,"set"=>$set,"model_id"=>$model_id ,"models"=> $models, "properties"=>$properties,"formTemplateInclude"=>$formTemplateInclude,"items"=>$items,"set_items"=>$set_items));
-		
-		*/
 	}
 	
 	public function updateDynamicSet($get, $post){

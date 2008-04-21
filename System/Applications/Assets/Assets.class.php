@@ -15,7 +15,7 @@
 require_once 'XML/Serializer.php'; 
 require_once 'Text/Highlighter.php';
 
-class Assets extends SmartestApplication{
+class Assets extends SmartestSystemApplication{
 	
 	function __moduleConstruct(){
 		
@@ -76,14 +76,14 @@ class Assets extends SmartestApplication{
 		}
 		
 		if($placeholder->exists($name, $this->getSite()->getId())){
-	        $this->addUserMessageToNextRequest("A placeholder with the name \"".$name."\" already exists.");
+	        $this->addUserMessageToNextRequest("A placeholder with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
 	    }else{
 		    $placeholder->setLabel($post['placeholder_label']);
 		    $placeholder->setName($name);
 		    $placeholder->setSiteId($this->getSite()->getId());
 		    $placeholder->setType($post['placeholder_type']);
 		    $placeholder->save();
-		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.");
+		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
 		}
 		
 		// print_r($placeholder);
@@ -103,14 +103,14 @@ class Assets extends SmartestApplication{
 		$container = new SmartestContainer;
 		
 		if($container->exists($name, $this->getSite()->getId())){
-	        $this->addUserMessageToNextRequest("A container with the name \"".$name."\" already exists.");
+	        $this->addUserMessageToNextRequest("A container with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
 	    }else{
 		    $container->setLabel($post['container_label']);
 		    $container->setName($name);
 		    $container->setSiteId($this->getSite()->getId());
 		    $container->setType('SM_ASSETCLASS_CONTAINER');
 		    $container->save();
-		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.");
+		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
 	    }
 		
 		// print_r($container);
@@ -268,7 +268,7 @@ class Assets extends SmartestApplication{
 	        $a->save();
 	    }
 	    
-	    $this->addUserMessageToNextRequest(count($new_files)." file ".((count($new_files) == 1) ? " was " : "s were ")."successfully added to the repository.");
+	    $this->addUserMessageToNextRequest(count($new_files)." file".((count($new_files) == 1) ? " was " : "s were ")."successfully added to the repository.", SmartestUserMessage::SUCCESS);
 	    
 	    $this->formForward();
 	    
@@ -400,7 +400,7 @@ class Assets extends SmartestApplication{
 		            
 		            
 		        }else{
-		            $this->addUserMessageToNextRequest("Error: Neither a file name nor a string_id were provided.");
+		            $this->addUserMessageToNextRequest("Error: Neither a file name nor a string_id were provided.", SmartestUserMessage::ERROR);
 		            $everything_ok = false;
 		        }
 		        
@@ -431,7 +431,7 @@ class Assets extends SmartestApplication{
     		        
     		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
     		            $everything_ok = false;
-    		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions."), basename($new_temp_file), basename($final_file_name));
+    		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
     		        }else{
     		            $asset->setUrl(basename($final_file_name));
     		            $asset->setWebid(SmartestStringHelper::random(32));
@@ -482,7 +482,7 @@ class Assets extends SmartestApplication{
     		        
     		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
     		            $everything_ok = false;
-    		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)));
+    		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
     		            // $this->addUserMessage(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
     		        }else{
     		            $asset->setUrl(basename($final_file_name));
@@ -503,10 +503,10 @@ class Assets extends SmartestApplication{
 		    
 		    if($everything_ok){
 		        $asset->save();
-		        $this->addUserMessageToNextRequest(sprintf("The file was successfully saved as: %s", $asset->getUrl()));
+		        $this->addUserMessageToNextRequest(sprintf("The file was successfully saved as: %s", $asset->getUrl()), SmartestUserMessage::SUCCESS);
 		        // $this->addUserMessage(sprintf("The file was successfully saved as: %s", $asset->getUrl()));
 		    }else{
-		        $this->addUserMessageToNextRequest("There was an error creating the new file.");
+		        $this->addUserMessageToNextRequest("There was an error creating the new file.", SmartestUserMessage::ERROR);
 		        // $this->addUserMessage("There was an error creating the new file.");
 		    }
 		    
@@ -514,7 +514,7 @@ class Assets extends SmartestApplication{
 		    
 		}else{
 		    
-		    $this->addUserMessageToNextRequest("The asset type was not recognized.");
+		    $this->addUserMessageToNextRequest("The asset type was not recognized.", SmartestUserMessage::ERROR);
 		    // $this->addUserMessage("The asset type was not recognized.");
 		    $this->formForward();
 		    
@@ -651,12 +651,12 @@ class Assets extends SmartestApplication{
 
 		    }else{
 		        // asset type is not supported
-		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.');
+		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.', SmartestUserMessage::WARNING);
 		    }
 
 		}else{
 		    // asset ID was not recognised
-		    $this->addUserMessage('The asset ID was not recognized.');
+		    $this->addUserMessage('The asset ID was not recognized.', SmartestUserMessage::ERROR);
 		}
 	}
 	
@@ -676,9 +676,9 @@ class Assets extends SmartestApplication{
 		        
 		        if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
 	                if($asset->getTextFragment()->publish()){
-	                    $this->addUserMessageToNextRequest('The file has been successfully published.');
+	                    $this->addUserMessageToNextRequest('The file has been successfully published.', SmartestUserMessage::SUCCESS);
                     }else{
-                        $this->addUserMessageToNextRequest('There was an error publishing file. Please check file permissions.');
+                        $this->addUserMessageToNextRequest('There was an error publishing file. Please check file permissions.', SmartestUserMessage::ERROR);
                     }
 	            }else{
 	                
@@ -686,12 +686,12 @@ class Assets extends SmartestApplication{
 		        
 		    }else{
     		    // asset type is not supported
-    		    $this->addUserMessageToNextRequest('The asset type \''.$assettype_code.'\' is not supported.');
+    		    $this->addUserMessageToNextRequest('The asset type \''.$assettype_code.'\' is not supported.', SmartestUserMessage::WARNING);
     	    }
 
     	}else{
 		    // asset ID was not recognised
-		    $this->addUserMessageToNextRequest('The asset ID was not recognized.');
+		    $this->addUserMessageToNextRequest('The asset ID was not recognized.', SmartestUserMessage::ERROR);
     	}
     	
     	$this->formForward();
@@ -746,12 +746,12 @@ class Assets extends SmartestApplication{
 
 		    }else{
 		        // asset type is not supported
-		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.');
+		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.', SmartestUserMessage::WARNING);
 		    }
 
 		}else{
 		    // asset ID was not recognised
-		    $this->addUserMessage('The asset ID was not recognized.');
+		    $this->addUserMessage('The asset ID was not recognized.', SmartestUserMessage::ERROR);
 		}
 	    
 	}
@@ -774,10 +774,10 @@ class Assets extends SmartestApplication{
 	        }
 
 		    $asset->save();
-		    $this->addUserMessageToNextRequest("The file has been successfully updated.");
+		    $this->addUserMessageToNextRequest("The file has been successfully updated.", SmartestUserMessage::SUCCESS);
 
 		}else{
-		    $this->addUserMessageToNextRequest("The file you are trying to update no longer exists or has been deleted by another user.");
+		    $this->addUserMessageToNextRequest("The file you are trying to update no longer exists or has been deleted by another user.", SmartestUserMessage::WARNING);
 		}
 		
   		$this->formForward();
@@ -839,12 +839,12 @@ class Assets extends SmartestApplication{
 
 		    }else{
 		        // asset type is not supported
-		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.');
+		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.', SmartestUserMessage::WARNING);
 		    }
 
 		}else{
 		    // asset ID was not recognised
-		    $this->addUserMessage('The asset ID was not recognized.');
+		    $this->addUserMessage('The asset ID was not recognized.', SmartestUserMessage::ERROR);
 		}
 	    
 	}
@@ -875,7 +875,7 @@ class Assets extends SmartestApplication{
 	        $current_def->save();
 	        
 	    }else{
-	        $this->addUserMessage('The textfragment ID was not recognized.');
+	        $this->addUserMessage('The textfragment ID was not recognized.', SmartestUserMessage::ERROR);
 	    }
 	    
 	    
@@ -904,7 +904,7 @@ class Assets extends SmartestApplication{
 		    $this->send($asset->__toArray(), 'asset');
 
 		}else{
-		    $this->addUserMessageToNextRequest("The asset ID was not recognized");
+		    $this->addUserMessageToNextRequest("The asset ID was not recognized", SmartestUserMessage::ERROR);
 		    $this->formForward();
 		}
 
@@ -922,19 +922,19 @@ class Assets extends SmartestApplication{
 
 		        $asset->delete();
 
-		        $this->addUserMessageToNextRequest("The asset has been successfully deleted.");
+		        $this->addUserMessageToNextRequest("The asset has been successfully deleted.", SmartestUserMessage::SUCCESS);
         		$this->formForward();
 
 		    }else{
 
-		        $this->addUserMessageToNextRequest("The asset ID was not recognized.");
+		        $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);
         		$this->formForward();
 
 		    }
 		    
         }else{
             
-            $this->addUserMessageToNextRequest("You don't currently have permission to delete files.");
+            $this->addUserMessageToNextRequest("You don't currently have permission to delete files.", SmartestUserMessage::ACCESS_DENIED);
     		$this->formForward();
             
         }
@@ -1024,7 +1024,7 @@ class Assets extends SmartestApplication{
     		$download->send();
 
 		}else{
-		    $this->addUserMessageToNextRequest("The asset ID was not recognized.");
+		    $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);
 		    $this->formForward();
 		}
 

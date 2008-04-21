@@ -6,6 +6,8 @@
     <li{if $method == "pageTags" || $method == "itemTags"} class="current"{/if}><a href="{if $smarty.get.item_id}{$domain}datamanager/itemTags?item_id={$smarty.get.item_id}{if $smarty.get.page_id}&amp;page_id={$smarty.get.page_id}{/if}{else}{$domain}websitemanager/pageTags?page_id={$smarty.get.page_id}{/if}">Tags</a></li>
 </ul>
 
+<br clear="all" />
+
 {* }[<a href="{$domain}{$section}/editPage?page_id={$smarty.get.page_id}">Overview</a>]
 [<a href="{$domain}{$section}/pageAssets?page_id={$smarty.get.page_id}">Element Structure</a>]
 [<a href="{$domain}{$section}/pageTags?page_id={$smarty.get.page_id}">Tags</a>]

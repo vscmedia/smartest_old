@@ -11,7 +11,7 @@
  */
 
 
-class Settings extends SmartestApplication{
+class Settings extends SmartestSystemApplication{
 
 	function __moduleConstruct(){
 				

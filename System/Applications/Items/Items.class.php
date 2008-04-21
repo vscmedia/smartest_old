@@ -1,20 +1,16 @@
 <?php
 
-require_once SM_ROOT_DIR.'System/Helpers/ItemsHelper.class.php';
 require_once SM_ROOT_DIR.'Managers/SchemasManager.class.php';
-require_once SM_ROOT_DIR.'System/Applications/Assets/AssetsManager.class.php';
+// require_once SM_ROOT_DIR.'System/Applications/Assets/AssetsManager.class.php';
 
-// require_once 'XML/Serializer.php'; 
-
-class Items extends SmartestApplication{
+class Items extends SmartestSystemApplication{
 
 	private $SchemasManager;
   
 	public function __moduleConstruct(){
 	    $this->database = SmartestPersistentObject::get('db:main'); /* usage of the $this->database variable should be phased out in main classes */
-		$this->manager = new ItemsHelper();
 		$this->SchemasManager = new SchemasManager();
-		$this->AssetsManager = new AssetsManager();
+		// $this->AssetsManager = new AssetsManager();
 	}
 	
 	public function startPage($get){	
@@ -38,19 +34,14 @@ class Items extends SmartestApplication{
 		$itemclassid = $get['class_id'];
 		$model = new SmartestModel;
 		$model->hydrate($itemclassid);
-		// echo $model->testFunction();
 		
-		// print_r($model);
-		
-		// $itemClass = $this->manager->getItemClass($itemclassid);
-		$itemClass = $model->__toArray();
-		// print_r($itemClass);
-		// $definition = $this->manager->getItemClassProperties($itemclassid);
+		$model = $model->__toArray();
 		
 		$definition = $model->getPropertiesAsArrays();
-		// print_r($definition);
-		/* print_r( array('itemclass'=>$itemClass, 'definition'=>$definition) ); */   
-		return( array('itemclass'=>$itemClass, 'definition'=>$definition));    
+		
+		$this->send($model, 'itemclass');
+		$this->send($definition, 'definition');
+		 
 	}
 
 	public function itemClassSettings($get){
@@ -85,7 +76,7 @@ class Items extends SmartestApplication{
   	        $this->send($model->__toArray(), 'model');
   	        
   	    }else{
-  	        $this->addUserMessageToNextRequest('The model ID was not recognized.');
+  	        $this->addUserMessageToNextRequest('The model ID was not recognized.', SmartestUserMessage::ERROR);
   	        $this->redirect('/smartest/models');
   	    }
 	
@@ -98,7 +89,7 @@ class Items extends SmartestApplication{
         if($model->hydrate($get['class_id'])){
             $num_held_items = $this->getUser()->getNumHeldItems($model->getId(), $this->getSite()->getId());
 	        $this->getUser()->releaseItems($model->getId(), $this->getSite()->getId());
-	        $this->addUserMessageToNextRequest($num_held_items.' '.$model->getPluralName()." were released.");
+	        $this->addUserMessageToNextRequest($num_held_items.' '.$model->getPluralName()." were released.", SmartestUserMessage::SUCCESS);
         }else{
             $this->addUserMessageToNextRequest("The model ID was not recognized.");
         }
@@ -268,19 +259,19 @@ class Items extends SmartestApplication{
 	            if(is_object($item)){
 	                $model_name = $item->getModel()->getName();
 	                $item->delete();
-	                $this->addUserMessageToNextRequest('The '.$model_name.' was moved to the trash.');
+	                $this->addUserMessageToNextRequest('The '.$model_name.' was moved to the trash.', SmartestUserMessage::SUCCESS);
 	            }else{
-	                $this->addUserMessageToNextRequest('The item ID was not recognised.');
+	                $this->addUserMessageToNextRequest('The item ID was not recognised.', SmartestUserMessage::ERROR);
 	            }
 	            
 	        }else{
 	            
-	            $this->addUserMessageToNextRequest('You don\'t have permission to delete items.');
+	            $this->addUserMessageToNextRequest('You don\'t have permission to delete items.', SmartestUserMessage::ACCESS_DENIED);
 	            
 	        }
 	    }else{
 	        
-	        $this->addUserMessageToNextRequest('The item ID was not recognised.');
+	        $this->addUserMessageToNextRequest('The item ID was not recognised.', SmartestUserMessage::ERROR);
 	        
 	    }
 	    
@@ -307,7 +298,7 @@ class Items extends SmartestApplication{
 		    $model = new SmartestModel;
 		    $model->hydrate($model_id);
 		    
-		    $this->addUserMessage('Warning: Editing existing properties will change how the data referred to by that property is stored and accessed.');
+		    $this->addUserMessage('Editing existing properties will change how the data referred to by that property is stored and accessed.', SmartestUserMessage::WARNING);
 		    
 		    $data_types = SmartestDataUtility::getDataTypes();
 		    
@@ -376,7 +367,7 @@ class Items extends SmartestApplication{
 	        // item is being edited by somebody else
 	        $u = new SmartestUser;
 	        $u->hydrate($item->getHeldBy());
-	        $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.');
+	        $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
 	        $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
 	    }else{
 	        if($this->getUser()->hasToken('modify_items')){
@@ -385,7 +376,7 @@ class Items extends SmartestApplication{
                 $item->save();
                 $this->redirect('/'.SM_CONTROLLER_MODULE.'/editItem?item_id='.$item->getId());
             }else{
-                $this->addUserMessageToNextRequest('You don\'t have permssion to edit items');
+                $this->addUserMessageToNextRequest('You don\'t have permssion to edit items', SmartestUserMessage::ACCESS_DENIED);
                 $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
             }
 	    }
@@ -402,7 +393,7 @@ class Items extends SmartestApplication{
 	            $item->setIsHeld(0);
                 $item->setHeldBy(0);
                 $item->save();
-                $this->addUserMessageToNextRequest('The item has been released.');
+                $this->addUserMessageToNextRequest('The item has been released.', SmartestUserMessage::SUCCESS);
                 if(isset($get['from']) && $get['from']=='todoList'){
                     $this->redirect('/smartest/todo');
                 }else{
@@ -410,12 +401,12 @@ class Items extends SmartestApplication{
                 }
                 // $this->formForward();
 	        }else{
-	            $this->addUserMessageToNextRequest('The item is already being edited by somebody else.');
+	            $this->addUserMessageToNextRequest('The item is already being edited by somebody else.', SmartestUserMessage::WARNING);
 	            $this->formForward();
 	        }
 	        
 	    }else{
-	        $this->addUserMessageToNextRequest('The item was not locked.');
+	        $this->addUserMessageToNextRequest('The item was not locked.', SmartestUserMessage::INFO);
 	        $this->formForward();
 	    }
 	    
@@ -466,7 +457,7 @@ class Items extends SmartestApplication{
 	        $this->send($item->__toArray(), 'item');
 	        
 	    }else{
-	        $this->addUserMessage('The item ID has not been recognized.');
+	        $this->addUserMessage('The item ID has not been recognized.', SmartestUserMessage::ERROR);
 	    }
 	    
 	}
@@ -497,12 +488,12 @@ class Items extends SmartestApplication{
                     
                 }
                 
-                $this->addUserMessageToNextRequest('The tags on this item were successfully updated.');
+                $this->addUserMessageToNextRequest('The tags on this item were successfully updated.', SmartestUserMessage::SUCCESS);
                 
             }else{
                 // clear all item tags
                 $item->clearTags();
-                $this->addUserMessageToNextRequest('The tags on this item were successfully removed.');
+                $this->addUserMessageToNextRequest('The tags on this item were successfully removed.', SmartestUserMessage::SUCCESS);
             }
         
         }else{
@@ -528,7 +519,7 @@ class Items extends SmartestApplication{
 	        // $props = $model->getAvailableDescriptionProperties();
 	        $this->send($model->getAvailableDescriptionPropertiesAsArrays(), 'description_properties');
 	    }else{
-	        $this->addUserMessageToNextRequest("The model ID was not recognized.");
+	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
 	        $this->redirect('/smartest/models');
 	    }
 	    
@@ -555,13 +546,13 @@ class Items extends SmartestApplication{
             if(isset($post['itemclass_default_description_property_id']) && is_numeric($post['itemclass_default_description_property_id'])){
                 $model->setDefaultDescriptionPropertyId($post['itemclass_default_description_property_id']);
             }else{
-                $this->addUserMessageToNextRequest("The plural name you entered was invalid.");
+                $this->addUserMessageToNextRequest("The plural name you entered was invalid.", SmartestUserMessage::WARNING);
             }
             
             $model->save();
             
 	    }else{
-	        $this->addUserMessageToNextRequest("The model ID was not recognized.");
+	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
 	    }
 	    
 	    $this->formForward();
@@ -630,17 +621,17 @@ class Items extends SmartestApplication{
     		        $item->setPropertyValueByNumericKey($property_id, $new_value);
     		    }
 		    
-		        $this->addUserMessageToNextRequest('The item was updated successfully.');
+		        $this->addUserMessageToNextRequest('The item was updated successfully.', SmartestUserMessage::SUCCESS);
 		
 	        }else{
 	        
-	            $this->addUserMessageToNextRequest('The item ID was not recognised.');
+	            $this->addUserMessageToNextRequest('The item ID was not recognised.', SmartestUserMessage::SUCCESS);
 	        
 	        }
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('You don\'t have permssion to edit items');
+            $this->addUserMessageToNextRequest('You don\'t have permssion to edit items', SmartestUserMessage::ACCESS_DENIED);
             
         }
 	    
@@ -658,19 +649,19 @@ class Items extends SmartestApplication{
 	        if($this->getUser()->hasToken('approve_item_changes')){
 	            if((bool) $item->getChangesApproved()){
 	                // user has permission. allow item to be approved.
-	                $this->addUserMessageToNextRequest('The item has been approved.');
+	                $this->addUserMessageToNextRequest('The item has been approved.', SmartestUserMessage::SUCCESS);
 	                $item->setChangesApproved(1);
 	                $item->save();
                 }else{
-                    $this->addUserMessageToNextRequest('The item had not been changed.');
+                    $this->addUserMessageToNextRequest('The item had not been changed.', SmartestUserMessage::INFO);
                 }
 	        }else{
 	            // user does not have permission
-	            $this->addUserMessageToNextRequest('You do not have permission to approve item changes.');
+	            $this->addUserMessageToNextRequest('You do not have permission to approve item changes.', SmartestUserMessage::ACCESS_DENIED);
 	        }
 	        
 	    }else{
-	        $this->addUserMessageToNextRequest('The Item ID was not recognised.');
+	        $this->addUserMessageToNextRequest('The Item ID was not recognised.', SmartestUserMessage::ERROR);
 	    }
 	    
 	    $this->formForward();
@@ -690,22 +681,22 @@ class Items extends SmartestApplication{
 	            
 	            // it is ok to publish the item
 	            $item->publish();
-	            $this->addUserMessageToNextRequest('The item has been published.');
+	            $this->addUserMessageToNextRequest('The item has been published.', SmartestUserMessage::SUCCESS);
 	            
 	        }else{
 	            
 	            // the user doesn't have permissions
 	            if(!$item->isApproved()){
-	                $this->addUserMessageToNextRequest('You don\'t have permission to publish items without them being approved first.');
+	                $this->addUserMessageToNextRequest('You don\'t have permission to publish items without them being approved first.', SmartestUserMessage::ACCESS_DENIED);
 	            }else{
-	                $this->addUserMessageToNextRequest('You don\'t have permission to publish items.');
+	                $this->addUserMessageToNextRequest('You don\'t have permission to publish items.', SmartestUserMessage::ACCESS_DENIED);
 	            }
 	            
 	        }
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('The Item ID was not recognised.');
+            $this->addUserMessageToNextRequest('The Item ID was not recognised.', SmartestUserMessage::ERROR);
             
         }
         
@@ -722,12 +713,12 @@ class Items extends SmartestApplication{
 	        if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items')){
 	            $item->setPublic('FALSE');
 	            $item->save();
-	            $this->addUserMessageToNextRequest('The item is no longer visible on the site.');
+	            $this->addUserMessageToNextRequest('The item is no longer visible on the site.', SmartestUserMessage::SUCCESS);
 	        }else{
-	            $this->addUserMessageToNextRequest('You don\'t have permission to unpublish items.');
+	            $this->addUserMessageToNextRequest('You don\'t have permission to unpublish items.', SmartestUserMessage::ACCESS_DENIED);
 	        }
         }else{
-            $this->addUserMessageToNextRequest('The Item ID was not recognised.');
+            $this->addUserMessageToNextRequest('The Item ID was not recognised.', SmartestUserMessage::ERROR);
         }
         
         $this->formForward();
@@ -782,108 +773,15 @@ class Items extends SmartestApplication{
 		    $property->save();
 		    
 		    if($old_name == $property->getName()){
-    		    $this->addUserMessageToNextRequest('The property was updated.');
+    		    $this->addUserMessageToNextRequest('The property was updated.', SmartestUserMessage::SUCCESS);
     		}else{
-    		    $this->addUserMessageToNextRequest('The property was updated and permanently renamed to "'.$property->getName().'".');
+    		    $this->addUserMessageToNextRequest('The property was updated and permanently renamed to "'.$property->getName().'".', SmartestUserMessage::SUCCESS);
     		}
 	    }else{
-	        $this->addUserMessageToNextRequest('There was an error updating the property.');
+	        $this->addUserMessageToNextRequest('There was an error updating the property.', SmartestUserMessage::ERROR);
 	    }
 		
 		$this->formForward();
-		
-		// print_r($property);
-		
-		// $itemproperty_itemclass_id = $post['class_id'];
-		// $itemproperty_datatype = $post['itemproperty_datatype'];
-		// $itemproperty_required = $post['itemproperty_required'];
-		// $itemproperty_name = $post['itemproperty_name'];
-		/* $itemproperty_setting = $post['itemproperty_setting'];
-		$itemproperty_setting_value = $post['value'];
-		$itemproperty_varname = SmartestStringHelper::toVarName($itemproperty_name);
-		$itemproperty_dropdown = 0;
-		$itemproperty_modelid = 0;
-    	
-    	switch($itemproperty_datatype){					
-			
-			case '1':
-				$itemproperty_default_value = $post['default_value']['text'];
-				break;	
-			
-			case '2':
-				$itemproperty_default_value = $post['default_value']['longtext'];	
-				break;
-			
-			case '3':
-				$itemproperty_default_value = $post['default_value']['bool'];	
-				break;
-			
-			case '4':		
-				$itemproperty_dropdown = $post['dropdownMenu'];
-				$itemproperty_default_value = $post['default_value']['option_value'];	
-				break;
-			
-			case '5':
-				$itemproperty_default_value = $post['default_value']['url'];	
-				break;								
-			
-			case '6':	
-				$itemproperty_default_value = $post['default_value']['M'].'-'.$post['default_value']['D'];						
-				break;	
-			
-			case '7':	
-				
-				if($_FILES['File']['name']!=''){
-					$itemproperty_default_value=$_FILES['File']['name'];
-					$explode=explode('.',$itemproperty_default_value);
-					$suffix=$explode[count($explode)-1];
-					$type_id=$this->AssetsManager->checkAssetSuffix($suffix);
-	
-					if($type_id && (!preg_match('/\.tpl|.html|.htm|.txt|.php|.thtml$/i', $itemproperty_default_value))){
-						$this->AssetsManager->insertAsset($this->_string->random(32),$this->_string->toVarName($itemproperty_default_value), $itemproperty_default_value, '', $type_id, '');
-					}
-
-					if(preg_match('/\.js$/i', $itemproperty_default_value)){
-						$path='Resources/Javascript/';			
-					}else if(preg_match('/\.css$/i', $itemproperty_default_value)){
-						$path='Resources/Stylesheets/';	
-					}else if(preg_match('/\.jpg|\.jpeg|\.gif|\.png$/i', $itemproperty_default_value)){
-						$path='Resources/Images/';	
-					}else if(preg_match('/\.mov|\.qt|\.mpg|\.mpeg|\.swf$/i', $itemproperty_default_value)){
-						$path='Resources/Assets/';	
-					}else{
-						$path='Resources/Uploads/';
-					}
-					
-					move_uploaded_file($_FILES['File']['tmp_name'], $path.$itemproperty_default_value);
-					
-				}else{
-					$itemproperty_default_value=$post['File_old'];
-						
-				}
-				
-				break;
-			
-			case '8':	
-				$itemproperty_modelid = $post['select_model'];
-				$itemproperty_default_value = $post['default_value']['sel_item'];
-				break;
-		} */
-				
-		// $this->manager->updateItemall($itemproperty_setting, $itemproperty_setting_value, $itemproperty_varname, $itemproperty_name, $itemproperty_required, $itemproperty_datatype, $itemproperty_id, $itemproperty_dropdown, $itemproperty_modelid);
-		// $this->manager->updatedefault($itemproperty_default_value, $itemproperty_id);
-
-		// WE ADD NEW PROPERTY TO EXISTING ITEMS
-		// $items = $this->manager->getItemid($itemproperty_itemclass_id);
-   
-  		//foreach($items as $item){ 
-		//	$value=$this->manager->getSingleItemPropertyValue($item['item_id'], $itemproperty_id);
-			
-		//	if(!$value){
-		//		$result=$this->manager->updateItemPropertyValues($item['item_id'], $itemproperty_id, $itemproperty_default_value);
-		//	}
-		// }
-		
 		
 	}
 	
@@ -921,53 +819,12 @@ class Items extends SmartestApplication{
                     $item->setSiteId($this->getSite()->getId());
                     $success = $item->save();
                     // $this->redirect("/datamanager/editItem?item_id=".$item->getId());
-                    $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.");
+                    $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.", SmartestUserMessage::SUCCESS);
                     $this->redirect("/datamanager/getItemClassMembers?class_id=".$model->getId());
                 }else{
-                    $this->addUserMessageToNextRequest("You cannot create ".$model->getPluralName()." without entering a name.");
+                    $this->addUserMessageToNextRequest("You cannot create ".$model->getPluralName()." without entering a name.", SmartestUserMessage::WARNINR);
                     $this->redirect("/datamanager/getItemClassMembers?class_id=".$model->getId());
                 }
-                
-                // print_r($item);
-                
-                /* if($success){
-                    $this->addUserMessageToNextRequest('Your new '.$model->getName().' was saved successfully.');
-                    $this->formForward();
-                    $this->redirect('/datamanager/getItemClassMembers?class_id='.$model->getId());
-                }else{
-                    
-                    $errors = $item->getSaveErrors();
-                    
-                    $this->addUserMessage('There was an error saving your new '.$model->getName().'.');
-                    
-                    if(!isset($get['from'])){
-            		    $this->setFormReturnUri();
-            		}
-
-            		// $item_id = $get['item_id'];
-
-            		// $item = SmartestCmsItem::retrieveByPk($item_id);
-
-            		$item_array = $item->__toArray(true, true);
-
-            		// $this->setTitle('Edit '.$item->getModel()->getName().' | '.$item->getName());
-
-            		$this->send($item_array, 'item');
-                } */
-                
-    		    // $properties = $item->getProperties(true);
-    		    
-    		    // print_r($item);
-		        
-		        // $status = array();
-		        
-    		    // foreach($new_values as $property_id=>$new_value){
-    		        // $status[$property_id] = $item->setPropertyValueByNumericKey($property_id, $new_value);
-    		    // }
-                
-                
-                    // 
-                // }
         
             }else if(isset($get['class_id'])){
         
@@ -982,7 +839,7 @@ class Items extends SmartestApplication{
                 
                 }else{
                     
-                    $this->addUserMessageToNextRequest('The model id was not recognised.');
+                    $this->addUserMessageToNextRequest('The model id was not recognised.', SmartestUserMessage::ERROR);
                     
                 }
             
@@ -1033,63 +890,8 @@ class Items extends SmartestApplication{
  
 		return array("itemClass"=>$itemClass[0], "itemProperties"=>$itemBaseValues, "formProperties"=>$formValues, "user_id"=>$user_id);*/
 	}
-	
-	function insertItem($get, $post){  
-		
-		
-		
-		/* $itemclass_id = $post['class_id'];
-		$item_name = $post['itemName'];
-		$item_public = $post['itemIsPublic'];
-		$item_userid = $post['user_id'];
-		$item_slung=$this->_string->toSlug($item_name);
-		$item_id = $this->manager->setItemname($this->_string->random(32),$item_slung,$itemclass_id,$item_name,$item_public,$item_userid);
-		$itemproperty = $this->manager->getItemClassProperties($itemclass_id);
-		
-		foreach ($itemproperty as $itemproperty){
-		    
-		    $itemproperty_id = $itemproperty["itemproperty_id"];
-		    $itemproperty_datatype = $itemproperty["itemproperty_datatype"];
-		    
-		    if($itemproperty_datatype == 6){
-			    $date = $post['itemProperty'][$itemproperty_id]['Y']."-".$post['itemProperty'][$itemproperty_id]['M']."-".$post['itemProperty'][$itemproperty_id]['D'];
-			    $this->manager->setItemPropertyValues($item_id,$itemproperty_id,$date);
-		    }
-		
-		    if($itemproperty_datatype == 7){
-			
-    			$filename='File_'.$itemproperty_id;		
-    			$itemproperty_default_value=$_FILES[$filename]['name'];
-    			$explode=explode('.',$itemproperty_default_value);
-    			$suffix=$explode[count($explode)-1];
-    			$type_id=$this->AssetsManager->checkAssetSuffix($suffix);
-	
-    			if($type_id && (!preg_match('/\.tpl|.html|.htm|.txt|.php|.thtml$/i', $itemproperty_default_value))){
-    			    $this->AssetsManager->insertAsset($this->_string->random(32),$this->_string->toVarName($itemproperty_default_value), $itemproperty_default_value, '', $type_id, '');
-    			}
 
-    			if(preg_match('/\.js$/i', $itemproperty_default_value)){
-    			    $path='Resources/Javascript/';			
-    			}elseif(preg_match('/\.css$/i', $itemproperty_default_value)){
-    			    $path='Resources/Stylesheets/';	
-    			}elseif(preg_match('/\.jpg|.jpeg|.gif|.png$/i', $itemproperty_default_value)){
-    			    $path='Resources/Images/';	
-    			}elseif(preg_match('/\.mov|.qt.mpg|.mpeg|..swf$/i', $itemproperty_default_value)){
-    			    $path='Resources/Assets/';	
-    			}else{
-    			    $path='Resources/Uploads/';
-    			}
-			
-    			move_uploaded_file($_FILES[$filename]['tmp_name'], $path.$itemproperty_default_value);
-    			$this->manager->setItemPropertyValues($item_id,$itemproperty_id,$itemproperty_default_value);
-    			
-    		}else{
-    		    $this->manager->setItemPropertyValues($item_id,$itemproperty_id,$post['itemProperty'][$itemproperty_id]);
-    		}
-		} */
-	}
-
-    function insertSettings($get, $post){
+ /*   function insertSettings($get, $post){
   
 		$itemclass_id = $post['itemclass_id'];
 		$item_name = $post['itemName'];
@@ -1142,7 +944,7 @@ class Items extends SmartestApplication{
 				}
 			}
 		}
-	}
+	} */
 	
 	function addItemClass(){
 		
@@ -1152,19 +954,23 @@ class Items extends SmartestApplication{
 	function insertItemClass($get, $post){
 		
 		if(strlen($post['itemclass_name']) > 2 && SmartestDataUtility::isValidModelName($post['itemclass_name'])){
+		    
 		    $model = new SmartestModel;
 		    $model->setName($post['itemclass_name']);
 		    $model->setPluralName($post['itemclass_plural_name']);
 		    $model->setVarname(SmartestStringHelper::toVarName($post['itemclass_plural_name']));
 		    $model->setWebid(SmartestStringHelper::random(16));
 		    $model->save();
-		    $this->addUserMessageToNextRequest("The new model has been saved. Now add some properties.");
+		    $this->addUserMessageToNextRequest("The new model has been saved. Now add some properties.", SmartestUserMessage::SUCCESS);
 		    SmartestCache::clear('model_class_names', true);
 		    SmartestCache::clear('model_id_name_lookup', true);
 		    $this->redirect("/".SM_CONTROLLER_MODULE."/addPropertyToClass?class_id=".$model->getId());
+		    
 	    }else{
-	        $this->addUserMessageToNextRequest("The model name \'".$post['itemclass_name']."\' is not valid.");
+	        
+	        $this->addUserMessageToNextRequest("The model name \'".$post['itemclass_name']."\' is not valid.", SmartestUserMessage::WARNING);
 	        $this->formForward();
+	        
 	    }
 		
 	}
@@ -1180,7 +986,6 @@ class Items extends SmartestApplication{
 		
 		$property = new SmartestItemProperty;
 		
-		
 		$property->setName($post['itemproperty_name']);
 		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
 		$property->setDatatype($post['itemproperty_datatype']);
@@ -1189,7 +994,7 @@ class Items extends SmartestApplication{
 	    
 	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
 	    
-	    $this->addUserMessageToNextRequest("Your new property has been added.");
+	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::WARNING);
 	    
 	    $property->save();
 	    
@@ -1198,96 +1003,7 @@ class Items extends SmartestApplication{
 	    }else{
 	        $this->redirect('/datamanager/getItemClassProperties?class_id='.$model->getId());
 	    }
-	    
-	    // $this->formForward();
-		
-		/* $itemproperty_itemclass_id = @$post['class_id'];
-		$itemproperty_name = @$post['itemproperty_name'];
-		$itemproperty_datatype = @$post['itemproperty_datatype'];
-		$itemproperty_required = @$post['itemproperty_required'];
-		$itemproperty_setting = @$post['itemproperty_setting'];
-		$value = @$post['value'];
-		$itemproperty_varname = $this->_string->toVarName($itemproperty_name);
-		$itemproperty_unit_name = @$post['itemproperty_unit_name'];
-		$web_id = $this->_string->random(32);
-			switch($itemproperty_datatype){					
-					case '1':
-						$itemproperty_default_value = $post['default_value']['text'];
-						break;	
-					case '2':
-						$itemproperty_default_value = $post['default_value']['longtext'];	
-						break;
-					case '3':
-						$itemproperty_default_value = $post['default_value']['bool'];	
-						break;
-					case '4':		
-						$itemproperty_dropdown = $post['dropdownMenu'];
-						$itemproperty_default_value = $post['default_value']['option_value'];	
-						break;
-					case '5':
-						$itemproperty_default_value = $post['default_value']['url'];	
-						break;								
-					case '6':	
-						$itemproperty_default_value = $post['default_value']['M'].'-'.$post['default_value']['D'];						
-						break;	
-					case '7':
-					    
-						$itemproperty_default_value=$_FILES['File']['name'];
-						$explode = explode('.',$itemproperty_default_value);
-						$suffix = $explode[count($explode)-1];
-						$type_id = $this->AssetsManager->checkAssetSuffix($suffix);
-	
-						if($type_id && (!preg_match('/\.tpl|.html|.htm|.txt|.php|.thtml$/i', $itemproperty_default_value))){
-							$this->AssetsManager->insertAsset($this->_string->random(32),$this->_string->toVarName($itemproperty_default_value), $itemproperty_default_value, '', $type_id, '');
-						}
 
-						if(preg_match('/\.js$/i', $itemproperty_default_value)){
-							$path='Resources/Javascript/';			
-						}
-						elseif(preg_match('/\.css$/i', $itemproperty_default_value)){
-							$path='Resources/Stylesheets/';	
-						}
-						elseif(preg_match('/\.jpg|.jpeg|.gif|.png$/i', $itemproperty_default_value)){
-							$path='Resources/Images/';	
-						}
-						elseif(preg_match('/\.mov|.qt.mpg|.mpeg|..swf$/i', $itemproperty_default_value)){
-							$path='Resources/Assets/';	
-						}
-						else{$path='Resources/Uploads/';}
-						move_uploaded_file($_FILES['File']['tmp_name'], $path.$itemproperty_default_value);	
-						break;
-					case '8':	
-						$itemproperty_modelid=$post['select_model'];
-						$itemproperty_default_value=$post['default_value']['sel_item'];
-						break;	
-				}
-
-
-		$options_array = array(
-			"class_id" 		=> $itemproperty_itemclass_id,
-			"web_id" 		=> $web_id,
-			"name" 			=> $itemproperty_name,
-			"datatype" 		=> $itemproperty_datatype,
-			"default_val" 	=> $itemproperty_default_value,
-			"var_name" 		=> $itemproperty_varname,
-			"is_required" 	=> $itemproperty_required,
-			"setting" => $itemproperty_setting,
-			"setting_value" => $value,
-			"dropdown" 	=> $itemproperty_dropdown,
-			"model" 	=> $itemproperty_modelid,
-		);
-
-		$new_property_id = $this->manager->insertNewItemClassProperty($options_array);
-    
-    
-		//WE ADD NEW PROPERTY TO EXISTING ITEMS
-		$items = $this->manager->getItemid($itemproperty_itemclass_id);
-   
-  		foreach($items as $item){ 
-		    if($itemproperty_setting == 0){
-		        $result=$this->manager->setItemPropertyValues($item['item_id'], $new_property_id, $itemproperty_default_value);
-		    }		
-		} */
 	}
 	
 	function addPropertyToClass($get){
@@ -1303,8 +1019,6 @@ class Items extends SmartestApplication{
 		$this->setTitle('Add a Property to Model | '.$model->getPluralName());
 		
 		$itemClasses = $this->manager->getItemClasses($get["class_id"]);
-		// $baseValues = $this->manager->getItemClassBaseValues($get["class_id"]);
-		// $propertyTypes = $this->manager->getItemPropertyTypes();
 		$data_types = SmartestDataUtility::getDataTypes();
 		
 		$this->send($model->compile(), 'model');
@@ -1312,18 +1026,6 @@ class Items extends SmartestApplication{
 		
 		// print_r($data_types);
 		
-		// $models = $this->manager->getItemClasses();
-		// $dropdownMenu = $this->manager->getDropdownMenu();
-		
-		/*if($sel_id){
-		    $dropdownValues=$this->manager->getDropdownMenuValues($sel_id);
-		}
-		
-		if($model_id){
-		    $items = $this->manager->getItemsInClass($model_id);
-		} */
-		
-		// return array("baseValues"=>$baseValues, "itemClasses"=>$itemClasses, 'datatypes'=>$newPropertyTypes, "Types"=>$propertyTypes, "models"=>$models,"dropdownMenu"=>$dropdownMenu,"dropdownValues"=>$dropdownValues,"name"=>$name,"type"=>$type,"sel_id"=>$sel_id,"model_id"=>$model_id,"sel_items"=>$items);
 	}
 	
 	function addNewItemClassAction($get, $post){
@@ -1582,5 +1284,3 @@ class Items extends SmartestApplication{
 		$this->redirect("/sets/addSet?model_id=".$get['class_id']);
 	}
 }
-  
-?>

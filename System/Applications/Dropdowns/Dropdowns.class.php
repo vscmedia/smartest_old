@@ -1,17 +1,6 @@
 <?php
-  
-// include any needed files - optional of course.
-// require_once "%NEEDED_FILE%.php";
 
-// if managers_autoload is turned off in settings but you want to use a manager class, 
-// you must include it here as such:
-// require_once SM_SYSTEM_MANAGERS_DIR."%SAMPLE%Manager.class.php";
-
-// Extend SmartestApplication
-// not strictly required if you like to do everything by hand, but no good reason not to.
-// Gives access to DataManager API
-// Gives access to Controller values and templating object
-class Dropdowns extends SmartestApplication{
+class Dropdowns extends SmartestSystemApplication{
   
 
 	// ModuleBase already has a constructor, so if you want your class to have a constructor,
