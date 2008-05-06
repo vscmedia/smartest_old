@@ -85,6 +85,12 @@ div#work-area h3{
     padding:9px;
 }
 
+div#work-area h4{
+	margin:0px;
+	margin-bottom:7px;
+    padding:5px;
+}
+
 div#work-area textarea#tpl_textArea{
 	height:400px;
 	width:100%;

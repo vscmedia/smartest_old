@@ -877,6 +877,38 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    }
 	}
 	
+	public function renderIframe($params){
+	    
+	    if(isset($params['url'])){
+	    
+	        $allowed_iframe_attributes = array('width', 'height', 'id', 'class', 'style');
+        
+            $iframe_render_data = array("src"=>$params['url']);
+        
+            foreach($params as $name => $value){
+                if(in_array($name, $allowed_iframe_attributes)){
+                    $iframe_render_data[$name] = $value;
+                }
+            }
+        
+            $iframe_attributes = SmartestStringHelper::toAttributeString($iframe_render_data);
+        
+            $render_process_id = SmartestStringHelper::toVarName('iframe_'.$params['url'].'_'.substr(microtime(true), -6));
+            $child = $this->startChildProcess($render_process_id);
+            $child->assign('iframe_attributes', $iframe_attributes);
+            $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
+            $content = $child->fetch($file);
+            $this->killChildProcess($child->getProcessId());
+            return $content;
+        
+        }else{
+            
+            $this->raiseError("Could not build iframe. The required 'url' parameter was not specified.");
+            
+        }
+        
+	}
+	
 	public function getListData($listname){
 		$result = $this->templateHelper->getList($listname);
 		return $result;

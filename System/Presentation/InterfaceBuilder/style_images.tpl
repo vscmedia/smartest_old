@@ -1,6 +1,6 @@
 <style type="text/css">
 
-  img{ldelim} behavior:url({$domain}Resources/System/Javascript/smartest/iepngfix.htc); {rdelim}
+  img{ldelim} behavior:url({$domain}Resources/System/Javascript/iepngfix/iepngfix.htc); {rdelim}
   
   ul.basic-list{ldelim}
     list-style-image:url('{$domain}Resources/System/Images/generic_bullet.gif');

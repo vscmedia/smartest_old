@@ -35,11 +35,13 @@ class Items extends SmartestSystemApplication{
 		$model = new SmartestModel;
 		$model->hydrate($itemclassid);
 		
-		$model = $model->__toArray();
+		$modelarray = $model->__toArray();
+		
+		$this->setTitle("Properties of model: ".$model->getName());
 		
 		$definition = $model->getPropertiesAsArrays();
 		
-		$this->send($model, 'itemclass');
+		$this->send($modelarray, 'itemclass');
 		$this->send($definition, 'definition');
 		 
 	}
@@ -503,6 +505,10 @@ class Items extends SmartestSystemApplication{
         }
 	    
 	    $this->formForward();
+	}
+	
+	public function relatedContent($get){
+	    
 	}
 	
 	public function editModel($get){
@@ -994,7 +1000,7 @@ class Items extends SmartestSystemApplication{
 	    
 	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
 	    
-	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::WARNING);
+	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
 	    
 	    $property->save();
 	    
@@ -1018,7 +1024,7 @@ class Items extends SmartestSystemApplication{
 		
 		$this->setTitle('Add a Property to Model | '.$model->getPluralName());
 		
-		$itemClasses = $this->manager->getItemClasses($get["class_id"]);
+		// $itemClasses = $this->manager->getItemClasses($get["class_id"]);
 		$data_types = SmartestDataUtility::getDataTypes();
 		
 		$this->send($model->compile(), 'model');

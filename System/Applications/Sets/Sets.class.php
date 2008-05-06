@@ -1,6 +1,6 @@
 <?php
 
-// include_once 'System/Helpers/ItemsHelper.class.php';
+include_once 'System/Helpers/ItemsHelper.class.php';
 include_once "Managers/SchemasManager.class.php";
 
 class Sets extends SmartestSystemApplication{
@@ -8,7 +8,7 @@ class Sets extends SmartestSystemApplication{
 	var $itemsManager;
 	
 	function __moduleConstruct(){
-		// $this->itemsManager = new ItemsHelper();
+		$this->itemsManager = new ItemsHelper();
 		$this->SchemasManager = new SchemasManager();	
 	}
 	
@@ -30,7 +30,7 @@ class Sets extends SmartestSystemApplication{
 	
 	function addSet($get){		
 
-		$models = $this->itemsManager->getItemClasses($models); 		
+		$models = $this->itemsManager->getItemClasses(); 		
 		$set_name = $get['set_name'];
 		$properties = null;		
 		
@@ -156,8 +156,6 @@ class Sets extends SmartestSystemApplication{
 	            $set->setName(SmartestStringHelper::toVarName($post['set_name']));
 	            $set->setSortField($post['set_sort_field']);
 	            $set->setDataSourceSiteId($post['set_data_source_site_id']);
-	            
-	            print_r($set);
 	            
 	            $direction = ($post['set_sort_direction'] == 'DESC') ? 'DESC' : 'ASC';
 	            
@@ -541,5 +539,3 @@ class Sets extends SmartestSystemApplication{
 		$this->manager->updateDataExportFeed($export_id,$set,$pair);
 	}
 }
-
-?>

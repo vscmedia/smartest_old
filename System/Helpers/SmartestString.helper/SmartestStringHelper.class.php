@@ -153,6 +153,8 @@ class SmartestStringHelper extends SmartestHelper{
 		
 	}
 	
+	
+	
 	static function toQueryString($array, $escapeAmpersand=false){
 	    if(is_array($array)){
 	        
@@ -427,5 +429,28 @@ class SmartestStringHelper extends SmartestHelper{
         $string = str_replace('</p><p', "</p>\n\n<p", $string);
         return $string;
     }
+    
+    static function toRegularExpression($string, $add_slashes=false){
+	    $regexp = str_replace('/', '\/', $string);
+	    $regexp = str_replace('|', '\|', $string);
+		$regexp = str_replace('+', '\+', $regexp);
+		$regexp = str_replace('(', '\(', $regexp);
+		$regexp = str_replace(')', '\)', $regexp);
+		$regexp = str_replace('[', '\[', $regexp);
+		$regexp = str_replace(']', '\]', $regexp);
+		$regexp = str_replace('{', '\{', $regexp);
+		$regexp = str_replace('}', '\}', $regexp);
+		$regexp = str_replace('.', '\.', $regexp);
+		$regexp = str_replace('?', '\?', $regexp);
+		$regexp = str_replace('$', '\$', $regexp);
+		$regexp = str_replace('^', '\^', $regexp);
+		$regexp = str_replace("\x39", "\x39\x39", $regexp);
+		
+		if($add_slashes){
+		    return '/'.$regexp.'/';
+		}else{
+		    return $regexp;
+		}
+	}
 
 }

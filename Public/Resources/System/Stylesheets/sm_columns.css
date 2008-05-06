@@ -1,0 +1,37 @@
+div.column-holder{
+    clear:all;
+    margin:0px;
+    width:100%;
+}
+
+div.two-column-c1{
+    float:left;
+    width:49%;
+    text-align:left;
+}
+
+div.two-column-c2{
+    float:left;
+    width:48%;
+    text-align:left;
+    margin-left:10px;
+}
+
+div.three-column-c1{
+    float:left;
+    width:30%;
+    text-align:left;
+}
+
+div.three-column-c2{
+    float:left;
+    text-align:left;
+    width:30%;
+    margin-left:10px;
+}
+
+div.three-column-c3{
+    float:right;
+    width:30%;
+    text-align:left;
+}

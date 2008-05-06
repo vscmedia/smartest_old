@@ -3,11 +3,15 @@ body {
 }
 
 body	{
-  background-color: #40484a;
+  background-color: #242c35;
   /* background:url(/Resources/System/Images/smartest_login_bg.gif); */
   color: #000;
   margin: 0;
   padding: 0;
+}
+
+a img{
+    border:0px;
 }
 
 body, td {
@@ -29,14 +33,13 @@ textarea, input.textInput, select {
 }
 
 #login {
-  background: #fff;
-  border: 1px solid #a2a2a2;
+  background: #c0c0c0;
+/*  border: 1px solid #a2a2a2; */
   margin: 5em auto;
-  padding: 1.5em;
-  width: 25em;
+  width: 325px;
 }
 
-#login #login_error {
+#login_error {
   background: #c00;
   border: 1px solid #a40000;
   color: #fff;
@@ -44,6 +47,10 @@ textarea, input.textInput, select {
   font-weight: bold;
   padding: .5em;
   text-align: center;
+}
+
+#login-inner{
+  margin:0 1.7em 0 1.7em;
 }
 
 #login h1 {
@@ -61,12 +68,11 @@ textarea, input.textInput, select {
   padding: 3px;
 }
 
-
-#login #username, #password {
-  font-size: 1.7em;
+#username, #password {
+  font-size: 1.4em;
   width: 80%;
 }
 
-#login #submit {
+#submit {
   font-size: 1.4em;
 }

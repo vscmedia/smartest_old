@@ -59,6 +59,12 @@
   </div>
   
   <div class="edit-form-row">
+    <div class="form-section-label">Section</div>
+    <input type="checkbox" name="page_is_section" id="page_is_section" value="true"{if $pageInfo.is_section=='1'} checked="checked"{/if} />
+    <label for="page_is_section">{if $pageInfo.is_section=='1'}Un-tick this box to make this page no longer a section{else}Tick this box to make this page a section{/if}</label>
+  </div>
+  
+  <div class="edit-form-row">
     <div class="form-section-label">Cache as Static HTML</div>
     <input type="radio" name="page_cache_as_html" id="page_cache_as_html_on" value="TRUE"{if $pageInfo.cache_as_html == "TRUE"} checked="checked"{/if} />&nbsp;<label for="page_cache_as_html_on">Yes please</label>
     <input type="radio" name="page_cache_as_html" id="page_cache_as_html_off" value="FALSE"{if $pageInfo.cache_as_html == "FALSE"} checked="checked"{/if} />&nbsp;<label for="page_cache_as_html_off">No, thanks</label>

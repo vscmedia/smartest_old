@@ -211,6 +211,16 @@ div#work-area h3 a{
 	color:#555;
 }
 
+div#work-area h4{
+    color:#555;
+    font-size:1.2em;
+    letter-spacing: 1px;
+    font-weight:normal;
+    font-family:"helvetica neue",helvetica,arial,sans-serif;
+    background-color:#eee;
+	border:1px solid #ccc;
+}
+
 div#actions-area{
 	font-size:12px;
 	background-color:#fff;
@@ -359,6 +369,11 @@ ul.tabset li a{
     padding:5px 6px 6px 6px;
     border:0px;
     border-right:1px #bbb solid;
+}
+
+ul.tabset li a:hover{
+    color: #333;
+    text-decoration: none;
 }
 
 ul.tabset li.current a{

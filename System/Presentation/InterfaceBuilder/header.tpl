@@ -13,13 +13,14 @@
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_layout.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_itemsview.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_treeview.css" />
+    <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_columns.css" />
     
     <script type="text/javascript" language="javascript">
 
        var sm_domain = '{$domain}';
        var sm_section = '{$section}';
        var sm_method = '{$method}';
-       var sm_user_agent = {$sm_user_agent};
+       var sm_user_agent = {$sm_user_agent_json};
        
     </script>
 

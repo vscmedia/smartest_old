@@ -8,6 +8,7 @@ class SmartestPage extends SmartestDataObject{
 	protected $_child_pages_retrieved = false;
 	protected $_grandparent_page = null;
 	protected $_parent_page = null;
+	protected $_section_page = null;
 	protected $_urls = array();
 	protected $_fields = array();
 	protected $_new_urls = array();
@@ -19,6 +20,8 @@ class SmartestPage extends SmartestDataObject{
 	const AWAITING_APPROVAL = 101;
 	const CHANGES_APPROVED = 102;
 	const NOT_PUBLIC = 103;
+	
+	const HIERARCHY_DEPTH_LIMIT = 32;
 	
 	protected function __objectConstruct(){
 		$this->_table_prefix = 'page_';
@@ -150,9 +153,11 @@ class SmartestPage extends SmartestDataObject{
 		
 	}
 	
-	public function unpublish(){
+	public function unpublish($auto_save=true){
 		$this->setIsPublished('FALSE');
-		$this->save();
+		if($auto_save){
+		    $this->save();
+	    }
 	}
 	
 	public function getTextFragments(){
@@ -302,20 +307,9 @@ class SmartestPage extends SmartestDataObject{
 		$working_array = array();
 		$index = 0;
 		
-		// print_r(get_class_methods($this));
-		
-		// var_dump($draft_mode);
-		
 		$_children = $this->getPageChildren($draft_mode);
 		
-		// echo 'called';
-		
-		// print_r($_children);
-		
-		// echo count($_children).":\n";
-		
 		$int_level = (int) $level;
-		// echo $int_level;
 		
 		foreach($_children as $child_page_record){
 			
@@ -330,17 +324,14 @@ class SmartestPage extends SmartestDataObject{
 		    }
 		    
 		    $child->hydrate($child_page_record);
-			// echo $child->getId().', ';
-			// echo $child['page_id'].', ';
-			// print_r($child->__toArray());
+			
 			$working_array[$index]["info"] = $child->__toArray();
 			$working_array[$index]["treeLevel"] = $int_level;
-			$new_level = $int_level + 1; // echo $new_level;
+			$new_level = $int_level + 1; 
 			$working_array[$index]["children"] = $child->getPagesSubTree($new_level, $draft_mode, $get_items);
 			
 			if($child->getType() == "ITEMCLASS" && $get_items){
 			    $set = $child->getDataSet();
-			    // print_r($set);
 			    $working_array[$index]["child_items"] = $set->getMembersAsArrays();
 			}else{
 			    $working_array[$index]["child_items"] = array();
@@ -349,12 +340,6 @@ class SmartestPage extends SmartestDataObject{
 			$index++;
 			
 		}
-		
-		// echo "finished";
-		
-        //	echo '<br />';
-		
-		// print_r($working_array);
 		
 		return $working_array;
 	}
@@ -512,12 +497,16 @@ class SmartestPage extends SmartestDataObject{
         
 	}
 
-	public function getPageChildren($draft_mode=false){
+	public function getPageChildren($draft_mode=false, $sections_only=false){
 	    
 	    $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->getId()."' AND page_site_id='".$this->getSiteId()."' AND page_deleted != 'TRUE'";
 		
 		if(!$draft_mode){
 		    $sql .= " AND page_is_published = 'TRUE'";
+		}
+		
+		if($sections_only){
+		    $sql .= " AND page_is_section = '1'";
 		}
 		
 		$sql .= " ORDER BY page_order_index, page_id ASC";
@@ -541,9 +530,9 @@ class SmartestPage extends SmartestDataObject{
 	    return $result;
 	}
 	
-	public function getPageChildrenAsArrays($draft_mode=false){
+	public function getPageChildrenAsArrays($draft_mode=false, $sections_only=false){
 	    
-	    $children = $this->getPageChildren($draft_mode);
+	    $children = $this->getPageChildren($draft_mode, $sections_only);
 	    $array = array();
 	    
 	    foreach($children as $child_page_record){
@@ -654,6 +643,8 @@ class SmartestPage extends SmartestDataObject{
 	    $data = array();
 	    $data['page'] = $this->__toArray();
 	    
+	    $data['page']['tags'] = $this->getTagsAsArrays();
+	    
 	    if($this instanceof SmartestItemPage){
 	        if($this->getPrincipalItem()){
 	            $data['principal_item'] = $this->getPrincipalItem()->__toArray();
@@ -681,7 +672,6 @@ class SmartestPage extends SmartestDataObject{
 	    $du = new SmartestDataUtility;
 	    $tags = $du->getTagsAsArrays();
 	    
-	    // TODO: add code here that will fetch "related" pages.
 	    $data['tags'] = $tags;
 	    $data['fields'] = $this->getPageFieldValuesAsAssociativeArray($draft_mode);
 	    $data['navigation'] = $this->getNavigationStructure($draft_mode);
@@ -690,9 +680,6 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function isTagPage(){
-	    // print_r($this->getSite());
-	    // echo 'tpid:'.$this->getSite()->getTagPageId();
-	    // echo 'id:'.$this->getId();
 	    return ($this->getParentSite()->getTagPageId() == $this->getId());
 	}
 	
@@ -817,12 +804,45 @@ class SmartestPage extends SmartestDataObject{
 	    $ids = array();
 	    
 	    foreach($result as $tl){
-	        if(!in_array($tl['taglookup_object_id'], $ids)){
+	        if(!in_array($ta['taglookup_tag_id'], $ids)){
 	            $ids[] = $tl['taglookup_tag_id'];
 	        }
 	    }
 	    
 	    return $ids;
+	    
+	}
+	
+	public function getTags(){
+	    
+	    $sql = "SELECT * FROM Tags, TagsObjectsLookup WHERE TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id='".$this->getId()."' AND TagsObjectsLookup.taglookup_type='SM_PAGE_TAG_LINK' ORDER BY Tags.tag_name";
+	    $result = $this->database->queryToArray($sql);
+	    $ids = array();
+	    $tags = array();
+	    
+	    foreach($result as $ta){
+	        if(!in_array($ta['taglookup_tag_id'], $ids)){
+	            $ids[] = $ta['taglookup_tag_id'];
+	            $tag = new SmartestTag;
+	            $tag->hydrate($ta);
+	            $tags[] = $tag;
+	        }
+	    }
+	    
+	    return $tags;
+	    
+	}
+	
+	public function getTagsAsArrays(){
+	    
+	    $arrays = array();
+	    $tags = $this->getTags();
+	    
+	    foreach($tags as $t){
+	        $arrays[] = $t->__toArray();
+	    }
+	    
+	    return $arrays;
 	    
 	}
 	
@@ -885,7 +905,51 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	function getNavigationStructure($draft_mode=false){
+	public function isRelatedToPage($page_id){
+	    
+	}
+	
+	public function getRelatedPages($draft_mode=false){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
+	    $q->setCentralNodeId($this->getId());
+	    $q->addSortField('Pages.page_title');
+	    
+	    if(!$draft_mode){
+	        $q->addForeignTableConstraint('Pages.page_is_published', 'TRUE');
+	    }
+	    
+	    $related_pages = $q->retrieve();
+	    // print_r($related_pages);
+	    return $related_pages;
+	}
+	
+	public function getRelatedPagesAsArrays($draft_mode=false){
+	    
+	    $pages = $this->getRelatedPages($draft_mode);
+	    $arrays = array();
+	    
+	    foreach($pages as $page){
+	        $arrays[] = $page->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
+	public function isRelatedToItem($page_id){
+	    
+	}
+	
+	public function getRelatedItems($draft_mode=false){
+	    
+	}
+	
+	public function getRelatedItemsAsArrays($draft_mode=false){
+	    
+	}
+	
+	public function getNavigationStructure($draft_mode=false){
 		
 		$home_page_id = $this->getParentSite()->getTopPageId();
 		$home_page = new SmartestPage;
@@ -894,12 +958,15 @@ class SmartestPage extends SmartestDataObject{
 		$this->getGrandParentPage();
 		
 		return array(
+		    // TODO: add code here that will fetch "related" pages.
 			"parent"=>$this->getParentPage()->compile(), 
+			"section"=>$this->getSectionPage()->compile(), 
 			"breadcrumbs"=>$this->getPageBreadCrumbs(), 
 			"sibling_level_lages"=>$this->getParentPage()->getPageChildrenAsArrays($draft_mode), 
 			"parent_level_pages"=>$this->getGrandParentPage()->getPageChildrenAsArrays($draft_mode),
 			"child_pages"=>$this->getPageChildrenAsArrays($draft_mode),
-			"section_pages"=>$home_page->getPageChildrenAsArrays($draft_mode)
+			"main_sections"=>$home_page->getPageChildrenAsArrays($draft_mode, true),
+			"related_pages"=>$this->getRelatedPagesAsArrays(false)
 		);
 	}
 	
@@ -908,7 +975,7 @@ class SmartestPage extends SmartestDataObject{
 		$home_page = $this->getParentSite()->getHomePage();
 		$breadcrumbs = array();
 		
-		$limit = 20;
+		$limit = self::HIERARCHY_DEPTH_LIMIT;
 		
 		$page_id = $this->getId();
 		
@@ -929,6 +996,37 @@ class SmartestPage extends SmartestDataObject{
 		
 	}
 	
+	public function getSectionPage(){
+	    if(SmartestStringHelper::isFalse($this->getIsSection()) && !$this->isHomePage()){
+	        if(!$this->_section_page){
+	            
+	            $page = $this->getParentPage();
+	            
+	            $limit = self::HIERARCHY_DEPTH_LIMIT;
+	            
+	            while($limit > 0){
+	                
+	                if(SmartestStringHelper::toRealBool($page->isHomePage()) || SmartestStringHelper::toRealBool($page->getIsSection())){
+	                    $section_page = $page;
+	                    break;
+	                }else{
+	                    $page = $page->getParentPage();
+	                }
+	                
+	                $limit--;
+	            }
+	            
+	            $this->_section_page = $section_page;
+	            return $section_page;
+	            
+	        }else{
+	            return $this->_section_page;
+	        }
+        }else{
+            return $this;
+        }
+	}
+	
 	public function getSite(){
 	    
 	    if(!SmartestPersistentObject::get('__current_host_site')){
@@ -937,7 +1035,7 @@ class SmartestPage extends SmartestDataObject{
 	        $s = new SmartestSite;
 	        $s->hydrate($result[0]);
 	        SmartestPersistentObject::set('__current_host_site', $s);
-	    } // $this->_site
+	    }
 	    
 	    return SmartestPersistentObject::get('__current_host_site');
 	    
@@ -955,19 +1053,31 @@ class SmartestPage extends SmartestDataObject{
 		
 		$format = $this->getParentSite()->getTitleFormat();
 		
+		$title = str_replace('$page', $this->getTitle(), $format);
+		
+		$separator = $this->getParentSite()->getTitleFormatSeparator();
+		
+		if(SmartestStringHelper::isFalse($this->getIsSection())){
+		    
+		    $section_page = $this->getSectionPage();
+		    
+		    if($section_page->isHomePage()){
+		        $title = preg_replace(SmartestStringHelper::toRegularExpression($separator.' $section', true), '', $title);
+		    }else{
+		        $title = preg_replace(SmartestStringHelper::toRegularExpression($separator.' $section', true), $separator.' '.$section_page->getTitle(), $title);
+	        }
+	        
+		}else{
+		    $title = preg_replace(SmartestStringHelper::toRegularExpression($separator.' $section', true), '', $title);
+		}
+		
 		if($this->isTagPage() && is_object($this->_tag)){
-		    $half_way = str_replace('$page', $this->getTitle().' | '.$this->_tag->getLabel(), $format);
-	    }else{
-	        $half_way = str_replace('$page', $this->getTitle(), $format);
+		    $title .= ' '.$separator.' '.$this->_tag->getLabel();
 	    }
 	    
-	    $title = str_replace('$site', $this->getParentSite()->getName(), $half_way);
+	    $title = str_replace('$site', $this->getParentSite()->getName(), $title);
 	    
-	    /* if($this->isTagPage() && is_object($this->_tag())){
-		    $title .= ' | '.$this->_tag->getLabel();
-		} */
-		
-		return $title;
+	    return $title;
 	}
 	
 	public function getCacheFileName(){

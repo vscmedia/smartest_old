@@ -11,8 +11,23 @@ class SmartestManyToManyEntity{
     protected $_required = false;
     
     public function __construct($table, $foreignKey, $entityIndex, $class, $required=false){
-        $this->_table = $table;
-        $this->_foreignKey = $foreignKey;
+        
+        $dbth = new SmartestDatabaseTableHelper;
+        
+        if($dbth->tableExists($table)){
+            
+            $this->_table = $table;
+            
+            if($dbth->tableHasColumn($this->_table, $foreignKey)){
+                $this->_foreignKey = $foreignKey;
+            }else{
+                throw new SmartestException('The column \''.$foreignKey.'\' does not exist in table \''.$table.'\'');
+            }
+            
+        }else{
+            throw new SmartestException('The table \''.$table.'\' does not exist.');
+        }
+        
         $this->_entityIndex = $entityIndex;
         $this->_class = $class;
         $this->_required = $required;
@@ -22,8 +37,12 @@ class SmartestManyToManyEntity{
         return $this->_table;
     }
     
-    public function getForeignKeyField(){
-        return $this->_table.'.'.$this->_foreignKey;
+    public function getForeignKeyField($add_table=true){
+        if($add_table){
+            return $this->_table.'.'.$this->_foreignKey;
+        }else{
+            return $this->_foreignKey;
+        }
     }
     
     public function getEntityIndex(){
@@ -31,12 +50,55 @@ class SmartestManyToManyEntity{
     }
     
     public function getClass(){
-        var_dump($this->_class);
         return $this->_class;
     }
     
     public function isRequired(){
         return $this->_required;
+    }
+    
+}
+
+class SmartestManyToManyNetwork{
+    
+    protected $_table;
+    protected $_foreignKey;
+    protected $_class;
+    
+    public function __construct($table, $foreignKey, $class){
+        
+        $dbth = new SmartestDatabaseTableHelper;
+        
+        if($dbth->tableExists($table)){
+            
+            $this->_table = $table;
+            
+            if($dbth->tableHasColumn($this->_table, $foreignKey)){
+                $this->_foreignKey = $foreignKey;
+            }else{
+                throw new SmartestException('The column \''.$foreignKey.'\' does not exist in table \''.$table.'\'');
+            }
+            
+        }else{
+            throw new SmartestException('The table \''.$table.'\' does not exist.');
+        }
+        
+    }
+    
+    public function getTable(){
+        return $this->_table;
+    }
+    
+    public function getForeignKeyField($add_table=true){
+        if($add_table){
+            return $this->_table.'.'.$this->_foreignKey;
+        }else{
+            return $this->_foreignKey;
+        }
+    }
+    
+    public function getClass(){
+        return $this->_class;
     }
     
 }
@@ -77,18 +139,31 @@ class SmartestManyToManyLookupType{
     
     protected $_id;
     protected $_return;
+    protected $_method;
     protected $_entities = array();
+    protected $_usesInstances = false;
+    protected $_network = null;
     
     public function __construct($type){
         
         $this->_id = $type['id'];
         $this->_return = $type['return'];
         $this->_label = $type['label'];
+        $this->_method = $type['method'];
+        $this->_usesInstances = SmartestStringHelper::toRealBool($type['instances']);
         
         // build entity objects
+        
         $entities = $type['entity'];
-        foreach($entities as $e){
-            $this->_entities[$e['index']] = new SmartestManyToManyEntity($e['table'], $e['foreignkey'], $e['index'], $e['class'], SmartestStringHelper::toRealBool($e['required']));
+        
+        if(is_array($entities) && $type['method'] != 'SM_MTMLOOKUPMETHOD_NETWORK'){
+            foreach($entities as $e){
+                $this->_entities[$e['index']] = new SmartestManyToManyEntity($e['table'], $e['foreignkey'], $e['index'], $e['class'], SmartestStringHelper::toRealBool($e['required']));
+            }
+        }
+        
+        if($type['method'] == 'SM_MTMLOOKUPMETHOD_NETWORK' && isset($type['network'])){
+            $this->_network = new SmartestManyToManyNetwork($type['network']['table'], $type['network']['foreignkey'], $type['network']['class']);
         }
         
     }
@@ -105,6 +180,14 @@ class SmartestManyToManyLookupType{
         return $this->_label;
     }
     
+    public function getMethod(){
+        return $this->_method;
+    }
+    
+    public function usesInstances(){
+        return $this->_usesInstances;
+    }
+    
     public function getNumberOfEntities(){
         return count($this->_entities);
     }
@@ -112,6 +195,12 @@ class SmartestManyToManyLookupType{
     public function getEntityByIndex($index){
         if(array_key_exists($index, $this->_entities)){
             return $this->_entities[$index];
+        }
+    }
+    
+    public function getNetwork(){
+        if($this->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
+            return $this->_network;
         }
     }
     

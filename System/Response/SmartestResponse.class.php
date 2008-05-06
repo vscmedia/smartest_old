@@ -10,7 +10,7 @@ mb_internal_encoding("UTF-8");
 
 // These two files can't be included using the include optimisation because it depends on their already having been included
 
-define('SM_INFO_VERSION_NUMBER', '0.3.5a');
+define('SM_INFO_VERSION_NUMBER', '0.3.5a2');
 
 require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
 require SM_ROOT_DIR.'System/Helpers/SmartestHelper.class.php';
@@ -418,7 +418,8 @@ class SmartestResponse{
 		$this->isSystemClass();
 		
 		$this->smarty->assign("sm_admin_email", SM_OPTIONS_ADMIN_EMAIL);
-		$this->smarty->assign("sm_user_agent", $this->browser->getSimpleClientSideObjectAsJson());
+		$this->smarty->assign("sm_user_agent_json", $this->browser->getSimpleClientSideObjectAsJson());
+		$this->smarty->assign("sm_user_agent", $this->browser->__toArray());
 		
 		// These constants will be phased out once the controller supports non-redirect forwarding (changing module and action and then re-calling)
 		define("SM_CONTROLLER_SECTION", $this->controller->getModuleName());
@@ -748,7 +749,9 @@ class SmartestResponse{
 		
 		// print_r($this->controller->getDebugContent()); // 渡辺香津美.html
 		
-		$this->smarty->assign('sm_messages', $this->controller->getUserActionObject()->getUserMessages());
+		if($this->controller->getUserActionObject() instanceof SmartestSystemApplication){
+		    $this->smarty->assign('sm_messages', $this->controller->getUserActionObject()->getUserMessages());
+	    }
 		
 		// print_r($this->controller->getUserActionObject()->getUserMessages());
 		// print_r(SmartestSession::get('user:messages:nextRequest'));

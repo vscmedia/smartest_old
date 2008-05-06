@@ -90,49 +90,71 @@ class SmartestUserAgentHelper extends SmartestHelper{
     	        // look for number after 'MSIE'
     	        preg_match('/MSIE\s?(\d+\.\d+)/i', $this->userAgent, $matches);
     	        $this->browser['appVersion'] = $matches[1];
+    	        $this->browser['appVersionInteger'] = (int) floor($matches[1]);
     	    }else if($this->isSafari()){
     	        preg_match('/Safari\/((\d+)(\.[\d]+)+)/i', $this->userAgent, $matches);
     	        $build = $matches[2];
+    	        // echo $build;
     	        switch($build){
     	            case 85:
     	            $this->browser['appVersion'] = '1.0';
+    	            $this->browser['appVersionInteger'] = 1;
     	            break;
     	            case 100:
     	            $this->browser['appVersion'] = '1.1';
+    	            $this->browser['appVersionInteger'] = 1;
     	            break;
     	            case 125:
     	            $this->browser['appVersion'] = '1.2';
+    	            $this->browser['appVersionInteger'] = 1;
     	            break;
     	            case 312:
     	            $this->browser['appVersion'] = '1.3';
+    	            $this->browser['appVersionInteger'] = 1;
     	            break;
     	            case 412:
     	            $this->browser['appVersion'] = '2.0';
+    	            $this->browser['appVersionInteger'] = 2;
     	            break;
     	            case 416:
     	            $this->browser['appVersion'] = '2.0.2';
+    	            $this->browser['appVersionInteger'] = 2;
     	            break;
     	            case 417:
     	            $this->browser['appVersion'] = '2.0.3';
+    	            $this->browser['appVersionInteger'] = 2;
     	            break;
     	            case 419:
     	            $this->browser['appVersion'] = '2.0.4';
+    	            $this->browser['appVersionInteger'] = 2;
     	            break;
     	            case 522:
     	            $this->browser['appVersion'] = '3.0';
+    	            $this->browser['appVersionInteger'] = 3;
+    	            break;
+    	            case 525:
+    	            $this->browser['appVersion'] = '3.1.1';
+    	            $this->browser['appVersionInteger'] = 3;
     	            break;
     	        }
     	    }else if($this->isFirefox()){
     	        preg_match('/Firefox\/(\d[\d\.]+\d+)/i', $this->userAgent, $matches);
     	        $this->browser['appVersion'] = $matches[1];
+    	        $this->browser['appVersionInteger'] = (int) $matches[1]{0};
     	    }else if($this->isCamino()){
         	    preg_match('/Camino\/(\d[\d\.]+\d+)/i', $this->userAgent, $matches);
         	    $this->browser['appVersion'] = $matches[1];
+        	    $this->browser['appVersionInteger'] = (int) $matches[1]{0};
         	    // echo $this->userAgent;
         	}
     	}
 	    
 	    return $this->browser['appVersion'];
+	}
+	
+	public function getAppVersionInteger(){
+	    $this->getAppVersion();
+	    return $this->browser['appVersionInteger'];
 	}
 	
 	public function getRenderingEngineName(){
@@ -217,12 +239,25 @@ class SmartestUserAgentHelper extends SmartestHelper{
 	        $this->simpleObject = new SmartestClientSideUserAgentObject;
 	        $this->simpleObject->appName = $this->getAppName();
 	        $this->simpleObject->appVersion = $this->getAppVersion();
+	        $this->simpleObject->appVersionInteger = $this->getAppVersionInteger();
 	        $this->simpleObject->platform = $this->getPlatform();
 	        $this->simpleObject->engine = $this->getRenderingEngineName();
 	        $this->simpleObject->isGecko = $this->isGecko();
 	        $this->simpleObject->language = $this->browser['language'];
 	        return $this->simpleObject;
 	    }
+	}
+	
+	public function __toArray(){
+	    $array = array();
+	    $array['appName'] = $this->getAppName();
+	    $array['appVersion'] = $this->getAppVersion();
+	    $array['appVersionInteger'] = $this->getAppVersionInteger();
+	    $array['platform'] = $this->getPlatform();
+	    $array['engine'] = $this->getRenderingEngineName();
+	    $array['isGecko'] = $this->isGecko();
+	    $array['language'] = $this->browser['language'];
+	    return $array;
 	}
 	
 	public function getSimpleClientSideObjectAsJson(){

@@ -1011,6 +1011,7 @@ class Pages extends SmartestSystemApplication{
             
             $page->setTitle(addslashes($post['page_title']));
             $page->setParent($post['page_parent']);
+            $page->setIsSection((isset($post['page_is_section']) && ($post['page_is_section'] == 'true')) ? 1 : 0);
             $page->setCacheAsHtml($post['page_cache_as_html']);
             $page->setCacheInterval($post['page_cache_interval']);
             $page->setIconImage($post['page_icon_image']);
@@ -1100,31 +1101,54 @@ class Pages extends SmartestSystemApplication{
 	    
 	    if($page->hydrate($page_id)){
 	        
-	        // $page_tag_ids = $page->getTagsAsIds();
-	        $du  = new SmartestDataUtility;
-	        $tags = $du->getTags();
-	        // print_r($tags);
-	        
-	        $page_tags = array();
-	        $i = 0;
-	        
-	        foreach($tags as $t){
+	        if($page->getType() == 'ITEMCLASS'){
 	            
-	            $page_tags[$i] = $t->__toArray();
+	            // Page is an Object meta page - force them to pick a specific item
+	            $this->send(false, 'show_tags');
 	            
-	            if($t->hasPage($page->getId())){
-	                $page_tags[$i]['attached'] = true;
-	            }else{
-	                $page_tags[$i]['attached'] = false;
+	            $model = new SmartestModel;
+
+                if($model->hydrate($page->getDatasetId())){
+                    $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+                    $this->send($items, 'items');
+                    $this->send($model->__toArray(), 'model');
+                }else{
+                    $this->send(array(), 'items');
+                }
+                
+                $this->send($page->__toArray(), 'page');
+                
+                $this->setTitle('Meta-Page Tags | Choose '.$model->getName().' to Continue');
+	            
+	        }else{
+	            
+	            // Page is a normal web page
+	            $du  = new SmartestDataUtility;
+	            $tags = $du->getTags();
+	        
+	            $page_tags = array();
+	            $i = 0;
+	        
+	            foreach($tags as $t){
+	            
+	                $page_tags[$i] = $t->__toArray();
+	            
+	                if($t->hasPage($page->getId())){
+	                    $page_tags[$i]['attached'] = true;
+	                }else{
+	                    $page_tags[$i]['attached'] = false;
+	                }
+	            
+	                $i++;
 	            }
+	        
+	            $this->send($page_tags, 'tags');
+	            $this->send(true, 'show_tags');
+	            $this->send($page->__toArray(), 'page');
 	            
-	            $i++;
-	        }
+	            $this->setTitle('Page Tags | '.$page->getTitle());
 	        
-	        // print_r($t);
-	        
-	        $this->send($page_tags, 'tags');
-	        $this->send($page->__toArray(), 'page');
+            }
 	        
 	    }else{
 	        $this->addUserMessage('The page ID has not been recognized.', SmartestUserMessage::ERROR);
@@ -1179,7 +1203,25 @@ class Pages extends SmartestSystemApplication{
 	    $this->formForward();
 	}
 	
-	function structure($get){
+	public function relatedContent($get){
+	    
+	    $this->setTitle("Related Content");
+	    $page = new SmartestPage;
+	    $page_webid = $get['page_id'];
+	    
+	    if($page->hydrate($page_webid)){
+	        $related_pages = $page->getRelatedPagesAsArrays(true);
+	        $related_items = $page->getRelatedItemsAsArrays(true);
+	        $this->send($related_pages, 'related_pages');
+    	    $this->send($related_items, 'related_items');
+	    }else{
+	        $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/pages');
+	    }
+	    
+	}
+	
+	public function structure($get){
 	
 		$this->setFormReturnUri();
 		
@@ -1190,7 +1232,7 @@ class Pages extends SmartestSystemApplication{
 		
 	}
 	
-	function layoutPresetForm($get){
+	public function layoutPresetForm($get){
 		
 		$page_webid = $get['page_id'];
 		
@@ -1203,8 +1245,6 @@ class Pages extends SmartestSystemApplication{
 		    $page_id = $this->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
 		    $assetClasses = $this->manager->getPageTemplateAssetClasses($page_webid, "draft");
 		    $assetClasseslist = $this->manager->getSerialisedAssetClassTree($assetClasses['tree']);
- 		    
- 		    // print_r($assetClasseslist);
  		    
  		    $this->send($assetClasseslist, 'elements');
  		    $this->send($page->__toArray(), 'page');

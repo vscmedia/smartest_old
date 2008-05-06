@@ -67,6 +67,39 @@ class SmartestItem extends SmartestDataObject{
 	    
 	}
 	
+	public function getTags(){
+	    
+	    $sql = "SELECT * FROM Tags, TagsObjectsLookup WHERE TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id='".$this->getId()."' AND TagsObjectsLookup.taglookup_type='SM_ITEM_TAG_LINK' ORDER BY Tags.tag_name";
+	    $result = $this->database->queryToArray($sql);
+	    $ids = array();
+	    $tags = array();
+	    
+	    foreach($result as $ta){
+	        if(!in_array($ta['taglookup_tag_id'], $ids)){
+	            $ids[] = $ta['taglookup_tag_id'];
+	            $tag = new SmartestTag;
+	            $tag->hydrate($ta);
+	            $tags[] = $tag;
+	        }
+	    }
+	    
+	    return $tags;
+	    
+	}
+	
+	public function getTagsAsArrays(){
+	    
+	    $arrays = array();
+	    $tags = $this->getTags();
+	    
+	    foreach($tags as $t){
+	        $arrays[] = $t->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
 	public function getDescriptionFieldContents(){
 	    
 	    // default_description_property_id

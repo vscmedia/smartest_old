@@ -14,7 +14,7 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		curl_setopt($ch, CURLOPT_URL, $address);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, 'Smartest Bot (Version'.SM_SYSTEM_VERSION.')');
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Smartest HTTP Request Helper (Version'.SM_SYSTEM_VERSION.')');
 		
 		if($type == 'POST'){
 			curl_setopt($ch, CURLOPT_POST, 1);
@@ -30,16 +30,50 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 			$protocol = (self::isSecure($address)) ? 'https://' : 'http://';
 			$protocol_length = strlen($protocol);
 			$hostname = self::getHostName($address);
+			
+			$urls = self::getLinkUrls($page);
+			
+			$already_processed = array();
+			
+			if(is_array($urls)){
+				foreach($urls as $resource_url){
+				    if(!in_array($resource_url, $already_processed)){
+					    if($resource_url{0} == '/'){
+					        // echo $resource_url.' - '.$protocol.$hostname.$resource_url."\n";
+    						// $page = str_replace($resource_url, $protocol.$hostname.$resource_url, $page);
+    						$regexp = SmartestStringHelper::toRegularExpression($resource_url);
+    						$page = preg_replace('/href=[\'"]?'.$regexp.'[\'"]/', 'href="'.$protocol.$hostname.$resource_url."\\1".'"', $page);
+    						$already_processed[] = $resource_url;
+    					}else{
+    						if(substr($resource_url, 0, $protocol_length) != $protocol && strlen($resource_url) > 1){
+    							$regexp = SmartestStringHelper::toRegularExpression($resource_url);
+        						$page = preg_replace('/href=[\'"]?'.$regexp.'[\'"]/', 'href="'.$protocol.$hostname.$resource_url."\\1".'"', $page);
+        						$already_processed[] = $resource_url;
+    						}
+    					}
+				    }
+				}
+				
+				// print_r($already_processed);
+				
+			}
+			
+			// print_r($res);
+			$already_processed = array();
 		
 			if(is_array($res)){
 				foreach($res as $resource_url){
-					if($resource_url{0} == '/'){
-						$page = str_replace($resource_url, $protocol.$hostname.$resource_url, $page);
-					}else{
-						if(substr($resource_url, 0, $protocol_length) != $protocol){
-							$page = str_replace($resource_url, $protocol.$hostname.'/'.$resource_url, $page);
-						}
-					}
+				    if(!in_array($resource_url, $already_processed)){
+					    if($resource_url{0} == '/'){
+    						$page = str_replace($resource_url, $protocol.$hostname.$resource_url, $page);
+    						$already_processed[] = $resource_url;
+    					}else{
+    						if(substr($resource_url, 0, $protocol_length) != $protocol){
+    							$page = str_replace($resource_url, $protocol.$hostname.'/'.$resource_url, $page);
+    							$already_processed[] = $resource_url;
+    						}
+    					}
+				    }
 				}
 			}
 		
@@ -70,7 +104,9 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		}
 		
 		preg_match_all('/<(link|script|img)[^>]+(href|src)=[\'"](\.{0,2}\/?[^\'"]+)/', $html, $matches);
-		preg_match_all('/<style[^>]+>@import ((url\()?[\'"]?([\w\.\/]+)[\'"]?\)?);/', $html, $matches_2);
+		preg_match_all('/<style[^>]*>[\s\n]*@import\s*((url\()?[\'"]?([\w\.\/-]+)[\'"]?\)?);/', $html, $matches_2);
+		
+		// print_r($matches_2);
 		
 		$res = $matches[3];
 		$css_imports = $matches_2[3];
@@ -82,6 +118,32 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		}
 		
 		return $res;
+	}
+	
+	static function getLinkUrls($page){
+	    
+	    if(substr($page, 0, 7) == 'http://' || substr($page, 0, 8) == 'https://'){
+			$html = self::getContent($page, false);
+		}else{
+			$html = $page;
+		}
+		
+		preg_match_all('/<a[^>]*\shref=[\'"]?([^\'"]+)[\'"]([^>]*)>([^(<\/)]*)<\/a>/', $html, $matches);
+		preg_match_all('/(window\.location|document\.location\.href)=[\'"](\.{0,2}\/?[^\'"]+)/', $html, $matches_2);
+		
+		$urls = $matches[1];
+		$css_imports = $matches_2[2];
+		
+		print_r($urls);
+		
+		foreach($css_imports as $css){
+			if(!in_array($css, $urls)){
+				$urls[] = $css;
+			}
+		}
+		
+		return $urls;
+		
 	}
 	
 	static function getTitle($page){

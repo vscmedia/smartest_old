@@ -64,7 +64,7 @@ class Test extends SmartestApplication{
 	
 	function libhelper($get){
 		// print_r(SmartestLibHelper::getLoaded());
-		$apple = SmartestHttpRequestHelper::getWebPage('http://www.whitehouse.gov/news/releases/2007/08/20070821-6.html');
+		$apple = SmartestHttpRequestHelper::getContent('http://www.apple.com/', true);
 		$apple = str_replace('Defense', 'Mass Murder', $apple);
 		$apple = str_replace('President', 'Supreme Emperor', $apple);
 		$apple = str_replace('American', 'evil', $apple);
@@ -80,7 +80,7 @@ class Test extends SmartestApplication{
 	}
 	
 	function xmltest(){
-	    $page = SmartestHttpRequestHelper::getWebPage('http://en.wikipedia.org/wiki/Special:Export/Dominique_DiPiazza');
+	    $page = SmartestHttpRequestHelper::getContent('http://en.wikipedia.org/wiki/Special:Export/Dominique_DiPiazza');
 	    $data = SmartestXmlHelper::loadString($page);
 	    $serializer = new SmartestXmlSerializer('mediawiki', $data);
 	    // echo $page;
@@ -92,8 +92,8 @@ class Test extends SmartestApplication{
 	
 	function testjson(){
 	    $page = new NewsStory;
-	    // $json_page = json_encode($page->__toArray());
-	    print_r($page->__toArray());
+	    $json_page = $page->__toJson();
+	    // print_r($page->__toArray());
 	    echo '<script language="javascript">var smartest_page = "'.$json_page.'"; alert (smartest_page);</script>';
 	}
 
@@ -133,7 +133,7 @@ class Test extends SmartestApplication{
 	    $cat->getTypes();
 	    print_r($cat); */
 	    
-	    // echo SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.'Presentation/Assets/helloworld-1.tpl').'<br />';
+	    echo SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.'Presentation/Layouts/helloworld.tpl').'<br />';
 	    
 	}
 

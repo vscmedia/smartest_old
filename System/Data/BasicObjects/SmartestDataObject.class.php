@@ -13,6 +13,7 @@ class SmartestDataObject{
 	protected $_came_from_database = false;
 	protected $database;
 	protected $_last_query = '';
+	protected $_dbTableHelper;
 	
 	public function __construct(){
 		
@@ -23,6 +24,8 @@ class SmartestDataObject{
 		if(method_exists($this, '__objectConstruct')){
 			$this->__objectConstruct();
 		}
+		
+		$this->_dbTableHelper = new SmartestDatabaseTableHelper;
 		
 		try{
 		    $this->generateModel();
@@ -37,23 +40,13 @@ class SmartestDataObject{
 		
 		if($this->_table_name){
 			
-			if(SmartestCache::hasData('smartest_tables', true)){
-				$tables = SmartestCache::load('smartest_tables', true);
-			}else{
-				$tables = $this->database->getTables($this->_table_name);
-				SmartestCache::save('smartest_tables', $tables, -1, true);
-			}
+			$tables = $this->_dbTableHelper->getTables();
 			
 			if(in_array($this->_table_name, $tables)){
 				
 				// build model
 				
-				if(SmartestCache::hasData($this->_table_name.'_columns', true)){
-					$columns = SmartestCache::load($this->_table_name.'_columns', true);
-				}else{
-					$columns = $this->database->getColumnNames($this->_table_name);
-					SmartestCache::save($this->_table_name.'_columns', $columns, -1, true);
-				}
+				$columns = $this->_dbTableHelper->getColumnNames($this->_table_name);
 				
 				foreach($columns as $column){
 					if(!in_array($column, $this->_no_prefix)){

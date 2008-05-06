@@ -49,6 +49,18 @@ class SmartestItemPage extends SmartestPage{
         }
     }
     
+    public function getTags(){
+	    
+	    return $this->_simple_item->getTags();
+	    
+	}
+	
+	public function getTagsAsArrays(){
+	    
+	    return $this->_simple_item->getTagsAsArrays();
+	    
+	}
+    
     public function setIdentifyingFieldName($field_name){
         if(!isset($this->_identifying_field_name)){
             $this->_identifying_field_name = $field_name;

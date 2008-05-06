@@ -3,6 +3,9 @@
   {load_interface file="edit_tabs.tpl"}
   
   <h3>Tags</h3>
+  
+  {if $show_tags}
+  
   <div class="instruction">Choose which tags this page is attached to.</div>
   <div class="instruction">Tags exist across all your sites. Some pags may not make sense for certain sites, but they can be ignored.</div>
   
@@ -26,6 +29,23 @@
     </div>
   
   </form>
+  
+  {else if $page.type == 'ITEMCLASS'}
+  
+  <div class="instruction">This is an object meta-page. it is only used for publishing info about {$model.plural_name}.</div>
+  <div class="instruction">Please choose which {$model.name} you would like to tag:</div>
+  
+  <form action="{$domain}datamanager/itemTags" method="get" id="item_chooser">
+    <input type="hidden" name="page_id" value="{$page.webid}" />
+    <select name="item_id" style="width:300px" onchange="$('item_choooser').submit()">
+      {foreach from=$items item="item"}
+      <option value="{$item.id}">{$item.name}</option>
+      {/foreach}
+    </select>
+    <input type="submit" value="Go" />
+  </form>
+  
+  {/if}
   
 </div>
 

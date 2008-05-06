@@ -227,12 +227,17 @@ class SmartestSite extends SmartestDataObject{
 	    
 	}
 	
-	public function getModels(){
+	public function getTitleFormatSeparator(){
 	    
-	}
-	
-	public function getModelsAsArrays(){
+	    $found = preg_match_all('/[\/\|\-:>›\xBB]+/', $this->getTitleFormat(), $matches);
 	    
+	    if(count($matches)){
+	        $symbols = $matches[0];
+	        /* if(count($symbols) > 1){
+	            
+	        } */
+	        return $symbols[0];
+        }
 	}
 	
 	public function getDataSets(){

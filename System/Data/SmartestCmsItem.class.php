@@ -512,7 +512,10 @@ class SmartestCmsItem{
 		$result['web_id'] = $this->getItem()->getWebid();
 		$result['name'] = $this->getItem()->getName(); */
 		
-		$result['_model'] = $this->getModel()->__toArray();
+		if(is_object($this->getModel())){
+		    $result['_model'] = $this->getModel()->__toArray();
+	    }
+	    
 		$result['_properties'] = $this->getPropertiesAsArrays($numeric_keys, $get_all_fk_property_options);
 		
 		ksort($result);
@@ -565,6 +568,18 @@ class SmartestCmsItem{
 		
 		return $result;
 		
+	}
+	
+	public function getTags(){
+	    
+	    return $this->_item->getTags();
+	    
+	}
+	
+	public function getTagsAsArrays(){
+	    
+	    return $this->_item->getTagsAsArrays();
+	    
 	}
 	
 	public function getPropertyByNumericKey($key){
