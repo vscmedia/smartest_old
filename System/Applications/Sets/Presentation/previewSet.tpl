@@ -10,7 +10,7 @@
   <input type="hidden" name="item_id" id="item_id_input" value="" />
 </form>
 
-<div class="instruction">Found {$count} item{if $count != 1}s{/if} in this data set</div>
+<div class="instruction">Found {$count} <strong>published</strong> item{if $count != 1}s{/if} in this data set</div>
 
 View as:
 <a href="{dud_link}" onclick="setView('list', '{if $content.count > 10}options_list{else}options_grid{/if}')">List</a> /

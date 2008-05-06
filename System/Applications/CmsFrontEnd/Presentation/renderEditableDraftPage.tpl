@@ -1,2 +1,1 @@
-{* include file=$content.page_live_template *}
-{cms_page page=$_page draft="true"}
+<?sm:cms_page page=$_page draft="true":?>

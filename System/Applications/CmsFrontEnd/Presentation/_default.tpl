@@ -1,2 +1,1 @@
-{* DO NOT EDIT *}
-{include file=$sm_interface}
+<?sm:include file=$sm_interface:?>
