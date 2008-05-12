@@ -2,8 +2,6 @@
 
 class SmartestItemProperty extends SmartestDataObject{
 	
-	protected $_value = null;
-	protected $_contextual_item_id = null;
 	protected $_type_info;
 	protected $_possible_values = array();
 	protected $_possible_values_retrieval_attempted = false;
@@ -16,12 +14,6 @@ class SmartestItemProperty extends SmartestDataObject{
 		
 	}
 	
-	public function setContextualItemId($id){
-	    if(is_numeric($id)){
-	        $this->_contextual_item_id = $id;
-	    }
-	}
-	
 	public function hydrate($value){
 	    
 	    $result = parent::hydrate($value);
@@ -32,20 +24,6 @@ class SmartestItemProperty extends SmartestDataObject{
 	    
 	    return $result;
 	    
-	}
-	
-	public function hydrateValueFromIpvArray($ipv_array){
-	    if(is_array($ipv_array)){
-	        $ipv = new SmartestItemPropertyValue;
-	        $ipv->hydrate($ipv_array);
-	        $this->_value = $ipv;
-        }
-	}
-	
-	public function hydrateValueFromIpvObject(SmartestItemPropertyValue $ipv_object){
-	    if($ipv_object instanceof SmartestItemPropertyValue){
-	        $this->_value = $ipv_object;
-        }
 	}
 
 	public function getTypeInfo(){
@@ -160,44 +138,6 @@ class SmartestItemProperty extends SmartestDataObject{
 	    }
 	    
 	    return $arrays;
-	    
-	}
-	
-	public function getData(){
-	    
-	    if(!$this->_value instanceof SmartestItemPropertyValue){
-	        
-	        $this->_value = new SmartestItemPropertyValue;
-	        
-	        if($this->_contextual_item_id){
-	            
-	            // try to find value
-	            $sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_property_id='".$this->getId()."' AND itempropertyvalue_item_id='".$this->_contextual_item_id."'";
-	            $result = $this->database->queryToArray($sql);
-	            
-	            if(count($result)){
-	                
-	                // hydrate value from array
-	                $this->_value->hydrate($result[0]);
-	                
-	            }else{
-	        
-	                $this->_value->setItemId($this->_contextual_item_id);
-	                
-	                if($this->getId()){
-
-        	            $this->_value->setPropertyId($this->getId());
-        	            // $this->_value->save();
-        	            $this->_value->setDraftContent($this->getDefaultValue());
-        	        }
-	            
-                }
-	        
-	        }
-	        
-	    }
-	    
-	    return $this->_value;
 	    
 	}
 	

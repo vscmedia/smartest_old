@@ -71,6 +71,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    $this->page = $page;
 	    $this->setDraftMode($draft_mode);
 	    // $this->_page_rendering_data_retrieved = true;
+	    $this->page->loadAssetClassDefinitions($draft_mode);
 	    $this->setPageRenderingData($this->page->fetchRenderingData($draft_mode));
 	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
 	    
@@ -93,8 +94,30 @@ class SmartestWebPageBuilder extends SmartestEngine{
         // echo 'container:'.$container_name.', rendering process id:'.$this->getProcessId().', context:'.$this->_context.'<br />';
         
         if($this->_context == SM_CONTEXT_CONTENT_PAGE){
-        
-            $container = new SmartestContainerDefinition;
+            
+            if($this->getPage()->hasContainerDefinition($container_name, $this->getDraftMode())){
+                
+                $container = $this->getPage()->getContainerDefinition($container_name, $this->getDraftMode());
+                $this->run($container->getTemplateFilePath(), array());
+                
+                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+		    
+    			    $edit_link = '';
+		    
+    			    if(is_object($container->getTemplate())){
+    			        // TODO: Make it an admin-controlled setting as to whether containers are changeable in the preview screen
+    			        // $edit_link .= "<a title=\"Click to edit template: ".$container->getTemplate()->getUrl()."\" href=\"".SM_CONTROLLER_DOMAIN."templates/editTemplate?template_id=".$container->getTemplate()->getId()."&amp;type=SM_CONTAINER_TEMPLATE&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this template--></a>";
+    			    }
+		    
+    			    // $edit_link .= "<a title=\"Click to edit definition for container: ".$container_name."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
+		    
+    		    }else{
+    			    // $edit_link = "<!--edit link-->";
+    		    }
+                
+            }
+            
+            /* $container = new SmartestContainerDefinition;
         
             if($container->load($container_name, $this->getPage(), $this->getDraftMode())){
             
@@ -120,7 +143,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 		    
     		    return $edit_link;
             
-            }
+            } */
         
         }else{
             
@@ -161,10 +184,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function renderPlaceholder($placeholder_name, $params, $parent){
         
-        $placeholder = new SmartestPlaceholderDefinition;
+        // $placeholder = new SmartestPlaceholderDefinition;
         $assetclass_types = SmartestDataUtility::getAssetClassTypes();
         
-        if($asset_id = $placeholder->load($placeholder_name, $this->getPage(), $this->getDraftMode())){
+        // if($asset_id = $placeholder->load($placeholder_name, $this->getPage(), $this->getDraftMode())){
+        
+        if($this->getPage()->hasPlaceholderDefinition($placeholder_name, $this->getDraftMode())){
+            
+            $placeholder = $this->getPage()->getPlaceholderDefinition($placeholder_name, $this->getDraftMode());
             
             if(array_key_exists($placeholder->getType(), $assetclass_types)){
                 
@@ -216,8 +243,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	            return $this->raiseError("Placeholder type '".$placeholder->getType()."' is unsupported");
 	            
 	        }
-            
-            // $html = $this->renderAsset(array('id'=>$asset_id, 'style'=>$style));
             
             if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
 			    $edit_link = "<a title=\"Click to edit definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";

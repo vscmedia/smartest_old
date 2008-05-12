@@ -160,6 +160,20 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
         return $this->_template;
     }
     
+    public function hydrateFromGiantArray($array){
+        
+        $this->hydrate($array);
+        
+        $container = new SmartestContainer;
+        $container->hydrate($array);
+        $this->_container = $container;
+        
+        $template = new SmartestContainerTemplateAsset;
+        $template->hydrate($array);
+        $this->_template = $template;
+        
+    }
+    
     public function getContainer(){
 	    
 	    if(!is_object($this->_container)){

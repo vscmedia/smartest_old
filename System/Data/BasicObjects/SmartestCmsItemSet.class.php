@@ -114,8 +114,6 @@ class SmartestCmsItemSet extends SmartestDataObject{
     	                $item = new $class_name;
     	                $item->hydrate($lookup['setlookup_item_id'], $draft);
     	                
-    	                // var_dump($item->isHydrated());
-	            
     	                if($item->isHydrated()){
     	                    $this->_set_members[$cardinality] = $item;
     	                    $this->_set_member_ids[$cardinality] = $item->getId();
@@ -123,9 +121,6 @@ class SmartestCmsItemSet extends SmartestDataObject{
     	                    $this->_set_member_slugs[$cardinality] = $item->getSlug();
     	                    $cardinality++;
     	                }
-    	                
-    	                // print_r($this->_set_member_ids);
-    	            
 	                }
     	        }
 	        
@@ -133,61 +128,69 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	        
     	    }else if($this->getType() == 'DYNAMIC'){
 	            
-	            $model = $this->getModel();
+	            if(SmartestCache::hasData('dynamic_set_item_ids_'.$this->getId(), true)){
+	                
+	                $ids = SmartestCache::load('dynamic_set_item_ids_'.$this->getId(), true);
+	                
+	            }else{
 	            
-	            // get members if the set is dynamic
-	            $q = new SmartestQuery($model->getId());
+	                $model = $this->getModel();
 	            
-	            $data_source = $this->getDataSourceSiteId();
+    	            // get members if the set is dynamic
+    	            $q = new SmartestQuery($model->getId());
 	            
-	            $site_id = $this->getCurrentSiteId();
+    	            $data_source = $this->getDataSourceSiteId();
+	            
+    	            $site_id = $this->getCurrentSiteId();
                 
-	            if($data_source){
-	                if(is_numeric($data_source)){
-	                    $q->setSiteId($data_source);
-                    }else if($data_source == 'CURRENT' && is_numeric($site_id)){
-                        // echo $site_id;
-                        $q->setSiteId($site_id);
-                    }else if($data_source == 'ALL'){
-                        // do nothing, and the query will know it's looking at all sites
-                    }
-	            }
+    	            if($data_source){
+    	                if(is_numeric($data_source)){
+    	                    $q->setSiteId($data_source);
+                        }else if($data_source == 'CURRENT' && is_numeric($site_id)){
+                            // echo $site_id;
+                            $q->setSiteId($site_id);
+                        }else if($data_source == 'ALL'){
+                            // do nothing, and the query will know it's looking at all sites
+                        }
+    	            }
 	            
-	            // get conditions
-	            foreach($this->getConditions() as $c){
+    	            // get conditions
+    	            foreach($this->getConditions() as $c){
 	                
-	                $final_value = $c->getValue();
+    	                $final_value = $c->getValue();
 	                
-	                if(SmartestStringHelper::startsWith($final_value, ':')){
+    	                if(SmartestStringHelper::startsWith($final_value, ':')){
 	                    
-	                    $keys = array_keys($query_data);
-	                    $position = array_search(substr($final_value, 1), $keys);
+    	                    $keys = array_keys($query_data);
+    	                    $position = array_search(substr($final_value, 1), $keys);
 	                    
-	                    if($position !== false){
-	                        $final_value = $query_data[$keys[$position]];
-	                    }else{
-	                        $final_value = '';
-	                    }
-	                }
+    	                    if($position !== false){
+    	                        $final_value = $query_data[$keys[$position]];
+    	                    }else{
+    	                        $final_value = '';
+    	                    }
+    	                }
 	                
-	                $q->add($c->getItempropertyId(), $final_value, $c->getOperator(), $draft);
-	            }
+    	                $q->add($c->getItempropertyId(), $final_value, $c->getOperator(), $draft);
+    	            }
 	            
-	            $result = $q->doSelect($draft);
+    	            $result = $q->doSelect($draft);
 	            
-	            if($this->getSortField()){
-	                $result->sort($this->getSortField(), $this->getSortDirection());
-	            }
+    	            if($this->getSortField()){
+    	                $result->sort($this->getSortField(), $this->getSortDirection());
+    	            }
 	            
-	            $this->_set_members = $result->getItems($limit);
+    	            $this->_set_members = $result->getItems($limit);
 	            
-	            foreach($this->_set_members as $item){
+    	            foreach($this->_set_members as $item){
 	                
-	                $this->_set_member_ids[] = $item->getId();
-	                $this->_set_member_webids[] = $item->getWebid();
-	                $this->_set_member_slugs[] = $item->getSlug();
+    	                $this->_set_member_ids[] = $item->getId();
+    	                $this->_set_member_webids[] = $item->getWebid();
+    	                $this->_set_member_slugs[] = $item->getSlug();
 	                
-	            }
+    	            }
+	            
+                }
 	            
 	            $this->_fetch_attempted = true;
 	            

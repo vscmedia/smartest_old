@@ -187,35 +187,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         
     }
     
-    /* public function getMarkup(){
-        
-        if($this->_asset){
-            
-            $asset_markup = $this->_asset->renderAsMarkup();
-            
-            if(!in_array($this->_asset->getType(), array('SM_ASSETTYPE_JAVASCRIPT', 'SM_ASSETTYPE_STYLESHEET'))){
-            
-                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-				    $edit_link = "<a title=\"Click to edit definition for placeholder: ".$this->getPlaceholder()->getLabel()." (".$this->getPlaceholder()->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$this->getPlaceholder()->getName()."&amp;page_id=".$this->_page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
-			    }else{
-				    $edit_link = "<!--edit link-->";
-			    }
-            
-                $asset_markup .= $edit_link;
-            
-            }
-        
-            if($this->_is_linkable && strlen($this->getLinkUrl())){
-                $string = '<a href="'.$this->getLinkUrl().'">'.$asset_markup.'</a>';
-            }else{
-                $string = $asset_markup;
-            }
-            
-            return $string;
-        }
-    } */
-	
-	public function getPlaceholder(){
+    public function getPlaceholder(){
 	    
 	    if(!is_object($this->_placeholder)){
 	        $ph = new SmartestPlaceHolder;
@@ -230,37 +202,18 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
 	    return $this->getPlaceholder()->getType();
 	}
 	
-	/* public function getTypeCode(){
-	    return $this->getPlaceholder()->getAssetType()->getCode();
-	} 
-	
-	public function getAsset($draft=false){
-	    
-	    if(!is_object($this->_asset)){
-	        
-	        switch($this->getTypeCode()){
-	            /* case "HTML":
-	            case "TEXT":
-	            case "LINE":
-	            $class = 'SmartestTextAsset'; 
-	            break; 
-	            case "JPEG":
-	            case "GIF":
-	            case "PNG":
-	            case "GIMG":
-	            $class = 'SmartestImageAsset';
-	            break;
-	            default:
-	            $class = 'SmartestAsset';
-	            break;
-	        }
-	        
-	        $asset = new $class;
-	        $hydrate = $draft ? $asset->hydrate($this->getDraftAssetId()) : $asset->hydrate($this->getLiveAssetId());
-	        $this->_asset = $asset;
-        }
-	    
-	    return $this->_asset;
-	}*/
+	public function hydrateFromGiantArray($array){
+        
+        $this->hydrate($array);
+        
+        $placeholder = new SmartestPlaceHolder;
+        $placeholder->hydrate($array);
+        $this->_placeholder = $placeholder;
+        
+        $asset = new SmartestAsset;
+        $asset->hydrate($array);
+        $this->_asset = $asset;
+        
+    }
 
 }

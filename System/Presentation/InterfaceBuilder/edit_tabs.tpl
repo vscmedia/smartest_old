@@ -4,7 +4,7 @@
     {if $smarty.get.page_id}<li{if $method == "pageAssets"} class="current"{/if}><a href="{$domain}websitemanager/pageAssets?page_id={$smarty.get.page_id}{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}">Page Elements Tree</a></li>{/if}
     {if $smarty.get.page_id}<li{if $method == "preview"} class="current"{/if}><a href="{$domain}websitemanager/preview?page_id={$smarty.get.page_id}{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}">Preview</a></li>{/if}
     <li{if $method == "pageTags" || $method == "itemTags"} class="current"{/if}><a href="{if $smarty.get.item_id}{$domain}datamanager/itemTags?item_id={$smarty.get.item_id}{if $smarty.get.page_id}&amp;page_id={$smarty.get.page_id}{/if}{else}{$domain}websitemanager/pageTags?page_id={$smarty.get.page_id}{/if}">Tags</a></li>
-    {* <li{if $method == "relatedContent"} class="current"{/if}>{if $smarty.get.item_id}<a href="{$domain}datamanager/relatedContent?&amp;item_id={$smarty.get.item_id}{if $smarty.get.page_id}&amp;page_id={$smarty.get.page_id}{/if}">{else}<a href="{$domain}websitemanager/relatedContent?page_id={$smarty.get.page_id}">{/if}Related Content</a></li> *}
+    <li{if $method == "relatedContent"} class="current"{/if}>{if $smarty.get.item_id}<a href="{$domain}datamanager/relatedContent?&amp;item_id={$smarty.get.item_id}{if $smarty.get.page_id}&amp;page_id={$smarty.get.page_id}{/if}">{else}<a href="{$domain}websitemanager/relatedContent?page_id={$smarty.get.page_id}">{/if}Related Content</a></li>
 </ul>
 
 <br clear="all" />

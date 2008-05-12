@@ -70,10 +70,16 @@ class SmartestModel extends SmartestDataObject{
 		
 		// $this->_model_properties = array();
 		
-		$sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->getId()."'";
-		$result = $this->database->queryToArray($sql);
 		
-		// $properties = array();
+		
+		if(SmartestCache::hasData('model_properties_'.$this->getId(), true)){
+		    $result = SmartestCache::load('model_properties_'.$this->getId(), true);
+	    }else{
+		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->getId()."'";
+		    $result = $this->database->queryToArray($sql);
+		    SmartestCache::save('model_properties_'.$this->getId(), $result, -1, true);
+		    // print_r(SmartestCache::load('model_properties_'.$this->getId(), true));
+	    }
 		
 		foreach($result as $db_property){
 			$property = new SmartestItemProperty;
@@ -81,13 +87,15 @@ class SmartestModel extends SmartestDataObject{
 			$this->_model_properties[] = $property;
 		}
 		
-		// print_r($properties);
-		
-		// return $result;
 	}
 	
 	public function getProperties(){
 		return $this->_model_properties;
+	}
+	
+	public function refresh(){
+	    SmartestCache::clear('model_properties_'.$this->getId(), true);
+        SmartestObjectModelHelper::buildAutoClassFile($this->getId(), SmartestStringHelper::toCamelCase($this->getName()));
 	}
 	
 	public function __toArray(){

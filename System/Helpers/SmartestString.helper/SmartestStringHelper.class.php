@@ -289,7 +289,14 @@ class SmartestStringHelper extends SmartestHelper{
         }
 	}
 	
+	// now deprecated
 	static function sanitizeFileContents($string){
+	    
+	    return self::sanitize($string);
+	    
+	}
+	
+	static function sanitize($string){
 	    
 	    $string = str_replace('<?php', '', $string);
 	    $string = str_replace('DELETE FROM', '', $string);

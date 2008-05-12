@@ -2,9 +2,9 @@
 
 interface SmartestDataAccessClass{
 	
-	public function queryToArray($query, $file='', $line='');
-	public function rawQuery($query, $file='', $line='');
-	public function howMany($query, $file='', $line='');
+	public function queryToArray($query);
+	public function rawQuery($query);
+	public function howMany($query);
 	public function specificQuery($wantedField, $qualifyingField, $qualifyingValue, $table);
 	public function getDebugInfo();
 	

@@ -58,6 +58,7 @@ class SmartestHelper{
 		
 		$system_helpers = array();
 		$system_helper_names = array();
+		$later_autoloads = array();
 		
 		if($res = opendir(SM_ROOT_DIR.'System/Helpers/')){
 		    
@@ -68,7 +69,8 @@ class SmartestHelper{
     			if(is_dir(SM_ROOT_DIR.'System/Helpers/'.$file) && preg_match('/([A-Z]\w+)\.helper$/', $file, $matches) && is_file(SM_ROOT_DIR.'System/Helpers/'.$file.'/'.$matches[1].'Helper.class.php')){
     				$helper = array();
     				$helper['name'] = $matches[1];
-    				$helper['file'] = SM_ROOT_DIR.'System/Helpers/'.$matches[0].'/'.$matches[1].'Helper.class.php';
+    				$helper['file'] = 'System/Helpers/'.$matches[0].'/'.$matches[1].'Helper.class.php';
+    				$helper['dir'] = 'System/Helpers/'.$matches[0].'/';
     				$system_helpers[] = $helper;
     				$system_helper_names[] = $helper['name'];
     				$system_helper_cache_string .= sha1_file($helper['file']);
@@ -93,20 +95,54 @@ class SmartestHelper{
 			if(is_file($h['file'])){
 				if($use_cache){
 				    if($rebuild_cache){
-				        $singlefile .= file_get_contents($h['file']);
+				        $singlefile .= file_get_contents(SM_ROOT_DIR.$h['file']);
 			        }else{
 			            // don't need to include anything because helpers are already in cache
 			        }
 				}else{
 				    // Include the original file rather than the cache
-				    include $h['file'];
+				    include SM_ROOT_DIR.$h['file'];
 				}
 			}else{
 				// File was there amoment ago but has now disappeared (???)
 			}
+			
+			if(is_file($h['dir'].'autoload.conf')){
+			    $autoload_file = $h['dir'].'autoload.conf';
+			    $autoload_file_contents = file_get_contents($autoload_file);
+			    
+			    preg_match_all('/^(\w+)\s+([^\s\/]+)$/m', $autoload_file_contents, $matches, PREG_SET_ORDER);
+			    
+			    foreach($matches as $m){
+			        switch($m[1]){
+			            case 'load':
+			            if(is_file(SM_ROOT_DIR.$h['dir'].$m[2])){
+			                $later_autoloads[] = $h['dir'].$m[2];
+			            }else{
+			                throw new SmartestException('Failed opening autoloaded resource: '.$h['dir'].$m[2].'.');
+			            }
+			            break;
+			        }
+			    }
+			    
+			}
+			
 		}
 		
-		if($rebuild_cache){
+		foreach($later_autoloads as $file){
+	        if($use_cache){
+			    if($rebuild_cache){
+			        $singlefile .= file_get_contents(SM_ROOT_DIR.$file);
+		        }else{
+		            // don't need to include anything because helpers are already in cache
+		        }
+			}else{
+			    // Include the original file rather than the cache
+			    include SM_ROOT_DIR.$file;
+			}
+	    }
+	    
+	    if($rebuild_cache){
 			
 			$singlefile = str_replace('<?php', "\n\n", $singlefile);
 			$singlefile = str_replace('?'.'>', "\n\n", $singlefile);
@@ -132,6 +168,7 @@ class SmartestHelper{
 			
     		$user_helpers = array();
 			$user_helper_names = array();
+			$later_autoloads = array();
 		
 			if($res = opendir(SM_ROOT_DIR.'Library/Helpers/')){
 		        
@@ -142,7 +179,8 @@ class SmartestHelper{
         			if(is_dir(SM_ROOT_DIR.'Library/Helpers/'.$file) && preg_match('/([A-Z]\w+)\.helper$/', $file, $matches) && is_file(SM_ROOT_DIR.'Library/Helpers/'.$file.'/'.$matches[1].'Helper.class.php')){
         				$helper = array();
         				$helper['name'] = $matches[1];
-        				$helper['file'] = SM_ROOT_DIR.'Library/Helpers/'.$matches[0].'/'.$matches[1].'Helper.class.php';
+        				$helper['file'] = 'Library/Helpers/'.$matches[0].'/'.$matches[1].'Helper.class.php';
+        				$helper['dir'] = 'Library/Helpers/'.$matches[0].'/';
         				$user_helpers[] = $helper;
         				$user_helper_names[] = $helper['name'];
         				$user_helper_cache_string .= sha1_file($helper['file']);
@@ -169,18 +207,56 @@ class SmartestHelper{
         			if(is_file($h['file'])){
         				if($use_cache){
         				    if($rebuild_cache){
-        				        $singlefile .= file_get_contents($h['file']);
+        				        $singlefile .= file_get_contents(SM_ROOT_DIR.$h['file']);
         			        }else{
             			        // don't need to include anything because helpers are already in cache
             			    }
         				}else{
         				    // Include the original file rather than the cache
-        				    include $h['file'];
+        				    include SM_ROOT_DIR.$h['file'];
         				}
         			}else{
         				// File was there amoment ago but has now disappeared (???)
         			}
+        			
+        			if(is_file(SM_ROOT_DIR.$h['dir'].'autoload.conf')){
+        			    
+        			    $autoload_file = SM_ROOT_DIR.$h['dir'].'autoload.conf';
+        			    $autoload_file_contents = file_get_contents($autoload_file);
+
+        			    preg_match_all('/^(\w+)\s+([^\s\/]+)$/m', $autoload_file_contents, $matches, PREG_SET_ORDER);
+
+        			    foreach($matches as $m){
+        			        switch($m[1]){
+        			            
+        			            case 'load':
+        			            
+        			            if(is_file(SM_ROOT_DIR.$h['dir'].$m[2])){
+        			                $later_autoloads[] = SM_ROOT_DIR.$h['dir'].$m[2];
+        			            }else{
+        			                throw new SmartestException('Failed opening autoloaded resource: '.$h['dir'].$m[2].'.');
+        			            }
+        			            
+        			            break;
+        			        }
+        			    }
+
+        			}
+        			
         		}
+        		
+        		foreach($later_autoloads as $file){
+        	        if($use_cache){
+        			    if($rebuild_cache){
+        			        $singlefile .= file_get_contents(SM_ROOT_DIR.$file);
+        		        }else{
+        		            // don't need to include anything because helpers are already in cache
+        		        }
+        			}else{
+        			    // Include the original file rather than the cache
+        			    include SM_ROOT_DIR.$file;
+        			}
+        	    }
 
         		if($rebuild_cache){
 
@@ -190,7 +266,7 @@ class SmartestHelper{
 
         			file_put_contents(SM_ROOT_DIR.'System/Cache/Includes/UserHelpers.cache.php', $singlefile);
     			
-        			SmartestCache::save('smartest_user_helpers_hash', $system_helper_cache_hash, -1, true);
+        			SmartestCache::save('smartest_user_helpers_hash', $user_helper_cache_hash, -1, true);
         		}
 
         		if($use_cache){

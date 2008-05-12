@@ -130,7 +130,7 @@ function setVarName(){
 
 <h3><a href="{$domain}{$section}">Data Manager</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Add Property</h3>
 
-<div class="instruction">You will be adding a new property to the model "imports".</div>
+<div class="instruction">You will be adding a new property to the model "{$model.plural_name}".</div>
 
 <form action="{$domain}{$section}/insertItemClassProperty" method="post" enctype="multipart/form-data">
   <input type="hidden" name="class_id" value="{$model.id}" />

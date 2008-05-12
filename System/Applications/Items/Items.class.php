@@ -244,8 +244,30 @@ class Items extends SmartestSystemApplication{
 	}
 	
 	function deleteProperty($get){
-		$itemproperty_id = mysql_real_escape_string($get['itemproperty_id']);
-    		return $this->manager->deleteItemClassProperty($itemproperty_id);
+	    // $itemproperty_id = mysql_real_escape_string($get['itemproperty_id']);
+    	// return $this->manager->deleteItemClassProperty($itemproperty_id);
+    	$property = new SmartestItemProperty;
+    	
+    	if($property->hydrate($get['itemproperty_id'])){
+    	    
+    	    $model = new SmartestModel;
+    	    
+    	    
+    	    if($model->hydrate($property->getModelId())){
+    	        // delete property - this should done before any cache or code files are regenerated
+    	        $property->delete();
+    	        // clear the cache and rebuild auto object model file
+    	        SmartestCache::clear('model_properties_'.$model->getId(), true);
+    	        SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
+            }else{
+                // just delete the property
+                $property->delete();
+            }
+	        
+	        $this->addUserMessageToNextRequest("The property has been deleted.", SmartestUserMessage::SUCCESS);
+	        $this->formForward();
+	        
+	    }
 	}
 	
 	function deleteItem($get){
@@ -421,8 +443,6 @@ class Items extends SmartestSystemApplication{
 	    
 	    $this->setFormReturnUri();
 	    
-	    $this->setTitle('Item Tags');
-	    
 	    $item_id = $get['item_id'];
 	    $item = new SmartestItem;
 	    
@@ -431,6 +451,8 @@ class Items extends SmartestSystemApplication{
 	        $model = new SmartestModel;
 	        $model->hydrate($item->getItemclassId());
 	        $this->send($model->__toArray(), 'model');
+	        
+	        $this->setTitle($item->getName().' | Tags');
 	        
 	        // $page_tag_ids = $page->getTagsAsIds();
 	        $du  = new SmartestDataUtility;
@@ -508,6 +530,225 @@ class Items extends SmartestSystemApplication{
 	}
 	
 	public function relatedContent($get){
+	    
+	    $this->setFormReturnUri();
+	    
+	    $item_id = (int) $get['item_id'];
+	    $item = SmartestCmsItem::retrieveByPk($item_id);
+	    
+	    if($item->isHydrated()){
+	        
+	        $this->send($item->__toArray(), 'item');
+	        
+	        $this->setTitle($item->getName()." | Related Content");
+	        $model = $item->getModel();
+	        
+	        $this->send($model->__toArray(), 'model');
+	        
+	        $related_items_this_model = $item->getItem()->getRelatedItemsAsArrays(true);
+	        $related_pages = $item->getItem()->getRelatedPagesAsArrays(true);
+	        
+	        $this->send($related_items_this_model, 'related_items_this_model');
+	        $this->send($related_pages, 'related_pages');
+	        
+	        $du = new SmartestDataUtility;
+	        $models = $du->getModelsAsArrays();
+        
+	        foreach($models as $key=>$m){
+	            if($m['id'] == $model->getId()){
+	                unset($models[$key]);
+	            }else{
+	                $models[$key]['related_items'] = $item->getItem()->getRelatedForeignItemsAsArrays(true, $m['id']);
+                }
+	        }
+	        
+	        $this->send($models, 'models');
+	        
+	    }
+	    
+	}
+	
+	public function editRelatedContent($get){
+	    
+	    $item = new SmartestItem;
+	    $item_id = $get['item_id'];
+	    
+	    if($item->hydrate($item_id)){
+	        
+	        if(isset($get['model_id'])){
+	            
+	            $model_id = (int) $get['model_id'];
+	            $model = new SmartestModel;
+	            
+	            if($model->hydrate($model_id)){
+	                $mode = 'items';
+	            }else{
+	                $mode = 'pages';
+	            }
+            }
+	        
+	        $this->send($mode, 'mode');
+	        
+	        if($mode == 'items'){
+	            
+	            $this->setTitle($item->getName()." | Related ".$model->getPluralName());
+	            $this->send($item->__toArray(), 'item');
+	            $this->send($model->__toArray(), 'model');
+	            
+	            if($model->getId() == $item->getModelId()){
+	                $related_ids = $item->getRelatedItemIds(true, $model->getId());
+                }else{
+                    $related_ids = $item->getRelatedForeignItemIds(true, $model->getId());
+                }
+                
+	            $all_items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+	            $this->send($all_items, 'items');
+	            $this->send($related_ids, 'related_ids');
+	            
+            }else{
+                
+                $this->setTitle($item->getName()." | Related pages");
+    	        $this->send($item->__toArray(), 'item');
+    	        $related_ids = $item->getRelatedPageIds(true);
+    	        $helper = new SmartestPageManagementHelper;
+    	        $pages = $helper->getPagesList($this->getSite()->getId());
+    	        $this->send($pages, 'pages');
+    	        $this->send($related_ids, 'related_ids');
+    	        
+            }
+	        
+	        // $related_pages = $page->getRelatedPagesAsArrays(true);
+    	    
+	    }else{
+	        $this->addUserMessageToNextRequest('The item ID was not recognized', SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/models');
+	    }
+	    
+	}
+	
+	public function updateRelatedItemConnections($get, $post){
+	    
+	    $item = new SmartestItem;
+	    $item_id = $post['item_id'];
+	    
+	    if($item->hydrate($item_id)){
+	        
+	        $model = new SmartestModel;
+    	    $model_id = $post['model_id'];
+    	    
+    	    if($model->hydrate($model_id)){
+	        
+	            if(isset($post['items']) && is_array($post['items'])){
+	            
+    	            $new_related_ids = array_keys($post['items']);
+	            
+    	            if(count($new_related_ids)){
+	                    
+	                    $items = $model->getSimpleItems();
+	                    
+	                    if($model->getId() == $item->getModelId()){
+    	                    $old_related_ids = $item->getRelatedItemIds(true);
+    	                    $same_model = true;
+	                    }else{
+	                        $old_related_ids = $item->getRelatedForeignItemIds(true, $model->getId());
+	                        $same_model = false;
+	                    }
+	                    
+	                    // print_r($old_related_ids);
+	                    // print_r($new_related_ids);
+	                    
+            	        foreach($items as $i){
+    	            
+            	            if(in_array($i->getId(), $new_related_ids) && !in_array($i->getId(), $old_related_ids)){
+            	                // add connection
+            	                // echo 'Add item '.$i->getName().'<br />';
+            	                if($same_model){
+            	                    $item->addRelatedItem($i->getId());
+            	                }else{
+            	                    $item->addRelatedForeignItem($i->getId());
+            	                }
+            	            }
+    	            
+            	            if(in_array($i->getId(), $old_related_ids) && !in_array($i->getId(), $new_related_ids)){
+            	                // remove connection
+            	                // echo 'Remove item '.$i->getName().'<br />';
+            	                if($same_model){
+            	                    $item->removeRelatedItem($i->getId());
+            	                }else{
+            	                    $item->removeRelatedForeignItem($i->getId());
+            	                }
+            	            }
+            	        }
+    	        
+    	            }else{
+	                
+    	                $item->removeAllRelatedItems($model->getId());
+	                
+    	            }
+	            
+    	        
+                }else{
+                    $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of items', SmartestUserMessage::ERROR);
+                }
+            
+            }else{
+                
+                $this->addUserMessageToNextRequest('The model ID was not recognized', SmartestUserMessage::ERROR);
+                
+            }
+            
+        }else{
+            $this->addUserMessageToNextRequest('The item ID was not recognized', SmartestUserMessage::ERROR);
+        }
+        
+        $this->formForward();
+	    
+	}
+	
+	public function updateRelatedPageConnections($get, $post){
+	    
+	    $item = new SmartestItem;
+	    $item_id = $post['item_id'];
+	    
+	    if($item->hydrate($item_id)){
+	        
+	        if(isset($post['pages']) && is_array($post['pages'])){
+	            
+	            $new_related_ids = array_keys($post['pages']);
+	            
+	            if(count($new_related_ids)){
+	            
+    	            $helper = new SmartestPageManagementHelper;
+                    $pages = $helper->getPagesList($this->getSite()->getId());
+                    $old_related_ids = $item->getRelatedPageIds(true);
+            	        
+            	    foreach($pages as $page){
+    	            
+            	        if(in_array($page['id'], $new_related_ids) && !in_array($page['id'], $old_related_ids)){
+                            // add connection
+                            $item->addRelatedPage($page['id']);
+                        }
+    	        
+        	            if(in_array($page['id'], $old_related_ids) && !in_array($page['id'], $new_related_ids)){
+        	                // remove connection
+        	                $item->removeRelatedPage($page['id']);
+        	            }
+        	        }
+    	        
+                }else{
+	                
+                    $item->removeAllRelatedPages();
+	                
+    	        }
+    	        
+            }else{
+                $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
+            }
+        }else{
+            $this->addUserMessageToNextRequest('The item ID was not recognized', SmartestUserMessage::ERROR);
+        }
+        
+        $this->formForward();
 	    
 	}
 	
@@ -997,12 +1238,13 @@ class Items extends SmartestSystemApplication{
 		$property->setDatatype($post['itemproperty_datatype']);
 		$property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
 		$property->setItemclassId($model->getId());
+		
+		$property->save();
 	    
+	    SmartestCache::clear('model_properties_'.$model->getId(), true);
 	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
 	    
 	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
-	    
-	    $property->save();
 	    
 	    if($post['continue'] == 'NEW_PROPERTY'){
 	        $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId());

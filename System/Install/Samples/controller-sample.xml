@@ -54,14 +54,7 @@
     <mode>NS_NONE</mode>
   </namespace>
   
-  <module>
-    <name>test</name>
-    <class>Test</class>
-    <template>Test</template>
-    <default-method>testMethod</default-method>
-    <form-forward method-name="addPageAction" method-type="POST">pages</form-forward>
-    <!--<role>Administrator</role>-->
-  </module>
+  <!--Add custom modules here. See docs or examples below for schema-->
   
 <!-- ////////////////// DO NOT EDIT OR REMOVE FROM HERE DOWNWARDS /////////////////// -->
 <!-- /////////////// FUTURE RELEASES WILL SEE THIS IN A SEPARATE FILE /////////////// -->
@@ -85,14 +78,7 @@
     <class>Pages</class>
     <template>Pages</template>
     <default-method>siteList</default-method>
-    <!--<form-forward method-name="setCurrentSite" method-type="GET">websitemanager/getSitePages?site_id=$site_id</form-forward>
-    <alias match="smartest/website/page/edit/$page">editPage?page_id=$page</alias>
-    <alias match="smartest/website/page/add/child/$site/$parent">addPage?site_id=$site&amp;parent_id=$parent</alias>
-    <alias match="smartest/website/page/add/$site">addPage?site_id=$site</alias>
-    <alias match="smartest/website/page/assets/$pageid">getPageAssets?page_id=$pageid</alias>
-    <alias match="smartest/website/sites/$siteid">getSitePages?site_id=$siteid</alias>-->
     <alias match="smartest/pages">sitePages</alias>
-    <!--<role>Administrator</role>-->
   </module>
   
   <module>
@@ -114,6 +100,7 @@
     <class>MetaData</class>
     <template>MetaData</template>
     <default-method>startPage</default-method>
+    <alias match="smartest/metadata">startPage</alias>
     <alias match="smartest/fields">listFields</alias>
     <alias match="smartest/tags">listTags</alias>
   </module>
@@ -125,10 +112,7 @@
     <class>Assets</class>
     <template>Assets</template>
     <default-method>getAssetTypes</default-method>
-    <alias match="smartest/assets/types">getAssetTypes</alias>
     <alias match="smartest/assets">getAssetTypes</alias>
-    
-    <!--<role>Administrator</role>-->
   </module>
   
   <module>
@@ -138,7 +122,6 @@
     <default-method>startPage</default-method>
     <alias match="smartest/templates/assets">getTemplateAssets</alias>
     <alias match="smartest/templates">startPage</alias>
-    <!--<role>Administrator</role>-->
   </module>
 
   <module>
@@ -146,24 +129,9 @@
     <class>Items</class>
     <template>Items</template>
     <default-method>startPage</default-method>
-    
-    <!--<form-forward method-name="insertItemClass" method-type="POST">datamanager</form-forward>
-    <form-forward method-name="insertItemClassSettings" method-type="POST">datamanager/</form-forward>
-    <form-forward method-name="updateItemClassProperty" method-type="POST">datamanager/getItemClassMembers?class_id=$class_id</form-forward>
-    <form-forward method-name="removeProperty" method-type="POST">datamanager/getItemClassProperties?class_id=$class_id</form-forward>    
-    <form-forward method-name="deleteProperty" method-type="GET">datamanager/getItemClassProperties?class_id=$class_id</form-forward>   
-    <form-forward method-name="insertItem" method-type="POST">datamanager/getItemClassMembers?class_id=$class_id</form-forward>
-    <form-forward method-name="updateItemClass" method-type="POST">datamanager/getItemClassProperties?class_id=$class_id</form-forward>
-    <form-forward method-name="updateItem" method-type="POST">datamanager/editItem?item_id=$item_id&amp;success=true</form-forward>
-    <form-forward method-name="deleteItem" method-type="GET">datamanager/getItemClassMembers?class_id=$class_id</form-forward>    
-    <form-forward method-name="duplicateItem" method-type="GET">datamanager/getItemClassMembers?class_id=$class_id</form-forward>    
-    <form-forward method-name="insertImportData" method-type="POST">datamanager/</form-forward>
-    <form-forward method-name="deleteItemClass" method-type="GET">datamanager</form-forward>-->
-    
     <alias match="smartest/data">startPage</alias>
     <alias match="smartest/models">getItemClasses</alias>
     <alias match="smartest/models/browse/$model">getItemClassMembers?class_id=$model</alias>
-    <!--<role>Administrator</role>-->
   </module>
   
   <module>
@@ -173,7 +141,6 @@
     <default-method>loginScreen</default-method>
     <alias match="smartest/login">loginScreen</alias>
     <alias match="smartest/logout">doLogOut</alias>
-    <!--<role>Administrator</role>-->
   </module>
 
   <module>
@@ -186,7 +153,7 @@
     <form-forward method-name="transferItem" method-type="POST">sets/editSet?set_id=$set_id</form-forward>
     <form-forward method-name="updateDataExportFeed" method-type="POST">sets/getDataExports</form-forward>
     <alias match="smartest/sets">startPage</alias>
-	<ajax>true</ajax>
+    <ajax>true</ajax>
   </module>
 
   <module>
@@ -217,9 +184,8 @@
     <class>Settings</class>
     <template>Settings</template>
     <default-method>startPage</default-method>
-    <!--<alias match="smartest/settings">startPage</alias>-->
     <alias match="smartest/users">listUsers</alias>
-	<ajax>true</ajax>
+    <ajax>true</ajax>
   </module>
   
   <module>
@@ -235,7 +201,6 @@
     <form-forward method-name="deleteDropDownValue" method-type="GET">dropdowns/viewDropDown?drop_down=$drop_down</form-forward>
     <form-forward method-name="updateDropDownOrder" method-type="POST">dropdowns/viewDropDown?drop_down=$drop_down_id</form-forward>
     <alias match="smartest/dropdowns">startPage</alias>
-    <!--<role>Administrator</role>-->
   </module>
   
   <module>
@@ -244,7 +209,6 @@
     <template>Help</template>
     <default-method>startPage</default-method>
     <alias match="smartest/help/guide">guideContentsPage</alias>
-    <!--<role>Administrator</role>-->
   </module>
 
   <module>
@@ -254,7 +218,6 @@
     <default-method>exit</default-method>
     <alias match="smartest/$schema/$model/$set/$export">exportData?schema=$schema&amp;model=$model&amp;set=$set&amp;dataexport=$export</alias>
     <alias match="smartest/$schema/$model/$set/$export.xml">exportData?schema=$schema&amp;model=$model&amp;set=$set&amp;dataexport=$export</alias>
-    <!--<role>Administrator</role>-->
   </module>
 
 </controller>

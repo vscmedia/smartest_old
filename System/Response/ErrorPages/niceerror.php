@@ -3,12 +3,12 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Smartest</title>
+    <title>This Site Is Offline</title>
     <style type="text/css">
       
       body{
         font-family:lucida grande,verdana,sans-serif;
-        font-size:11px;
+        font-size:12px;
       }
       
       div.container{
@@ -32,7 +32,7 @@
   </head>
   <body>
     <div class="container">
-      <br /><br /><img src="/Resources/Images/System/smartest.jpg" title="Smartest" alt="Smartest" />
+      <br /><br /><img src="/Resources/System/Images/smartest.jpg" title="Smartest" alt="Smartest" />
       <p>Sorry, but this site is currently offline. Please try again later.</p>
     </div>
   </body>

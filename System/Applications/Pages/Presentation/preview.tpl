@@ -20,23 +20,7 @@
 
 {elseif $show_item_list}
 
-<h4>To preview this page, please choose a specific {$model.name}:</h4>
-
-{* <ul class="basic-list">
-{foreach from=$items item="page_item"}
-  <li><a href="{$domain}{$section}/preview?page_id={$page.webid}&amp;item_id={$page_item.id}">{$model.name}: {$page_item.name}</a></li>
-{/foreach}
-</ul> *}
-
-<form action="{$domain}{$section}/preview" method="get" id="item_chooser">
-  <input type="hidden" name="page_id" value="{$page.webid}" />
-  <select name="item_id" style="width:300px" onchange="$('item_chooser').submit();" />
-    {foreach from=$items item="page_item"}
-    <option value="{$page_item.id}">{$page_item.name}</option>
-    {/foreach}
-  </select>
-  <input type="submit" value="Go" />
-</form>
+{load_interface file="choose_item.tpl"}
 
 {/if}
 

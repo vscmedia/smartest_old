@@ -74,6 +74,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                     } */
                     
                 }else{
+                    $this->_page_not_found = true;
                     $this->_error_message = 'Link format invalid';
                     $this->_error = true;
                     return false;
@@ -81,6 +82,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                 
             }else{
                 // whatever was passed in the to attribute must have ended in a colon, because $link_parts[1] is empty
+                $this->_page_not_found = true;
                 $this->_error_message = 'Link format invalid';
                 $this->_error = true;
                 return false;

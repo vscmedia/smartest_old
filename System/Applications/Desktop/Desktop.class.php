@@ -20,17 +20,17 @@ class Desktop extends SmartestSystemApplication{
             // }
             
         }else{
+            
+            if($this->getUserAgent()->isExplorer() && $this->getUserAgent()->getAppVersionInteger() < 7){
+                $this->addUserMessage("Smartest has noticed that you're using Internet Explorer 6 or below. Your browser <em>is</em> supported, however you may find that the interface works better in IE7 or Firefox.");
+            }
+            
             $this->setTitle('Choose a Site');
-            // $result = $this->manager->getSites();
             $result = $this->getUser()->getAllowedSites();
 
     		$sites = array();
 
     		foreach($result as $site){
-    		    /* $ts = new SmartestSite;
-    		    if($ts->hydrate($site)){
-    		        $sites[] = $ts->__toArray();
-    		    } */
     		    $sites[] = $site->__toArray();
     		}
     		
@@ -48,39 +48,16 @@ class Desktop extends SmartestSystemApplication{
 	    if($this->getSite() instanceof SmartestSite){
 		    
 		    $site_id = $this->getSite()->getId();
-		    // $site = new SmartestSite;
-		    // $site->hydrate($site_id);
 		    
 		    $main_page_templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/Masters/');
 		    
-		    // print_r($main_page_templates);
-		    
-		    // $this->send($main_page_templates, 'templates');
-		    
-		    // $sql = "SELECT * FROM Sites WHERE site_id = $site_id";
-		
-		    // $result = $this->database->queryToArray($sql);
 		    $sitedetails = $this->getSite()->__toArray();
-		    // $sitedetails = $this->database->queryToArray($sql);
-            
-            // print_r($sitedetails);
-            
-            // print_r();
-            
-            // $pages = $this->getSite()->getPagesTree();
-            
-            $pages = $this->getSite()->getPagesList();
-            
-            // print_r($pages);
-            
-            // $old_pages = $this->manager->getPagesList($site_id);
+		    $pages = $this->getSite()->getPagesList();
             $this->send($pages, 'pages');
-            // echo count($pages);
-            // print_r($pages);
             
-		    $this->setTitle("Edit Site Parameters");
+            $this->setTitle("Edit Site Parameters");
 		    $this->send($sitedetails, 'site');
-		    // return array("sitedetails"=>$sitedetails);
+		    
 	    }else{
 	        
 	        $this->addUserMessageToNextRequest('You must have an open site to open edit settings.', SmartestUserMessage::INFO);
@@ -99,8 +76,6 @@ class Desktop extends SmartestSystemApplication{
 	        $site->setTitleFormat($post['site_title_format']);
 	        $site->setDomain($post['site_domain']);
 	        $site->setRoot($post['site_root']);
-	        // $site->setErrorTitle($post['site_error_title']);
-	        // $site->setErrorTpl($post['site_error_tpl']);
 	        $site->setTopPageId($post['site_top_page']);
 	        $site->setTagPageId($post['site_tag_page']);
 	        $site->setSearchPageId($post['site_search_page']);
@@ -113,27 +88,7 @@ class Desktop extends SmartestSystemApplication{
 	    }
 	}
     
-/*    public function siteList(){
-		
-		$result = $this->manager->getSites();
-		
-		$sites = array();
-		
-		foreach($result as $site){
-		    $ts = new SmartestSite;
-		    if($ts->hydrate($site)){
-		        $sites[] = $ts->__toArray();
-		    }
-		}
-		
-		$this->setTitle("Select a Site");
-		
-		// return array("sites"=>$result, 'n');
-		$this->send($result, 'oldsites');
-		$this->send($sites, 'sites');
-	} */
-	
-	public function openSite($get){
+    public function openSite($get){
 		
 		if(@$get['site_id']){
 		    
@@ -143,10 +98,10 @@ class Desktop extends SmartestSystemApplication{
 		    
 		        if($site->hydrate($get['site_id'])){
 			        SmartestSession::set('current_open_project', $site);
-			        // $this->redirect('/'.SM_CONTROLLER_MODULE.'/sitePages?site_id='.$site->getId());
 			        $this->getUser()->reloadTokens();
 			        $this->redirect('/smartest');
 		        }
+		        
 	        }else{
 	            
 	            $this->addUserMessageToNextRequest('You don\'t have permission to access that site. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
@@ -198,7 +153,6 @@ class Desktop extends SmartestSystemApplication{
 	    $home_page->setOrderIndex(0);
 	    $home_page->save();
 	    $site->setTopPageId($home_page->getId());
-	    // $this->addUserMessage($home_page->getLastQuery());
 	    
 	    $error_page = new SmartestPage;
 	    $error_page->setTitle($post['site_error_page_title']);
@@ -210,7 +164,6 @@ class Desktop extends SmartestSystemApplication{
 	    $error_page->setOrderIndex(1024);
 	    $error_page->save();
 	    $site->setErrorPageId($error_page->getId());
-	    // $this->addUserMessage($error_page->getLastQuery());
 	    
 	    $tag_page = new SmartestPage;
 	    $tag_page->setTitle('Tagged Content');
@@ -221,7 +174,6 @@ class Desktop extends SmartestSystemApplication{
 	    $tag_page->setCreatedbyUserid($this->getUser()->getId());
 	    $tag_page->setOrderIndex(1022);
 	    $tag_page->save();
-	    // $this->addUserMessage($tag_page->getLastQuery());
 	    $site->setTagPageId($tag_page->getId());
 	    
 	    $search_page = new SmartestPage;
@@ -233,14 +185,12 @@ class Desktop extends SmartestSystemApplication{
 	    $search_page->setCreatedbyUserid($this->getUser()->getId());
 	    $tag_page->setOrderIndex(1023);
 	    $search_page->save();
-	    // $this->addUserMessage($search_page->getLastQuery());
 	    $site->setTagPageId($search_page->getId());
 	    
 	    $logo_upload = new SmartestUploadHelper('site_logo');
 	    $logo_upload->setUploadDirectory(SM_ROOT_DIR.'Public/Resources/Images/SiteLogos/');
 	    
 	    if($logo_upload->hasDotSuffix('gif', 'png', 'jpg', 'jpeg')){
-			// $logo_upload->setFileName($upload->getFileName());
 			$logo_upload->save();
 			$site->setLogoImageFile($logo_upload->getFileName());
 		}else{
@@ -250,12 +200,10 @@ class Desktop extends SmartestSystemApplication{
 		$site->save();
 		
 		if(!$this->getUser()->hasGlobalPermission('site_access')){
-		    // 
 		    $this->getUser()->addToken('site_access', $site->getId());
 		}
 		
 		if(!$this->getUser()->hasGlobalPermission('modify_user_permissions')){
-		    // 
 		    $this->getUser()->addToken('modify_user_permissions', $site->getId());
 		}
 		
@@ -326,8 +274,6 @@ class Desktop extends SmartestSystemApplication{
         }else{
             $this->send(false, 'show_items_awaiting_publishing');
         }
-        
-        // var_dump($this->getUser()->hasToken('publish_approved_pages'));
         
         // get Pages awaiting publishing
         if($this->getUser()->hasToken('publish_approved_pages')){

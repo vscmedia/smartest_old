@@ -6,7 +6,12 @@ class MetaData extends SmartestSystemApplication{
 		
 	}
 	
-	function startPage(){
+	public function startPage(){
+	
+	}
+	
+	public function listTags(){
+	    
 	    $this->setFormReturnUri();
 	    $du = new SmartestDataUtility;
 	    $tags = $du->getTagsAsArrays();
@@ -14,7 +19,7 @@ class MetaData extends SmartestSystemApplication{
 	    
 	}
 	
-	function listFields(){
+    public function listFields(){
 	    
 		$this->setFormReturnUri();
 		
@@ -26,7 +31,7 @@ class MetaData extends SmartestSystemApplication{
 		
 	}
 	
-	function deletePageProperty($get,$post){
+	public function deletePageProperty($get,$post){
 		
 		$field_id = $get['field_id'];
 		

@@ -4,7 +4,7 @@ class SmartestDatabaseTableHelper{
     
     protected $database;
     
-    public function construct(){
+    public function __construct(){
         
         $this->database = SmartestPersistentObject::get('db:main');
         

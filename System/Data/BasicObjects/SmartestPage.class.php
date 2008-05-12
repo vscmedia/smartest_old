@@ -6,15 +6,22 @@ class SmartestPage extends SmartestDataObject{
 	protected $_fields_retrieval_attempted = false;
 	protected $_child_pages = array();
 	protected $_child_pages_retrieved = false;
-	protected $_grandparent_page = null;
-	protected $_parent_page = null;
-	protected $_section_page = null;
+	protected $_child_web_pages = array();
+	protected $_child_web_pages_retrieved = false;
+	protected $_grandparent_page;
+	protected $_parent_page;
+	protected $_section_page;
 	protected $_urls = array();
+	
 	protected $_fields = array();
+	protected $_containers = array();
+	protected $_placeholders = array();
+	
 	protected $_new_urls = array();
 	protected $displayPagesIndex = 0;
 	protected $displayPages = array();
 	protected $_site;
+	protected $_parent_site;
 	
 	const NOT_CHANGED = 100;
 	const AWAITING_APPROVAL = 101;
@@ -77,12 +84,21 @@ class SmartestPage extends SmartestDataObject{
 		
 		parent::save();
 		
+		$i = 0;
+		
 		// Add URL
 		foreach($this->_new_urls as $url_string){
+		    
 		    $url = new SmartestPageUrl;
     	    $url->setUrl($url_string);
     	    $url->setPageId($this->getId());
+    	    
+    	    if($i < 1){
+    	        $url->setIsDefault(1);
+	        }
+	        
     	    $url->save();
+    	    $i++;
 		}
 		
 		// Add definitions from preset, if any
@@ -115,6 +131,57 @@ class SmartestPage extends SmartestDataObject{
 	    }
 	}
 	
+	public function clearDefaultUrl(){
+	    $sql = "UPDATE PageUrls SET pageurl_is_default='0' WHERE pageurl_page_id='".$this->getId()."'";
+	    $this->database->rawQuery($sql);
+	}
+	
+	public function setDefaultUrl($url){
+	    if($url == (int) $url){
+	        // we are dealing with a url id
+	        $u = new SmartestPageUrl;
+	        if($u->hydrate($url)){
+	            $u->setIsDefault(1);
+	            $this->clearDefaultUrl();
+                $u->save();
+                return true;
+	        }else{
+	            return false;
+	        }
+	    }else{
+	        $sql = "SELECT PageUrls.*, Pages.page_id FROM PageUrls, Pages WHERE PageUrls.pageurl_page_id=Pages.page_id AND PageUrls.pageurl_url='".SmartestStringHelper::sanitize($url)."' AND Pages.page_site_id='".$this->getParentSite()->getId()."'";
+	        $result = $this->database->queryToArray();
+	        if(count($result)){
+	            // url exists
+	            $url_record = $result[0];
+	            
+	            if($url_record['page_id'] == $this->getId()){
+	                // the url is already in use for this page - just make it the default
+	                $u = new SmartestPageUrl;
+	                $u->hydrate($result[0]);
+	                $u->setIsDefault(1);
+	                $this->clearDefaultUrl();
+	                $u->save();
+	                return true;
+	            }else{
+	                // the url is in use for another page
+	                // record to log
+	                return false;
+	            }
+	            
+	        }else{
+	            // url doesn't exist
+	            $u = new SmartestPageUrl;
+	            $u->setUrl(SmartestStringHelper::sanitize($url));
+	            $u->setPageId($this->getId());
+	            $u->setIsDefault(1);
+	            $this->clearDefaultUrl();
+	            $u->save();
+	            return true;
+	        }
+	    }
+	}
+	
 	public function publish(){
 	    
 	    // update database defs
@@ -140,6 +207,7 @@ class SmartestPage extends SmartestDataObject{
 		// now delete files in page cache?
 		$cache_files = SmartestFileSystemHelper::load(SM_ROOT_DIR."System/Cache/Pages/");
 		
+		// remove all cache versions related to this page to keep the cache nice and tidy
 		$cf_start = "site".$this->getSiteId()."_cms_page_".$this->getId();
 		
 		foreach($cache_files as $f){
@@ -311,9 +379,9 @@ class SmartestPage extends SmartestDataObject{
 		
 		$int_level = (int) $level;
 		
-		foreach($_children as $child_page_record){
+		foreach($_children as $child){
 			
-			if($child_page_record['page_type'] == 'ITEMCLASS'){
+			/* if($child_page_record['page_type'] == 'ITEMCLASS'){
 			    
 			    $child = new SmartestItemPage;
 			    
@@ -321,7 +389,7 @@ class SmartestPage extends SmartestDataObject{
 		        
 		        $child = new SmartestPage;
 		        
-		    }
+		    } */
 		    
 		    $child->hydrate($child_page_record);
 			
@@ -523,11 +591,11 @@ class SmartestPage extends SmartestDataObject{
 	            $i++;
 	        }
 	    
-	    $this->_child_pages_retrieved = true;
+	        $this->_child_pages_retrieved = true;
 	    
         }
 	        
-	    return $result;
+	    return $this->_child_pages;
 	}
 	
 	public function getPageChildrenAsArrays($draft_mode=false, $sections_only=false){
@@ -535,9 +603,103 @@ class SmartestPage extends SmartestDataObject{
 	    $children = $this->getPageChildren($draft_mode, $sections_only);
 	    $array = array();
 	    
-	    foreach($children as $child_page_record){
-	        $child_page = new SmartestPage;
-	        $child_page->hydrate($child_page_record);
+	    foreach($children as $child_page){
+	        $array[] = $child_page->__toArray();
+	    }
+	    
+	    return $array;
+	    
+	}
+	
+	public function getPageChildrenForWeb($draft_mode=false, $sections_only=false){
+	    
+	    if($this->getParentSite()->getTagPageId()){
+	        $special_page_ids = array($this->getParentSite()->getTagPageId());
+	    }
+        
+        
+        
+        // these values should not be the same as the ids of the other special pages, 
+        // but just in case they are, prevent them from being in the SQL query twice:
+        if($this->getParentSite()->getErrorPageId() && !in_array($this->getParentSite()->getErrorPageId(), $special_page_ids)){
+            $special_page_ids[] = $this->getParentSite()->getErrorPageId();
+        }
+        
+        if($this->getParentSite()->getSearchPageId() && !in_array($this->getParentSite()->getSearchPageId(), $special_page_ids)){
+            $special_page_ids[] = $this->getParentSite()->getSearchPageId();
+        }
+        
+        $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->getId()."' AND page_site_id='".$this->getSiteId()."' AND page_deleted != 'TRUE'";
+		
+		if(!$draft_mode){
+		    $sql .= " AND page_is_published = 'TRUE'";
+		}
+		
+		if($sections_only){
+		    $sql .= " AND page_is_section = '1'";
+		}
+		
+		if(count($special_page_ids)){
+		    $sql .= " AND page_id NOT IN('".implode("', '", $special_page_ids)."')";
+	    }
+		
+		$sql .= " ORDER BY page_order_index, page_id ASC";
+		
+		$result = $this->database->queryToArray($sql);
+	    $i = 0;
+	    
+	    if(is_array($result)){
+	    
+	        foreach($result as $page_record){
+	            if($page_record['page_type'] == 'NORMAL'){
+	                $child_page = new SmartestPage;
+	                $child_page->hydrate($page_record);
+	                $this->_child_web_pages[$i] = $child_page;
+	                $i++;
+                }
+                
+                /* else if($page_record['page_type'] == 'ITEMCLASS'){
+                    
+                    $model = new SmartestModel;
+                    
+                    if($model->hydrate($page_record['page_dataset_id'])){
+                        foreach($model->getSimpleItems() as $item){
+                            
+                            $child_page = new SmartestItemPage;
+                            $child_page->hydrate($page_record);
+                            $child_page->setSimpleItem($item);
+                            $child_page->setIdentifyingFieldName('id');
+                            $child_page->setIdentifyingFieldValue($item->getId());
+                            $child_page->assignPrincipalItem();
+                            
+                            $is_acceptable = $child_page->isAcceptableItem($draft_mode);
+                            
+                            // var_dump($is_acceptable);
+                            
+                            if($is_acceptable){
+                                $this->_child_web_pages[$i] = $child_page;
+        	                    $i++;
+    	                    }
+                        }
+                    }
+                } */
+	        }
+	    
+	        $this->_child_web_pages_retrieved = true;
+	    
+        }
+        
+        return $this->_child_web_pages;
+        
+	}
+	
+	
+	public function getPageChildrenForWebAsArrays($draft_mode=false, $sections_only=false){
+	    
+	    $children = $this->getPageChildrenForWeb($draft_mode, $sections_only);
+	    $array = array();
+	    
+	    foreach($children as $child_page){
 	        $array[] = $child_page->__toArray();
 	    }
 	    
@@ -702,9 +864,20 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $array = parent::__toArray();
 	    
+	    $array['title'] = $this->getTitle();
 	    $array['url'] = $this->getDefaultUrl();
 	    $array['formatted_title'] = $this->getFormattedTitle();
 	    $array['is_tag_page'] = $this->isTagPage();
+	    
+	    if($this->getType() == 'ITEMCLASS'){
+	        if(is_object($this->getSimpleItem())){
+	            $array['link_contents'] = 'metapage:'.$this->getName().':id='.$this->getSimpleItem()->getId();
+            }else{
+                $array['link_contents'] = 'page:'.$this->getName();
+            }
+	    }else{
+	        $array['link_contents'] = 'page:'.$this->getName();
+        }
 	    
 	    if($getChildren){
 	        $array['_child_pages'] = $this->getPageChildrenAsArrays();
@@ -937,16 +1110,132 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
+	public function getRelatedPageIds($draft_mode=false){
+	    
+	    $pages = $this->getRelatedPages($draft_mode);
+	    $ids = array();
+	    
+	    foreach($pages as $page){
+	        $ids[] = $page->getId();
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
+	public function addRelatedPage($page_id){
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
+	    $q->createNetworkLinkBetween($this->getId(), $page_id);
+	}
+	
+	public function removeRelatedPage($page_id){
+	    $page_id = (int) $page_id;
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
+	    $q->deleteNetworkLinkBetween($this->getId(), $page_id);
+	}
+	
+	public function removeAllRelatedPages(){
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
+	    $q->deleteNetworkNodeById($this->getId());
+	}
+	
 	public function isRelatedToItem($page_id){
 	    
 	}
 	
-	public function getRelatedItems($draft_mode=false){
+	public function getRelatedItems($draft_mode=false, $model_id=''){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
+	    $q->setTargetEntityByIndex(1);
+	    $q->addQualifyingEntityByIndex(2, $this->getId());
+	    
+	    $q->addForeignTableConstraint('Items.item_deleted', 1, SmartestQuery::NOT_EQUAL);
+	    
+	    if($model_id && (int) $model_id == $model_id){
+	        $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
+	    }
+	    
+	    if(!$draft_mode){
+	        $q->addForeignTableConstraint('Items.item_public', 'TRUE');
+	    }
+	    
+	    $q->addSortField('Items.item_created');
+	    
+	    $result = $q->retrieve();
+	    
+	    /* $big_objects = array();
+	    
+	    foreach($result as $i){
+	        $big_objects[] = SmartestCmsItem::retrieveByPk($i->getId());
+	    } */
+	    
+	    return $result;
 	    
 	}
 	
-	public function getRelatedItemsAsArrays($draft_mode=false){
+	public function getRelatedItemsAsArrays($draft_mode=false, $model_id=''){
 	    
+	    $items = $this->getRelatedItems($draft_mode, $model_id);
+	    $arrays = array();
+	    
+	    foreach($items as $i){
+	        $arrays[] = $i->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
+	public function getRelatedItemIds($draft_mode=false, $model_id=''){
+	    
+	    $items = $this->getRelatedItems($draft_mode, $model_id);
+	    $ids = array();
+	    
+	    foreach($items as $i){
+	        $ids[] = $i->getId();
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
+	public function addRelatedItem($item_id){
+	    
+	    $item_id = (int) $item_id;
+	    
+	    $link = new SmartestManyToManyLookup;
+	    $link->setEntityForeignKeyValue(2, $this->getId());
+	    $link->setEntityForeignKeyValue(1, $item_id);
+	    $link->setType('SM_MTMLOOKUP_PAGES_ITEMS');
+	    
+	    $link->save();
+	}
+	
+	public function removeRelatedItem($item_id){
+	    
+	    $item_id = (int) $item_id;
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
+	    $q->setTargetEntityByIndex(1);
+	    $q->addQualifyingEntityByIndex(2, $this->getId());
+	    $q->addForeignTableConstraint('Items.item_id', $item_id);
+	    
+	    $q->delete();
+	}
+	
+	public function removeAllRelatedItems($model_id=''){
+	    
+	    $model_id = (int) $model_id;
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
+	    $q->setTargetEntityByIndex(1);
+	    $q->addQualifyingEntityByIndex(2, $this->getId());
+	    
+	    if($model_id > 0){
+	        $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
+        }
+        
+	    $q->delete();
 	}
 	
 	public function getNavigationStructure($draft_mode=false){
@@ -962,12 +1251,100 @@ class SmartestPage extends SmartestDataObject{
 			"parent"=>$this->getParentPage()->compile(), 
 			"section"=>$this->getSectionPage()->compile(), 
 			"breadcrumbs"=>$this->getPageBreadCrumbs(), 
-			"sibling_level_lages"=>$this->getParentPage()->getPageChildrenAsArrays($draft_mode), 
-			"parent_level_pages"=>$this->getGrandParentPage()->getPageChildrenAsArrays($draft_mode),
-			"child_pages"=>$this->getPageChildrenAsArrays($draft_mode),
-			"main_sections"=>$home_page->getPageChildrenAsArrays($draft_mode, true),
-			"related_pages"=>$this->getRelatedPagesAsArrays(false)
+			"sibling_level_lages"=>$this->getParentPage()->getPageChildrenForWebAsArrays($draft_mode), 
+			"parent_level_pages"=>$this->getGrandParentPage()->getPageChildrenForWebAsArrays($draft_mode),
+			"child_pages"=>$this->getPageChildrenForWebAsArrays($draft_mode),
+			"main_sections"=>$home_page->getPageChildrenForWebAsArrays($draft_mode, true),
+			"related"=>$this->getRelatedContentForRender($draft_mode)
 		);
+	}
+	
+	public function loadAssetClassDefinitions($draft_mode=false){
+	    
+	    if($draft_mode){
+	        $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id";
+        }else{
+            $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
+        }
+        
+        $result = $this->database->queryToArray($sql);
+        
+        foreach($result as $def_array){
+            if($def_array['assetclass_type'] == 'SM_ASSETCLASS_CONTAINER'){
+                $def = new SmartestContainerDefinition;
+                $def->hydrateFromGiantArray($def_array);
+                $this->_containers[$def_array['assetclass_name']] = $def;
+            }else{
+                $def = new SmartestPlaceholderDefinition;
+                $def->hydrateFromGiantArray($def_array);
+                $this->_placeholders[$def_array['assetclass_name']] = $def;
+            }
+        }
+	    
+	}
+	
+	public function hasContainerDefinition($container_name, $draft_mode=false){
+	    
+	    return array_key_exists($container_name, $this->_containers);
+	    
+	}
+	
+	public function hasPlaceholderDefinition($placeholder_name, $draft_mode=false){
+	    
+	    return array_key_exists($placeholder_name, $this->_placeholders);
+	    
+	}
+	
+	public function getContainerDefinition($container_name, $draft_mode=false){
+	    
+	    if(array_key_exists($container_name, $this->_containers)){
+	        
+	        $container = $this->_containers[$container_name];
+	        return $container;
+	        
+	    }else{
+	    
+	        $container = new SmartestContainerDefinition;
+            $container->load($container_name, $this, $draft_mode);
+            return $container;
+        
+        }
+	    
+	}
+	
+	public function getPlaceholderDefinition($placeholder_name, $draft_mode=false){
+	    
+	    if(array_key_exists($placeholder_name, $this->_placeholders)){
+	        
+	        $placeholder = $this->_placeholders[$placeholder_name];
+	        return $placeholder;
+	        
+	    }else{
+	    
+	        $placeholder = new SmartestPlaceholderDefinition;
+            $placeholder->load($placeholder_name, $this, $draft_mode);
+            return $placeholder;
+        
+        }
+	    
+	}
+	
+	public function getRelatedContentForRender($draft_mode=false){
+	    
+	    $content = array();
+	    
+	    $du = new SmartestDataUtility;
+        $models = $du->getModels();
+    
+        foreach($models as $m){
+            $key = SmartestStringHelper::toVarName($m->getPluralName());
+            $content[$key] = $this->getRelatedItemsAsArrays($draft_mode, $m->getId());
+        }
+        
+        $content['pages'] = $this->getRelatedPagesAsArrays($draft_mode);
+        
+        return $content;
+        
 	}
 	
 	public function getPageBreadCrumbs(){
@@ -1042,11 +1419,16 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function getParentSite(){
-	    $sql = "SELECT * FROM Sites WHERE site_id='".$this->getSiteId()."'";
-        $result = $this->database->queryToArray($sql);
-        $s = new SmartestSite;
-        $s->hydrate($result[0]);
-        return $s;
+	    
+	    if(!$this->_parent_site){
+	        $sql = "SELECT * FROM Sites WHERE site_id='".$this->getSiteId()."'";
+            $result = $this->database->queryToArray($sql);
+            $s = new SmartestSite;
+            $s->hydrate($result[0]);
+            $this->_parent_site = $s;
+        }
+        
+        return $this->_parent_site;
 	}
 	
 	public function getFormattedTitle(){

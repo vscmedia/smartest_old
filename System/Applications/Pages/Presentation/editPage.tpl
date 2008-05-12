@@ -1,14 +1,17 @@
 <div id="work-area">
 
 {if $allow_edit}
-
-{load_interface file="edit_tabs.tpl"}
-
-{load_interface file="editPage.form.tpl"}
+  
+  {load_interface file="edit_tabs.tpl"}
+  
+  {if $require_item_select}
+  <h3>Meta-Page Overview</h3>
+  {load_interface file="choose_item.tpl"}
+  {else}
+  {load_interface file="editPage.form.tpl"}
+  {/if}
 
 {else}
-
-<h3>Edit Page</h3>
 
 <div class="instruction">You can't currently edit this page</div>
 
@@ -16,6 +19,7 @@
 
 </div>
 
+{if !$require_item_select}
 <div id="actions-area">
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Site Options</b></li>
@@ -25,3 +29,4 @@
     {if $allow_edit}<li class="permanent-action"><a href="{$domain}{$section}/closeCurrentPage" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Finish working with this page</a></li>{/if}
   </ul>
 </div>
+{/if}

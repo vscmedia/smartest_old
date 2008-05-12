@@ -5,6 +5,7 @@
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="assetclass_id" id="item_id_input" value="" />
   <input type="hidden" name="page_id" value="{$page.webid}" />
+  {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
 </form>
     
 {* <div style="margin-top:10px;width:95%;padding-left:10px;border-bottom:1px solid #999;padding-bottom:7px;margin-bottom:10px;" id="options-nav">

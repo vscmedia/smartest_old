@@ -126,6 +126,12 @@ ul.basic-list{
     padding-top:0px;
 }
 
+ul.scroll-list{
+    overflow: scroll;
+    margin:0px;
+    padding-left:25px;
+}
+
 ul.basic-list li{
     padding:4px;
 }

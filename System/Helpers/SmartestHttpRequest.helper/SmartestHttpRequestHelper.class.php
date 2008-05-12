@@ -134,8 +134,6 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		$urls = $matches[1];
 		$css_imports = $matches_2[2];
 		
-		print_r($urls);
-		
 		foreach($css_imports as $css){
 			if(!in_array($css, $urls)){
 				$urls[] = $css;
@@ -187,5 +185,3 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 	}
 	
 }
-
-?>

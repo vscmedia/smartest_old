@@ -24,7 +24,12 @@ class SmartestObjectModelHelper{
 	
 	static function buildAutoClassFile($id, $name){
 		
-		$className = $name;
+		if(count(explode(' ', $name)) > 1){
+		    $className = SmartestStringHelper::toCamelCase($name);
+	    }else{
+	        $className = $name;
+	    }
+	    
 		$constants = '';
 		$model = new SmartestModel;
 		$model->hydrate($id);

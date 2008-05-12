@@ -12,67 +12,6 @@ mb_internal_encoding("UTF-8");
 
 define('SM_INFO_VERSION_NUMBER', '0.3.5a2');
 
-require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
-require SM_ROOT_DIR.'System/Helpers/SmartestHelper.class.php';
-
-SmartestHelper::loadAll();
-
-SmartestFileSystemHelper::include_group(
-
-	'System/Base/SmartestException.class.php',
-	'System/Base/SmartestError.class.php',
-	'System/Base/SmartestErrorStack.class.php',
-	'System/Response/SmartestUserMessage.class.php',
-	'System/Data/SmartestSession.class.php',
-	'System/Data/SmartestPersistentObject.class.php',
-	'System/Data/SmartestDataAccessClass.interface.php',
-	'System/Response/SmartestResponseDataHolder.class.php',
-	'System/Data/SmartestMysql.class.php',
-	'System/Data/SmartestSqllite.class.php',
-	'System/Data/SmartestCacheDb.class.php',
-	'System/Data/SmartestCmsItem.class.php',
-	'System/Data/SmartestDataUtility.class.php',
-	'System/Data/SmartestFile.class.php'
-
-);
-
-include 'PEAR.php';
-include 'XML/Unserializer.php';
-include 'XML/Serializer.php';
-
-SmartestDataUtility::loadTypeObjects();
-SmartestDataUtility::loadBasicObjects();
-SmartestDataUtility::loadExtendedObjects();
-
-// include SM_ROOT_DIR.'Libraries/Plugins/SmartestXml/SmartestXmlSerializer.class.php';
-
-SmartestFileSystemHelper::include_group(
-
-	'System/Data/DataQuery.class.php',
-	'System/Data/SmartestQuery.class.php',
-	'System/Data/SmartestQueryResultSet.class.php',
-	'System/Data/SmartestManyToManyQuery.class.php',
-	'System/Data/SmartestObjectModelHelper.class.php',
-	'System/Data/SmartestGenericListedObject.class.php',
-	'Library/Quince/Quince.class.php',
-	'Library/Quince/QuinceException.class.php',
-	'Library/Quince/QuinceBase.interface.php',
-	'System/Templating/SmartestEngine.class.php',
-	'System/Templating/SmartestInterfaceBuilder.class.php',
-	'System/Templating/SmartestWebPageBuilder.class.php',
-	'System/Templating/SmartyManager.class.php',
-	'System/Controller/SmartestController.class.php',
-	'System/Templating/SmartestTemplateHelper.class.php',
-	'System/Base/SmartestBaseProcess.class.php',
-	'System/Base/SmartestBaseApplication.class.php',
-	'System/Base/SmartestSystemApplication.class.php',
-	'Library/API/SmartestApplication.class.php',
-	'Library/API/SmartestUser.class.php'
-
-);
-
-define('SM_START_TIME', microtime(true));
-
 class SmartestResponse{
 	
 	// Main controller object
@@ -181,6 +120,73 @@ class SmartestResponse{
 	
 	function __construct(){
 		
+		require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
+        require SM_ROOT_DIR.'System/Helpers/SmartestHelper.class.php';
+        require SM_ROOT_DIR.'System/Base/SmartestException.class.php';
+        require SM_ROOT_DIR.'System/Base/SmartestError.class.php';
+        require SM_ROOT_DIR.'System/Base/SmartestErrorStack.class.php';
+        
+        $this->errorStack = new SmartestErrorStack();
+
+        try{
+            SmartestHelper::loadAll();
+        }catch(SmartestException $e){
+            $this->error($e->getMessage());
+            $this->errorStack->display();
+        }
+
+        SmartestFileSystemHelper::include_group(
+
+        	'System/Response/SmartestUserMessage.class.php',
+        	'System/Data/SmartestSession.class.php',
+        	'System/Data/SmartestPersistentObject.class.php',
+        	'System/Data/SmartestDataAccessClass.interface.php',
+        	'System/Response/SmartestResponseDataHolder.class.php',
+        	'System/Data/SmartestMysql.class.php',
+        	'System/Data/SmartestSqllite.class.php',
+        	'System/Data/SmartestCacheDb.class.php',
+        	'System/Data/SmartestCmsItem.class.php',
+        	'System/Data/SmartestDataUtility.class.php',
+        	'System/Data/SmartestFile.class.php'
+
+        );
+
+        include 'PEAR.php';
+        include 'XML/Unserializer.php';
+        include 'XML/Serializer.php';
+
+        SmartestDataUtility::loadTypeObjects();
+        SmartestDataUtility::loadBasicObjects();
+        SmartestDataUtility::loadExtendedObjects();
+
+        // include SM_ROOT_DIR.'Libraries/Plugins/SmartestXml/SmartestXmlSerializer.class.php';
+
+        SmartestFileSystemHelper::include_group(
+
+        	'System/Data/DataQuery.class.php',
+        	'System/Data/SmartestQuery.class.php',
+        	'System/Data/SmartestQueryResultSet.class.php',
+        	'System/Data/SmartestManyToManyQuery.class.php',
+        	'System/Data/SmartestObjectModelHelper.class.php',
+        	'System/Data/SmartestGenericListedObject.class.php',
+        	'Library/Quince/Quince.class.php',
+        	'Library/Quince/QuinceException.class.php',
+        	'Library/Quince/QuinceBase.interface.php',
+        	'System/Templating/SmartestEngine.class.php',
+        	'System/Templating/SmartestInterfaceBuilder.class.php',
+        	'System/Templating/SmartestWebPageBuilder.class.php',
+        	'System/Templating/SmartyManager.class.php',
+        	'System/Controller/SmartestController.class.php',
+        	'System/Templating/SmartestTemplateHelper.class.php',
+        	'System/Base/SmartestBaseProcess.class.php',
+        	'System/Base/SmartestBaseApplication.class.php',
+        	'System/Base/SmartestSystemApplication.class.php',
+        	'Library/API/SmartestApplication.class.php',
+        	'Library/API/SmartestUser.class.php'
+
+        );
+        
+        define('SM_START_TIME', microtime(true));
 		$this->startTime = SM_START_TIME;
 		// echo $this->startTime;
 		
@@ -194,7 +200,6 @@ class SmartestResponse{
 		// print_r($_SESSION);
 		
 		$this->_log("Session started");
-		$this->errorStack = new SmartestErrorStack();
 		
 		SmartestPersistentObject::set('errors:stack', $this->errorStack);
 		SmartestPersistentObject::set('centralDataHolder', new SmartestResponseDataHolder);
@@ -296,6 +301,8 @@ class SmartestResponse{
 		$this->_log("Starting controller...");
 		
 		// var_dump(SmartestSession::get('user:isAuthenticated'));
+		
+		
 		
 		$this->controller = new SmartestController(SM_ROOT_DIR."Configuration/controller.xml", false);
 		
@@ -429,6 +436,11 @@ class SmartestResponse{
 		define("SM_CONTROLLER_DOMAIN", $this->controller->getDomain());
 		define("SM_CONTROLLER_TEMPLATE_FAMILY", $this->controller->getTemplateName());
 		define("SM_CONTROLLER_TEMPLATE_FILE", $this->templateFile);
+		
+		if($this->browser->isExplorer() && $this->browser->getPlatform() == 'Macintosh' && !$this->isWebsitePage()){
+		    include(SM_ROOT_DIR.'System/Response/ErrorPages/mac_ie.php');
+		    exit();
+		}
 		
 		$this->errorStack->display();
 		
@@ -938,11 +950,11 @@ class SmartestResponse{
 		
 		// Calculate time taken and assign to smarty
 		$this->endTime   = microtime(true);
-		$this->timeTaken = number_format(($this->endTime - $this->startTime)*1000, 2, ".", ",");
+		$this->timeTaken = number_format(($this->endTime - $this->startTime)*1000, 2, ".", "");
 		// echo $this->endTime - $this->startTime;
 		
-		$this->controllerPrepareTimeTaken = number_format(($this->controller->prepareTime - $this->startTime)*1000, 2, ".", ",");
-		$this->controllerActionTimeTaken  = number_format(($this->controller->postActionTime - $this->startTime)*1000, 2, ".", ",");
+		$this->controllerPrepareTimeTaken = number_format(($this->controller->prepareTime - $this->startTime)*1000, 2, ".", "");
+		$this->controllerActionTimeTaken  = number_format(($this->controller->postActionTime - $this->startTime)*1000, 2, ".", "");
 		
 		$this->smarty->assign("sm_execTime", $this->timeTaken);
 		
@@ -951,7 +963,7 @@ class SmartestResponse{
 		
 		// Calculate time taken and assign to smarty
 		$endTime   = microtime(true);
-		$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", ",");
+		$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
 		
 		// Display HTML from templates
 		if((SM_CONTROLLER_METHOD == "renderPageFromUrl" || SM_CONTROLLER_METHOD == "renderPageFromId")){
@@ -971,7 +983,7 @@ class SmartestResponse{
 					// Cached file not found; Build page
 					$output     = $this->getUnfilteredOutput();
 					$endTime    = microtime(true);
-					$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", ",");
+					$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
 					$html       = $this->executeFilterChain($output);
 					
 					$filename = $this->getFlatHtmlFileName();
@@ -994,28 +1006,20 @@ class SmartestResponse{
 				// Page is a 404 page, so don't bother with cache
 				$output = $this->getUnfilteredOutput();
 				$endTime   = microtime(true);
-				$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", ",");
+				$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
 				$html = $this->executeFilterChain($output);
 				return $html;
 			}
 				
 		}else{
 			
-			// Output is not from CMS, but one of the other modules
-			
-			// echo 'boo';
-			
-			// var_dump($fragment_only);
+			// Output is not a live CMS page, just a normal actions
 			
 			$output = $this->getUnfilteredOutput($fragment_only);
 			
-			// echo $output;
-			
 			$endTime   = microtime(true);
 			
-			// echo 'Started: '.$this->startTime.', ended: '.$endTime;
-			
-			$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", ",");
+			$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
 			$html = $this->executeFilterChain($output);
 			
 			return $html;
@@ -1024,23 +1028,21 @@ class SmartestResponse{
 	
 	public function finish(){
 		
-		if($this->content === null){
+	    if($this->content === null){
 		    $this->content = new stdClass;
 		}
-		
-		
 		
 		switch($this->controller->getNamespace()){
 		    case 'ui':
 		        echo $this->fetch(true);
-		        // echo $this->fullTimeTaken;
 		        break;
 		    case 'json':
 		        echo json_encode($this->content);
 		        break;
 		    default:
 		        echo $this->fetch();
-		        // echo $this->fullTimeTaken;
+		        echo $this->fullTimeTaken.'<br />';
+		        // 
 		        break;
 	    }
 		

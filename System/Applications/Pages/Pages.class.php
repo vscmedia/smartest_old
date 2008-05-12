@@ -43,17 +43,17 @@ class Pages extends SmartestSystemApplication{
 	} */
 	
 	public function openPage($get){
+	    
 	    if(@$get['page_id']){
 	        
 	        $page = new SmartestPage;
 	        
 	        if($page->hydrate($get['page_id'])){
 	            
-	            // echo $page->getIsHeld().' : '.$page->getHeldBy().' : '.$this->getUser()->getId();
-	            
 	            if($this->getUser()->hasToken('modify_page_properties')){
 	            
 	                if($page->getIsHeld() && $page->getHeldBy() != $this->getUser()->getId()){
+    	                
     	                // page is already being edited by another user
     	                $editing_user = new SmartestUser;
 	                
@@ -65,17 +65,20 @@ class Pages extends SmartestSystemApplication{
 	                
     	                $this->redirect('/smartest/pages');
     	                
+    	                $this->send($page->__toArray(), 'page');
+    	                
     	            }else{
-	                
-    	                // page is available to edit
-    			        SmartestSession::set('current_open_page', $page->getId());
-			        
-    			        // lock it against being edited by other people
-    			        $page->setIsHeld(1);
-    			        $page->setHeldBy($this->getUser()->getId());
-    			        $page->save();
-			        
-    			        $this->redirect('/'.SM_CONTROLLER_MODULE.'/editPage?page_id='.$page->getWebid());
+	                    
+	                    // page is available to edit
+			            SmartestSession::set('current_open_page', $page->getId());
+		        
+			            // lock it against being edited by other people
+			            $page->setIsHeld(1);
+			            $page->setHeldBy($this->getUser()->getId());
+			            $page->save();
+		            
+			            $this->redirect('/'.SM_CONTROLLER_MODULE.'/editPage?page_id='.$page->getWebid());
+    			        
     		        }
 		        
 	            }else{
@@ -125,7 +128,7 @@ class Pages extends SmartestSystemApplication{
                     $this->addUserMessageToNextRequest("The page has been released.", SmartestUserMessage::SUCCESS);
                 }else{
                     //  the page
-                    $this->addUserMessageToNextRequest("The page couldn't be released because another user is editing it.", SmartestUserMessage::WARNING);
+                    $this->addUserMessageToNextRequest("You can't release this page because another user is editing it.", SmartestUserMessage::WARNING);
                 }
             }else{
                 $this->addUserMessageToNextRequest("The page is not currently held by another user.", SmartestUserMessage::INFO);
@@ -214,108 +217,97 @@ class Pages extends SmartestSystemApplication{
     	$page = new SmartestPage;
     	
     	if($page->hydrate($page_webid)){
-    	
-    	    $editorContent = $page->__toArray();
-    		
-        	if($this->getUser()->hasToken('modify_page_properties')){
-		
-        		// $site_id = $page->getSiteId();
-        		$site_id = $this->getSite()->getId();
-        		$page_id = $page->getId();
-		
-        		// $site = new SmartestSite;
-        		// $site->hydrate($site_id);
-		
-        		// $this->setFormReturnUri();
-		        // $saved = $get['saved'];
-		
-        		if($site_id){
-			
-        			// $homepage_id = $site->getTopPageId();
-			
-        			if($this->getSite()->getTopPageId() == $page->getId()){
-        				$ishomepage = true;
-        			}else{
-        				$ishomepage = false;
-        			}
-        		}
-		        
-		        // var_dump($ishomepage);
-		        
-        		/* $parent_page_arrays = $this->manager->getOkParentPages($page_id);
-		        $parent_pages = array();
-		
-        		foreach($parent_page_arrays as $pp){
-		    
-        		    // $ppo = new SmartestPage;
-        		    // $ppo->hydrate($pp['info']);
-		    
-        		    // $page_array = $ppo->__toArray();
-        		    $page_array = $pp['info'];
-        		    $page_array['tree_level'] = $pp['treeLevel'];
-		    
-        		    $parent_pages[] = $page_array;
-        		} */
-        		
-        		$parent_pages = $page->getOkParentPages();
-        		
-        		// print_r($parent_pages);
-		
-        		// $pageproperties = $this->manager->getPageProperties($page_id);
-        		// $definedPageProperties = $pageproperties['define'];
-		
-        		// $undefinedPageProperties = $pageproperties['undefine'];
-        		// $definedPagePropertyValues = $pageproperties['definedPagePropertyValues'];
-        		
-        		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
-        		    $allow_release = true;
-        		}else{
-        		    $allow_release = false;
-        		}
-        		
-        		$this->send($allow_release, 'allow_release');
-		
-        		$pageUrls = $page->getUrlsAsArrays();
-		        
-		        $available_icons = $page->getAvailableIconImageFilenames();
-		        // print_r($available_icons);
-		        $this->send($available_icons, 'available_icons');
-		        
-        		// $set = new SmartestCmsItemSet;
-        		// $set->hydrate($page->getDatasetId());
-		
-        		// $editorContent['set_name'] = $set->getName();
-        		// $editorContent['model_name'] = $set->getModel()->getName();
+    	    
+    	    if($page->getType() == 'ITEMCLASS' && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
+            
+                $this->send(true, 'allow_edit');
+            
+                $model = new SmartestModel;
                 
-                if($page->getType() == "ITEMCLASS"){
-                
-                    $model = new SmartestModel;
-                    $model->hydrate($page->getDatasetId());
-                    $editorContent['model_name'] = $model->getName();
-                
+                if($model->hydrate($page->getDatasetId())){
+                    $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+                    $this->send($items, 'items');
+                    $this->send($model->__toArray(), 'model');
+                    $this->send($page->__toArray(), 'page');
+                    $this->send(true, 'require_item_select');
+                    $this->send('Please choose an item to continue editing.', 'chooser_message');
+                    $this->send('websitemanager/editPage', 'continue_action');
                 }
-                
-        		$count_url = count($pageUrls);
-        		$this->setTitle("Edit Page | ".$page->getTitle());
+            
+            }else{
+    	        
+    	        $this->send(false, 'require_item_select');
+    	        
+    	        $editorContent = $page->__toArray();
     		
-        		// print_r($this->getSite()->__toArray());
+            	if($this->getUser()->hasToken('modify_page_properties')){
 		
-        		$this->send($editorContent, "pageInfo");
-        		$this->send($parent_pages, "parent_pages");
-        		$this->send($saved, "saved");
-        		$this->send($pageUrls, "pageurls");
-        		$this->send($count_url, "count");
-        		$this->send($ishomepage, "ishomepage");
-        		$this->send($this->getSite()->__toArray(), "site");
-        		$this->send(true, 'allow_edit');
+            		// $site_id = $page->getSiteId();
+            		$site_id = $this->getSite()->getId();
+            		$page_id = $page->getId();
 		
-    	    }else{
+            		// $site = new SmartestSite;
+            		// $site->hydrate($site_id);
+		
+            		// $this->setFormReturnUri();
+    		        // $saved = $get['saved'];
+		
+            		if($site_id){
+			
+            			// $homepage_id = $site->getTopPageId();
+			
+            			if($this->getSite()->getTopPageId() == $page->getId()){
+            				$ishomepage = true;
+            			}else{
+            				$ishomepage = false;
+            			}
+            		}
+		        
+    		        $parent_pages = $page->getOkParentPages();
+        		
+            		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
+            		    $allow_release = true;
+            		}else{
+            		    $allow_release = false;
+            		}
+        		
+            		$this->send($allow_release, 'allow_release');
+		
+            		$pageUrls = $page->getUrlsAsArrays();
+		        
+    		        $available_icons = $page->getAvailableIconImageFilenames();
+    		        // print_r($available_icons);
+    		        $this->send($available_icons, 'available_icons');
+		        
+            		if($page->getType() == "ITEMCLASS"){
+                
+                        $model = new SmartestModel;
+                        $model->hydrate($page->getDatasetId());
+                        $editorContent['model_name'] = $model->getName();
+                
+                    }
+                
+            		$count_url = count($pageUrls);
+            		$this->setTitle("Edit Page | ".$page->getTitle());
+    		
+            		$this->send($editorContent, "pageInfo");
+            		$this->send($parent_pages, "parent_pages");
+            		$this->send($saved, "saved");
+            		$this->send($pageUrls, "pageurls");
+            		$this->send($count_url, "count");
+            		$this->send($ishomepage, "ishomepage");
+            		$this->send($this->getSite()->__toArray(), "site");
+            		$this->send(true, 'allow_edit');
+		
+        	    }else{
 	        
-    	        $this->addUserMessage('You don\'t have permission to modify page properties.', SmartestUserMessage::ACCESS_DENIED);
-    	        $this->send($editorContent, "pageInfo");
-    	        $this->send(false, 'allow_edit');
+        	        $this->addUserMessageToNextRequest('You don\'t have permission to modify page properties.', SmartestUserMessage::ACCESS_DENIED);
+        	        $this->redirect('/smartest/pages');
+        	        $this->send($editorContent, "pageInfo");
+        	        $this->send(false, 'allow_edit');
 	        
-    	    }
+        	    }
+        	}
 	    
         }else{
             $this->addUserMessageToNextRequest('The page ID was not recognized.', SmartestUserMessage::ERROR);
@@ -472,13 +464,22 @@ class Pages extends SmartestSystemApplication{
 
         	                $model = new SmartestModel;
 
-        	                if($model->hydrate($page->getDatasetId())){
+        	                /* if($model->hydrate($page->getDatasetId())){
         	                    $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
         	                    $this->send($items, 'items');
         	                    $this->send($model->__toArray(), 'model');
         	                }else{
         	                    $this->send(array(), 'items');
-        	                }
+        	                } */
+        	                
+        	                if($model->hydrate($page->getDatasetId())){
+	                            $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+	                            $this->send($items, 'items');
+	                            $this->send($model->__toArray(), 'model');
+	                            $this->send($page->__toArray(), 'page');
+	                        }else{
+	                            $this->send(array(), 'items');
+	                        }
         	                
         	                $this->setTitle('Meta-Page Preview | Choose '.$model->getName().' to Continue');
     		            }
@@ -487,18 +488,7 @@ class Pages extends SmartestSystemApplication{
 	                
     	                $this->send(false, 'show_iframe');
 	                
-    	                /* $set = new SmartestCmsItemSet;
-	                
-    	                if($set->hydrate($page->getDatasetId())){
-	                    
-    	                    $items = $set->getMembersAsArrays(true);
-    	                    $this->send($items, 'set_members');
-    	                    $this->addUserMessage("Please choose an item to preview this page.");
-    	                    $this->send(true, 'show_item_list');
-	                
-    	                } */
-	                    
-	                    $this->send(true, 'show_item_list');
+    	                $this->send(true, 'show_item_list');
 	                
     	                $model = new SmartestModel;
 	                
@@ -506,6 +496,8 @@ class Pages extends SmartestSystemApplication{
     	                    $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
     	                    $this->send($items, 'items');
     	                    $this->send($model->__toArray(), 'model');
+    	                    $this->send('Please choose an item to preview on this page.', 'chooser_message');
+                            $this->send('websitemanager/preview', 'continue_action');
     	                }else{
     	                    $this->send(array(), 'items');
     	                }
@@ -647,6 +639,8 @@ class Pages extends SmartestSystemApplication{
 		
 		$user_id = SmartestPersistentObject::get('user')->getId(); //['user_id'];
 		
+		$helper = new SmartestPageManagementHelper;
+		
 		// print_r($_SESSION);
 		
 		if(isset($post['stage']) && is_numeric($post['stage']) && is_object(SmartestPersistentObject::get('__newPage'))){
@@ -692,7 +686,7 @@ class Pages extends SmartestSystemApplication{
 			$parent_info = $parent->__toArray();
 		}
 		
-		$templates = $this->manager->getMasterTemplates($site_id); 
+		$templates = $helper->getMasterTemplates($site_id); 
 
 		switch($stage){
 			
@@ -704,7 +698,7 @@ class Pages extends SmartestSystemApplication{
 			$type = in_array($post['page_type'], array('NORMAL', 'ITEMCLASS', 'TAG')) ? $post['page_type'] : 'NORMAL';
 			$this->send($post['page_parent'], 'page_parent');
 			
-			$page_presets = $this->manager->getPagePresets($this->getSite()->getId());
+			$page_presets = $helper->getPagePresets($this->getSite()->getId());
 			
 			$template = "addPage.stage2.tpl";
 			
@@ -713,7 +707,7 @@ class Pages extends SmartestSystemApplication{
 			}
 			
 			// if(!SmartestPersistentObject::get('__newPage')->getParent()){
-				$pages = $this->manager->getSerialisedPageTree($this->manager->getPagesTree($site_info['id']));
+				$pages = $helper->getSerialisedPageTree($helper->getPagesTree($site_info['id']));
 				$this->send('TRUE', 'chooseParent');
 				$this->send($pages, 'pages');
 			// }
@@ -888,10 +882,11 @@ class Pages extends SmartestSystemApplication{
 			
 			default:
 			
+			$parent = new SmartestPage;
+			
 			if(isset($get['page_id']) && !isset($site_id)){
 			    
 			    $parent_id = $get['page_id'];
-			    $parent = new SmartestPage;
 			    $parent->hydrate($parent_id);
 				
 				// $site_id = $this->manager->database->specificQuery("page_site_id", "page_webid", $parent_id, "Pages");
@@ -907,7 +902,7 @@ class Pages extends SmartestSystemApplication{
 			SmartestPersistentObject::get('__newPage')->setSiteId($site_info['id']);
 			SmartestPersistentObject::get('__newPage')->setParent($parent_info['id']);
 			
-			$this->send($this->manager->getPageIdFromPageWebId($get['page_id']), 'page_parent');
+			$this->send($parent->getId(), 'page_parent');
 			$template = "addPage.start.tpl";
 			break;
 		}
@@ -1036,51 +1031,80 @@ class Pages extends SmartestSystemApplication{
 	    // SmartestDataUtility::getAssetClassTypes();
 	    
 	    if($this->getUser()->hasToken('modify_draft_pages')){
-	    
-		    $this->setFormReturnUri();
+	        
+	        $page = new SmartestPage;
+    		
+    		if($page->hydrate($get['page_id'])){
+	        
+	            if($page->getType() == 'ITEMCLASS' && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
+	            
+    	            $model = new SmartestModel;
+            
+                    if($model->hydrate($page->getDatasetId())){
+                        $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+                        $this->send($items, 'items');
+                        $this->send($model->__toArray(), 'model');
+                        $this->send('Please choose an item to edit the elements on this page.', 'chooser_message');
+                        $this->send('websitemanager/pageAssets', 'continue_action');
+                        $this->send(true, 'allow_edit');
+                        $this->send($page->__toArray(), 'page');
+                    }else{
+                        $this->send(array(), 'items');
+                    }
+                
+                    $this->send(true, 'require_item_select');
+	            
+    	        }else{
+	                
+	                $this->send(false, 'require_item_select');
+	                
+    		        $this->setFormReturnUri();
 		
-    		$definedAssets = $this->manager->getDefinedPageAssetsList($get['page_id']);
-    		$version = (!empty($get['version']) && $get['version'] == "live") ? "live" : "draft";
-    		$field = ($version == "live") ? "page_live_template" : "page_draft_template";
+            		$definedAssets = $this->manager->getDefinedPageAssetsList($get['page_id']);
+            		$version = (!empty($get['version']) && $get['version'] == "live") ? "live" : "draft";
+            		$field = ($version == "live") ? "page_live_template" : "page_draft_template";
 		    
-		    $assetClasses = $this->manager->getPageTemplateAssetClasses($get['page_id'], $version);
-    		// $page = $this->manager->getPage($get['page_id']);
-    		$site_id = $this->database->specificQuery("page_site_id", "page_webid", $get['page_id'], "Pages");
-    		$templates = $this->manager->getMasterTemplates($site_id);
+        		    $assetClasses = $this->manager->getPageTemplateAssetClasses($get['page_id'], $version);
+            		// $page = $this->manager->getPage($get['page_id']);
+            		$site_id = $this->database->specificQuery("page_site_id", "page_webid", $get['page_id'], "Pages");
+            		$templates = $this->manager->getMasterTemplates($site_id);
 		
-    		$this->setTitle("Page Elements");
+            		$this->setTitle("Page Elements");
     		
-    		$page = new SmartestPage;
-    		$page->hydrate($get['page_id']);
     		
-    		if($version == 'live'){
-    		    $template_name = $page->getLiveTemplate();
-    		}else{
-    		    $template_name = $page->getDraftTemplate();
-    		}
     		
-    		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
-    		    $allow_release = true;
-    		}else{
-    		    $allow_release = false;
-    		}
+            		if($version == 'live'){
+            		    $template_name = $page->getLiveTemplate();
+            		}else{
+            		    $template_name = $page->getDraftTemplate();
+            		}
     		
-    		$this->send($allow_release, 'allow_release');
+            		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
+            		    $allow_release = true;
+            		}else{
+            		    $allow_release = false;
+            		}
+    		
+            		$this->send($allow_release, 'allow_release');
 		
-    		$mode = 'advanced';
+            		$mode = 'advanced';
     		
-    		// $sub_template = ($mode == "basic") ? "getPageAssets.basic.tpl" : "getPageAssets.advanced.tpl";
-		    $sub_template = "getPageAssets.advanced.tpl";
+            		// $sub_template = ($mode == "basic") ? "getPageAssets.basic.tpl" : "getPageAssets.advanced.tpl";
+        		    $sub_template = "getPageAssets.advanced.tpl";
 		
-    		$this->send($assetClasses["tree"], "assets");
-    		$this->send($definedAssets, "definedAssets");
-    		$this->send($page->__toArray(), "page");
-    		$this->send($templates, "templates");
-    		$this->send($template_name, "templateMenuField");
-    		$this->send($site_id, "site_id");
-    		$this->send($version, "version");
-    		$this->send($sub_template, "sub_template");
-    		$this->send(true, 'allow_edit');
+            		$this->send($assetClasses["tree"], "assets");
+            		$this->send($definedAssets, "definedAssets");
+            		$this->send($page->__toArray(), "page");
+            		$this->send($templates, "templates");
+            		$this->send($template_name, "templateMenuField");
+            		$this->send($site_id, "site_id");
+            		$this->send($version, "version");
+            		$this->send($sub_template, "sub_template");
+            		$this->send(true, 'allow_edit');
+    		
+    		    }
+		    
+	        }
 		
 	    }else{
 	        
@@ -1112,6 +1136,8 @@ class Pages extends SmartestSystemApplication{
                     $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
                     $this->send($items, 'items');
                     $this->send($model->__toArray(), 'model');
+                    $this->send('Please choose which '.$model->getName().' you would like to tag:', 'chooser_message');
+                    $this->send('datamanager/itemTags', 'continue_action');
                 }else{
                     $this->send(array(), 'items');
                 }
@@ -1205,19 +1231,200 @@ class Pages extends SmartestSystemApplication{
 	
 	public function relatedContent($get){
 	    
-	    $this->setTitle("Related Content");
 	    $page = new SmartestPage;
 	    $page_webid = $get['page_id'];
 	    
 	    if($page->hydrate($page_webid)){
-	        $related_pages = $page->getRelatedPagesAsArrays(true);
-	        $related_items = $page->getRelatedItemsAsArrays(true);
-	        $this->send($related_pages, 'related_pages');
-    	    $this->send($related_items, 'related_items');
+	        
+	        $this->setFormReturnUri();
+	        
+	        if($page->getType() == 'ITEMCLASS'){
+	            
+	            $model = new SmartestModel;
+            
+                if($model->hydrate($page->getDatasetId())){
+                    $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+                    $this->send($items, 'items');
+                    $this->send($model->__toArray(), 'model');
+                    $this->send('Please choose an item to attache related content.', 'chooser_message');
+                    $this->send('datamanager/relatedContent', 'continue_action');
+                    $this->send($page->__toArray(), 'page');
+                }else{
+                    $this->send(array(), 'items');
+                }
+                
+                $this->send(true, 'require_item_select');
+	            
+	        }else{
+	        
+	            $this->setTitle($page->getTitle()." | Related Content");
+    	        $related_pages = $page->getRelatedPagesAsArrays(true);
+	        
+    	        $du = new SmartestDataUtility;
+    	        $models = $du->getModelsAsArrays();
+	        
+    	        foreach($models as &$m){
+    	            $m['related_items'] = $page->getRelatedItemsAsArrays(true, $m['id']);
+    	        }
+	        
+    	        $this->send($page->__toArray(), 'page');
+    	        $this->send($related_pages, 'related_pages');
+        	    $this->send($models, 'models');
+        	    $this->send(false, 'require_item_select');
+    	    
+	        }
+    	    
 	    }else{
 	        $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
 	        $this->redirect('/smartest/pages');
 	    }
+	    
+	}
+	
+	public function editRelatedContent($get){
+	    
+	    $page = new SmartestPage;
+	    $page_webid = $get['page_id'];
+	    
+	    if($page->hydrate($page_webid)){
+	        
+	        if(isset($get['model_id'])){
+	            
+	            $model_id = (int) $get['model_id'];
+	            $model = new SmartestModel;
+	            
+	            if($model->hydrate($model_id)){
+	                $mode = 'items';
+	            }else{
+	                $mode = 'pages';
+	            }
+            }
+	        
+	        $this->send($mode, 'mode');
+	        
+	        if($mode == 'items'){
+	            $this->setTitle($page->getTitle()." | Related ".$model->getPluralName());
+	            $this->send($page->__toArray(), 'page');
+	            $this->send($model->__toArray(), 'model');
+	            $related_ids = $page->getRelatedItemIds(true, $model->getId());
+	            $all_items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+	            $this->send($all_items, 'items');
+	            $this->send($related_ids, 'related_ids');
+            }else{
+                $this->setTitle($page->getTitle()." | Related pages");
+    	        $this->send($page->__toArray(), 'page');
+    	        $related_ids = $page->getRelatedPageIds(true);
+    	        $helper = new SmartestPageManagementHelper;
+    	        $pages = $helper->getPagesList($this->getSite()->getId());
+    	        $this->send($pages, 'pages');
+    	        $this->send($related_ids, 'related_ids');
+            }
+	        
+	        $related_pages = $page->getRelatedPagesAsArrays(true);
+    	    
+	    }else{
+	        $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/pages');
+	    }
+	    
+	}
+	
+	public function updateRelatedPageConnections($get, $post){
+	    
+	    $page = new SmartestPage;
+	    $page_webid = $post['page_id'];
+	    
+	    if($page->hydrate($page_webid)){
+	        
+	        if(isset($post['pages']) && is_array($post['pages'])){
+	            
+	            $new_related_ids = array_keys($post['pages']);
+	            
+	            if(count($new_related_ids)){
+	            
+	                $old_related_ids = $page->getRelatedPageIds(true);
+        	        $helper = new SmartestPageManagementHelper;
+        	        $pages = $helper->getPagesList($this->getSite()->getId());
+    	        
+        	        foreach($pages as $p){
+    	            
+        	            if(in_array($p['id'], $new_related_ids) && !in_array($p['id'], $old_related_ids)){
+        	                // add connection
+        	                $page->addRelatedPage($p['id']);
+        	            }
+    	            
+        	            if(in_array($p['id'], $old_related_ids) && !in_array($p['id'], $new_related_ids)){
+        	                // remove connection
+        	                $page->removeRelatedPage($p['id']);
+        	            }
+        	        }
+    	        
+	            }else{
+	                
+	                $page->removeAllRelatedPages();
+	                
+	            }
+    	        
+            }else{
+                $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
+            }
+        }else{
+            $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
+        }
+        
+        $this->formForward();
+	    
+	}
+	
+	public function updateRelatedItemConnections($get, $post){
+	    
+	    $page = new SmartestPage;
+	    $page_webid = $post['page_id'];
+	    
+	    if($page->hydrate($page_webid)){
+	        
+	        if(isset($post['items']) && is_array($post['items'])){
+	            
+	            $new_related_ids = array_keys($post['items']);
+	            
+	            $model = new SmartestModel;
+	            
+	            if($model->hydrate($post['model_id'])){
+	            
+	                if(count($new_related_ids)){
+	            
+    	                $old_related_ids = $page->getRelatedItemIds(true, $model->getId());
+            	        $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+            	        
+            	        foreach($items as $item){
+    	            
+            	            if(in_array($item['id'], $new_related_ids) && !in_array($item['id'], $old_related_ids)){
+            	                // add connection
+            	                $page->addRelatedItem($item['id']);
+            	            }
+    	            
+            	            if(in_array($item['id'], $old_related_ids) && !in_array($item['id'], $new_related_ids)){
+            	                // remove connection
+            	                $page->removeRelatedItem($item['id']);
+            	            }
+            	        }
+    	        
+    	            }else{
+	                
+    	                $page->removeAllRelatedItems($model->getId());
+	                
+    	            }
+	            
+                }
+    	        
+            }else{
+                $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
+            }
+        }else{
+            $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
+        }
+        
+        $this->formForward();
 	    
 	}
 	
@@ -1317,56 +1524,6 @@ class Pages extends SmartestSystemApplication{
 		$this->formForward();
 	}
 	
-	function defineAssetClass($get){
-	
-		$page_id = $this->database->specificQuery("page_id", "page_webid", $get['page_id'], "Pages");
-		$site_id = $this->database->specificQuery("page_site_id", "page_webid", $get['page_id'], "Pages");
-
-		$defined = $this->manager->getAssetClassDefinedOnPage($get['assetclass_id'], $page_id);
-		
-		if($defined != "UNDEFINED"){
-			
-			$draftAssetId = $this->manager->getAssetClassDraftDefinition($get['assetclass_id'], $page_id);
-			$liveAssetId  = $this->manager->getAssetClassLiveDefinition($get['assetclass_id'], $page_id);
-			
-			$draftAsset   = $this->manager->getAssetsManager()->getAssetById($draftAssetId);
-			$liveAsset    = $this->manager->getAssetsManager()->getAssetById($liveAssetId);
-			
-		}
-		
-		$available_assets = $this->manager->getAvailableAssets($get['assetclass_id']);
-		$page = $this->manager->getPage($page_id);
-		
-		$assetClass = $this->database->queryToArray("SELECT * FROM AssetClasses, AssetTypes WHERE assetclass_name='{$get['assetclass_id']}' AND assetclass_assettype_id=assettype_id");
-		$assetClass = $assetClass[0];
-		
-		$instance = $this->database->queryToArray("SELECT assetidentifier_id, assetidentifier_draft_asset_id, assetidentifier_live_asset_id FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='{$assetClass['assetclass_id']}' AND assetidentifier_page_id='{$page['page_id']}'");
-		$instance = $instance[0]; // TODO: Eventually there should be the possibility for multiple instances on one page
-		
-		/*** The below code will need changing once there are multiple instances per page **/
-		
-		
-		
-		/*** End temp code **/
-		
-		// $this->setTitle("Define Assetclass | ".$assetClass['assetclass_label']);
-		
-		$result = array(
-			"defined"=>$defined, 
-			"definedBool"=>($defined == "DRAFT" || $defined == "PUBLISHED") ? "TRUE" : "FALSE",
-			"assets"=>$available_assets, 
-			"numAssets"=>count($available_assets), 
-			"draftAssetId"=>$draftAssetId, 
-			"page"=>$page,
-			"assetClass"=>$assetClass,
-			"draftAsset"=>@$draftAsset,
-			"liveAsset"=>@$liveAsset,
-			"siteInfo"=>$this->manager->getSiteInfoFromId($site_id)
-		);
-		
-		return $result;
-	}
-	
 	public function defineContainer($get){
 	    
 	    $container_name = $get['assetclass_id'];
@@ -1388,20 +1545,15 @@ class Pages extends SmartestSystemApplication{
 	            
 	            if($definition->load($container_name, $page)){
 	                // container has live definition
-	                // print_r($definition);
 	                $this->send($container->getLiveAssetId(), 'selected_template_id');
 	                $this->send(true, 'is_defined');
 	            }else{
 	                // container has no live definition
-	                // print_r($definition);
 	                $this->send(0, 'selected_template_id');
 	                $this->send(false, 'is_defined');
 	            }
 	            
-	            // $assets = $this->manager->getAssetsByTypeAsArrays('SM_ASSETTYPE_CONTAINER_TEMPLATE');
-	            // print_r($assets);
 	            $assets = $container->getPossibleAssetsAsArrays();
-	            // print_r($container);
 	            
 	            $this->send($assets, 'templates');
 	            $this->send($page->__toArray(), 'page');
@@ -1816,7 +1968,7 @@ class Pages extends SmartestSystemApplication{
 		header("Location:".$this->domain.$this->module."/getPageLists?page_id=$page_id&version=$version");
 	}
 	
-	function setDraftAsset($get){
+	public function setDraftAsset($get){
 
 		$this->manager->setDraftAsset($get['page_id'], $get['assetclass_id'], $get['asset_id']);
 		$this->formForward();
@@ -1889,16 +2041,10 @@ class Pages extends SmartestSystemApplication{
 		
 		if($page->hydrate($page_webid)){
 		    
-		    // echo 'found page';
-		    
 		    if(( (boolean) $page->getChangesApproved() && $this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
-		    
-		        // echo 'allowed';
 		    
 		        $version = "draft";
 		        $undefinedAssetsClasses = $this->manager->getUndefinedElements($page_webid);
-		        
-		        // $this->addUserMessage('test');
 		        
 		        $count = count($undefinedAssetsClasses);
 		        $this->send(true, 'allow_publish');
@@ -1935,13 +2081,6 @@ class Pages extends SmartestSystemApplication{
 	    if($page->hydrate($page_webid)){
 	    
 	        if(((boolean) $page->getChangesApproved() || $this->getUser()->hasToken('approve_page_changes')) && $this->getUser()->hasToken('publish_approved_pages')){
-		        
-		        /* if(!(boolean) $page->getChangesApproved()){
-		            $page->setChangesApproved(1);
-		            $page->save();
-		        }
-		        
-		        $this->manager->publishPage($page->getWebid()); */
 		        
 		        $page->publish();
 		        $this->addUserMessageToNextRequest('The page has been successfully published.', SmartestUserMessage::SUCCESS);
@@ -2003,8 +2142,6 @@ class Pages extends SmartestSystemApplication{
             
             $list = new SmartestCmsItemList;
             
-            // print_r($page);
-            
             if($list->load($list_name, $page, true)){
                 // this list was already defined
             }else{
@@ -2038,8 +2175,6 @@ class Pages extends SmartestSystemApplication{
 		// $path = 'Presentation/ListItems'; 
 		// $listitemtemplates = $this->templatesManager->getTemplateNames($path);
 		
-		
-
 		$sql = "SELECT * FROM Lists WHERE list_page_id = '$page_id' AND list_name = '$list_name'";
 		$result = $this->database->queryToArray($sql);
 		$items = $this->manager->managePageData($result);
@@ -2114,7 +2249,7 @@ class Pages extends SmartestSystemApplication{
             
         }else{
             // page was not found
-            $this->addUserMessageToNextRequest("The page ID was not recognised.", SmartestUserMessage::ERROR);
+            $this->addUserMessageToNextRequest("The page ID was not recognizsed.", SmartestUserMessage::ERROR);
             $this->formForward();
         }
 	    
@@ -2139,7 +2274,7 @@ class Pages extends SmartestSystemApplication{
 			
 	} */
 	
-	function publishListsConfirm($get){
+	public function publishListsConfirm($get){
 		$page_webid=$get['page_id'];
 		$version="draft";
 		$undefinedLists=$this->manager->publishListsConfirm($page_webid, $version);
@@ -2147,13 +2282,13 @@ class Pages extends SmartestSystemApplication{
 		return array ("undefinedLists"=>$undefinedLists,"page_id"=>$page_webid,"count"=>$count);
 	}
 	
-	function publishPageLists($get){
+	public function publishPageLists($get){
 		$page_webid=$get['page_id'];
 		$this->manager->publishPageLists($page_webid);
 		$this->formForward();
 	}
 	
-	function addPageUrl($get){
+	public function addPageUrl($get){
 	    
 	    $page_webid=$get['page_id'];
 	    
@@ -2177,7 +2312,7 @@ class Pages extends SmartestSystemApplication{
 		// return array("pageInfo"=>$page_info, "msg"=>$msg, "ishomepage"=>$ishomepage );
 	}
 	
-	function addNewPageUrl($get,$post){
+	public function addNewPageUrl($get,$post){
 		
 		$url = new SmartestPageUrl;
 		
@@ -2212,7 +2347,7 @@ class Pages extends SmartestSystemApplication{
 		} */
 	}
 	
-	function editPageUrl($get){
+	public function editPageUrl($get){
 		
 		$page_webid = $get['page_id'];
 		
@@ -2241,7 +2376,7 @@ class Pages extends SmartestSystemApplication{
 		// return array("pageInfo"=>$editorContent, "url"=>$url, "ishomepage"=>$ishomepage );
 	}
 	
-	function updatePageUrl($get,$post){
+	public function updatePageUrl($get,$post){
 		
 		$page_webid = $post['page_webid'];
 		$page_url = $post['page_url'];
@@ -2260,19 +2395,14 @@ class Pages extends SmartestSystemApplication{
 		$this->formForward();
 	}
 	
-	function deletePageUrl($get){
-		// $page_webid = $get['page_id'];
+	public function deletePageUrl($get){
 		
 		$url = new SmartestPageUrl;
 		
 		if($url->hydrate($get['url'])){
 		
-		    // $page_url = $get['url'];
-		    // $pageurl_id = $this->manager->database->specificQuery("pageurl_id", "pageurl_url", $page_url, "PageUrls");
-		    // $page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
-		    // $this->manager->deletePageUrl($page_id,$pageurl_id,$page_url);
 		    $url->delete();
-		    $this->addUserMessageToNextRequest("The URL has been successfully deleted.", SmartestUserMessage::SUCCESS);
+		    $this->addUserMessageToNextRequest("The URL has been successfully deleted. It's recommended that you now clear the pages cache to avoid dead links.", SmartestUserMessage::SUCCESS);
 		
 	    }else{
 	        
@@ -2283,17 +2413,40 @@ class Pages extends SmartestSystemApplication{
 		$this->formForward();
 	}
 	
-	function editField($get){
+	public function setPageDefaultUrl($get){
+	    
+	    $page = new SmartestPage;
+	    
+	    if($page->hydrate($get['page_id'])){
+	        $result = $page->setDefaultUrl($get['url']);
+	        
+	        if(!$result){
+	            if($url == (int) $url){
+	                $this->addUserMessageToNextRequest("The URL ID was not recognized.", SmartestUserMessage::ERROR);
+                }else{
+                    $this->addUserMessageToNextRequest("The URL is already in use for another page.", SmartestUserMessage::ERROR);
+                }
+	        }
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The page ID was not recognized.", SmartestUserMessage::ERROR);
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
+	public function editField($get){
 		// This is a hack. Sorry.
 		$this->redirect(SM_CONTROLLER_DOMAIN.'metadata/defineFieldOnPage?page_id='.$get['page_id'].'&assetclass_id='.$get['assetclass_id']);
 	}
 	
-	function setLiveProperty($get){
+	public function setLiveProperty($get){
 		// This is a hack. Sorry.
 		$this->redirect(SM_CONTROLLER_DOMAIN.'metadata/setLiveProperty?page_id='.$get['page_id'].'&assetclass_id='.$get['assetclass_id']);
 	}
 	
-	function undefinePageProperty($get){
+	public function undefinePageProperty($get){
 		// This is a hack. Sorry.
 		$this->redirect(SM_CONTROLLER_DOMAIN.'metadata/undefinePageProperty?page_id='.$get['page_id'].'&assetclass_id='.$get['assetclass_id']);
 	}

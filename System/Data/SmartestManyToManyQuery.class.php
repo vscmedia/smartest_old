@@ -13,6 +13,7 @@ class SmartestManyToManyQuery{
     protected $_sortField = null;
     protected $_helper;
     protected $_central_node_id; // only used in networks
+    protected $_query = null;
     protected $database;
     
     public function __construct($type){
@@ -56,14 +57,68 @@ class SmartestManyToManyQuery{
         if(!in_array($target_entity_index, $this->_qualifyingEntityIndices)){
             if(is_numeric($target_entity_index) && ceil($target_entity_index) > 0 && ceil($target_entity_index) < 5){
                 $this->_targetEntityIndex = $target_entity_index;
-                $e = new SmartestManyToManyQualifyingEntity($this->_type->getEntityByIndex($target_entity_index));
+                $e = new SmartestManyToManyTargetEntity($this->_type->getEntityByIndex($target_entity_index));
                 $this->_targetEntity = $e;
             }
         }
         
-        if($this->_type->getMethod() != 'SM_MTMLOOKUPMETHOD_NETWORK' && !$this->_type->usesInstances() && !$this->_sortField){
-            $this->_sortField = $this->getTargetEntity()->getForeignKeyField();
+        // print_r($this->getTargetEntity());
+        
+    }
+    
+    public function getSortField(){
+        
+        if(!$this->_sortField){
+            if($this->_type->getMethod() != 'SM_MTMLOOKUPMETHOD_NETWORK' && !$this->_type->usesInstances() && !$this->_sortField){
+                $this->_sortField = $this->getTargetEntity()->getEntity()->getForeignKeyField();
+            }
         }
+        
+        return $this->_sortField;
+    }
+    
+    public function createNetworkLinkBetween($id_1, $id_2){
+        
+        $id_1 = (int) $id_1;
+        $id_2 = (int) $id_2;
+        
+        if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
+            $link = new SmartestManyToManyLookup;
+    	    $link->setEntityForeignKeyValue(1, $id_1);
+    	    $link->setEntityForeignKeyValue(2, $id_2);
+    	    $link->setType($this->_type->getId());
+    	    $link->save();
+        }else{
+            throw new SmartestException('Error: SmartestManyToManyQuery::createNetworkLinkBetween() should only be used with Network method connections', SM_ERROR_USER);
+        }
+        
+    }
+    
+    public function deleteNetworkLinkBetween($id_1, $id_2){
+        
+        $id_1 = (int) $id_1;
+        $id_2 = (int) $id_2;
+        
+        if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
+            $sql = "DELETE FROM ManyToManyLookups WHERE (mtmlookup_entity_1_foreignkey='".$id_1."' AND mtmlookup_entity_2_foreignkey='".$id_2."') OR (mtmlookup_entity_1_foreignkey='".$id_2."' AND mtmlookup_entity_2_foreignkey='".$id_1."')";
+            $this->database->rawQuery($sql);
+        }else{
+            throw new SmartestException('Error: SmartestManyToManyQuery::deleteNetworkLinkBetween() should only be used with Network method connections', SM_ERROR_USER);
+        }
+        
+    }
+    
+    public function deleteNetworkNodeById($id){
+        
+        $id = (int) $id;
+        
+        if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
+            $sql = "DELETE FROM ManyToManyLookups WHERE mtmlookup_entity_1_foreignkey='".$id."' OR  mtmlookup_entity_2_foreignkey='".$id."'";
+            $this->database->rawQuery($sql);
+        }else{
+            throw new SmartestException('Error: SmartestManyToManyQuery::deleteNetworkNodeById() should only be used with Network method connections', SM_ERROR_USER);
+        }
+        
         
     }
     
@@ -191,7 +246,7 @@ class SmartestManyToManyQuery{
             // For now, this won't support MTM relationships between entities in the same table - much of that functionality is covered in the 'network' type (see above)
             // TODO: we need to build in a checker and alternative query builder for when this is the case, for instance the 'related pages' feature.
         
-            // tie foreign and primary key together
+            // tie foreign (ie Items.item_id) and local (ie ManyToManyLookups.mtmlookup_...) entity key together
             $qf = $this->_targetEntity->getFieldName()."=".$this->_targetEntity->getEntity()->getForeignKeyField();
             $query .= $qf;
         
@@ -224,23 +279,25 @@ class SmartestManyToManyQuery{
         
         }
         
-        $query .= ' ORDER BY '.$this->_sortField;
+        $query .= ' ORDER BY '.$this->getSortField();
+        $this->_query = $query;
         
         return $query;
         
     }
     
+    public function getLastQuery(){
+        return $this->_query;
+    }
+    
     public function getReturnClassName(){
-        
-        // $type = $this->getTypeInfo();
         
         if($this->_type->getReturnValueType() == 'meta:targetEntityClass'){
             
-            // echo 'meta';
-            return $this->getTargetEntity()->getClass();
+            return $this->getTargetEntity()->getEntity()->getClass();
             
         }else if(substr($this->_type->getReturnValueType(), 0, 6) == 'class:'){
-            // echo 'specific';
+        
             $class = substr($this->_type->getReturnValueType(), 6);
             
             if(class_exists($class)){
@@ -249,9 +306,26 @@ class SmartestManyToManyQuery{
                 $final_class = $this->getTargetEntity()->getClass();
             }
             
-            // echo $final_class;
             return $final_class;
             
+        }
+        
+    }
+    
+    public function delete(){
+        
+        $result = $this->database->queryToArray($this->buildQuery());
+        $mtml_ids = array();
+        
+        if(count($result)){
+        
+            foreach($result as $raw_lookup){
+                $mtml_ids[] = $raw_lookup['mtmlookup_id'];
+            }
+        
+            $sql = "DELETE FROM ManyToManyLookups WHERE mtmlookup_id IN ('".implode("', '", $mtml_ids)."')";
+            $this->database->rawQuery($sql);
+        
         }
         
     }
@@ -261,7 +335,6 @@ class SmartestManyToManyQuery{
         $result = $this->database->queryToArray($this->buildQuery());
         $objects = array();
         $object_type = $this->getReturnClassName();
-        // var_dump($object_type);
         
         foreach($result as $r){
             $o = new $object_type;
@@ -273,7 +346,7 @@ class SmartestManyToManyQuery{
                 if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
                     $key = $r[$this->_type->getNetwork()->getForeignKeyField(false)];
                 }else{
-                    $key = $r[$this->getTargetEntity()->getForeignKeyField(false)];
+                    $key = $r[$this->getTargetEntity()->getEntity()->getForeignKeyField(false)];
                 }
             }
             

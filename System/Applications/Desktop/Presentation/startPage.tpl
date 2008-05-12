@@ -14,12 +14,13 @@
 <div class="instruction">What would you like to do?</div>
 
 <ul class="options-grid-no-scroll">
-  <li><a href="{$domain}smartest/pages" class="option" id="option_1"><img border="0" src="{$domain}Resources/Icons/package.png" />Modify Presentation</a></li>
-  <li><a href="{$domain}smartest/data" class="option" id="option_2"><img border="0" src="{$domain}Resources/Icons/package.png" />Manage Data</a></li>
-  <li><a href="{$domain}smartest/assets" class="option" id="option_3"><img border="0" src="{$domain}Resources/Icons/package.png" />Browse and Upload Multimedia Assets</a></li>
+  <li><a href="{$domain}smartest/pages" class="option" id="option_1"><img border="0" src="{$domain}Resources/Icons/package.png" />Edit &amp; publish pages</a></li>
+  <li><a href="{$domain}smartest/data" class="option" id="option_2"><img border="0" src="{$domain}Resources/Icons/package.png" />Manage data objects</a></li>
+  <li><a href="{$domain}smartest/assets" class="option" id="option_3"><img border="0" src="{$domain}Resources/Icons/package.png" />Browse and upload files</a></li>
+  <li><a href="{$domain}smartest/metadata" class="option" id="option_2"><img border="0" src="{$domain}Resources/Icons/package.png" />Manage meta data</a></li>
+  <li><a href="{$domain}smartest/templates" class="option" id="option_5"><img border="0" src="{$domain}Resources/Icons/package.png" />Browse &amp; Add Templates</a></li>
   <li><a href="{$domain}smartest/todo" class="option" id="option_4"><img border="0" src="{$domain}Resources/Icons/package.png" />Go to Your Todo List</a></li>
-  <li><a href="{$domain}smartest/templates" class="option" id="option_5"><img border="0" src="{$domain}Resources/Icons/package.png" />Administer Templates</a></li>
-  <li><a href="{$domain}smartest/users" class="option" id="option_6"><img border="0" src="{$domain}Resources/Icons/package.png" />Administer User Accounts</a></li>
+  <li><a href="{$domain}smartest/users" class="option" id="option_6"><img border="0" src="{$domain}Resources/Icons/package.png" />Administer Users</a></li>
   <li><a href="{$domain}smartest/settings" class="option" id="option_7"><img border="0" src="{$domain}Resources/Icons/package.png" />Modify Settings</a></li>
   {* <li><a href="{$domain}smartest/help/guide" class="option" id="option_8"><img border="0" src="{$domain}Resources/Icons/package.png" />Learn More About Using Smartest</a></li> *}
 </ul>

@@ -106,6 +106,7 @@
   		      {if $pageInfo.is_published == "TRUE" && $pageInfo.type != "ITEMCLASS"}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}</div></td>
   	    <td>
   		    <input type="button" name="edit" value="Edit" onclick="window.location='{$domain}{$section}/editPageUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage}'" />
+  		    <input type="button" name="mkdefault" value="Make Default" onclick="window.location='{$domain}{$section}/setPageDefaultUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}'"{if $pageurl.is_default == 1} disabled="disabled"{/if} />
   		    {if $count > 1 || $ishomepage == "true"}<input type="button" name="delete" value="Delete" onclick="if(confirm('Are you sure you want to delete this URL?')) window.location='{$domain}{$section}/deletePageUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage};'"/>{/if}</td></tr> 
       {/foreach}
 	    {else}

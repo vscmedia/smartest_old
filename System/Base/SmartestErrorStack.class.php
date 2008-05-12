@@ -34,7 +34,7 @@ class SmartestErrorStack{
 	
 	function display(){
 		if(count($this->stack)){
-			if(defined("SM_DEVELOPER_MODE") && @SM_DEVELOPER_MODE == true){
+			if(defined("SM_DEVELOPER_MODE") && constant('SM_DEVELOPER_MODE')){
 				$errors = $this->getErrors();
 				include SM_ROOT_DIR."System/Response/ErrorPages/errorlog.php";
 				exit;
@@ -55,5 +55,3 @@ class SmartestErrorStack{
 	}
 	
 }
-
-?>

@@ -32,18 +32,7 @@
   
   {else if $page.type == 'ITEMCLASS'}
   
-  <div class="instruction">This is an object meta-page. it is only used for publishing info about {$model.plural_name}.</div>
-  <div class="instruction">Please choose which {$model.name} you would like to tag:</div>
-  
-  <form action="{$domain}datamanager/itemTags" method="get" id="item_chooser">
-    <input type="hidden" name="page_id" value="{$page.webid}" />
-    <select name="item_id" style="width:300px" onchange="$('item_choooser').submit()">
-      {foreach from=$items item="item"}
-      <option value="{$item.id}">{$item.name}</option>
-      {/foreach}
-    </select>
-    <input type="submit" value="Go" />
-  </form>
+  {load_interface file="choose_item.tpl"}
   
   {/if}
   

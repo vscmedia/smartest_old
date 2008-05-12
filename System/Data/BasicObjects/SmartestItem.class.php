@@ -32,6 +32,7 @@ class SmartestItem extends SmartestDataObject{
 	public function __toArray(){
 	    $array = $this->_properties;
 	    $array['model_name'] = $this->getModel()->getName();
+	    $array['link_contents'] = $this->getCmsLinkContents();
 	    return $array;
 	}
 	
@@ -97,6 +98,211 @@ class SmartestItem extends SmartestDataObject{
 	    }
 	    
 	    return $arrays;
+	    
+	}
+	
+	public function getRelatedItems($draft_mode=false){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
+	    $q->setCentralNodeId($this->getId());
+	    $q->addSortField('Items.item_created');
+	    
+	    if(!$draft_mode){
+	        $q->addForeignTableConstraint('Items.item_public', 'TRUE');
+	    }
+	    
+	    $related_items = $q->retrieve();
+	    
+	    return $related_items;
+	    
+	}
+	
+	public function getRelatedItemsAsArrays($draft_mode=false){
+	    
+	    $items = $this->getRelatedItems($draft_mode);
+	    $arrays = array();
+	    
+	    foreach($items as $i){
+	        $arrays[] = $i->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
+	public function getRelatedItemIds($draft_mode=false){
+	    
+	    $items = $this->getRelatedItems($draft_mode);
+	    $ids = array();
+	    
+	    foreach($items as $i){
+	        $ids[] = $i->getId();
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
+	public function getRelatedForeignItems($draft_mode=false, $model_id=''){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
+	    $q->setCentralNodeId($this->getId());
+	    $q->addSortField('Items.item_created');
+	    
+	    if(is_numeric($model_id)){
+	        $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
+	    }
+	    
+	    if(!$draft_mode){
+	        $q->addForeignTableConstraint('Items.item_public', 'TRUE');
+	    }
+	    
+	    $related_items = $q->retrieve();
+	    
+	    return $related_items;
+	    
+	}
+	
+	public function getRelatedForeignItemsAsArrays($draft_mode=false, $model_id=''){
+	    
+	    $items = $this->getRelatedForeignItems($draft_mode, $model_id);
+	    $arrays = array();
+	    
+	    foreach($items as $i){
+	        $arrays[] = $i->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
+	public function getRelatedForeignItemIds($draft_mode=false, $model_id=''){
+	    
+	    $items = $this->getRelatedForeignItems($draft_mode, $model_id);
+	    $ids = array();
+	    
+	    foreach($items as $i){
+	        $ids[] = $i->getId();
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
+	public function addRelatedItem($item_id){
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
+	    $q->createNetworkLinkBetween($this->getId(), $item_id);
+	}
+	
+	public function removeRelatedItem($item_id){
+	    $item_id = (int) $item_id;
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
+	    $q->deleteNetworkLinkBetween($this->getId(), $item_id);
+	}
+	
+	public function addRelatedForeignItem($item_id){
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
+	    $q->createNetworkLinkBetween($this->getId(), $item_id);
+	}
+	
+	public function removeRelatedForeignItem($item_id){
+	    $item_id = (int) $item_id;
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
+	    $q->deleteNetworkLinkBetween($this->getId(), $item_id);
+	}
+	
+	public function removeAllRelatedItems($model_id){
+	    
+	    if($this->getModelId() == $model_id){
+	        $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
+	    }else{
+	        $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
+	    }
+	    
+	    $q->deleteNetworkNodeById($this->getId());
+	    
+	}
+	
+	public function getRelatedPages($draft_mode=false){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
+	    
+	    $q->setTargetEntityByIndex(2);
+	    $q->addQualifyingEntityByIndex(1, $this->getId());
+	    
+	    if(!$draft_mode){
+	        $q->addForeignTableConstraint('Pages.page_is_published', 'TRUE');
+	    }
+	    
+	    $q->addForeignTableConstraint('Pages.page_type', 'NORMAL');
+	    $q->addForeignTableConstraint('Pages.page_deleted', 'FALSE');
+	    
+	    $q->addSortField('Pages.page_created');
+	    
+	    $result = $q->retrieve();
+	    
+	    return $result;
+	    
+	}
+	
+	public function getRelatedPagesAsArrays($draft_mode=false){
+	    
+	    $pages = $this->getRelatedPages($draft_mode);
+	    $arrays = array();
+	    
+	    foreach($pages as $p){
+	        $arrays[] = $p->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
+	public function getRelatedPageIds($draft_mode=false){
+	    
+	    $pages = $this->getRelatedPages($draft_mode);
+	    $ids = array();
+	    
+	    foreach($pages as $p){
+	        $ids[] = $p->getId();
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
+	public function addRelatedPage($page_id){
+	    
+	    $page_id = (int) $page_id;
+	    
+	    $link = new SmartestManyToManyLookup;
+	    $link->setEntityForeignKeyValue(1, $this->getId());
+	    $link->setEntityForeignKeyValue(2, $page_id);
+	    $link->setType('SM_MTMLOOKUP_PAGES_ITEMS');
+	    
+	    $link->save();
+	}
+	
+	public function removeRelatedPage($page_id){
+	    
+	    $page_id = (int) $page_id;
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
+	    $q->setTargetEntityByIndex(2);
+	    $q->addQualifyingEntityByIndex(1, $this->getId());
+	    $q->addForeignTableConstraint('Pages.page_id', $page_id);
+	    
+	    $q->delete();
+	    
+	}
+	
+	public function removeAllRelatedPages(){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
+	    $q->setTargetEntityByIndex(2);
+	    $q->addQualifyingEntityByIndex(1, $this->getId());
+	    
+	    $q->delete();
 	    
 	}
 	
@@ -198,18 +404,28 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function getUrl(){
 	    
-	    if($this->getMetapageId()){
-	        $page_id = $this->getMetapageId($this->getCurrentSiteId());
-	    }else if($this->getModel()->getDefaultMetapageId($this->getCurrentSiteId())){
-	        $page_id = $this->getModel()->getDefaultMetapageId($this->getCurrentSiteId());
+	    if($lc = $this->getCmsLinkContents()){
+	        
+	        $lh = new SmartestCmsLinkHelper;
+    	    $lh->parse($lc);
+            return $lh->getUrl();
 	    }else{
 	        return null;
 	    }
 	    
-	    $lh = new SmartestCmsLinkHelper;
-	    $lh->parse('metapage:id='.$page_id.':id='.$this->getId());
+	}
+	
+	public function getCmsLinkContents(){
 	    
-	    return $lh->getUrl();
+	    if($this->getMetapageId()){
+	        $page_id = $this->getMetapageId($this->getCurrentSiteId());
+	        return 'metapage:id='.$page_id.':id='.$this->getId();
+	    }else if($this->getModel()->getDefaultMetapageId($this->getCurrentSiteId())){
+	        $page_id = $this->getModel()->getDefaultMetapageId($this->getCurrentSiteId());
+	        return 'metapage:id='.$page_id.':id='.$this->getId();
+	    }else{
+	        return null;
+	    }
 	    
 	}
 	

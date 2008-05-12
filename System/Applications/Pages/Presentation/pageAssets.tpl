@@ -30,17 +30,24 @@ function viewLivePage(){
 
 {if $allow_edit}
 
-{load_interface file="edit_tabs.tpl"}
+  {load_interface file="edit_tabs.tpl"}
 
-{load_interface file=$sub_template}
+  {if $require_item_select}
+    <h3>Page Elements</h3>
+    {load_interface file="choose_item.tpl"}
+  {else}
+    {load_interface file=$sub_template}
+  {/if}
 
 {else}
 
-<h3>Page Structure</h3>
+<h3>Page Elements</h3>
 
 {/if}
 
 </div>
+
+{if !$require_item_select}
 
 <div id="actions-area">
 
@@ -105,3 +112,5 @@ function viewLivePage(){
 </ul>
 
 </div>
+
+{/if}
