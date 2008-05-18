@@ -1,3 +1,32 @@
+<script language="javascript">{literal}
+
+function updateSetConditionsFormFromOperator(condition, value){
+  
+  if(condition=='new'){
+    
+    $('add_new_condition').checked=true;
+    
+    var no_property = 'no-property-input-new-condition';
+    var choose_property = 'property-input-new-condition';
+    
+  }else{
+    var no_property = 'no-property-input-'+condition;
+    var choose_property = 'property-select-input-'+condition;
+  }
+  
+  if(value == 8 || value == 9){
+    $(no_property).style.display='inline';
+    $(choose_property).style.display='none';
+  }else{
+    $(no_property).style.display='none';
+    $(choose_property).style.display='inline';
+  }
+  
+}
+
+{/literal}
+</script>
+
 <div id="work-area">
 
 <h3><a href="{$domain}datamanager">Data Manager</a> &gt; <a href="{$domain}smartest/sets">Data Sets</a> &gt; Conditions</h3>
@@ -49,38 +78,31 @@
 			    </select>
 			  </td>
       </tr>
+    </table>
 
-  {if empty($conditions)}			
-{*    <tr>
-      <td style="width:60px">Use Items From Model:</td>
-      <td>
-        <select name="model_select" id="model_select" onchange="window.location='{$domain}{$section}/editSet?set_id=&amp;{$set.set_id}model_id=' + document.getElementById('model_select').value">
-  {foreach from=$models key="key" item="item"}
-          <option {if $item.itemclass_id == $set.itemclass_id} selected{/if} value="{$item.itemclass_id}">{$item.itemclass_name}</option>
-  {/foreach}
-        </select>
-      </td>
-    </tr> *}
-    <div>There are no conditions for this data set yet</div>
-  {/if}
-
-
-    <tr>
-      <td colspan="2">
-  		  <ul class="options-list" id="rules_list">
-  		    <li><h4>Conditions:</h4></li>
+        <h4 style="margin-top:15px">Conditions</h4>
+  		  
+  		  <table id="rules-list">
+  		    {if empty($conditions)}			
+          <td colspan="4"><div>There are no conditions for this data set yet</div></td>
+          {else}
+          <td colspan="4"><div>Retrieve all {$model.plural_name} where:</div></td>
+          {/if}
   				{foreach from=$conditions item="rule" }
-  <li id="item_{$rule.itemproperty_id}">
-					  
-  					  <select name="conditions[{$rule.id}][property_id]">
+          <tr id="rule-tr-{$rule.itemproperty_id}">
+            <td>
+					    <span id="no-property-input-{$rule.id}" style="{if $rule.itemproperty_id == '_SMARTEST_ITEM_TAGGED'}display:inline{else}display:none{/if}">The {$model.name}
+					    <input value="_SMARTEST_ITEM_TAGGED" name="conditions[{$rule.id}][property_id]" type="hidden" /></span>
+  					  <select name="conditions[{$rule.id}][property_id]" id="property-select-input-{$rule.id}" style="{if $rule.itemproperty_id == '_SMARTEST_ITEM_TAGGED'}display:none{else}display:inline{/if}">
   						  <option value="_SMARTEST_ITEM_NAME" {if $rule.itemproperty_id == "_SMARTEST_ITEM_NAME"} selected{/if}>{$model.name} Name</option>
   						  <option value="_SMARTEST_ITEM_ID" {if $rule.itemproperty_id == "_SMARTEST_ITEM_ID"} selected{/if}>{$model.name} ID</option>
   					    {foreach from=$properties item="property"}
   						  <option value="{$property.id}" {if $property.id == $rule.itemproperty_id} selected{/if}>{$property.name}</option>
                 {/foreach}
   					  </select>
-					
-  					  <select name="conditions[{$rule.id}][operator]">
+					  </td>
+					  <td>
+  					  <select name="conditions[{$rule.id}][operator]" onchange="updateSetConditionsFormFromOperator('{$rule.id}', this.value)">
   						  <option value="0" {if $rule.operator == "0"} selected="selected" {/if}>Equals</option>
   						  <option value="1" {if $rule.operator == "1"} selected="selected" {/if}>Does Not Equal</option>
   						  <option value="2" {if $rule.operator == "2"} selected="selected" {/if}>Contains</option>
@@ -89,55 +111,48 @@
   						  <option value="5" {if $rule.operator == "5"} selected="selected" {/if}>Ends With</option>
   						  <option value="6" {if $rule.operator == "6"} selected="selected" {/if}>Greater Than</option>
   						  <option value="7" {if $rule.operator == "7"} selected="selected" {/if}>Less Than</option>
-  					  </select>
+  						  <option value="8" {if $rule.operator == "8"} selected="selected" {/if}>Is Tagged With</option>
+  						  <option value="9" {if $rule.operator == "9"} selected="selected" {/if}>Is Not Tagged With</option>
+  					  </select></td>
 						
-  					  <input type="text" value="{$rule.value}" name="conditions[{$rule.id}][value]" />
-					  
-  					  {* <a href="#" onclick="document.getElementById('form_{$rule.setrule_id}').submit()"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> Delete Rule</a> *}
-  					  <input type="button" value="-" onclick="window.location='{$domain}{$section}/removeConditionFromSet?condition_id={$rule.id}'" />
+  					<td><input type="text" value="{$rule.value}" name="conditions[{$rule.id}][value]" /></td>
+            <td><input type="button" value="-" onclick="window.location='{$domain}{$section}/removeConditionFromSet?condition_id={$rule.id}'" /></td>
 
-  </li>
-  				{/foreach}
-  <li>
-					    
-					    <div style="margin-top:15px">Add a new Condition? <input type="checkbox" name="add_new_condition" value="1" /> Yes</div>
-					    
-  					  <div>
-  					    
-  					    <select name="new_condition_property_id">
-    					    <option value="_SMARTEST_ITEM_NAME">{$model.name} Name</option>
-    					    <option value="_SMARTEST_ITEM_ID">{$model.name} ID</option>
-                  {foreach from=$properties item="property"}
-                  <option value="{$property.id}">{$property.name}</option>
-                  {/foreach}
-    					  </select>
-					
-    					  <select name="new_condition_operator">
-    					    <option value="0">Equals</option>
-    					    <option value="1">Does Not Equal</option>
-    					    <option value="2">Contains</option>
-    					    <option value="3">Does Not Contain</option>
-    					    <option value="4">Starts With</option>
-    					    <option value="5">Ends With</option>
-    					    <option value="6">Greater Than</option>
-    					    <option value="7">Less Than</option>
-    				    </select>
-  				    
-  						  <input type="text" name="new_condition_value" />
-  				    
-  				    </div>
-					
-  				    {* <a href="#" onclick="document.getElementById('form_new').submit()"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Add Rule</a> *}
-					
-  </li>
-  			  </ul>
-  			</td>
-  		</tr>
+        </tr>{/foreach}
+        <tr id="add-new-condition-checkbox-holder">
+				  <td colspan="4"><div><input type="checkbox" id="add_new_condition" name="add_new_condition" value="1" /> <label for="add_new_condition">Add a new Condition:</label></div></td>
+        </tr>
+  			<tr id="add-new-condition">
+  				<td>
+  				  <span id="no-property-input-new-condition" style="display:none">The {$model.name}
+				    <input value="_SMARTEST_ITEM_TAGGED" name="new_condition_property_id" type="hidden" /></span>
+				    
+  					<select name="new_condition_property_id" id="property-input-new-condition" onchange="updateSetConditionsFormFromProperty('new', this.value)">
+    				  <option value="_SMARTEST_ITEM_NAME" id="nc_name">{$model.name} Name</option>
+    				  <option value="_SMARTEST_ITEM_ID" id="nc_id">{$model.name} ID</option>
+              {foreach from=$properties item="property"}<option value="{$property.id}">{$property.name}</option>{/foreach}
+    		    </select></td>
+  			<td>
+  			  <select name="new_condition_operator" onchange="updateSetConditionsFormFromOperator('new', this.value);">
+  			    <option value="0">Equals</option>
+  			    <option value="1">Does Not Equal</option>
+  			    <option value="2">Contains</option>
+  			    <option value="3">Does Not Contain</option>
+  			    <option value="4">Starts With</option>
+  			    <option value="5">Ends With</option>
+  			    <option value="6">Greater Than</option>
+  			    <option value="7">Less Than</option>
+  			    <option value="8">Is Tagged With</option>
+  			    <option value="9">Is Not Tagged With</option>
+  			  </select></td>
+  			<td><input type="text" name="new_condition_value" onchange="$('add_new_condition').checked=true" /></td>
+  			<td></td>
+      </tr>
     </table>
   
     <div class="edit-form-row">
       <div class="buttons-bar">
-        <input type="button" value="cancel" />
+        <input type="button" value="Cancel" />
         <input type="submit" value="Save Changes" />
       </div>
     </div>

@@ -1,6 +1,6 @@
 <?php
 
-// a class for tag contents, search resuts, and any other time where mixed content is listed.
+// a class for tag contents, search resuts, clipboard, and any other time where mixed content is listed.
 
 class SmartestGenericListedObject{
     
@@ -8,8 +8,11 @@ class SmartestGenericListedObject{
     protected $_type;
     protected $_properties = array();
     
+    const USER = 0; // not yet in use
     const PAGE = 1;
     const ITEM = 2;
+    const ASSET = 4;
+    const TODO = 8;
     
     function __construct($object){
         

@@ -72,13 +72,13 @@ class SmartestModel extends SmartestDataObject{
 		
 		
 		
-		if(SmartestCache::hasData('model_properties_'.$this->getId(), true)){
-		    $result = SmartestCache::load('model_properties_'.$this->getId(), true);
+		if(SmartestCache::hasData('model_properties_'.$this->_properties['id'], true)){
+		    $result = SmartestCache::load('model_properties_'.$this->_properties['id'], true);
 	    }else{
-		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->getId()."'";
+		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_properties['id']."'";
 		    $result = $this->database->queryToArray($sql);
-		    SmartestCache::save('model_properties_'.$this->getId(), $result, -1, true);
-		    // print_r(SmartestCache::load('model_properties_'.$this->getId(), true));
+		    SmartestCache::save('model_properties_'.$this->_properties['id'], $result, -1, true);
+		    // print_r(SmartestCache::load('model_properties_'.$this->_properties['id'], true));
 	    }
 		
 		foreach($result as $db_property){
@@ -94,8 +94,8 @@ class SmartestModel extends SmartestDataObject{
 	}
 	
 	public function refresh(){
-	    SmartestCache::clear('model_properties_'.$this->getId(), true);
-        SmartestObjectModelHelper::buildAutoClassFile($this->getId(), SmartestStringHelper::toCamelCase($this->getName()));
+	    SmartestCache::clear('model_properties_'.$this->_properties['id'], true);
+        SmartestObjectModelHelper::buildAutoClassFile($this->_properties['id'], SmartestStringHelper::toCamelCase($this->getName()));
 	}
 	
 	public function __toArray(){
@@ -180,7 +180,7 @@ class SmartestModel extends SmartestDataObject{
     
     public function getSimpleItems($site_id=''){
         
-        $sql = "SELECT * FROM Items WHERE item_itemclass_id='".$this->getId()."' AND item_deleted != 1";
+        $sql = "SELECT * FROM Items WHERE item_itemclass_id='".$this->_properties['id']."' AND item_deleted != 1";
         
         if(is_numeric($site_id)){
             $sql .= " AND item_site_id='".$site_id."'";
@@ -192,6 +192,7 @@ class SmartestModel extends SmartestDataObject{
         
         $result = $this->database->queryToArray($sql);
         $items = array();
+        
         
         foreach($result as $db_array){
             $item = new SmartestItem;
@@ -207,9 +208,13 @@ class SmartestModel extends SmartestDataObject{
         $items = $this->getSimpleItems($site_id);
         $arrays = array();
         
+        // $time_1 = debug_time();
+        
         foreach($items as $item){
             $arrays[] = $item->__toArray();
         }
+        
+        // echo debug_time() - $time_1.'<br />';
         
         return $arrays;
         
@@ -217,7 +222,7 @@ class SmartestModel extends SmartestDataObject{
     
     public function getItemIds($site_id=''){
         
-        $sql = "SELECT item_id FROM Items WHERE item_itemclass_id='".$this->getId()."' AND item_deleted != 1";
+        $sql = "SELECT item_id FROM Items WHERE item_itemclass_id='".$this->_properties['id']."' AND item_deleted != 1";
         
         if(is_numeric($site_id)){
             $sql .= " AND item_site_id='".$site_id."'";
@@ -238,7 +243,7 @@ class SmartestModel extends SmartestDataObject{
     
     public function getMetaPages(){
         
-        $sql = "SELECT * FROM Pages WHERE page_type='ITEMCLASS' AND page_dataset_id='".$this->getId()."' and page_deleted != 1";
+        $sql = "SELECT * FROM Pages WHERE page_type='ITEMCLASS' AND page_dataset_id='".$this->_properties['id']."' and page_deleted != 1";
         
         if(is_object($this->getSite())){
             $sql .= " AND page_site_id='".$this->getSite()->getId()."'";
@@ -307,11 +312,11 @@ class SmartestModel extends SmartestDataObject{
     }
     
     public function getDefaultMetaPageId($site_id){
-        return SmartestSystemSettingHelper::load('model_'.$this->getId().'_default_metapage_site_'.$site_id);
+        return SmartestSystemSettingHelper::load('model_'.$this->_properties['id'].'_default_metapage_site_'.$site_id);
     }
     
     public function setDefaultMetaPageId($site_id, $id){
-        return SmartestSystemSettingHelper::save('model_'.$this->getId().'_default_metapage_site_'.$site_id, $id);
+        return SmartestSystemSettingHelper::save('model_'.$this->_properties['id'].'_default_metapage_site_'.$site_id, $id);
     }
     
     public function getAvailableDescriptionPropertiesAsArrays(){

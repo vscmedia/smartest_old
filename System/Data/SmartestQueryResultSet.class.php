@@ -35,73 +35,65 @@ class SmartestQueryResultSet{
 	
 	public function sort($field, $direction='ASC'){
 	    
-	    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemProperties, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model_id."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id";
+	    if(count($this->_item_ids)){
 	    
-	    if($field != SmartestCmsItem::ID && $field != SmartestCmsItem::NAME){
-	        $sql .= " AND ItemPropertyValues.itempropertyvalue_property_id=ItemProperties.itemproperty_id AND ItemPropertyValues.itempropertyvalue_property_id='".$field."'";
-	    }
+	        $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemProperties, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model_id."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id";
 	    
-	    $sql .= " AND Items.item_id IN (";
+    	    if($field != SmartestCmsItem::ID && $field != SmartestCmsItem::NAME){
+    	        $sql .= " AND ItemPropertyValues.itempropertyvalue_property_id=ItemProperties.itemproperty_id AND ItemPropertyValues.itempropertyvalue_property_id='".$field."'";
+    	    }
 	    
-	    $i = 0;
+    	    $sql .= " AND Items.item_id IN (";
 	    
-	    foreach($this->_item_ids as $id){
+    	    $i = 0;
+	    
+    	    foreach($this->_item_ids as $id){
 	        
-	        if($i > 0){
-	            $sql .= ',';
-	        }
+    	        if($i > 0){
+    	            $sql .= ',';
+    	        }
 	        
-	        $sql .= $id;
+    	        $sql .= $id;
 	        
-	        $i++;
-	    }
+    	        $i++;
+    	    }
 	    
-	    $sql .= ') ORDER BY ';
+    	    $sql .= ') ORDER BY ';
 	    
-		if($field == SmartestCmsItem::ID){
+    		if($field == SmartestCmsItem::ID){
 		
-		    $sql .= "Items.item_id ";
+    		    $sql .= "Items.item_id ";
 		
-		}else if($field == SmartestCmsItem::NAME){
+    		}else if($field == SmartestCmsItem::NAME){
 		    
-		    $sql .= "Items.name_id ";
-		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_name ";
+    		    $sql .= "Items.name_id ";
+    		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_name ";
 		
-		}else{
+    		}else{
 		    
-		    if($this->_is_draft){
-		        $sql .= "ItemPropertyValues.itempropertyvalue_draft_content ";
-		    }else{
-		        $sql .= "ItemPropertyValues.itempropertyvalue_content ";
+    		    if($this->_is_draft){
+    		        $sql .= "ItemPropertyValues.itempropertyvalue_draft_content ";
+    		    }else{
+    		        $sql .= "ItemPropertyValues.itempropertyvalue_content ";
+    		    }
+    		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_property_id='$property_id' AND ".$value_field.' ';
+		    
+    		}
+		
+		    $sql .= $direction;
+		    $result = $this->database->queryToArray($sql);
+		
+		    $ids = array();
+		
+		    foreach($result as $record){
+		        $ids[] = $record['itempropertyvalue_item_id'];
 		    }
-		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_property_id='$property_id' AND ".$value_field.' ';
-		    
-		}
 		
-		$sql .= $direction;
-		$result = $this->database->queryToArray($sql);
+		    $this->_item_ids = $ids;
 		
-		// echo $sql;
+		    $this->_items_retrieval_attempted = false;
 		
-		// print_r($result);
-		
-		$ids = array();
-		
-		foreach($result as $record){
-		    $ids[] = $record['itempropertyvalue_item_id'];
-		}
-		
-		$this->_item_ids = $ids;
-		
-		$this->_items_retrieval_attempted = false;
-		
-		// print_r($ids);
-		
-		// print_r($this->getSimpleIdsArray($result));
-		
-		// $this->_item_ids = $this->getSimpleIdsArray($result);
-		
-		// print_r( $this->_item_ids);
+	    }
 		
 	}
 	

@@ -32,6 +32,12 @@ class SmartestQuery{
 	const LESSTHAN = 7;
 	const LESS_THAN = 7;
 	
+	const TAGGEDWITH = 8;
+	const TAGGED_WITH = 8;
+	
+	const NOTTAGGEDWITH = 9;
+	const NOT_TAGGED_WITH = 9;
+	
 	public function __construct($model_id, $site_id=''){
 		
 		$this->database =& SmartestPersistentObject::get('db:main');
@@ -281,7 +287,41 @@ class SmartestQuery{
     				}else if($condition['field'] == SmartestCmsItem::NAME){
 				
     				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_name ";
-				
+				    
+				    }else if($condition['operator'] == self::TAGGED_WITH){
+				        
+				        $tag_name = SmartestStringHelper::toSlug($condition['value']);
+        				$tag = new SmartestTag;
+        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
+        				
+        				if($tag->hydrateBy('name', $tag_name)){
+        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $draft, $this->model->getId());
+        				    $sql .= "AND Items.item_id IN ('".implode("', '", $ids)."')";
+        				}else{
+        				    if(SM_DEVELOPER_MODE){
+        				        // throw new SmartestException('Unknown tag: \''.$tag_name.'\' in SmartestQuery::doSelect()');
+        				    }
+        				    
+        				    // $sql .= "AND Items.item_id ='x'";
+        				}
+				        
+				    }else if($condition['operator'] == self::NOT_TAGGED_WITH){
+				        
+				        $tag_name = SmartestStringHelper::toSlug($condition['value']);
+        				$tag = new SmartestTag;
+        				
+        				
+        				if($tag->hydrateBy('name', $tag_name)){
+        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_id ";
+        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $draft, $this->model->getId());
+        				    $sql .= "NOT IN ('".implode("', '", $ids)."')";
+        				}else{
+        				    if(SM_DEVELOPER_MODE){
+        				        // throw new SmartestException('Unknown tag: \''.$tag_name.'\' in SmartestQuery::doSelect()');
+        				    }
+        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
+        				}
+				    
     				}else{
 				
     				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_property_id='$property_id' AND Items.item_deleted != '1' AND Items.item_id = ItemPropertyValues.itempropertyvalue_item_id AND ".$value_field.' ';
@@ -321,6 +361,9 @@ class SmartestQuery{
         				case 7:
         				$sql .= " < '".mysql_real_escape_string($condition['value'])."'";
         				break;
+        				
+        				// For 8 and 9 involving tagging, see above
+        				
     		        }
 				    
 				    $sql .= " AND Items.item_public='TRUE'";
@@ -331,11 +374,13 @@ class SmartestQuery{
 				        $sql .= " AND (Items.item_site_id='".$this->getSiteId()."' OR Items.item_shared='1')";
 				    }
 				    
-				    // echo $sql;
+				    // echo $sql."\n";
 				    
-    			    $result = $this->database->queryToArray($sql);
-				
-    				$this->conditions[$property_id]['ids'] = $this->getSimpleIdsArray($result);
+				    $result = $this->database->queryToArray($sql);
+				    
+				    $this->conditions[$property_id]['ids'] = $this->getSimpleIdsArray($result);
+				    
+				    // print_r($this->conditions[$property_id]['ids']);
 				
     			}
     		

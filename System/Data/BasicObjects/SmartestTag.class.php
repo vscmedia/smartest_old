@@ -74,7 +74,7 @@ class SmartestTag extends SmartestDataObject{
         
     }
     
-    public function getSimpleItems($site_id='', $draft=false){
+    public function getSimpleItems($site_id=false, $draft=false, $model_id=false){
         
         if(!$site_id || !is_numeric($site_id)){
             $site_id = 'all';
@@ -90,6 +90,10 @@ class SmartestTag extends SmartestDataObject{
             
             if(!$draft){
                 $sql .= " AND item_public='TRUE'";
+            }
+            
+            if($model_id && is_numeric($model_id)){
+                $sql .= " AND item_itemclass_id='".$model_id."'";
             }
             
             // echo $sql;
@@ -119,6 +123,32 @@ class SmartestTag extends SmartestDataObject{
         }
         
         return $this->_simple_items;
+        
+    }
+    
+    public function getSimpleItemsAsArrays($site_id=false, $draft=false, $model_id=false){
+        
+        $items = $this->getSimpleItems($site_id, $draft, $model_id);
+        $arrays = array();
+        
+        foreach($items as $i){
+            $arrays[] = $i->__toArray();
+        }
+        
+        return $arrays;
+        
+    }
+    
+    public function getSimpleItemIds($site_id=false, $draft=false, $model_id=false){
+        
+        $items = $this->getSimpleItems($site_id, $draft, $model_id);
+        $ids = array();
+        
+        foreach($items as $i){
+            $ids[] = $i->getId();
+        }
+        
+        return $ids;
         
     }
     

@@ -8,7 +8,7 @@ class SmartestBaseUser extends SmartestDataObject{
 	protected function __objectConstruct(){
 		$this->_table_prefix = 'user_';
 		$this->_table_name = 'Users';
-		$this->_no_prefix = array('username', 'password');
+		$this->_no_prefix = array('username'=>1, 'password'=>1);
 		
 		if(method_exists($this, '__myConstructor')){
 		    $args = func_get_args();
@@ -30,7 +30,7 @@ class SmartestBaseUser extends SmartestDataObject{
 					if(substr($key, 0, strlen($this->_table_prefix)) == $this->_table_prefix){
 						$this->_properties[substr($key, strlen($this->_table_prefix))] = $value;
 						$this->_came_from_database = true;
-					}else if(in_array($name, $this->_no_prefix)){
+					}else if(isset($this->_no_prefix[$name])){
 						$this->_properties[$name] = $value;
 					}
 					
@@ -65,7 +65,7 @@ class SmartestBaseUser extends SmartestDataObject{
 					if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
 						$this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
 						$this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix));
-					}else if(in_array($name, $this->_no_prefix)){
+					}else if(isset($this->_no_prefix[$name])){
 					    $this->_properties[$name] = $value;
 					    $this->_properties_lookup[SmartestStringHelper::toCamelCase($name)] = $name;
 					}
@@ -269,7 +269,7 @@ class SmartestBaseUser extends SmartestDataObject{
 	public function isAuthenicated(){
 		
 		// only works for the current logged in user
-		if(SmartestPersistentObject::get('user:isAuthenticated')){
+		if(SmartestSession::get('user:isAuthenticated')){
 			return true;
 		}else{
 			return false;
@@ -305,6 +305,10 @@ class SmartestBaseUser extends SmartestDataObject{
 	    
 	    $this->database->rawQuery($sql);
 	    
+	    $sql = "UPDATE TodoItems SET todoitem_is_complete='1', todoitem_time_completed='".time()."' WHERE todoitem_type='SM_TODOITEMTYPE_RELEASE_PAGE' AND todoitem_receiving_user_id='".$this->_properties['id']."'";
+	    
+	    $this->database->rawQuery($sql);
+	    
 	}
 	
 	public function getNumHeldItems($model_id, $site_id=''){
@@ -316,8 +320,6 @@ class SmartestBaseUser extends SmartestDataObject{
 	    }
 	    
 	    return $this->database->howMany($sql);
-	    
-	    return 0;
 	}
 	
 	public function releaseItems($model_id, $site_id=''){
@@ -329,6 +331,110 @@ class SmartestBaseUser extends SmartestDataObject{
 	    }
 	    
 	    $this->database->rawQuery($sql);
+	    
+	    $sql = "UPDATE TodoItems SET todoitem_is_complete='1', todoitem_time_completed='".time()."' WHERE todoitem_type='SM_TODOITEMTYPE_RELEASE_ITEM' AND todoitem_receiving_user_id='".$this->_properties['id']."'";
+	    
+	    $this->database->rawQuery($sql);
+	}
+	
+	public function assignTodo($type_code, $entity_id, $assigner_id, $message='', $send_email=false){
+	    
+	    $type = SmartestTodoListHelper::getType($type_code);
+	    
+	    if(isset($message{1})){
+	        $input_message = SmartestStringHelper::sanitize($message);
+	    }else{
+	        $input_message = $type->getDescription();
+	    }
+	    
+	    $task = new SmartestTodoItem;
+	    $task->setReceivingUserId($this->_properties['id']);
+	    $task->setAssigningUserIs($assigner_id);
+	    $task->setForeignObjectId($entity_id);
+	    $task->setTimeAssigned(time());
+	    $task->setDescription($input_message);
+	    $task->setType($type_code);
+	    $task->save();
+	    
+	    if($send_email){
+	        // code goes in here to send notification email to user
+	    }
+	    
+	}
+	
+	public function hasTodo($type, $entity_id){
+	    $id = (int) $entity_id;
+	    $type = SmartestStringHelper::sanitize($type);
+	    $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_foreign_object_id='".$id."' AND todoitem_type='".$type."' AND todoitem_is_complete !=1";
+	    return (bool) count($this->database->queryToArray($sql));
+	    
+	}
+	
+	public function getTodo($type, $entity_id){
+	    
+	    $id = (int) $entity_id;
+	    $type = SmartestStringHelper::sanitize($type);
+	    $sql = "SELECT * FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_foreign_object_id='".$id."' AND todoitem_type='".$type."' AND todoitem_is_complete !=1";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    if(isset($result[0])){
+	        $todo = new SmartestTodoItem;
+	        $todo->hydrate($result[0]);
+	        return $todo;
+        }else{
+            return false;
+        }
+	    
+	}
+	
+	public function getNumTodoItems($get_assigned=false){
+	    
+	    if($get_assigned){
+	        $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_assigning_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 ORDER BY todoitem_time_assigned ASC";
+	    }else{
+	        $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 ORDER BY todoitem_time_assigned ASC";
+        }
+	    
+	    return count($this->database->queryToArray($sql));
+	    
+	}
+	
+	public function getTodoItems($get_assigned=false){
+	    
+	    if($get_assigned){
+	        $sql = "SELECT * FROM TodoItems WHERE todoitem_assigning_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 ORDER BY todoitem_time_assigned ASC";
+	    }else{
+	        $sql = "SELECT * FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 ORDER BY todoitem_time_assigned ASC";
+        }
+	    
+	    $result = $this->database->queryToArray($sql);
+	    $tasks = array();
+	    
+	    if(count($result)){
+	        foreach($result as $t){
+	            $task = new SmartestTodoItem;
+	            $task->hydrate($t);
+	            $tasks[] = $task;
+	        }
+	    }
+	    
+	    return $tasks;
+	    
+	}
+	
+	public function getTodoItemsAsArrays($get_assigned=false, $get_foreign_object_info=false){
+	    
+	    $tasks = $this->getTodoItems($get_assigned);
+	    $arrays = array();
+	    
+	    // print_r($tasks);
+	    
+	    foreach($tasks as $t){
+	        $arrays[] = $t->__toArray($get_foreign_object_info);
+	    }
+	    
+	    return $arrays;
+	    
 	}
 	
 }

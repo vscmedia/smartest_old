@@ -13,8 +13,8 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		
 		$this->database = SmartestPersistentObject::get('db:main');
 		
-		if(SmartestPersistentObject::get('user:isAuthenticated')){
-			$this->userLoggedIn =& SmartestPersistentObject::get('user:isAuthenticated');
+		if(SmartestSession::get('user:isAuthenticated')){
+			$this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
 		}else{
 			$this->userLoggedIn = false;
 			SmartestPersistentObject::set('user:isAuthenticated', false);
@@ -56,7 +56,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 			SmartestSession::set('user:isAuthenticated', true);
 			
 			// 
-			$this->userLoggedIn =& SmartestPersistentObject::get('user:isAuthenticated');
+			$this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
 			$this->getUserPermissionTokens();
 			
 			return $userObj;

@@ -279,7 +279,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 $attachments = $this->getProperty('attachments');
                 $asset = $this->getProperty('asset');
                 
-                if(array_key_exists($name, $attachments)){
+                if(isset($attachments[$name])){
                     
                     $attachment = $attachments[$name];
                     
@@ -304,7 +304,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             }else{
                 
-                echo $this->raiseError('Attachment tags must be used only in text files.');
+                echo $this->raiseError('Attachment tags can only be used in text files.');
                 
             }
 	        
@@ -675,6 +675,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
             $path = 'none';
         }
         
+        // echo $render_template
+        
         if(file_exists($render_template)){
             
             if($asset->isImage()){
@@ -710,11 +712,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
                 	        $child->setProperty('asset', $asset);
                 	        $child->setProperty('attachments', $attachments);
-                            $content = $child->fetch($asset->getTextFragment()->getParsableFilePath(true));
+                	        $content = $child->fetch($asset->getTextFragment()->getParsableFilePath(true));
                 	        $this->killChildProcess($child->getProcessId());
                 	        echo $content;
                         }else{
-                            echo '<br />ERROR: TextFragment render preview could not be created.';
+                            // echo '<br />ERROR: TextFragment render preview could not be created.';
+                            $this->raiseError('TextFragment render preview could not be created.');
                         }
                     }else{
                     // otherwise parse local disk copy.
@@ -723,7 +726,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
                 	        $child->setProperty('asset', $asset);
                 	        $child->setProperty('attachments', $attachments);
-                            $content = $child->fetch($asset->getTextFragment()->getParsableFilePath());
+                	        $content = $child->fetch($asset->getTextFragment()->getParsableFilePath());
                 	        $this->killChildProcess($child->getProcessId());
                 	        echo $content;
                         }else{

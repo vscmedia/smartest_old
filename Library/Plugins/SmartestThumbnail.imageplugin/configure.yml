@@ -1,0 +1,3 @@
+plugin:
+  url_name: ImageAssetThumbnails
+  description: "Converts JPEG, PNG and GIF to nicely rounded images";

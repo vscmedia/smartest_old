@@ -2,32 +2,23 @@
 
   <h3>Your To-do List</h3>
   
-  <div class="instruction">Assigned by you ({$num_self_assigned_tasks})</div>
-
-  <div class="instruction">Assigned by others ({$num_assigned_tasks})</div>
-
-  <div class="instruction">Duties ({$num_duty_items})</div>
-
+  {if empty($todo_items)}
+  
+  <div class="instruction">Lucky you! There are no tasks on your to-do list at the moment.</div>
+  
+  {else}
+  
   <ul class="todo-item">
-    {foreach from=$locked_pages item="page"}
-    <li>Finish editing and release page: {$page.title} [<a href="{$domain}websitemanager/openPage?page_id={$page.webid}&amp;from=todoList">edit</a>] [<a href="{$domain}websitemanager/releasePage?page_id={$page.webid}&amp;from=todoList">release</a>]</li>
+    
+    {foreach from=$todo_items item="todo"}
+    <li><strong>Page: {$todo.object_label}</strong><br />
+      <span>Task: {$todo.description}</span><br />
+      <span><a href="{$domain}{$todo.action_url}&amp;from=todoList">Do This Now</a> | <a href="">Ignore</a></span></li>
     {/foreach}
-    {foreach from=$locked_items item="item"}
-    <li>Finish editing and release item: {$item.name} [<a href="{$domain}datamanager/openItem?item_id={$item.id}&amp;from=todoList">edit</a>] [<a href="{$domain}datamanager/releaseItem?item_id={$item.id}&amp;from=todoList">release</a>]</li>
-    {/foreach}
-    {foreach from=$pages_awaiting_approval item="page"}
-    <li>Approve changes to page: {$page.title} [<a href="{$domain}websitemanager/preview?page_id={$page.webid}&amp;from=todoList">go</a>]</li>
-    {/foreach}
-    {foreach from=$items_awaiting_approval item="item"}
-    <li>Approve changes to item: {$item.name} [<a href="{$domain}datamanager/editItem?item_id={$item.id}&amp;from=todoList">go</a>]</li>
-    {/foreach}
-    {foreach from=$pages_awaiting_publishing item="page"}
-    <li>Publish changes to page: {$page.title} [<a href="{$domain}websitemanager/publishPageConfirm?page_id={$page.webid}&amp;from=todoList">go</a>]</li>
-    {/foreach}
-    {foreach from=$items_awaiting_publishing item="item"}
-    <li>Publish changes to item: {$item.name} [<a href="{$domain}datamanager/publishItem?item_id={$item.id}&amp;from=todoList">go</a>]</li>
-    {/foreach}
+
   </ul>
+  
+  {/if}
 
 </div>
 

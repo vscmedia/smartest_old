@@ -89,7 +89,7 @@ class SmartestTextFragment extends SmartestDataObject{
     }
     
     public function parseAttachmentNames(){
-        $regexp = preg_match_all("/<\?sm:attachment.+name=\"([\w-_]+)\".*:\?>/i", $this->getContent(), $matches);
+        $regexp = preg_match_all('/<\?sm:attachment.+?name="([\w_-]+)"/', $this->_properties['content'], $matches);
         $attachment_names = $matches[1];
         return $attachment_names;
     }

@@ -87,9 +87,9 @@ class SmartestStringHelper extends SmartestHelper{
 	
 		$page_name = strtolower($normal_string);
 		
-		if(!self::isAscii($page_name)){
+		/* if(!self::isAscii($page_name)){
 		    $page_name = self::toAscii($page_name);
-		}
+		} */
 		
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\");
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
@@ -102,9 +102,9 @@ class SmartestStringHelper extends SmartestHelper{
 	
 		$page_name = strtolower($normal_string);
 		
-		if(!self::isAscii($page_name)){
+		/* if(!self::isAscii($page_name)){
 		    $page_name = self::toAscii($page_name);
-		}
+		} */
 		
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\");
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
@@ -117,9 +117,9 @@ class SmartestStringHelper extends SmartestHelper{
 		
 		$constant_name = trim($string, " ?!%$#&£*|/\\");
 		
-		if(!self::isAscii($constant_name)){
+		/* if(!self::isAscii($constant_name)){
 		    $constant_name = self::toAscii($constant_name);
-		}
+		} */
 		
 		$constant_name = preg_replace("/[\"'\.,]+/", "", $constant_name);
 		$constant_name = preg_replace("/[^\w-_]+/", "_", $constant_name);

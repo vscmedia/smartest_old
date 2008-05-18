@@ -21,6 +21,13 @@
         margin-right:auto
       }
       
+      div.error-text{
+          display:block;
+          float:left;
+          margin-left:5px;
+          width:570px;
+      }
+      
       table.error-table{
         width:600px;
         border:1px solid #999;
@@ -50,7 +57,7 @@
         <tr>
           <td>
             <img src="<?php echo defined("SM_CONTROLLER_DOMAIN") ? SM_CONTROLLER_DOMAIN : "/"; ?>Resources/Icons/exclamation.png" alt="" style="display:block;float:left" />
-            <div style="display:block;float:left;margin-left:5px"><?php echo $error->getMessage() ?></div></td>
+            <div class="error-text"><?php echo $error->getMessage() ?></div></td>
         </tr>
 <?php endforeach; ?>
       </table>

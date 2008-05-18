@@ -79,8 +79,12 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	///// Form forwarding //////
 	
 	protected function setFormReturnUri(){
-		$_SESSION["_FORM_RETURN"] = reset(explode("?", $_SERVER["REQUEST_URI"]));
-		$_SESSION["_FORM_RETURN_VARS"] = $_GET;
+	    if(isset($_GET['from']) && isset($_GET['from']{0})){
+	        // do nothing
+	    }else{
+		    $_SESSION["_FORM_RETURN"] = reset(explode("?", $_SERVER["REQUEST_URI"]));
+		    $_SESSION["_FORM_RETURN_VARS"] = $_GET;
+	    }
 	}
 	
 	protected function setFormCompleteUri(){

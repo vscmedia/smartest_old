@@ -1,16 +1,8 @@
 <?php
 
-// print_r(mb_get_info());
-
 mb_http_output("UTF-8");
 mb_http_input("UTF-8");
 mb_internal_encoding("UTF-8");
-
-// echo "é";
-
-// These two files can't be included using the include optimisation because it depends on their already having been included
-
-define('SM_INFO_VERSION_NUMBER', '0.3.5a2');
 
 class SmartestResponse{
 	
@@ -126,6 +118,8 @@ class SmartestResponse{
         require SM_ROOT_DIR.'System/Base/SmartestError.class.php';
         require SM_ROOT_DIR.'System/Base/SmartestErrorStack.class.php';
         
+        // These files can't be included using the include optimisation because it depends on their already having been included
+        
         $this->errorStack = new SmartestErrorStack();
 
         try{
@@ -174,7 +168,6 @@ class SmartestResponse{
         	'Library/Quince/QuinceBase.interface.php',
         	'System/Templating/SmartestEngine.class.php',
         	'System/Templating/SmartestInterfaceBuilder.class.php',
-        	'System/Templating/SmartestWebPageBuilder.class.php',
         	'System/Templating/SmartyManager.class.php',
         	'System/Controller/SmartestController.class.php',
         	'System/Templating/SmartestTemplateHelper.class.php',
@@ -185,6 +178,8 @@ class SmartestResponse{
         	'Library/API/SmartestUser.class.php'
 
         );
+        
+        include SM_ROOT_DIR.'System/Templating/SmartestWebPageBuilder.class.php';
         
         define('SM_START_TIME', microtime(true));
 		$this->startTime = SM_START_TIME;
@@ -945,8 +940,8 @@ class SmartestResponse{
 		}
 		
 		// get all Smartest defined classes and constants
-		$smartest_constants = $this->getConstants();
-		$smartest_classes = $this->getClasses();
+		// $smartest_constants = $this->getConstants();
+		// $smartest_classes = $this->getClasses();
 		
 		// Calculate time taken and assign to smarty
 		$this->endTime   = microtime(true);

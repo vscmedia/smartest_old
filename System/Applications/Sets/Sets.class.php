@@ -61,15 +61,15 @@ class Sets extends SmartestSystemApplication{
 	        $set->save();
 	        
 	        if($set->getType() == 'DYNAMIC'){
-	            $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to give it some rules.");
+	            $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to give it some rules.", SmartestUserMessage::SUCCESS);
             }else{
-                $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to decide what goes in there.");
+                $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to decide what goes in there.", SmartestUserMessage::SUCCESS);
             }
             
 	        $this->redirect('/sets/editSet?set_id='.$set->getId());
 	        
 	    }else{
-	        $this->addUserMessageToNextRequest("Error: Your set could not be created.");
+	        $this->addUserMessageToNextRequest("Error: Your set could not be created because the name you supplied was already taken or invalid.", SmartestUserMessage::ERROR);
 	        $this->redirect('/smartest/sets');
 	    }
 	    
@@ -135,7 +135,7 @@ class Sets extends SmartestSystemApplication{
 	        
 	    }else{
 	        $this->send(false, 'show_form');
-	        $this->addUserMessage('The Set ID was not recognised');
+	        $this->addUserMessage('The Set ID was not recognised', SmartestUserMessage::ERROR);
 	    }
 	    
 	    $this->setFormReturnUri();
@@ -168,10 +168,16 @@ class Sets extends SmartestSystemApplication{
 	        
 	        foreach($post['conditions'] as $c_id => $c_post_data){
 	            
+	            if($c_post_data['operator'] == 8 || $c_post_data['operator'] == 9){
+    	            $property_id = '_SMARTEST_ITEM_TAGGED';
+    	        }else{
+    	            $property_id = $c_post_data['property_id'];
+    	        }
+	            
 	            $c = new SmartestDynamicDataSetCondition;
 	            
 	            if($c->hydrate($c_id)){
-	                $c->setItempropertyId($c_post_data['property_id']);
+	                $c->setItempropertyId($property_id);
 	                $c->setOperator($c_post_data['operator']);
 	                $c->setValue($c_post_data['value']);
 	                $c->save();
@@ -181,16 +187,22 @@ class Sets extends SmartestSystemApplication{
 	    
 	    if(@$post['add_new_condition']){
 	        
+	        if($post['new_condition_operator'] == 8 || $post['new_condition_operator'] == 9){
+	            $property_id = '_SMARTEST_ITEM_TAGGED';
+	        }else{
+	            $property_id = $post['new_condition_property_id'];
+	        }
+	        
 	        $c = new SmartestDynamicDataSetCondition;
 	        $c->setSetId($set_id);
-	        $c->setItempropertyId($post['new_condition_property_id']);
+	        $c->setItempropertyId($property_id);
 	        $c->setOperator($post['new_condition_operator']);
 	        $c->setValue($post['new_condition_value']);
 	        $c->save();
 	        
 	    }
 	    
-	    $this->addUserMessageToNextRequest("Your set has been updated.");
+	    $this->addUserMessageToNextRequest("Your set has been updated.", SmartestUserMessage::SUCCESS);
 	    $this->formForward();
 	    
 	}
@@ -234,6 +246,8 @@ class Sets extends SmartestSystemApplication{
 	}
 	
 	function previewSet($get){     
+	    
+	    $this->setFormReturnUri();
 	    
 	    $set_id = $get['set_id'];
 	    $set = new SmartestCmsItemSet;

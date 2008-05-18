@@ -212,10 +212,27 @@ class Desktop extends SmartestSystemApplication{
 		$this->redirect("/smartest");
 	    
 	}
+	
+	public function assignTodo($get){
+	    
+	}
+	
+	public function insertTodo($get, $post){
+	    
+	}
     
-    function todoList(){
+    public function todoList(){
         
         $this->setFormReturnUri();
+        
+        $this->setTitle('Your To-do List');
+        
+        $todo_items = $this->getUser()->getTodoItemsAsArrays(false, true);
+        // print_r($todo_items);
+        
+        $this->send($todo_items, 'todo_items');
+        
+        /*
         
         // print_r($this->manager);
         $this->setTitle('Your To-do List');
@@ -285,7 +302,9 @@ class Desktop extends SmartestSystemApplication{
             $this->send(false, 'show_pages_awaiting_publishing');
         }
         
-        $this->send($total_num_duty_items, 'num_duty_items');
+        $this->send($total_num_duty_items, 'num_duty_items'); */
+        
+        
         
     }
     

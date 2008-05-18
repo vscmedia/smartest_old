@@ -3,34 +3,29 @@
 /**
  * Implements a mysql abstraction layer
  *
- * PHP version 5
+ * PHP versions 4/5
  *
  * @category   System
  * @package    Smartest
  * @license    read license file
- * @author     Marcus Gilroy-Ware <marcus@vsccreative.com>
+ * @author     Marcus Gilroy-Ware <marcus@visudo.com>
  */
 
 if(!defined("UNSUPPORTED_QUERY")){
 	define("UNSUPPORTED_QUERY", false);
 }
 
-class SmartestMysql{
+class SmartestMysql implements SmartestDataAccessClass{
 
 	protected $dblink;
 	public $lastQuery;
-	protected $cachedQueryHistory = array();
-	protected $queryHistory = array();
+	protected $queryHistory;
 	protected $id;
 	protected $databaseName;
 	protected $options = array();
-	protected $queryHashes = array();
-	protected $retrievalQueryTypes = array('SELECT', 'SHOW');
-	protected $log = array();
-	
 	// protected $remember_password;
   
-	public function __construct($server, $username, $database, $password="", $remember_password=true){
+	function __construct($server, $username, $database, $password="", $remember_password=true){
 	    
 	    $this->options['server'] = $server;
 	    $this->options['username'] = $username;
@@ -47,31 +42,24 @@ class SmartestMysql{
             $this->options['password_needed'] = false;
         }
 	    
-	    
-	    
 		if($this->dblink = @mysql_connect($server, $username, $password)){
 			// @mysql_set_charset("UTF-8", $this->dblink);
 			$this->queryHistory = array();
 			$this->rawQuery("SET NAMES 'utf8'");
 			mysql_select_db($database, $this->dblink);
 			$this->databaseName = $database;
-			$this->lastQuery = "No queries made yet.";
+			$this->lastQuery = "no queries made yet";
 			
 		}else{
-			throw new SmartestException("Could not connect to MySQL.", SM_ERROR_DB);
+			throw new SmartestException("Could not connect to MySQL", SM_ERROR_DB);
 		}
-	}
-	
-	public function __destruct(){
-	    // mysql_close($this->dblink);
-	    $this->clearQueryHistoryCache();
 	}
 	
 	protected function reconnect(){
 	    if($this->options['password_needed'] && isset($this->options['password'])){
 	        if($this->dblink = @mysql_connect($this->options['server'], $this->options['username'], $this->options['password'], true)){
     			// @mysql_set_charset("UTF-8", $this->dblink);
-    			$this->rawQuery("SET NAMES 'utf8'");
+    			mysql_query("SET NAMES 'UTF8'", $this->dblink);
     			@mysql_select_db($this->databaseName, $this->dblink);
     			return true;
     		}else{
@@ -114,6 +102,7 @@ class SmartestMysql{
 	public function getColumnNames($table){
 		
 		$sql = "SHOW COLUMNS FROM ".$table;
+		// $result = mysql_query($sql);
 
 		$columns = $this->queryToArray($sql);
 		
@@ -127,18 +116,18 @@ class SmartestMysql{
 		
 	}
 	
-	public function rawQuery($querystring){
+	public function rawQuery($querystring, $file='', $line=''){
 	    if(!$this->dblink && !$this->reconnect()){
 	        throw new SmartestException("Lost connection to to MySQL database", SM_ERROR_DB);
         }else{
 	        $result = mysql_query($querystring, $this->dblink);
     	    // var_dump($result);
-    	    $this->recordLiveQuery($querystring);
-    	    
     		if($result){
+    			$this->recordQuery($querystring);
     			$this->id = mysql_insert_id($this->dblink);
     			return $result;
     		}else{
+    			$this->recordQuery($querystring);
     			return false;
     		}
 	    }
@@ -158,121 +147,60 @@ class SmartestMysql{
 	    
 		    if($result = @mysql_query($querystring, $this->dblink)){
 			    $cardinality = @mysql_num_rows($result);
-			    $this->recordLiveQuery($querystring);
+			    $this->recordQuery($querystring);
 			    return $cardinality;
 		    }else{
-			    return 0;
+			    return "0";
 		    }
 		
 	    }
 	}
 	
-	protected function getHashFromQuery($query){
-	    $query = preg_replace('/\s{2,}/', ' ', $query);
-	    $query = str_replace("\n", "", $query);
-	    $query = str_replace(" = '", "='", $query);
-	    $query = str_replace(" != '", "!='", $query);
-	    $query = str_replace(' = "', '="', $query);
-	    $query = str_replace(' != "', '!="', $query);
-	    $hash = sha1($query);
-	    return $hash;
-	}
-	
-	public function queryToArray($querystring){
+	public function queryToArray($querystring, $file='', $line=''){
 	    
 		if(!$this->dblink && !$this->reconnect()){
 	    
 	        throw new SmartestException("Lost connection to to MySQL database", SM_ERROR_DB);
         
         }else{
-		    
-		    // echo $querystring.'<br />';
-		    
-		    if($this->queryReturnsData($querystring)){
-		        
-		        $result = $this->getSelectQueryResult($querystring);
-		        return $result;
-		    
-	        }else{
-	            
-	            throw new SmartestException("Unsupported ".$this->getQueryType($querystring)." query type in SmartestMysql::queryToArray(). Use SmartestMysql::rawQuery()", SM_ERROR_DB);
-	            
-	        }
 		
-	    }
-	}
-	
-	protected function getSelectQueryResult($query, $refresh=false){
-	    
-	    // echo $query.'<br />';
-	    
-	    $hash = $this->getHashFromQuery($query);
-	    
-	    if(isset($this->queryHashes, $hash) && !$refresh){
-	        
-	        return $this->loadQueryDataFromCache($query);
-	        
-	    }else{
-	        
-	        $resultArray = array();
-		    
-		    $result = @mysql_query($query, $this->dblink);
+		    $resultArray = array();
+		
+		    $result = @mysql_query($querystring, $this->dblink);
 		
 		    for($i=0;$i<@mysql_num_rows($result);$i++){
     			$row = @mysql_fetch_array($result, MYSQL_ASSOC);
-    			$resultArray[] = $row;
+    			array_push($resultArray, $row);
     		}
-		    
-		    $this->queryHashes[$hash] = 1;
-    		$this->saveQueryDataToCache($query, $resultArray);
+		
+    		$this->recordQuery($querystring);
 		
     		return $resultArray;
-	        
-	    }
-	    
-	}
-	
-	protected function queryReturnsData($querystring){
-	    return in_array($this->getQueryType($querystring), $this->retrievalQueryTypes);
-	}
-	
-	protected function loadQueryDataFromCache($query){
-	    
-	    $hash = $this->getHashFromQuery($query);
-	    
-	    $cache_name = 'smartest_mysql_cached_result'.$hash;
-	    
-	    if(SmartestCache::hasData($cache_name, true)){
-	        $result = SmartestCache::load($cache_name, true);
-	        $this->recordCachedQuery($query);
-	        return $result;
-	    }else{
-	        $result = $this->getSelectQueryResult($query, true);
-	        $this->recordLiveQuery($query);
-	        return $result;
+		
 	    }
 	}
 	
-	protected function saveQueryDataToCache($query, $data){
-	    
-	    $hash = $this->getHashFromQuery($query);
-	    
-	    if(is_array($data)){
-	        $cache_name = 'smartest_mysql_cached_result'.$hash;
-	        SmartestCache::save($cache_name, $data, -1, true);
-        }else{
-            throw new SmartestException("SmartestMysql::saveQueryDataToCache() expects array.");
-        }
-	    
-	}
-	
-	public function clearQueryHistoryCache(){
-	    
-	    foreach($this->queryHashes as $hash=>$bin){
-	        $cache_name = 'smartest_mysql_cached_result'.$hash;
-	        SmartestCache::clear($cache_name, true);
-	    }
-	    
+	protected function recordQuery($querystring, $file='', $line=''){
+		
+		if(strlen(@mysql_error($this->dblink)) > 0){
+			$error = "MySQL ERROR ".@mysql_errno($this->dblink) . ": " . @mysql_error($this->dblink);
+		}else{
+			$error = "Query OK";
+		}
+		
+		if($file){
+		    $querystring .= '; in'.$file;
+		}
+		
+		if($line && is_numeric($line)){
+		    $querystring .= ' on line '.$line;
+		}
+		
+		// $querystring .= ';';
+		
+		$this->lastQuery = $querystring;
+		array_push($this->queryHistory, $querystring."; ".$error);
+		
 	}
 	
 	public function specificQuery($wantedField, $qualifyingField, $qualifyingValue, $table){
@@ -290,20 +218,12 @@ class SmartestMysql{
 	}
 	
 	protected function getQueryType($querystring){
-        
-        $bits = explode(' ', $querystring);
-        if(isset($bits[0])){
-            $first = $bits[0];
-            return $first;
-        }else{
-            return false;
-        }
-                
-    	/* if(preg_match( '/^(\w+)\s/i', $querystring, $match)){
+    
+    	if(preg_match( '/^(\w+)\s/i', $querystring, $match)){
 			return strtoupper(trim($match[0]));
     	}else{
 			return false;
-    	} */
+    	}
 	}
 	
 	
@@ -328,7 +248,6 @@ class SmartestMysql{
 				break;
 
 			case 'SELECT': // select query returns data as array.
-			case 'SHOW': // select query returns data as array.
 				if($data = $this->queryToArray($querystring)){
 					return $data;
 				}else{
@@ -343,50 +262,14 @@ class SmartestMysql{
 
 	}
 	
-	protected function recordLiveQuery($querystring){
-		
-		if(strlen(@mysql_error($this->dblink)) > 0){
-			
-			$error = "MySQL ERROR ".@mysql_errno($this->dblink) . ": " . @mysql_error($this->dblink);
-			
-			if(defined('SM_DEVELOPER_MODE') && constant('SM_DEVELOPER_MODE')){
-			
-			    $e = new SmartestException('MySQL ERROR: '.@mysql_errno($this->dblink) . ": " . @mysql_error($this->dblink), SM_ERROR_DB);
-			
-			    foreach($e->getTrace() as $event){
-			        if($event['function'] == 'queryToArray' || $event['function'] == 'rawQuery'){
-			            $e->setMessage($e->getMessage().'. Query: <code>'.$querystring.'</code> in '.$event['file'].' on line '.$event['line'].'.');
-			            break;
-			        }
-			    
-			    }
-			
-			    throw $e;
-			
-		    }
-			
-		}else{
-			$error = "Query OK";
-		}
-		
-		$this->lastQuery = $querystring;
-		$this->queryHistory[] = $querystring."; ".$error;
-	    
-	}
-	
-	protected function recordCachedQuery($querystring){
-		
-		$this->cachedQueryHistory[] = $querystring;
-	    
-	}
-	
 	// this function added because $lastQuery is going to become a protected property.
 	public function getLastQuery(){
 	    return $this->lastQuery;
 	}
 	
 	public function getDebugInfo(){
-		return array('live'=>$this->queryHistory, 'cached'=>$this->cachedQueryHistory);
+		return $this->queryHistory;
 	}
-	
 }
+
+?>

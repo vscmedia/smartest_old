@@ -16,13 +16,30 @@ class SmartestAsset extends SmartestDataObject{
 		
 	}
 	
-	public function __toArray($include_object=false){
+	public function __toArray($include_object=false, $include_owner=false){
 	    $data = parent::__toArray();
 	    
 	    $data['text_content'] = $this->getContent();
 	    $data['type_info'] = $this->getTypeInfo();
 	    $data['default_parameters'] = $this->getDefaultParams();
-	    $data['full_path'] = $this->getFullPathOnDisk();
+	    
+	    if($data['type_info']['storage']['type'] == 'database'){
+	        $data['full_path'] = $this->_properties['url'];
+	    }else{
+	        $data['full_path'] = $this->getFullPathOnDisk();
+	        
+        }
+        
+        $data['size'] = $this->getSize();
+	    
+	    if($include_owner){
+	        $o = new SmartestUser;
+	        if($o->hydrate($this->_properties['user_id'])){
+	            $data['owner'] = $o->__toArray();
+            }else{
+                $data['owner'] = array();
+            }
+        }
 	    
 	    if($this->isImage()){
             $data['width'] = $this->getWidth();
@@ -453,6 +470,60 @@ class SmartestAsset extends SmartestDataObject{
 	    }
 	    
 	    parent::save();
+	    
+	}
+	
+	public function getSize($raw=false){
+	    
+	    $type_info = $this->getTypeInfo();
+	    
+	    if($type_info['storage']['type'] == 'database'){
+	        
+	        $size = mb_strlen($this->getContent());
+	        
+	        if(!$raw){
+	            // size is in bytes
+    	        if($size >= 1024){
+    	            // convert to kilobytes
+    	            $new_size = $size/1024;
+
+    	            if($new_size >= 1024){
+    	                // convert to megabytes
+    	                $new_size = $new_size/1024;
+
+    	                if($new_size >= 1024){
+        	                // convert to gigabytes
+        	                $new_size = $new_size/1024;
+
+                            if($new_size >= 1024){
+            	                // convert to terrabytes
+            	                $new_size = $new_size/1024;
+                                $size = number_format($new_size, 3, '.', ',').' TB';
+                            }else{
+                                $size = number_format($new_size, 2, '.', ',').' GB';
+                            }
+
+                        }else{
+                            $size = number_format($new_size, 1, '.', ',').' MB';
+                        }
+
+                    }else{
+                        $size = number_format($new_size, 1, '.', ',').' KB';
+                    }
+
+    	        }else{
+    	            $size = $size.' Bytes';
+    	        }
+	        }
+	    }else{
+	        if($raw){
+	            $size = SmartestFileSystemHelper::getFileSize($this->getFullPathOnDisk());
+	        }else{
+	            $size = SmartestFileSystemHelper::getFileSizeFormatted($this->getFullPathOnDisk());
+            }
+        }
+        
+        return $size;
 	    
 	}
 	

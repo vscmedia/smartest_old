@@ -46,7 +46,9 @@ class SmartestPage extends SmartestDataObject{
 		}else{
 		    
 		    $this->_save_url = false;
-		
+		    
+		    
+		    
     		if(is_numeric($id)){
     			// numeric_id
     			$field = 'page_id';
@@ -57,26 +59,29 @@ class SmartestPage extends SmartestDataObject{
     			// name
     			$field = 'page_name';
     		}
+    		
+    		if($field && $id){
+		    
+    		    $sql = "SELECT * FROM Pages WHERE $field='$id'";
 		
-    		$sql = "SELECT * FROM Pages WHERE $field='$id'";
+        		$result = $this->database->queryToArray($sql);
 		
-    		$result = $this->database->queryToArray($sql);
-		
-    		if(count($result)){
+        		if(count($result)){
 			
-    			foreach($result[0] as $name => $value){
-    				if (substr($name, 0, 5) == $this->_table_prefix) {
-    					$this->_properties[substr($name, 5)] = $value;
-    					$this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, 5))] = substr($name, 5);
-    				}
-    			}
+        			foreach($result[0] as $name => $value){
+        				if (substr($name, 0, 5) == $this->_table_prefix) {
+        					$this->_properties[substr($name, 5)] = $value;
+        					$this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, 5))] = substr($name, 5);
+        				}
+        			}
 			
-    			$this->_came_from_database = true;
+        			$this->_came_from_database = true;
 			
-    			return true;
-    		}else{
-    			return false;
-    		}
+        			return true;
+        		}else{
+        			return false;
+        		}
+		    }
 	    }
 	}
 	
@@ -91,7 +96,7 @@ class SmartestPage extends SmartestDataObject{
 		    
 		    $url = new SmartestPageUrl;
     	    $url->setUrl($url_string);
-    	    $url->setPageId($this->getId());
+    	    $url->setPageId($this->_properties['id']);
     	    
     	    if($i < 1){
     	        $url->setIsDefault(1);
@@ -102,21 +107,21 @@ class SmartestPage extends SmartestDataObject{
 		}
 		
 		// Add definitions from preset, if any
-		if($this->getPreset() && $this->getId()){
+		if($this->getPreset() && $this->_properties['id']){
 			
 			$preset = new SmartestPageLayoutPreset;
 			$preset->hydrate($this->getPreset());
 			$defs = $preset->getDefinitions();
 			
 			foreach($defs as $definition){
-				$sql = "INSERT INTO AssetIdentifiers (assetidentifier_draft_asset_id, assetidentifier_assetclass_id, assetidentifier_page_id) VALUES ('".$definition['plpd_asset_id']."', '".$definition['plpd_assetclass_id']."', '".$this->getId()."')";
+				$sql = "INSERT INTO AssetIdentifiers (assetidentifier_draft_asset_id, assetidentifier_assetclass_id, assetidentifier_page_id) VALUES ('".$definition['plpd_asset_id']."', '".$definition['plpd_assetclass_id']."', '".$this->_properties['id']."')";
 			}
 		}
 	}
 	
 	public function delete($remove=false){
 	    if($remove){
-		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->getId()."' LIMIT 1";
+		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
 		    $this->database->rawQuery($sql);
 		    $this->_came_from_database = false;
 	    }else{
@@ -132,7 +137,7 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function clearDefaultUrl(){
-	    $sql = "UPDATE PageUrls SET pageurl_is_default='0' WHERE pageurl_page_id='".$this->getId()."'";
+	    $sql = "UPDATE PageUrls SET pageurl_is_default='0' WHERE pageurl_page_id='".$this->_properties['id']."'";
 	    $this->database->rawQuery($sql);
 	}
 	
@@ -155,7 +160,7 @@ class SmartestPage extends SmartestDataObject{
 	            // url exists
 	            $url_record = $result[0];
 	            
-	            if($url_record['page_id'] == $this->getId()){
+	            if($url_record['page_id'] == $this->_properties['id']){
 	                // the url is already in use for this page - just make it the default
 	                $u = new SmartestPageUrl;
 	                $u->hydrate($result[0]);
@@ -173,7 +178,7 @@ class SmartestPage extends SmartestDataObject{
 	            // url doesn't exist
 	            $u = new SmartestPageUrl;
 	            $u->setUrl(SmartestStringHelper::sanitize($url));
-	            $u->setPageId($this->getId());
+	            $u->setPageId($this->_properties['id']);
 	            $u->setIsDefault(1);
 	            $this->clearDefaultUrl();
 	            $u->save();
@@ -185,13 +190,13 @@ class SmartestPage extends SmartestDataObject{
 	public function publish(){
 	    
 	    // update database defs
-		$sql = "UPDATE Lists SET list_live_set_id=list_draft_set_id, list_live_template_file=list_draft_template_file, list_live_header_template=list_draft_header_template, list_live_footer_template=list_draft_footer_template WHERE list_page_id='".$this->getId()."'";
+		$sql = "UPDATE Lists SET list_live_set_id=list_draft_set_id, list_live_template_file=list_draft_template_file, list_live_header_template=list_draft_header_template, list_live_footer_template=list_draft_footer_template WHERE list_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);
 		
-		$sql = "UPDATE AssetIdentifiers SET assetidentifier_live_asset_id=assetidentifier_draft_asset_id, assetidentifier_live_render_data=assetidentifier_draft_render_data WHERE assetidentifier_page_id='".$this->getId()."'";
+		$sql = "UPDATE AssetIdentifiers SET assetidentifier_live_asset_id=assetidentifier_draft_asset_id, assetidentifier_live_render_data=assetidentifier_draft_render_data WHERE assetidentifier_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);
 		
-		$sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_page_id='".$this->getId()."'";
+		$sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);
 		
 		$this->setLiveTemplate($this->getDraftTemplate());
@@ -208,7 +213,7 @@ class SmartestPage extends SmartestDataObject{
 		$cache_files = SmartestFileSystemHelper::load(SM_ROOT_DIR."System/Cache/Pages/");
 		
 		// remove all cache versions related to this page to keep the cache nice and tidy
-		$cf_start = "site".$this->getSiteId()."_cms_page_".$this->getId();
+		$cf_start = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id'];
 		
 		foreach($cache_files as $f){
 		    if(substr($f, 0, strlen($cf_start)) == $cf_start){
@@ -230,7 +235,7 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function getTextFragments(){
 	    
-	    $sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->getId()."'";
+	    $sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->_properties['id']."'";
 		$result = $this->database->queryToArray($sql);
 		$objects = array();
 		
@@ -248,7 +253,7 @@ class SmartestPage extends SmartestDataObject{
 	    $helper = new SmartestAssetsLibraryHelper;
 		$codes = $helper->getParsableAssetTypeCodes();
 		
-		$sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->getId()."' AND Assets.asset_type IN ('".implode("', '", $codes)."')";
+		$sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->_properties['id']."' AND Assets.asset_type IN ('".implode("', '", $codes)."')";
 		$result = $this->database->queryToArray($sql);
 		$objects = array();
 		
@@ -336,7 +341,7 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function getPreviousPage(){
-	    $sql  = "SELECT * FROM Pages WHERE page_order_index < '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' AND page_id !='".$this->getId()."' AND page_deleted !='TRUE' ORDER BY page_order_index DESC LIMIT 1";
+	    $sql  = "SELECT * FROM Pages WHERE page_order_index < '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' AND page_id !='".$this->_properties['id']."' AND page_deleted !='TRUE' ORDER BY page_order_index DESC LIMIT 1";
 	    // echo $sql;
 	    $result = $this->database->queryToArray($sql);
 	    if(count($result)){
@@ -350,7 +355,7 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function getNextPage(){
-	    $sql  = "SELECT * FROM Pages WHERE page_order_index > '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' AND page_id !='".$this->getId()."' AND page_deleted !='TRUE' ORDER BY page_order_index ASC LIMIT 1";
+	    $sql  = "SELECT * FROM Pages WHERE page_order_index > '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' AND page_id !='".$this->_properties['id']."' AND page_deleted !='TRUE' ORDER BY page_order_index ASC LIMIT 1";
 	    $result = $this->database->queryToArray($sql);
 	    if(count($result)){
 	        $np = $result[0];
@@ -450,7 +455,7 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function getAvailableIconImageFilenames(){
 	    
-	    $sql = "SELECT * FROM Assets WHERE asset_type IN ('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE') AND (asset_site_id='".$this->getSiteId()."' OR asset_shared=1) AND asset_deleted!=1 ORDER BY asset_url";
+	    $sql = "SELECT * FROM Assets WHERE asset_type IN ('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE') AND (asset_site_id='".$this->_properties['site_id']."' OR asset_shared=1) AND asset_deleted!=1 ORDER BY asset_url";
 	    $result = $this->database->queryToArray($sql);
 	    
 	    // print_r($this->getSite());
@@ -507,7 +512,8 @@ class SmartestPage extends SmartestDataObject{
 		
 		if(!count($this->_urls)){
 		
-		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id = '".$this->getId()."'";
+		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id ='".$this->_properties['id']."'";
+		    // echo $sql;
 		    $pageUrls = $this->database->queryToArray($sql);
 		
 		    foreach($pageUrls as $key => $url){
@@ -567,7 +573,7 @@ class SmartestPage extends SmartestDataObject{
 
 	public function getPageChildren($draft_mode=false, $sections_only=false){
 	    
-	    $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->getId()."' AND page_site_id='".$this->getSiteId()."' AND page_deleted != 'TRUE'";
+	    $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->_properties['id']."' AND page_site_id='".$this->_properties['site_id']."' AND page_deleted != 'TRUE'";
 		
 		if(!$draft_mode){
 		    $sql .= " AND page_is_published = 'TRUE'";
@@ -629,7 +635,7 @@ class SmartestPage extends SmartestDataObject{
             $special_page_ids[] = $this->getParentSite()->getSearchPageId();
         }
         
-        $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->getId()."' AND page_site_id='".$this->getSiteId()."' AND page_deleted != 'TRUE'";
+        $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->_properties['id']."' AND page_site_id='".$this->_properties['site_id']."' AND page_deleted != 'TRUE'";
 		
 		if(!$draft_mode){
 		    $sql .= " AND page_is_published = 'TRUE'";
@@ -711,11 +717,11 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    // if(!$this->_fields_retrieval_attempted){
 	    
-	    $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->getSiteId()."'";
+	    $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->_properties['site_id']."'";
 	    $result = $this->database->queryToArray($sql);
         
         // print_r($result);
-        // var_dump($this->getSiteId());
+        // var_dump($this->_properties['site_id']);
         // echo $sql;
         
 	    foreach($result as $p){
@@ -724,7 +730,7 @@ class SmartestPage extends SmartestDataObject{
 	        $this->_fields[$property->getId()] = $property;
 	    }
     
-	    $sql = "SELECT * FROM `PagePropertyValues` WHERE pagepropertyvalue_page_id='".$this->getId()."'";
+	    $sql = "SELECT * FROM `PagePropertyValues` WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
 	    $result = $this->database->queryToArray($sql);
         
         // echo $sql;
@@ -739,7 +745,7 @@ class SmartestPage extends SmartestDataObject{
             $fid = $pfda['pagepropertyvalue_pageproperty_id'];
             
             if(is_object($this->_fields[$fid])){
-                $this->_fields[$fid]->setContextualPageId($this->getId());
+                $this->_fields[$fid]->setContextualPageId($this->_properties['id']);
                 $this->_fields[$fid]->hydrateValueFromPpdArray($pfda);
             }
         }
@@ -842,20 +848,20 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function isTagPage(){
-	    return ($this->getParentSite()->getTagPageId() == $this->getId());
+	    return ($this->getParentSite()->getTagPageId() == $this->_properties['id']);
 	}
 	
 	public function isSearchPage(){
-	    return ($this->getParentSite()->getSearchPageId() == $this->getId());
+	    return ($this->getParentSite()->getSearchPageId() == $this->_properties['id']);
 	}
 	
 	public function isHomePage(){
-	    return ($this->getParentSite()->getTopPageId() == $this->getId());
+	    return ($this->getParentSite()->getTopPageId() == $this->_properties['id']);
 	}
 	
 	public function touch(){
 	    if($this->_came_from_database == true){
-	        $sql = "UPDATE Pages SET page_modified = '".time()."' WHERE Pages.page_id = '".$this->getId()."'";
+	        $sql = "UPDATE Pages SET page_modified = '".time()."' WHERE Pages.page_id = '".$this->_properties['id']."'";
 	        $this->database->rawQuery($sql);
 	    }
 	}
@@ -916,7 +922,7 @@ class SmartestPage extends SmartestDataObject{
 		//// FOR THE CURRENT PAGE. I.E. NOT ITSELF OR ANY OF ITS CHILDREN
 		
 		// $site_id = $this->manager->database->specificQuery("page_site_id", "page_id", $page_id, "Pages");
-		$site_id = $this->getSiteId();
+		$site_id = $this->_properties['site_id'];
 		
 		// FIRST GET A LIST OF ALL PAGES
 		$all_pages = $this->getParentSite()->getPagesList(true);
@@ -957,7 +963,7 @@ class SmartestPage extends SmartestDataObject{
 		
 		// REMOVE THOSE PAGES FROM THE MAIN LIST
 		foreach($all_pages as $key=>$page_array){
-			if(in_array($page_array["info"]["id"], $sub_page_ids) || $page_array["info"]["id"] == $this->getId()){
+			if(in_array($page_array["info"]["id"], $sub_page_ids) || $page_array["info"]["id"] == $this->_properties['id']){
 				unset($all_pages[$key]);
 			}
 		}
@@ -966,13 +972,13 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function clearTags(){
-	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->getId()."' AND taglookup_type='SM_PAGE_TAG_LINK'";
+	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_type='SM_PAGE_TAG_LINK'";
 	    $this->database->rawQuery($sql);
 	}
 	
 	public function getTagIdsArray(){
 	    
-	    $sql = "SELECT taglookup_tag_id FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->getId()."' AND taglookup_type='SM_PAGE_TAG_LINK'";
+	    $sql = "SELECT taglookup_tag_id FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_type='SM_PAGE_TAG_LINK'";
 	    $result = $this->database->queryToArray($sql);
 	    $ids = array();
 	    
@@ -988,7 +994,7 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function getTags(){
 	    
-	    $sql = "SELECT * FROM Tags, TagsObjectsLookup WHERE TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id='".$this->getId()."' AND TagsObjectsLookup.taglookup_type='SM_PAGE_TAG_LINK' ORDER BY Tags.tag_name";
+	    $sql = "SELECT * FROM Tags, TagsObjectsLookup WHERE TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id='".$this->_properties['id']."' AND TagsObjectsLookup.taglookup_type='SM_PAGE_TAG_LINK' ORDER BY Tags.tag_name";
 	    $result = $this->database->queryToArray($sql);
 	    $ids = array();
 	    $tags = array();
@@ -1044,7 +1050,7 @@ class SmartestPage extends SmartestDataObject{
     	    }
 	    }
 	    
-	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->getId()."', 'SM_PAGE_TAG_LINK')";
+	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->_properties['id']."', 'SM_PAGE_TAG_LINK')";
 	    $this->database->rawQuery($sql);
 	    return true;
 	    
@@ -1072,7 +1078,7 @@ class SmartestPage extends SmartestDataObject{
     	    }
 	    }
 	    
-	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->getId()."' AND taglookup_tag_id='".$tag->getId()."' AND taglookup_type='SM_PAGE_TAG_LINK'";
+	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_tag_id='".$tag->getId()."' AND taglookup_type='SM_PAGE_TAG_LINK'";
 	    $this->database->rawQuery($sql);
 	    return true;
 	    
@@ -1085,7 +1091,7 @@ class SmartestPage extends SmartestDataObject{
 	public function getRelatedPages($draft_mode=false){
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
-	    $q->setCentralNodeId($this->getId());
+	    $q->setCentralNodeId($this->_properties['id']);
 	    $q->addSortField('Pages.page_title');
 	    
 	    if(!$draft_mode){
@@ -1125,18 +1131,18 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function addRelatedPage($page_id){
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
-	    $q->createNetworkLinkBetween($this->getId(), $page_id);
+	    $q->createNetworkLinkBetween($this->_properties['id'], $page_id);
 	}
 	
 	public function removeRelatedPage($page_id){
 	    $page_id = (int) $page_id;
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
-	    $q->deleteNetworkLinkBetween($this->getId(), $page_id);
+	    $q->deleteNetworkLinkBetween($this->_properties['id'], $page_id);
 	}
 	
 	public function removeAllRelatedPages(){
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
-	    $q->deleteNetworkNodeById($this->getId());
+	    $q->deleteNetworkNodeById($this->_properties['id']);
 	}
 	
 	public function isRelatedToItem($page_id){
@@ -1147,7 +1153,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
 	    $q->setTargetEntityByIndex(1);
-	    $q->addQualifyingEntityByIndex(2, $this->getId());
+	    $q->addQualifyingEntityByIndex(2, $this->_properties['id']);
 	    
 	    $q->addForeignTableConstraint('Items.item_deleted', 1, SmartestQuery::NOT_EQUAL);
 	    
@@ -1204,7 +1210,7 @@ class SmartestPage extends SmartestDataObject{
 	    $item_id = (int) $item_id;
 	    
 	    $link = new SmartestManyToManyLookup;
-	    $link->setEntityForeignKeyValue(2, $this->getId());
+	    $link->setEntityForeignKeyValue(2, $this->_properties['id']);
 	    $link->setEntityForeignKeyValue(1, $item_id);
 	    $link->setType('SM_MTMLOOKUP_PAGES_ITEMS');
 	    
@@ -1217,7 +1223,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
 	    $q->setTargetEntityByIndex(1);
-	    $q->addQualifyingEntityByIndex(2, $this->getId());
+	    $q->addQualifyingEntityByIndex(2, $this->_properties['id']);
 	    $q->addForeignTableConstraint('Items.item_id', $item_id);
 	    
 	    $q->delete();
@@ -1229,7 +1235,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
 	    $q->setTargetEntityByIndex(1);
-	    $q->addQualifyingEntityByIndex(2, $this->getId());
+	    $q->addQualifyingEntityByIndex(2, $this->_properties['id']);
 	    
 	    if($model_id > 0){
 	        $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
@@ -1262,9 +1268,9 @@ class SmartestPage extends SmartestDataObject{
 	public function loadAssetClassDefinitions($draft_mode=false){
 	    
 	    if($draft_mode){
-	        $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id";
+	        $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id";
         }else{
-            $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
+            $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
         }
         
         $result = $this->database->queryToArray($sql);
@@ -1354,7 +1360,7 @@ class SmartestPage extends SmartestDataObject{
 		
 		$limit = self::HIERARCHY_DEPTH_LIMIT;
 		
-		$page_id = $this->getId();
+		$page_id = $this->_properties['id'];
 		
 		while($home_page->getId() != $page_id && $limit > 0){
 			$page = new SmartestPage;
@@ -1407,7 +1413,7 @@ class SmartestPage extends SmartestDataObject{
 	public function getSite(){
 	    
 	    if(!SmartestPersistentObject::get('__current_host_site')){
-	        $sql = "SELECT * FROM Sites WHERE site_id='".$this->getSiteId()."'";
+	        $sql = "SELECT * FROM Sites WHERE site_id='".$this->_properties['site_id']."'";
 	        $result = $this->database->queryToArray($sql);
 	        $s = new SmartestSite;
 	        $s->hydrate($result[0]);
@@ -1421,7 +1427,7 @@ class SmartestPage extends SmartestDataObject{
 	public function getParentSite(){
 	    
 	    if(!$this->_parent_site){
-	        $sql = "SELECT * FROM Sites WHERE site_id='".$this->getSiteId()."'";
+	        $sql = "SELECT * FROM Sites WHERE Sites.site_id='".$this->_properties['site_id']."'";
             $result = $this->database->queryToArray($sql);
             $s = new SmartestSite;
             $s->hydrate($result[0]);
@@ -1467,28 +1473,28 @@ class SmartestPage extends SmartestDataObject{
 	    switch($this->getCacheInterval()){
 	        
 			case "MONTHLY":
-			$page_cache_name = "site".$this->getSiteId()."_cms_page_".$this->getId()."_m".date("m");
+			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m");
 			break;
 			
 			case "DAILY":
-			$page_cache_name = "site".$this->getSiteId()."_cms_page_".$this->getId()."_m".date("m")."_d".date("d");
+			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m")."_d".date("d");
 			break;
 			
 			case "HOURLY":
-			$page_cache_name = "site".$this->getSiteId()."_cms_page_".$this->getId()."_m".date("m")."_d".date("d")."_H".date("H");
+			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m")."_d".date("d")."_H".date("H");
 			break;
 			
 			case "MINUTE":
-			$page_cache_name = "site".$this->getSiteId()."_cms_page_".$this->getId()."_m".date("m")."_d".date("d")."_H".date("H")."_i".date("i");
+			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m")."_d".date("d")."_H".date("H")."_i".date("i");
 			break;
 			
 			case "SECOND":
-			$page_cache_name = "site".$this->getSiteId()."_cms_page_".$this->getId()."_m".date("m")."_d".date("d")."_H".date("H")."_i".date("i")."_s".date("s");
+			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m")."_d".date("d")."_H".date("H")."_i".date("i")."_s".date("s");
 			break;
 			
 			case "PERMANENT":
 			default:
-			$page_cache_name = "site".$this->getSiteId()."_cms_page_".$this->getId();
+			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id'];
 			break;
 			
 		}

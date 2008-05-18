@@ -342,183 +342,225 @@ class Assets extends SmartestSystemApplication{
 	
 	function saveNewAsset($get, $post){
 	    
-	    $asset_type = $post['asset_type'];
+	    if($this->getUser()->hasToken('create_assets')){
 	    
-	    $everything_ok = true;
+	        $asset_type = $post['asset_type'];
 	    
-	    $types_array = SmartestDataUtility::getAssetTypes();
+    	    $everything_ok = true;
+	    
+    	    $types_array = SmartestDataUtility::getAssetTypes();
 		
-		if(in_array($asset_type, array_keys($types_array))){
+    		if(in_array($asset_type, array_keys($types_array))){
 		    
-		    $type = $types_array[$asset_type];
+    		    $type = $types_array[$asset_type];
 		    
-		    $asset = new SmartestAsset;
-		    $asset->setType($asset_type);
-		    // echo $post['input_mode'];
-		    $asset->setSiteId($this->getSite()->getId());
-		    $shared = $post['asset_shared'] ? 1 : 0;
-		    $asset->setShared($shared);
+    		    $asset = new SmartestAsset;
+    		    $asset->setType($asset_type);
+    		    // echo $post['input_mode'];
+    		    $asset->setSiteId($this->getSite()->getId());
+    		    $shared = $post['asset_shared'] ? 1 : 0;
+    		    $asset->setShared($shared);
+    		    $asset->setUserId($this->getUser()->getId());
 		    
-		    $suffixes = array();
+    		    $suffixes = array();
 		    
-		    if(is_array($type['suffix'])){
-		        foreach($type['suffix'] as $s){
-		            $suffixes[] = $s['_content'];
-		        }
-		    }
-		    
-		    // print_r($post);
-		    
-		    if($post['input_mode'] == 'direct'){
-		        
-		        // create filename
-		        if(isset($post['new_filename']) && strlen($post['new_filename'])){
-		            
-		            if(in_array(SmartestStringHelper::getDotSuffix($post['new_filename']), $suffixes)){
-		                $filename = $post['new_filename'];
-		                $string_id = SmartestStringHelper::toVarName($post['new_filename']);
-		            }else{
-		                $filename = SmartestStringHelper::toVarName($post['new_filename']).'.'.$suffixes[0];
-		                $string_id = SmartestStringHelper::toVarName($post['new_filename']);
-		            }
-		            
-		            if(isset($post['string_id']) && strlen($post['string_id'])){
-
-    		            $string_id = SmartestStringHelper::toVarName($post['string_id']);
-
-    		        }
-		            
-		        }else if(isset($post['string_id']) && strlen($post['string_id'])){
-		            
-		            if(in_array(SmartestStringHelper::getDotSuffix($post['string_id']), $suffixes)){
-		                $filename = $post['string_id'];
-		                $string_id = SmartestStringHelper::toVarName($post['string_id']);
-		            }else{
-		                $filename = SmartestStringHelper::toVarName($post['string_id']).'.'.$suffixes[0];
-		                $string_id = SmartestStringHelper::toVarName($post['string_id']);
-		            }
-		            
-		            
-		        }else{
-		            $this->addUserMessageToNextRequest("Error: Neither a file name nor a string_id were provided.", SmartestUserMessage::ERROR);
-		            $everything_ok = false;
-		        }
-		        
-		        // $this->addUserMessage("\$filename: $filename; \$string_id: $string_id");
-		        
-		        $asset->setStringid($string_id);
-		        
-		        $content = SmartestStringHelper::sanitizeFileContents($post['content']);
-		        
-		        $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.md5(microtime(true)).'.tmp';
-		        SmartestFileSystemHelper::save($new_temp_file, $content, true);
-		        
-		        if($type['storage']['type'] == 'database'){
-                    
-                    // add contents of file in System/Temporary/ to database as a text fragment
-                    $asset->getTextFragment()->setContent(str_replace("'", "\\'", SmartestFileSystemHelper::load($new_temp_file, true)));
-                    $asset->setUrl($filename);
-                    
-    		    }else{
-    		        
-    		        $intended_file_name = SM_ROOT_DIR.$type['storage']['location'].$filename;
-    		        $final_file_name = SmartestFileSystemHelper::getUniqueFileName($intended_file_name);
-    		        SmartestFileSystemHelper::save($final_file_name, '');
-    		        
-    		        // $new_temp_file
-    		        // copy the file from System/Temporary/ to the location dictated by the Type
-    		        // delete copy in System/Temporary/ if necessary
-    		        
-    		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
-    		            $everything_ok = false;
-    		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
-    		        }else{
-    		            $asset->setUrl(basename($final_file_name));
-    		            $asset->setWebid(SmartestStringHelper::random(32));
+    		    if(is_array($type['suffix'])){
+    		        foreach($type['suffix'] as $s){
+    		            $suffixes[] = $s['_content'];
     		        }
     		    }
+		    
+    		    // print_r($post);
+		    
+    		    if($post['input_mode'] == 'direct'){
 		        
-		    }else{ // The new asset is being uploaded
-		        
-		        // create upload helper
-		        $upload = new SmartestUploadHelper('new_file');
-		        $upload->setUploadDirectory(SM_ROOT_DIR.'System/Temporary/');
-		        
-		        if(!$upload->hasDotSuffix($suffixes)){
-        			$upload->setFileName(SmartestStringHelper::toVarName($upload->getFileName()).'.'.$suffixes[0]);
-        		}
-        		
-		        // create filename based on existing filename
-		        $raw_filename = $upload->getFileName();
-		        $filename = SmartestStringHelper::toSensibleFileName($raw_filename);
-		        
-		        // print_r($_FILES);
-		        
-		        // give it hashed name for now and save it to disk
-		        $upload->setFileName(md5(microtime(true)).'.tmp');
-		        // var_dump ($upload->save());
-		        $upload->save();
-		        
-		        $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.$upload->getFileName();
-		        
-		        // create string id based on actual file name
-		        $string_id = SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix($filename));
-		        $asset->setStringid($string_id);
-		        
-		        if($type['storage']['type'] == 'database'){
+    		        // create filename
+    		        if(isset($post['new_filename']) && strlen($post['new_filename'])){
 		            
-		            // if storage type is database, save the file to System/Temporary/ and get its contents
-		            $content = SmartestFileSystemHelper::load($new_temp_file, true);
-		            $asset->getTextFragment()->setContent(str_replace("'", "\\'", $content));
-		            $asset->setUrl($filename);
+    		            if(in_array(SmartestStringHelper::getDotSuffix($post['new_filename']), $suffixes)){
+    		                $filename = $post['new_filename'];
+    		                $string_id = SmartestStringHelper::toVarName($post['new_filename']);
+    		            }else{
+    		                $filename = SmartestStringHelper::toVarName($post['new_filename']).'.'.$suffixes[0];
+    		                $string_id = SmartestStringHelper::toVarName($post['new_filename']);
+    		            }
 		            
-		        }else{
+    		            if(isset($post['string_id']) && strlen($post['string_id'])){
+
+        		            $string_id = SmartestStringHelper::toVarName($post['string_id']);
+
+        		        }
 		            
-		            // if storage type is file, save the upload in the location dictated by the Type
-		            // echo $intended_file_name;
+    		        }else if(isset($post['string_id']) && strlen($post['string_id'])){
 		            
-    		        $intended_file_name = SM_ROOT_DIR.$type['storage']['location'].$filename;
-    		        $final_file_name = SmartestFileSystemHelper::getUniqueFileName($intended_file_name);
-    		        
-    		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
-    		            $everything_ok = false;
-    		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
-    		            // $this->addUserMessage(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
+    		            if(in_array(SmartestStringHelper::getDotSuffix($post['string_id']), $suffixes)){
+    		                $filename = $post['string_id'];
+    		                $string_id = SmartestStringHelper::toVarName($post['string_id']);
+    		            }else{
+    		                $filename = SmartestStringHelper::toVarName($post['string_id']).'.'.$suffixes[0];
+    		                $string_id = SmartestStringHelper::toVarName($post['string_id']);
+    		            }
+		            
+		            
     		        }else{
-    		            $asset->setUrl(basename($final_file_name));
+    		            $this->addUserMessageToNextRequest("Error: Neither a file name nor a string_id were provided.", SmartestUserMessage::ERROR);
+    		            $everything_ok = false;
     		        }
-    		        
-		        }
 		        
-		    }
+    		        // $this->addUserMessage("\$filename: $filename; \$string_id: $string_id");
+		        
+    		        $asset->setStringid($string_id);
+		        
+    		        $content = SmartestStringHelper::sanitizeFileContents($post['content']);
+		        
+    		        $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.md5(microtime(true)).'.tmp';
+    		        SmartestFileSystemHelper::save($new_temp_file, $content, true);
+		        
+    		        if($type['storage']['type'] == 'database'){
+                    
+                        // add contents of file in System/Temporary/ to database as a text fragment
+                        $asset->getTextFragment()->setContent(str_replace("'", "\\'", SmartestFileSystemHelper::load($new_temp_file, true)));
+                        $asset->setUrl($filename);
+                    
+        		    }else{
+    		        
+        		        $intended_file_name = SM_ROOT_DIR.$type['storage']['location'].$filename;
+        		        $final_file_name = SmartestFileSystemHelper::getUniqueFileName($intended_file_name);
+        		        SmartestFileSystemHelper::save($final_file_name, '');
+    		        
+        		        // $new_temp_file
+        		        // copy the file from System/Temporary/ to the location dictated by the Type
+        		        // delete copy in System/Temporary/ if necessary
+    		        
+        		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
+        		            $everything_ok = false;
+        		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
+        		        }else{
+        		            $asset->setUrl(basename($final_file_name));
+        		            $asset->setWebid(SmartestStringHelper::random(32));
+        		        }
+        		    }
+		        
+    		    }else{ // The new asset is being uploaded
+		        
+    		        // create upload helper
+    		        $upload = new SmartestUploadHelper('new_file');
+    		        $upload->setUploadDirectory(SM_ROOT_DIR.'System/Temporary/');
+		        
+    		        if(!$upload->hasDotSuffix($suffixes)){
+            			$upload->setFileName(SmartestStringHelper::toVarName($upload->getFileName()).'.'.$suffixes[0]);
+            		}
+        		
+    		        // create filename based on existing filename
+    		        $raw_filename = $upload->getFileName();
+    		        $filename = SmartestStringHelper::toSensibleFileName($raw_filename);
+		        
+    		        // print_r($_FILES);
+		        
+    		        // give it hashed name for now and save it to disk
+    		        $upload->setFileName(md5(microtime(true)).'.tmp');
+    		        // var_dump ($upload->save());
+    		        $upload->save();
+		        
+    		        $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.$upload->getFileName();
+		        
+    		        // create string id based on actual file name
+    		        $string_id = SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix($filename));
+    		        $asset->setStringid($string_id);
+		        
+    		        if($type['storage']['type'] == 'database'){
+		            
+    		            // if storage type is database, save the file to System/Temporary/ and get its contents
+    		            $content = SmartestFileSystemHelper::load($new_temp_file, true);
+    		            $asset->getTextFragment()->setContent(str_replace("'", "\\'", $content));
+    		            $asset->setUrl($filename);
+		            
+    		        }else{
+		            
+    		            // if storage type is file, save the upload in the location dictated by the Type
+    		            // echo $intended_file_name;
+		            
+        		        $intended_file_name = SM_ROOT_DIR.$type['storage']['location'].$filename;
+        		        $final_file_name = SmartestFileSystemHelper::getUniqueFileName($intended_file_name);
+    		        
+        		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
+        		            $everything_ok = false;
+        		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
+        		            // $this->addUserMessage(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
+        		        }else{
+        		            $asset->setUrl(basename($final_file_name));
+        		        }
+    		        
+    		        }
+		        
+    		    }
 		    
-		    $asset->setWebid(SmartestStringHelper::random(32));
+    		    $asset->setWebid(SmartestStringHelper::random(32));
 		    
-		    if(isset($post['params']) && is_array($post['params'])){
-		        $param_values = serialize($post['params']);
-		        $asset->setParameterDefaults($param_values);
-	        }
+    		    if(isset($post['params']) && is_array($post['params'])){
+    		        $param_values = serialize($post['params']);
+    		        $asset->setParameterDefaults($param_values);
+    	        }
 		    
-		    // print_r($asset);
+    		    // print_r($asset);
 		    
-		    if($everything_ok){
-		        $asset->save();
-		        $this->addUserMessageToNextRequest(sprintf("The file was successfully saved as: %s", $asset->getUrl()), SmartestUserMessage::SUCCESS);
-		        // $this->addUserMessage(sprintf("The file was successfully saved as: %s", $asset->getUrl()));
+    		    if($everything_ok){
+    		        $asset->setCreated(time());
+    		        $asset->save();
+    		        $this->addUserMessageToNextRequest(sprintf("The file was successfully saved as: %s", $asset->getUrl()), SmartestUserMessage::SUCCESS);
+    		        // $this->addUserMessage(sprintf("The file was successfully saved as: %s", $asset->getUrl()));
+    		    }else{
+    		        $this->addUserMessageToNextRequest("There was an error creating the new file.", SmartestUserMessage::ERROR);
+    		        // $this->addUserMessage("There was an error creating the new file.");
+    		    }
+		    
+    		    $this->formForward();
+		    
+    		}else{
+		    
+    		    $this->addUserMessageToNextRequest("The asset type was not recognized.", SmartestUserMessage::ERROR);
+    		    // $this->addUserMessage("The asset type was not recognized.");
+    		    $this->formForward();
+		    
+    		}
+		
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("You don't currently have permission to add new files.", SmartestUserMessage::ACCESS_DENIED);
+	        $this->formForward();
+	        
+	    }
+	    
+	}
+	
+	public function assetInfo($get){
+	    
+	    $asset_id = $get['asset_id'];
+	    
+	    $asset = new SmartestAsset;
+
+		if($asset->hydrate($asset_id)){
+		    
+		    // echo 'hydrated';
+		    $data = $asset->__toArray(false, true); // don't include object, do include owner info
+		    
+		    if(isset($data['type_info']['source-editable']) && SmartestStringHelper::toRealBool($data['type_info']['source-editable'])){
+		        $this->send(true, 'allow_source_edit');
 		    }else{
-		        $this->addUserMessageToNextRequest("There was an error creating the new file.", SmartestUserMessage::ERROR);
-		        // $this->addUserMessage("There was an error creating the new file.");
+		        $this->send(false, 'allow_source_edit');
 		    }
 		    
-		    $this->formForward();
+		    if(isset($data['type_info']['parsable']) && SmartestStringHelper::toRealBool($data['type_info']['parsable'])){
+		        $this->send(true, 'show_publish');
+		        $this->send(true, 'show_attachments');
+		    }else{
+		        $this->send(false, 'show_publish');
+		        $this->send(false, 'show_attachments');
+		    }
 		    
-		}else{
+		    $this->send($data, 'asset'); 
 		    
-		    $this->addUserMessageToNextRequest("The asset type was not recognized.", SmartestUserMessage::ERROR);
-		    // $this->addUserMessage("The asset type was not recognized.");
-		    $this->formForward();
-		    
-		} 
+		}
 	    
 	}
     
@@ -660,39 +702,72 @@ class Assets extends SmartestSystemApplication{
 		}
 	}
 	
-	function publishTextAsset($get){
+	function approveAsset($get){
+	    
 	    $asset_id = $get['asset_id'];
+	    
+	    if($this->getUser()->hasToken('approve_assets')){
+	        $asset = new SmartestAsset;
 
-		$asset = new SmartestAsset;
+    		if($asset->hydrate($asset_id)){
+    		    $asset->setIsApproved(1);
+    		    $this->addUserMessageToNextRequest('The file has been approved.', SmartestUserMessage::SUCCESS);
+    		}else{
+    		    $this->addUserMessage('The asset ID was not recognized.', SmartestUserMessage::ERROR);
+    		}
+    		
+	    }else{
+	        $this->addUserMessageToNextRequest('You don\'t have permission to approve files for use on this site.', SmartestUserMessage::ACCESS_DENIED);
+	    }
+	    
+	}
+	
+	function publishTextAsset($get){
+	    
+	    $asset_id = $get['asset_id'];
+        
+        if($this->getUser()->hasToken('publish_text_assets') || $this->getUser()->hasToken('publish_all_assets')){
+        
+		    $asset = new SmartestAsset;
 
-		if($asset->hydrate($asset_id)){
+    		if($asset->hydrate($asset_id)){
 		    
-		    $assettype_code = $asset->getType();
-			$types_data = SmartestDataUtility::getAssetTypes();
+    		    $assettype_code = $asset->getType();
+    			$types_data = SmartestDataUtility::getAssetTypes();
 
-			if(array_key_exists($assettype_code, $types_data)){
+    			if(array_key_exists($assettype_code, $types_data)){
 		        
-		        $asset_type = $types_data[$assettype_code];
+    		        $asset_type = $types_data[$assettype_code];
 		        
-		        if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
-	                if($asset->getTextFragment()->publish()){
-	                    $this->addUserMessageToNextRequest('The file has been successfully published.', SmartestUserMessage::SUCCESS);
-                    }else{
-                        $this->addUserMessageToNextRequest('There was an error publishing file. Please check file permissions.', SmartestUserMessage::ERROR);
-                    }
-	            }else{
+    		        if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
+    		            if($asset->isApproved() || $this->getUser()->hasToken('publish_unapproved_text_assets') || $this->getUser()->hasToken('publish_unapproved_assets')){
+    	                    if($asset->getTextFragment()->publish()){
+    	                        $this->addUserMessageToNextRequest('The file has been successfully published.', SmartestUserMessage::SUCCESS);
+                            }else{
+                                $this->addUserMessageToNextRequest('There was an error publishing file. Please check file permissions.', SmartestUserMessage::ERROR);
+                            }
+                        }else{
+                            $this->addUserMessageToNextRequest('The file could not be published because it requires approval first.', SmartestUserMessage::ACCESS_DENIED);
+                        }
+    	            }else{
 	                
-	            }
+    	            }
 		        
-		    }else{
-    		    // asset type is not supported
-    		    $this->addUserMessageToNextRequest('The asset type \''.$assettype_code.'\' is not supported.', SmartestUserMessage::WARNING);
-    	    }
+    		    }else{
+        		    // asset type is not supported
+        		    $this->addUserMessageToNextRequest('The asset type \''.$assettype_code.'\' is not supported.', SmartestUserMessage::WARNING);
+        	    }
 
-    	}else{
-		    // asset ID was not recognised
-		    $this->addUserMessageToNextRequest('The asset ID was not recognized.', SmartestUserMessage::ERROR);
-    	}
+        	}else{
+    		    // asset ID was not recognised
+    		    $this->addUserMessageToNextRequest('The asset ID was not recognized.', SmartestUserMessage::ERROR);
+        	}
+    	
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest('You don\'t have permission to publish text files', SmartestUserMessage::ACCESS_DENIED);
+	        
+	    }
     	
     	$this->formForward();
 		
@@ -757,30 +832,38 @@ class Assets extends SmartestSystemApplication{
 	}
 
 	function updateAsset($get, $post){
-
-		$asset_id = $post['asset_id'];
+        
+        $asset_id = $post['asset_id'];
 
 		$asset = new SmartestAsset;
 
 		if($asset->hydrate($asset_id)){
+            
+            if($asset->getUserId() == $this->getUser()->getId() || $this->getUser()->hasToken('modify_assets')){
+            
+		        $param_values = serialize($post['params']);
+    		    $asset->setParameterDefaults($param_values);
 
-		    $param_values = serialize($post['params']);
-		    $asset->setParameterDefaults($param_values);
+    		    if($asset->usesTextFragment()){
+    		        $content = $post['asset_content'];
+    		        $content = SmartestStringHelper::unProtectSmartestTags($content);
+    		        $asset->setContent($content);
+    	        }
+    	        
+    	        $asset->setModified(time());
 
-		    if($asset->usesTextFragment()){
-		        $content = $post['asset_content'];
-		        $content = SmartestStringHelper::unProtectSmartestTags($content);
-		        $asset->setContent($content);
-	        }
-
-		    $asset->save();
-		    $this->addUserMessageToNextRequest("The file has been successfully updated.", SmartestUserMessage::SUCCESS);
+    		    $asset->save();
+    		    $this->addUserMessageToNextRequest("The file has been successfully updated.", SmartestUserMessage::SUCCESS);
+		    
+		    }else{
+    	        $this->addUserMessageToNextRequest("You don't have permission to edit assets created by other users.", SmartestUserMessage::WARNING);
+    	    }
 
 		}else{
 		    $this->addUserMessageToNextRequest("The file you are trying to update no longer exists or has been deleted by another user.", SmartestUserMessage::WARNING);
 		}
 		
-  		$this->formForward();
+	    $this->formForward();
 
 	}
 	
@@ -793,54 +876,60 @@ class Assets extends SmartestSystemApplication{
 		$asset = new SmartestAsset;
 
 		if($asset->hydrate($asset_id)){
-
-			$assettype_code = $asset->getType();
-			$types_data = SmartestDataUtility::getAssetTypes();
+            
+            if($asset->getUserId() == $this->getUser()->getId() || $this->getUser()->hasToken('modify_assets')){
+            
+			    $assettype_code = $asset->getType();
+    			$types_data = SmartestDataUtility::getAssetTypes();
 			
-			if(array_key_exists($assettype_code, $types_data)){
+    			if(array_key_exists($assettype_code, $types_data)){
                 
-                $attachable_files = $this->manager->getAttachableFilesAsArrays($this->getSite()->getId());
-                $this->send($attachable_files, 'files');
+                    $attachable_files = $this->manager->getAttachableFilesAsArrays($this->getSite()->getId());
+                    $this->send($attachable_files, 'files');
                 
-                $textfragment = $asset->getTextFragment();
+                    $textfragment = $asset->getTextFragment();
                 
-                if(is_object($textfragment)){
+                    if(is_object($textfragment)){
                 
-                    $current_def = $textfragment->getAttachmentCurrentDefinition($attachment_name);
+                        $current_def = $textfragment->getAttachmentCurrentDefinition($attachment_name);
                 
-                    $this->send($asset->getTextFragment()->getId(), 'textfragment_id');
+                        $this->send($asset->getTextFragment()->getId(), 'textfragment_id');
                 
-                    $attached_asset_id = $current_def->getAttachedAssetId();
-                    $this->send($attached_asset_id, 'attached_asset_id');
+                        $attached_asset_id = $current_def->getAttachedAssetId();
+                        $this->send($attached_asset_id, 'attached_asset_id');
                 
-                    $alignment = $current_def->getAlignment();
-                    $this->send($alignment, 'alignment');
+                        $alignment = $current_def->getAlignment();
+                        $this->send($alignment, 'alignment');
                 
-                    $caption = $current_def->getCaption();
-                    $this->send($caption, 'caption');
+                        $caption = $current_def->getCaption();
+                        $this->send($caption, 'caption');
                 
-                    $caption_alignment = $current_def->getCaptionAlignment();
-                    $this->send($caption_alignment, 'caption_alignment');
+                        $caption_alignment = $current_def->getCaptionAlignment();
+                        $this->send($caption_alignment, 'caption_alignment');
                 
-                    $float = $current_def->getFloat();
-                    $this->send($float, 'float');
+                        $float = $current_def->getFloat();
+                        $this->send($float, 'float');
                 
-                    $border = $current_def->getBorder();
-                    $this->send($border, 'border');
+                        $border = $current_def->getBorder();
+                        $this->send($border, 'border');
                 
-                }
+                    }
                 
-			    $asset_type = $types_data[$assettype_code];
+    			    $asset_type = $types_data[$assettype_code];
 
-    			$this->send($formTemplateInclude, "formTemplateInclude");
-    			$this->setTitle('Define Attachment: '.$attachment_name);
-    			$this->send($asset_type, 'asset_type');
-    			$this->send($asset->__toArray(), 'asset');
+        			$this->send($formTemplateInclude, "formTemplateInclude");
+        			$this->setTitle('Define Attachment: '.$attachment_name);
+        			$this->send($asset_type, 'asset_type');
+        			$this->send($asset->__toArray(), 'asset');
 
+    		    }else{
+    		        // asset type is not supported
+    		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.', SmartestUserMessage::WARNING);
+    		    }
+		    
 		    }else{
-		        // asset type is not supported
-		        $this->addUserMessage('The asset type \''.$assettype_code.'\' is not supported.', SmartestUserMessage::WARNING);
-		    }
+    	        $this->addUserMessageToNextRequest("You don't have permission to edit assets created by other users.", SmartestUserMessage::WARNING);
+    	    }
 
 		}else{
 		    // asset ID was not recognised
@@ -1030,7 +1119,7 @@ class Assets extends SmartestSystemApplication{
 
 	}
 	
-	function getAssetGroupContents($get){
+	/* function getAssetGroupContents($get){
 	    
 	    $group_id = (int) $get[''];
 	    
@@ -1039,6 +1128,6 @@ class Assets extends SmartestSystemApplication{
 	    $q->addQualifyingEntityByIndex(2, $group_id);
 	    $assets = $q->retrieve();
 	    
-	}
+	} */
 		
 }

@@ -170,8 +170,15 @@ class SmartestCmsItemSet extends SmartestDataObject{
     	                        $final_value = '';
     	                    }
     	                }
-	                
-    	                $q->add($c->getItempropertyId(), $final_value, $c->getOperator(), $draft);
+	                    
+	                    // little hack to get around the fact that there can be more than one tagging criteria but they aren't actual properties
+	                    $property_id = $c->getItempropertyId();
+	                    
+	                    if($property_id == '_SMARTEST_ITEM_TAGGED'){
+	                        $property_id .= '_'.$c->getId();
+	                    }
+	                    
+	                    $q->add($property_id, $final_value, $c->getOperator(), $draft);
     	            }
 	            
     	            $result = $q->doSelect($draft);

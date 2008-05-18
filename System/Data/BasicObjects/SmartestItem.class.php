@@ -14,14 +14,14 @@ class SmartestItem extends SmartestDataObject{
 	}
 	
 	public function getIsPublic(){
-		return ($this->getPublic() == 'TRUE') ? TRUE : FALSE;
+		return ($this->getPublic() == 'TRUE') ? true : false;
 	}
 	
 	public function getModel(){
 	    
 	    if(!is_object($this_model)){
 	        $m = new SmartestModel;
-	        $m->hydrate($this->getModelId());
+	        $m->hydrate($this->_properties['itemclass_id']);
 	        $this->_model = $m;
 	    }
 	    
@@ -29,16 +29,21 @@ class SmartestItem extends SmartestDataObject{
 	    
 	}
 	
-	public function __toArray(){
+	public function __toArray($include_foreign_object_data=false){
+	    
 	    $array = $this->_properties;
-	    $array['model_name'] = $this->getModel()->getName();
-	    $array['link_contents'] = $this->getCmsLinkContents();
+	    
+	    if($include_foreign_object_data){
+	        $array['model'] = $this->getModel()->__toArray();
+	        $array['link_contents'] = $this->getCmsLinkContents();
+        }
+        
 	    return $array;
 	}
 	
 	public function delete($remove=false){
 	    if($remove){
-		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->getId()."' LIMIT 1";
+		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
 		    $this->database->rawQuery($sql);
 		    $this->_came_from_database = false;
 	    }else{
@@ -48,13 +53,13 @@ class SmartestItem extends SmartestDataObject{
 	}
 	
 	public function clearTags(){
-	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->getId()."' AND taglookup_type='SM_ITEM_TAG_LINK'";
+	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_type='SM_ITEM_TAG_LINK'";
 	    $this->database->rawQuery($sql);
 	}
 	
 	public function getTagIdsArray(){
 	    
-	    $sql = "SELECT taglookup_tag_id FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->getId()."' AND taglookup_type='SM_ITEM_TAG_LINK'";
+	    $sql = "SELECT taglookup_tag_id FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_type='SM_ITEM_TAG_LINK'";
 	    $result = $this->database->queryToArray($sql);
 	    $ids = array();
 	    
@@ -70,7 +75,7 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function getTags(){
 	    
-	    $sql = "SELECT * FROM Tags, TagsObjectsLookup WHERE TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id='".$this->getId()."' AND TagsObjectsLookup.taglookup_type='SM_ITEM_TAG_LINK' ORDER BY Tags.tag_name";
+	    $sql = "SELECT * FROM Tags, TagsObjectsLookup WHERE TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id='".$this->_properties['id']."' AND TagsObjectsLookup.taglookup_type='SM_ITEM_TAG_LINK' ORDER BY Tags.tag_name";
 	    $result = $this->database->queryToArray($sql);
 	    $ids = array();
 	    $tags = array();
@@ -104,7 +109,7 @@ class SmartestItem extends SmartestDataObject{
 	public function getRelatedItems($draft_mode=false){
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
-	    $q->setCentralNodeId($this->getId());
+	    $q->setCentralNodeId($this->_properties['id']);
 	    $q->addSortField('Items.item_created');
 	    
 	    if(!$draft_mode){
@@ -123,7 +128,7 @@ class SmartestItem extends SmartestDataObject{
 	    $arrays = array();
 	    
 	    foreach($items as $i){
-	        $arrays[] = $i->__toArray();
+	        $arrays[] = $i->__toArray(true);
 	    }
 	    
 	    return $arrays;
@@ -146,7 +151,7 @@ class SmartestItem extends SmartestDataObject{
 	public function getRelatedForeignItems($draft_mode=false, $model_id=''){
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
-	    $q->setCentralNodeId($this->getId());
+	    $q->setCentralNodeId($this->_properties['id']);
 	    $q->addSortField('Items.item_created');
 	    
 	    if(is_numeric($model_id)){
@@ -169,7 +174,7 @@ class SmartestItem extends SmartestDataObject{
 	    $arrays = array();
 	    
 	    foreach($items as $i){
-	        $arrays[] = $i->__toArray();
+	        $arrays[] = $i->__toArray(true);
 	    }
 	    
 	    return $arrays;
@@ -191,35 +196,35 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function addRelatedItem($item_id){
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
-	    $q->createNetworkLinkBetween($this->getId(), $item_id);
+	    $q->createNetworkLinkBetween($this->_properties['id'], $item_id);
 	}
 	
 	public function removeRelatedItem($item_id){
 	    $item_id = (int) $item_id;
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
-	    $q->deleteNetworkLinkBetween($this->getId(), $item_id);
+	    $q->deleteNetworkLinkBetween($this->_properties['id'], $item_id);
 	}
 	
 	public function addRelatedForeignItem($item_id){
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
-	    $q->createNetworkLinkBetween($this->getId(), $item_id);
+	    $q->createNetworkLinkBetween($this->_properties['id'], $item_id);
 	}
 	
 	public function removeRelatedForeignItem($item_id){
 	    $item_id = (int) $item_id;
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
-	    $q->deleteNetworkLinkBetween($this->getId(), $item_id);
+	    $q->deleteNetworkLinkBetween($this->_properties['id'], $item_id);
 	}
 	
 	public function removeAllRelatedItems($model_id){
 	    
-	    if($this->getModelId() == $model_id){
+	    if($this->_properties['itemclass_id'] == $model_id){
 	        $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
 	    }else{
 	        $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
 	    }
 	    
-	    $q->deleteNetworkNodeById($this->getId());
+	    $q->deleteNetworkNodeById($this->_properties['id']);
 	    
 	}
 	
@@ -228,7 +233,7 @@ class SmartestItem extends SmartestDataObject{
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
 	    
 	    $q->setTargetEntityByIndex(2);
-	    $q->addQualifyingEntityByIndex(1, $this->getId());
+	    $q->addQualifyingEntityByIndex(1, $this->_properties['id']);
 	    
 	    if(!$draft_mode){
 	        $q->addForeignTableConstraint('Pages.page_is_published', 'TRUE');
@@ -276,7 +281,7 @@ class SmartestItem extends SmartestDataObject{
 	    $page_id = (int) $page_id;
 	    
 	    $link = new SmartestManyToManyLookup;
-	    $link->setEntityForeignKeyValue(1, $this->getId());
+	    $link->setEntityForeignKeyValue(1, $this->_properties['id']);
 	    $link->setEntityForeignKeyValue(2, $page_id);
 	    $link->setType('SM_MTMLOOKUP_PAGES_ITEMS');
 	    
@@ -289,7 +294,7 @@ class SmartestItem extends SmartestDataObject{
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
 	    $q->setTargetEntityByIndex(2);
-	    $q->addQualifyingEntityByIndex(1, $this->getId());
+	    $q->addQualifyingEntityByIndex(1, $this->_properties['id']);
 	    $q->addForeignTableConstraint('Pages.page_id', $page_id);
 	    
 	    $q->delete();
@@ -300,7 +305,7 @@ class SmartestItem extends SmartestDataObject{
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
 	    $q->setTargetEntityByIndex(2);
-	    $q->addQualifyingEntityByIndex(1, $this->getId());
+	    $q->addQualifyingEntityByIndex(1, $this->_properties['id']);
 	    
 	    $q->delete();
 	    
@@ -360,7 +365,7 @@ class SmartestItem extends SmartestDataObject{
 	        if(count($result)){
 	            $property = new SmartestItemProperty;
 	            $property->hydrate($result[0]);
-	            $property->setContextualItemId($this->getId());
+	            $property->setContextualItemId($this->_properties['id']);
 	            $this->_model_properties[$key] = $property;
 	        }
 	    
@@ -419,10 +424,10 @@ class SmartestItem extends SmartestDataObject{
 	    
 	    if($this->getMetapageId()){
 	        $page_id = $this->getMetapageId($this->getCurrentSiteId());
-	        return 'metapage:id='.$page_id.':id='.$this->getId();
+	        return 'metapage:id='.$page_id.':id='.$this->_properties['id'];
 	    }else if($this->getModel()->getDefaultMetapageId($this->getCurrentSiteId())){
 	        $page_id = $this->getModel()->getDefaultMetapageId($this->getCurrentSiteId());
-	        return 'metapage:id='.$page_id.':id='.$this->getId();
+	        return 'metapage:id='.$page_id.':id='.$this->_properties['id'];
 	    }else{
 	        return null;
 	    }
@@ -454,7 +459,7 @@ class SmartestItem extends SmartestDataObject{
     	    }
 	    }
 	    
-	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->getId()."', 'SM_ITEM_TAG_LINK')";
+	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->_properties['id']."', 'SM_ITEM_TAG_LINK')";
 	    $this->database->rawQuery($sql);
 	    return true;
 	    
@@ -482,7 +487,7 @@ class SmartestItem extends SmartestDataObject{
     	    }
 	    }
 	    
-	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->getId()."' AND taglookup_tag_id='".$tag->getId()."' AND taglookup_type='SM_ITEM_TAG_LINK'";
+	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_tag_id='".$tag->getId()."' AND taglookup_type='SM_ITEM_TAG_LINK'";
 	    $this->database->rawQuery($sql);
 	    return true;
 	    
@@ -490,7 +495,7 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function getTextFragments(){
 	    
-	    $sql = "SELECT TextFragments.* FROM Items, Assets, ItemPropertyValues, TextFragments WHERE Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->getId()."'";
+	    $sql = "SELECT TextFragments.* FROM Items, Assets, ItemPropertyValues, TextFragments WHERE Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->_properties['id']."'";
 		/* $result = $this->database->queryToArray($sql);
 		$objects = array();
 		
@@ -508,7 +513,7 @@ class SmartestItem extends SmartestDataObject{
 	    $helper = new SmartestAssetsLibraryHelper;
 		$codes = $helper->getParsableAssetTypeCodes();
 		
-		$sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->getId()."' AND Assets.asset_type IN ('".implode("', '", $codes)."')";
+		$sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->_properties['id']."' AND Assets.asset_type IN ('".implode("', '", $codes)."')";
 		/* $result = $this->database->queryToArray($sql);
 		$objects = array();
 		

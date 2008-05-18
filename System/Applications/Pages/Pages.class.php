@@ -71,6 +71,10 @@ class Pages extends SmartestSystemApplication{
 	                    
 	                    // page is available to edit
 			            SmartestSession::set('current_open_page', $page->getId());
+			            
+			            if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId())){
+			                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId(), 0);
+		                }
 		        
 			            // lock it against being edited by other people
 			            $page->setIsHeld(1);
@@ -120,18 +124,26 @@ class Pages extends SmartestSystemApplication{
 	    $page = new SmartestPage;
 	    
 	    if($page->hydrate($get['page_id'])){
+	        
 	        if($page->getIsHeld() == '1'){
+	            
 	            if($page->getHeldBy() == $this->getUser()->getId()){
+                    
                     $page->setIsHeld(0);
                     $page->setHeldBy('');
                     $page->save();
                     $this->addUserMessageToNextRequest("The page has been released.", SmartestUserMessage::SUCCESS);
+                    
+                    if($todo = $this->getUser()->getTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId())){
+		                $todo->complete();
+	                }
+	                
                 }else{
                     //  the page
                     $this->addUserMessageToNextRequest("You can't release this page because another user is editing it.", SmartestUserMessage::WARNING);
                 }
             }else{
-                $this->addUserMessageToNextRequest("The page is not currently held by another user.", SmartestUserMessage::INFO);
+                $this->addUserMessageToNextRequest("The page is not currently held by any user.", SmartestUserMessage::INFO);
             }
             
         }
@@ -141,6 +153,7 @@ class Pages extends SmartestSystemApplication{
 	    if(isset($get['from']) && $get['from'] == 'todoList'){
 	        $this->redirect('/smartest/todo');
         }else{
+            SmartestSession::clear('current_open_page');
             $this->redirect('/smartest/pages');
         }
 	}

@@ -72,7 +72,9 @@ class Items extends SmartestSystemApplication{
   	    if($model->hydrate($model_id)){
   	        
   	        // echo $this->getSite()->getId();
+  	        
   	        $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+  	        $this->setTitle($model->getPluralName());
   	        $this->send($items, 'items');
   	        $this->send(count($items), 'num_items');
   	        $this->send($model->__toArray(), 'model');
@@ -81,6 +83,8 @@ class Items extends SmartestSystemApplication{
   	        $this->addUserMessageToNextRequest('The model ID was not recognized.', SmartestUserMessage::ERROR);
   	        $this->redirect('/smartest/models');
   	    }
+  	    
+  	    
 	
 	}
     
@@ -395,10 +399,17 @@ class Items extends SmartestSystemApplication{
 	        $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
 	    }else{
 	        if($this->getUser()->hasToken('modify_items')){
+                
                 $item->setIsHeld(1);
                 $item->setHeldBy($this->getUser()->getId());
                 $item->save();
+                
+                if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId())){
+	                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId(), 0);
+                }
+                
                 $this->redirect('/'.SM_CONTROLLER_MODULE.'/editItem?item_id='.$item->getId());
+                
             }else{
                 $this->addUserMessageToNextRequest('You don\'t have permssion to edit items', SmartestUserMessage::ACCESS_DENIED);
                 $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
@@ -418,6 +429,11 @@ class Items extends SmartestSystemApplication{
                 $item->setHeldBy(0);
                 $item->save();
                 $this->addUserMessageToNextRequest('The item has been released.', SmartestUserMessage::SUCCESS);
+                
+                if($todo = $this->getUser()->getTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId())){
+	                $todo->complete();
+                }
+                
                 if(isset($get['from']) && $get['from']=='todoList'){
                     $this->redirect('/smartest/todo');
                 }else{
@@ -441,7 +457,9 @@ class Items extends SmartestSystemApplication{
 	
 	public function itemTags($get){
 	    
-	    $this->setFormReturnUri();
+	    if(!isset($get['from'])){
+	        $this->setFormReturnUri();
+        }
 	    
 	    $item_id = $get['item_id'];
 	    $item = new SmartestItem;
@@ -816,6 +834,7 @@ class Items extends SmartestSystemApplication{
 		$item = SmartestCmsItem::retrieveByPk($item_id);
 		
 		if(is_object($item)){
+		    
 		    $item_array = $item->__toArray(true, true, true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
 		    $this->send($item->getModel()->getMetaPagesAsArrays(), 'metapages');
 		    $this->setTitle('Edit '.$item->getModel()->getName().' | '.$item->getName());

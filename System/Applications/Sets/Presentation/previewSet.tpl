@@ -30,11 +30,12 @@ View as:
     
     <ul class="actions-list" id="item-specific-actions" style="display:none">
       <li><b>Selected Item</b></li>
-      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}datamanager/editItem?item_id='+selectedPage"><img border="0" src="{$domain}Resources/Icons/model.png" style="width:16px;height:18px"> Edit Properties</a></li>	
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}datamanager/editItem?item_id='+selectedPage+'&amp;from=previewSet'"><img border="0" src="{$domain}Resources/Icons/model.png" style="width:16px;height:18px"> Edit Properties</a></li>	
     </ul>
     
     <ul class="actions-list">
-      <li><b>Options</b></li>
+      <li><b>Sets Options</b></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px"> Edit This Set</a></li>
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px"> Back to Data Sets</a></li>
     	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/models'"><img border="0" src="{$domain}Resources/Icons/model.png" style="width:16px;height:18px"> Go to Models</a></li>	
     </ul>    

@@ -3,6 +3,11 @@
 // phpinfo();
 // apd_set_pprof_trace();
 
+function debug_time(){
+    $time = number_format(microtime(true)*1000, 0, ".", "");
+    return $time;
+}
+
 // error reporting control
 error_reporting(E_ALL ^ E_NOTICE);
 

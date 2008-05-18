@@ -10,6 +10,10 @@ class SmartestException extends Exception{
 		$this->message = $message;
 	}
 	
+	function setMessage($message){
+	    $this->message = $message;
+	}
+	
 	function setRedirectUrl($url){
 	    $this->_redirectUrl = $url;
 	}

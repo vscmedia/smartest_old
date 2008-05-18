@@ -33,19 +33,19 @@ function check(){
 
 <form id="pageViewForm" method="post" action="{$domain}{$section}/updateDropDownValue"  onsubmit="return check();">
 
-<input type="hidden" name="drop_down_id" value="{$dropdown_details.dropdown_id}" />
-<input type="hidden" name="drop_down_value_id" value="{$value_details.dropdownvalue_dropdown_id}" />
+<input type="hidden" name="drop_down_id" value="{$dropdown_id}" />
+<input type="hidden" name="drop_down_value_id" value="{$option.id}" />
 
 <div class="edit-form-layout">
   
   <div class="edit-form-row">
     <div class="form-section-label">Label:</div>
-    <input type="text" name="drop_down_value" id="drop_down_value" value="{$value_details.dropdownvalue_label}">
+    <input type="text" name="drop_down_label" id="drop_down_label" value="{$option.label}">
   </div>
   
   <div class="edit-form-row">
     <div class="form-section-label">Order:</div>
-    <input type="text" name="drop_down_order" id="drop_down_order" value="{$value_details.dropdownvalue_order}">
+    <input type="text" name="drop_down_order" id="drop_down_order" value="{$option.order}">
   </div>
   
   <div class="edit-form-row">

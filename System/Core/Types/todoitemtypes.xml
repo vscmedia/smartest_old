@@ -1,0 +1,132 @@
+<?xml version="1.0" ?>
+
+<todoitemtypes>
+  
+  <category id="SM_TODOITEMCATEGORY_ASSETS" table="Assets" field="asset_id" class="SmartestAsset" internal-code="1">
+    <description>Types of todo-item that relate to the Files Repository</description>
+  </category>
+  
+  <category id="SM_TODOITEMCATEGORY_PAGES" table="Pages" field="page_id" class="SmartestPage" internal-code="2">
+    <description>Types of todo-item that relate to whole web pages</description>
+  </category>
+  
+  <category id="SM_TODOITEMCATEGORY_ITEMS" table="Items" field="item_id" class="SmartestItem" internal-code="4">
+    <description>Types of todo-item that relate to the items in the Data Manager</description>
+  </category>
+  
+  <type id="SM_TODOITEMTYPE_APPROVE_ASSET" category="SM_TODOITEMCATEGORY_ASSETS">
+    <label>Approve it</label>
+    <description>Approve file for use on site</description>
+    <table>Assets</table>
+    <class>SmartestAsset</class>
+    <foreignkeyfield>asset_id</foreignkeyfield>
+    <urifield>asset_webid</urifield>
+    <action>assets/assetInfo</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_EDIT_ASSET" category="SM_TODOITEMCATEGORY_ASSETS">
+    <label>Edit it (please specify how)</label>
+    <description>Edit file in some way (see message)</description>
+    <table>Assets</table>
+    <class>SmartestAsset</class>
+    <foreignkeyfield>asset_id</foreignkeyfield>
+    <urifield>asset_webid</urifield>
+    <action>assets/editAsset</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_RELEASE_ASSET" category="SM_TODOITEMCATEGORY_ASSETS">
+    <label>Release it</label>
+    <description>Release file</description>
+    <table>Assets</table>
+    <class>SmartestAsset</class>
+    <foreignkeyfield>asset_id</foreignkeyfield>
+    <urifield>asset_webid</urifield>
+    <action>assets/assetInfo</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_APPROVE_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
+    <label>Approve it</label>
+    <description>Approve page so that it is ready for publishing</description>
+    <table>Pages</table>
+    <class>SmartestPage</class>
+    <foreignkeyfield>page_id</foreignkeyfield>
+    <urifield>page_webid</urifield>
+    <action>websitemanager/preview</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_EDIT_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
+    <label>Edit it (please specify how)</label>
+    <description>Edit page in some way (see message)</description>
+    <table>Pages</table>
+    <class>SmartestPage</class>
+    <foreignkeyfield>page_id</foreignkeyfield>
+    <urifield>page_webid</urifield>
+    <action>websitemanager/openPage</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_RELEASE_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
+    <label>Release it</label>
+    <description>Release page so that it can be edited by others.</description>
+    <table>Pages</table>
+    <class>SmartestPage</class>
+    <foreignkeyfield>page_id</foreignkeyfield>
+    <urifield>page_webid</urifield>
+    <action>websitemanager/releasePage</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_PUBLISH_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
+    <label>Publish it</label>
+    <description>Publish the page</description>
+    <table>Pages</table>
+    <class>SmartestPage</class>
+    <foreignkeyfield>page_id</foreignkeyfield>
+    <urifield>page_webid</urifield>
+    <action>websitemanager/preview</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_APPROVE_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
+    <label>Approve it</label>
+    <description>Approve item so that it is ready for publishing</description>
+    <table>Items</table>
+    <class>SmartestItem</class>
+    <foreignkeyfield>item_id</foreignkeyfield>
+    <urifield>item_id</urifield>
+    <action>datamanager/openItem</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_EDIT_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
+    <label>Edit it</label>
+    <description>Edit the item in some way (see message)</description>
+    <table>Items</table>
+    <class>SmartestItem</class>
+    <foreignkeyfield>item_id</foreignkeyfield>
+    <urifield>item_id</urifield>
+    <action>datamanager/openItem</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_RELEASE_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
+    <label>Release this item</label>
+    <description>Release the item so that it can be edited by others</description>
+    <table>Items</table>
+    <class>SmartestItem</class>
+    <foreignkeyfield>item_id</foreignkeyfield>
+    <urifield>item_id</urifield>
+    <action>datamanager/releaseItem</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_PUBLISH_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
+    <label>Publish this item</label>
+    <description>Publish the item</description>
+    <table>Items</table>
+    <class>SmartestItem</class>
+    <foreignkeyfield>item_id</foreignkeyfield>
+    <urifield>item_id</urifield>
+    <action>datamanager/openItem</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_GENERIC" category="SM_TODOITEMCATEGORY_ALL">
+    <label>Any other task (specify in message)</label>
+    <description>Indicates the need to approve a file.</description>
+  </type>
+  
+</todoitemtypes>
