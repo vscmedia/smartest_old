@@ -84,4 +84,4 @@ var supersleight	= function() {
 // limit to part of the page ... pass an ID to limitTo:
 // supersleight.limitTo('header');
 
-supersleight.init();
+// supersleight.init();

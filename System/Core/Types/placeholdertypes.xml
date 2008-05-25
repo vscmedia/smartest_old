@@ -58,8 +58,14 @@
   </type>
   
   <type id="SM_ASSETCLASS_CONTAINER">
+    <hide>true</hide>
     <label>A Container</label>
     <accept>SM_ASSETTYPE_CONTAINER_TEMPLATE</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_ITEM_SPACE">
+    <hide>true</hide>
+    <label>A Dynamically loaded item</label>
   </type>
   
 </placeholdertypes>

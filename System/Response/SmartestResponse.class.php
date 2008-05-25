@@ -141,7 +141,9 @@ class SmartestResponse{
         	'System/Data/SmartestCacheDb.class.php',
         	'System/Data/SmartestCmsItem.class.php',
         	'System/Data/SmartestDataUtility.class.php',
-        	'System/Data/SmartestFile.class.php'
+        	'System/Data/SmartestFile.class.php',
+        	'System/Base/SmartestWebPageBuilderException.class.php',
+        	'System/Base/SmartestInterfaceBuilderException.class.php'
 
         );
 
@@ -230,7 +232,7 @@ class SmartestResponse{
 		try{
 			$this->userOptions = $this->configuration->getUserOptions();
 		} catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		// load system-essential settings
@@ -238,14 +240,14 @@ class SmartestResponse{
 		try{
 			$this->systemOptions   = $this->configuration->getSystemOptions();
 		} catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		// load measuring units
 		try{
 			$this->measuringUnits  = $this->configuration->getMeasuringUnits();
 		} catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		$this->_log("System settings and options loaded.");
@@ -258,7 +260,7 @@ class SmartestResponse{
 			SmartestPersistentObject::set('db:main', $mysql);
 			// var_dump(SmartestPersistentObject::get('db:main'));
 		} catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 	    }
 		
 		// instantiate sqlite database object
@@ -267,7 +269,7 @@ class SmartestResponse{
 			// $_SESSION['sqllite'] = $sql_main;
 			// SmartestPersistentObject::set('db:sqlite:user', $sql_main);
 		} catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		// instantiate cache sqlite database object
@@ -275,7 +277,7 @@ class SmartestResponse{
 			// $_SESSION['cache_db'] = new SmartestCacheDb();
 			// SmartestPersistentObject::set('db:sqlite:cache', $sql_main);
 		} catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		$this->database =& SmartestPersistentObject::get('db:main');
@@ -322,7 +324,12 @@ class SmartestResponse{
 	}
 	
 	function error($message="", $type=100){
-    	$this->errorStack->recordError($message, $type);
+	    $e = new SmartestException($message, $type);
+    	$this->errorStack->recordError($e, false);
+    }
+    
+    function errorFromException($e){
+        $this->errorStack->recordError($e, false);
     }
     
     function setPersistentObject(){}
@@ -371,7 +378,7 @@ class SmartestResponse{
 		try{
 			$this->smarty = $smarty_manager->initialize();
 		} catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		$module_smarty_plugins_dir = SM_ROOT_DIR.$this->controller->getModuleDirectory().'Presentation/Plugins/';
@@ -731,19 +738,19 @@ class SmartestResponse{
 		try{
 			SmartestQuery::init(true);
 		}catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		try{
 			$this->controller->registerProcess(SmartestController::APPLICATION);
 		}catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		try{
 			$this->controller->performAction();
 		}catch(SmartestException $e){
-			$this->error($e->getMessage(), $e->getCode());
+			$this->errorFromException($e);
 		}
 		
 		$this->errorStack->display();
@@ -855,11 +862,17 @@ class SmartestResponse{
 		if($this->content == Quince::NODISPLAY){
 			$output = "";
 		}else{
-		    if($fragment_only){
-			    $output = $this->smarty->fetch($this->userInterfaceTemplate);
-		    }else{
-		        $output = $this->smarty->fetch($this->templateFile);
-		    }
+		    try{
+		        if($fragment_only){
+			        $output = $this->smarty->fetch($this->userInterfaceTemplate);
+		        }else{
+		            $output = $this->smarty->fetch($this->templateFile);
+		        }
+	        }catch (SmartestException $e){
+	            
+	            $this->errorFromException($e);
+	            
+	        }
 		}
 		
 		return $output;
@@ -1036,16 +1049,19 @@ class SmartestResponse{
 		        break;
 		    default:
 		        echo $this->fetch();
-		        echo $this->fullTimeTaken.'<br />';
+		        // echo $this->fullTimeTaken.'<br />';
 		        // 
 		        break;
 	    }
+		
+		// Last chance to display any errors before trying to render the page
+		$this->errorStack->display();
 		
 		// echo '<pre>';
 		// print_r($this->database->getDebugInfo());
 		// echo '</pre>';
 		
-		SmartestPersistentObject::clear('centralDataHolder');
+		// SmartestPersistentObject::clear('centralDataHolder');
 		
 		exit;
 	}

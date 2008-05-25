@@ -1,6 +1,6 @@
 <?php
 
-class SmartestDataObject{
+class SmartestDataObject implements ArrayAccess{
 	
 	protected $_properties = array();
 	protected $_modified_properties = array();
@@ -132,6 +132,26 @@ class SmartestDataObject{
 		
 	    }
 		
+	}
+	
+	public function offsetExists($offset){
+	    return isset($this->_properties[$offset]);
+	}
+	
+	public function offsetGet($offset){
+	    if(isset($this->_properties[$offset])){
+	        return $this->_properties[$offset];
+	    }else{
+	        return null;
+	    }
+	}
+	
+	public function offsetSet($offset, $value){
+	    // read only
+	}
+	
+	public function offsetUnset($offset){
+	    // read only
 	}
 	
 	public function getId(){
@@ -325,7 +345,7 @@ class SmartestDataObject{
 			
 			// field being set is part of the model and corresponds to a column in the db table
 			$this->_properties[$this->_properties_lookup[$field_name]] = $value;
-			$this->_modified_properties[$this->_properties_lookup[$field_name]] = $value;
+			$this->_modified_properties[$this->_properties_lookup[$field_name]] = SmartestStringHelper::sanitize($value);
 			
 		}else{
 		    
@@ -425,7 +445,13 @@ class SmartestDataObject{
 	
 	public function hydrateBy($field, $value, $draft=false){
 	    
-	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix.$field." = '".$value."'";
+	    if(isset($this->_no_prefix[$field])){
+		    $column_name = $field;
+		}else{
+			$column_name = $this->_table_prefix.$field;
+		}
+	    
+	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
 	    $this->_last_query = $sql;
 	    $result = $this->database->queryToArray($sql, $file, $line);
 
@@ -451,68 +477,72 @@ class SmartestDataObject{
 	
 	public function save(){
 		
-		if($this->_came_from_database){
-			
-			$sql = "UPDATE ".$this->_table_name." SET ";
-			
-			$i = 0;
-			
-			foreach($this->_modified_properties as $name => $value){
-				
-				if($i > 0){
-					$sql .= ', ';
-				}
-				
-				if(!isset($this->_no_prefix[$name])){
-					$sql .= $this->_table_prefix.$name."='".$value."'";
-				}else{
-					$sql .= $name."='".$value."'";
-				}
-				
-				$i++;
-			}
+		if(count($this->_modified_properties)){
 		
-			$sql .= " WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
-			$this->_last_query = $sql;
-			$this->database->rawQuery($sql);
+		    if($this->_came_from_database){
 			
-		}else{
+    			$sql = "UPDATE ".$this->_table_name." SET ";
 			
-			$sql = "INSERT INTO ".$this->_table_name."(";
-			$fields = array();
+    			$i = 0;
 			
-			foreach($this->_modified_properties as $key => $value){
-			    if(!isset($this->_no_prefix[$key])){
-				    $fields[] = $this->_table_prefix.$key;
-				}else{
-				    $fields[] = $key;
-				}
-			}
-			
-			$sql .= join(', ', $fields).") VALUES (";
-			
-			$i = 0;
-			
-			foreach($this->_modified_properties as $value){
+    			foreach($this->_modified_properties as $name => $value){
 				
-				if($i > 0){
-					$sql .= ', ';
-				}
+    				if($i > 0){
+    					$sql .= ', ';
+    				}
 				
-				$sql .= "'$value'";
-				$i++;
-			}
-			
-			$sql .= ')';
-			$this->_last_query = $sql;
-			$id = $this->database->query($sql);
-			
-			$this->_properties['id'] = $id;
-			$this->generatePropertiesLookup();
-			$this->_came_from_database = true;
-		}
+    				if(!isset($this->_no_prefix[$name])){
+    					$sql .= $this->_table_prefix.$name."='".$value."'";
+    				}else{
+    					$sql .= $name."='".$value."'";
+    				}
+				
+    				$i++;
+    			}
 		
-		$this->_modified_properties = array();
+    			$sql .= " WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
+    			$this->_last_query = $sql;
+    			$this->database->rawQuery($sql);
+			
+    		}else{
+			
+    			$sql = "INSERT INTO ".$this->_table_name."(";
+    			$fields = array();
+			
+    			foreach($this->_modified_properties as $key => $value){
+    			    if(!isset($this->_no_prefix[$key])){
+    				    $fields[] = $this->_table_prefix.$key;
+    				}else{
+    				    $fields[] = $key;
+    				}
+    			}
+			
+    			$sql .= join(', ', $fields).") VALUES (";
+			
+    			$i = 0;
+			
+    			foreach($this->_modified_properties as $value){
+				
+    				if($i > 0){
+    					$sql .= ', ';
+    				}
+				
+    				$sql .= "'$value'";
+    				$i++;
+    			}
+			
+    			$sql .= ')';
+    			$this->_last_query = $sql;
+    			$id = $this->database->query($sql);
+			
+    			$this->_properties['id'] = $id;
+    			$this->generatePropertiesLookup();
+    			$this->_came_from_database = true;
+    		}
+		
+    		$this->_modified_properties = array();
+		
+	    }
 	}
 	
 	public function delete(){

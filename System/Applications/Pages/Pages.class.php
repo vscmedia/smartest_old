@@ -192,6 +192,7 @@ class Pages extends SmartestSystemApplication{
             
                     $this->send(true, 'show_result');
                     $this->send($deleted_files, 'deleted_files');
+                    $this->send(count($deleted_files), 'num_deleted_files');
                     $this->send($failed_files, 'failed_files');
                     $this->send($untouched_files, 'untouched_files');
                     $this->send(SM_ROOT_DIR.'System/Cache/Pages/', 'cache_path');
@@ -817,9 +818,9 @@ class Pages extends SmartestSystemApplication{
 		    } 
 			
 			SmartestPersistentObject::get('__newPage')->setDraftTemplate($post['page_draft_template']);
-			SmartestPersistentObject::get('__newPage')->setDescription(addslashes(strip_tags($post['page_description'])));
-			SmartestPersistentObject::get('__newPage')->setMetaDescription(addslashes(strip_tags($post['page_meta_description'])));
-			SmartestPersistentObject::get('__newPage')->setKeywords(addslashes(strip_tags($post['page_keywords'])));
+			SmartestPersistentObject::get('__newPage')->setDescription(strip_tags($post['page_description']));
+			SmartestPersistentObject::get('__newPage')->setMetaDescription(strip_tags($post['page_meta_description']));
+			SmartestPersistentObject::get('__newPage')->setKeywords(strip_tags($post['page_keywords']));
 			
 			if(isset($_REQUEST['page_id'])){
 				SmartestPersistentObject::get('__newPage')->setParent($_REQUEST['page_id']);
@@ -940,6 +941,11 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $page->setOrderIndex($page->getParentPage()->getNextChildOrderIndex());
 	            $page->setCreated(time());
+	            
+	            if($page->getType() == 'NORMAL'){
+	                $page->addAuthorById($this->getUser()->getId());
+                }
+                
 	            $page->save();
 	            
 	            // should the page have a preset?
@@ -1017,16 +1023,20 @@ class Pages extends SmartestSystemApplication{
         
         if($page->hydrate($post['page_id'])){
             
-            $page->setTitle(addslashes($post['page_title']));
+            $page->setTitle($post['page_title']);
             $page->setParent($post['page_parent']);
             $page->setIsSection((isset($post['page_is_section']) && ($post['page_is_section'] == 'true')) ? 1 : 0);
             $page->setCacheAsHtml($post['page_cache_as_html']);
             $page->setCacheInterval($post['page_cache_interval']);
             $page->setIconImage($post['page_icon_image']);
-            $page->setSearchField(addslashes(strip_tags($post['page_search_field'])));
-            $page->setKeywords(addslashes(strip_tags($post['page_keywords'])));
-            $page->setDescription(addslashes(strip_tags($post['page_description'])));
-            $page->setMetaDescription(addslashes(strip_tags($post['page_meta_description'])));
+            
+            if($page->getType() == 'NORMAL'){
+                $page->setSearchField(strip_tags($post['page_search_field']));
+                $page->setKeywords(strip_tags($post['page_keywords']));
+                $page->setDescription(strip_tags($post['page_description']));
+                $page->setMetaDescription(strip_tags($post['page_meta_description']));
+            }
+            
             $page->save();
             SmartestCache::clear('site_pages_tree_'.$page->getSiteId(), true);
             $this->addUserMessageToNextRequest('The page was successfully updated.', SmartestUserMessage::SUCCESS);
@@ -1438,6 +1448,86 @@ class Pages extends SmartestSystemApplication{
         }
         
         $this->formForward();
+	    
+	}
+	
+	public function authors($get){
+	    
+	    if(!isset($get['from'])){
+	        $this->setFormReturnUri();
+	    }
+	    
+	    $page_webid = $get['page_id'];
+	    
+	    $page = new SmartestPage;
+	    
+	    if($page->hydrate($page_webid)){
+	        
+	        $uhelper = new SmartestUsersHelper;
+	        $users = $uhelper->getUsersOnSiteAsArrays($this->getSite()->getId());
+	        $this->send($users, 'users');
+	        $author_ids = $page->getAuthorIds();
+	        $this->send($author_ids, 'author_ids');
+	        $this->send($page->__toArray(), 'page');
+	        
+	    }else{
+            $this->addUserMessage('The page ID was not recognized', SmartestUserMessage::ERROR);
+        }
+	    
+	}
+	
+	public function updateAuthors($get, $post){
+	    
+	    $page_id = (int) $post['page_id'];
+	    
+	    $page = new SmartestPage;
+	    
+	    if($page->hydrate($page_id)){
+	        
+	        if(isset($post['users']) && count($post['users'])){
+	        
+	            $uhelper = new SmartestUsersHelper;
+                $users = $uhelper->getUsersOnSite($this->getSite()->getId());
+            
+                $new_author_ids = array_keys($post['users']);
+                $old_author_ids = $page->getAuthorIds();
+            
+                foreach($users as $u){
+                    
+                    if(in_array($u->getId(), $old_author_ids) && !in_array($u->getId(), $new_author_ids)){
+                        // remove connection
+                        $page->removeAuthorById($u->getId());
+                    }
+                    
+                    if(in_array($u->getId(), $new_author_ids) && !in_array($u->getId(), $old_author_ids)){
+                        // add connection
+                        $page->addAuthorById($u->getId());
+                    }
+                }
+                
+                $this->addUserMessageToNextRequest('The authors of this page were sucessfully updated.', SmartestUserMessage::SUCCESS);
+            
+            }else{
+                
+                $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGE_AUTHORS');
+        	    $q->setTargetEntityByIndex(1);
+        	    $q->addQualifyingEntityByIndex(2, $page->getId());
+
+        	    $q->addSortField('Users.user_lastname');
+
+        	    $q->delete();
+        	    
+        	    $this->addUserMessageToNextRequest('The authors of this page were sucessfully removed.', SmartestUserMessage::SUCCESS);
+                
+            }
+	        
+	    }else{
+            $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
+        }
+	    
+	    // print_r($post);
+	    
+	    $this->formForward();
 	    
 	}
 	
@@ -2299,6 +2389,150 @@ class Pages extends SmartestSystemApplication{
 		$page_webid=$get['page_id'];
 		$this->manager->publishPageLists($page_webid);
 		$this->formForward();
+	}
+	
+	public function addItemSpace($get){
+	    
+	    $new_name = SmartestStringHelper::toVarName($get['name']);
+	    $item_space = new SmartestItemSpace;
+	    
+	    if($item_space->exists($new_name, $this->getSite()->getId())){
+	        // item space already exists with this name
+	        $this->send(false, 'allow_continue');
+	    }else{
+	        
+	        // get templates
+	        $assetshelper = new SmartestAssetsLibraryHelper;
+	        $templates = $assetshelper->getAssetsByTypeCodeAsArrays('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId());
+	        $this->send($templates, 'templates');
+	        
+	        // get sets
+	        $du = new SmartestDataUtility;
+	        $sets = $du->getDataSetsAsArrays(false, $this->getSite()->getId());
+	        $this->send($sets, 'sets');
+	        
+	        $this->send($new_name, 'name');
+	        
+	        $this->send(true, 'allow_continue');
+	    }
+	    
+	}
+	
+	public function insertItemSpace($get, $post){
+	    
+	    $new_name = SmartestStringHelper::toVarName($post['itemspace_name']);
+	    $item_space = new SmartestItemSpace;
+	    
+	    if(strlen($new_name)){
+	    
+	        if($item_space->exists($new_name, $this->getSite()->getId())){
+	            // item space already exists with this name
+	            $this->addUserMessageToNextRequest('An itemspace with that name already exists', SmartestUserMessage::WARNING);
+	        }else{
+	        
+	            $item_space->setName($new_name);
+	            $item_space->setLabel($new_name);
+	        
+	            $dataset_id = (int) $post['itemspace_dataset_id'];
+	            $item_space->setDataSetId($dataset_id);
+	        
+	            $use_template = isset($post['itemspace_use_template']);
+	            $item_space->setUsesTemplate($use_template);
+	        
+	            if($use_template){
+	                $template_id = (int) $post['itemspace_template_id'];
+    	            $item_space->setTemplateAssetId($template_id);
+	            }
+	        
+	            $this->addUserMessageToNextRequest('An itemspace called \''.$new_name.'\' has been created.', SmartestUserMessage::SUCCESS);
+	            $item_space->save();
+	        }
+        }else{
+            $this->addUserMessageToNextRequest('You didn\'t enter a name for the itemspace. Please try again.', SmartestUserMessage::WARNING);
+        }
+        
+        $this->formForward();
+        
+	}
+	
+	public function defineItemspace($get){
+	    
+	    $page = new SmartestPage;
+	    $page_webid = $get['page_id'];
+	    
+	    if($page->hydrate($page_webid)){
+	    
+	        $name = SmartestStringHelper::toVarName($get['assetclass_id']);
+	    
+    	    $item_space = new SmartestItemSpace;
+        
+            if($item_space->exists($name, $this->getSite()->getId())){
+            
+                $definition = new SmartestItemSpaceDefinition;
+            
+                if($definition->load($name, $page, true)){
+                    // $definition_id = $definition->getSimpleItem()->getId();
+                    $definition_id = $definition->getItemId(true);
+                }else{
+                    $definition_id = 0;
+                }
+                
+                $this->send($definition_id, 'definition_id');
+                $this->send($item_space->getOptionsAsArrays(), 'options');
+                $this->send($item_space->__toArray(), 'itemspace');
+                $this->send($page->__toArray(), 'page');
+                
+            }else{
+                $this->addUserMessageToNextRequest("The itemspace ID wasn't recognized", SmartestUserMessage::ERROR);
+                $this->formForward();
+            }
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("The page ID wasn't recognized", SmartestUserMessage::ERROR);
+            $this->formForward();
+            
+        }
+	    
+	}
+	
+	public function updateItemspaceDefinition($get, $post){
+	    
+	    $page = new SmartestPage;
+	    $page_id = $post['page_id'];
+	    
+	    if($page->hydrate($page_id)){
+	    
+	        $name = SmartestStringHelper::toVarName($post['itemspace_name']);
+	    
+    	    $item_space = new SmartestItemSpace;
+        
+            if($exists = $item_space->exists($name, $this->getSite()->getId())){
+            
+                $definition = new SmartestItemSpaceDefinition;
+            
+                if(!$definition->load($name, $page, true)){
+                    $definition->setItemSpaceId($item_space->getId());
+                    $definition->setPageId($page->getId());
+                }
+                
+                $definition->setDraftItemId($post['item_id']);
+                
+                $this->addUserMessageToNextRequest("The itemspace ID was successfully updated", SmartestUserMessage::SUCCESS);
+                $definition->save();
+                
+            }else{
+                $this->addUserMessageToNextRequest("The itemspace ID wasn't recognized", SmartestUserMessage::ERROR);
+            }
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("The page ID wasn't recognized", SmartestUserMessage::ERROR);
+            
+        }
+        
+        $this->formForward();
+	    
 	}
 	
 	public function addPageUrl($get){

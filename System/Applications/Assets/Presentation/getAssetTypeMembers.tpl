@@ -14,20 +14,20 @@
 
 <div id="options-view-chooser">
 Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
-<a href="#" onclick="setView('list', 'options_grid')">List</a> /
-<a href="#" onclick="setView('grid', 'options_grid')">Icons</a>
+<a href="{dud_link}" onclick="setView('list', 'options_grid')">List</a> /
+<a href="{dud_link}" onclick="setView('grid', 'options_grid')">Icons</a>
 </div>
 
 <ul class="options-grid" style="margin-top:0px" id="options_grid">
 {foreach from=$assets item="asset"}
 
 <li>
-    <a href="#" class="option" id="item_{$asset.asset_id}" onclick="setSelectedItem('{$asset.asset_id}', 'Template', '{$sidebartype}');" >
+    <a href="{dud_link}" class="option" id="item_{$asset.id}" onclick="setSelectedItem('{$asset.id}', 'Template', '{$sidebartype}');" >
 
 {if in_array($type_code, array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'))}
-    <img border="0" src="{$domain}Resources/Images/ImageAssetThumbnails/{$asset.asset_url}" />{$asset.asset_stringid}</a>
+    <img border="0" src="{$domain}Resources/Images/ImageAssetThumbnails/{$asset.url}" />{$asset.stringid}</a>
 {else}
-    <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$asset.asset_stringid}</a>
+    <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$asset.stringid}</a>
 {/if}
 
 </li>
@@ -42,25 +42,29 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
 
 <ul class="actions-list" id="noneditableasset-specific-actions" style="display:none">
   <li><b>Selected File</b></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('assetInfo'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About This File...</a></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('deleteAssetConfirm'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete This File</a></li>
-	{* <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('duplicateAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate This File</a></li> *}
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('downloadAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Download This File</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('assetInfo'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About This File...</a></li>
+	<li class="permanent-action"><a href="{dud_link}href="{dud_link}"" onclick="{literal}if(selectedPage){ workWithItem('addTodoItem'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt="" /> Add a new to-do</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('previewAsset'); }{/literal}"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Preview This File</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('deleteAssetConfirm'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete This File</a></li>
+	{* <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('duplicateAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate This File</a></li> *}
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('downloadAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Download This File</a></li>
 </ul>
 
 <ul class="actions-list" id="editableasset-specific-actions" style="display:none">
   <li><b>Selected File</b></li>
-  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('assetInfo'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About This File...</a></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('editAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This File</a></li>
-	{if $allow_source_edit}<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('editTextFragmentSource'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit File Source</a></li>{/if}
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('deleteAssetConfirm'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete This File</a></li>
-	{* <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('duplicateAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_copy.png" border="0" alt="" /> Duplicate This File</a></li> *}
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('downloadAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/disk.png" border="0" alt="" /> Download This File</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('assetInfo'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About This File...</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('editAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This File</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('previewAsset'); }{/literal}"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Preview This File</a></li>
+	{if $allow_source_edit}<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('editTextFragmentSource'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit File Source</a></li>{/if}
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('addTodoItem'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt="" /> Add a new to-do</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('deleteAssetConfirm'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete This File</a></li>
+	{* <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('duplicateAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_copy.png" border="0" alt="" /> Duplicate This File</a></li> *}
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('downloadAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/disk.png" border="0" alt="" /> Download This File</a></li>
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Media Asset Options</b></li>
-	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addAsset?asset_type={$type_code}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a new file of this type</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addAsset?asset_type={$type_code}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a new file of this type</a></li>
 </ul>
 
 </div>

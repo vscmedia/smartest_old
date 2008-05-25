@@ -148,6 +148,8 @@
   
   {/if}
   
+  {if $pageInfo.type == 'NORMAL'}
+  
   <div class="edit-form-row">
     <div class="form-section-label">Search terms</div>
       <textarea name="page_search_field" style="width:500px;height:60px">{$pageInfo.search_field}</textarea>
@@ -167,6 +169,8 @@
       <div class="form-section-label">Meta Keywords</div>
       <textarea name="page_keywords" style="width:500px;height:100px">{$pageInfo.keywords}</textarea>
     </div>
+    
+  {/if}
     
   <div class="edit-form-row">
     <div class="buttons-bar">

@@ -16,8 +16,8 @@ Found  assets. View as:
 <ul class="options-grid" style="margin-top:0px" id="options_grid">
 {foreach from=$assetList item="asset"}
 <li>
-    <a href="javascript:nothing()" class="option" id="item_{$asset.asset_id}" onclick="setSelectedItem('{$asset.asset_id}');" >
-    <img border="0" src="{$domain}Resources/Icons/page.png" />{$asset.asset_stringid}</a>
+    <a href="javascript:nothing()" class="option" id="item_{$asset.id}" onclick="setSelectedItem('{$asset.id}');" >
+    <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$asset.url}</a>
 </li>
 {/foreach}
 </ul>

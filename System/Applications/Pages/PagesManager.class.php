@@ -489,6 +489,7 @@ class PagesManager{
 		$info = array();
 		$site_id = $page->getSiteId();
 		$version = ($version == 'live') ? 'live' : 'draft';
+		$draft = ($version == 'draft') ? true : false;
 		
 		$fieldNames = $this->getTemplateFieldNames($template_file_path);
 			
@@ -578,6 +579,60 @@ class PagesManager{
 				$i++;
 			}
 		
+		}
+		
+		$itemspace_names = $this->getTemplateItemNames($template_file_path);
+			
+		if(is_array($itemspace_names)){
+			
+			foreach($itemspace_names as $itemspace_name){
+                
+                $item_space = new SmartestItemSpace;
+                
+                $info[$i]['info']['type'] = "itemspace";
+                $info[$i]['info']['assetclass_name'] = $itemspace_name;
+                
+                if($item_space->exists($itemspace_name, $site_id)){
+                    
+                    $info[$i]['info']['exists'] = 'true';
+                    $info[$i]['info']['assetclass_id'] = $item_space->getId();
+                    
+                    $definition = new SmartestItemSpaceDefinition;
+                    
+                    if($definition->load($itemspace_name, $page, $draft)){
+                        $info[$i]['info']['defined'] = $definition->hasChanged() ? 'DRAFT' : 'PUBLISHED';
+                    }else{
+                        $info[$i]['info']['defined'] = 'UNDEFINED';
+                    }
+                    
+                }else{
+                    $info[$i]['info']['exists'] = 'false';
+                }
+                
+                $info[$i]['info']['level'] = $level;
+                
+                $i++;
+                
+                /* $field = new SmartestPageField;
+                // $field->hydrateBy('name', $fieldName);
+                // a simple 'hydrateBy' did not take into account that fields are not cross-site and multiple fields may exist of the same name (one for each site)
+                $correct_sql = "SELECT * FROM PageProperties WHERE pageproperty_name='".$fieldName."' AND pageproperty_site_id='".$site_id."'";
+                $result = $this->database->queryToArray($correct_sql);
+                $field->hydrate($result[0]);
+                
+				// $info[$i]['info']['exists'] = $this->getFieldExists($fieldName);
+				$info[$i]['info']['exists'] = (count($result) > 0) ? 'true' : 'false';
+				$info[$i]['info']['defined'] = $this->getFieldDefinedOnPage($fieldName, $page->getId());
+				$info[$i]['info']['assetclass_name'] = $fieldName;
+				$info[$i]['info']['assetclass_id'] = 'field_'.$field->getId();
+				
+				// beware - hack
+				$info[$i]['info']['asset_id'] = $field->getId();
+				$info[$i]['info']['type'] = "field";
+				$info[$i]['info']['level'] = $level;
+				
+				$i++; */
+			}
 		}
 		
 		/* $listNames = $this->getTemplateListNames($template_file_path);
@@ -1259,6 +1314,22 @@ class PagesManager{
 				$regexp = preg_match_all("/<\?sm:(edit_)?field.+name=\"([\w-_]+?)\".*:\?>/i", $template_contents, $matches);
 
 				$foundClasses = $matches[2];
+
+				return $foundClasses;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
+	
+	public function getTemplateItemNames($template_file_path){
+		if(is_file($template_file_path)){
+			if($template_contents = file_get_contents($template_file_path)){
+				$regexp = preg_match_all("/<\?sm:item.+name=\"([\w-_]+?)\".*:\?>/i", $template_contents, $matches);
+
+				$foundClasses = $matches[1];
 
 				return $foundClasses;
 			}else{

@@ -220,6 +220,27 @@ class Desktop extends SmartestSystemApplication{
 	public function insertTodo($get, $post){
 	    
 	}
+	
+	public function completeTodoItem($get){
+	    
+	    $todo_id = (int) $get['todo_id'];
+	    
+	    $todo = new SmartestTodoItem;
+	    
+	    if($todo->hydrate($todo_id)){
+	        
+	        $todo->complete(true);
+	        $this->addUserMessageToNextRequest("The to-do item has been marked as completed", SmartestUserMessage::SUCCESS);
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The to-do item ID was not recognized", SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    $this->formForward();
+	    
+	}
     
     public function todoList(){
         

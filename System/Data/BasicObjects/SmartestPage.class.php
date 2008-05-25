@@ -16,6 +16,7 @@ class SmartestPage extends SmartestDataObject{
 	protected $_fields = array();
 	protected $_containers = array();
 	protected $_placeholders = array();
+	protected $_itemspaces = array();
 	
 	protected $_new_urls = array();
 	protected $displayPagesIndex = 0;
@@ -89,6 +90,14 @@ class SmartestPage extends SmartestDataObject{
 		
 		parent::save();
 		
+		if($this->_properties['id']){
+		    $sql = "SELECT pageurl_id FROM PageUrls WHERE pageurl_page_id='".$this->_properties['id']."'";
+		    $result = $this->database->queryToArray($sql);
+		    $num_existing_urls = count($result);
+	    }else{
+	        $num_existing_urls = 0;
+	    }
+		
 		$i = 0;
 		
 		// Add URL
@@ -99,7 +108,9 @@ class SmartestPage extends SmartestDataObject{
     	    $url->setPageId($this->_properties['id']);
     	    
     	    if($i < 1){
-    	        $url->setIsDefault(1);
+    	        if($num_existing_urls == 0){
+    	            $url->setIsDefault(1);
+	            }
 	        }
 	        
     	    $url->save();
@@ -222,7 +233,8 @@ class SmartestPage extends SmartestDataObject{
 		}
 		
 		// finally, request the page to force the system to build and cache the new copy
-		SmartestHttpRequestHelper::getContent(SM_CONTROLLER_DOMAIN.$this->getDefaultUrl());
+		// unfortunately this function is stil in need of errors, and still causes some preg_match errors
+		// SmartestHttpRequestHelper::getContent(SM_CONTROLLER_DOMAIN.$this->getDefaultUrl());
 		
 	}
 	
@@ -811,25 +823,29 @@ class SmartestPage extends SmartestDataObject{
 	    $data = array();
 	    $data['page'] = $this->__toArray();
 	    
-	    $data['page']['tags'] = $this->getTagsAsArrays();
+	    $data['tags'] = $this->getTagsAsArrays();
 	    
 	    if($this instanceof SmartestItemPage){
 	        if($this->getPrincipalItem()){
+	            
 	            $data['principal_item'] = $this->getPrincipalItem()->__toArray();
-	            $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
-	            $data['data_set'] = $this->getDataSet()->__toArray();
+	            
+	            // $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
+	            // $data['data_set'] = $this->getDataSet()->__toArray();
+	            
 	            $data['is_item'] = true;
+	            
             }else{
+                
                 $data['principal_item'] = array();
                 
-                // TODO: replace this code with code that will fetch "related" items
-                if($this->getDataSet() instanceof SmartestCmsItemSet){
+                /* if($this->getDataSet() instanceof SmartestCmsItemSet){
                     $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
                     $data['data_set'] = $this->getDataSet()->__toArray();
                 }else{
                     $data['sibling_items'] = array();
                     $data['data_set'] = array();
-                }
+                } */
                 
                 $data['is_item'] = true;
             }
@@ -839,8 +855,10 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $du = new SmartestDataUtility;
 	    $tags = $du->getTagsAsArrays();
+	    $data['all_tags'] = $tags;
 	    
-	    $data['tags'] = $tags;
+	    $data['authors'] = $this->getAuthorsAsArrays();
+	    
 	    $data['fields'] = $this->getPageFieldValuesAsAssociativeArray($draft_mode);
 	    $data['navigation'] = $this->getNavigationStructure($draft_mode);
 	    
@@ -1275,6 +1293,10 @@ class SmartestPage extends SmartestDataObject{
         
         $result = $this->database->queryToArray($sql);
         
+        // echo $sql;
+        
+        // print_r($result);
+        
         foreach($result as $def_array){
             if($def_array['assetclass_type'] == 'SM_ASSETCLASS_CONTAINER'){
                 $def = new SmartestContainerDefinition;
@@ -1289,6 +1311,25 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
+	public function loadItemSpaceDefinitions($draft_mode=false){
+	    
+	    if($draft_mode){
+	        $sql = "SELECT * FROM Items, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Items.item_id";
+	    }else{
+	        $sql = "SELECT * FROM Items, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_live_asset_id=Items.item_id";
+	    }
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    foreach($result as $def_array){
+            $def = new SmartestItemSpaceDefinition;
+            $def->hydrateFromGiantArray($def_array);
+            // print_r($def);
+            $this->_itemspaces[$def_array['assetclass_name']] = $def;
+        }
+	    
+	}
+	
 	public function hasContainerDefinition($container_name, $draft_mode=false){
 	    
 	    return array_key_exists($container_name, $this->_containers);
@@ -1298,6 +1339,84 @@ class SmartestPage extends SmartestDataObject{
 	public function hasPlaceholderDefinition($placeholder_name, $draft_mode=false){
 	    
 	    return array_key_exists($placeholder_name, $this->_placeholders);
+	    
+	}
+	
+	public function hasItemSpaceDefinition($itemspace_name, $draft_mode=false){
+	    
+	    return array_key_exists($itemspace_name, $this->_itemspaces);
+	    
+	}
+	
+	public function getItemSpaceDefinitionNames(){
+	    return array_keys($this->_itemspaces);
+	}
+	
+	//// Authors and page credit
+	
+	public function getAuthors(){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGE_AUTHORS');
+	    $q->setTargetEntityByIndex(1);
+	    $q->addQualifyingEntityByIndex(2, $this->_properties['id']);
+	    
+	    $q->addSortField('Users.user_lastname');
+	    
+	    $result = $q->retrieve();
+	    
+	    return $result;
+	    
+	}
+	
+	public function getAuthorsAsArrays(){
+	    
+	    $authors = $this->getAuthors();
+	    $arrays = array();
+	    
+	    foreach($authors as $a){
+	        $arrays[] = $a->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
+	public function getAuthorIds(){
+	    
+	    $authors = $this->getAuthors();
+	    $ids = array();
+	    
+	    foreach($authors as $a){
+	        $ids[] = $a->getId();
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
+	public function addAuthorById($user_id){
+	    
+	    $user_id = (int) $user_id;
+	    
+	    $link = new SmartestManyToManyLookup;
+	    $link->setEntityForeignKeyValue(2, $this->_properties['id']);
+	    $link->setEntityForeignKeyValue(1, $user_id);
+	    $link->setType('SM_MTMLOOKUP_PAGE_AUTHORS');
+	    
+	    $link->save();
+	    
+	}
+	
+	public function removeAuthorById($item_id){
+	    
+	    $user_id = (int) $user_id;
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGE_AUTHORS');
+	    $q->setTargetEntityByIndex(1);
+	    $q->addQualifyingEntityByIndex(2, $this->_properties['id']);
+	    $q->addForeignTableConstraint('Users.user_id', $user_id);
+	    
+	    $q->delete();
 	    
 	}
 	
@@ -1318,6 +1437,10 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
+	public function getContainerDefinitionNames(){
+	    return array_keys($this->_containers);
+	}
+	
 	public function getPlaceholderDefinition($placeholder_name, $draft_mode=false){
 	    
 	    if(array_key_exists($placeholder_name, $this->_placeholders)){
@@ -1330,6 +1453,33 @@ class SmartestPage extends SmartestDataObject{
 	        $placeholder = new SmartestPlaceholderDefinition;
             $placeholder->load($placeholder_name, $this, $draft_mode);
             return $placeholder;
+        
+        }
+	    
+	}
+	
+	public function getPlaceholderDefinitionNames(){
+	    return array_keys($this->_placeholders);
+	}
+	
+	public function getItemSpaceDefinition($itemspace_name, $draft_mode=false){
+	    
+	    // print_r($this->_itemspaces);
+	    // echo $itemspace_name;
+	    
+	    if(array_key_exists($itemspace_name, $this->_itemspaces)){
+	        
+	        $itemspace = $this->_itemspaces[$itemspace_name];
+	        // print_r($itemspace);
+	        return $itemspace;
+	        
+	    }else{
+	    
+	        $itemspace = new SmartestItemSpaceDefinition;
+            $itemspace->load($itemspace_name, $this, $draft_mode);
+            return $itemspace;
+            
+            // throw new SmartestException("itemspace name '".$itemspace_name."' not recognized.");
         
         }
 	    

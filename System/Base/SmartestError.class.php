@@ -2,26 +2,28 @@
 
 class SmartestError{
 
-	protected $verboseType;
-	protected $message;
-	protected $code;
+	protected $_verboseType;
+	protected $_exception;
 	
-	public function __construct($message="[No Error Message Given]", $code=100, $verboseType="Unknown or Miscellaneous"){
-		$this->code = $code;
-		$this->message = $message;
-		$this->verboseType = $verboseType;
-	}
+	public function __construct($exception, $verboseType="Unknown or Miscellaneous"){
+		$this->_exception = $exception;
+		$this->_verboseType = $verboseType;
+	}// $message, $type, @$this->errorCodes[$type]
 	
 	public function getMessage(){
-		return $this->message;
+		return $this->_exception->getMessage();
 	}
 	
 	public function getVerboseType(){
-		return $this->verboseType;
+		return $this->_verboseType;
 	}
 	
 	public function getType(){
-		return $this->code;
+		return $this->_exception->getCode();
+	}
+	
+	public function getBackTrace(){
+	    return $this->_exception->getTrace();
 	}
 
 }

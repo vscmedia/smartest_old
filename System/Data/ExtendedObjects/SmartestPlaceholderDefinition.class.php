@@ -5,6 +5,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
     protected $_placeholder;
     protected $_asset;
     protected $_is_linkable = false;
+    protected $_page;
     
 	protected function __objectConstruct(){
 		
@@ -22,7 +23,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
             
             $placeholder = new SmartestPlaceholder;
             
-            $sql = "SELECT * FROM AssetClasses WHERE assetclass_type != 'SM_ASSETCLASS_CONTAINER' AND assetclass_name='".$name."' AND (assetclass_site_id='".$page->getSiteId()."' OR assetclass_shared=1)";
+            $sql = "SELECT * FROM AssetClasses WHERE assetclass_type != 'SM_ASSETCLASS_CONTAINER' AND assetclass_type != 'SM_ASSETCLASS_ITEM_SPACE' AND assetclass_name='".$name."' AND (assetclass_site_id='".$page->getSiteId()."' OR assetclass_shared=1)";
             $result = $this->database->queryToArray($sql);
             
             if(count($result)){

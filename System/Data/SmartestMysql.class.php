@@ -129,7 +129,7 @@ class SmartestMysql{
 	
 	public function rawQuery($querystring){
 	    if(!$this->dblink && !$this->reconnect()){
-	        throw new SmartestException("Lost connection to to MySQL database", SM_ERROR_DB);
+	        throw new SmartestException("Lost connection to to MySQL database and could not reconnect", SM_ERROR_DB);
         }else{
 	        $result = mysql_query($querystring, $this->dblink);
     	    // var_dump($result);
@@ -152,7 +152,7 @@ class SmartestMysql{
 	    
 	    if(!$this->dblink && !$this->reconnect()){
 	    
-	        throw new SmartestException("Lost connection to to MySQL database", SM_ERROR_DB);
+	        throw new SmartestException("Lost connection to to MySQL database and could not reconnect", SM_ERROR_DB);
         
         }else{
 	    
@@ -366,7 +366,25 @@ class SmartestMysql{
 		    }
 			
 		}else{
-			$error = "Query OK";
+		    
+		    if(defined('SM_DEVELOPER_MODE') && constant('SM_DEVELOPER_MODE')){
+		        
+		        $e = new SmartestException('MySQL QUERY: ', SM_ERROR_DB);
+		        $stack = $e->getTrace();
+		        
+		        foreach($stack as $key => $event){
+		            $guiltykey = $key + 1;
+			        if($event['function'] == 'queryToArray' || $event['function'] == 'rawQuery'){
+			            $error = basename($stack[$guiltykey]['file']).' on line '.$stack[$guiltykey]['line'];
+			            break;
+			        }
+			    }
+			    
+		    }else{
+		    
+			    $error = "Query OK";
+			
+		    }
 		}
 		
 		$this->lastQuery = $querystring;

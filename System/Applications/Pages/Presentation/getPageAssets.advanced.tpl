@@ -124,6 +124,8 @@ Viewing mode:
 	    <a href="{$domain}{$section}/addList?name={$assetclass.info.assetclass_name}">Add it</a>
 	  {elseif $assetclass.info.type=='field'}
 	    <a href="{$domain}metadata/addPageProperty?site_id={$site_id}&amp;name={$assetclass.info.assetclass_name}">Add it</a>
+	  {elseif $assetclass.info.type=='itemspace'}
+  	  <a href="{$domain}{$section}/addItemSpace?site_id={$site_id}&amp;name={$assetclass.info.assetclass_name}">Add it</a>
 	  {/if}
 	  
 	{/if}

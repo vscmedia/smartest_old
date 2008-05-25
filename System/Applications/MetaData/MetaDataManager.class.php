@@ -65,8 +65,8 @@ class MetaDataManager{
 	}
 	
 	function getPropertyTypes(){
-		$sql = "SELECT * FROM PropertyTypes ";
-    	$propertyTypes = $this->database->queryToArray($sql); 
+		/* $sql = "SELECT * FROM PropertyTypes ";
+    	$propertyTypes = $this->database->queryToArray($sql);  */
 		return $propertyTypes;
 	}
 	

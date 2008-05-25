@@ -21,7 +21,8 @@
     <class>SmartestAsset</class>
     <foreignkeyfield>asset_id</foreignkeyfield>
     <urifield>asset_webid</urifield>
-    <action>assets/assetInfo</action>
+    <autocomplete>false</autocomplete>
+    <action>assets/previewAsset?asset_id=$asset_id</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_EDIT_ASSET" category="SM_TODOITEMCATEGORY_ASSETS">
@@ -31,7 +32,8 @@
     <class>SmartestAsset</class>
     <foreignkeyfield>asset_id</foreignkeyfield>
     <urifield>asset_webid</urifield>
-    <action>assets/editAsset</action>
+    <autocomplete>false</autocomplete>
+    <action>assets/editAsset?asset_id=$asset_id</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_RELEASE_ASSET" category="SM_TODOITEMCATEGORY_ASSETS">
@@ -41,7 +43,8 @@
     <class>SmartestAsset</class>
     <foreignkeyfield>asset_id</foreignkeyfield>
     <urifield>asset_webid</urifield>
-    <action>assets/assetInfo</action>
+    <autocomplete>true</autocomplete>
+    <action>assets/assetInfo?asset_id=$asset_id</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_APPROVE_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
@@ -51,7 +54,8 @@
     <class>SmartestPage</class>
     <foreignkeyfield>page_id</foreignkeyfield>
     <urifield>page_webid</urifield>
-    <action>websitemanager/preview</action>
+    <autocomplete>true</autocomplete>
+    <action>websitemanager/preview?page_id=$page_webid</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_EDIT_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
@@ -61,7 +65,8 @@
     <class>SmartestPage</class>
     <foreignkeyfield>page_id</foreignkeyfield>
     <urifield>page_webid</urifield>
-    <action>websitemanager/openPage</action>
+    <autocomplete>false</autocomplete>
+    <action>websitemanager/openPage?page_id=$page_id</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_RELEASE_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
@@ -71,7 +76,8 @@
     <class>SmartestPage</class>
     <foreignkeyfield>page_id</foreignkeyfield>
     <urifield>page_webid</urifield>
-    <action>websitemanager/releasePage</action>
+    <autocomplete>true</autocomplete>
+    <action>websitemanager/releasePage?page_id=$page_id</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_PUBLISH_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
@@ -81,17 +87,8 @@
     <class>SmartestPage</class>
     <foreignkeyfield>page_id</foreignkeyfield>
     <urifield>page_webid</urifield>
-    <action>websitemanager/preview</action>
-  </type>
-  
-  <type id="SM_TODOITEMTYPE_APPROVE_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
-    <label>Approve it</label>
-    <description>Approve item so that it is ready for publishing</description>
-    <table>Items</table>
-    <class>SmartestItem</class>
-    <foreignkeyfield>item_id</foreignkeyfield>
-    <urifield>item_id</urifield>
-    <action>datamanager/openItem</action>
+    <autocomplete>true</autocomplete>
+    <action>websitemanager/preview?page_id=$page_webid</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_EDIT_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
@@ -101,7 +98,19 @@
     <class>SmartestItem</class>
     <foreignkeyfield>item_id</foreignkeyfield>
     <urifield>item_id</urifield>
-    <action>datamanager/openItem</action>
+    <autocomplete>false</autocomplete>
+    <action>datamanager/openItem?item_id=$item_id</action>
+  </type>
+  
+  <type id="SM_TODOITEMTYPE_APPROVE_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
+    <label>Approve it</label>
+    <description>Approve item so that it is ready for publishing</description>
+    <table>Items</table>
+    <class>SmartestItem</class>
+    <foreignkeyfield>item_id</foreignkeyfield>
+    <urifield>item_id</urifield>
+    <autocomplete>true</autocomplete>
+    <action>datamanager/openItem?item_id=$item_id</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_RELEASE_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
@@ -111,7 +120,8 @@
     <class>SmartestItem</class>
     <foreignkeyfield>item_id</foreignkeyfield>
     <urifield>item_id</urifield>
-    <action>datamanager/releaseItem</action>
+    <autocomplete>true</autocomplete>
+    <action>datamanager/releaseItem?item_id=$item_id</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_PUBLISH_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
@@ -121,12 +131,14 @@
     <class>SmartestItem</class>
     <foreignkeyfield>item_id</foreignkeyfield>
     <urifield>item_id</urifield>
-    <action>datamanager/openItem</action>
+    <autocomplete>true</autocomplete>
+    <action>datamanager/openItem?item_id=$item_id</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_GENERIC" category="SM_TODOITEMCATEGORY_ALL">
     <label>Any other task (specify in message)</label>
     <description>Indicates the need to approve a file.</description>
+    <autocomplete>false</autocomplete>
   </type>
   
 </todoitemtypes>

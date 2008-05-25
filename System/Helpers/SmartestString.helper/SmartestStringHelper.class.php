@@ -83,13 +83,13 @@ class SmartestStringHelper extends SmartestHelper{
 
     }
 
-	static function toSlug($normal_string){
+	static function toSlug($normal_string, $clean_non_ascii=false){
 	
 		$page_name = strtolower($normal_string);
 		
-		/* if(!self::isAscii($page_name)){
+		if($clean_non_ascii && !self::isAscii($page_name)){
 		    $page_name = self::toAscii($page_name);
-		} */
+		}
 		
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\");
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
@@ -98,13 +98,13 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
-	static function toVarName($normal_string){
+	static function toVarName($normal_string, $clean_non_ascii=false){
 	
 		$page_name = strtolower($normal_string);
 		
-		/* if(!self::isAscii($page_name)){
+		if($clean_non_ascii && !self::isAscii($page_name)){
 		    $page_name = self::toAscii($page_name);
-		} */
+		}
 		
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\");
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
@@ -113,13 +113,13 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
-	static function toConstantName($string){
+	static function toConstantName($string, $clean_non_ascii=false){
 		
 		$constant_name = trim($string, " ?!%$#&£*|/\\");
 		
-		/* if(!self::isAscii($constant_name)){
+		if($clean_non_ascii && !self::isAscii($constant_name)){
 		    $constant_name = self::toAscii($constant_name);
-		} */
+		}
 		
 		$constant_name = preg_replace("/[\"'\.,]+/", "", $constant_name);
 		$constant_name = preg_replace("/[^\w-_]+/", "_", $constant_name);
@@ -152,7 +152,6 @@ class SmartestStringHelper extends SmartestHelper{
 		return $final;
 		
 	}
-	
 	
 	
 	static function toQueryString($array, $escapeAmpersand=false){
@@ -296,12 +295,18 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	}
 	
+	// protects the database
 	static function sanitize($string){
 	    
-	    $string = str_replace('<?php', '', $string);
-	    $string = str_replace('DELETE FROM', '', $string);
-	    $string = str_replace('DROP TABLE', '', $string);
-	    $string = str_replace('DROP DATABASE', '', $string);
+	    if(is_string($string)){
+	        // $string = mysql_real_escape_string($string);
+	        $string = str_replace('<?php', '', $string);
+	        $string = str_replace('DELETE FROM', '', $string);
+	        $string = str_replace('DROP TABLE', '', $string);
+	        $string = str_replace('DROP DATABASE', '', $string);
+        }
+	    
+	    // echo $string;
 	    
 	    return $string;
 	    

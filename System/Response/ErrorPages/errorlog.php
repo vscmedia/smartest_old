@@ -57,7 +57,16 @@
         <tr>
           <td>
             <img src="<?php echo defined("SM_CONTROLLER_DOMAIN") ? SM_CONTROLLER_DOMAIN : "/"; ?>Resources/Icons/exclamation.png" alt="" style="display:block;float:left" />
-            <div class="error-text"><?php echo $error->getMessage() ?></div></td>
+            <div class="error-text"><?php echo $error->getMessage() ?></div>
+            <?php if(count($error->getBackTrace()) > 2): ?>
+                <br clear="all" />
+                <ul>
+                    <?php $i=0; foreach($error->getBackTrace() as $clue): ?>
+                    <li><?php echo $clue['function'].'() in '.basename($clue['file']).' on line '.$clue['line']; ++$i; ?></li>
+                    <?php if($i > 6){break;} ?>
+                <?php endforeach; ?>
+                </ul>
+            <?php endif; ?></td>
         </tr>
 <?php endforeach; ?>
       </table>

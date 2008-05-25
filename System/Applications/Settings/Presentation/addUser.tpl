@@ -60,17 +60,6 @@ function check(){
   </tr>
   
   <tr>
-    <td class="text" valign="top">Initial Site (you may add others later) </td>
-    <td align="left">
-      <select name="site_id" style="width:200px">
-        {foreach from=$sites item="site"}
-        <option value="{$site.id}">{$site.name}</option>
-        {/foreach}
-      </select>
-    </td>
-  </tr>
-  
-  <tr>
     <td class="text" valign="top">Username </td>
     <td align="left"><input type="text" style="width:200px" name="username" />
       </td>

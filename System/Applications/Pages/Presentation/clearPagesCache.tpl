@@ -30,7 +30,7 @@
   
   {if count($deleted_files) || count($failed_files) || count($untouched_files)}
   
-  <div class="instruction">Result: 0 pages were cleared from the cache. <a href="javascript:toggleCacheResultDetails()" id="show-details-link">Show Details</a></div>
+  <div class="instruction">Result: {$num_deleted_files} page{if $num_deleted_files == 1} was{else}s were{/if} cleared from the cache. <a href="javascript:toggleCacheResultDetails()" id="show-details-link">Show Details</a></div>
   
   <div id="cache-details" style="display:none">
   

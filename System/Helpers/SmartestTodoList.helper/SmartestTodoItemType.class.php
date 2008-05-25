@@ -10,6 +10,7 @@ class SmartestTodoItemType{
     protected $_class;
     protected $_foreign_key_field;
     protected $_uri_field;
+    protected $_autocomplete;
     protected $_action;
     
     public function __construct($type_data){
@@ -22,6 +23,7 @@ class SmartestTodoItemType{
         $this->_class = $type_data['class'];
         $this->_foreign_key_field = $type_data['foreignkeyfield'];
         $this->_uri_field = $type_data['urifield'];
+        $this->_autocomplete = SmartestStringHelper::toRealBool($type_data['autocomplete']);
         $this->_action = $type_data['action'];
         
     }
@@ -40,6 +42,7 @@ class SmartestTodoItemType{
             'class'=>$this->_class,
             'foreignkeyfield'=>$this->_foreign_key_field,
             'urifield'=>$this->_uri_field,
+            'autocomplete'=>$this->_autocomplete,
             'action'=>$this->_action
         );
     }
@@ -74,6 +77,10 @@ class SmartestTodoItemType{
     
     public function getUriField(){
         return $this->_uri_field;
+    }
+    
+    public function getAutoComplete(){
+        return $this->_autocomplete;
     }
     
     public function getAction(){

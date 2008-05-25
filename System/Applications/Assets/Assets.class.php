@@ -265,6 +265,7 @@ class Assets extends SmartestSystemApplication{
 	        $a->setWebid(SmartestStringHelper::random(32));
 	        $a->setStringid(SmartestStringHelper::toVarName($nf['name']));
 	        $a->setUrl(basename($nf['filename']));
+	        $a->setUserId($this->getUser()->getId());
 	        $a->save();
 	    }
 	    
@@ -361,6 +362,7 @@ class Assets extends SmartestSystemApplication{
     		    $shared = $post['asset_shared'] ? 1 : 0;
     		    $asset->setShared($shared);
     		    $asset->setUserId($this->getUser()->getId());
+    		    $asset->setCreated(time());
 		    
     		    $suffixes = array();
 		    
@@ -411,7 +413,7 @@ class Assets extends SmartestSystemApplication{
 		        
     		        $asset->setStringid($string_id);
 		        
-    		        $content = SmartestStringHelper::sanitizeFileContents($post['content']);
+    		        $content = $post['content'];
 		        
     		        $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.md5(microtime(true)).'.tmp';
     		        SmartestFileSystemHelper::save($new_temp_file, $content, true);
@@ -472,7 +474,7 @@ class Assets extends SmartestSystemApplication{
 		            
     		            // if storage type is database, save the file to System/Temporary/ and get its contents
     		            $content = SmartestFileSystemHelper::load($new_temp_file, true);
-    		            $asset->getTextFragment()->setContent(str_replace("'", "\\'", $content));
+    		            $asset->getTextFragment()->setContent($content);
     		            $asset->setUrl($filename);
 		            
     		        }else{
@@ -622,7 +624,7 @@ class Assets extends SmartestSystemApplication{
 			    }
 
     			$this->send($formTemplateInclude, "formTemplateInclude");
-    			$this->setTitle('Edit Asset | '.$asset_type['label']);
+    			$this->setTitle('Edit File | '.$asset_type['label']);
     			$this->send($asset_type, 'asset_type');
     			$this->send($asset->__toArray(), 'asset');
 
@@ -702,7 +704,7 @@ class Assets extends SmartestSystemApplication{
 		}
 	}
 	
-	function approveAsset($get){
+	public function approveAsset($get){
 	    
 	    $asset_id = $get['asset_id'];
 	    
@@ -710,8 +712,15 @@ class Assets extends SmartestSystemApplication{
 	        $asset = new SmartestAsset;
 
     		if($asset->hydrate($asset_id)){
+    		    
     		    $asset->setIsApproved(1);
+    		    
+    		    if($todo = $this->getUser()->getTodo('SM_TODOITEMTYPE_APPROVE_ASSET', $asset->getId())){
+	                $todo->complete();
+                }
+    		    
     		    $this->addUserMessageToNextRequest('The file has been approved.', SmartestUserMessage::SUCCESS);
+    		    
     		}else{
     		    $this->addUserMessage('The asset ID was not recognized.', SmartestUserMessage::ERROR);
     		}
@@ -720,9 +729,11 @@ class Assets extends SmartestSystemApplication{
 	        $this->addUserMessageToNextRequest('You don\'t have permission to approve files for use on this site.', SmartestUserMessage::ACCESS_DENIED);
 	    }
 	    
+	    $this->formForward();
+	    
 	}
 	
-	function publishTextAsset($get){
+	public function publishTextAsset($get){
 	    
 	    $asset_id = $get['asset_id'];
         
@@ -773,7 +784,164 @@ class Assets extends SmartestSystemApplication{
 		
 	}
 	
-	function previewParsableTextFragment($get){
+	public function addTodoItem($get){
+	    
+	    $asset_id = (int) $get['asset_id'];
+	    $asset = new SmartestAsset;
+	    
+	    if($asset->hydrate($asset_id)){
+	        
+	        $uhelper = new SmartestUsersHelper;
+	        $users = $uhelper->getUsersOnSiteAsArrays($this->getSite()->getId());
+	        
+	        $this->send($users, 'users');
+	        $this->send($asset->__toArray(), 'asset');
+	        $this->send($this->getUser()->__toArray(), 'user');
+	        
+	        $todo_types = SmartestTodoListHelper::getTypesByCategoryAsArrays('SM_TODOITEMCATEGORY_ASSETS', true);
+	        $this->send($todo_types, 'todo_types');
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest('The asset ID was not recognised.', SmartestUserMessage::ERROR);
+	        $this->formForward();
+	        
+	    }
+	    
+	}
+	
+	public function insertTodoItem($get, $post){
+	    
+	    $asset_id = (int) $post['asset_id'];
+	    
+	    $asset = new SmartestAsset;
+	    
+	    if($asset->hydrate($asset_id)){
+	        
+	        $user = new SmartestUser;
+	        $user_id = (int) $post['todoitem_receiving_user_id'];
+	        
+	        if($user->hydrate($user_id)){
+	            
+	            // $user->assignTodo('SM_TODOITEMTYPE_EDIT_ITEM', $item_id, $this->getUser()->getId(), SmartestStringHelper::sanitize())
+	            
+	            $todo_type = SmartestStringHelper::sanitize($post['todoitem_type']);
+	            
+	            $type = SmartestTodoListHelper::getType($todo_type);
+                
+                $message = SmartestStringHelper::sanitize($post['todoitem_description']);
+                
+        	    if(isset($message{1})){
+        	        $input_message = SmartestStringHelper::sanitize($message);
+        	    }else{
+        	        $input_message = $type->getDescription();
+        	    }
+        	    
+        	    $priority = (int) $post['todoitem_priority'];
+        	    $size     = (int) $post['todoitem_size'];
+	            
+	            $todo = new SmartestTodoItem;
+	            $todo->setReceivingUserId($user->getId());
+        	    $todo->setAssigningUserIs($this->getUser()->getId());
+        	    $todo->setForeignObjectId($asset->getId());
+        	    $todo->setTimeAssigned(time());
+        	    $todo->setDescription($input_message);
+        	    $todo->setType($todo_type);
+        	    $todo->setPriority($priority);
+        	    $todo->setSize($size);
+        	    $todo->save();
+        	    
+        	    if(!$todo->isSelfAssigned()){
+        	        
+        	        $message = 'Hi '.$user.",\n\n".$this->getUser()." has added a new task to your to-do list. Please visit ".SM_CONTROLLER_DOMAIN."smartest/todo for more information.\n\nYours truly,\nThe Smartest Web Content Management Platform";
+        	        $user->sendEmail('New To-do Assigned', $message);
+        	        
+        	    }
+	            
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest('The user ID was not recognized.', SmartestUserMessage::ERROR);
+	            
+	        }
+	        
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest('The asset ID was not recognized.', SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
+	public function previewAsset($get){
+	    
+	    $this->setTitle("Preview File");
+	    $asset = new SmartestAsset;
+	    $asset_id = (int) $get['asset_id'];
+	    
+	    if($asset->hydrate($asset_id)){
+	        
+	        $data = $asset->__toArray(false, true); // don't include object, do include owner info
+		    
+		    if(isset($data['type_info']['source-editable']) && SmartestStringHelper::toRealBool($data['type_info']['source-editable'])){
+		        $this->send(true, 'allow_source_edit');
+		    }else{
+		        $this->send(false, 'allow_source_edit');
+		    }
+		    
+		    if(isset($data['type_info']['parsable']) && SmartestStringHelper::toRealBool($data['type_info']['parsable'])){
+		        
+		        if($this->getUser()->hasToken('publish_assets')){
+		            $this->send(true, 'show_publish');
+	            }else{
+	                $this->send(false, 'show_publish');
+	            }
+	            
+		        $this->send(true, 'show_attachments');
+		        
+		    }else{
+		        $this->send(false, 'show_publish');
+		        $this->send(false, 'show_attachments');
+		    }
+		    
+		    if($this->getUser()->hasToken('approve_assets') && $asset->getApproved() == 0){
+		        $this->send(true, 'allow_approve');
+		    }else{
+		        $this->send(false, 'allow_approve');
+		    }
+		    
+		    $page = $this->getSite()->getHomePage();
+    	    
+    	    $wpb = new SmartestWebPageBuilder('_preview');
+    	    $wpb->assignPage($page);
+    	    $wpb->setDraftMode(true);
+    	    $wpb->prepareForRender();
+    	    
+    	    $wpb->assign('domain', SM_CONTROLLER_DOMAIN);
+    	    $wpb->template_dir = SM_ROOT_DIR.'Presentation/';
+    		$wpb->compile_dir = SM_ROOT_DIR.'System/Cache/Smarty/';
+    		$wpb->cache_dir = SM_ROOT_DIR.'System/Cache/Smarty/';
+    		$wpb->config_dir = SM_ROOT_DIR.'Configuration/';
+    	    
+    	    ob_start();
+    	    $wpb->_renderAssetObject($asset, array());
+    	    $asset_html = ob_get_contents();
+    	    ob_end_clean();
+    	    // echo $asset_html;
+    	    $this->send($asset_html, 'preview_html');
+    	    $this->send($data, 'asset');
+    	    
+    	    // for html reusability
+    	    $this->send($data['type_info'], 'asset_type');
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest('The asset ID was not recognized.', SmartestUserMessage::ERROR);
+	        $this->formForward();
+	        
+	    }
 	    
 	}
 	
@@ -1001,32 +1169,33 @@ class Assets extends SmartestSystemApplication{
 
 	function deleteAsset($get, $post){
 
-		if($this->getUser()->hasToken('delete_assets')){
+		$asset_id = $post['asset_id'];
 
-		    $asset_id = $post['asset_id'];
+	    $asset = new SmartestAsset;
 
-		    $asset = new SmartestAsset;
-
-		    if($asset->hydrate($asset_id)){
-
-		        $asset->delete();
-
-		        $this->addUserMessageToNextRequest("The asset has been successfully deleted.", SmartestUserMessage::SUCCESS);
-        		$this->formForward();
-
-		    }else{
-
-		        $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);
-        		$this->formForward();
-
-		    }
-		    
-        }else{
+	    if($asset->hydrate($asset_id)){
             
-            $this->addUserMessageToNextRequest("You don't currently have permission to delete files.", SmartestUserMessage::ACCESS_DENIED);
+            if($this->getUser()->hasToken('delete_assets') || $asset->getUserId() == $this->getUser()->getId()){
+            
+	            $asset->delete();
+                
+	            $this->addUserMessageToNextRequest("The file has been successfully deleted.", SmartestUserMessage::SUCCESS);
+    		    $this->formForward();
+    		
+    		}else{
+
+                $this->addUserMessageToNextRequest("You don't currently have permission to delete files that don't belong to you.", SmartestUserMessage::ACCESS_DENIED);
+        		$this->formForward();
+
+            }
+
+	    }else{
+
+	        $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);
     		$this->formForward();
-            
-        }
+
+	    }
+		    
 	}
 
 	function duplicateAsset($get){

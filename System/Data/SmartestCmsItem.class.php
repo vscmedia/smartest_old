@@ -8,7 +8,7 @@
 * It is also used
 */
 
-class SmartestCmsItem{
+class SmartestCmsItem implements ArrayAccess{
 	
 	/** 
 	* Description
@@ -176,6 +176,22 @@ class SmartestCmsItem{
 		}
 	}
 	
+	public function offsetExists($offset){
+	    
+	}
+	
+	public function offsetGet($offset){
+	    
+	}
+	
+	public function offsetSet($offset, $value){
+	    
+	}
+	
+	public function offsetUnset($offset){
+	    
+	}
+	
 	private function getField($field_name, $draft=false){
 		if(array_key_exists($field_name, $this->_properties_lookup)){
 		    if($this->_properties[$this->_properties_lookup[$field_name]] instanceof SmartestItemPropertyValueHolder){
@@ -259,7 +275,7 @@ class SmartestCmsItem{
 	    
 	    if(is_array($request_data)){
 	            
-            $this->_item->setName($request_data['_name']);
+		$this->_item->setName(SmartestStringHelper::sanitize($request_data['_name']));
             
             //if(isset($request_data['_is_public']) && in_array($request_data['_is_public'], array("TRUE", "FALSE"))){
             //    $this->_item->setPublic($request_data['_is_public']);
@@ -460,16 +476,22 @@ class SmartestCmsItem{
 	    
 	}
 	
-	public function getDescriptionFieldContents(){
+	public function getDescriptionField(){
 	    
 	    // default_description_property_id
 	    if($this->getModel()->getDefaultDescriptionPropertyId()){
 	        $property_id = $this->getModel()->getDefaultDescriptionPropertyId();
+	        $property = $this->getPropertyByNumericKey($property_id);
+	        return $property;
 	    }else{
 	        return null;
 	    }
 	    
-	    $property = $this->getPropertyByNumericKey($property_id);
+	}
+	
+	public function getDescriptionFieldContents(){
+	    
+	    $property = $this->getDescriptionField();
 	    
 	    if(is_object($property)){
 	        
@@ -477,19 +499,21 @@ class SmartestCmsItem{
 	        
 	        if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
 	            $asset = new SmartestAsset;
-	            if($asset->hydrate($this->getPropertyValueByNumericKey($property_id))){
+	            
+	            if($asset->hydrate($this->getPropertyValueByNumericKey($property->getId()))){
 	                // get asset content
 	                return $asset->getContent();
 	            }else{
 	                // throw new SmartestException(sprintf("Asset with ID %s was not found.", $this->getPropertyValueByNumericKey($property_id)));
 	                return null;
 	            }
+	            
 	        }else{
 	            return $this->getPropertyValueByNumericKey();
 	        }
 	        
 	    }else{
-	        throw new SmartestException(sprintf("Property with ID %s is not an object.", $property_id));
+	        throw new SmartestException(sprintf("Specified model description property with ID %s is not an object.", $property_id));
 	    }
 	    
 	}
@@ -507,7 +531,7 @@ class SmartestCmsItem{
 		
 		// print_r($draft);
 		
-		$result = $this->_item->__toArray();
+		$result = $this->_item->__toArray(true);
 		
 		foreach($this->_properties_lookup as $fn => $id){
 		    

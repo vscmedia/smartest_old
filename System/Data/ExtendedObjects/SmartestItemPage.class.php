@@ -176,5 +176,9 @@ class SmartestItemPage extends SmartestPage{
         return $content;
         
 	}
+	
+	public function getAuthorsAsArrays(){
+	    return $this->_simple_item->getAuthorsAsArrays();
+	}
     
 }

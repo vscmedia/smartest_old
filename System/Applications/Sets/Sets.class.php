@@ -253,7 +253,7 @@ class Sets extends SmartestSystemApplication{
 	    $set = new SmartestCmsItemSet;
 	    $set->hydrate($set_id);
 	    
-	    $items = $set->getMembersAsArrays();
+	    $items = $set->getMembersAsArrays(true);
 	    
 	    $this->send($items, 'items');
 	    $this->send(count($items), 'count');

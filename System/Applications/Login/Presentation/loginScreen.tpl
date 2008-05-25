@@ -82,6 +82,9 @@
   <img src="{$domain}Resources/System/Images/login_box_bottom_corners.png" alt="" style="display:block" />
 
 </div>
+{if $sm_user_agent.platform == "Windows" && $sm_user_agent.appName == "Explorer" && $sm_user_agent.appVersionInteger < 7}
 <script language="javascript" src="{$domain}Resources/System/Javascript/supersleight/supersleight.js"></script>
+<script language="javascript">supersleight.init();</script>
+{/if}
 </body>
 </html>

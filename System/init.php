@@ -2,7 +2,7 @@
 
 // set up required paths and environmental constants
 
-define('SM_INFO_REVISION_NUMBER', 92);
+define('SM_INFO_REVISION_NUMBER', 93);
 define('SM_INFO_VERSION_NUMBER', '0.3.5a2');
 
 class SmartestInit{
@@ -52,6 +52,7 @@ class SmartestInit{
 	
 		require_once(SM_ROOT_DIR."System/Response/SmartestResponse.class.php");
         
+        // $everything is everything
 		$everything = new SmartestResponse;
 		$everything->init();
 		$everything->build();

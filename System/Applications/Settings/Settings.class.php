@@ -171,18 +171,16 @@ class Settings extends SmartestSystemApplication{
 	}
     
 	function addUser(){
-	    // get roles
-	    $result = $this->database->queryToArray("SELECT * FROM Roles");
 	    
-	    $roles = array();
+	    $uhelper = new SmartestUsersHelper;
+	    $roles = $uhelper->getRolesAsArrays();
 	    
-	    foreach($result as $role_array){
-	        $role = new SmartestRole;
-	        $role->hydrate($role_array);
-	        $roles[] = $role->__toArray();
+	    if($this->getUser()->hasToken('create_users')){
+	        $this->send($roles, 'roles');
+	    }else{
+	        $this->addUserMessageToNextRequest("You don't have permission to add new user accounts", SmartestUserMessage::ACCESS_DENIED);
+	        $this->redirect('/smartest/users');
 	    }
-	    
-	    $this->send($roles, 'roles');
 	    
 	}
 
@@ -190,51 +188,48 @@ class Settings extends SmartestSystemApplication{
 		
 		$user = new SmartestUser;
         
-		$username = $post['username'];
-		$password = $post['password'];
-		$firstname = $post['user_firstname'];
-		$lastname = $post['user_lastname'];
-		$email = $post['user_email'];
-		$website = $post['user_website'];
-		$hash = md5($post['password']);
-		
-		$user->setUsername($username);
-		$user->setPassword($hash);
-		$user->setFirstname($firstname);
-		$user->setLastname($lastname);
-		$user->setEmail($email);
-		$user->setWebsite($website);
-		
-		$user->save();
-		
-		$site_id = $post['site_id'];
-		
-        // add user tokens
-        $role_id = $post['user_role'];
+        $username = $post['username'];
         
-        $role = new SmartestRole;
-        
-        if($role->hydrate($role_id)){
-            $tokens = $role->getTokens();
+        if($user->hydrateBy('username', $username)){
             
-            foreach($tokens as $t){
-                $user->addToken($t->getId(), $site_id);
+            $this->addUserMessageToNextRequest("The username you entered is already is use.");
+            
+        }else{
+        
+		    $password = $post['password'];
+    		$firstname = $post['user_firstname'];
+    		$lastname = $post['user_lastname'];
+    		$email = $post['user_email'];
+    		$website = $post['user_website'];
+    		$hash = md5($post['password']);
+		
+    		$user->setUsername($username);
+    		$user->setPassword($hash);
+    		$user->setFirstname($firstname);
+    		$user->setLastname($lastname);
+    		$user->setEmail($email);
+    		$user->setWebsite($website);
+		
+    		$user->save();
+		
+    		// $site_id = $post['site_id'];
+		
+            // add user tokens
+            $role_id = $post['user_role'];
+        
+            $role = new SmartestRole;
+            $site_id = $this->getSite()->getId();
+        
+            if($role->hydrate($role_id)){
+                $tokens = $role->getTokens();
+            
+                foreach($tokens as $t){
+                    // echo "Trying to add token ".$t->getCode()."<br />";
+                    $user->addToken($t->getCode(), $site_id);
+                }
             }
+        
         }
-        
-        // print_r($user);
-        
-    	/* $update_password = null;
-    	$update_password_wordpress = null;
-    
-    	if(strlen($password) > 1){
-    		$update_password = "password='$hash',"; 
-    		$update_password_wordpress = "password='$hash',"; 
-    	}
-    
-    	$sql = "INSERT INTO Users (username, password, user_firstname, user_lastname, user_displayname,  user_email, user_website, user_aim, user_yahooim, user_gtalk) 
-VALUES ('$username', '$hash', '$firstname',  '$lastname', 'displayname', '$email', '$website', '$aim', '$yahooim', '$gtalk' ) ";
-    	$this->manager->database->rawQuery($sql);  */
     
 		$this->formForward();
 		
@@ -257,14 +252,34 @@ VALUES ('$username', '$hash', '$firstname',  '$lastname', 'displayname', '$email
 	}
 	
 	function deleteUser($get){
-    	$database = $_SESSION['database'];
-		$user_id = $get['user_id'];
-		$query = "DELETE FROM Users WHERE user_id='$user_id' LIMIT 1";
-		$database->query($query);
+	    
+    	$user = new SmartestUser;
+    	$user_id = (int) $get['user_id'];
+    	
+    	if($user_id == $this->getUser()->getId()){
+    	
+    	    $this->addUserMessageToNextRequest("You can't delete your own account.", SmartestUserMessage::WARNING);
+    	
+    	}else{
+    	
+    	    if($user->hydrate($user_id)){
+    	        
+    	        $this->addUserMessageToNextRequest("The user '".$user->getUsername()."' was successfully deleted.", SmartestUserMessage::SUCCESS);
+		        $user->delete();
+		        
+		
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest("The user ID was not recognized.", SmartestUserMessage::ERROR);
+	            
+	        }
+	    
+        }
+		
 		$this->formForward();
 	}
 	
-	function showModels($get){
+	/* function showModels($get){
 		
 		$user_id = $get['user_id'];
 		$sql = "SELECT * FROM ItemClasses WHERE itemclass_userid = '$user_id'";
@@ -281,9 +296,9 @@ VALUES ('$username', '$hash', '$firstname',  '$lastname', 'displayname', '$email
 		$pages = $this->database->queryToArray($sql);
 		$username = $this->database->specificQuery("username", "user_id", $user_id, "Users");
 		return array("pages" =>$pages, "username"=>$username, "pageCount"=>count($pages));
-	}
+	} */
 	
-	function editUserTokens($get){
+	public function editUserTokens($get){
 	    
 	    if($this->getUser()->hasToken('modify_user_permissions')){
 	    
@@ -342,18 +357,12 @@ VALUES ('$username', '$hash', '$firstname',  '$lastname', 'displayname', '$email
     	    $utokens = $this->manager->getRolePermissions($role_id); //print_r($utokens);
 		    $tokens = $this->manager->getRoleAvailablePermissions($role_id);
 		    
-		    $this->addUserMessage('Editing this role will not affect users created with it. To edit the permission of specific users, ');
-		    
-		    // print_r($tokens);
-		    
-		    // print_r($user);
+		    $this->addUserMessage('Editing this role will not affect users created with it. To edit the permission of specific users, select the user and choose the \'Edit user tokens\' option.');
 		    
 		    $this->send($role->__toArray(), 'role');
 		    $this->send($utokens, 'utokens');
 		    $this->send($tokens, 'tokens');
 		    
-    	    // return array("user_id"=>$user_id, "utokens"=>$utokens,"tokens"=>$tokens);
-    	
 	    }else{
 	        
 	    }

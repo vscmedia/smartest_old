@@ -137,6 +137,37 @@ class SmartestTodoListHelper extends SmartestHelper{
 	    
 	    $types = self::getTypes();
 	    $select_types = array();
+	    $type_objects = array();
+	    
+	    foreach($types as $t){
+	        
+	        if($t['category'] == $category){
+	            $select_types[$t['id']] = $t;
+	        }
+	        
+	        if($include_all){
+	            if($category == 'SM_TODOITEMCATEGORY_ALL' && !isset($select_types[$t['id']])){
+	                $select_types[$t['id']] = $t;
+	            }
+	        }
+	    }
+	    
+	    foreach($select_types as $a){
+	        
+	        $type = new SmartestTodoItemType($a);
+	        $type_objects[] = $type;
+	        
+	    }
+	    
+	    return $type_objects;
+	    
+	}
+	
+	static function getTypesByCategoryAsArrays($category, $include_all=false){
+	    
+	    $types = self::getTypes();
+	    $select_types = array();
+	    $type_objects = array();
 	    
 	    foreach($types as $t){
 	        
@@ -154,7 +185,5 @@ class SmartestTodoListHelper extends SmartestHelper{
 	    return $select_types;
 	    
 	}
-	
-	
     
 }

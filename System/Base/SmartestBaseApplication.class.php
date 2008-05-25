@@ -37,7 +37,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		$this->domain = SM_CONTROLLER_DOMAIN;
 		$this->module = SM_CONTROLLER_MODULE;
 		$this->_resultIndex = 0;
-		$this->userTokenHelper = new SmartestUserTokenHelper();
+		$this->userTokenHelper = new SmartestUsersHelper();
 		
 		SmartestSession::set('user:currentApp', SM_CONTROLLER_MODULE);
 		SmartestSession::set('user:currentAction', SM_CONTROLLER_METHOD);

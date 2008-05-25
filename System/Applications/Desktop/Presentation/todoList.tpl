@@ -8,12 +8,12 @@
   
   {else}
   
-  <ul class="todo-item">
+  <ul class="todo-item" style="list-style-type:none;margin:0px;padding:0px">
     
     {foreach from=$todo_items item="todo"}
-    <li><strong>Page: {$todo.object_label}</strong><br />
+    <li style="margin-bottom:10px"><strong>{$todo.object_label}</strong><br />
       <span>Task: {$todo.description}</span><br />
-      <span><a href="{$domain}{$todo.action_url}&amp;from=todoList">Do This Now</a> | <a href="">Ignore</a></span></li>
+      <span>{if $todo.type.autocomplete}<a href="{$domain}{$todo.action_url}&amp;from=todoList">Do This Now</a>{else}<a href="{$domain}{$todo.action_url}&amp;from=todoList">Go to this task</a> | <a href="{$domain}{$section}/completeTodoItem?todo_id={$todo.id}">Complete</a>{/if}</span></li>
     {/foreach}
 
   </ul>

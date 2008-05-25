@@ -171,15 +171,39 @@ class SmartestAssetsLibraryHelper{
 	
 	public function getAssetsByTypeCode($code, $site_id=''){
 		
-		$sql = "SELECT * FROM Assets WHERE asset_type='$code' AND asset_deleted != 1";
+		if(is_array($code)){
+		    $sql = "SELECT * FROM Assets WHERE asset_type IN ('".implode("', '", $code)."') AND asset_deleted != 1";
+	    }else{
+		    $sql = "SELECT * FROM Assets WHERE asset_type='".$code."' AND asset_deleted != 1";
+	    }
 		
 		if(is_numeric($site_id)){
 		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_stringid";
 		}
 		
-		$assets = $this->database->queryToArray($sql);
+		$result = $this->database->queryToArray($sql);
+		$assets = array();
+		
+		foreach($result as $r){
+		    $a = new SmartestAsset;
+		    $a->hydrate($r);
+		    $assets[] = $a;
+		}
 		
 		return $assets;
+	}
+	
+	public function getAssetsByTypeCodeAsArrays($code, $site_id=''){
+	    
+	    $assets = $this->getAssetsByTypeCode($code, $site_id);
+	    $arrays = array();
+	    
+	    foreach($assets as $a){
+	        $arrays[] = $a->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
 	}
     
 }

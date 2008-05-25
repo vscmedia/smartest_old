@@ -161,10 +161,28 @@ class SmartestTextFragment extends SmartestDataObject{
 	    }
 	}
 	
+	public function getContent(){
+	    return $this->_getContent();
+	}
+	
+	public function setContent($content){
+	    return $this->_setContent($content);
+	}
+	
+	protected function _getContent(){
+	    return $this->_properties['content'];
+	}
+	
+	protected function _setContent($content){
+	    return $this->setField('content', $content);
+	}
+	
 	public function save(){
 	    
 	    $this->setLastModified(time());
 	    $this->createPreviewFile();
+	    // print_r($this->_modified_properties);
+	    
 	    parent::save();
 	    
 	}

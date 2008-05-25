@@ -7,6 +7,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	protected $_page_rendering_data = array();
 	protected $_page_rendering_data_retrieved = false;
 	protected $draft_mode = false;
+	protected $_items = array();
 	
 	public function __construct($pid){
 	    
@@ -58,22 +59,34 @@ class SmartestWebPageBuilder extends SmartestEngine{
         }
 	}
 	
+	// overrides Smarty method which actually causes E_USER_ERROR
+	// public function trigger_error($error_msg){
+	//     $this->raiseError($error_msg);
+	// }
+	
 	public function raiseError($error_msg='Unknown Template Error'){
 	    if($this->getDraftMode()){
 	        $this->assign('_error_text', $error_msg);
 	        $error_markup = $this->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/markup_error.tpl");
-	        return $error_markup;
+	        echo $error_markup;
         }
 	}
+    
+    public function prepareForRender(){
+        
+        $this->page->loadAssetClassDefinitions($draft_mode);
+	    $this->page->loadItemSpaceDefinitions($draft_mode);
+	    $this->setPageRenderingData($this->page->fetchRenderingData($draft_mode));
+	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
+        
+    }
     
     public function renderPage($page, $draft_mode=false){
 	    
 	    $this->page = $page;
 	    $this->setDraftMode($draft_mode);
 	    // $this->_page_rendering_data_retrieved = true;
-	    $this->page->loadAssetClassDefinitions($draft_mode);
-	    $this->setPageRenderingData($this->page->fetchRenderingData($draft_mode));
-	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
+	    $this->prepareForRender();
 	    
 	    if($draft_mode){
 	        $template = SM_ROOT_DIR."Presentation/Masters/".$page->getDraftTemplate();
@@ -90,6 +103,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	}
     
     public function renderContainer($container_name, $params, $parent){
+        
+        // print_r($this->getPage()->getContainerDefinitionNames());
         
         // echo 'container:'.$container_name.', rendering process id:'.$this->getProcessId().', context:'.$this->_context.'<br />';
         
@@ -264,6 +279,45 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }
             
             }
+            
+        }
+        
+    }
+    
+    public function renderItemSpace($itemspace_name, $params){
+        
+        if($this->_context == SM_CONTEXT_CONTENT_PAGE){
+        
+            if($this->getPage()->hasItemSpaceDefinition($itemspace_name, $this->getDraftMode())){
+            
+                $def = $this->getPage()->getItemSpaceDefinition($itemspace_name, $this->getDraftMode());
+            
+                if($def->getItemspace()->usesTemplate()){
+                
+                    $template_id = $def->getItemspace()->getTemplateAssetId();
+                    $template = new SmartestContainerTemplateAsset;
+                
+                    if($template->hydrate($template_id)){
+                    
+                    }else{
+                        $this->raiseError("Problem rendering itemspace with template ID ".$template_id.": template not found.");
+                    }
+                
+                }else{
+                
+                    // itemspace doesn't use template, but data is still loaded
+                
+                }
+            
+            }else{
+                
+                // item space is not defined
+                
+            }
+        
+        }else{
+            
+            $this->raiseError("ItemSpace '".$itemspace_name."' used outside page context.");
             
         }
         
@@ -541,6 +595,30 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
     }
     
+    public function loadItem($id){
+        
+        list($model_name, $item_id) = explode(':', $id);
+        
+        $item = SmartestCmsItem::retrieveByPk($item_id);
+        
+        return $item;
+        
+        /* if(isset($this->_models[$model_name])){
+            if(isset($this->_models[$model_name])){
+                
+            }
+        } */
+        
+        // $item = new SmartestItem;
+        
+        
+    }
+    
+    public function loadItemAsArray($id){
+        $item = $this->loadItem($id);
+        return $item->__toArray($this->getDraftMode());
+    }
+    
     public function getRepeatBlockData($params){
         
         if(count(explode(':', $params['from'])) > 1){
@@ -675,8 +753,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
             $path = 'none';
         }
         
-        // echo $render_template
-        
         if(file_exists($render_template)){
             
             if($asset->isImage()){
@@ -708,12 +784,16 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     // If draft, check that a temporary preview copy has been created, and creat it if not
                     if($this->getDraftMode()){
                         if($asset->getTextFragment()->ensurePreviewFileExists()){
+                            
                             $child = $this->startChildProcess($render_process_id);
                 	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
                 	        $child->setProperty('asset', $asset);
                 	        $child->setProperty('attachments', $attachments);
+                	        
                 	        $content = $child->fetch($asset->getTextFragment()->getParsableFilePath(true));
+                	        
                 	        $this->killChildProcess($child->getProcessId());
+                	        
                 	        echo $content;
                         }else{
                             // echo '<br />ERROR: TextFragment render preview could not be created.';
@@ -819,6 +899,91 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     
                 }
             
+            // for rendering the properties of an item loaded using item spaces
+            }else if(isset($params['context']) && ($params['context'] == 'itemspace' || $this->_context == SM_CONTEXT_ITEMSPACE_TEMPLATE)){
+                
+                $requested_property_name = $params["name"];
+                
+                // you have to tell it which itemspace you are referring to
+                if(isset($params['itemspace']) && strlen($params['itemspace'])){
+                    
+                    // print_r($this->getPage()->getItemSpaceDefinitionNames());
+                    
+                    if($this->getPage()->hasItemSpaceDefinition($params['itemspace'], $this->getDraftMode())){
+
+                        $def = $this->getPage()->getItemSpaceDefinition($params['itemspace'], $this->getDraftMode());
+                        $object = $def->getItem(false, $this->getDraftMode());
+                        
+                        // print_r($def);
+                        
+                        // var_dump($object);
+                        
+                        if(is_object($object)){
+                            
+                            // $simple_object = $object->getItem();
+                            // print_r($object);
+                            
+                            if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
+
+                                $lookup = $object->getModel()->getPropertyVarNamesLookup();
+                                $property = $object->getPropertyByNumericKey($lookup[$requested_property_name]);
+                                $property_type_info = $property->getTypeInfo();
+                                
+                                $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
+
+                                if(is_file($render_template)){
+
+                                    if($this->getDraftMode()){
+                                        $value = $property->getData()->getDraftContent();
+                                    }else{
+                                        $value = $property->getData()->getContent();
+                                    }
+
+                                    // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
+                                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                                        if(SmartestStringHelper::toRealBool($value)){
+                                            return $this->renderAssetById($value, $params, $path);
+                                        }
+                                    }else{
+                                        $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
+                                    }
+
+                                }else{
+                                    return $this->raiseError("Render template '".$render_template."' is missing.");
+                                }
+                                
+                            }else if(in_array($requested_property_name, array_keys($object->__toArray(true)))){
+                                
+                                $array = $object->__toArray(true);
+                                return $array[$requested_property_name];
+                                
+                            }else{
+                                
+                                return $this->raiseError("Unknown Property: ".$requested_property_name);
+                                
+                            }
+                            
+                        }else{
+                            
+                            // item space is not defined
+                            return $this->raiseError("&lt;?sm:property:&gt; tag used in itemspace context, but itemspace '".$params['itemspace']."' has no object.");
+                            
+                        }
+
+                    }else{
+
+                        // item space is not defined
+                        // return $this->raiseError("Itemspace '".$params['itemspace']."' not defined yet.");
+                        if($this->getDraftMode()){
+                            echo "Itemspace '".$params['itemspace']."' not defined yet.";
+                        }
+
+                    }
+                    
+                }else{
+                    return $this->raiseError("&lt;?sm:property:&gt; tag must have itemspace=\"\" attribute when used in itemspace context.");
+                }
+            
             // for rendering the properties of an item in a list
             }else if(isset($params['context']) && ($params['context'] == 'repeat' || $params['context'] == 'list')){
                 
@@ -884,6 +1049,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	}
 	
 	public function renderGoogleAnalyticsTags($params){
+	    
 	    if(isset($params['id'])){
 	        
 	        if(isset($params['legacy']) && SmartestStringHelper::toRealBool($params['legacy']) == false){

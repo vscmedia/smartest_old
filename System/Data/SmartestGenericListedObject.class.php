@@ -2,7 +2,7 @@
 
 // a class for tag contents, search resuts, clipboard, and any other time where mixed content is listed.
 
-class SmartestGenericListedObject{
+class SmartestGenericListedObject implements ArrayAccess{
     
     protected $_internal_object;
     protected $_type;
@@ -14,7 +14,7 @@ class SmartestGenericListedObject{
     const ASSET = 4;
     const TODO = 8;
     
-    function __construct($object){
+    public function __construct($object){
         
         if(is_object($object)){
             
@@ -32,7 +32,9 @@ class SmartestGenericListedObject{
                     $this->_properties['date'] = $this->_internal_object->getItem()->getCreated();
                 }
                 
-                $this->_properties['description'] = SmartestStringHelper::toSummary($this->_internal_object->getDescriptionFieldContents());
+                if($this->_internal_object->getDescriptionField()){
+                    $this->_properties['description'] = SmartestStringHelper::toSummary($this->_internal_object->getDescriptionFieldContents());
+                }
                 
                 $this->_properties['type'] = $this->_internal_object->getModel()->getName();
                 
@@ -52,8 +54,10 @@ class SmartestGenericListedObject{
                  }else{
                      $this->_properties['date'] = $this->_internal_object->getCreated();
                  }
-
-                 $this->_properties['description'] = SmartestStringHelper::toSummary($this->_internal_object->getDescriptionFieldContents());
+                 
+                 if($this->_internal_object->getDescriptionField()){
+                     $this->_properties['description'] = SmartestStringHelper::toSummary($this->_internal_object->getDescriptionFieldContents());
+                 }
 
                  $this->_properties['type'] = $this->_internal_object->getModel()->getName();
                  
@@ -90,29 +94,49 @@ class SmartestGenericListedObject{
         }
     }
     
-    function getTitle(){
+    public function getTitle(){
         return $this->_properties['title'];
     }
     
-    function getDescription(){
+    public function getDescription(){
         return $this->_properties['description'];
     }
     
-    function getDate(){
+    public function getDate(){
         return $this->_properties['date'];
     }
     
-    function getUrl(){
+    public function getUrl(){
         return $this->_properties['url'];
     }
     
-    function __toArray(){
+    public function __toArray(){
         
         $data = array();
         $data = $this->_properties;
         $data['object'] = $this->_internal_object->__toArray();
         return $data;
         
+    }
+    
+    public function offsetExists($offset){
+        
+    }
+    
+    public function offsetGet($offset){
+        if(isset($this->_properties[$offset])){
+            return $this->_properties[$offset];
+        }else{
+            return $this->_internal_object[$offset];
+        }
+    }
+    
+    public function offsetSet($o, $v){
+        // read only
+    }
+    
+    public function offsetUnset($o){
+        // read only
     }
     
 }

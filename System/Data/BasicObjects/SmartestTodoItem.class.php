@@ -4,6 +4,8 @@ class SmartestTodoItem extends SmartestDataObject{
     
     protected $_type_object;
     protected $_target_object;
+    protected $_assigning_user;
+    protected $_receiving_user;
     
 	protected function __objectConstruct(){
 		
@@ -45,22 +47,38 @@ class SmartestTodoItem extends SmartestDataObject{
 	    
 	    $data = parent::__toArray();
 	    $data['type'] = $this->getType()->__toArray();
-	    $data['action_url'] = $this->getActionUrl();
 	    
-	    // if($include_object_info && $this->getTargetObject()){
-	    $data['object'] = $this->getTargetObject()->__toArray();
-	    $data['object_label'] = $this->getTargetObject()->__toString();
-	    // }
-	    
-	    return $data;
+	    if($this->getTargetObject()){
+	        $data['action_url'] = $this->getActionUrl();
+	        $data['object'] = $this->getTargetObject()->__toArray();
+	        $data['object_label'] = $this->getTargetObject()->__toString();
+	        return $data;
+	    }else{
+	        // action object not found - write to log and delete this to-do
+	        $this->delete();
+	        return array();
+	    }
 	    
 	}
 	
 	public function getActionUrl(){
-	    $url = $this->getType()->getAction().'?'.
-	    $this->getType()->getUriField().'='.
-	    $this->getTargetObject()->getFieldByName($this->getType()->getUriField());
-	    return $url;
+	    
+	    $url = $this->getType()->getAction();
+	    
+	    if($object = $this->getTargetObject()){
+	        
+	        preg_match_all('/\$'.$object->getTablePrefix().'([\w_]+)/', $url, $matches);
+	        
+	        foreach($matches[0] as $key=>$variable){
+    	        $url = str_replace($variable, $object->getFieldByName($matches[1][$key]), $url);
+    	    }
+    	    
+    	    return $url;
+    	    
+        }else{
+            // action object not found - write to log
+        }
+	    
 	}
 	
 	public function ignore(){
@@ -69,10 +87,45 @@ class SmartestTodoItem extends SmartestDataObject{
 	    $this->save();
 	}
 	
-	public function complete(){
+	public function complete($send_email=false){
+	    
 	    $this->setIsComplete(1);
-	    $this->setTimeAssigned(time());
-	    $this->save();
+        $this->setTimeCompleted(time());
+        $this->save();
+        
+        if($send_email && ((int) $this->_properties['assigning_user_id']) > 0){
+            $this->getAssigningUser()->sendEmail('Task Completed', 'Hi '.$this->getAssigningUser()->getFirstname().",\n\nThe task you assigned to ".$this->getUser()->getFirstname()." has now been completed.");
+        }
+        
+	}
+	
+	public function isSelfAssigned(){
+	    return ($this->_properties['assigning_user_id'] == $this->_properties['receiving_user_id']);
+	}
+	
+	public function getAssigningUser(){
+	    
+	    if(!$this->_assigning_user){
+	        $u = new SmartestUser;
+	        if($u->hydrate($this->_properties['assigning_user_id'])){
+	            $this->_assigning_user = $u;
+	        }
+	    }
+	    
+	    return $this->_assigning_user;
+	}
+	
+	public function getUser(){
+	    
+	    if(!$this->_receiving_user){
+	        $u = new SmartestUser;
+	        if($u->hydrate($this->_properties['receiving_user_id'])){
+	            $this->_receiving_user = $u;
+	        }
+	    }
+	    
+	    return $this->_receiving_user;
+	    
 	}
 	
 	public function getTargetObject(){

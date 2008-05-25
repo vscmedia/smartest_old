@@ -267,6 +267,8 @@ class SmartestQuery{
 	
 	public function doSelect($draft=false){
 		
+	    // var_dump($draft);
+	    
 		// if($forcedb){
 			// do it the slow way, getting ids of matching rows and hydrating them
 			
@@ -368,19 +370,12 @@ class SmartestQuery{
 				    
 				    $sql .= " AND Items.item_public='TRUE'";
 				    
-				    // var_dump($this->getSiteId());
-				    
 				    if($this->getSiteId()){
 				        $sql .= " AND (Items.item_site_id='".$this->getSiteId()."' OR Items.item_shared='1')";
 				    }
 				    
-				    // echo $sql."\n";
-				    
 				    $result = $this->database->queryToArray($sql);
-				    
 				    $this->conditions[$property_id]['ids'] = $this->getSimpleIdsArray($result);
-				    
-				    // print_r($this->conditions[$property_id]['ids']);
 				
     			}
     		

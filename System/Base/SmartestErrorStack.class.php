@@ -45,8 +45,13 @@ class SmartestErrorStack{
 		}
 	}
 	
-	function recordError($message="[No error message given]", $type=100){
+	/* function recordError($message="[No error message given]", $type=100){
 		$this->stack[$this->stackIndex] = new SmartestError($message, $type, @$this->errorCodes[$type]);
+		$this->stackIndex++;
+	} */
+	
+	public function recordError($exception){
+	    $this->stack[$this->stackIndex] = new SmartestError($exception, @$this->errorCodes[$exception->getCode()]);
 		$this->stackIndex++;
 	}
 	

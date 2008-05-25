@@ -240,7 +240,7 @@ class MetaData extends SmartestSystemApplication{
     		
         		$def = new SmartestPageFieldDefinition;
         		$def->loadForUpdate($field, $page);
-        		$def->setDraftValue(addslashes($post['field_content']));
+        		$def->setDraftValue($post['field_content']);
         		$def->setPageId($page->getId());
         		$def->setPagepropertyId($field->getId());
         		$def->save();
@@ -411,7 +411,7 @@ class MetaData extends SmartestSystemApplication{
 	        $this->formForward();
 	    }else{
 	        $tag->setName($tag_name);
-	        $tag->setLabel(addslashes($tag_label));
+	        $tag->setLabel($tag_label);
 	        $tag->save();
 	        // print_r($tag);
 	        $this->addUserMessageToNextRequest("Tag was successfully added.", SmartestUserMessage::SUCCESS);

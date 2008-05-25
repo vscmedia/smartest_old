@@ -45,12 +45,16 @@ class SmartestItem extends SmartestDataObject{
 	    if($remove){
 		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
 		    $this->database->rawQuery($sql);
+		    $sql = "DELETE FROM ItemPropertyValues WHERE itempropertyvalue_item_id='".$this->_properties['id']."'";
+		    $this->database->rawQuery($sql);
 		    $this->_came_from_database = false;
 	    }else{
 	        $this->setField('Deleted', 1);
 	        $this->save();
 	    }
 	}
+	
+	// Tags
 	
 	public function clearTags(){
 	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_type='SM_ITEM_TAG_LINK'";
@@ -105,6 +109,67 @@ class SmartestItem extends SmartestDataObject{
 	    return $arrays;
 	    
 	}
+	
+	public function tag($tag_identifier){
+	    
+	    if(is_numeric($tag_identifier)){
+	        
+	        $tag = new SmartestTag;
+	        
+	        if(!$tag->hydrate($tag_identifier)){
+	            // kill it off if they are supplying a numeric ID which doesn't match a tag
+	            return false;
+	        }
+	        
+	    }else{
+	        
+	        $tag_name = SmartestStringHelper::toSlug($tag_identifier);
+	        
+	        $tag = new SmartestTag;
+
+    	    if(!$tag->hydrateBy('name', $tag_name)){
+                // create tag
+    	        $tag->setLabel($tag_identifier);
+    	        $tag->setName($tag_name);
+    	        $tag->save();
+    	    }
+	    }
+	    
+	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->_properties['id']."', 'SM_ITEM_TAG_LINK')";
+	    $this->database->rawQuery($sql);
+	    return true;
+	    
+	}
+	
+	public function untag($tag_identifier){
+	    
+	    if(is_numeric($tag_identifier)){
+	        
+	        $tag = new SmartestTag;
+	        
+	        if(!$tag->hydrate($tag_identifier)){
+	            // kill it off if they are supplying a numeric ID which doesn't match a tag
+	            return false;
+	        }
+	        
+	    }else{
+	        
+	        $tag_name = SmartestStringHelper::toSlug($tag_identifier);
+	        
+	        $tag = new SmartestTag;
+
+    	    if(!$tag->hydrateBy('name', $tag_name)){
+                return false;
+    	    }
+	    }
+	    
+	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_tag_id='".$tag->getId()."' AND taglookup_type='SM_ITEM_TAG_LINK'";
+	    $this->database->rawQuery($sql);
+	    return true;
+	    
+	}
+	
+	// Related items and pages
 	
 	public function getRelatedItems($draft_mode=false){
 	    
@@ -311,20 +376,94 @@ class SmartestItem extends SmartestDataObject{
 	    
 	}
 	
-	public function getDescriptionFieldContents(){
+	//// Authors and page credit
+	
+	public function getAuthors(){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_ITEM_AUTHORS');
+	    $q->setTargetEntityByIndex(1);
+	    $q->addQualifyingEntityByIndex(2, $this->_properties['id']);
+	    
+	    $q->addSortField('Users.user_lastname');
+	    
+	    $result = $q->retrieve();
+	    
+	    return $result;
+	    
+	}
+	
+	public function getAuthorsAsArrays(){
+	    
+	    $authors = $this->getAuthors();
+	    $arrays = array();
+	    
+	    foreach($authors as $a){
+	        $arrays[] = $a->__toArray();
+	    }
+	    
+	    return $arrays;
+	    
+	}
+	
+	public function getAuthorIds(){
+	    
+	    $authors = $this->getAuthors();
+	    $ids = array();
+	    
+	    foreach($authors as $a){
+	        $ids[] = $a->getId();
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
+	public function addAuthorById($user_id){
+	    
+	    $user_id = (int) $user_id;
+	    
+	    $link = new SmartestManyToManyLookup;
+	    $link->setEntityForeignKeyValue(2, $this->_properties['id']);
+	    $link->setEntityForeignKeyValue(1, $user_id);
+	    $link->setType('SM_MTMLOOKUP_ITEM_AUTHORS');
+	    
+	    $link->save();
+	    
+	}
+	
+	public function removeAuthorById($user_id){
+	    
+	    $user_id = (int) $user_id;
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_ITEM_AUTHORS');
+	    $q->setTargetEntityByIndex(1);
+	    $q->addQualifyingEntityByIndex(2, $this->_properties['id']);
+	    $q->addForeignTableConstraint('Users.user_id', $user_id);
+	    
+	    $q->delete();
+	    
+	    // print_r($q);
+	    
+	}
+	
+	// CMS Display stuff
+	
+	public function getDescriptionField(){
 	    
 	    // default_description_property_id
 	    if($this->getModel()->getDefaultDescriptionPropertyId()){
 	        $property_id = $this->getModel()->getDefaultDescriptionPropertyId();
+	        $property = $this->getPropertyByNumericKey($property_id);
+	        return $property;
 	    }else{
 	        return null;
 	    }
 	    
-	    // echo $property_id;
+	}
+	
+	public function getDescriptionFieldContents(){
 	    
-	    $property = $this->getPropertyByNumericKey($property_id);
-	    
-	    // print_r($property);
+	    $property = $this->getDescriptionField();
 	    
 	    if(is_object($property)){
 	        
@@ -332,21 +471,21 @@ class SmartestItem extends SmartestDataObject{
 	        
 	        if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
 	            $asset = new SmartestAsset;
-	            // echo $property_id;
-	            // print_r($this->getPropertyValueByNumericKey($property_id));
-	            if($asset->hydrate($this->getPropertyValueByNumericKey($property_id))){
+	            
+	            if($asset->hydrate($this->getPropertyValueByNumericKey($property->getId()))){
 	                // get asset content
 	                return $asset->getContent();
 	            }else{
 	                // throw new SmartestException(sprintf("Asset with ID %s was not found.", $this->getPropertyValueByNumericKey($property_id)));
 	                return null;
 	            }
+	            
 	        }else{
 	            return $this->getPropertyValueByNumericKey();
 	        }
 	        
 	    }else{
-	        throw new SmartestException(sprintf("Property with ID %s is not an object.", $property_id));
+	        throw new SmartestException(sprintf("Specified model description property with ID '%s' is not an object.", $property_id));
 	    }
 	    
 	}
@@ -355,15 +494,13 @@ class SmartestItem extends SmartestDataObject{
 	    
 	    /* $this->getProperties(); */
 	    
-	    
-	    
 	    if(!$this->_model_properties[$key]){
 	    
 	        $sql = "SELECT * FROM ItemProperties WHERE itemproperty_id='".$key."'";
 	        $result = $this->database->queryToArray($sql);
 	        
 	        if(count($result)){
-	            $property = new SmartestItemProperty;
+	            $property = new SmartestItemPropertyValueHolder;
 	            $property->hydrate($result[0]);
 	            $property->setContextualItemId($this->_properties['id']);
 	            $this->_model_properties[$key] = $property;
@@ -380,28 +517,21 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function getPropertyValueByNumericKey($key, $draft=false){
 	    
-	    // $this->getProperties();
-	    
-	    // print_r($this->_model_properties);
-	    // echo $key;
-	    
-	    // $this->
-	    
-	    // print_r($this->_model_properties[$key]->getData());
-	    
-	    // print_r(array_keys($this->_model_properties));
-	    
-	    // echo $key;
-	    
 	    if(array_key_exists($key, $this->_model_properties)){
 	        
-	        // echo 'has property. ';
+	        $property_value_object = $this->_model_properties[$key]->getData();
+	        // print_r($property_value_object);
 	        
-	        if($draft){
-	            return $this->_model_properties[$key]->getData()->getDraftContent();
-            }else{
-                return $this->_model_properties[$key]->getData()->getContent();
-            }
+	        if(is_object($property_value_object)){
+	            if($draft){
+    	            return $property_value_object->getDraftContent();
+                }else{
+                    return $property_value_object->getContent();
+                }
+	        }else{
+	            throw new SmartestException("Accessing property ID '".$key."' failed because SmartestItemPropertyValue object was not loaded.");
+	        }
+            
 	    }else{
 	        return null;
 	    }
@@ -431,65 +561,6 @@ class SmartestItem extends SmartestDataObject{
 	    }else{
 	        return null;
 	    }
-	    
-	}
-	
-	public function tag($tag_identifier){
-	    
-	    if(is_numeric($tag_identifier)){
-	        
-	        $tag = new SmartestTag;
-	        
-	        if(!$tag->hydrate($tag_identifier)){
-	            // kill it off if they are supplying a numeric ID which doesn't match a tag
-	            return false;
-	        }
-	        
-	    }else{
-	        
-	        $tag_name = SmartestStringHelper::toSlug($tag_identifier);
-	        
-	        $tag = new SmartestTag;
-
-    	    if(!$tag->hydrateBy('name', $tag_name)){
-                // create tag
-    	        $tag->setLabel($tag_identifier);
-    	        $tag->setName($tag_name);
-    	        $tag->save();
-    	    }
-	    }
-	    
-	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->_properties['id']."', 'SM_ITEM_TAG_LINK')";
-	    $this->database->rawQuery($sql);
-	    return true;
-	    
-	}
-	
-	public function untag($tag_identifier){
-	    
-	    if(is_numeric($tag_identifier)){
-	        
-	        $tag = new SmartestTag;
-	        
-	        if(!$tag->hydrate($tag_identifier)){
-	            // kill it off if they are supplying a numeric ID which doesn't match a tag
-	            return false;
-	        }
-	        
-	    }else{
-	        
-	        $tag_name = SmartestStringHelper::toSlug($tag_identifier);
-	        
-	        $tag = new SmartestTag;
-
-    	    if(!$tag->hydrateBy('name', $tag_name)){
-                return false;
-    	    }
-	    }
-	    
-	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_tag_id='".$tag->getId()."' AND taglookup_type='SM_ITEM_TAG_LINK'";
-	    $this->database->rawQuery($sql);
-	    return true;
 	    
 	}
 	

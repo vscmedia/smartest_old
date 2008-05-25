@@ -245,18 +245,17 @@ class SmartestBaseUser extends SmartestDataObject{
 	    
 	    if($token->hydrateBy('code', $token_code)){
 	        
+	        // echo "found token: ".$token_code."<br />";
+	        
 	        $utl = new SmartestUserTokenLookup;
 		    $utl->setUserId($this->getId());
 		    $utl->setTokenId($token->getId());
 		    $utl->setGrantedTimestamp(time());
-            
+		    
 		    if($site_id == "GLOBAL"){
 		        $utl->setIsGlobal(1);
 		    }else{
-		        // if($site_id instanceof SmartestSite){
-    		    // $site_id = SmartestSession::get('current_open_project')->getId();
-    		    $utl->setSiteId($site_id);
-    		    // }
+		        $utl->setSiteId($site_id);
 		    }
 		    
 		    $utl->save();
@@ -282,6 +281,23 @@ class SmartestBaseUser extends SmartestDataObject{
 	
 	public function __toString(){
 	    return $this->getFirstname().' '.$this->getLastname();
+	}
+	
+	public function __toArray(){
+	    
+	    $data = parent::__toArray();
+	    $data['full_name'] = $this->_properties['firstname'];
+	    
+	    if($this->_properties['firstname']){
+	        $data['full_name'] .= ' ';
+	    }
+	    
+	    if($this->_properties['lastname']){
+	        $data['full_name'] .= $this->_properties['lastname'];
+	    }
+	    
+	    return $data;
+	    
 	}
 	
 	public function getNumHeldPages($site_id=''){
@@ -434,6 +450,21 @@ class SmartestBaseUser extends SmartestDataObject{
 	    }
 	    
 	    return $arrays;
+	    
+	}
+	
+	public function sendEmail($subject, $message, $from=''){
+	    
+	    if(!isset($from{0})){
+	        $from = 'Smartest <smartest@'.$_SERVER['HTTP_HOST'].'>';
+	    }
+	    
+	    // $to = $this->_properties['email'];
+	    
+	    // if($to){
+	        mail($to, $subject, $message, "From: ".$from."\r\nReply-to: ".$from);
+	        return true;
+        // }
 	    
 	}
 	

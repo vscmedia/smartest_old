@@ -183,6 +183,8 @@ class SmartestCmsItemSet extends SmartestDataObject{
 	            
     	            $result = $q->doSelect($draft);
 	            
+		    // var_dump($draft);
+			
     	            if($this->getSortField()){
     	                $result->sort($this->getSortField(), $this->getSortDirection());
     	            }

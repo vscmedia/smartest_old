@@ -8,5 +8,5 @@
     <option value="{$item.id}">{$item.name}</option>
     {/foreach}
   </select>
-  <input type="submit" value="Go" />
+  <input type="submit" value="Continue" />
 </form>

@@ -53,6 +53,12 @@ class SmartestAsset extends SmartestDataObject{
 	    return $data;
 	}
 	
+	public function __toString(){
+	    
+	    return $this->_properties['stringid'].' ('.$this->_properties['url'].')';
+	    
+	}
+	
 	public function getSite(){
 	    
 	    if($this->_site){
@@ -198,11 +204,7 @@ class SmartestAsset extends SmartestDataObject{
 	    
 	    $info = $this->getTypeInfo();
 	    
-	    if($escapeslashes && !$this->usesLocalFile()){
-	        $content = addslashes($raw_content);
-	    }else{
-	        $content = $raw_content;
-	    }
+	    $content = $raw_content;
 	    
 	    if($this->getTextFragment()){
 	        // save the text fragment in the database

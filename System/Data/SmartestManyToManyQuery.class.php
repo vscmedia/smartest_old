@@ -314,8 +314,13 @@ class SmartestManyToManyQuery{
     
     public function delete(){
         
-        $result = $this->database->queryToArray($this->buildQuery());
+        $query = $this->buildQuery();
+        // echo $query;
+        
+        $result = $this->database->queryToArray($query);
         $mtml_ids = array();
+        
+        // echo count($result);
         
         if(count($result)){
         

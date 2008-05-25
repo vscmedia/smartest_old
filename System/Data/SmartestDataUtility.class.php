@@ -89,11 +89,16 @@ class SmartestDataUtility{
 	}
 	
 	public function getDataSetsAsArrays($simple = false, $site_id='', $get_contents=false){
+	    
 	    $sets = $this->getDataSets($simple, $site_id);
 	    $arrays = array();
 	    
 	    foreach($sets as $s){
-	        $arrays[] = $s->__toArray($get_contents);
+	        if(is_object($s)){
+	            $arrays[] = $s->__toArray($get_contents);
+            }else{
+                // ??? something to do with $simple ???
+            }
 	    }
 	    
 	    return $arrays;
