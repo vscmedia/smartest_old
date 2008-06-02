@@ -61,7 +61,10 @@ class SmartestItemPropertyValue extends SmartestDataObject{
         }else{
             $raw_data = $this->_properties['content'];
         }
-        
+	
+       // var_dump($raw_data.' ');
+        // print_r($this->_properties);
+	
         switch($this->getProperty()->getDatatype()){
             
             case "SM_DATATYPE_DATE":
@@ -99,6 +102,8 @@ class SmartestItemPropertyValue extends SmartestDataObject{
                 break;
         }
         
+	// var_dump($data);
+	
         return $data;
         
     }
@@ -127,7 +132,7 @@ class SmartestItemPropertyValue extends SmartestDataObject{
                 break;
                 
             default:
-                $data = addslashes($raw_data);
+                $data = SmartestStringHelper::sanitize($raw_data);
                 
                 break;
         }
@@ -144,7 +149,9 @@ class SmartestItemPropertyValue extends SmartestDataObject{
             
             if($user->hasToken('publish_approved_items') || $user->hasToken('publish_all_items')){
                 $this->_properties['content'] = $this->_properties['draft_content'];
-                $this->_modified_properties['content'] = $this->_properties['draft_content'];
+                $this->_modified_properties['content'] = addslashes($this->_properties['draft_content']);
+                $this->_properties['live_info'] = $this->_properties['draft_info'];
+                $this->_modified_properties['live_info'] = str_replace("'", "\\'", $this->_properties['draft_info']);
                 $this->save();
             }
             
@@ -174,12 +181,71 @@ class SmartestItemPropertyValue extends SmartestDataObject{
         
     }
     
+    public function getInfoField($field_name){
+	    
+	    $field_name = SmartestStringHelper::toVarName($field_name);
+	    
+	    $data = $this->getInfo();
+	    
+	    if(isset($data[$field_name])){
+	        return $data[$field_name];
+	    }else{
+	        return null;
+	    }
+	}
+	
+	public function setInfoField($field_name, $data){
+	    
+	    $field_name = SmartestStringHelper::toVarName($field_name);
+	    
+	    $existing_data = $this->getInfo(true);
+	    
+	    $existing_data[$field_name] = $data;
+	    
+	    $this->setInfo($existing_data);
+	    
+	}
+	
+	public function getInfo($draft_mode=false){
+	    
+	    $data = @unserialize($this->_getInfo($draft_mode));
+	    
+	    if(is_array($data)){
+	        return $data;
+	    }else{
+	        return array($data);
+	    }
+	    
+	}
+	
+	public function setInfo($data){
+	    
+	    if(!is_array($data)){
+	        $data = array($data);
+	    }
+	    
+	    $this->_setInfo(serialize($data));
+	    
+	}
+	
+	protected function _getInfo($draft_mode=false){
+	    if($draft_mode){
+	        return $this->_properties['draft_info'];
+        }else{
+            return $this->_properties['live_info'];
+        }
+	}
+	
+	protected function _setInfo($serialized_data){
+	    $this->setField('DraftInfo', $serialized_data);
+	}
+    
     public function setContent($data){
         
         $filtered_data = $this->filterNewContent($data);
         
         $this->_properties['draft_content'] = $filtered_data;
-        $this->_modified_properties['draft_content'] = $filtered_data;
+        $this->_modified_properties['draft_content'] = addslashes($filtered_data);
         
         if(isset($this->_properties['item_id']) && is_numeric($this->_properties['item_id'])){
             $this->save();

@@ -345,6 +345,7 @@ class SmartestDataObject implements ArrayAccess{
 			
 			// field being set is part of the model and corresponds to a column in the db table
 			$this->_properties[$this->_properties_lookup[$field_name]] = $value;
+			$value = str_replace("'", "\\'", $value);
 			$this->_modified_properties[$this->_properties_lookup[$field_name]] = SmartestStringHelper::sanitize($value);
 			
 		}else{

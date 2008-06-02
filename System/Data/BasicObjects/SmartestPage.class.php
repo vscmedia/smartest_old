@@ -198,14 +198,77 @@ class SmartestPage extends SmartestDataObject{
 	    }
 	}
 	
+	public function getAssetIdentifiers(){
+	    
+	    $sql = "SELECT * FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_page_id='".$this->_properties['id']."' AND assetidentifier_assetclass_id=assetclass_id";
+	    $result = $this->database->queryToArray($sql);
+	    $ais = array();
+	    
+	    foreach($result as $r){
+	        
+	        $ai = new SmartestAssetIdentifier;
+	        $ai->hydrateFromGiantArray($r);
+	        // print_r($ai);
+	        $ais[] = $ai;
+	        
+	    }
+	    
+	    return $ais;
+	    
+	}
+	
+	public function clearCachedCopies(){
+	    
+	    $cache_files = SmartestFileSystemHelper::load(SM_ROOT_DIR."System/Cache/Pages/");
+		
+		// removes all cache versions related to this page to keep the cache nice and tidy
+		$cf_start = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id'];
+		
+		$result = false;
+		
+		foreach($cache_files as $f){
+		    if(substr($f, 0, strlen($cf_start)) == $cf_start){
+		        $result = unlink(SM_ROOT_DIR."System/Cache/Pages/".$f);
+		    }
+		}
+		
+		return $result;
+	    
+	}
+	
 	public function publish(){
 	    
 	    // update database defs
 		$sql = "UPDATE Lists SET list_live_set_id=list_draft_set_id, list_live_template_file=list_draft_template_file, list_live_header_template=list_draft_header_template, list_live_footer_template=list_draft_footer_template WHERE list_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);
 		
-		$sql = "UPDATE AssetIdentifiers SET assetidentifier_live_asset_id=assetidentifier_draft_asset_id, assetidentifier_live_render_data=assetidentifier_draft_render_data WHERE assetidentifier_page_id='".$this->_properties['id']."'";
-		$this->database->rawQuery($sql);
+		// $sql = "UPDATE AssetIdentifiers INNER JOIN AssetClasses USING (assetidentifier_assetclass_id,assetclass_id) SET assetidentifier_live_asset_id=assetidentifier_draft_asset_id, assetidentifier_live_render_data=assetidentifier_draft_render_data WHERE assetidentifier_page_id='".$this->_properties['id']."' AND AssetClasses.assetclass_update_on_page_publish='1'";
+		// echo $sql;
+		// $this->database->rawQuery($sql);
+		
+		// delete files in page cache
+		$this->clearCachedCopies();
+		
+		$asset_identifiers = $this->getAssetIdentifiers();
+		
+		// new way of publishing asset identifiers that takes account of items and itemspaces
+		foreach($asset_identifiers as $ai){
+		    
+		    if($ai->getAssetClass()->getType() == 'SM_ASSETCLASS_ITEM_SPACE'){
+		        
+		        $item = $ai->getSimpleItem(true);
+		        
+		        if($item){
+		            $item_published = ($item->getPublic() == 'TRUE') ? true : false;
+		        }else{
+		            // echo 'no item <br />';
+		        }
+	        }
+		    
+		    if($ai->getAssetClass()->getUpdateOnPagePublish() == 1 || $item_published){
+		        $ai->publish();
+		    }
+		}
 		
 		$sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);
@@ -218,18 +281,6 @@ class SmartestPage extends SmartestDataObject{
 		// publish all textfragments on the page
 		foreach($this->getParsableTextFragments() as $tf){
 		    $tf->publish();
-		}
-		
-		// now delete files in page cache?
-		$cache_files = SmartestFileSystemHelper::load(SM_ROOT_DIR."System/Cache/Pages/");
-		
-		// remove all cache versions related to this page to keep the cache nice and tidy
-		$cf_start = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id'];
-		
-		foreach($cache_files as $f){
-		    if(substr($f, 0, strlen($cf_start)) == $cf_start){
-		        unlink(SM_ROOT_DIR."System/Cache/Pages/".$f);
-		    }
 		}
 		
 		// finally, request the page to force the system to build and cache the new copy
@@ -415,12 +466,12 @@ class SmartestPage extends SmartestDataObject{
 			$new_level = $int_level + 1; 
 			$working_array[$index]["children"] = $child->getPagesSubTree($new_level, $draft_mode, $get_items);
 			
-			if($child->getType() == "ITEMCLASS" && $get_items){
+			/* if($child->getType() == "ITEMCLASS" && $get_items){
 			    $set = $child->getDataSet();
 			    $working_array[$index]["child_items"] = $set->getMembersAsArrays();
 			}else{
 			    $working_array[$index]["child_items"] = array();
-			}
+			} */
 			
 			$index++;
 			
@@ -877,6 +928,10 @@ class SmartestPage extends SmartestDataObject{
 	    return ($this->getParentSite()->getTopPageId() == $this->_properties['id']);
 	}
 	
+	public function isApproved(){
+	    return (bool) $this->_properties['changes_approved'];
+	}
+	
 	public function touch(){
 	    if($this->_came_from_database == true){
 	        $sql = "UPDATE Pages SET page_modified = '".time()."' WHERE Pages.page_id = '".$this->_properties['id']."'";
@@ -1187,6 +1242,10 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $result = $q->retrieve();
 	    
+	    /* if($draft_mode){
+	        print_r($result);
+	    } */
+	    
 	    /* $big_objects = array();
 	    
 	    foreach($result as $i){
@@ -1203,7 +1262,7 @@ class SmartestPage extends SmartestDataObject{
 	    $arrays = array();
 	    
 	    foreach($items as $i){
-	        $arrays[] = $i->__toArray();
+	        $arrays[] = $i->__toArray(true);
 	    }
 	    
 	    return $arrays;

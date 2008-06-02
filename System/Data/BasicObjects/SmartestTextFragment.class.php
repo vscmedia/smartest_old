@@ -174,7 +174,8 @@ class SmartestTextFragment extends SmartestDataObject{
 	}
 	
 	protected function _setContent($content){
-	    return $this->setField('content', $content);
+	    // echo $content;
+	    return $this->setField('Content', $content);
 	}
 	
 	public function save(){

@@ -26,7 +26,7 @@ function executeTransfer(){
 
 <div id="work-area">
 
-<h3>{$model.plural_name} in this Data Set</h3>
+<h3>{$model.plural_name} in this Data Set ({$set.name})</h3>
 
 <div class="instruction">Use the arrow buttons below to move {$model.plural_name|lower} in and out of this set.</div>
 
@@ -38,7 +38,7 @@ function executeTransfer(){
   <table width="100%" border="0" cellpadding="0" cellspacing="5" style="border:1px solid #ccc">
     <tr>
       <td align="center">
-      <div style="text-align:left">Available Items Not Used</div>
+      <div style="text-align:left">{$model.plural_name} that <strong>aren't</strong> in this set</div>
 
 		<select name="available_items[]"  id="available_items" size="2" multiple style="width:270px; height:300px;"  onclick="setMode('add')"  >
     
@@ -54,7 +54,7 @@ function executeTransfer(){
     <input type="button" value="&lt;&lt;" id="remove_button" disabled="disabled" onclick="executeTransfer();" />
      </td>
      <td align="center">
-        <div style="text-align:left">Items Belonging to this set:</div>
+        <div style="text-align:left">{$model.plural_name} that <strong>are</strong> in this set</div>
  	<select name="used_items[]"  id='used_items' size="2" multiple style="width:270px; height:300px" onclick="setMode('remove')" >	
 	  {foreach from=$members key="key" item="item"}
 		<option value="{$item.id}" >{$item.name}</option>

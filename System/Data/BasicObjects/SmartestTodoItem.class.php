@@ -30,6 +30,34 @@ class SmartestTodoItem extends SmartestDataObject{
 	    
 	}
 	
+	public function hydrate($data){
+	    
+	    if(is_array($data)){
+	        if(isset($data['user_id'])){
+	            // user information has been passed too
+	            
+	            $u = new SmartestUser;
+                $u->hydrate($data, false);
+	            
+	            // the user passed was the one who assigned this todo
+	            if($data['user_id'] == $data['todoitem_assigning_user_id']){
+	                
+	                $this->_assigning_user = $u;
+	                
+	            }
+	            
+	            if($data['user_id'] == $data['todoitem_receiving_user_id']){
+	                
+	                $this->_receiving_user = $u;
+	                
+	            }
+	        }
+	    }
+	    
+	    return parent::hydrate($data);
+	    
+	}
+	
 	public function getType(){
 	    
 	    if(!$this->_type_object){
@@ -47,17 +75,26 @@ class SmartestTodoItem extends SmartestDataObject{
 	    
 	    $data = parent::__toArray();
 	    $data['type'] = $this->getType()->__toArray();
+	    $data['assigning_user'] = $this->getAssigningUser()->__toArray();
 	    
-	    if($this->getTargetObject()){
-	        $data['action_url'] = $this->getActionUrl();
-	        $data['object'] = $this->getTargetObject()->__toArray();
-	        $data['object_label'] = $this->getTargetObject()->__toString();
-	        return $data;
+	    if($this->getType()->getId() == 'SM_TODOITEMTYPE_GENERIC'){
+	        
+	        // there's no action object
+	        
 	    }else{
-	        // action object not found - write to log and delete this to-do
-	        $this->delete();
-	        return array();
-	    }
+	    
+	        if($this->getTargetObject()){
+	            $data['action_url'] = $this->getActionUrl();
+	            $data['object'] = $this->getTargetObject()->__toArray();
+	            $data['object_label'] = $this->getTargetObject()->__toString();
+	            return $data;
+	        }else{
+	            // action object not found - write to log and delete this to-do
+	            $this->delete();
+	            return array();
+	        }
+	    
+        }
 	    
 	}
 	

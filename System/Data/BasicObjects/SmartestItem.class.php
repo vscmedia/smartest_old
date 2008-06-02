@@ -4,6 +4,8 @@ class SmartestItem extends SmartestDataObject{
 	
 	protected $_model;
 	protected $_model_properties = array();
+	protected $_meta_page_id;
+	protected $_meta_page;
 	
 	protected function __objectConstruct(){
 		
@@ -52,6 +54,62 @@ class SmartestItem extends SmartestDataObject{
 	        $this->setField('Deleted', 1);
 	        $this->save();
 	    }
+	}
+	
+	public function getInfoForPageTree($draft){
+	    
+	    $item = array();
+	    $data = array();
+	    
+	    $data['asset_id'] = $this->getId();
+	    $data['asset_webid'] = $this->getWebid();
+	    $data['asset_type'] = $this->getType();
+	    $data['assetclass_name'] = SmartestStringHelper::toVarName($this->getName());
+	    $data['assetclass_id'] = 'item_'.$this->getId();
+	    $data['defined'] = 'PUBLISHED';
+	    $data['exists'] = 'true';
+	    $data['type'] = 'item';
+	    
+	    $item['info'] = $data;
+	    
+	    $item['children'] = $this->getUsedAssetsForPageTree($draft);
+	    
+	    return $item;
+	    
+	}
+	
+	public function getUsedAssetsForPageTree($draft=false){
+	    
+	    $assets = $this->getUsedAssets($draft);
+	    $arrays = array();
+	    
+	    foreach($assets as $a){
+	        $arrays[] = $a->getArrayForElementsTree(1);
+	    }
+	    
+	    // print_r($arrays);
+	    return $arrays;
+	    
+	}
+	
+	public function getUsedAssets($draft=false){
+	    
+	    $field = $draft ? 'itempropertyvalue_draft_content' : 'itempropertyvalue_content';
+	    
+	    $sql = "SELECT Assets.* FROM ItemPropertyValues, ItemProperties, Items, Assets WHERE Items.item_id='".$this->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND ItemPropertyValues.itempropertyvalue_property_id=ItemProperties.itemproperty_id AND ItemPropertyValues.".$field."=Assets.asset_id AND ItemProperties.itemproperty_datatype IN ('SM_DATATYPE_ASSET')";
+	    $result = $this->database->queryToArray($sql);
+	    $assets = array();
+	    
+	    foreach($result as $record){
+	        
+	        $a = new SmartestAsset;
+	        $a->hydrate($record);
+	        $assets[] = $a;
+	        
+	    }
+	    
+	    return $assets;
+	    
 	}
 	
 	// Tags
@@ -553,49 +611,78 @@ class SmartestItem extends SmartestDataObject{
 	public function getCmsLinkContents(){
 	    
 	    if($this->getMetapageId()){
-	        $page_id = $this->getMetapageId($this->getCurrentSiteId());
-	        return 'metapage:id='.$page_id.':id='.$this->_properties['id'];
-	    }else if($this->getModel()->getDefaultMetapageId($this->getCurrentSiteId())){
-	        $page_id = $this->getModel()->getDefaultMetapageId($this->getCurrentSiteId());
+	        $page_id = $this->getMetapageId();
 	        return 'metapage:id='.$page_id.':id='.$this->_properties['id'];
 	    }else{
 	        return null;
 	    }
 	    
 	}
-	
-	public function getTextFragments(){
-	    
-	    $sql = "SELECT TextFragments.* FROM Items, Assets, ItemPropertyValues, TextFragments WHERE Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->_properties['id']."'";
-		/* $result = $this->database->queryToArray($sql);
-		$objects = array();
-		
-		foreach($result as $tfarray){
-		    $tf = new SmartestTextFragment;
-		    $tf->hydrate($tfarray);
-		    $objects[] = $tf;
-		}
-		
-		return $objects; */
+    
+    public function getMetapageId(){
+        
+        if(!$this->_meta_page_id){
+        
+            if($this->_properties['metapage_id']){
+	            $this->_meta_page_id = $this->_properties['metapage_id'];
+            }else if($this->getModel()->getDefaultMetapageId($this->getCurrentSiteId())){
+                $this->_meta_page_id = $this->getModel()->getDefaultMetapageId($this->getCurrentSiteId());
+            }else{
+                $this->_meta_page_id = null;
+            }
+        
+        }
+        
+        return $this->_meta_page_id;
+        
 	}
 	
-	public function getParsableTextFragments(){
+	public function getMetapage(){
 	    
-	    $helper = new SmartestAssetsLibraryHelper;
-		$codes = $helper->getParsableAssetTypeCodes();
-		
-		$sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->_properties['id']."' AND Assets.asset_type IN ('".implode("', '", $codes)."')";
-		/* $result = $this->database->queryToArray($sql);
-		$objects = array();
-		
-		foreach($result as $tfarray){
-		    $tf = new SmartestTextFragment;
-		    $tf->hydrate($tfarray);
-		    $objects[] = $tf;
-		}
-		
-		return $objects; */
-		
+	    if(!$this->_meta_page){
+	    
+	        if($this->getMetaPageId()){
+	            
+	            $page = new SmartestPage;
+	            
+	            if($page->hydrate($this->getMetaPageId())){
+	                $this->_meta_page = $page;
+	            }
+	            
+            }
+        
+        }
+        
+        return $this->_meta_page;
+	    
+	}
+	
+	public function getItemSpaceDefinitions($draft=false){
+	    
+	    $defs = array();
+	    
+	    $sql = "SELECT * FROM AssetIdentifiers, AssetClasses, Pages WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id=Pages.page_id AND Pages.page_deleted != 'TRUE'";
+	    
+	    if($draft){
+	        $match_field = "AssetIdentifiers.assetidentifier_draft_asset_id";
+	    }else{
+	        $match_field = "AssetIdentifiers.assetidentifier_live_asset_id";
+	    }
+	    
+	    $sql .= " AND ".$match_field."='".$this->getId()."'";
+	    
+	    // echo $sql;
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    foreach($result as $record){
+	        $definition = new SmartestItemSpaceDefinition;
+	        $definition->hydrateFromGiantArray($record);
+	        $defs[] = $definition;
+	    }
+	    
+	    return $defs;
+	    
 	}
 	
 }

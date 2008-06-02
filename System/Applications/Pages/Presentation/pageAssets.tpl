@@ -89,6 +89,11 @@ function viewLivePage(){
   <li class="permanent-action"><a href="#" onclick="workWithItem('defineItemspace');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define This Itemspace</a></li>
 </ul>
 
+<ul class="invisible-actions-list" id="item-specific-actions" style="display:none">
+  <li><b>Item Options</b></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('openItem');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This Item</a></li>
+</ul>
+
 <ul class="invisible-actions-list" id="field-specific-actions" style="display:none">
   <li><b>Field Options</b></li>
   <li class="permanent-action"><a href="#" onclick="workWithItem('editField');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define This Field</a></li>

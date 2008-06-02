@@ -241,12 +241,45 @@ class Desktop extends SmartestSystemApplication{
 	    $this->formForward();
 	    
 	}
+	
+	public function deleteTodoItem($get){
+	    
+	    $todo_id = $get['todo_id'];
+	    
+	    $todo = new SmartestTodoItem;
+	    
+	    if($todo->hydrate($todo_id)){
+	        
+	        $todo->delete();
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The to-do item ID was not recognized", SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
+	public function deleteCompletedTodos($get){
+	    
+	    $this->getUser()->clearCompletedTodos();
+	    
+	    $this->addUserMessageToNextRequest("Your completed to-do items have been removed", SmartestUserMessage::SUCCESS);
+	    
+	    $this->formForward();
+	    
+	}
     
     public function todoList(){
         
         $this->setFormReturnUri();
         
         $this->setTitle('Your To-do List');
+        
+        // $todo_item_objects = $this->getUser()->getTodoItems();
+        // print_r($todo_item_objects);
         
         $todo_items = $this->getUser()->getTodoItemsAsArrays(false, true);
         // print_r($todo_items);

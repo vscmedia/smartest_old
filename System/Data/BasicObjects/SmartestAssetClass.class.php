@@ -8,7 +8,8 @@ class SmartestAssetClass extends SmartestDataObject{
     
 	protected function __objectConstruct(){
 		
-		throw new SmartestException('SmartestAssetClass is not supposed to be instantiated directly. Please use SmartestPlaceholder or SmartestContainer.');
+		$this->_table_prefix = 'assetclass_';
+		$this->_table_name = 'AssetClasses';
 		
 	}
 	
@@ -31,6 +32,8 @@ class SmartestAssetClass extends SmartestDataObject{
 	        $types = SmartestDataUtility::getAssetClassTypes();
 	        $this->_type_info = $types[$this->getType()];
         }
+        
+        // var_dump($this->getType());
         
         return $this->_type_info;
         

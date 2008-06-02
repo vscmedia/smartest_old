@@ -192,6 +192,22 @@ class SmartestCmsItem implements ArrayAccess{
 	    
 	}
 	
+	public function getCacheFiles(){
+	    
+	    $ending = '__id'.$this->getId().'.html';
+	    $start = 0 - strlen($ending);
+	    $files = array();
+	    
+	    foreach(SmartestFileSystemHelper::load(constant('SM_ROOT_DIR').'System/Cache/Pages/') as $file){
+	        if(substr($file, $start) == $ending){
+	            $files[] = constant('SM_ROOT_DIR').'System/Cache/Pages/'.$file;
+	        }
+	    }
+	    
+	    return $files;
+	    
+	}
+	
 	private function getField($field_name, $draft=false){
 		if(array_key_exists($field_name, $this->_properties_lookup)){
 		    if($this->_properties[$this->_properties_lookup[$field_name]] instanceof SmartestItemPropertyValueHolder){
@@ -265,6 +281,24 @@ class SmartestCmsItem implements ArrayAccess{
 	    if(is_object($this->_item)){
 	        $this->_item->setSiteId($id);
         }
+	}
+    
+    public function getMetapageId(){
+	    
+	    return $this->_item->getMetapageId();
+	    
+	}
+	
+	public function getMetaPage(){
+	    
+	    return $this->_item->getMetapage();
+	    
+	}
+	
+	public function getItemSpaceDefinitions($draft=false){
+	    
+	    return $this->_item->getItemSpaceDefinitions($draft);
+	    
 	}
 	
 	public function hydrateNewFromRequest($request_data){
@@ -557,6 +591,18 @@ class SmartestCmsItem implements ArrayAccess{
 		$result['web_id'] = $this->getItem()->getWebid();
 		$result['name'] = $this->getItem()->getName(); */
 		
+		switch($this->getWorkflowStatus()){
+		    case self::NOT_CHANGED:
+		    $result['_workflow_status'] = 'Not changed';
+		    break;
+		    case self::CHANGES_APPROVED:
+		    $result['_workflow_status'] = 'Approved and ready for publishing';
+		    break;
+		    default:
+		    $result['_workflow_status'] = 'Awaiting approval';
+		    break;
+		}
+		
 		if(is_object($this->getModel())){
 		    $result['_model'] = $this->getModel()->__toArray();
 	    }
@@ -770,15 +816,24 @@ class SmartestCmsItem implements ArrayAccess{
 	            $p->getData()->publish();
 	        }
 	        
-	        // print_r($p);
-	        
 	    }
+	    
+	    $sql = "UPDATE TodoItems SET todoitem_is_complete='1' WHERE todoitem_type='SM_TODOITEMTYPE_PUBLISH_ITEM' AND todoitem_foreign_object_id='".$this->_item->getId()."'";
+	    $this->database->rawQuery($sql);
 	    
 	    $this->_item->setChangesApproved(1);
 	    $this->_item->setLastPublished(time());
 	    $this->_item->setIsHeld(0);
 	    $this->_item->setPublic('TRUE');
 	    $this->_item->save();
+	    
+	    // print_r($this->getCacheFiles());
+	    
+	    foreach($this->getCacheFiles() as $file){
+	        
+	        unlink($file);
+	        
+	    }
 	    
 	}
 	

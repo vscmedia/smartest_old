@@ -541,7 +541,7 @@ class Pages extends SmartestSystemApplication{
     	    
 		    
 		}else{
-		    $this->addUserMessage("The page ID was not recognised.", SmartestUserMessage::ERROR);
+		    $this->addUserMessage("The page ID was not recognized.", SmartestUserMessage::ERROR);
 		    $this->send(false, 'show_iframe');
 		}
 		
@@ -1942,7 +1942,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    // print_r($get);
 	    
-	    $this->setTitle('Define Placeholder');
+	    $this->setTitle('Un-Define Placeholder');
 	    
 	    $page = new SmartestPage;
 	    
@@ -1953,6 +1953,63 @@ class Pages extends SmartestSystemApplication{
 	        $placeholder = new SmartestPlaceholder;
 	        
 	        if($placeholder->hydrateBy('name', $placeholder_id)){
+	            
+	            $definition = new SmartestPlaceholderDefinition;
+	            
+	            if($definition->loadForUpdate($placeholder->getName(), $page)){
+	                
+	                // update placeholder
+	                // $definition->delete();
+	                $definition->setDraftAssetId('');
+	                $definition->save();
+	                $this->addUserMessageToNextRequest('The placeholder definition was removed.', SmartestUserMessage::SUCCESS);
+	                
+	            }else{
+	                
+	                // wasn't already defined
+	                $this->addUserMessageToNextRequest('The placeholder wasn\'t defined to start with.', SmartestUserMessage::INFO);
+	                
+	                
+	            }
+	            
+	            $page->setChangesApproved(0);
+                $page->setModified(time());
+                $page->save();
+	            
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest('The specified placeholder doesn\'t exist', SmartestUserMessage::ERROR);
+	            
+	        }
+	    
+        }else{
+            
+            $this->addUserMessageToNextRequest('The specified page doesn\'t exist', SmartestUserMessage::ERROR);
+            
+        }
+        
+        $this->formForward();
+	    
+	}
+	
+	public function undefineContainer($get, $post){
+	    
+	    $placeholder_id = $get['assetclass_id'];
+	    $page_id = $get['page_id'];
+	    
+	    // print_r($get);
+	    
+	    $this->setTitle('Un-Define Container');
+	    
+	    $page = new SmartestPage;
+	    
+	    if($page->hydrate($page_id)){
+	        
+	        // print_r($page);
+	        
+	        $container = new SmartestPlaceholder;
+	        
+	        if($container->hydrateBy('name', $placeholder_id)){
 	            
 	            $definition = new SmartestPlaceholderDefinition;
 	            
@@ -2183,7 +2240,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    if($page->hydrate($page_webid)){
 	    
-	        if(((boolean) $page->getChangesApproved() || $this->getUser()->hasToken('approve_page_changes')) && $this->getUser()->hasToken('publish_approved_pages')){
+	        if(((boolean) $page->getChangesApproved() || $this->getUser()->hasToken('approve_page_changes')) && ($this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
 		        
 		        $page->publish();
 		        $this->addUserMessageToNextRequest('The page has been successfully published.', SmartestUserMessage::SUCCESS);

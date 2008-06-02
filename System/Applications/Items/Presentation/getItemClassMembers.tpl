@@ -27,7 +27,7 @@ function openPage(pageAction){
 
 <div id="work-area">
 
-<h3><a href="{$domain}{$section}">Data Manager</a> &gt; {$model.plural_name}</h3>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; {$model.plural_name}</h3>
 <a name="top"></a>
 <div class="instruction">Double click one of the {$content.itemBaseValues.itemclass_plural_name|lower} to edit it or choose from the options on the right.</div>
 
@@ -36,19 +36,37 @@ function openPage(pageAction){
   <input type="hidden" name="class_id" value="{$model.id}" />
 </form>
 
+<div>
+  <form id="mode-form" method="get" action="">
+    <input type="hidden" name="class_id" value="{$model.id}" />
+    Show: <select name="mode" onchange="$('mode-form').submit();">
+      <option value="7"{if $mode == 7} selected="selected"{/if}>All {$model.plural_name|strtolower} not archived</option>
+      <option value="1"{if $mode == 1} selected="selected"{/if}>Unpublished {$model.plural_name|strtolower}</option>
+      <option value="2"{if $mode == 2} selected="selected"{/if}>Unpublished {$model.plural_name|strtolower} that are not approved</option>
+      <option value="3"{if $mode == 3} selected="selected"{/if}>Unpublished {$model.plural_name|strtolower} that have been approved</option>
+      <option value="4"{if $mode == 4} selected="selected"{/if}>Published {$model.plural_name|strtolower}</option>
+      <option value="5"{if $mode == 5} selected="selected"{/if}>Published {$model.plural_name|strtolower} that have been modified, but not re-approved</option>
+      <option value="6"{if $mode == 6} selected="selected"{/if}>Published {$model.plural_name|strtolower} that have been modified and re-approved</option>
+      <option value="0"{if $mode == 0} selected="selected"{/if}>All {$model.plural_name|strtolower}</option>
+      <option value="8"{if $mode == 8} selected="selected"{/if}>All archived {$model.plural_name|strtolower}</option>
+    </select>
+  </form>
+</div>
+
 <div id="options-view-chooser">
 Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/if}. View as:
 <a href="{dud_link}" onclick="setView('list', 'options_list')">List</a> /
 <a href="{dud_link}" onclick="setView('grid', 'options_list')">Icons</a>
 </div>
   
-  <ul class="{if count($items) > 30}options-list{else}options-grid{/if}" id="options_list">
+  {* <ul class="{if count($items) > 30}options-list{else}options-grid{/if}" id="options_list"> *}
+    <ul class="options-grid" id="options_list">
   {foreach from=$items key="key" item="item"}
 	
     <li ondblclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}'">
-      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="setSelectedItem('{$item.id}', '{$item.name|escape:quotes}');">
+      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="setSelectedItem('{$item.id}', '{$item.name|escape:html}');">
         
-        <img src="{$domain}Resources/Icons/item.png" border="0" />{$item.name}</a>{if $item.public=='FALSE'}&nbsp;(hidden){/if}</li>
+        <img src="{$domain}Resources/Icons/item.png" border="0" />{$item.name}</a>{* if $item.public=='FALSE'}&nbsp;(hidden){/if *}</li>
 
   {/foreach}
   
@@ -61,10 +79,13 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
 
 <ul class="actions-list" id="item-specific-actions" style="display:none">
   <li><b>Selected {$content.itemBaseValues.itemclass_name}</b></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/information.png"> <a href="{dud_link}" onclick="workWithItem('itemInfo');">{$model.name} info</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/pencil.png"> <a href="{dud_link}" onclick="workWithItem('openItem');">Edit Properties</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/lock_open.png"> <a href="{dud_link}" onclick="workWithItem('releaseItem');">Release</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('publishItem');">Publish</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('unpublishItem');">Un-Publish</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/accept.png"> <a href="{dud_link}" onclick="workWithItem('addTodoItem');">Add new to-do</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('archiveItem');">Move to Archive</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> <a href="{dud_link}" onclick="if(selectedPage && confirm('Are you sure you want to delete this {$model.name|lower} ?')) {ldelim}workWithItem('deleteItem');{rdelim}">Delete</a></li>
 {* <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="if(selectedPage) {ldelim}workWithItem('duplicateItem');{rdelim}">Duplicate</a></li> *}
 

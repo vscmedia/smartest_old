@@ -124,11 +124,19 @@ function getWebContent(url){
 function workWithItem(pageAction){
 	
 	// alert(sm_domain+sm_section+"/"+pageAction);
-	
 	var editForm = document.getElementById('pageViewForm');	
+	
 	if(selectedPage && editForm){
-		editForm.action = sm_domain+sm_section+"/"+pageAction;
-		editForm.submit();
+	    
+	    // alert(pageAction.split("/").length());
+	    
+	    //if(pageAction.split("/").length() > 1){
+	    //    editForm.action = sm_domain+pageAction;
+	    //}else{
+		    editForm.action = sm_domain+sm_section+"/"+pageAction;
+	    //}
+	    
+	    editForm.submit();
 	}
 }
 

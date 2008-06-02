@@ -6,6 +6,10 @@
   {/foreach}
 </select>
 
+{if count($asset.type_info.param) && $asset.id}
+  <input type="button" onclick="window.location='{$domain}{$section}/editItemPropertyValueAssetData?item_id={$item.id}&amp;property_id={$property.id}'" value="Edit Parameters" />
+{/if}
+
 {if $asset.type_info.editable=='true'}
-<input type="button" onclick="window.location='{$domain}assets/editAsset?from=item_edit&amp;asset_id='+$('item_property_{$property.id}').value" value="Edit &gt;&gt;" />
+ <input type="button" onclick="window.location='{$domain}assets/editAsset?from=item_edit&amp;asset_id='+$('item_property_{$property.id}').value" value="Edit &gt;&gt;" />
 {/if}

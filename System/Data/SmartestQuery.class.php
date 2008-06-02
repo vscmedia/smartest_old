@@ -265,14 +265,16 @@ class SmartestQuery{
 		
 	}
 	
-	public function doSelect($draft=false){
+	public function doSelect($mode=9){
 		
 	    // var_dump($draft);
+	    
+	    $mode = (int) $mode;
 	    
 		// if($forcedb){
 			// do it the slow way, getting ids of matching rows and hydrating them
 			
-			if($draft){
+			if(in_array($mode, array(0,1,2,6,7,8))){
 			    $value_field = 'itempropertyvalue_draft_content';
 			}else{
 			    $value_field = 'itempropertyvalue_content';
@@ -368,7 +370,21 @@ class SmartestQuery{
         				
     		        }
 				    
-				    $sql .= " AND Items.item_public='TRUE'";
+				    if($mode > 5){
+				    
+				        $sql .= " AND Items.item_public='TRUE'";
+				    
+			        }
+			        
+			        if(in_array($mode, array(1,4,7,10))){
+				    
+				        $sql .= " AND Items.item_is_archived='1'";
+				    
+			        }else if(in_array($mode, array(2,5,8,11))){
+			            
+			            $sql .= " AND Items.item_is_archived!='1'";
+			            
+			        }
 				    
 				    if($this->getSiteId()){
 				        $sql .= " AND (Items.item_site_id='".$this->getSiteId()."' OR Items.item_shared='1')";

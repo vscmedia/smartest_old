@@ -600,7 +600,11 @@ class PagesManager{
                     $definition = new SmartestItemSpaceDefinition;
                     
                     if($definition->load($itemspace_name, $page, $draft)){
+                        
                         $info[$i]['info']['defined'] = $definition->hasChanged() ? 'DRAFT' : 'PUBLISHED';
+                        $item = $definition->getSimpleItem($draft);
+                        $info[$i]['children'] = array($item->getInfoForPageTree($draft));
+                        
                     }else{
                         $info[$i]['info']['defined'] = 'UNDEFINED';
                     }

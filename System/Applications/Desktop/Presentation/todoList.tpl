@@ -13,7 +13,9 @@
     {foreach from=$todo_items item="todo"}
     <li style="margin-bottom:10px"><strong>{$todo.object_label}</strong><br />
       <span>Task: {$todo.description}</span><br />
-      <span>{if $todo.type.autocomplete}<a href="{$domain}{$todo.action_url}&amp;from=todoList">Do This Now</a>{else}<a href="{$domain}{$todo.action_url}&amp;from=todoList">Go to this task</a> | <a href="{$domain}{$section}/completeTodoItem?todo_id={$todo.id}">Complete</a>{/if}</span></li>
+      <span>Assigned By: {$todo.assigning_user.full_name}</span><br />
+      <span>Status: {if $todo.is_complete}Completed{else}Awaiting completion{/if}</span><br />
+      <span>{if !$todo.is_complete}{if $todo.type.autocomplete}<a href="{$domain}{$todo.action_url}">Do This Now</a>{else}<a href="{$domain}{$todo.action_url}">Go to this task</a> | <a href="{$domain}{$section}/completeTodoItem?todo_id={$todo.id}">Complete</a>{/if}{else}<a href="{$domain}{$section}/deleteTodoItem?todo_id={$todo.id}">Delete This To-do Permanently</a>{/if}</span></li>
     {/foreach}
 
   </ul>

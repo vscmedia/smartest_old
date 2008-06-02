@@ -30,7 +30,7 @@ function setView(viewName, list_id){
 
 <div id="work-area">
 
-<h3><a href="{$domain}smartest/data">Data Manager</a> &gt; Models</h3>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; Models</h3>
 <a name="top"></a>
 
 <div class="instruction">Your data is collected into functionally distinct types called models. Please choose one to continue.</div>

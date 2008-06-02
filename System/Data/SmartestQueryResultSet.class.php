@@ -127,6 +127,41 @@ class SmartestQueryResultSet{
 		
 	}
 	
+	public function getSimpleItems($limit=0){
+	    
+	    // echo $limit;
+	    $limit = (int) $limit;
+	    
+	    if(!$this->_items_retrieval_attempted){
+	        
+	        $cardinality = 0;
+	        
+	        $this->_simple_items = array();
+	        
+	        $sql = "SELECT * FROM Items WHERE item_id IN ('".implode("', '", $this->_item_ids)."')";
+	        
+	        if($limit > 0){
+	            $sql .= " LIMIT ".$limit;
+	        }
+	        
+	        $result = $this->database->queryToArray($sql);
+	        
+	        foreach($result as $record){
+	            
+    	        $obj = new SmartestItem;
+	            $obj->hydrate($record);
+	            $this->_simple_items[] = $obj;
+	                
+    	    }
+	        
+	        $this->_items_retrieval_attempted = true;
+	    
+	    }
+	    
+	    return $this->_simple_items;
+	
+	}
+	
 	public function getItems($limit=null){
 	    
 	    // echo $limit;

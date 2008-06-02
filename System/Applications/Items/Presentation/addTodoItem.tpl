@@ -17,6 +17,15 @@
     </div>
     
     <div class="edit-form-row">
+      <div class="form-section-label">Task type</div>
+      <select name="todoitem_type">
+        <option value="SM_TODOITEMTYPE_EDIT_ITEM">Edit this item</option>
+        <option value="SM_TODOITEMTYPE_APPROVE_ITEM">Approve this item</option>
+        <option value="SM_TODOITEMTYPE_PUBLISH_ITEM">Publish this item</option>
+      </select>
+    </div>
+    
+    <div class="edit-form-row">
       <div class="form-section-label">Description of the task</div>
       <textarea name="todoitem_description" style="width:400px;height:80px"></textarea>
     </div>

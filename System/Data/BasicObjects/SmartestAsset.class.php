@@ -142,34 +142,42 @@ class SmartestAsset extends SmartestDataObject{
 	    
 	    // var_dump($this->_text_fragment);
 	    
-	    // no text fragment has been created
+	    // no text fragment has been retrieved
 	    if(!$this->_text_fragment){
-	        
 	        
 	        if($this->usesTextFragment()){
     	        
     	        $tf = new SmartestTextFragment;
     	        
+    	        // echo $this->getFragmentId();
+    	        
     	        if($this->getFragmentId()){
 	                
 	                if(!$tf->hydrate($this->getFragmentId())){
 	                    
+	                    // echo "No Fragment";
+	                    
 	                    // whoops, this asset doesn't have a text fragment - create one, but log that this was what happened
                         $tf->setAssetId($this->getId());
                         $tf->setCreated(time());
-                        $tf->save();
-                        $this->setFragmentId($tf->getId());
+                        // $tf->save();
+                        $this->setField('FragmentId', $tf->getId());
                     }
                     
+                    // $this->save();
                     $this->_text_fragment = $tf;
                     
     	        }else{
+    	            
+    	            // echo "No Fragment ID";
+    	            
     	            // whoops, this asset doesn't have a text fragment - create one, but log that this was what happened
     	            if($this->getId()){
 	                    $tf->setAssetId($this->getId());
                         $tf->setCreated(time());
-	                    $tf->save();
-                        $this->setFragmentId($tf->getId());
+	                    // $tf->save();
+                        // $this->setField('FragmentId', $tf->getId());
+                        // $this->save();
                         $this->_text_fragment = $tf;
                     }else{
                         $this->_text_fragment = $tf;
@@ -182,6 +190,8 @@ class SmartestAsset extends SmartestDataObject{
 	    
         }
         
+        // print_r($this->_text_fragment);
+        
         return $this->_text_fragment;
 	    
 	}
@@ -189,9 +199,9 @@ class SmartestAsset extends SmartestDataObject{
 	public function getContent(){
 	    if($this->getTextFragment()){
 	        if($this->isParsable()){
-    	        return stripslashes($this->getTextFragment()->getContent());
+    	        return $this->getTextFragment()->getContent();
             }else{
-                return htmlspecialchars(stripslashes($this->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8');
+                return htmlspecialchars($this->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
             }
 	    }else if($this->isEditable() && is_file($this->getFullPathOnDisk())){
 	        return SmartestFileSystemHelper::load($this->getFullPathOnDisk(), true);
@@ -339,18 +349,34 @@ class SmartestAsset extends SmartestDataObject{
 	    
 	    parent::save();
 	    
-	    if($this->getTextFragment()){
+	    if($this->usesTextFragment()){
+	    
+	        $tf = $this->getTextFragment();
 	        
-	        if(!$this->getFragmentId() || !$this->getTextFragment()->getId()){
-	            // fragment has not been saved
+	        if($tf->getId()){
+	            // the textfragment already exists in the database
+	            $this->setFragmentId($this->getTextFragment()->getId());
+	            $tf->save();
+	        }else{
+	            // the textfragment is a new object
+	            $tf->setAssetId($this->getId());
+	            $tf->save();
+	            $this->setFragmentId($tf->getId());
+	            parent::save();
+	        }
+	        
+    	    /* if(!$this->getFragmentId()){
+	            // this asset isn't linked
 	            $this->getTextFragment()->setAssetId($this->getId());
 	            $this->getTextFragment()->save();
-	            $this->setFragmentId($this->getTextFragment()->getId());
+	            
 	            parent::save();
 	        }else{
 	            $this->getTextFragment()->save();
-	        }
-	    }
+	        } */
+    	    
+	    
+        }
 	    
 	}
 	

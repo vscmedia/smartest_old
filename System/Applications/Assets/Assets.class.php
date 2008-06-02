@@ -421,7 +421,7 @@ class Assets extends SmartestSystemApplication{
     		        if($type['storage']['type'] == 'database'){
                     
                         // add contents of file in System/Temporary/ to database as a text fragment
-                        $asset->getTextFragment()->setContent(str_replace("'", "\\'", SmartestFileSystemHelper::load($new_temp_file, true)));
+                        $asset->getTextFragment()->setContent(SmartestFileSystemHelper::load($new_temp_file, true));
                         $asset->setUrl($filename);
                     
         		    }else{
@@ -593,7 +593,7 @@ class Assets extends SmartestSystemApplication{
     			    if($asset_type['storage']['type'] == 'database'){
     			        if($asset->usesTextFragment()){
     			            // $content = utf8_encode(htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8'));
-    			            $content = htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8');
+    			            $content = htmlspecialchars($asset->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
     			        }
 			        }else{
 			            $file = SM_ROOT_DIR.$asset_type['storage'].$asset->getUrl();
@@ -842,7 +842,7 @@ class Assets extends SmartestSystemApplication{
 	            
 	            $todo = new SmartestTodoItem;
 	            $todo->setReceivingUserId($user->getId());
-        	    $todo->setAssigningUserIs($this->getUser()->getId());
+        	    $todo->setAssigningUserId($this->getUser()->getId());
         	    $todo->setForeignObjectId($asset->getId());
         	    $todo->setTimeAssigned(time());
         	    $todo->setDescription($input_message);
@@ -1019,8 +1019,8 @@ class Assets extends SmartestSystemApplication{
     	        }
     	        
     	        $asset->setModified(time());
-
-    		    $asset->save();
+                $asset->save();
+                
     		    $this->addUserMessageToNextRequest("The file has been successfully updated.", SmartestUserMessage::SUCCESS);
 		    
 		    }else{

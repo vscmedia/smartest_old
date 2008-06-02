@@ -17,7 +17,7 @@ class SmartestBaseUser extends SmartestDataObject{
 		
 	}
 	
-	public function hydrate($id){
+	public function hydrate($id, $bother_with_tokens=true){
 		
 		if(is_array($id)){
 			
@@ -36,7 +36,9 @@ class SmartestBaseUser extends SmartestDataObject{
 					
 				}
 				
-				$this->getTokens();
+				if($bother_with_tokens){
+				    $this->getTokens();
+			    }
 				
 				return true;
 			
@@ -406,9 +408,9 @@ class SmartestBaseUser extends SmartestDataObject{
 	public function getNumTodoItems($get_assigned=false){
 	    
 	    if($get_assigned){
-	        $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_assigning_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 ORDER BY todoitem_time_assigned ASC";
+	        $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_assigning_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1";
 	    }else{
-	        $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 ORDER BY todoitem_time_assigned ASC";
+	        $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1";
         }
 	    
 	    return count($this->database->queryToArray($sql));
@@ -418,10 +420,12 @@ class SmartestBaseUser extends SmartestDataObject{
 	public function getTodoItems($get_assigned=false){
 	    
 	    if($get_assigned){
-	        $sql = "SELECT * FROM TodoItems WHERE todoitem_assigning_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 ORDER BY todoitem_time_assigned ASC";
+	        $sql = "SELECT * FROM Users, TodoItems WHERE todoitem_assigning_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 AND TodoItems.todoitem_receiving_user_id=Users.user_id ORDER BY todoitem_time_assigned DESC";
 	    }else{
-	        $sql = "SELECT * FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 ORDER BY todoitem_time_assigned ASC";
+	        $sql = "SELECT * FROM Users, TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 AND TodoItems.todoitem_assigning_user_id=Users.user_id ORDER BY todoitem_time_assigned DESC";
         }
+	    
+	    // echo $sql;
 	    
 	    $result = $this->database->queryToArray($sql);
 	    $tasks = array();
@@ -453,13 +457,19 @@ class SmartestBaseUser extends SmartestDataObject{
 	    
 	}
 	
-	public function sendEmail($subject, $message, $from=''){
+	public function clearCompletedTodos(){
+	    
+	    $sql = "DELETE FROM TodoItems WHERE ";
+	    
+	}
+	
+	public function sendEmail($subject, $message, $from=""){
 	    
 	    if(!isset($from{0})){
 	        $from = 'Smartest <smartest@'.$_SERVER['HTTP_HOST'].'>';
 	    }
 	    
-	    // $to = $this->_properties['email'];
+	    $to = $this->_properties['email'];
 	    
 	    // if($to){
 	        mail($to, $subject, $message, "From: ".$from."\r\nReply-to: ".$from);

@@ -5,7 +5,6 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
     protected $_placeholder;
     protected $_asset;
     protected $_is_linkable = false;
-    protected $_page;
     
 	protected function __objectConstruct(){
 		
@@ -31,8 +30,8 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
                 
                 $placeholder->hydrate($result[0]);
                 
-                $this->_placeholder = $placeholder;
-                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_placeholder->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
+                $this->_asset_class = $placeholder;
+                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
@@ -113,8 +112,8 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
                 
                 // echo 'loaded';
                 
-                $this->_placeholder = $placeholder;
-                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_placeholder->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
+                $this->_asset_class = $placeholder;
+                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
                 $result = $this->database->queryToArray($sql);
                 
                 // var_dump($result);
@@ -190,13 +189,13 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
     
     public function getPlaceholder(){
 	    
-	    if(!is_object($this->_placeholder)){
+	    if(!is_object($this->_asset_class)){
 	        $ph = new SmartestPlaceHolder;
 	        $ph->hydrate($this->getAssetClassId());
-	        $this->_placeholder = $ph;
+	        $this->_asset_class = $ph;
         }
 	    
-	    return $this->_placeholder;
+	    return $this->_asset_class;
 	}
 	
 	public function getType(){
@@ -209,7 +208,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         
         $placeholder = new SmartestPlaceHolder;
         $placeholder->hydrate($array);
-        $this->_placeholder = $placeholder;
+        $this->_asset_class = $placeholder;
         
         $asset = new SmartestAsset;
         $asset->hydrate($array);

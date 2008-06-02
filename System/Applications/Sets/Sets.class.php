@@ -236,7 +236,7 @@ class Sets extends SmartestSystemApplication{
 			    $set->addItems($item_ids);
 		    }else{
 			    // $this->manager->removeItemFromStaticSet($post['used_items'], $post['set_id']);
-			    $item_ids = (isset($post['available_items']) && is_array($post['available_items'])) ? $post['available_items'] : array();
+			    $item_ids = (isset($post['used_items']) && is_array($post['used_items'])) ? $post['used_items'] : array();
 			    $set->removeItems($item_ids);
 		    }
 		
@@ -247,13 +247,20 @@ class Sets extends SmartestSystemApplication{
 	
 	function previewSet($get){     
 	    
+	    if(isset($get['mode'])){
+	        $mode = (int) $get['mode'];
+	    }else{
+	        $mode = SM_QUERY_PUBLIC_DRAFT;
+	    }
+	    
+	    $this->send($mode, 'mode');
 	    $this->setFormReturnUri();
 	    
 	    $set_id = $get['set_id'];
 	    $set = new SmartestCmsItemSet;
 	    $set->hydrate($set_id);
 	    
-	    $items = $set->getMembersAsArrays(true);
+	    $items = $set->getMembersAsArrays($mode);
 	    
 	    $this->send($items, 'items');
 	    $this->send(count($items), 'count');

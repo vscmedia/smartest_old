@@ -19,6 +19,10 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
         }
 	}
 	
+	public function getDataType(){
+	    return $this->_properties['datatype'];
+	}
+	
 	public function hydrateValueFromIpvObject(SmartestItemPropertyValue $ipv_object){
 	    // var_dump($ipv_object);
 	    $this->_value = $ipv_object;

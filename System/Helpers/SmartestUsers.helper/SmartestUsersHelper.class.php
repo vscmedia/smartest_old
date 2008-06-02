@@ -12,8 +12,12 @@ class SmartestUsersHelper extends SmartestHelper{
     
     public function getUsersThatHaveToken($token, $site_id=''){
         
-        $sql = 'SELECT * FROM Users, UsersTokensLookup, UserTokens WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND UserTokens.token_code='.$token."'";
-        
+	    if(is_array($token)){
+	        $sql = "SELECT DISTINCT Users.* FROM Users, UsersTokensLookup, UserTokens WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND UserTokens.token_code IN ('".implode("', '", $token)."')";
+        }else{
+	        $sql = 'SELECT DISTINCT Users.* FROM Users, UsersTokensLookup, UserTokens WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND UserTokens.token_code='.$token."'";
+	    }
+	    
         if(is_numeric($site_id)){
             $sql .= " AND UsersTokensLookup.utlookup_site_id='".$site_id."'";
         }
@@ -33,7 +37,16 @@ class SmartestUsersHelper extends SmartestHelper{
     
     public function getUsersThatHaveTokenAsArrays($token, $site_id){
     
+        $users = $this->getUsersThatHaveToken($token, $site_id='');
+        $arrays = array();
         
+        foreach($users as $u){
+            
+            $arrays[] = $u->__toArray();
+            
+        }
+        
+        return $arrays;
     
     }
     

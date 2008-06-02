@@ -71,50 +71,61 @@ class SmartestItemProperty extends SmartestDataObject{
 	            
 	            if($info['filter']['entitysource']['type'] == 'db'){
 	                
-	                if(is_object($this->getSite())){
-	                    $site_id = $this->getSite()->getId();
-	                }
-	                
-	                if(isset($info['filter']['entitysource']['class']) && class_exists($info['filter']['entitysource']['class'])){
-	                
-	                    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";
+	                if($this->getDatatype() == 'SM_DATATYPE_ASSET' && substr($filter, 0, 13) == 'SM_ASSETCLASS'){
 	                    
-	                    if($site_id && $info['filter']['entitysource']['sitefield'] && $info['filter']['entitysource']['sharedfield']){
-	                        $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
-	                    }
+	                    $p = new SmartestPlaceholder;
+	                    $p->setType($filter);
+	                    $this->_possible_values = $p->getPossibleAssets();
+	                    // print_r($this->_possible_values);
 	                    
-	                    if(isset($info['filter']['entitysource']['sortfield'])){
-	                        $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
-	                    }
-	                    
-	                    // echo $sql;
-	                    
-	                    $result = $this->database->queryToArray($sql);
-	                    $options = array();
-	                    
-	                    foreach($result as $raw_array){
-	                        
-	                        $class = $info['filter']['entitysource']['class'];
-	                        $option = new $class;
-	                        $option->hydrate($raw_array);
-	                        $options[] = $option;
-                        
-	                    }
-	                    
-	                    $this->_possible_values = $options;
-	                
 	                }else{
-	                        
-	                    throw new SmartestException("Foreign key data object class '".$info['filter']['entitysource']['class']."' not defined or doesn't exist for property datatype: ".$this->getDatatype());
-	                        
-	                }
 	                
+    	                if(is_object($this->getSite())){
+    	                    $site_id = $this->getSite()->getId();
+    	                }
+	                
+    	                if(isset($info['filter']['entitysource']['class']) && class_exists($info['filter']['entitysource']['class'])){
+	                
+    	                    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";
+	                    
+    	                    if($site_id && $info['filter']['entitysource']['sitefield'] && $info['filter']['entitysource']['sharedfield']){
+    	                        $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
+    	                    }
+	                    
+    	                    if(isset($info['filter']['entitysource']['sortfield'])){
+    	                        $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
+    	                    }
+	                    
+    	                    // echo $sql;
+	                    
+    	                    $result = $this->database->queryToArray($sql);
+    	                    $options = array();
+	                    
+    	                    foreach($result as $raw_array){
+	                        
+    	                        $class = $info['filter']['entitysource']['class'];
+    	                        $option = new $class;
+    	                        $option->hydrate($raw_array);
+    	                        $options[] = $option;
+                        
+    	                    }
+	                    
+    	                    $this->_possible_values = $options;
+	                
+    	                }else{
+	                        
+    	                    throw new SmartestException("Foreign key data object class '".$info['filter']['entitysource']['class']."' not defined or doesn't exist for property datatype: ".$this->getDatatype());
+	                        
+    	                }
+	                
+    	            }
+	            
 	            }else{
 	                
-	                // non-database entity types? to be continued...
-	                $this->_possible_values = array();
+    	            // non-database entity types? to be continued...
+    	            $this->_possible_values = array();
 	                
-	            }
+    	        }
 	            
 	            $this->_possible_values_retrieval_attempted = true;
 	            return $this->_possible_values;

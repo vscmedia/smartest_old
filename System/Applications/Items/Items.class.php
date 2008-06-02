@@ -61,9 +61,15 @@ class Items extends SmartestSystemApplication{
 		}
 	}
 	
-	function getItemClassMembers($get="", $post=""){
+	function getItemClassMembers($get, $post){
   	    
   	    $this->setFormReturnUri();
+  	    
+  	    if(isset($get['mode'])){
+  	        $mode = (int) $get['mode'];
+  	    }else{
+  	        $mode = SM_STATUS_CURRENT;
+  	    }
   	    
   	    $model = new SmartestModel;
   	    
@@ -73,9 +79,10 @@ class Items extends SmartestSystemApplication{
   	        
   	        // echo $this->getSite()->getId();
   	        
-  	        $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+  	        $items = $model->getSimpleItemsAsArrays($this->getSite()->getId(), $mode);
   	        $this->setTitle($model->getPluralName());
   	        $this->send($items, 'items');
+  	        $this->send($mode, 'mode');
   	        $this->send(count($items), 'num_items');
   	        $this->send($model->__toArray(), 'model');
   	        
@@ -331,7 +338,11 @@ class Items extends SmartestSystemApplication{
 	        $u = new SmartestUser;
 	        $u->hydrate($item->getHeldBy());
 	        $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
-	        $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
+		if($get['from']=='todoList'){
+		    $this->redirect('/smartest/todo');
+		}else{
+	            $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
+		}
 	    }else{
 	        if($this->getUser()->hasToken('modify_items')){
                 
@@ -343,7 +354,13 @@ class Items extends SmartestSystemApplication{
 	                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId(), 0);
                 }
                 
-                $this->redirect('/'.SM_CONTROLLER_MODULE.'/editItem?item_id='.$item->getId());
+		$destination = '/'.SM_CONTROLLER_MODULE.'/editItem?item_id='.$item->getId();
+		
+		if(isset($get['from'])){
+		    $destination .= '&from='.$get['from'];
+		}
+		    
+                $this->redirect($destination);
                 
             }else{
                 $this->addUserMessageToNextRequest('You don\'t have permssion to edit items', SmartestUserMessage::ACCESS_DENIED);
@@ -844,6 +861,71 @@ class Items extends SmartestSystemApplication{
 	    $this->formForward();
 	}
 	
+	public function itemInfo($get){
+	    
+	    $item_id = (int) $get['item_id'];
+	    
+	    $item = SmartestCmsItem::retrieveByPk($item_id);
+	    
+	    if(is_object($item)){
+	        
+	        $item_array = $item->__toArray(true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
+		    $this->send($item->getModel()->getMetaPagesAsArrays(), 'metapages');
+		    
+		    $authors = $item->getItem()->getAuthorsAsArrays();
+		    
+		    $num_authors = count($authors);
+            $byline = '';
+
+            if($num_authors){
+                for($i=0;$i<$num_authors;$i++){
+
+                    $byline .= $authors[$i]['full_name'];
+
+                    if(isset($authors[$i+2])){
+                        $byline .= ', ';
+                    }else if(isset($authors[$i+1])){
+                        $byline .= ' and ';
+                    }
+
+                }
+
+                $this->send($byline, 'byline');
+            }else{
+                $this->send('Anonymous', 'byline');
+            }
+		    
+		    if($page = $item->getMetaPage()){
+		        $this->send(true, 'has_page');
+		        $this->send($page->__toArray(), 'page');
+		    }
+		    
+		    $this->setTitle($item->getModel()->getName().' Information | '.$item->getName());
+		    $this->send($item_array, 'item');
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The item ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	        
+	    }
+	    
+	}
+	
+	public function archiveItem($get){
+	    
+	    $item_id = (int) $get['item_id'];
+	    $item = new SmartestItem;
+	    
+	    if($item->hydrate($item_id)){
+	        $item->setIsArchived(1);
+	        $item->save();
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
 	public function editItem($get, $post){
 		
 		if(!isset($get['from'])){
@@ -854,6 +936,8 @@ class Items extends SmartestSystemApplication{
 		
 		$item = SmartestCmsItem::retrieveByPk($item_id);
 		
+	        // print_r($item);
+	    
 		if(is_object($item)){
 		    
 		    $item_array = $item->__toArray(true, true, true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
@@ -863,7 +947,9 @@ class Items extends SmartestSystemApplication{
 		    
 		    $page = new SmartestPage;
 		    
-		    if($page->hydrate($item->getModel()->getDefaultMetapageId($this->getSite()->getId()))){
+		    if($page->hydrate($item->getMetapageId())){
+		        $this->send($page->getWebid(), 'default_metapage_id');
+		    }else if($page->hydrate($item->getModel()->getDefaultMetapageId($this->getSite()->getId()))){
 		        $this->send($page->getWebid(), 'default_metapage_id');
 		    }
 		    
@@ -896,8 +982,8 @@ class Items extends SmartestSystemApplication{
 		
 		        $new_values = $post['item'];
     		    $properties = $item->getProperties(true);
-		        
-		        if(is_array($new_values)){
+    		    
+    		    if(is_array($new_values)){
 		    
 		            foreach($new_values as $property_id=>$new_value){
 				        $item->setPropertyValueByNumericKey($property_id, $new_value);
@@ -921,6 +1007,197 @@ class Items extends SmartestSystemApplication{
 	    
 	    $this->formForward();
 	
+	}
+	
+	public function editItemPropertyValueAssetData($get){
+	    
+	    // get item id and property id
+	    // load item property, draft info
+	    $item_id = (int) $get['item_id'];
+	    $property_id = (int) $get['property_id'];
+	    
+	    $item = new SmartestItem;
+	    
+	    if($item->hydrate($item_id)){
+	        
+	        $property = new SmartestItemPropertyValueHolder;
+	        
+	        if($property->hydrate($property_id)){
+	            
+	            $property->setContextualItemId($item_id);
+	            $asset_id = $property->getData()->getDraftContent();
+	            
+	            $existing_render_data = $property->getData()->getInfo(true);
+	            // print_r($existing_render_data);
+	            
+	            $asset = new SmartestAsset;
+	            
+	            if($asset->hydrate($asset_id)){
+	                
+	                $this->send($property->__toArray(), 'property');
+	                $this->send($item->__toArray(), 'item');
+	                $this->send($item->getModel()->__toArray(), 'model');
+	                
+	                $type = $asset->getTypeInfo();
+	                $this->send($type, 'asset_type');
+	                $this->send($asset->__toArray(), 'asset');
+	                
+	                if(isset($type['param'])){
+
+            	        $raw_xml_params = $type['param'];
+                        $params = array();
+            	        foreach($raw_xml_params as $rxp){
+            	            
+            	            if(isset($rxp['default'])){
+            	                $params[$rxp['name']]['xml_default'] = $rxp['default'];
+            	                $params[$rxp['name']]['value'] = $rxp['default'];
+                            }else{
+                                $params[$rxp['name']]['xml_default'] = '';
+                                $params[$rxp['name']]['value'] = '';
+                            }
+                            
+                            $params[$rxp['name']]['type'] = $rxp['type'];
+                            $params[$rxp['name']]['asset_default'] = '';
+            	        }
+            	        
+            	        $this->send($type, 'asset_type');
+
+            	    }else{
+            	        $params = array();
+            	    }
+            	    
+            	    $asset_params = $asset->getDefaultParameterValues();
+            	    
+            	    foreach($params as $key=>$p){
+            	        // default values from xml are set above.
+            	        
+            	        // next, set values from asset
+            	        if(isset($asset_params[$key]) && strlen($asset_params[$key])){
+            	            $params[$key]['value'] = $asset_params[$key];
+            	            $params[$key]['asset_default'] = $asset_params[$key];
+            	        }
+            	        
+            	        // then, override any values that already exist
+            	        if(isset($existing_render_data[$key]) && strlen($existing_render_data[$key])){
+            	            $params[$key]['value'] = $existing_render_data[$key];
+            	        }
+        	        }
+        	        
+        	        $this->send($params, 'params');
+        	        
+        	        // print_r($params);
+	                
+	            }
+	            
+	        }
+	        
+	    }
+	    
+	    
+	}
+	
+	public function updateItemPropertyValueAssetData($get, $post){
+	    
+	    $item_id = (int) $post['item_id'];
+	    $property_id = (int) $post['property_id'];
+	    $values = is_array($post['params']) ? $post['params'] : array();
+	    $new_values = array();
+	    
+	    $item = new SmartestItem;
+	    
+	    if($item->hydrate($item_id)){
+	        
+	        $property = new SmartestItemPropertyValueHolder;
+	        
+	        if($property->hydrate($property_id)){
+	            
+	            $property->setContextualItemId($item_id);
+	            $value_object = $property->getData();
+	            $asset_id = $value_object->getDraftContent();
+	            
+	            // print_r($value_object);
+	            
+	            $existing_render_data = $value_object->getInfo(true);
+	            // print_r($existing_render_data);
+	            
+	            $asset = new SmartestAsset;
+	            
+	            if($asset->hydrate($asset_id)){
+	                
+	                $type = $asset->getTypeInfo();
+	                
+	                if(isset($type['param'])){
+
+            	        $raw_xml_params = $type['param'];
+                        $params = array();
+            	        
+            	        foreach($raw_xml_params as $rxp){
+            	            
+            	            if(isset($rxp['default'])){
+            	                $params[$rxp['name']]['xml_default'] = $rxp['default'];
+            	                $params[$rxp['name']]['value'] = $rxp['default'];
+                            }else{
+                                $params[$rxp['name']]['xml_default'] = '';
+                                $params[$rxp['name']]['value'] = '';
+                            }
+                            
+                            $params[$rxp['name']]['type'] = $rxp['type'];
+                            $params[$rxp['name']]['asset_default'] = '';
+            	        }
+
+            	    }else{
+            	        $params = array();
+            	    }
+            	    
+            	    $asset_params = $asset->getDefaultParameterValues();
+            	    
+            	    // print_r($params);
+            	    
+            	    foreach($params as $key=>$p){
+            	        // default values from xml are set above.
+            	        
+            	        // next, set values from asset
+            	        if(isset($asset_params[$key]) && strlen($asset_params[$key])){
+            	            $v = $asset_params[$key];
+            	        }
+            	        
+            	        // then, override any values that already exist
+            	        if(isset($existing_render_data[$key]) && strlen($existing_render_data[$key])){
+            	            $v = $existing_render_data[$key];
+            	        }
+            	        
+            	        if(isset($values[$key]) && strlen($values[$key])){
+            	            $v = $values[$key];
+            	        }
+            	        
+            	        $value_object->setInfoField($key, $v);
+            	        
+        	        }
+        	        
+        	        $value_object->save();
+        	        
+	                $this->addUserMessageToNextRequest("The display parameters were updated", SmartestUserMessage::SUCCESS);
+	                
+	            }else{
+	                
+	                $this->addUserMessageToNextRequest("The asset ID wasn't recognized", SmartestUserMessage::ERROR);
+	                
+	            }
+	            
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest("The property ID wasn't recognized", SmartestUserMessage::ERROR);
+	            
+	        }
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The item ID wasn't recognized", SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    $this->formForward();
+	    
 	}
 	
 	public function addTodoItem($get){
@@ -965,7 +1242,8 @@ class Items extends SmartestSystemApplication{
 	            
 	            // $user->assignTodo('SM_TODOITEMTYPE_EDIT_ITEM', $item_id, $this->getUser()->getId(), SmartestStringHelper::sanitize())
 	            
-	            $type = SmartestTodoListHelper::getType('SM_TODOITEMTYPE_EDIT_ITEM');
+		    $type_id = $post['todoitem_type'];
+	            $type = SmartestTodoListHelper::getType($type_id);
                 
                 $message = SmartestStringHelper::sanitize($post['todoitem_description']);
                 
@@ -980,11 +1258,11 @@ class Items extends SmartestSystemApplication{
 	            
 	            $todo = new SmartestTodoItem;
 	            $todo->setReceivingUserId($user->getId());
-        	    $todo->setAssigningUserIs($this->getUser()->getId());
+        	    $todo->setAssigningUserId($this->getUser()->getId());
         	    $todo->setForeignObjectId($item->getId());
         	    $todo->setTimeAssigned(time());
         	    $todo->setDescription($input_message);
-        	    $todo->setType('SM_TODOITEMTYPE_EDIT_ITEM');
+        	    $todo->setType($type_id);
         	    $todo->setPriority($priority);
         	    $todo->setSize($size);
         	    $todo->save();
@@ -1021,14 +1299,27 @@ class Items extends SmartestSystemApplication{
 	    if($item->hydrate($item_id)){
 	        
 	        if($this->getUser()->hasToken('approve_item_changes')){
-	            if((bool) $item->getChangesApproved()){
-	                // user has permission. allow item to be approved.
-	                $this->addUserMessageToNextRequest('The item has been approved.', SmartestUserMessage::SUCCESS);
-	                $item->setChangesApproved(1);
-	                $item->save();
-                }else{
-                    $this->addUserMessageToNextRequest('The item had not been changed.', SmartestUserMessage::INFO);
-                }
+	            
+		        // user has permission. allow item to be approved.
+	            $this->addUserMessageToNextRequest('The item has been approved.', SmartestUserMessage::SUCCESS);
+	            $item->setChangesApproved(1);
+		        $item->setIsHeld(0);
+		        $item->setHeldBy(0);
+	            $item->save();
+		    
+		        if($todo = $this->getUser()->getTodo('SM_TODOITEMTYPE_APPROVE_ITEM', $item->getId())){
+			        $todo->complete();
+		        }
+		        
+		        $uhelper = new SmartestUsersHelper;
+		        $publishable_users = $uhelper->getUsersThatHaveToken(array('publish_all_items', 'publish_approved_items'), $this->getUser());
+		    
+		        foreach($publishable_users as $u){
+		            if(!$u->hasTodo('SM_TODOITEMTYPE_PUBLISH_ITEM', $item->getId())){
+			            $u->assignTodo('SM_TODOITEMTYPE_PUBLISH_ITEM', $item->getId(), 0);
+		            }
+		        }
+		      
 	        }else{
 	            // user does not have permission
 	            $this->addUserMessageToNextRequest('You do not have permission to approve item changes.', SmartestUserMessage::ACCESS_DENIED);
@@ -1042,7 +1333,7 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
-	public function publishItem($get){
+	public function publishItem($get, $post){
 	    
 	    if(isset($post['item_id'])){
 	    
@@ -1051,12 +1342,57 @@ class Items extends SmartestSystemApplication{
             $item = SmartestCmsItem::retrieveByPk($item_id);
         
             if(is_object($item)){
-	    
-    	        if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items')){
 	            
-    	            // it is ok to publish the item
+	            if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items')){
+	                
+	            // it is ok to publish the item
     	            $item->publish();
-    	            $this->addUserMessageToNextRequest('The item has been published.', SmartestUserMessage::SUCCESS);
+    	            
+    	            $update_itemspaces = $post['update_itemspaces'];
+    	            
+    	            if($update_itemspaces == 'IGNORE'){
+    	                
+    	            }else{
+    	                
+    	                $itemspace_defs = $item->getItemSpaceDefinitions(true);
+    	                
+    	                // print_r($itemspace_defs);
+    	                
+    	                foreach($itemspace_defs as $def){
+    	                    
+    	                    $def->publish();
+    	                    
+    	                    if($update_itemspaces == 'PUBLISH'){
+    	                        
+    	                        if($page = $def->getPage()){
+    	                            
+    	                            if(($this->getUser()->hasToken('publish_approved_pages') && $page->isApproved()) || $this->getUser()->hasToken('publish_all_pages')){
+    	                                $page->publish();
+	                                }
+    	                        }
+    	                    }
+    	                }
+    	            }
+    	            
+    	            $update_pages = $post['update_pages'];
+    	            
+    	            if($update_pages == 'PUBLISH'){
+    	                
+    	                if(isset($post['metapage_id']) && is_numeric($post['metapage_id'])){
+    	                
+    	                    $page = new SmartestPage;
+    	                
+    	                    if($page->hydrate($post['metapage_id'])){
+    	                        $page->publish();
+    	                    }else{
+    	                        $post['metapage_id'];
+    	                    }
+    	                
+    	                }
+    	            
+	                }
+	                
+	                $this->addUserMessageToNextRequest('The item has been published.', SmartestUserMessage::SUCCESS);
 	            
     	        }else{
 	            
@@ -1082,6 +1418,17 @@ class Items extends SmartestSystemApplication{
             // Display publish options/warnings before doing the deed
             $item_id = $get['item_id'];
             $item = SmartestCmsItem::retrieveByPk($item_id);
+            
+            if($page = $item->getMetaPage()){
+                if($this->getUser()->hasToken('publish_all_pages') || $this->getUser()->hasToken('publish_approved_pages')){
+                    $this->send(true, 'show_page_publish_option');
+                    $this->send($page->__toArray(), 'meta_page');
+                }else{
+                    $this->send(false, 'show_page_publish_option');
+                }
+            }else{
+                $this->send(false, 'show_page_publish_option');
+            }
             
             if(is_object($item)){
 	    

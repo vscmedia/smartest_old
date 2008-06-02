@@ -5,7 +5,6 @@ class SmartestItemSpaceDefinition extends SmartestAssetIdentifier{
     protected $_itemspace;
     protected $_item;
     protected $_simple_item;
-    protected $_page;
     protected $_loaded = false;
     
     public function __objectConstruct(){
@@ -20,11 +19,11 @@ class SmartestItemSpaceDefinition extends SmartestAssetIdentifier{
         if(strlen($name) && is_object($page)){
             
             $this->_page = $page;
-            $this->_itemspace = new SmartestItemSpace;
+            $this->_asset_class = new SmartestItemSpace;
             
-            if($this->_itemspace->exists($name, $page->getSiteId())){
+            if($this->_asset_class->exists($name, $page->getSiteId())){
                 
-                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_itemspace->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
+                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
@@ -52,13 +51,14 @@ class SmartestItemSpaceDefinition extends SmartestAssetIdentifier{
                 $this->_simple_item = $this->_item->getSimpleItem();
             }else{
                 $item = new SmartestItem;
+                
                 if($draft){
                     $field = 'draft_asset_id';
                 }else{
                     $field = 'live_asset_id';
                 }
                 
-                if($item->hydrate($this->_properties['live_asset_id'])){
+                if($item->hydrate($this->_properties[$field])){
                     $this->_simple_item = $item;
                 }else{
                     return $item;
@@ -125,18 +125,47 @@ class SmartestItemSpaceDefinition extends SmartestAssetIdentifier{
     }
     
     public function getItemSpace(){
-        return $this->_itemspace;
+        
+        if(!$this->_asset_class){
+            
+            $sql = "SELECT * FROM AssetClasses WHERE assetclass_id='".$this->_properties['assetclass_id']."'";
+            $result = $this->database->queryToArray($sql);
+            
+            if(count($result)){
+                $ac = new SmartestItemSpace;
+                $ac->hydrate($result[0]);
+                $this->_asset_class = $ac;
+            }
+            
+        }
+        
+        return $this->_asset_class;
+        
     }
     
     public function hydrateFromGiantArray($array){
         
         $this->hydrate($array);
         
-        $itemspace = new SmartestItemSpace;
-        $itemspace->hydrate($array);
-        $this->_itemspace = $itemspace;
+        if(isset($array['assetclass_id'])){
+            
+            $itemspace = new SmartestItemSpace;
+            $itemspace->hydrate($array);
+            $this->_asset_class = $itemspace;
         
-        $this->_item = SmartestCmsItem::retrieveByPk($array['item_id']);
+        }
+        
+        if(isset($array['page_id'])){
+            
+            $page = new SmartestPage;
+            $page->hydrate($array);
+            $this->_page = $page;
+        
+        }
+        
+        if(isset($array['item_id'])){
+            $this->_item = SmartestCmsItem::retrieveByPk($array['item_id']);
+        }
         
     }
     

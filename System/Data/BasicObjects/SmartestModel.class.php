@@ -178,12 +178,42 @@ class SmartestModel extends SmartestDataObject{
 	    return SmartestStringHelper::toCamelCase($this->getName());
     }
     
-    public function getSimpleItems($site_id=''){
+    public function getSimpleItems($site_id='', $mode=0){
+        
+        $mode = (int) $mode;
+        
+        // echo $mode;
         
         $sql = "SELECT * FROM Items WHERE item_itemclass_id='".$this->_properties['id']."' AND item_deleted != 1";
         
         if(is_numeric($site_id)){
             $sql .= " AND item_site_id='".$site_id."'";
+        }
+        
+        if($mode > 0){
+            
+            if(in_array($mode, array(4,5,6))){
+                $sql .= " AND item_public='TRUE'";
+            }else if(in_array($mode, array(1,2,3))){
+                $sql .= " AND item_public='FALSE'";
+            }
+            
+            if($mode == 8){
+                $sql .= " AND item_is_archived='1'";
+            }else{
+                $sql .= " AND item_is_archived='0'";
+            }
+            
+            if(in_array($mode, array(2,3,5,6))){
+                $sql .= " AND item_modified > item_last_published";
+            }
+            
+            if(in_array($mode, array(3,6))){
+                $sql .= " AND item_changes_approved='1'";
+            }else if(in_array($mode, array(2,5))){
+                $sql .= " AND item_changes_approved='0'";
+            }
+            
         }
         
         $sql .= " ORDER BY item_name";
@@ -203,9 +233,9 @@ class SmartestModel extends SmartestDataObject{
         return $items;
     }
     
-    public function getSimpleItemsAsArrays($site_id=''){
+    public function getSimpleItemsAsArrays($site_id='', $mode=0){
         
-        $items = $this->getSimpleItems($site_id);
+        $items = $this->getSimpleItems($site_id, $mode);
         $arrays = array();
         
         // $time_1 = debug_time();

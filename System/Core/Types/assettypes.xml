@@ -163,7 +163,8 @@
       <icon>generic.gif</icon>
       <storage type="file" location="Public/Resources/Assets/" />
       <suffix mime="audio/mpeg">mp3</suffix>
-      <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
+      <render template="System/Presentation/WebPageBuilder/display.mp3_audio.tpl" />
+      <param name="width" type="SM_DATATYPE_NUMERIC" required="true" />
     </type>
     
     <type id="SM_ASSETTYPE_SHOCKWAVE_FLASH" category="embedded">

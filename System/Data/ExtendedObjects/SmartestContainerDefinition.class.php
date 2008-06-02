@@ -4,7 +4,6 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
 
 	protected $_container;
 	protected $_depth = null;
-	protected $_page = null;
 	protected $_template = null;
 	
 	protected function __objectConstruct(){
@@ -31,8 +30,8 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
                 
                 $container->hydrate($result[0]);
                 
-                $this->_container = $container;
-                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_container->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
+                $this->_asset_class = $container;
+                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
@@ -97,8 +96,8 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
                 
                 // echo 'loaded';
                 
-                $this->_container = $container;
-                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_container->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
+                $this->_asset_class = $container;
+                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
                 $result = $this->database->queryToArray($sql);
                 
                 // var_dump($result);
@@ -166,7 +165,7 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
         
         $container = new SmartestContainer;
         $container->hydrate($array);
-        $this->_container = $container;
+        $this->_asset_class = $container;
         
         $template = new SmartestContainerTemplateAsset;
         $template->hydrate($array);
@@ -176,15 +175,15 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
     
     public function getContainer(){
 	    
-	    if(!is_object($this->_container)){
+	    if(!is_object($this->_asset_class)){
 	    
 	        $c = new SmartestContainer;
 	        $c->hydrate($this->getAssetClassId());
-	        $this->_container = $c;
+	        $this->_asset_class = $c;
 	    
         }
 	    
-	    return $this->_container;
+	    return $this->_asset_class;
 	}
 
 }

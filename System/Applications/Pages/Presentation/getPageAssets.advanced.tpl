@@ -80,6 +80,8 @@ Viewing mode:
 	      {/if}
 		  {elseif $assetclass.info.type == 'template'}
   		  <img src="{$domain}Resources/Icons/page_white_code.png" style="border:0px" />
+  		{elseif $assetclass.info.type == 'item'}
+    		<img src="{$domain}Resources/Icons/package.png" style="border:0px;width:16px;height:16px" />
       {else}
 		  <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/published_{$assetclass.info.type|lower}.gif" />
 		  {/if}
@@ -93,7 +95,7 @@ Viewing mode:
 		  <img border="0" style="width:16px;height:16px;" title="This {$assetclass.info.type} has not yet been defined" src="{$domain}Resources/Icons/undefined_{$assetclass.info.type|lower}.gif" />
 		{/if}
 	
-	  <b>{$assetclass.info.assetclass_name}</b>
+	  <b>{$assetclass.info.assetclass_name|escape:html}</b>
 	  {if $assetclass.info.type == 'placeholder'}{/if}
 	  
 	  {if $assetclass.info.filename != ""}

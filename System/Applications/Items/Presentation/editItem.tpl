@@ -2,7 +2,7 @@
 
 {load_interface file="edit_tabs.tpl"}
 
-<h3><a href="{$domain}{$section}">Data Manager</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$item._model.id}">{$item._model.plural_name}</a> &gt; Edit {$item._model.name}</h3>
+<h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$item._model.id}">{$item._model.plural_name}</a> &gt; Edit {$item._model.name}</h3>
 
 <div id="instruction">You are editing the draft property values of this item</div>
 
@@ -10,6 +10,9 @@
 
 <input type="hidden" name="class_id" value="{$item._model.id}" />
 <input type="hidden" name="item_id" value="{$item.id}" />
+
+{if $smarty.get.from}<input type="hidden" name="from" value="{$smarty.get.from}"
+/>{/if}
 
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} Name</div>
@@ -65,6 +68,7 @@
     <li><b>This {$item._model.name}</b></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/releaseItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/lock_open.png" border="0" />&nbsp;Release for others to edit</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/approveItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" />&nbsp;Approve changes</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addTodoItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" />&nbsp;Assign To-do</a></li>
     {if $default_metapage_id}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}websitemanager/preview?page_id={$default_metapage_id}&amp;item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/page.png" border="0" />&nbsp;Preview it</a></li>{/if}
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/page_lightning.png" border="0" />&nbsp;Publish it</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassMembers?class_id={$item.itemclass_id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" />&nbsp;Finish editing for now</a></li>

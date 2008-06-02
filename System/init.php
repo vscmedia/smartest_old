@@ -49,8 +49,9 @@ class SmartestInit{
 	
 		self::setRootDir();
 		self::setIncludePaths();
-	
-		require_once(SM_ROOT_DIR."System/Response/SmartestResponse.class.php");
+	    
+	    require SM_ROOT_DIR.'System/Base/constants.php';
+		require SM_ROOT_DIR.'System/Response/SmartestResponse.class.php';
         
         // $everything is everything
 		$everything = new SmartestResponse;

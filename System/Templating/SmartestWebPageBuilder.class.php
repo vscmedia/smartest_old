@@ -74,9 +74,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function prepareForRender(){
         
-        $this->page->loadAssetClassDefinitions($draft_mode);
-	    $this->page->loadItemSpaceDefinitions($draft_mode);
-	    $this->setPageRenderingData($this->page->fetchRenderingData($draft_mode));
+        $this->page->loadAssetClassDefinitions($this->getDraftMode());
+	    $this->page->loadItemSpaceDefinitions($this->getDraftMode());
+	    $this->setPageRenderingData($this->page->fetchRenderingData($this->getDraftMode()));
 	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
         
     }
@@ -660,7 +660,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }
 
         		if($set->hydrateBy('name', $name)){
-        		    $items = $set->getMembers($this->getDraftMode(), false, $limit, $query_vars);
+        		    
+        		    $set_mode = $this->getDraftMode() ? SM_QUERY_PUBLIC_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT ;
+        		    $items = $set->getMembers($set_mode, false, $limit, $query_vars);
+        		    
         		}else{
         		    $items = array();
         		}
@@ -683,6 +686,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
             $asset = new SmartestAsset;
             
             if($asset->hydrateBy($hydrateField, $asset_id)){
+                
+                // print_r($asset);
                 
                 $render_data = array();
                 
@@ -873,12 +878,22 @@ class SmartestWebPageBuilder extends SmartestEngine{
                                 }else{
                                     $value = $property->getData()->getContent();
                                 }
-                    
-                                // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
+                                
+				// TODO: It's more direct to do this, though not quite so extensible. We can update this later.
                                 if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                                    
+                                    // print_r($property->getData()->getInfo($this->getDraftMode()));
+
+                                    // 
+
+                                    foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
+                                        $params[$key] = $param_value;
+                                    }
+                                    
                                     if(SmartestStringHelper::toRealBool($value)){
                                         return $this->renderAssetById($value, $params, $path);
                                     }
+                                    
                                 }else{
                                     $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
                                 }
@@ -910,7 +925,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     // print_r($this->getPage()->getItemSpaceDefinitionNames());
                     
                     if($this->getPage()->hasItemSpaceDefinition($params['itemspace'], $this->getDraftMode())){
-
+			
+			
+			
                         $def = $this->getPage()->getItemSpaceDefinition($params['itemspace'], $this->getDraftMode());
                         $object = $def->getItem(false, $this->getDraftMode());
                         
@@ -923,6 +940,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
                             // $simple_object = $object->getItem();
                             // print_r($object);
                             
+			    // print_r($object->getModel()->getPropertyVarNames());
+			    
+			    
+			    
                             if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
 
                                 $lookup = $object->getModel()->getPropertyVarNamesLookup();
@@ -938,6 +959,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
                                     }else{
                                         $value = $property->getData()->getContent();
                                     }
+				    
+				    // var_dump($value);
+				    // var_dump($this->getDraftMode());
 
                                     // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
                                     if($property->getDatatype() == 'SM_DATATYPE_ASSET'){

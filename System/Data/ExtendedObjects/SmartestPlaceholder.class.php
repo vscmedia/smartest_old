@@ -30,6 +30,8 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	    
 	    $type = $this->getTypeInfo();
 	    
+	    // print_r($type);
+	    
 	    /*if($this->getType() == 'SM_ASSETTYPE_IMAGE'){
             $types = array('SM_ASSETTYPE_IMAGE', 'SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE');
         }else{
@@ -111,6 +113,8 @@ class SmartestPlaceholder extends SmartestAssetClass{
             $result = $this->database->queryToArray($sql);
             $official_types = SmartestDataUtility::getAssetTypes();
             $assets = array();
+            
+            // echo $sql;
             
             foreach($result as $raw_asset){
                 

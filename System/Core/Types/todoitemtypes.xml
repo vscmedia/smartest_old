@@ -22,7 +22,7 @@
     <foreignkeyfield>asset_id</foreignkeyfield>
     <urifield>asset_webid</urifield>
     <autocomplete>false</autocomplete>
-    <action>assets/previewAsset?asset_id=$asset_id</action>
+    <action>assets/previewAsset?asset_id=$asset_id&amp;from=todoList</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_EDIT_ASSET" category="SM_TODOITEMCATEGORY_ASSETS">
@@ -44,7 +44,7 @@
     <foreignkeyfield>asset_id</foreignkeyfield>
     <urifield>asset_webid</urifield>
     <autocomplete>true</autocomplete>
-    <action>assets/assetInfo?asset_id=$asset_id</action>
+    <action>assets/assetInfo?asset_id=$asset_id&amp;from=todoList</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_APPROVE_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
@@ -55,7 +55,7 @@
     <foreignkeyfield>page_id</foreignkeyfield>
     <urifield>page_webid</urifield>
     <autocomplete>true</autocomplete>
-    <action>websitemanager/preview?page_id=$page_webid</action>
+    <action>websitemanager/preview?page_id=$page_webid&amp;from=todoList</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_EDIT_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
@@ -77,7 +77,7 @@
     <foreignkeyfield>page_id</foreignkeyfield>
     <urifield>page_webid</urifield>
     <autocomplete>true</autocomplete>
-    <action>websitemanager/releasePage?page_id=$page_id</action>
+    <action>websitemanager/releasePage?page_id=$page_id&amp;from=todoList</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_PUBLISH_PAGE" category="SM_TODOITEMCATEGORY_PAGES">
@@ -88,7 +88,7 @@
     <foreignkeyfield>page_id</foreignkeyfield>
     <urifield>page_webid</urifield>
     <autocomplete>true</autocomplete>
-    <action>websitemanager/preview?page_id=$page_webid</action>
+    <action>websitemanager/preview?page_id=$page_webid&amp;from=todoList</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_EDIT_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
@@ -110,7 +110,7 @@
     <foreignkeyfield>item_id</foreignkeyfield>
     <urifield>item_id</urifield>
     <autocomplete>true</autocomplete>
-    <action>datamanager/openItem?item_id=$item_id</action>
+    <action>datamanager/openItem?item_id=$item_id&amp;from=todoList</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_RELEASE_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
@@ -121,7 +121,7 @@
     <foreignkeyfield>item_id</foreignkeyfield>
     <urifield>item_id</urifield>
     <autocomplete>true</autocomplete>
-    <action>datamanager/releaseItem?item_id=$item_id</action>
+    <action>datamanager/releaseItem?item_id=$item_id&amp;from=todoList</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_PUBLISH_ITEM" category="SM_TODOITEMCATEGORY_ITEMS">
@@ -132,7 +132,7 @@
     <foreignkeyfield>item_id</foreignkeyfield>
     <urifield>item_id</urifield>
     <autocomplete>true</autocomplete>
-    <action>datamanager/openItem?item_id=$item_id</action>
+    <action>datamanager/publishItem?item_id=$item_id&amp;from=todoList</action>
   </type>
   
   <type id="SM_TODOITEMTYPE_GENERIC" category="SM_TODOITEMCATEGORY_ALL">

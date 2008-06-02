@@ -3,7 +3,8 @@
     {if $show_left_nav_options}
     <li{if $section == "desktop"} class="on"{else} class="off"{/if}><a href='{$domain}smartest' >Site Desktop</a></li>
     <li{if $section == "websitemanager"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/pages' >Pages</a></li>
-    <li{if $section == "datamanager" || $section == "metadata" || $section == "sets"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/data'>Data</a></li>
+    <li{if $section == "datamanager" || $section == "sets"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/data'>Items</a></li>
+    <li{if $section == "metadata"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/metadata'>Meta-data</a></li>
     <li{if $section == "assets"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/assets'>Files</a></li>
 	  <li{if $section == "templates"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/templates'>Templates</a></li>
 	  {* <li{if $section == "desktop" && $method == 'editSite'} class="on"{else} class="off"{/if}><a href='{$domain}smartest/settings'>Settings</a></li> *}
