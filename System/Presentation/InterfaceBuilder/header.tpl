@@ -28,9 +28,9 @@
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/scriptaculous/src/effects.js"></script>
                                                                                                   
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/interface.js"></script>
-    <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/interface-obj.js"></script>
+    {* <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/interface-obj.js"></script> *}
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/treeview.js"></script>
-    <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/server.js"></script>
+    {* <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/server.js"></script> *}
     
     {* <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/yui/build/yahoo/yahoo.js"></script>
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/yui/build/dom/dom.js"></script>
