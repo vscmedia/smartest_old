@@ -106,7 +106,9 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
                     
                     $this->hydrate($result[0]);
                     
-                    if($container->getType() == "SM_ASSETTYPE_CONTAINER_TEMPLATE"){
+                    // var_dump($container->getType());
+                    
+                    if($container->getType() == "SM_ASSETCLASS_CONTAINER"){
                         
                         $template = new SmartestContainerTemplateAsset;
                         $this->_template = $template;

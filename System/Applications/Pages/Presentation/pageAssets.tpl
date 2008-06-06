@@ -62,6 +62,7 @@ function viewLivePage(){
 <ul class="invisible-actions-list" id="container-specific-actions" style="display:none">
   <li><b>Container Options</b></li>
   <li class="permanent-action"><a href="#" onclick="workWithItem('defineContainer');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define Container</a></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('undefineContainer');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Un-Define Container</a></li>
 </ul>
 
 <ul class="invisible-actions-list" id="list-specific-actions" style="display:none">

@@ -1994,12 +1994,12 @@ class Pages extends SmartestSystemApplication{
 	
 	public function undefineContainer($get, $post){
 	    
-	    $placeholder_id = $get['assetclass_id'];
+	    $container_id = $get['assetclass_id'];
 	    $page_id = $get['page_id'];
 	    
 	    // print_r($get);
 	    
-	    $this->setTitle('Un-Define Container');
+	    // $this->setTitle('Un-Define Container');
 	    
 	    $page = new SmartestPage;
 	    
@@ -2007,24 +2007,24 @@ class Pages extends SmartestSystemApplication{
 	        
 	        // print_r($page);
 	        
-	        $container = new SmartestPlaceholder;
+	        $container = new SmartestContainer;
 	        
-	        if($container->hydrateBy('name', $placeholder_id)){
+	        if($container->hydrateBy('name', $container_id)){
 	            
-	            $definition = new SmartestPlaceholderDefinition;
+	            $definition = new SmartestContainerDefinition;
 	            
-	            if($definition->loadForUpdate($placeholder->getName(), $page)){
+	            if($definition->loadForUpdate($container->getName(), $page, true)){
 	                
 	                // update placeholder
 	                // $definition->delete();
 	                $definition->setDraftAssetId('');
 	                $definition->save();
-	                $this->addUserMessageToNextRequest('The placeholder definition was removed.', SmartestUserMessage::SUCCESS);
+	                $this->addUserMessageToNextRequest('The container definition was removed.', SmartestUserMessage::SUCCESS);
 	                
 	            }else{
 	                
 	                // wasn't already defined
-	                $this->addUserMessageToNextRequest('The placeholder wasn\'t defined to start with.', SmartestUserMessage::INFO);
+	                $this->addUserMessageToNextRequest('The container wasn\'t defined to start with.', SmartestUserMessage::INFO);
 	                
 	                
 	            }
@@ -2035,7 +2035,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	        }else{
 	            
-	            $this->addUserMessageToNextRequest('The specified placeholder doesn\'t exist', SmartestUserMessage::ERROR);
+	            $this->addUserMessageToNextRequest('The specified container doesn\'t exist', SmartestUserMessage::ERROR);
 	            
 	        }
 	    
