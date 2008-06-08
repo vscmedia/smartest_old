@@ -129,8 +129,10 @@ class SmartestCmsItemList extends SmartestDataObject{
     	    }else{
     	        $this->_data_set->hydrate($this->getLiveSetId());
     	    }
-	    
-    	    $this->_list_items = $this->_data_set->getMembers($draft);
+	        
+	        $mode = $draft ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT;
+	        
+    	    $this->_list_items = $this->_data_set->getMembers($mode);
     	    $this->_fetch_attempted = true;
 	    
 	    }

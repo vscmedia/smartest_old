@@ -639,7 +639,7 @@ class PagesManager{
 			}
 		}
 		
-		/* $listNames = $this->getTemplateListNames($template_file_path);
+		$listNames = $this->getTemplateListNames($template_file_path);
 			
 		if(is_array($listNames)){
 			
@@ -653,7 +653,7 @@ class PagesManager{
 				$i++;
 			}
 
-		} */
+		}
 
 		$containerNames = $this->getTemplateContainerNames($template_file_path);
 		

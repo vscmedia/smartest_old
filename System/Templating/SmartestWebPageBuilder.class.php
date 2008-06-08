@@ -421,6 +421,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 $this->_smarty_include(array('smarty_include_tpl_file'=>$container->getTemplateFilePath(), 'smarty_include_vars'=>array()));
             } */
             
+            // 
+            
             if($list->hasRepeatingTemplate($this->getDraftMode())){
             
                 if($list->hasHeaderTemplate($this->getDraftMode())){
@@ -428,14 +430,19 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     // echo $list->getHeaderTemplate($this->getDraftMode());
                     $this->run($list->getHeaderTemplate($this->getDraftMode()), array());
                 }
-            
-                $data = $list->getItemsAsArrays($this->getDraftMode());
+                
+                // print_r($list);
+                
+                $data = $list->getItems($this->getDraftMode());
+                
+                // print_r($data);
                 
                 foreach($data as $item){
                     // print_r($item);
                     $this->_tpl_vars['item'] = $item;
+                    $this->assign("repeated_item", $item->__toArray());
                     // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getRepeatingTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
-                    $this->run($list->getRepeatingTemplate($this->getDraftMode(), array()));
+                    $this->run($list->getRepeatingTemplate($this->getDraftMode()), array());
                     // echo $list->getRepeatingTemplate($this->getDraftMode());
                 }
                 
@@ -447,7 +454,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
     				    $edit_link = "<!--edit link-->";
     			    }
     			    
-    			    echo $edit_link;
+    			    // echo $edit_link;
                 }
             
                 if($list->hasFooterTemplate($this->getDraftMode())){
