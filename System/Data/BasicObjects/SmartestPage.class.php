@@ -352,10 +352,12 @@ class SmartestPage extends SmartestDataObject{
 	        
 	        $order_index = 0;
 	        
-	        foreach($children as $child_array){
+	        foreach($children as $p){
 	            
-	            $p = new SmartestPage;
-	            $p->hydrate($child_array);
+	            // print_r($child_array);
+	            
+	            // $p = new SmartestPage;
+	            // $p->hydrate($child_array);
 	            
 	            if(!SmartestStringHelper::toRealBool($p->getDeleted())){
 	            
