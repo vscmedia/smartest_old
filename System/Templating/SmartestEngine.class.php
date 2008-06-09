@@ -2,12 +2,6 @@
 
 require('Smarty.class.php');
 
-define('SM_CONTEXT_GENERAL', 100);
-define('SM_CONTEXT_SYSTEM_UI', 101);
-define('SM_CONTEXT_CONTENT_PAGE', 102);
-define('SM_CONTEXT_DYNAMIC_TEXTFRAGMENT', 103);
-define('SM_CONTEXT_COMPLEX_ELEMENT', 104);
-
 class SmartestEngine extends Smarty{
 
 	protected $controller;

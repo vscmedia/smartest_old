@@ -298,7 +298,13 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     $template = new SmartestContainerTemplateAsset;
                 
                     if($template->hydrate($template_id)){
-                    
+                        $template_path = SM_ROOT_DIR.'Presentation/Layouts/'.$template->getUrl();
+                        $render_process_id = SmartestStringHelper::toVarName('itemspace_template_'.SmartestStringHelper::removeDotSuffix($template->getUrl()).'_'.substr(microtime(true), -6));
+            	        $child = $this->startChildProcess($render_process_id);
+            	        $child->setContext(SM_CONTEXT_ITEMSPACE_TEMPLATE);
+            	        $content = $child->fetch($template_path);
+            	        $this->killChildProcess($child->getProcessId());
+            	        return $content;
                     }else{
                         $this->raiseError("Problem rendering itemspace with template ID ".$template_id.": template not found.");
                     }

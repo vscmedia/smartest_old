@@ -483,7 +483,7 @@ class PagesManager{
 		
 	}
 		
-    public function getTemplateAssetClasses($template_file_path, $page, $level=0, $version="draft"){
+    public function getTemplateAssetClasses($template_file_path, SmartestPage $page, $level=0, $version="draft"){
 		
 		$i = 0;
 		$info = array();
@@ -574,8 +574,6 @@ class PagesManager{
 				
 				$info[$i]['level'] = $level;
 				
-				// print_r($info[$i]);
-				
 				$i++;
 			}
 		
@@ -616,26 +614,6 @@ class PagesManager{
                 $info[$i]['info']['level'] = $level;
                 
                 $i++;
-                
-                /* $field = new SmartestPageField;
-                // $field->hydrateBy('name', $fieldName);
-                // a simple 'hydrateBy' did not take into account that fields are not cross-site and multiple fields may exist of the same name (one for each site)
-                $correct_sql = "SELECT * FROM PageProperties WHERE pageproperty_name='".$fieldName."' AND pageproperty_site_id='".$site_id."'";
-                $result = $this->database->queryToArray($correct_sql);
-                $field->hydrate($result[0]);
-                
-				// $info[$i]['info']['exists'] = $this->getFieldExists($fieldName);
-				$info[$i]['info']['exists'] = (count($result) > 0) ? 'true' : 'false';
-				$info[$i]['info']['defined'] = $this->getFieldDefinedOnPage($fieldName, $page->getId());
-				$info[$i]['info']['assetclass_name'] = $fieldName;
-				$info[$i]['info']['assetclass_id'] = 'field_'.$field->getId();
-				
-				// beware - hack
-				$info[$i]['info']['asset_id'] = $field->getId();
-				$info[$i]['info']['type'] = "field";
-				$info[$i]['info']['level'] = $level;
-				
-				$i++; */
 			}
 		}
 		
@@ -643,14 +621,33 @@ class PagesManager{
 			
 		if(is_array($listNames)){
 			
+			// print_r($listNames);
+			
 			foreach($listNames as $listName){
                 
-				$info[$i]['info']['exists'] = 'true';
+				/* $info[$i]['info']['exists'] = 'true';
 				$info[$i]['info']['defined'] = $this->getListDefinedOnPage($listName, $page->getId());
 				$info[$i]['info']['assetclass_name'] = $listName;
 				$info[$i]['info']['type'] = "list";
 				$info[$i]['info']['level'] = $level;
+				$i++; */
+				
+				$list = new SmartestCmsItemList;
+				
+				if($list->exists($listName, $page->getId())){
+				    $info[$i]['info'] = $list->getInfoForPageTree($level);
+				}else{
+				    $info[$i]['info']['exists'] = 'true';
+				    $info[$i]['info']['defined'] = 'UNDEFINED';
+				    $info[$i]['info']['assetclass_name'] = $listName;
+    				$info[$i]['info']['type'] = "list";
+    				$info[$i]['info']['level'] = $level;
+				}
+				
+				// print_r($info[$i]['info']);
+				
 				$i++;
+				
 			}
 
 		}

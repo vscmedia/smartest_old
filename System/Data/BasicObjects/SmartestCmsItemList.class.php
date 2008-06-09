@@ -33,10 +33,12 @@ class SmartestCmsItemList extends SmartestDataObject{
 	    
 	}
 	
-	public function exists($name, $page_id){
+	public function exists($list_name, $page_id){
 	    
-	    $sql = "SELECT * FROM Lists WHERE list_name='".$list_name."' AND list_page_id='".$page_id."'";
+	    $sql = "SELECT * FROM Lists WHERE list_name='".SmartestStringHelper::toVarName($list_name)."' AND list_page_id='".$page_id."'";
         $result = $this->database->queryToArray($sql);
+        
+        // echo $sql."<br />";
         
         if(count($result)){
             $this->hydrate($result[0]);
@@ -46,6 +48,22 @@ class SmartestCmsItemList extends SmartestDataObject{
         }
         
         
+	}
+	
+	public function getInfoForPageTree($level=1){
+	    
+	    $info = array();
+	    $info['exists'] = 'true';
+	    $info['defined'] = $this->hasChanged() ? 'DRAFT' : 'PUBLISHED';
+	    $info['assetclass_name'] = $this->_properties['name'];
+		$info['type'] = "list";
+		$info['level'] = $level;
+		return $info;
+	    
+	}
+	
+	public function hasChanged(){
+	    return ($this->_properties['draft_set_id'] == $this->_properties['live_set_id'] && $this->_properties['draft_template_file'] == $this->_properties['live_template_file'] && $this->_properties['draft_header_template'] == $this->_properties['live_header_template'] && $this->_properties['draft_footer_template'] == $this->_properties['live_footer_template']) ? true : false;
 	}
 	
 	public function hasHeaderTemplate($draft=false){

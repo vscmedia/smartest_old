@@ -437,7 +437,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     }
     
     public function shouldOmitAnchorTag(){
-        return $this->isInternalPage() && $this->shouldGoCold() && is_object($this->_host_page) && $this->_page->getId() == $this->_host_page->getId();
+        return !$this->_preview_mode && ($this->isInternalPage() && $this->shouldGoCold() && is_object($this->_host_page) && $this->_page->getId() == $this->_host_page->getId());
     }
     
     public function shouldGoCold(){
