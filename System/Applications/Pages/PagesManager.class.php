@@ -579,8 +579,10 @@ class PagesManager{
 		
 		}
 		
-		$itemspace_names = $this->getTemplateItemNames($template_file_path);
-			
+		$itemspace_names = $this->getTemplateItemSpaceNames($template_file_path);
+		
+		// print_r($itemspace_names);
+		
 		if(is_array($itemspace_names)){
 			
 			foreach($itemspace_names as $itemspace_name){
@@ -591,6 +593,8 @@ class PagesManager{
                 $info[$i]['info']['assetclass_name'] = $itemspace_name;
                 
                 if($item_space->exists($itemspace_name, $site_id)){
+                    
+                    // print_r($item_space);
                     
                     $info[$i]['info']['exists'] = 'true';
                     $info[$i]['info']['assetclass_id'] = $item_space->getId();
@@ -1325,10 +1329,10 @@ class PagesManager{
 		}
 	}
 	
-	public function getTemplateItemNames($template_file_path){
+	public function getTemplateItemSpaceNames($template_file_path){
 		if(is_file($template_file_path)){
 			if($template_contents = file_get_contents($template_file_path)){
-				$regexp = preg_match_all("/<\?sm:item.+name=\"([\w-_]+?)\".*:\?>/i", $template_contents, $matches);
+				$regexp = preg_match_all("/<\?sm:itemspace.+name=\"([\w-_]+?)\".*:\?>/i", $template_contents, $matches);
 
 				$foundClasses = $matches[1];
 

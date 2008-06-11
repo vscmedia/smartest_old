@@ -143,7 +143,8 @@ class Pages extends SmartestSystemApplication{
                     $this->addUserMessageToNextRequest("You can't release this page because another user is editing it.", SmartestUserMessage::WARNING);
                 }
             }else{
-                $this->addUserMessageToNextRequest("The page is not currently held by any user.", SmartestUserMessage::INFO);
+                $this->addUserMessageToNextRequest("The page has been released.", SmartestUserMessage::SUCCESS);
+                // $this->addUserMessageToNextRequest("The page is not currently held by any user.", SmartestUserMessage::INFO);
             }
             
         }
@@ -290,7 +291,7 @@ class Pages extends SmartestSystemApplication{
             		$pageUrls = $page->getUrlsAsArrays();
 		        
     		        $available_icons = $page->getAvailableIconImageFilenames();
-    		        // print_r($available_icons);
+    		        
     		        $this->send($available_icons, 'available_icons');
 		        
             		if($page->getType() == "ITEMCLASS"){
@@ -298,7 +299,33 @@ class Pages extends SmartestSystemApplication{
                         $model = new SmartestModel;
                         $model->hydrate($page->getDatasetId());
                         $editorContent['model_name'] = $model->getName();
-                
+                        
+                        if($page->getParentPage() && $page->getParentPage()->getType() == 'ITEMCLASS'){
+                            if($page->getParentPage()->getDatasetId() == $page->getDatasetId()){
+                                // parent metapage has same model as this one
+                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getDatasetId());
+                                
+                                if(count($parent_indicator_properties) > 1){
+                                    // there is a choice as to which property should be used to indicate which is the 'parent' item
+                                }else if(count($parent_indicator_properties) > 0){
+                                    // the parent item-page must be defined by a single foreign-key property of the model of this meta-page.
+                                    // Display it, but there is no choice.
+                                }else{
+                                    // there's no self-referential foreign key property for this model, just give a choice of items to be the parent item
+                                }
+                                
+                            }else{
+                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage()->getDatasetId());
+                                if(count($parent_indicator_properties) > 1){
+                                    // there is a choice as to which property should be used to indicate which is the 'parent' item
+                                }else if(count($parent_indicator_properties) > 0){
+                                    // the parent item-page must be defined by a single foreign-key property of the model of this meta-page.
+                                    // Display it, but there is no choice.
+                                }else{
+                                    // there are no properties in this meta-page that point to the data type of the parent meta-page. this is a problem so we nnotify the user.
+                                }
+                            }
+                        }
                     }
                 
             		$count_url = count($pageUrls);
@@ -1025,6 +1052,7 @@ class Pages extends SmartestSystemApplication{
             
             $page->setTitle($post['page_title']);
             $page->setParent($post['page_parent']);
+            $page->setForceStaticTitle((isset($post['page_force_static_title']) && ($post['page_force_static_title'] == 'true')) ? 1 : 0);
             $page->setIsSection((isset($post['page_is_section']) && ($post['page_is_section'] == 'true')) ? 1 : 0);
             $page->setCacheAsHtml($post['page_cache_as_html']);
             $page->setCacheInterval($post['page_cache_interval']);
@@ -2316,7 +2344,9 @@ class Pages extends SmartestSystemApplication{
             $this->send($list->__toArray(), 'list');
             $this->send($list_name, 'list_name');
             
-            $sets = $this->getSite()->getDataSetsAsArrays();
+            $datautil = new SmartestDataUtility;
+            
+            $sets = $datautil->getDataSetsAsArrays(false, $this->getSite()->getId());
             $this->send($sets, 'sets');
             $this->send($page->__toArray(), 'page');
             $this->send($templates, 'templates');
@@ -2489,6 +2519,7 @@ class Pages extends SmartestSystemApplication{
 	        
 	            $item_space->setName($new_name);
 	            $item_space->setLabel($new_name);
+	            $item_space->setSiteId($this->getSite()->getId());
 	        
 	            $dataset_id = (int) $post['itemspace_dataset_id'];
 	            $item_space->setDataSetId($dataset_id);
@@ -2504,6 +2535,7 @@ class Pages extends SmartestSystemApplication{
 	            $this->addUserMessageToNextRequest('An itemspace called \''.$new_name.'\' has been created.', SmartestUserMessage::SUCCESS);
 	            $item_space->save();
 	        }
+	        
         }else{
             $this->addUserMessageToNextRequest('You didn\'t enter a name for the itemspace. Please try again.', SmartestUserMessage::WARNING);
         }

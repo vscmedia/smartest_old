@@ -7,7 +7,7 @@ class MetaData extends SmartestSystemApplication{
 	}
 	
 	public function startPage(){
-	
+	    
 	}
 	
 	public function listTags(){

@@ -16,32 +16,40 @@
 <div id="edit-form-layout">
   
   <div class="edit-form-row">
-    <div class="form-section-label">Title</div>
-    	<input type="text" name="page_title" value="{$pageInfo.title}" style="width:200px" />
-    	{if !$pageInfo.title}<div>You must have a title! </div>{/if}
-  </div>
-  
-  <div class="edit-form-row">
-    <div class="form-section-label">Name</div>
-    {$pageInfo.name}
-  </div>
-  
-  <div class="edit-form-row">
     <div class="form-section-label">Type</div>
     {if $pageInfo.type == "ITEMCLASS"}Object Meta-Page{else}Regular Web-Page{/if}
   </div>
   
   {if $pageInfo.type == "ITEMCLASS"}
-  <div class="edit-form-row">
+  {* <div class="edit-form-row">
     <div class="form-section-label">Data Set</div>
     &quot;{$pageInfo.set_name}&quot;
-  </div>
+  </div> *}
   
   <div class="edit-form-row">
     <div class="form-section-label">Object Model</div>
     &quot;{$pageInfo.model_name}&quot;
   </div>
   {/if}
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Title</div>
+    	<input type="text" name="page_title" value="{$pageInfo.title}" style="width:200px" />
+    	{if !$pageInfo.title}<div>You must have a title! </div>{/if}
+  </div>
+  
+  {if $pageInfo.type == "ITEMCLASS"}
+  <div class="edit-form-row">
+    <div class="form-section-label">Always use page name</div>
+    <input type="checkbox" name="page_force_static_title" id="page_force_static_title" value="true"{if $pageInfo.force_static_title=='1'} checked="checked"{/if} />
+    <label for="page_force_static_title">{if $pageInfo.force_static_title=='1'}Un-tick this box to make this meta-page have the title of the {$pageInfo.model_name} that is being displayed.{else}Tick this box to make sure this meta-page keeps the title above, instead of the {$pageInfo.model_name} that is being displayed.{/if}</label>
+  </div>
+  {/if}
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Name</div>
+    {$pageInfo.name}
+  </div>
   
   <div class="edit-form-row">
     <div class="form-section-label">Status</div>

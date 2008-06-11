@@ -104,7 +104,7 @@ class Sets extends SmartestSystemApplication{
 	            $all_items = $set->getModel()->getSimpleItemsAsArrays($this->getSite()->getId());
 	            
 	            // fetch set member item ids (and create objects for form)
-	            $set_member_ids = $set->getMemberIds();
+	            $set_member_ids = $set->getMemberIds(SM_QUERY_ALL_DRAFT);
 	            
 	            // do the math
 	            $set_member_arrays = array();

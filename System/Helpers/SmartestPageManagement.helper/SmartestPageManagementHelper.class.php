@@ -54,6 +54,20 @@ class SmartestPageManagementHelper extends SmartestHelper{
 	    }
 	}
 	
+	public function getPageTypesIndex($site_id){
+	    
+	    $sql = "SELECT page_id, page_type FROM Pages WHERE page_site_id = '".$site_id."' AND page_deleted!='TRUE'";
+	    $result = $this->database->queryToArray($sql);
+	    $index = array();
+	    
+	    foreach($result as $row){
+	        $index[$row['page_id']] = $row['page_type'];
+	    }
+	    
+	    return $index;
+	    
+	}
+	
 	public function getPageIdFromPageWebId($page_webid){
 		if(!is_numeric($page_webid)){
 			return $this->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");

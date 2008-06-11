@@ -1,6 +1,6 @@
   <h3>Create a New Page</h3>
   
-  <div class="instruction">Step 1 of 3: Choose which type of page you're going to make</div>
+  <div class="instruction">Step 1: Choose which type of page you're going to make</div>
   <form action="{$domain}{$section}/addPage" method="post">
     
     <input type="hidden" name="page_parent" value="{$page_parent}" />
