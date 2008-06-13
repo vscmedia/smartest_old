@@ -42,12 +42,15 @@ class SmartestItemPage extends SmartestPage{
     public function setPrincipalItem($item){
         // print_r($item);
         $this->_principal_item = $item;
+        $this->_simple_item = $item->getItem();
+        $this->_identifying_field_name = 'id';
+        $this->_identifying_field_value = $item->getItem()->getId();
     }
     
     public function assignPrincipalItem(){
         // print_r($this->getDataSet()->getMembers());
         // $items = $this->getDataSet()->getMembers()
-        
+        // echo 'assigned';
         // if($item = $this->getDataSet()->getItem($this->getIdentifyingFieldName(), $this->getIdentifyingFieldValue())){
         if($item = SmartestCmsItem::retrieveByPk($this->_simple_item->getId())){
             $this->_principal_item = $item;
@@ -151,7 +154,13 @@ class SmartestItemPage extends SmartestPage{
     }
     
     public function getTitle(){
-        return $this->_simple_item->getName();
+        if($this->_properties['force_static_title']){
+            return $this->_properties['title'];
+        }else{
+            // var_dump($this->_properties['title']);
+            // var_dump($this->_simple_item);
+            return $this->_simple_item->getName();
+        }
     }
     
     public function getRelatedContentForRender($draft_mode=false){

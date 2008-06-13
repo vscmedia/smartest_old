@@ -18,9 +18,9 @@ include_once "System/Applications/MetaData/MetaDataManager.class.php";
 
 class Pages extends SmartestSystemApplication{
 	
-	var $setsManager;
-	var $templatesManager;
-	var $propertiesManager;
+	protected $setsManager;
+	protected $templatesManager;
+	protected $propertiesManager;
 	
 	function __moduleConstruct(){
 		$this->setsManager = new SetsManager;
@@ -33,14 +33,6 @@ class Pages extends SmartestSystemApplication{
 		// No code is needed here, just a function definition
 		$this->setTitle("Welcome to Smartest");
 	}
-	
-	/* public function pagesFront(){
-	    if($this->getSite() instanceof SmartestSite){
-	        $this->redirect('/'.SM_CONTROLLER_MODULE.'/sitePages?site_id='.$this->getSite()->getId());
-	    }else{
-	        $this->redirect('/smartest');
-	    }
-	} */
 	
 	public function openPage($get){
 	    
@@ -297,34 +289,121 @@ class Pages extends SmartestSystemApplication{
             		if($page->getType() == "ITEMCLASS"){
                 
                         $model = new SmartestModel;
-                        $model->hydrate($page->getDatasetId());
-                        $editorContent['model_name'] = $model->getName();
                         
-                        if($page->getParentPage() && $page->getParentPage()->getType() == 'ITEMCLASS'){
-                            if($page->getParentPage()->getDatasetId() == $page->getDatasetId()){
-                                // parent metapage has same model as this one
-                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getDatasetId());
+                        if($model->hydrate($page->getDatasetId())){
+                            $editorContent['model_name'] = $model->getName();
+                        
+                            if($page->getParentPage(true) && $page->getParentPage(true)->getType() == 'ITEMCLASS'){
                                 
-                                if(count($parent_indicator_properties) > 1){
-                                    // there is a choice as to which property should be used to indicate which is the 'parent' item
-                                }else if(count($parent_indicator_properties) > 0){
-                                    // the parent item-page must be defined by a single foreign-key property of the model of this meta-page.
-                                    // Display it, but there is no choice.
+                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage(true)->getDatasetId(), (int) $get['item_id']);
+                            
+                                // print_r($parent_indicator_properties);
+                                
+                                $this->send(true, 'show_parent_meta_page_property_control');
+                                $this->send($model->__toArray(), 'model');
+                                
+                                if($page->getParentPage(true)->getDatasetId() == $page->getDatasetId()){
+                                    
+                                    // parent metapage has same model as this one
+                                    $parent_model = &$model;
+                                    $this->send(true, 'show_self_option');
+                                    
                                 }else{
-                                    // there's no self-referential foreign key property for this model, just give a choice of items to be the parent item
+                                    
+                                    // quickly fetch parent meta-page's model
+                                    $parent_model = new SmartestModel;
+                                
+                                    if($parent_model->hydrate($page->getParentPage(true)->getDatasetId())){
+                                        
+                                    }else{
+                                        $this->addUserMessage("The parent of this page is a meta-page, but not linked to any existing model", SmartestUserMessage::WARNING);
+                                    }
+                                    
+                                    $this->send(false, 'show_self_option');
+                                    
                                 }
-                                
-                            }else{
-                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage()->getDatasetId());
+                            
                                 if(count($parent_indicator_properties) > 1){
                                     // there is a choice as to which property should be used to indicate which is the 'parent' item
+                                    // convert to arrays and send to form
+                                    
+                                    $arrays = array();
+                                    
+                                    foreach($parent_indicator_properties as $p){
+                                        
+                                        $property_array = $p->__toArray();
+                                        
+                                        if($p instanceof SmartestItemPropertyValueHolder){
+                                            
+                                            $foreign_item = new SmartestItem;
+
+                                            if($foreign_item->hydrate($p->getData()->getDraftContent())){
+                                                $property_array['selected_item_name'] = $foreign_item->getName();
+                                            }else{
+                                                $property_array['selected_item_name'] = "Not Selected";
+                                            }
+
+                                        }else{
+                                            $property_array['selected_item_name'] = "Unknown";
+                                        }
+                                        
+                                        $arrays[] = $property_array;
+                                        
+                                    }
+                                    
+                                    $this->send($page->getParentMetaPageReferringPropertyId(), 'parent_data_source_property_id');
+                                    $this->send('dropdown', 'parent_mpp_control_type');
+                                    $this->send($arrays, 'parent_meta_page_property_options');
+                                    
                                 }else if(count($parent_indicator_properties) > 0){
-                                    // the parent item-page must be defined by a single foreign-key property of the model of this meta-page.
+                                    
+                                    // the parent meta-page must be defined by a single foreign-key property of the model of this meta-page.
                                     // Display it, but there is no choice.
+                                    
+                                    if(!$page->getParentMetaPageReferringPropertyId()){
+                                        $page->setParentMetaPageReferringPropertyId($parent_indicator_properties[0]->getId());
+                                    }
+                                    
+                                    $this->send('text', 'parent_mpp_control_type');
+                                    $property_array = $parent_indicator_properties[0]->__toArray();
+                                    
+                                    if($parent_indicator_properties[0] instanceof SmartestItemPropertyValueHolder){
+                                        // $property_array['value'] = $parent_indicator_properties[0]->getData(true)->__toArray();
+                                        $foreign_item = new SmartestItem;
+                                        
+                                        if($foreign_item->hydrate($parent_indicator_properties[0]->getData()->getDraftContent())){
+                                            $property_array['selected_item_name'] = $foreign_item->getName();
+                                        }else{
+                                            $property_array['selected_item_name'] = "Not Selected";
+                                        }
+                                        
+                                    }else{
+                                        $property_array['selected_item_name'] = "Unknown";
+                                    }
+                                    
+                                    // print_r($property_array);
+                                    $this->send($property_array, 'parent_meta_page_property');
+                                    
                                 }else{
+                                    
                                     // there are no properties in this meta-page that point to the data type of the parent meta-page. this is a problem so we nnotify the user.
+                                    if($page->getParentPage(true)->getDatasetId() == $page->getDatasetId()){
+                                        $this->addUserMessage("This ".$model->getName()." meta-page is the child of a meta-page that is also used to represent ".$model->getPluralName().", but the ".$model->getName()." model has no foreign-key properties that refer to other ".$model->getPluralName().". This page will assign its own item to it's parent meta-page.", SmartestUserMessage::WARNING);
+                                        $page->setParentMetaPageReferringPropertyId('_SELF');
+                                        $this->send('_SELF', 'parent_meta_page_property');
+                                        $this->send('text', 'parent_mpp_control_type');
+                                    }else{
+                                        $this->addUserMessage("This ".$model->getName()." meta-page is the child of a meta-page used for model ".$parent_model->getName().", but the ".$model->getName()." model (that this page refers to) has no foreign-key properties that refer to ".$parent_model->getPluralName().".", SmartestUserMessage::WARNING);
+                                    }
+                                    
                                 }
+                                
                             }
+                            
+                        }else{
+                            
+                            $this->addUserMessage("This page is a meta-page, but not linked to any existing model", SmartestUserMessage::WARNING);
+                            
                         }
                     }
                 
@@ -1063,6 +1142,12 @@ class Pages extends SmartestSystemApplication{
                 $page->setKeywords(strip_tags($post['page_keywords']));
                 $page->setDescription(strip_tags($post['page_description']));
                 $page->setMetaDescription(strip_tags($post['page_meta_description']));
+            }
+            
+            if($page->getType() == 'ITEMCLASS'){
+                if(isset($post['page_parent_data_source']) && strlen($post['page_parent_data_source'])){
+                    $page->setParentMetaPageReferringPropertyId($post['page_parent_data_source']);
+                }
             }
             
             $page->save();

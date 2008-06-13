@@ -634,6 +634,10 @@ class SmartestCmsItem implements ArrayAccess{
 	    
 	}
 	
+	public function getPropertyValueHolders(){
+	    return $this->getProperties();
+	}
+	
 	public function getPropertiesAsArrays($numeric_keys=false, $get_all_fk_property_options=false){
 	    
 	    $result = array();
@@ -865,14 +869,31 @@ class SmartestCmsItem implements ArrayAccess{
     // builds a fully populated object of the correct type from just the primary key or webid
     public static function retrieveByPk($item_id, $dont_bother_with_class=false){
         
-        if(!$dont_bother_with_class){
-            $className = self::getModelClassName($item_id);
-        }
+        /*  SELECT *
+        FROM `ItemClasses` , `Items` , `ItemPropertyValues` , `ItemProperties`
+        WHERE item_itemclass_id = itemclass_id
+        AND itemproperty_itemclass_id = itemclass_id
+        AND itempropertyvalue_item_id = item_id
+        AND itempropertyvalue_property_id = itemproperty_id
+        AND item_id =6166 */
         
-        if(!$dont_bother_with_class && class_exists($className)){
-            $object = new $className;
+        if(__CLASS__ == 'SmartestCmsItem'){
+        
+            if(!$dont_bother_with_class){
+                $className = self::getModelClassName($item_id);
+            }
+        
+            if(!$dont_bother_with_class && class_exists($className)){
+                $object = new $className;
+            }else{
+                $object = new SmartestCmsItem;
+            }
+        
         }else{
-            $object = new SmartestCmsItem;
+            
+            $className = __CLASS__;
+            $object = new $className;
+            
         }
         
         if($object->hydrate($item_id)){

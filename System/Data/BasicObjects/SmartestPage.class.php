@@ -48,9 +48,7 @@ class SmartestPage extends SmartestDataObject{
 		    
 		    $this->_save_url = false;
 		    
-		    
-		    
-    		if(is_numeric($id)){
+		    if(is_numeric($id)){
     			// numeric_id
     			$field = 'page_id';
     		}else if(preg_match('/[a-zA-Z0-9]{32}/', $id)){
@@ -82,6 +80,13 @@ class SmartestPage extends SmartestDataObject{
         		}else{
         			return false;
         		}
+        		
+		    }else{
+		        
+		        // var_dump($id);
+		        // echo 'empty ';
+		        // throw new SmartestException('Attempted page hydration without valid page id, web_id, or name field.');
+		        
 		    }
 	    }
 	}
@@ -461,9 +466,11 @@ class SmartestPage extends SmartestDataObject{
 		        
 		    } */
 		    
+		    // var_dump($child_page_record);
+		    
 		    $child->hydrate($child_page_record);
 			
-			$working_array[$index]["info"] = $child->__toArray();
+			$working_array[$index]["info"] = $child->__toArray(false, $draft_mode);
 			$working_array[$index]["treeLevel"] = $int_level;
 			$new_level = $int_level + 1; 
 			$working_array[$index]["children"] = $child->getPagesSubTree($new_level, $draft_mode, $get_items);
@@ -608,12 +615,80 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getParentPage(){
+	public function getParentPage($draft_mode=false){
 	    
 	    if(!$this->_parent_page){
-	    
-	        $parent = new SmartestPage;
-	        $parent->hydrate($this->getParent());
+	        
+	        $helper = new SmartestPageManagementHelper;
+    		$type_index = $helper->getPageTypesIndex($this->getParentSite()->getId());
+	        
+	        if($type_index[$this->getParent()] == 'ITEMCLASS'){
+                
+                if($this instanceof SmartestItemPage){
+                    
+	                if($this->getParentMetaPageReferringPropertyId()){
+	                    // get the value of that property for the principal_item, which should also be an item_id
+	                    $property = new SmartestItemPropertyValueHolder;
+	                    
+	                    if($property->hydrate($this->getParentMetaPageReferringPropertyId())){
+	                        
+	                        $property->setContextualItemId($this->getSimpleItem()->getId());
+	                        
+	                        if($draft_mode){
+	                            $parent_item_id = $property->getData()->getDraftContent();
+	                        }else{
+	                            $parent_item_id = $property->getData()->getContent();
+	                        }
+	                        
+	                        if($parent_item_id){
+	                            
+	                            // build the item that has that ID
+	                            if($parent_item = SmartestCmsItem::retrieveByPk($parent_item_id)){
+	                                $parent = new SmartestItemPage;
+                    	            $parent->hydrate($this->getParent());
+                    	            // give the item to the parent page
+                    	            $parent->setPrincipalItem($parent_item);
+	                            }else{
+	                                $parent = new SmartestPage;
+                    	            $parent->hydrate($this->getParent());
+	                            }
+                                
+	                        }else{
+	                            $parent = new SmartestPage;
+                	            $parent->hydrate($this->getParent());
+	                        }
+	                        
+	                        
+                        }else if($this->getParentMetaPageReferringPropertyId() == '_SELF'){
+                            
+                            // self-referential property
+                            $parent = new SmartestItemPage;
+        	                $parent->hydrate($this->getParent());
+                            $parent->setPrincipalItem($this->getPrincipalItem());
+                            
+                        }else{
+                            
+                            throw new SmartestException("Parent data source property for parent meta-page not found with ID '".$this->getParentMetaPageReferringPropertyId()."'.");
+                            
+                        }
+                        
+	                }else{
+	                    
+	                    throw new SmartestException("Parent data source property ID for parent meta-page not defined for meta-page '".$this->_properties['title']."'.");
+	                    
+	                }
+	                
+	            }else{
+	                // the current page is not a SmartestItemPage instance, so has no prinipal item
+	                $parent = new SmartestPage;
+    	            $parent->hydrate($this->getParent());
+	            }
+	            
+            }else{
+	            $parent = new SmartestPage;
+	            $parent->hydrate($this->getParent());
+	        }
+	        
 	        $this->_parent_page = $parent;
 	        
         }
@@ -622,13 +697,16 @@ class SmartestPage extends SmartestDataObject{
         
 	}
 	
-	public function getGrandParentPage(){
+	public function getGrandParentPage($draft_mode=false){
 	    
 	    if(!$this->_grandparent_page){
-	    
-	        $grandparent = new SmartestPage;
-	        $grandparent->hydrate($this->getParentPage()->getParent());
-	        $this->_grandparent_page = $grandparent;
+	        
+	        if(is_object($this->getParentPage($draft_mode))){
+	            
+	            $this->_grandparent_page = $this->getParentPage($draft_mode)->getParentPage($draft_mode);
+	            // $this->_grandparent_page = $grandparent;
+	        
+            }
 	        
         }
         
@@ -675,7 +753,7 @@ class SmartestPage extends SmartestDataObject{
 	    $array = array();
 	    
 	    foreach($children as $child_page){
-	        $array[] = $child_page->__toArray();
+	        $array[] = $child_page->__toArray(false, $draft_mode);
 	    }
 	    
 	    return $array;
@@ -687,8 +765,6 @@ class SmartestPage extends SmartestDataObject{
 	    if($this->getParentSite()->getTagPageId()){
 	        $special_page_ids = array($this->getParentSite()->getTagPageId());
 	    }
-        
-        
         
         // these values should not be the same as the ids of the other special pages, 
         // but just in case they are, prevent them from being in the SQL query twice:
@@ -771,7 +847,7 @@ class SmartestPage extends SmartestDataObject{
 	    $array = array();
 	    
 	    foreach($children as $child_page){
-	        $array[] = $child_page->__toArray();
+	        $array[] = $child_page->__toArray(false, $draft_mode);
 	    }
 	    
 	    return $array;
@@ -871,10 +947,18 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
+	public function getParentMetaPageReferringPropertyId(){
+	    return SmartestSystemSettingHelper::load('metapage_'.$this->_properties['id'].'_parent_item_property_id');
+	}
+	
+	public function setParentMetaPageReferringPropertyId($id){
+	    return SmartestSystemSettingHelper::save('metapage_'.$this->_properties['id'].'_parent_item_property_id', $id);
+	}
+	
 	public function fetchRenderingData($draft_mode=false){
 	    
 	    $data = array();
-	    $data['page'] = $this->__toArray();
+	    $data['page'] = $this->__toArray(false, $draft_mode);
 	    
 	    $data['tags'] = $this->getTagsAsArrays();
 	    
@@ -941,13 +1025,15 @@ class SmartestPage extends SmartestDataObject{
 	    }
 	}
 	
-	public function __toArray($getChildren=false, $require_site_lookup=true){
+	public function __toArray($getChildren=false, $draft_mode=false){
 	    
 	    $array = parent::__toArray();
 	    
 	    $array['title'] = $this->getTitle();
 	    $array['url'] = $this->getDefaultUrl();
-	    $array['formatted_title'] = $this->getFormattedTitle();
+	    $array['formatted_title'] = $this->getFormattedTitle($draft_mode);
+	    $array['formatted_static_title'] = $this->getFormattedTitle($draft_mode);
+	    $array['static_title'] = $this->_properties['title'];
 	    $array['is_tag_page'] = $this->isTagPage();
 	    
 	    if($this->getType() == 'ITEMCLASS'){
@@ -1169,6 +1255,8 @@ class SmartestPage extends SmartestDataObject{
 	    $q->setCentralNodeId($this->_properties['id']);
 	    $q->addSortField('Pages.page_title');
 	    
+	    $q->addForeignTableConstraint('Pages.page_type', 'NORMAL');
+	    
 	    if(!$draft_mode){
 	        $q->addForeignTableConstraint('Pages.page_is_published', 'TRUE');
 	    }
@@ -1184,7 +1272,7 @@ class SmartestPage extends SmartestDataObject{
 	    $arrays = array();
 	    
 	    foreach($pages as $page){
-	        $arrays[] = $page->__toArray();
+	        $arrays[] = $page->__toArray(false, $draft_mode);
 	    }
 	    
 	    return $arrays;
@@ -1329,15 +1417,17 @@ class SmartestPage extends SmartestDataObject{
 		$home_page = new SmartestPage;
 		$home_page->hydrate($home_page_id);
 		
-		$this->getGrandParentPage();
+		$this->getGrandParentPage($draft_mode);
+		
+		// var_dump($draft_mode);
 		
 		return array(
-		    // TODO: add code here that will fetch "related" pages.
-			"parent"=>$this->getParentPage()->compile(), 
-			"section"=>$this->getSectionPage()->compile(), 
-			"breadcrumbs"=>$this->getPageBreadCrumbs(), 
-			"sibling_level_lages"=>$this->getParentPage()->getPageChildrenForWebAsArrays($draft_mode), 
-			"parent_level_pages"=>$this->getGrandParentPage()->getPageChildrenForWebAsArrays($draft_mode),
+		    "parent"=>$this->getParentPage($draft_mode)->compile(), 
+			"section"=>$this->getSectionPage($draft_mode)->compile(), 
+//          "breadcrumbs"=>$this->getPageBreadCrumbsAsArrays(),
+			"_breadcrumb_trail"=>$this->getPageBreadCrumbs($draft_mode), 
+			"sibling_level_pages"=>$this->getParentPage($draft_mode)->getPageChildrenForWebAsArrays($draft_mode), 
+			"parent_level_pages"=>$this->getGrandParentPage($draft_mode)->getPageChildrenForWebAsArrays($draft_mode),
 			"child_pages"=>$this->getPageChildrenForWebAsArrays($draft_mode),
 			"main_sections"=>$home_page->getPageChildrenForWebAsArrays($draft_mode, true),
 			"related"=>$this->getRelatedContentForRender($draft_mode)
@@ -1564,7 +1654,100 @@ class SmartestPage extends SmartestDataObject{
         
 	}
 	
-	public function getPageBreadCrumbs(){
+	public function getPageBreadCrumbs($draft_mode=false){
+		
+		$helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getParentSite()->getId());
+		
+		// print_r($index);
+		
+		$home_page = $this->getParentSite()->getHomePage();
+		$breadcrumbs = array();
+		
+		$limit = self::HIERARCHY_DEPTH_LIMIT;
+		
+		// $page_id = $this->_properties['id'];
+		
+		$page = &$this;
+		
+		$breadcrumb_index = 0;
+		
+		while($home_page->getId() != $page->getId() && $limit > 0){
+		    
+		    /* if($type_index[$page_id] == 'ITEMCLASS'){
+		        
+		        // echo 'meta-page ';
+			    
+			    if($breadcrumb_index > 0){
+			        
+			        $page = new SmartestItemPage;
+    			    $page->hydrate($page_id);
+			        
+    		        // we are not dealing with the principal_item, but a parent meta-page higher up the site
+    		        
+    		        $property_id = $child->getParentMetaPageReferringPropertyId();
+    		        $property = new SmartestItemPropertyValueHolder;
+    		        $property->hydrate($property_id);
+    		        
+    		        $property->setContextualItemId($child->getSimpleItem()->getId());
+    		        
+    		        if($draft_mode){
+    		            $parent_item_id = $property->getData()->getDraftContent();
+		            }else{
+		                $parent_item_id = $property->getData()->getContent();
+		            }
+    		        
+    		        $breadcrumbs[] = $page;
+    		        $child = $page;
+    		        
+    		        // print_r();
+    		    }else{
+    		        // we are dealing with the principal_item
+    		        // print_r($this->getPrincipalItem());
+    		        $child = $this;
+    		        // var_dump($this);
+    		        $breadcrumbs[] = $this;
+    		        
+    		    }
+			    
+		    }else{
+		        // echo 'static ';
+		        
+		        $page = new SmartestPage;
+		        $page->hydrate($page_id);
+		        $breadcrumbs[] = $page;
+		    }
+		    
+		    if($breadcrumb_index > 0){
+			    $page_id = $page->getParent();
+			    // echo $page->getTitle();
+		    }else{
+	            $page_id = $this->getParent();
+	            // echo $this->getTitle();
+	        }
+			
+			 */
+			
+			// var_dump($draft_mode);
+			
+			$breadcrumbs[] = $page;
+			$page = $page->getParentPage($draft_mode);
+			
+			$limit--;
+			$breadcrumb_index++;
+			
+		}
+		
+		$breadcrumbs[] = $home_page;
+		
+		krsort($breadcrumbs);
+		$result = array_values($breadcrumbs);
+		
+		return $result;
+		
+	}
+	
+	public function getPageBreadCrumbsAsArrays($draft_mode=false){
 		
 		$home_page = $this->getParentSite()->getHomePage();
 		$breadcrumbs = array();
@@ -1576,12 +1759,12 @@ class SmartestPage extends SmartestDataObject{
 		while($home_page->getId() != $page_id && $limit > 0){
 			$page = new SmartestPage;
 			$page->hydrate($page_id);
-			$breadcrumbs[] = $page->__toArray();
+			$breadcrumbs[] = $page->__toArray(false, $draft_mode);
 			$page_id = $page->getParent();
 			$limit--;
 		}
 		
-		$breadcrumbs[] = $home_page->__toArray();
+		$breadcrumbs[] = $home_page->__toArray(false, $draft_mode);
 		
 		krsort($breadcrumbs);
 		$result = array_values($breadcrumbs);
@@ -1590,11 +1773,13 @@ class SmartestPage extends SmartestDataObject{
 		
 	}
 	
-	public function getSectionPage(){
+	public function getSectionPage($draft_mode=false){
+	    
 	    if(SmartestStringHelper::isFalse($this->getIsSection()) && !$this->isHomePage()){
+	        
 	        if(!$this->_section_page){
 	            
-	            $page = $this->getParentPage();
+	            $page = $this->getParentPage($draft_mode);
 	            
 	            $limit = self::HIERARCHY_DEPTH_LIMIT;
 	            
@@ -1604,7 +1789,7 @@ class SmartestPage extends SmartestDataObject{
 	                    $section_page = $page;
 	                    break;
 	                }else{
-	                    $page = $page->getParentPage();
+	                    $page = $page->getParentPage($draft_mode);
 	                }
 	                
 	                $limit--;
@@ -1648,17 +1833,23 @@ class SmartestPage extends SmartestDataObject{
         return $this->_parent_site;
 	}
 	
-	public function getFormattedTitle(){
+	public function getTitle(){
+        return $this->_properties['title'];
+    }
+	
+	public function getFormattedTitle($draft_mode=false){
+		
+		$t = $this->getTitle();
 		
 		$format = $this->getParentSite()->getTitleFormat();
 		
-		$title = str_replace('$page', $this->getTitle(), $format);
+		$title = str_replace('$page', $t, $format);
 		
 		$separator = $this->getParentSite()->getTitleFormatSeparator();
 		
 		if(SmartestStringHelper::isFalse($this->getIsSection())){
 		    
-		    $section_page = $this->getSectionPage();
+		    $section_page = $this->getSectionPage($draft_mode);
 		    
 		    if($section_page->isHomePage()){
 		        $title = preg_replace(SmartestStringHelper::toRegularExpression($separator.' $section', true), '', $title);

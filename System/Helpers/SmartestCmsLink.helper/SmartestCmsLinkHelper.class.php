@@ -255,7 +255,11 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                 break;
 
                 case "metapage":
-                return $this->_item->getName();
+                if($this->_page->getForceStaticTitle() == 1){
+                    return $this->_page->getTitle();
+                }else{
+                    return $this->_item->getName();
+                }
                 break;
 
                 case "image":

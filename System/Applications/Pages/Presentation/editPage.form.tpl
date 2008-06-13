@@ -152,6 +152,30 @@
       {/foreach}
     </select>
   </div>
+  
+    {if $show_parent_meta_page_property_control}
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Parent Meta-Page Item Source</div>
+    {if $parent_mpp_control_type == 'dropdown'}
+    <select name="page_parent_data_source" style="width:300px">
+      {if $show_self_option}<option value="_SELF"{if $parent_data_source_property_id == '_SELF'} selected="selected"{/if}>The same {$model.name} as on this page</option>{/if}
+      {foreach from=$parent_meta_page_property_options item="parent_meta_page_property"}
+      <option value="{$parent_meta_page_property.id}"{if $parent_data_source_property_id == $parent_meta_page_property.id} selected="selected"{/if}>Property: {$parent_meta_page_property.name} ({$parent_meta_page_property.selected_item_name})</option>
+      {/foreach}
+    </select>
+    {elseif $parent_mpp_control_type == 'text'}
+      {if $parent_meta_page_property == '_SELF'}
+      Parent meta-page will use the same items as this page.
+      {else}
+      <input type="hidden" name="page_parent_data_source" value="{$parent_meta_page_property.id}" />
+      Property: {$parent_meta_page_property.name} ({$parent_meta_page_property.selected_item_name})
+      {/if}
+    {/if}
+  </div>
+  
+    {/if}
+  
   {/if}
   
   {/if}

@@ -286,25 +286,32 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function renderItemSpace($itemspace_name, $params){
         
-        if($this->_context == SM_CONTEXT_CONTENT_PAGE){
+        // echo 'called';
         
+        if($this->_context == SM_CONTEXT_CONTENT_PAGE){
+            
             if($this->getPage()->hasItemSpaceDefinition($itemspace_name, $this->getDraftMode())){
             
                 $def = $this->getPage()->getItemSpaceDefinition($itemspace_name, $this->getDraftMode());
-            
+                
+                // var_dump($def->getItemspace()->getTemplateAssetId());
+                
                 if($def->getItemspace()->usesTemplate()){
                 
                     $template_id = $def->getItemspace()->getTemplateAssetId();
                     $template = new SmartestContainerTemplateAsset;
-                
+                    
                     if($template->hydrate($template_id)){
                         $template_path = SM_ROOT_DIR.'Presentation/Layouts/'.$template->getUrl();
+                        // echo $template_path;
                         $render_process_id = SmartestStringHelper::toVarName('itemspace_template_'.SmartestStringHelper::removeDotSuffix($template->getUrl()).'_'.substr(microtime(true), -6));
+            	        // echo $render_process_id;
             	        $child = $this->startChildProcess($render_process_id);
             	        $child->setContext(SM_CONTEXT_ITEMSPACE_TEMPLATE);
             	        $content = $child->fetch($template_path);
             	        $this->killChildProcess($child->getProcessId());
             	        return $content;
+            	        // $this->run($template_path, array());
                     }else{
                         $this->raiseError("Problem rendering itemspace with template ID ".$template_id.": template not found.");
                     }
@@ -447,6 +454,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     // print_r($item);
                     $this->_tpl_vars['item'] = $item;
                     $this->assign("repeated_item", $item->__toArray());
+                    $this->assign("repeated_item_object", $item);
                     // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getRepeatingTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
                     $this->run($list->getRepeatingTemplate($this->getDraftMode()), array());
                     // echo $list->getRepeatingTemplate($this->getDraftMode());
@@ -485,10 +493,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function renderBreadcrumbs($params){
         
-        if($this->_tpl_vars['this']['navigation']['breadcrumbs']){
+        if($this->_tpl_vars['this']['navigation']['_breadcrumb_trail']){
 
-    		$breadcrumbs = $this->_tpl_vars['this']['navigation']['breadcrumbs'];
-    		$separator = (isset($params['separator'])) ? $params['separator'] : "&gt;&gt;";
+    		$breadcrumbs = $this->_tpl_vars['this']['navigation']['_breadcrumb_trail'];
+    		$separator = (isset($params['separator'])) ? $params['separator'] : "&gt;";
     		$string = "";
 
     		$link_params = array();
@@ -498,26 +506,51 @@ class SmartestWebPageBuilder extends SmartestEngine{
     		}
 
     		$link_params['goCold'] = 'true';
+    		
+    		$last_breadcrumb_index = (count($breadcrumbs) - 1);
+    		// echo $last_breadcrumb_index;
 
     		foreach($breadcrumbs as $key => $page){
-
-    			if($page['type'] == 'ITEMCLASS'){
-
-    			    if(is_object($this->getPage()->getPrincipalItem())){
-    			        $id = $this->getPage()->getPrincipalItem()->getId();
-    			        $to = 'metapage:webid='.$page['webid'].':id='.$id;
-    			    }else{
-    			        $to = 'page:webid='.$page['webid'];
-    			    }
+                
+                // print_r(get_class($page));
+                
+    			if($page->getType() == 'ITEMCLASS'){
+                    
+                    // print_r($this->page->getPrincipalItem());
+                    
+                    // print_r($page->getTitle());
+                    
+                    if($key == $last_breadcrumb_index){
+                        
+                        $id = $this->page->getPrincipalItem()->getId();
+			            $to = 'metapage:webid='.$page->getWebid().':id='.$id;
+                        
+                    }else{
+                    
+    			        if(is_object($page->getPrincipalItem())){
+    			            $id = $page->getPrincipalItem()->getId();
+    			            $to = 'metapage:webid='.$page->getWebid().':id='.$id;
+    			        }else{
+    			            $to = 'page:webid='.$page->getWebid();
+    			        }
+    			    
+			        }
+    			    
 
     			}else{
-    		        $to = 'page:webid='.$page['webid'];
+    		        $to = 'page:webid='.$page->getWebid();
     		    }
-
-    			$text = $this->renderLink($to, $link_params);
+                
+                // echo $to.' ';
+                
+                if($page->getType() == 'ITEMCLASS' && !$page instanceof SmartestItemPage){
+                    $text = $page->getTitle();
+                }else{
+    			    $text = $this->renderLink($to, $link_params);
+			    }
 
     			if($key > 0){
-    				$string .= " $separator ";
+    				$string .= ' '.$separator.' ';
     			}
 
     			$string .= $text;
@@ -674,7 +707,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 
         		if($set->hydrateBy('name', $name)){
         		    
-        		    $set_mode = $this->getDraftMode() ? SM_QUERY_PUBLIC_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT ;
+        		    $set_mode = $this->getDraftMode() ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT ;
         		    $items = $set->getMembers($set_mode, false, $limit, $query_vars);
         		    
         		}else{
@@ -892,7 +925,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
                                     $value = $property->getData()->getContent();
                                 }
                                 
-				// TODO: It's more direct to do this, though not quite so extensible. We can update this later.
+                                
+                                
+				                // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
                                 if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
                                     
                                     // print_r($property->getData()->getInfo($this->getDraftMode()));
@@ -903,11 +938,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
                                         $params[$key] = $param_value;
                                     }
                                     
+                                    // print_r($params);
+                                    
                                     if(SmartestStringHelper::toRealBool($value)){
                                         return $this->renderAssetById($value, $params, $path);
                                     }
                                     
                                 }else{
+                                    // echo 'asset';
                                     $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
                                 }
                         
@@ -954,7 +992,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                             // print_r($object);
                             
 			    // print_r($object->getModel()->getPropertyVarNames());
-			    
+			                
 			    
 			    
                             if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
@@ -972,15 +1010,23 @@ class SmartestWebPageBuilder extends SmartestEngine{
                                     }else{
                                         $value = $property->getData()->getContent();
                                     }
-				    
+				                    
+				                    // print_r($property->getData()->getInfo($this->getDraftMode()));
+				                    
 				    // var_dump($value);
 				    // var_dump($this->getDraftMode());
 
                                     // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
                                     if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                                        
+                                        foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
+                                            $params[$key] = $param_value;
+                                        }
+                                        
                                         if(SmartestStringHelper::toRealBool($value)){
                                             return $this->renderAssetById($value, $params, $path);
                                         }
+                                        
                                     }else{
                                         $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
                                     }

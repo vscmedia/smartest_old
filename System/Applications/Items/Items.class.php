@@ -14,7 +14,7 @@ class Items extends SmartestSystemApplication{
 	}
 	
 	public function startPage($get){	
-		
+		$this->setTitle("Items");
 	}
 		
 	public function getItemClasses(){

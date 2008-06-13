@@ -70,8 +70,6 @@ class SmartestModel extends SmartestDataObject{
 		
 		// $this->_model_properties = array();
 		
-		
-		
 		if(SmartestCache::hasData('model_properties_'.$this->_properties['id'], true)){
 		    $result = SmartestCache::load('model_properties_'.$this->_properties['id'], true);
 	    }else{
@@ -359,6 +357,64 @@ class SmartestModel extends SmartestDataObject{
         }
         
         return $arrays;
+        
+    }
+    
+    public function getForeignKeyProperties($item_id=''){
+        
+        if(is_numeric($item_id)){
+            
+            $class = $this->getClassName();
+            $item = new $class;
+            
+            if($item->hydrate($item_id)){
+                $properties = $item->getPropertyValueHolders();
+            }else{
+                $properties = $this->getProperties();
+            }
+            
+        }else{
+            $properties = $this->getProperties();
+        }
+        
+        $fk_properties = array();
+        
+        foreach($properties as $p){
+            if($p->getDatatype() == 'SM_DATATYPE_CMS_ITEM'){
+                $fk_properties[] = $p;
+            }
+        }
+        
+        return $fk_properties;
+        
+    }
+    
+    public function hasForeignKeyProperties(){
+        
+        return (bool) count($this->getForeignKeyProperties());
+        
+    }
+    
+    public function getForeignKeyPropertiesForModelId($model_id, $item_id=''){
+        
+        $model_id = (int) $model_id;
+        
+        $fk_properties = $this->getForeignKeyProperties($item_id);
+        $properties = array();
+        
+        foreach($fk_properties as $p){
+            if($p->getForeignKeyFilter() == $model_id){
+                $properties[] = $p;
+            }
+        }
+        
+        return $properties;
+        
+    }
+    
+    public function hasForeignKeyPropertiesForModelId($model_id){
+        
+        return (bool) count($this->getForeignKeyPropertiesForModelId($model_id));
         
     }
     

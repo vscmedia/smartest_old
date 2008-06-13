@@ -43,6 +43,14 @@ class SmartestItem extends SmartestDataObject{
 	    return $array;
 	}
 	
+	public function getParentItemForMetaPage($metapage_id){
+	    return SmartestSystemSettingHelper::load('item_parent_metapage_'.$metapage_id.'_'.$this->_properties['id'].'_site_'.$this->getCurrentSiteId());
+	}
+	
+	public function setParentItemForMetaPage($metapage_id, $parent_item_id){
+	    
+	}
+	
 	public function delete($remove=false){
 	    if($remove){
 		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";

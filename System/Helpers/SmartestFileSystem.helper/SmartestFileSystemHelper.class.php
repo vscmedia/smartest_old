@@ -104,7 +104,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	
 	static function getFileSize($file_path){
 	    if(file_exists(utf8_decode($file_path))){
-	        $size = filesize($file_path);
+	        $size = filesize(utf8_decode($file_path));
 	        return $size;
 	    }else{
 	        return false;
