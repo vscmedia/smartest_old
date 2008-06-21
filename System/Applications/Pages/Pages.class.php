@@ -42,6 +42,8 @@ class Pages extends SmartestSystemApplication{
 	        
 	        if($page->hydrate($get['page_id'])){
 	            
+	            $page->setDraftMode(true);
+	            
 	            if($this->getUser()->hasToken('modify_page_properties')){
 	            
 	                if($page->getIsHeld() && $page->getHeldBy() != $this->getUser()->getId()){
@@ -116,6 +118,8 @@ class Pages extends SmartestSystemApplication{
 	    $page = new SmartestPage;
 	    
 	    if($page->hydrate($get['page_id'])){
+	        
+	        $page->setDraftMode(true);
 	        
 	        if($page->getIsHeld() == '1'){
 	            
@@ -225,6 +229,8 @@ class Pages extends SmartestSystemApplication{
     	
     	if($page->hydrate($page_webid)){
     	    
+    	    $page->setDraftMode(true);
+    	    
     	    if($page->getType() == 'ITEMCLASS' && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
             
                 $this->send(true, 'allow_edit');
@@ -293,16 +299,16 @@ class Pages extends SmartestSystemApplication{
                         if($model->hydrate($page->getDatasetId())){
                             $editorContent['model_name'] = $model->getName();
                         
-                            if($page->getParentPage(true) && $page->getParentPage(true)->getType() == 'ITEMCLASS'){
+                            if($page->getParentPage() && $page->getParentPage()->getType() == 'ITEMCLASS'){
                                 
-                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage(true)->getDatasetId(), (int) $get['item_id']);
+                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage()->getDatasetId(), (int) $get['item_id']);
                             
                                 // print_r($parent_indicator_properties);
                                 
                                 $this->send(true, 'show_parent_meta_page_property_control');
                                 $this->send($model->__toArray(), 'model');
                                 
-                                if($page->getParentPage(true)->getDatasetId() == $page->getDatasetId()){
+                                if($page->getParentPage()->getDatasetId() == $page->getDatasetId()){
                                     
                                     // parent metapage has same model as this one
                                     $parent_model = &$model;
@@ -313,7 +319,7 @@ class Pages extends SmartestSystemApplication{
                                     // quickly fetch parent meta-page's model
                                     $parent_model = new SmartestModel;
                                 
-                                    if($parent_model->hydrate($page->getParentPage(true)->getDatasetId())){
+                                    if($parent_model->hydrate($page->getParentPage()->getDatasetId())){
                                         
                                     }else{
                                         $this->addUserMessage("The parent of this page is a meta-page, but not linked to any existing model", SmartestUserMessage::WARNING);
@@ -387,7 +393,7 @@ class Pages extends SmartestSystemApplication{
                                 }else{
                                     
                                     // there are no properties in this meta-page that point to the data type of the parent meta-page. this is a problem so we nnotify the user.
-                                    if($page->getParentPage(true)->getDatasetId() == $page->getDatasetId()){
+                                    if($page->getParentPage()->getDatasetId() == $page->getDatasetId()){
                                         $this->addUserMessage("This ".$model->getName()." meta-page is the child of a meta-page that is also used to represent ".$model->getPluralName().", but the ".$model->getName()." model has no foreign-key properties that refer to other ".$model->getPluralName().". This page will assign its own item to it's parent meta-page.", SmartestUserMessage::WARNING);
                                         $page->setParentMetaPageReferringPropertyId('_SELF');
                                         $this->send('_SELF', 'parent_meta_page_property');
@@ -1394,13 +1400,13 @@ class Pages extends SmartestSystemApplication{
 	        }else{
 	        
 	            $this->setTitle($page->getTitle()." | Related Content");
-    	        $related_pages = $page->getRelatedPagesAsArrays(true);
+    	        $related_pages = $page->getRelatedPagesAsArrays();
 	        
     	        $du = new SmartestDataUtility;
     	        $models = $du->getModelsAsArrays();
 	        
     	        foreach($models as &$m){
-    	            $m['related_items'] = $page->getRelatedItemsAsArrays(true, $m['id']);
+    	            $m['related_items'] = $page->getRelatedItemsAsArrays($m['id']);
     	        }
 	        
     	        $this->send($page->__toArray(), 'page');
@@ -1420,6 +1426,7 @@ class Pages extends SmartestSystemApplication{
 	public function editRelatedContent($get){
 	    
 	    $page = new SmartestPage;
+	    $page->setDraftMode(true);
 	    $page_webid = $get['page_id'];
 	    
 	    if($page->hydrate($page_webid)){
@@ -1442,7 +1449,7 @@ class Pages extends SmartestSystemApplication{
 	            $this->setTitle($page->getTitle()." | Related ".$model->getPluralName());
 	            $this->send($page->__toArray(), 'page');
 	            $this->send($model->__toArray(), 'model');
-	            $related_ids = $page->getRelatedItemIds(true, $model->getId());
+	            $related_ids = $page->getRelatedItemIds($model->getId());
 	            $all_items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
 	            $this->send($all_items, 'items');
 	            $this->send($related_ids, 'related_ids');
@@ -1456,7 +1463,7 @@ class Pages extends SmartestSystemApplication{
     	        $this->send($related_ids, 'related_ids');
             }
 	        
-	        $related_pages = $page->getRelatedPagesAsArrays(true);
+	        $related_pages = $page->getRelatedPagesAsArrays();
     	    
 	    }else{
 	        $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
@@ -1468,6 +1475,7 @@ class Pages extends SmartestSystemApplication{
 	public function updateRelatedPageConnections($get, $post){
 	    
 	    $page = new SmartestPage;
+	    $page->setDraftMode(true);
 	    $page_webid = $post['page_id'];
 	    
 	    if($page->hydrate($page_webid)){
@@ -1515,6 +1523,7 @@ class Pages extends SmartestSystemApplication{
 	public function updateRelatedItemConnections($get, $post){
 	    
 	    $page = new SmartestPage;
+	    $page->setDraftMode(true);
 	    $page_webid = $post['page_id'];
 	    
 	    if($page->hydrate($page_webid)){
@@ -1529,7 +1538,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	                if(count($new_related_ids)){
 	            
-    	                $old_related_ids = $page->getRelatedItemIds(true, $model->getId());
+    	                $old_related_ids = $page->getRelatedItemIds($model->getId());
             	        $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
             	        
             	        foreach($items as $item){
@@ -1573,6 +1582,7 @@ class Pages extends SmartestSystemApplication{
 	    $page_webid = $get['page_id'];
 	    
 	    $page = new SmartestPage;
+	    $page->setDraftMode(true);
 	    
 	    if($page->hydrate($page_webid)){
 	        
@@ -1594,6 +1604,7 @@ class Pages extends SmartestSystemApplication{
 	    $page_id = (int) $post['page_id'];
 	    
 	    $page = new SmartestPage;
+	    $page->setDraftMode(true);
 	    
 	    if($page->hydrate($page_id)){
 	        
@@ -1662,6 +1673,8 @@ class Pages extends SmartestSystemApplication{
 		$page = new SmartestPage;
 		
 		if($page->hydrate($page_webid)){
+		    
+		    $page->setDraftMode(true);
 		    
 		    $this->setTitle('Create Preset');
 		    
@@ -1751,6 +1764,8 @@ class Pages extends SmartestSystemApplication{
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        
+	        $page->setDraftMode(true);
+	        
 	        $container = new SmartestContainer;
 	        
 	        if($container->hydrateBy('name', $container_name)){
@@ -1794,6 +1809,8 @@ class Pages extends SmartestSystemApplication{
 	    $page = new SmartestPage;
 	    
 	    if($page->hydrate($page_id)){
+	        
+	        $page->setDraftMode(true);
 	        
 	        $container = new SmartestContainer;
 	        
@@ -1852,6 +1869,8 @@ class Pages extends SmartestSystemApplication{
         $page = new SmartestPage;
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
+	        
+	        $page->setDraftMode(true);
 	        
 	        $placeholder = new SmartestPlaceholder;
 	        
@@ -1996,6 +2015,8 @@ class Pages extends SmartestSystemApplication{
 	        
 	        // print_r($page);
 	        
+	        $page->setDraftMode(true);
+	        
 	        $placeholder = new SmartestPlaceholder;
 	        
 	        if($placeholder->hydrate($placeholder_id)){
@@ -2061,6 +2082,8 @@ class Pages extends SmartestSystemApplication{
 	    
 	    if($page->hydrate($page_id)){
 	        
+	        $page->setDraftMode(true);
+	        
 	        // print_r($page);
 	        
 	        $placeholder = new SmartestPlaceholder;
@@ -2117,6 +2140,8 @@ class Pages extends SmartestSystemApplication{
 	    $page = new SmartestPage;
 	    
 	    if($page->hydrate($page_id)){
+	        
+	        $page->setDraftMode(true);
 	        
 	        // print_r($page);
 	        
@@ -2190,7 +2215,7 @@ class Pages extends SmartestSystemApplication{
 	    $page_webid = $get['page_id'];
 	    $asset = new SmartestAsset;
 	    
-	    if($asset->hydrateBy('stringid', $id)){
+	    if($asset->hydrateBy('stringid', $id, $this->getSite()->getId())){
             $this->redirect('/assets/editAsset?assettype_code='.$asset->getType().'&asset_id='.$asset->getId().'&from=pageAssets');
         }else{
             if(strlen($page_webid) == 32){
@@ -2314,6 +2339,8 @@ class Pages extends SmartestSystemApplication{
 		
 		if($page->hydrate($page_webid)){
 		    
+		    $page->setDraftMode(true);
+		    
 		    if(( (boolean) $page->getChangesApproved() && $this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
 		    
 		        $version = "draft";
@@ -2352,7 +2379,9 @@ class Pages extends SmartestSystemApplication{
 	    $page_webid = $get['page_id'];
 	    
 	    if($page->hydrate($page_webid)){
-	    
+	        
+	        $page->setDraftMode(true);
+	        
 	        if(((boolean) $page->getChangesApproved() || $this->getUser()->hasToken('approve_page_changes')) && ($this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
 		        
 		        $page->publish();
@@ -2378,6 +2407,9 @@ class Pages extends SmartestSystemApplication{
 		$page = new SmartestPage;
 		
 		if($page->hydrate($page_webid)){
+		    
+		    $page->setDraftMode(true);
+		    
 		    $page->unpublish();
 		}
 		
@@ -2412,6 +2444,8 @@ class Pages extends SmartestSystemApplication{
         $page = new SmartestPage;
         
         if($page->hydrate($page_webid)){
+            
+            $page->setDraftMode(true);
             
             $list = new SmartestCmsItemList;
             
@@ -2472,6 +2506,8 @@ class Pages extends SmartestSystemApplication{
         $page = new SmartestPage;
         
         if($page->hydrate($page_id)){
+            
+            $page->setDraftMode(true);
             
             $list = new SmartestCmsItemList;
             
@@ -2635,7 +2671,9 @@ class Pages extends SmartestSystemApplication{
 	    $page_webid = $get['page_id'];
 	    
 	    if($page->hydrate($page_webid)){
-	    
+	        
+	        $page->setDraftMode(true);
+	        
 	        $name = SmartestStringHelper::toVarName($get['assetclass_id']);
 	    
     	    $item_space = new SmartestItemSpace;
@@ -2676,7 +2714,9 @@ class Pages extends SmartestSystemApplication{
 	    $page_id = $post['page_id'];
 	    
 	    if($page->hydrate($page_id)){
-	    
+	        
+	        $page->setDraftMode(true);
+	        
 	        $name = SmartestStringHelper::toVarName($post['itemspace_name']);
 	    
     	    $item_space = new SmartestItemSpace;
@@ -2716,7 +2756,9 @@ class Pages extends SmartestSystemApplication{
 	    $page = new SmartestPage;
 	    
 	    if($page->hydrate($page_webid)){
-		
+		    
+		    $page->setDraftMode(true);
+		    
 		    // $message = $get['msg'];
 		    $ishomepage = $get['ishomepage'];
 		    // $page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
@@ -2744,6 +2786,7 @@ class Pages extends SmartestSystemApplication{
 		    $page = new SmartestPage;
 		    
 		    if($page->hydrate($post['page_id'])){
+		        $page->setDraftMode(true);
 		        $page->addUrl($post['page_url']);
 		        $page->save();
 		        $this->addUserMessageToNextRequest("The new URL was successully added.", SmartestUserMessage::SUCCESS);
@@ -2784,6 +2827,7 @@ class Pages extends SmartestSystemApplication{
 		$ishomepage = $get['ishomepage'];
 		
 		if($page->hydrate($page_webid)){
+		    $page->setDraftMode(true);
 		    // $page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
 		    // $editorContent = $this->manager->getPage($page_id);
 		    $editorContent = $page->__toArray();
@@ -2839,6 +2883,9 @@ class Pages extends SmartestSystemApplication{
 	    $page = new SmartestPage;
 	    
 	    if($page->hydrate($get['page_id'])){
+	        
+	        $page->setDraftMode(true);
+	        
 	        $result = $page->setDefaultUrl($get['url']);
 	        
 	        if(!$result){

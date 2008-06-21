@@ -18,9 +18,9 @@
 
 Viewing mode:
 {if $version == "draft"}
-<b>Edit</b> - <a href="{$domain}{$section}/pageAssets?page_id={$page.webid}&amp;version=live">Switch to live mode</a>
+<b>Edit</b> - <a href="{$domain}{$section}/pageAssets?page_id={$page.webid}&amp;version=live{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}">Switch to live mode</a>
 {else}
-<b>Live</b> - <a href="{$domain}{$section}/pageAssets?page_id={$page.webid}&amp;version=draft">Switch to draft mode</a>
+<b>Live</b> - <a href="{$domain}{$section}/pageAssets?page_id={$page.webid}&amp;version=draft{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}">Switch to draft mode</a>
 {/if}
   
 <input type="hidden" name="page_id" value="{$page.webid}" />

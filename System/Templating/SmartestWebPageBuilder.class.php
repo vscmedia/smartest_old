@@ -40,7 +40,13 @@ class SmartestWebPageBuilder extends SmartestEngine{
     }
     
     public function setDraftMode($mode){
+        
         $this->draft_mode = SmartestStringHelper::toRealBool($mode);
+        
+        if($this->page){
+            $this->page->setDraftMode($mode);
+        }
+        
     }
     
     public function startChildProcess($pid, $type=''){
@@ -74,9 +80,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function prepareForRender(){
         
-        $this->page->loadAssetClassDefinitions($this->getDraftMode());
-	    $this->page->loadItemSpaceDefinitions($this->getDraftMode());
-	    $this->setPageRenderingData($this->page->fetchRenderingData($this->getDraftMode()));
+        $this->page->loadAssetClassDefinitions();
+	    $this->page->loadItemSpaceDefinitions();
+	    $this->setPageRenderingData($this->page->fetchRenderingData());
 	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
         
     }
@@ -436,8 +442,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             // 
             
-            if($list->hasRepeatingTemplate($this->getDraftMode())){
+            // echo 'list loaded<br />';
             
+            if($list->hasRepeatingTemplate($this->getDraftMode())){
+                
+                // echo 'list has repeating template<br />';
+                
                 if($list->hasHeaderTemplate($this->getDraftMode())){
                     // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getHeaderTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
                     // echo $list->getHeaderTemplate($this->getDraftMode());
@@ -487,6 +497,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             }
             
+        }else{
+            
+            // echo 'list did not load.';
+            
         }
     
     }
@@ -508,17 +522,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
     		$link_params['goCold'] = 'true';
     		
     		$last_breadcrumb_index = (count($breadcrumbs) - 1);
-    		// echo $last_breadcrumb_index;
-
+    		
     		foreach($breadcrumbs as $key => $page){
                 
-                // print_r(get_class($page));
-                
-    			if($page->getType() == 'ITEMCLASS'){
-                    
-                    // print_r($this->page->getPrincipalItem());
-                    
-                    // print_r($page->getTitle());
+                if($page->getType() == 'ITEMCLASS'){
                     
                     if($key == $last_breadcrumb_index){
                         
@@ -535,13 +542,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
     			        }
     			    
 			        }
-    			    
 
     			}else{
     		        $to = 'page:webid='.$page->getWebid();
     		    }
-                
-                // echo $to.' ';
                 
                 if($page->getType() == 'ITEMCLASS' && !$page instanceof SmartestItemPage){
                     $text = $page->getTitle();

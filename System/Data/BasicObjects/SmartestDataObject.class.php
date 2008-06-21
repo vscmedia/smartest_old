@@ -141,8 +141,6 @@ class SmartestDataObject implements ArrayAccess{
 	public function offsetGet($offset){
 	    if(isset($this->_properties[$offset])){
 	        return $this->_properties[$offset];
-	    }else{
-	        return null;
 	    }
 	}
 	
@@ -444,7 +442,7 @@ class SmartestDataObject implements ArrayAccess{
 		
 	}
 	
-	public function hydrateBy($field, $value, $draft=false){
+	public function hydrateBy($field, $value, $site_id=''){
 	    
 	    if(isset($this->_no_prefix[$field])){
 		    $column_name = $field;
@@ -453,8 +451,15 @@ class SmartestDataObject implements ArrayAccess{
 		}
 	    
 	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
+	    
+	    if($site_id && is_numeric($site_id)){
+	        if(isset($this->_properties['site_id'])){
+	            $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
+	        }
+	    }
+	    
 	    $this->_last_query = $sql;
-	    $result = $this->database->queryToArray($sql, $file, $line);
+	    $result = $this->database->queryToArray($sql);
 
 	    if(count($result)){
 	

@@ -13,6 +13,9 @@ class SmartestPage extends SmartestDataObject{
 	protected $_section_page;
 	protected $_urls = array();
 	
+	protected $_draft_mode = false;
+	protected $_level = 0;
+	
 	protected $_fields = array();
 	protected $_containers = array();
 	protected $_placeholders = array();
@@ -144,6 +147,14 @@ class SmartestPage extends SmartestDataObject{
 	        $this->setField('Deleted', 1);
 	        $this->save();
 	    }
+	}
+	
+	public function getDraftMode(){
+	    return $this->_draft_mode;
+	}
+	
+	public function setDraftMode($mode){
+	    $this->_draft_mode = (bool) $mode;
 	}
 	
 	public function addUrl($url_string){
@@ -336,7 +347,9 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	public function getNextChildOrderIndex(){
+	    
 	    $children = $this->getPageChildren();
+	    
 	    if(count($children)){
 	        $bottom_child_array = end($children);
 	        $bottom_child = new SmartestPage;
@@ -351,18 +364,13 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function fixChildPageOrder($recursive=false){
 	    
-	    $children = $this->getPageChildren(true);
+	    $children = $this->getPageChildren();
 	    
 	    if(count($children)){
 	        
 	        $order_index = 0;
 	        
 	        foreach($children as $p){
-	            
-	            // print_r($child_array);
-	            
-	            // $p = new SmartestPage;
-	            // $p->hydrate($child_array);
 	            
 	            if(!SmartestStringHelper::toRealBool($p->getDeleted())){
 	            
@@ -372,7 +380,7 @@ class SmartestPage extends SmartestDataObject{
 	                $order_index++;
 	                
 	                if($recursive){
-	                    $p->fixChildPageOrder();
+	                    $p->fixChildPageOrder(true);
 	                }
                 }
 	        }
@@ -445,12 +453,12 @@ class SmartestPage extends SmartestDataObject{
 		
 	}
 	
-	public function getPagesSubTree($level=1, $draft_mode=false, $get_items){
+	public function getPagesSubTree($level=1, $get_items){
 	
 		$working_array = array();
 		$index = 0;
 		
-		$_children = $this->getPageChildren($draft_mode);
+		$_children = $this->getPageChildren();
 		
 		$int_level = (int) $level;
 		
@@ -470,10 +478,10 @@ class SmartestPage extends SmartestDataObject{
 		    
 		    $child->hydrate($child_page_record);
 			
-			$working_array[$index]["info"] = $child->__toArray(false, $draft_mode);
+			$working_array[$index]["info"] = $child->__toArray(false);
 			$working_array[$index]["treeLevel"] = $int_level;
 			$new_level = $int_level + 1; 
-			$working_array[$index]["children"] = $child->getPagesSubTree($new_level, $draft_mode, $get_items);
+			$working_array[$index]["children"] = $child->getPagesSubTree($new_level, $get_items);
 			
 			/* if($child->getType() == "ITEMCLASS" && $get_items){
 			    $set = $child->getDataSet();
@@ -489,12 +497,12 @@ class SmartestPage extends SmartestDataObject{
 		return $working_array;
 	}
 	
-	public function getSerializedPageTree($level=1, $get_items=false, $use_passed_array=false, $passed_array='', $draft_mode){
+	public function getSerializedPageTree($level=1, $get_items=false, $use_passed_array=false, $passed_array=''){
 		
 		if($use_passed_array && is_array($passed_array)){
 		    $pagesArray = $passed_array;
 		}else{
-		    $pagesArray = $this->getPagesSubTree($level, $draft_mode, $get_items);
+		    $pagesArray = $this->getPagesSubTree($level, $get_items);
 	    }
 		
 		$new_level = (int) $level + 1;
@@ -513,7 +521,7 @@ class SmartestPage extends SmartestDataObject{
 			    
 			    foreach($children as $child_array){
 				    
-				    $this->getSerializedPageTree($new_level, $get_items, true, array($child_array), $draft_mode);
+				    $this->getSerializedPageTree($new_level, $get_items, true, array($child_array));
 			        
 		        }
 		        
@@ -615,7 +623,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getParentPage($draft_mode=false){
+	public function getParentPage(){
 	    
 	    if(!$this->_parent_page){
 	        
@@ -634,7 +642,7 @@ class SmartestPage extends SmartestDataObject{
 	                        
 	                        $property->setContextualItemId($this->getSimpleItem()->getId());
 	                        
-	                        if($draft_mode){
+	                        if($this->getDraftMode()){
 	                            $parent_item_id = $property->getData()->getDraftContent();
 	                        }else{
 	                            $parent_item_id = $property->getData()->getContent();
@@ -689,6 +697,8 @@ class SmartestPage extends SmartestDataObject{
 	            $parent->hydrate($this->getParent());
 	        }
 	        
+	        $parent->setDraftMode($this->getDraftMode());
+	        
 	        $this->_parent_page = $parent;
 	        
         }
@@ -697,14 +707,13 @@ class SmartestPage extends SmartestDataObject{
         
 	}
 	
-	public function getGrandParentPage($draft_mode=false){
+	public function getGrandParentPage(){
 	    
 	    if(!$this->_grandparent_page){
 	        
-	        if(is_object($this->getParentPage($draft_mode))){
+	        if(is_object($this->getParentPage())){
 	            
-	            $this->_grandparent_page = $this->getParentPage($draft_mode)->getParentPage($draft_mode);
-	            // $this->_grandparent_page = $grandparent;
+	            $this->_grandparent_page = $this->getParentPage()->getParentPage();
 	        
             }
 	        
@@ -714,11 +723,11 @@ class SmartestPage extends SmartestDataObject{
         
 	}
 
-	public function getPageChildren($draft_mode=false, $sections_only=false){
+	public function getPageChildren($sections_only=false){
 	    
 	    $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->_properties['id']."' AND page_site_id='".$this->_properties['site_id']."' AND page_deleted != 'TRUE'";
 		
-		if(!$draft_mode){
+		if(!$this->getDraftMode()){
 		    $sql .= " AND page_is_published = 'TRUE'";
 		}
 		
@@ -747,20 +756,20 @@ class SmartestPage extends SmartestDataObject{
 	    return $this->_child_pages;
 	}
 	
-	public function getPageChildrenAsArrays($draft_mode=false, $sections_only=false){
+	public function getPageChildrenAsArrays($sections_only=false){
 	    
-	    $children = $this->getPageChildren($draft_mode, $sections_only);
+	    $children = $this->getPageChildren($sections_only);
 	    $array = array();
 	    
 	    foreach($children as $child_page){
-	        $array[] = $child_page->__toArray(false, $draft_mode);
+	        $array[] = $child_page->__toArray(false);
 	    }
 	    
 	    return $array;
 	    
 	}
 	
-	public function getPageChildrenForWeb($draft_mode=false, $sections_only=false){
+	public function getPageChildrenForWeb($sections_only=false){
 	    
 	    if($this->getParentSite()->getTagPageId()){
 	        $special_page_ids = array($this->getParentSite()->getTagPageId());
@@ -778,13 +787,15 @@ class SmartestPage extends SmartestDataObject{
         
         $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->_properties['id']."' AND page_site_id='".$this->_properties['site_id']."' AND page_deleted != 'TRUE'";
 		
-		if(!$draft_mode){
+		if(!$this->getDraftMode()){
 		    $sql .= " AND page_is_published = 'TRUE'";
 		}
 		
 		if($sections_only){
 		    $sql .= " AND page_is_section = '1'";
 		}
+		
+		$sql .= " AND page_type = 'NORMAL'";
 		
 		if(count($special_page_ids)){
 		    $sql .= " AND page_id NOT IN('".implode("', '", $special_page_ids)."')";
@@ -798,12 +809,12 @@ class SmartestPage extends SmartestDataObject{
 	    if(is_array($result)){
 	    
 	        foreach($result as $page_record){
-	            if($page_record['page_type'] == 'NORMAL'){
+	            // if($page_record['page_type'] == 'NORMAL'){
 	                $child_page = new SmartestPage;
 	                $child_page->hydrate($page_record);
 	                $this->_child_web_pages[$i] = $child_page;
 	                $i++;
-                }
+                // }
                 
                 /* else if($page_record['page_type'] == 'ITEMCLASS'){
                     
@@ -819,7 +830,7 @@ class SmartestPage extends SmartestDataObject{
                             $child_page->setIdentifyingFieldValue($item->getId());
                             $child_page->assignPrincipalItem();
                             
-                            $is_acceptable = $child_page->isAcceptableItem($draft_mode);
+                            $is_acceptable = $child_page->isAcceptableItem($this->getDraftMode());
                             
                             // var_dump($is_acceptable);
                             
@@ -841,13 +852,13 @@ class SmartestPage extends SmartestDataObject{
 	}
 	
 	
-	public function getPageChildrenForWebAsArrays($draft_mode=false, $sections_only=false){
+	public function getPageChildrenForWebAsArrays($sections_only=false){
 	    
-	    $children = $this->getPageChildrenForWeb($draft_mode, $sections_only);
+	    $children = $this->getPageChildrenForWeb($sections_only);
 	    $array = array();
 	    
 	    foreach($children as $child_page){
-	        $array[] = $child_page->__toArray(false, $draft_mode);
+	        $array[] = $child_page->__toArray(false);
 	    }
 	    
 	    return $array;
@@ -922,7 +933,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getPageFieldValuesAsAssociativeArray($draft_mode=false){
+	public function getPageFieldValuesAsAssociativeArray(){
 	    
 	    $fields = $this->getPageFields();
 	    $array = array();
@@ -933,7 +944,7 @@ class SmartestPage extends SmartestDataObject{
 	        
 	        $key = $f->getName();
 	        
-	        if($draft_mode){
+	        if($this->getDraftMode()){
 	            $data = $f->getData()->getDraftValue();
 	        }else{
 	            $data = $f->getData()->getLiveValue();
@@ -955,11 +966,11 @@ class SmartestPage extends SmartestDataObject{
 	    return SmartestSystemSettingHelper::save('metapage_'.$this->_properties['id'].'_parent_item_property_id', $id);
 	}
 	
-	public function fetchRenderingData($draft_mode=false){
+	public function fetchRenderingData(){
 	    
 	    $data = array();
-	    $data['page'] = $this->__toArray(false, $draft_mode);
 	    
+	    $data['page'] = $this;
 	    $data['tags'] = $this->getTagsAsArrays();
 	    
 	    if($this instanceof SmartestItemPage){
@@ -996,8 +1007,8 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $data['authors'] = $this->getAuthorsAsArrays();
 	    
-	    $data['fields'] = $this->getPageFieldValuesAsAssociativeArray($draft_mode);
-	    $data['navigation'] = $this->getNavigationStructure($draft_mode);
+	    $data['fields'] = $this->getPageFieldValuesAsAssociativeArray();
+	    $data['navigation'] = $this->getNavigationStructure();
 	    
 	    return $data;
 	}
@@ -1025,14 +1036,14 @@ class SmartestPage extends SmartestDataObject{
 	    }
 	}
 	
-	public function __toArray($getChildren=false, $draft_mode=false){
+	public function __toArray($getChildren=false){
 	    
 	    $array = parent::__toArray();
 	    
 	    $array['title'] = $this->getTitle();
 	    $array['url'] = $this->getDefaultUrl();
-	    $array['formatted_title'] = $this->getFormattedTitle($draft_mode);
-	    $array['formatted_static_title'] = $this->getFormattedTitle($draft_mode);
+	    $array['formatted_title'] = $this->getFormattedTitle();
+	    $array['formatted_static_title'] = $this->getFormattedTitle();
 	    $array['static_title'] = $this->_properties['title'];
 	    $array['is_tag_page'] = $this->isTagPage();
 	    
@@ -1052,6 +1063,66 @@ class SmartestPage extends SmartestDataObject{
         
         return $array;
         
+	}
+	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        
+	        case "title":
+	        return $this->getTitle();
+	        break;
+	        
+	        case "url":
+	        return $this->getDefaultUrl();
+	        break;
+	        
+	        case "formatted_title":
+	        return $this->getFormattedTitle();
+	        break;
+	        
+	        case "static_title":
+	        return $this->_properties['title'];
+	        break;
+	        
+	        case "link_contents":
+	        
+	        if($this->getType() == 'ITEMCLASS'){
+    	        if(is_object($this->getSimpleItem())){
+    	            return 'metapage:'.$this->getName().':id='.$this->getSimpleItem()->getId();
+                }else{
+                    return 'page:'.$this->getName();
+                }
+    	    }else{
+    	        return 'page:'.$this->getName();
+            }
+            
+	        break;
+	        
+	        case "is_tag_page":
+	        return $this->isTagPage();
+	        break;
+	        
+	        case "child_pages":
+	        return $this->getPageChildrenForWeb();
+	        break;
+	        
+	        case "sibling_level_pages":
+	        return $this->getParentPage()->getPageChildrenForWeb();
+	        break;
+	        
+	        case "parent_level_pages":
+			return $this->getGrandParentPage()->getPageChildrenForWeb();
+			break;
+	        
+	        case "level":
+	        return $this->getTreeLevel();
+	        break;
+	        
+	    }
+	    
+	    return parent::offsetGet($offset);
+	    
 	}
 	
 	public function getWorkflowStatus(){
@@ -1249,7 +1320,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getRelatedPages($draft_mode=false){
+	public function getRelatedPages(){
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_PAGES');
 	    $q->setCentralNodeId($this->_properties['id']);
@@ -1257,7 +1328,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $q->addForeignTableConstraint('Pages.page_type', 'NORMAL');
 	    
-	    if(!$draft_mode){
+	    if(!$this->getDraftMode()){
 	        $q->addForeignTableConstraint('Pages.page_is_published', 'TRUE');
 	    }
 	    
@@ -1266,22 +1337,22 @@ class SmartestPage extends SmartestDataObject{
 	    return $related_pages;
 	}
 	
-	public function getRelatedPagesAsArrays($draft_mode=false){
+	public function getRelatedPagesAsArrays(){
 	    
-	    $pages = $this->getRelatedPages($draft_mode);
+	    $pages = $this->getRelatedPages();
 	    $arrays = array();
 	    
 	    foreach($pages as $page){
-	        $arrays[] = $page->__toArray(false, $draft_mode);
+	        $arrays[] = $page->__toArray();
 	    }
 	    
 	    return $arrays;
 	    
 	}
 	
-	public function getRelatedPageIds($draft_mode=false){
+	public function getRelatedPageIds(){
 	    
-	    $pages = $this->getRelatedPages($draft_mode);
+	    $pages = $this->getRelatedPages();
 	    $ids = array();
 	    
 	    foreach($pages as $page){
@@ -1312,7 +1383,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getRelatedItems($draft_mode=false, $model_id=''){
+	public function getRelatedItems($model_id=''){
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
 	    $q->setTargetEntityByIndex(1);
@@ -1324,7 +1395,7 @@ class SmartestPage extends SmartestDataObject{
 	        $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
 	    }
 	    
-	    if(!$draft_mode){
+	    if(!$this->getDraftMode()){
 	        $q->addForeignTableConstraint('Items.item_public', 'TRUE');
 	    }
 	    
@@ -1332,7 +1403,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $result = $q->retrieve();
 	    
-	    /* if($draft_mode){
+	    /* if($this->getDraftMode()){
 	        print_r($result);
 	    } */
 	    
@@ -1346,9 +1417,9 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getRelatedItemsAsArrays($draft_mode=false, $model_id=''){
+	public function getRelatedItemsAsArrays($model_id=''){
 	    
-	    $items = $this->getRelatedItems($draft_mode, $model_id);
+	    $items = $this->getRelatedItems($model_id);
 	    $arrays = array();
 	    
 	    foreach($items as $i){
@@ -1359,9 +1430,9 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getRelatedItemIds($draft_mode=false, $model_id=''){
+	public function getRelatedItemIds($model_id=''){
 	    
-	    $items = $this->getRelatedItems($draft_mode, $model_id);
+	    $items = $this->getRelatedItems($model_id);
 	    $ids = array();
 	    
 	    foreach($items as $i){
@@ -1411,32 +1482,33 @@ class SmartestPage extends SmartestDataObject{
 	    $q->delete();
 	}
 	
-	public function getNavigationStructure($draft_mode=false){
+	public function getNavigationStructure(){
 		
 		$home_page_id = $this->getParentSite()->getTopPageId();
 		$home_page = new SmartestPage;
 		$home_page->hydrate($home_page_id);
+		$home_page->setDraftMode($this->getDraftMode());
 		
-		$this->getGrandParentPage($draft_mode);
+		$this->getGrandParentPage();
 		
-		// var_dump($draft_mode);
+		// var_dump($this->getDraftMode());
 		
 		return array(
-		    "parent"=>$this->getParentPage($draft_mode)->compile(), 
-			"section"=>$this->getSectionPage($draft_mode)->compile(), 
+		    "parent"=>$this->getParentPage(), 
+			"section"=>$this->getSectionPage(), 
 //          "breadcrumbs"=>$this->getPageBreadCrumbsAsArrays(),
-			"_breadcrumb_trail"=>$this->getPageBreadCrumbs($draft_mode), 
-			"sibling_level_pages"=>$this->getParentPage($draft_mode)->getPageChildrenForWebAsArrays($draft_mode), 
-			"parent_level_pages"=>$this->getGrandParentPage($draft_mode)->getPageChildrenForWebAsArrays($draft_mode),
-			"child_pages"=>$this->getPageChildrenForWebAsArrays($draft_mode),
-			"main_sections"=>$home_page->getPageChildrenForWebAsArrays($draft_mode, true),
-			"related"=>$this->getRelatedContentForRender($draft_mode)
+			"_breadcrumb_trail"=>$this->getPageBreadCrumbs(), 
+			"sibling_level_pages"=>$this->getParentPage()->getPageChildrenForWeb(), 
+			"parent_level_pages"=>$this->getGrandParentPage()->getPageChildrenForWeb(),
+			"child_pages"=>$this->getPageChildrenForWeb(),
+			"main_sections"=>$home_page->getPageChildrenForWeb(true),
+			"related"=>$this->getRelatedContentForRender()
 		);
 	}
 	
-	public function loadAssetClassDefinitions($draft_mode=false){
+	public function loadAssetClassDefinitions(){
 	    
-	    if($draft_mode){
+	    if($this->getDraftMode()){
 	        $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id";
         }else{
             $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
@@ -1462,9 +1534,9 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function loadItemSpaceDefinitions($draft_mode=false){
+	public function loadItemSpaceDefinitions(){
 	    
-	    if($draft_mode){
+	    if($this->getDraftMode()){
 	        $sql = "SELECT * FROM Items, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Items.item_id";
 	    }else{
 	        $sql = "SELECT * FROM Items, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_live_asset_id=Items.item_id";
@@ -1481,19 +1553,19 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function hasContainerDefinition($container_name, $draft_mode=false){
+	public function hasContainerDefinition($container_name){
 	    
 	    return array_key_exists($container_name, $this->_containers);
 	    
 	}
 	
-	public function hasPlaceholderDefinition($placeholder_name, $draft_mode=false){
+	public function hasPlaceholderDefinition($placeholder_name){
 	    
 	    return array_key_exists($placeholder_name, $this->_placeholders);
 	    
 	}
 	
-	public function hasItemSpaceDefinition($itemspace_name, $draft_mode=false){
+	public function hasItemSpaceDefinition($itemspace_name){
 	    
 	    return array_key_exists($itemspace_name, $this->_itemspaces);
 	    
@@ -1571,7 +1643,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getContainerDefinition($container_name, $draft_mode=false){
+	public function getContainerDefinition($container_name){
 	    
 	    if(array_key_exists($container_name, $this->_containers)){
 	        
@@ -1581,7 +1653,7 @@ class SmartestPage extends SmartestDataObject{
 	    }else{
 	    
 	        $container = new SmartestContainerDefinition;
-            $container->load($container_name, $this, $draft_mode);
+            $container->load($container_name, $this, $this->getDraftMode());
             return $container;
         
         }
@@ -1592,7 +1664,7 @@ class SmartestPage extends SmartestDataObject{
 	    return array_keys($this->_containers);
 	}
 	
-	public function getPlaceholderDefinition($placeholder_name, $draft_mode=false){
+	public function getPlaceholderDefinition($placeholder_name){
 	    
 	    if(array_key_exists($placeholder_name, $this->_placeholders)){
 	        
@@ -1602,7 +1674,7 @@ class SmartestPage extends SmartestDataObject{
 	    }else{
 	    
 	        $placeholder = new SmartestPlaceholderDefinition;
-            $placeholder->load($placeholder_name, $this, $draft_mode);
+            $placeholder->load($placeholder_name, $this, $this->getDraftMode());
             return $placeholder;
         
         }
@@ -1613,7 +1685,7 @@ class SmartestPage extends SmartestDataObject{
 	    return array_keys($this->_placeholders);
 	}
 	
-	public function getItemSpaceDefinition($itemspace_name, $draft_mode=false){
+	public function getItemSpaceDefinition($itemspace_name){
 	    
 	    // print_r($this->_itemspaces);
 	    // echo $itemspace_name;
@@ -1627,7 +1699,7 @@ class SmartestPage extends SmartestDataObject{
 	    }else{
 	    
 	        $itemspace = new SmartestItemSpaceDefinition;
-            $itemspace->load($itemspace_name, $this, $draft_mode);
+            $itemspace->load($itemspace_name, $this, $this->getDraftMode());
             return $itemspace;
             
             // throw new SmartestException("itemspace name '".$itemspace_name."' not recognized.");
@@ -1636,7 +1708,7 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getRelatedContentForRender($draft_mode=false){
+	public function getRelatedContentForRender(){
 	    
 	    $content = array();
 	    
@@ -1645,23 +1717,23 @@ class SmartestPage extends SmartestDataObject{
     
         foreach($models as $m){
             $key = SmartestStringHelper::toVarName($m->getPluralName());
-            $content[$key] = $this->getRelatedItemsAsArrays($draft_mode, $m->getId());
+            $content[$key] = $this->getRelatedItemsAsArrays($m->getId());
         }
         
-        $content['pages'] = $this->getRelatedPagesAsArrays($draft_mode);
+        $content['pages'] = $this->getRelatedPagesAsArrays();
         
         return $content;
         
 	}
 	
-	public function getPageBreadCrumbs($draft_mode=false){
+	public function getPageBreadCrumbs(){
 		
 		$helper = new SmartestPageManagementHelper;
 		$type_index = $helper->getPageTypesIndex($this->getParentSite()->getId());
 		
 		// print_r($index);
 		
-		$home_page = $this->getParentSite()->getHomePage();
+		$home_page = $this->getParentSite()->getHomePage($this->getDraftMode());
 		$breadcrumbs = array();
 		
 		$limit = self::HIERARCHY_DEPTH_LIMIT;
@@ -1691,7 +1763,7 @@ class SmartestPage extends SmartestDataObject{
     		        
     		        $property->setContextualItemId($child->getSimpleItem()->getId());
     		        
-    		        if($draft_mode){
+    		        if($this->getDraftMode()){
     		            $parent_item_id = $property->getData()->getDraftContent();
 		            }else{
 		                $parent_item_id = $property->getData()->getContent();
@@ -1728,15 +1800,19 @@ class SmartestPage extends SmartestDataObject{
 			
 			 */
 			
-			// var_dump($draft_mode);
+			// var_dump($this->getDraftMode());
+			
+			// $this->_level++;
 			
 			$breadcrumbs[] = $page;
-			$page = $page->getParentPage($draft_mode);
+			$page = $page->getParentPage();
 			
 			$limit--;
 			$breadcrumb_index++;
 			
 		}
+		
+		$this->_level = $breadcrumb_index;
 		
 		$breadcrumbs[] = $home_page;
 		
@@ -1747,9 +1823,9 @@ class SmartestPage extends SmartestDataObject{
 		
 	}
 	
-	public function getPageBreadCrumbsAsArrays($draft_mode=false){
+	public function getPageBreadCrumbsAsArrays(){
 		
-		$home_page = $this->getParentSite()->getHomePage();
+		$home_page = $this->getParentSite()->getHomePage($this->getDraftMode());
 		$breadcrumbs = array();
 		
 		$limit = self::HIERARCHY_DEPTH_LIMIT;
@@ -1759,12 +1835,12 @@ class SmartestPage extends SmartestDataObject{
 		while($home_page->getId() != $page_id && $limit > 0){
 			$page = new SmartestPage;
 			$page->hydrate($page_id);
-			$breadcrumbs[] = $page->__toArray(false, $draft_mode);
+			$breadcrumbs[] = $page->__toArray();
 			$page_id = $page->getParent();
 			$limit--;
 		}
 		
-		$breadcrumbs[] = $home_page->__toArray(false, $draft_mode);
+		$breadcrumbs[] = $home_page->__toArray();
 		
 		krsort($breadcrumbs);
 		$result = array_values($breadcrumbs);
@@ -1773,13 +1849,17 @@ class SmartestPage extends SmartestDataObject{
 		
 	}
 	
-	public function getSectionPage($draft_mode=false){
+	public function getTreeLevel(){
+	    return $this->_level;
+	}
+	
+	public function getSectionPage(){
 	    
 	    if(SmartestStringHelper::isFalse($this->getIsSection()) && !$this->isHomePage()){
 	        
 	        if(!$this->_section_page){
 	            
-	            $page = $this->getParentPage($draft_mode);
+	            $page = $this->getParentPage();
 	            
 	            $limit = self::HIERARCHY_DEPTH_LIMIT;
 	            
@@ -1789,7 +1869,7 @@ class SmartestPage extends SmartestDataObject{
 	                    $section_page = $page;
 	                    break;
 	                }else{
-	                    $page = $page->getParentPage($draft_mode);
+	                    $page = $page->getParentPage();
 	                }
 	                
 	                $limit--;
@@ -1837,7 +1917,7 @@ class SmartestPage extends SmartestDataObject{
         return $this->_properties['title'];
     }
 	
-	public function getFormattedTitle($draft_mode=false){
+	public function getFormattedTitle(){
 		
 		$t = $this->getTitle();
 		
@@ -1849,7 +1929,7 @@ class SmartestPage extends SmartestDataObject{
 		
 		if(SmartestStringHelper::isFalse($this->getIsSection())){
 		    
-		    $section_page = $this->getSectionPage($draft_mode);
+		    $section_page = $this->getSectionPage();
 		    
 		    if($section_page->isHomePage()){
 		        $title = preg_replace(SmartestStringHelper::toRegularExpression($separator.' $section', true), '', $title);

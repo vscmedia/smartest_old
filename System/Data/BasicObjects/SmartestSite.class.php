@@ -17,7 +17,7 @@ class SmartestSite extends SmartestDataObject{
 		
 	}
 	
-	public function getHomePage(){
+	public function getHomePage($draft_mode=false){
 	    
 	    // $this->setTopPageId(29);
 	    // $this->save();
@@ -27,6 +27,7 @@ class SmartestSite extends SmartestDataObject{
 	    // if(!$this->_home_page){
 	        $page = new SmartestPage;
 	        $page->hydrate($this->getTopPageId());
+	        $page->setDraftMode($draft_mode);
 	        $this->_home_page = $page;
 	    // }
 	    
@@ -49,6 +50,8 @@ class SmartestSite extends SmartestDataObject{
 		}else{
 		
 			$home_page = $this->getHomePage();
+		    
+		    $home_page->setDraftMode($draft_mode);
 		    
 		    // print_r($home_page);
 		    
