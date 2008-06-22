@@ -227,6 +227,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         $render_data['height'] = $asset->getHeight();
                     }
                     
+                    // var_dump($this->getDraftMode());
+                    
                     if($this->getDraftMode()){
                         $rd = $placeholder->getDraftRenderData();
                     }else{

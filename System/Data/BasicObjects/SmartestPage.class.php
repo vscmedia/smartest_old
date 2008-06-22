@@ -476,12 +476,12 @@ class SmartestPage extends SmartestDataObject{
 		    
 		    // var_dump($child_page_record);
 		    
-		    $child->hydrate($child_page_record);
+		    // $child->hydrate($child_page_record);
 			
-			$working_array[$index]["info"] = $child->__toArray(false);
+			$working_array[$index]["info"] = $child;
 			$working_array[$index]["treeLevel"] = $int_level;
 			$new_level = $int_level + 1; 
-			$working_array[$index]["children"] = $child->getPagesSubTree($new_level, $get_items);
+			$working_array[$index]["children"] = $child->getPagesSubTree($new_level, false);
 			
 			/* if($child->getType() == "ITEMCLASS" && $get_items){
 			    $set = $child->getDataSet();
@@ -745,6 +745,7 @@ class SmartestPage extends SmartestDataObject{
 	        foreach($result as $page_record){
 	            $child_page = new SmartestPage;
 	            $child_page->hydrate($page_record);
+	            $child_page->setDraftMode($this->getDraftMode());
 	            $this->_child_pages[$i] = $child_page;
 	            $i++;
 	        }

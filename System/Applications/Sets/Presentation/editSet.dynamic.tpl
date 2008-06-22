@@ -29,8 +29,7 @@ function updateSetConditionsFormFromOperator(condition, value){
 
 <div id="work-area">
 
-<h3><a href="{$domain}datamanager">Data Manager</a> &gt; <a href="{$domain}smartest/sets">Data Sets</a> &gt; Conditions</h3>
-<a name="top"></a>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/sets">Sets</a> &gt; {$set.name}</h3>
 
 <div class="instruction">Create conditions to filter your data into a pre-saved set that can be used anywhere.</div>
 
@@ -62,6 +61,8 @@ function updateSetConditionsFormFromOperator(condition, value){
         <td style="width:180px">Sort By Property:</td>
         <td>
           <select name="set_sort_field">
+            <option value="_SMARTEST_ITEM_NAME" {if $set.sort_field == '_SMARTEST_ITEM_NAME'} selected="selected"{/if}>Name</option>
+            <option value="_SMARTEST_ITEM_ID" {if $set.sort_field == '_SMARTEST_ITEM_ID'} selected="selected"{/if}>ID</option>
 				    {foreach from=$properties item="property"}
 				    <option value="{$property.id}" {if $property.id == $set.sort_field} selected="selected"{/if}>{$property.name}</option>
             {/foreach}

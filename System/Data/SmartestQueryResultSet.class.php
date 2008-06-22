@@ -66,7 +66,7 @@ class SmartestQueryResultSet{
 		
     		}else if($field == SmartestCmsItem::NAME){
 		    
-    		    $sql .= "Items.name_id ";
+    		    $sql .= "Items.item_name ";
     		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_name ";
 		
     		}else{

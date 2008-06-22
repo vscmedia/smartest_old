@@ -1,7 +1,6 @@
 <div id="work-area">
 
-<h3><a href="{$domain}datamanager">Data Manager</a> &gt; <a href="{$domain}{$section}">Sets</a> &gt; {$set.name} </h3>
-<a name="top"></a>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/sets">Sets</a> &gt; <a href="{$domain}sets/editSet?set_id={$set.id}">{$set.name}</a> &gt; Preview</h3>
 
 <div class="instruction">Items in this set:</div>
 

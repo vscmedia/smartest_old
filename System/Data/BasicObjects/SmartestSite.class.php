@@ -53,12 +53,10 @@ class SmartestSite extends SmartestDataObject{
 		    
 		    $home_page->setDraftMode($draft_mode);
 		    
-		    // print_r($home_page);
-		    
-	        $tree = array();
+		    $tree = array();
 			$tree[0]["info"] = $home_page->__toArray();
 			$tree[0]["treeLevel"] = 0;
-			$tree[0]["children"] = $home_page->getPagesSubTree(1, $draft_mode, $get_items);
+			$tree[0]["children"] = $home_page->getPagesSubTree(1, $get_items);
 			
 			// if($get_items){
 			$tree[0]["child_items"] = array();
@@ -67,8 +65,6 @@ class SmartestSite extends SmartestDataObject{
 			SmartestCache::save('site_pages_tree_'.$this->getId().$items_suffix, $tree, -1, true);
 		
 		}
-		
-		// print_r($tree);
 		
 		return $tree;
 	    

@@ -710,19 +710,10 @@ class Pages extends SmartestSystemApplication{
 		    
 		        $this->setFormReturnUri();
 
-		        // $sql = "SELECT * FROM Sites";
-		        // $result = $this->database->queryToArray($sql);
-		        // $site = $result[0];
 		        $site_id = $this->getSite()->getId();
 		        
 		        $pagesTree = $this->getSite()->getPagesTree(true);
 		        
-		        // print_r($pagesTree);
-		        
-		        // $this->getSite();
-		        
-		        // print_r($this->getSite());
-		
 		        if($get['refresh'] == 1){
 		            SmartestCache::clear('site_pages_tree_'.$site_id, true);
 	            }

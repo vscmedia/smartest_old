@@ -109,18 +109,17 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                     // if($this->_page->hydrateBy($lookup['key'], $lookup['value'])){
                     if(count($result)){
                         $this->_page->hydrate($result[0]);
-                        
+                        // var_dump($this->_page->getId());
+                        $this->_item = new SmartestItem;
                         if($item_lookup = $this->parseLinkIdentifier($item_identifier)){
 
-                            $this->_item = new SmartestItem;
-                            
                             if($item_lookup['key'] == 'name'){
                                 $key = 'slug';
                             }else{
                                 $key = $item_lookup['key'];
                             }
                             
-                            if($this->_item->hydrateBy($key, $item_lookup['value'])){
+                            if($this->_item->hydrateBy($key, $item_lookup['value'], $this->_page->getSiteId())){
                                 // success!
                             }else{
                                 $this->_error_message = 'Item not found';

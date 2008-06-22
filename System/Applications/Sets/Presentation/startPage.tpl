@@ -1,6 +1,6 @@
 <div id="work-area">
 
-<h3><a href="{$domain}smartest/data">Data Manager</a> &gt; Data Sets</h3>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; Sets</h3>
 
 <div class="instruction">Use Data Sets to organize your data into smaller groups.</div>
 
