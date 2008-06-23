@@ -988,19 +988,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         $def = $this->getPage()->getItemSpaceDefinition($params['itemspace'], $this->getDraftMode());
                         $object = $def->getItem(false, $this->getDraftMode());
                         
-                        // print_r($def);
-                        
-                        // var_dump($object);
-                        
                         if(is_object($object)){
                             
-                            // $simple_object = $object->getItem();
-                            // print_r($object);
-                            
-			    // print_r($object->getModel()->getPropertyVarNames());
-			                
-			    
-			    
                             if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
 
                                 $lookup = $object->getModel()->getPropertyVarNamesLookup();
@@ -1017,13 +1006,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                                         $value = $property->getData()->getContent();
                                     }
 				                    
-				                    // print_r($property->getData()->getInfo($this->getDraftMode()));
-				                    
-				    // var_dump($value);
-				    // var_dump($this->getDraftMode());
-
-                                    // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
-                                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+				                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
                                         
                                         foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
                                             $params[$key] = $param_value;
@@ -1072,6 +1055,71 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }else{
                     return $this->raiseError("&lt;?sm:property:&gt; tag must have itemspace=\"\" attribute when used in itemspace context.");
                 }
+            
+            // for rendering the properties of an item in a list
+            }else if(isset($params['context']) && ($params['context'] == 'other') && isset($params['item'])){
+                
+                $requested_property_name = $params["name"];
+                                        
+                $object = $params['item'];
+                        
+                if(is_object($object)){
+                            
+                    if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
+
+                        $lookup = $object->getModel()->getPropertyVarNamesLookup();
+                        $property = $object->getPropertyByNumericKey($lookup[$requested_property_name]);
+                        $property_type_info = $property->getTypeInfo();
+                        
+                        $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
+
+                        if(is_file($render_template)){
+
+                            if($this->getDraftMode()){
+                                $value = $property->getData()->getDraftContent();
+                            }else{
+                                $value = $property->getData()->getContent();
+                            }
+		                    
+		                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                                
+                                foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
+                                    $params[$key] = $param_value;
+                                }
+                                
+                                if(SmartestStringHelper::toRealBool($value)){
+                                    return $this->renderAssetById($value, $params, $path);
+                                }
+                                
+                            }else{
+                                $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
+                            }
+
+                        }else{
+                            return $this->raiseError("Render template '".$render_template."' is missing.");
+                        }
+                        
+                    }else if(in_array($requested_property_name, array_keys($object->__toArray(true)))){
+                        
+                        $array = $object->__toArray(true);
+                        return $array[$requested_property_name];
+                        
+                    }else{
+                        
+                        return $this->raiseError("Unknown Property: ".$requested_property_name);
+                        
+                    }
+                    
+                }else{
+                    
+                    // $object is not an object
+                    if($this->getDraftMode()){
+                        echo "Item is not an object.";
+                        print_r($object);
+                    }
+                    
+                }
+
             
             // for rendering the properties of an item in a list
             }else if(isset($params['context']) && ($params['context'] == 'repeat' || $params['context'] == 'list')){

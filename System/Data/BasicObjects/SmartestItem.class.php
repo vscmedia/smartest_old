@@ -43,6 +43,52 @@ class SmartestItem extends SmartestDataObject{
 	    return $array;
 	}
 	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        
+	        case "title":
+	        return $this->getName();
+	        break;
+	        
+	        case "url":
+	        return $this->getUrl();
+	        break;
+	        
+	        case "link_contents":
+	        
+	        if($this->getMetapageId()){
+    	        
+    	        return 'metapage:'.$this->getMetapageId().':id='.$this->getId();
+                
+    	    }
+            
+	        break;
+	        
+	        case "model":
+	        return $this->getModel();
+	        break;
+	        
+	        case "tags":
+	        return $this->getTags();
+	        break;
+	        
+	        case "authors":
+	        return $this->getAuthors();
+	        break;
+	        
+	    }
+	    
+	    return parent::offsetGet($offset);
+	    
+	}
+	
+	public function offsetExists($offset){
+	    
+	    return parent::offsetExists($offset) || in_array($offset, array('title', 'url', 'link_contents', 'model', 'tags', 'authors'));
+	    
+	}
+	
 	public function getParentItemForMetaPage($metapage_id){
 	    return SmartestSystemSettingHelper::load('item_parent_metapage_'.$metapage_id.'_'.$this->_properties['id'].'_site_'.$this->getCurrentSiteId());
 	}
@@ -239,6 +285,20 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function getRelatedItems($draft_mode=false){
 	    
+	    $ids_array = $this->getRelatedItemIds($draft_mode);
+	    
+	    $ds = new SmartestQueryResultSet($this->getModel()->getId(), $this->getModel()->getClassName(), $draft_mode);
+    
+        foreach($ids_array as $item_id){
+	        $ds->insertItemId($item_id);
+	    }
+    
+        return $ds->getItems();
+	    
+	}
+	
+	public function getRelatedSimpleItems($draft_mode=false){
+	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
 	    $q->setCentralNodeId($this->_properties['id']);
 	    $q->addSortField('Items.item_created');
@@ -255,7 +315,7 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function getRelatedItemsAsArrays($draft_mode=false){
 	    
-	    $items = $this->getRelatedItems($draft_mode);
+	    $items = $this->getRelatedSimpleItems($draft_mode);
 	    $arrays = array();
 	    
 	    foreach($items as $i){
@@ -268,7 +328,7 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function getRelatedItemIds($draft_mode=false){
 	    
-	    $items = $this->getRelatedItems($draft_mode);
+	    $items = $this->getRelatedSimpleItems($draft_mode);
 	    $ids = array();
 	    
 	    foreach($items as $i){
@@ -279,7 +339,7 @@ class SmartestItem extends SmartestDataObject{
 	    
 	}
 	
-	public function getRelatedForeignItems($draft_mode=false, $model_id=''){
+	public function getRelatedForeignSimpleItems($draft_mode=false, $model_id=''){
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
 	    $q->setCentralNodeId($this->_properties['id']);
@@ -299,9 +359,31 @@ class SmartestItem extends SmartestDataObject{
 	    
 	}
 	
+	public function getRelatedForeignItems($draft_mode=false, $model_id=''){
+	    
+	    $ids_array = $this->getRelatedForeignItemIds($model_id);
+	    
+	    $model = new SmartestModel;
+	    
+	    if($model->hydrate($model_id)){
+	    
+	        $ds = new SmartestQueryResultSet($model->getId(), $model->getClassName(), $this->getDraftMode());
+	    
+	        foreach($ids_array as $item_id){
+		        $ds->insertItemId($item_id);
+		    }
+	    
+	        return $ds->getItems();
+	    
+        }else{
+            return array();
+        }
+	    
+	}
+	
 	public function getRelatedForeignItemsAsArrays($draft_mode=false, $model_id=''){
 	    
-	    $items = $this->getRelatedForeignItems($draft_mode, $model_id);
+	    $items = $this->getRelatedForeignSimpleItems($draft_mode, $model_id);
 	    $arrays = array();
 	    
 	    foreach($items as $i){
@@ -314,7 +396,7 @@ class SmartestItem extends SmartestDataObject{
 	
 	public function getRelatedForeignItemIds($draft_mode=false, $model_id=''){
 	    
-	    $items = $this->getRelatedForeignItems($draft_mode, $model_id);
+	    $items = $this->getRelatedForeignSimpleItems($draft_mode, $model_id);
 	    $ids = array();
 	    
 	    foreach($items as $i){

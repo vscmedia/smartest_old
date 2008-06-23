@@ -135,7 +135,7 @@ class Pages extends SmartestSystemApplication{
 	                }
 	                
                 }else{
-                    //  the page
+                    //  the page is being edited by another user
                     $this->addUserMessageToNextRequest("You can't release this page because another user is editing it.", SmartestUserMessage::WARNING);
                 }
             }else{
@@ -225,7 +225,18 @@ class Pages extends SmartestSystemApplication{
 		
 		$page_webid = $get['page_id'];
 		
-    	$page = new SmartestPage;
+		$helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+		
+		if(isset($type_index[$page_webid])){
+		    if($type_index[$page_webid] == 'ITEMCLASS' && isset($get['item_id']) && is_numeric($get['item_id'])){
+		        $page = new SmartestItemPage;
+		    }else{
+		        $page = new SmartestPage;
+		    }
+		}else{
+		    $page = new SmartestPage;
+		}
     	
     	if($page->hydrate($page_webid)){
     	    
@@ -241,7 +252,7 @@ class Pages extends SmartestSystemApplication{
                     $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
                     $this->send($items, 'items');
                     $this->send($model->__toArray(), 'model');
-                    $this->send($page->__toArray(), 'page');
+                    $this->send($page, 'page');
                     $this->send(true, 'require_item_select');
                     $this->send('Please choose an item to continue editing.', 'chooser_message');
                     $this->send('websitemanager/editPage', 'continue_action');
@@ -249,9 +260,15 @@ class Pages extends SmartestSystemApplication{
             
             }else{
     	        
-    	        $this->send(false, 'require_item_select');
+    	        if($page->getType() == 'ITEMCLASS'){
+    	            if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+    	                $page->setPrincipalItem($item);
+    	            }
+    	            // print_r($item);
+	            }
     	        
-    	        $editorContent = $page->__toArray();
+    	        $this->send(false, 'require_item_select');
+    	        $editorContent = $page;
     		
             	if($this->getUser()->hasToken('modify_page_properties')){
 		
@@ -1165,9 +1182,22 @@ class Pages extends SmartestSystemApplication{
 	    
 	    if($this->getUser()->hasToken('modify_draft_pages')){
 	        
-	        $page = new SmartestPage;
+	        $page_webid = $get['page_id'];
+	        
+	        $helper = new SmartestPageManagementHelper;
+    		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+
+    		if(isset($type_index[$page_webid])){
+    		    if($type_index[$page_webid] == 'ITEMCLASS' && isset($get['item_id']) && is_numeric($get['item_id'])){
+    		        $page = new SmartestItemPage;
+    		    }else{
+    		        $page = new SmartestPage;
+    		    }
+    		}else{
+    		    $page = new SmartestPage;
+    		}
     		
-    		if($page->hydrate($get['page_id'])){
+    		if($page->hydrate($page_webid)){
 	        
 	            if($page->getType() == 'ITEMCLASS' && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
 	            
@@ -1180,7 +1210,7 @@ class Pages extends SmartestSystemApplication{
                         $this->send('Please choose an item to edit the elements on this page.', 'chooser_message');
                         $this->send('websitemanager/pageAssets', 'continue_action');
                         $this->send(true, 'allow_edit');
-                        $this->send($page->__toArray(), 'page');
+                        $this->send($page, 'page');
                     }else{
                         $this->send(array(), 'items');
                     }
@@ -1191,22 +1221,30 @@ class Pages extends SmartestSystemApplication{
 	                
 	                $this->send(false, 'require_item_select');
 	                
+	                if($page->getType() == 'ITEMCLASS'){
+        	            if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+        	                $page->setPrincipalItem($item);
+        	            }
+    	            }
+	                
     		        $this->setFormReturnUri();
 		
-            		$definedAssets = $this->manager->getDefinedPageAssetsList($get['page_id']);
+            		// $definedAssets = $this->manager->getDefinedPageAssetsList($get['page_id']);
             		$version = (!empty($get['version']) && $get['version'] == "live") ? "live" : "draft";
             		$field = ($version == "live") ? "page_live_template" : "page_draft_template";
-		    
-        		    $assetClasses = $this->manager->getPageTemplateAssetClasses($get['page_id'], $version);
-            		// $page = $this->manager->getPage($get['page_id']);
+		            
+		            if($page->getType() == 'ITEMCLASS'){
+        		        $assetClasses = $this->manager->getPageTemplateAssetClasses($get['page_id'], $version, $item->getId());
+    		        }else{
+    		            $assetClasses = $this->manager->getPageTemplateAssetClasses($get['page_id'], $version);
+    		        }
+            		
             		$site_id = $this->database->specificQuery("page_site_id", "page_webid", $get['page_id'], "Pages");
             		$templates = $this->manager->getMasterTemplates($site_id);
 		
             		$this->setTitle("Page Elements");
     		
-    		
-    		
-            		if($version == 'live'){
+    		        if($version == 'live'){
             		    $template_name = $page->getLiveTemplate();
             		}else{
             		    $template_name = $page->getDraftTemplate();
@@ -1227,7 +1265,7 @@ class Pages extends SmartestSystemApplication{
 		
             		$this->send($assetClasses["tree"], "assets");
             		$this->send($definedAssets, "definedAssets");
-            		$this->send($page->__toArray(), "page");
+            		$this->send($page, "page");
             		$this->send($templates, "templates");
             		$this->send($template_name, "templateMenuField");
             		$this->send($site_id, "site_id");

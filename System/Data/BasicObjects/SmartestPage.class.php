@@ -977,7 +977,7 @@ class SmartestPage extends SmartestDataObject{
 	    if($this instanceof SmartestItemPage){
 	        if($this->getPrincipalItem()){
 	            
-	            $data['principal_item'] = $this->getPrincipalItem()->__toArray();
+	            $data['principal_item'] = $this->getPrincipalItem();
 	            
 	            // $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
 	            // $data['data_set'] = $this->getDataSet()->__toArray();
@@ -1003,10 +1003,10 @@ class SmartestPage extends SmartestDataObject{
 	    }
 	    
 	    $du = new SmartestDataUtility;
-	    $tags = $du->getTagsAsArrays();
+	    $tags = $du->getTags();
 	    $data['all_tags'] = $tags;
 	    
-	    $data['authors'] = $this->getAuthorsAsArrays();
+	    $data['authors'] = $this->getAuthors();
 	    
 	    $data['fields'] = $this->getPageFieldValuesAsAssociativeArray();
 	    $data['navigation'] = $this->getNavigationStructure();
@@ -1384,7 +1384,29 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getRelatedItems($model_id=''){
+	public function getRelatedItems($model_id){
+	    
+	    $ids_array = $this->getRelatedItemIds($model_id);
+	    
+	    $model = new SmartestModel;
+	    
+	    if($model->hydrate($model_id)){
+	    
+	        $ds = new SmartestQueryResultSet($model->getId(), $model->getClassName(), $this->getDraftMode());
+	    
+	        foreach($ids_array as $item_id){
+		        $ds->insertItemId($item_id);
+		    }
+	    
+	        return $ds->getItems();
+	    
+        }else{
+            return array();
+        }
+	    
+	}
+	
+	public function getRelatedSimpleItems($model_id=''){
 	    
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PAGES_ITEMS');
 	    $q->setTargetEntityByIndex(1);
@@ -1404,23 +1426,13 @@ class SmartestPage extends SmartestDataObject{
 	    
 	    $result = $q->retrieve();
 	    
-	    /* if($this->getDraftMode()){
-	        print_r($result);
-	    } */
-	    
-	    /* $big_objects = array();
-	    
-	    foreach($result as $i){
-	        $big_objects[] = SmartestCmsItem::retrieveByPk($i->getId());
-	    } */
-	    
 	    return $result;
 	    
 	}
 	
 	public function getRelatedItemsAsArrays($model_id=''){
 	    
-	    $items = $this->getRelatedItems($model_id);
+	    $items = $this->getRelatedSimpleItems($model_id);
 	    $arrays = array();
 	    
 	    foreach($items as $i){
@@ -1433,7 +1445,7 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function getRelatedItemIds($model_id=''){
 	    
-	    $items = $this->getRelatedItems($model_id);
+	    $items = $this->getRelatedSimpleItems($model_id);
 	    $ids = array();
 	    
 	    foreach($items as $i){
@@ -1718,10 +1730,10 @@ class SmartestPage extends SmartestDataObject{
     
         foreach($models as $m){
             $key = SmartestStringHelper::toVarName($m->getPluralName());
-            $content[$key] = $this->getRelatedItemsAsArrays($m->getId());
+            $content[$key] = $this->getRelatedItems($m->getId());
         }
         
-        $content['pages'] = $this->getRelatedPagesAsArrays();
+        $content['pages'] = $this->getRelatedPages();
         
         return $content;
         

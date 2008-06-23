@@ -56,12 +56,13 @@ class SmartestPageManagementHelper extends SmartestHelper{
 	
 	public function getPageTypesIndex($site_id){
 	    
-	    $sql = "SELECT page_id, page_type FROM Pages WHERE page_site_id = '".$site_id."' AND page_deleted!='TRUE'";
+	    $sql = "SELECT page_id, page_webid, page_type FROM Pages WHERE page_site_id = '".$site_id."' AND page_deleted!='TRUE'";
 	    $result = $this->database->queryToArray($sql);
 	    $index = array();
 	    
 	    foreach($result as $row){
 	        $index[$row['page_id']] = $row['page_type'];
+	        $index[$row['page_webid']] = $row['page_type'];
 	    }
 	    
 	    return $index;

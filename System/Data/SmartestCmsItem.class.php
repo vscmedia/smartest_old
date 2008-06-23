@@ -60,6 +60,13 @@ class SmartestCmsItem implements ArrayAccess{
 	protected $_properties_varnames_lookup = array();
 	
 	/** 
+	* A mapping of the varnames of the properties to the ids of the properties, for speed.
+	* @access protected
+	* @var array
+	*/
+	protected $_varnames_lookup = array();
+	
+	/** 
 	* Description
 	* @access protected
 	* @var array
@@ -160,6 +167,10 @@ class SmartestCmsItem implements ArrayAccess{
 			    $this->_properties_varnames_lookup[SmartestStringHelper::toCamelCase($raw_property['itemproperty_name'])] = $raw_property['itemproperty_varname'];
 		    }
 		    
+		    foreach($result as $key => $raw_property){
+			    $this->_varnames_lookup[$raw_property['itemproperty_varname']] = $raw_property['itemproperty_id'];
+		    }
+		    
 		    $this->_lookups_built = true;
 		
 	    }
@@ -178,18 +189,63 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function offsetExists($offset){
 	    
+	    return ($this->_item->offsetExists($offset) || isset($this->_varnames_lookup[$offset]) || in_array($offset, array('_workflow_status', '_model', '_properties')));
+	    
 	}
 	
 	public function offsetGet($offset){
 	    
+	    if($this->_item->offsetExists($offset)){
+	        
+	        return $this->_item->offsetGet($offset);
+	        
+	    }else if(isset($this->_varnames_lookup[$offset])){
+	        
+	        return $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset]);
+	        
+	    }else{
+	        
+	        switch($offset){
+	            
+	            case "_workflow_status":
+	            
+	            switch($this->getWorkflowStatus()){
+            	    
+            	    case self::NOT_CHANGED:
+            	    return 'Not changed';
+            	    break;
+            	    
+            	    case self::CHANGES_APPROVED:
+            	    return 'Approved and ready for publishing';
+            	    break;
+            	    
+            	    default:
+            	    return 'Awaiting approval';
+            	    break;
+            	}
+            	
+	            break;
+	            
+	            case '_model':
+	            $this->getModel();
+	            break;
+	            
+	            case '_properties':
+	            $this->getProperties();
+	            break;
+	            
+	        }
+	        
+	    }
+	    
 	}
 	
 	public function offsetSet($offset, $value){
-	    
+	    // read only
 	}
 	
 	public function offsetUnset($offset){
-	    
+	    // read only
 	}
 	
 	public function getCacheFiles(){
@@ -687,6 +743,18 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function getPropertyValueByNumericKey($key, $draft=false){
 	    if(array_key_exists($key, $this->_properties)){
+	        if($draft){
+	            return $this->_properties[$key]->getData()->getDraftContent();
+            }else{
+                return $this->_properties[$key]->getData()->getContent();
+            }
+	    }else{
+	        return null;
+	    }
+	}
+	
+	public function getPropertyValueByVarName($varname, $draft=false){
+	    if(isset($varname, $this->_properties)){
 	        if($draft){
 	            return $this->_properties[$key]->getData()->getDraftContent();
             }else{

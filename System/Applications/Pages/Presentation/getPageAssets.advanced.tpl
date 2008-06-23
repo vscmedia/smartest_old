@@ -1,4 +1,4 @@
-<h3>Elements used on page: {$page.title}</h3>
+<h3>Elements used on page: {$page.static_title}{if $page.type == 'ITEMCLASS'} ({$page.title}){/if}</h3>
 
 <div class="instruction">Double click a placeholder to set its content, or choose from the options on the right.</div>
 

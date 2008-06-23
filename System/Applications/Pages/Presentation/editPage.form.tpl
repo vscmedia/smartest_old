@@ -1,4 +1,4 @@
-<h3 id="pageName">Page Details: {$pageInfo.title}</h3>
+<h3 id="pageName">Page Details: {$pageInfo.static_title}</h3>
 
 <form id="getForm" method="get" action="">
   <input type="hidden" name="page_id" value="{$pageInfo.id}">
@@ -34,7 +34,7 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">Title</div>
-    	<input type="text" name="page_title" value="{$pageInfo.title}" style="width:200px" />
+    	<input type="text" name="page_title" value="{$pageInfo.static_title}" style="width:200px" />
     	{if !$pageInfo.title}<div>You must have a title! </div>{/if}
   </div>
   
@@ -66,11 +66,13 @@
     	{/if}</div>
   </div>
   
+  {if $pageInfo.type == "NORMAL"}
   <div class="edit-form-row">
     <div class="form-section-label">Section</div>
     <input type="checkbox" name="page_is_section" id="page_is_section" value="true"{if $pageInfo.is_section=='1'} checked="checked"{/if} />
     <label for="page_is_section">{if $pageInfo.is_section=='1'}Un-tick this box to make this page no longer a section{else}Tick this box to make this page a section{/if}</label>
   </div>
+  {/if}
   
   <div class="edit-form-row">
     <div class="form-section-label">Cache as Static HTML</div>

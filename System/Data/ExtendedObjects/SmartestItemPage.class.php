@@ -163,7 +163,7 @@ class SmartestItemPage extends SmartestPage{
         }
     }
     
-    public function getRelatedContentForRender($draft_mode=false){
+    public function getRelatedContentForRender(){
 	    
 	    $content = array();
 	    
@@ -174,13 +174,15 @@ class SmartestItemPage extends SmartestPage{
             $key = SmartestStringHelper::toVarName($m->getPluralName());
             
             if($m->getId() == $this->_simple_item->getModelId()){
-                $content[$key] = $this->_simple_item->getRelatedItemsAsArrays($draft_mode);
+                $content[$key] = $this->_simple_item->getRelatedItems($this->getDraftMode());
             }else{
-                $content[$key] = $this->_simple_item->getRelatedForeignItemsAsArrays($draft_mode, $m->getId());
+                $content[$key] = $this->_simple_item->getRelatedForeignItems($this->getDraftMode(), $m->getId());
             }
         }
         
-        $content['pages'] = $this->_simple_item->getRelatedPagesAsArrays($draft_mode);
+        // print_r($models);
+        
+        $content['pages'] = $this->_simple_item->getRelatedPages($this->getDraftMode());
         
         return $content;
         
