@@ -59,7 +59,7 @@ class SmartestItem extends SmartestDataObject{
 	        
 	        if($this->getMetapageId()){
     	        
-    	        return 'metapage:'.$this->getMetapageId().':id='.$this->getId();
+    	        return 'metapage:id='.$this->getMetapageId().':id='.$this->getId();
                 
     	    }
             
