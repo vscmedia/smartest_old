@@ -83,6 +83,7 @@ class SmartestCmsItem implements ArrayAccess{
 	protected $_model_built = false;
 	protected $_lookups_built = false;
 	protected $_save_errors = array();
+	protected $_draft_mode = false;
 	
 	/** 
 	* Description
@@ -185,6 +186,14 @@ class SmartestCmsItem implements ArrayAccess{
 		if ((strtolower(substr($name, 0, 3)) == 'set') && count($args)) {
 			return $this->setField(substr($name, 3), $args[0]);
 		}
+	}
+	
+	public function setDraftMode($mode){
+	    $this->_draft_mode = (bool) $mode;
+	}
+	
+	public function getDraftMode(){
+	    return $this->_draft_mode;
 	}
 	
 	public function offsetExists($offset){
@@ -743,7 +752,7 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function getPropertyValueByNumericKey($key, $draft=false){
 	    if(array_key_exists($key, $this->_properties)){
-	        if($draft){
+	        if($this->getDraftMode()){
 	            return $this->_properties[$key]->getData()->getDraftContent();
             }else{
                 return $this->_properties[$key]->getData()->getContent();
@@ -755,7 +764,7 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function getPropertyValueByVarName($varname, $draft=false){
 	    if(isset($varname, $this->_properties)){
-	        if($draft){
+	        if($this->getDraftMode()){
 	            return $this->_properties[$key]->getData()->getDraftContent();
             }else{
                 return $this->_properties[$key]->getData()->getContent();

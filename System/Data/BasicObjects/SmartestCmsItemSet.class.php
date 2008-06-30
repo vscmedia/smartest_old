@@ -210,7 +210,7 @@ class SmartestCmsItemSet extends SmartestDataObject{
     	                $result->sort($this->getSortField(), $this->getSortDirection());
     	            }
 	            
-    	            $this->_set_members = $result->getItems($limit);
+    	            $this->_set_members = $result->getItems($limit, $draft);
 	            
     	            foreach($this->_set_members as $item){
 	                

@@ -63,6 +63,9 @@ class CmsFrontEndManager{
 	    if(count($page) > 0){
 			// print_r($page[0]);
 			$pageObj->hydrate($page[0]);
+			if($draft_mode){
+			    $pageObj->setDraftMode(true);
+			}
 			return $pageObj;
 		}else{
 			return null;
@@ -88,6 +91,10 @@ class CmsFrontEndManager{
 			// print_r($result[0]);
 			$page = new SmartestItemPage;
 			$page->hydrate($result[0]);
+			
+			if($draft_mode){
+			    $page->setDraftMode(true);
+			}
 			
 			if(is_numeric($item_id)){
 			    $page->setIdentifyingFieldName("id");

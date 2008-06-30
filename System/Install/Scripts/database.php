@@ -4,6 +4,7 @@
 define('SM_ROOT_DIR', getcwd().DIRECTORY_SEPARATOR);
 define('SM_DEVELOPER_MODE', true);
 
+require SM_ROOT_DIR."System/Base/SmartestException.class.php";
 require SM_ROOT_DIR."System/Data/SmartestDataAccessClass.interface.php";
 require SM_ROOT_DIR."System/Data/SmartestMysql.class.php";
 require SM_ROOT_DIR."System/Data/SmartestCache.class.php";
@@ -49,7 +50,7 @@ function getSmartestDetailsFromUser(){
     
     $smartest_fullname = '';
     
-    while(strlen(SmartestStringHelper::toVarName($smartest_firstname)) < 4){
+    while(strlen(SmartestStringHelper::toVarName($smartest_firstname)) < 3){
         fwrite(STDOUT, "Please enter your FIRST NAME:\n");
         $smartest_firstname = trim(fread(STDIN, 1024));
     }
@@ -123,7 +124,13 @@ if(!file_exists(SM_ROOT_DIR."Configuration/database.ini")){
         $queries = explode(';', $schema);
         
         foreach($queries as $query){
-            $database->rawQuery(trim($query).';');
+            if(strlen(trim($query))){
+                try{
+                    $database->rawQuery(trim($query).';');
+                }catch (SmartestException $e) {
+                    continue;
+                }
+            }
         }
         
         fwrite(STDOUT, "* Table structure complete. Now what about you?\n");
@@ -148,7 +155,13 @@ if(!file_exists(SM_ROOT_DIR."Configuration/database.ini")){
         $queries = explode(';', $setup);
         
         foreach($queries as $query){
-            $database->rawQuery(trim($query).';');
+            if(strlen(trim($query))){
+                try{
+                    $database->rawQuery(trim($query).';');
+                }catch (SmartestException $e) {
+                    continue;
+                }
+            }
         }
         
         $log_info = $database->getDebugInfo();

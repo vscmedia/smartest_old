@@ -54,6 +54,7 @@ class SmartestItemPage extends SmartestPage{
         // if($item = $this->getDataSet()->getItem($this->getIdentifyingFieldName(), $this->getIdentifyingFieldValue())){
         if($item = SmartestCmsItem::retrieveByPk($this->_simple_item->getId())){
             $this->_principal_item = $item;
+            $this->_principal_item->setDraftMode($this->getDraftMode());
             // print_r($this->_principal_item);
         }else{
             return false;
@@ -117,8 +118,10 @@ class SmartestItemPage extends SmartestPage{
             }else{
                 
                 $sql = "SELECT * FROM Items WHERE item_".$this->_identifying_field_name."='".$this->_identifying_field_value."'";
-            
-                if(!$draft_mode){
+                
+                // var_dump($this->getDraftMode());
+                
+                if(!$this->getDraftMode()){
                     $sql .= " AND item_public='TRUE'";
                 }
             

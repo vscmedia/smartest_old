@@ -31,11 +31,11 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	$repeat = !empty($item);
 
 	if($item){
-		$properties = $item->__toArray();
+		// $properties = $item->__toArray();
 		
 		// $properties["_name"] = $item["item_name"];
 		// $properties["_id"] = $item["item_id"];
-		$smartest_engine->assign("repeated_item", $properties);
+		$smartest_engine->assign("repeated_item", $item);
 		$smartest_engine->_set_items_res[] = &$items;
 		$smartest_engine->_set_items_index[] = &$index;
 		

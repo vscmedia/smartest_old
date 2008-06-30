@@ -208,7 +208,7 @@ class SmartestQuery{
 		return $new_array;
 	}
 	
-	private function createDataSet($conditions, $draft){
+	private function createDataSet($conditions, $set_item_draft_mode){
 		
 		$ids_array = array();
 		
@@ -220,36 +220,22 @@ class SmartestQuery{
 		
 		// var_dump($this->model->getId());
 		
-		$ds = new SmartestQueryResultSet($this->model->getId(), $this->model->getClassName(), $draft);
+		$ds = new SmartestQueryResultSet($this->model->getId(), $this->model->getClassName(), $set_item_draft_mode);
 		
 		if(count($this->conditions)){
 		    
 			$array_values = array_values($this->conditions);
 			
-			// print_r($array_values);
-			
 			$ids_array = $array_values[0]['ids'];
 			
 			for($i=1; $i < count($array_values); $i++){
 			    $new_ids_array = array_intersect($ids_array, $array_values[$i]['ids']);
-			    // 
 			    $ids_array = $new_ids_array;
 			}
 			
 			foreach($ids_array as $item_id){
 			    $ds->insertItemId($item_id);
 			}
-			
-			// print_r($ds);
-			
-			
-			// return $ds;
-			/* foreach($av[0]['ids'] as $item_id){
-			    // echo $class_name;
-				$item = new $class_name;
-				$item->hydrate($item_id);
-				$dataset->insert($item);
-			} */
 			
 		}else{
 			// no conditions specified - return all items of the model
@@ -276,9 +262,13 @@ class SmartestQuery{
 			
 			if(in_array($mode, array(0,1,2,6,7,8))){
 			    $value_field = 'itempropertyvalue_draft_content';
+			    $set_item_draft_mode = true;
 			}else{
 			    $value_field = 'itempropertyvalue_content';
+			    $set_item_draft_mode = false;
 			}
+			
+			$allow_draft_items = $mode < 6;
 			
 			if(count($this->conditions)){
 			
@@ -299,7 +289,7 @@ class SmartestQuery{
         				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
         				
         				if($tag->hydrateBy('name', $tag_name)){
-        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $draft, $this->model->getId());
+        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->model->getId());
         				    $sql .= "AND Items.item_id IN ('".implode("', '", $ids)."')";
         				}else{
         				    if(SM_DEVELOPER_MODE){
@@ -317,7 +307,7 @@ class SmartestQuery{
         				
         				if($tag->hydrateBy('name', $tag_name)){
         				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_id ";
-        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $draft, $this->model->getId());
+        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->model->getId());
         				    $sql .= "NOT IN ('".implode("', '", $ids)."')";
         				}else{
         				    if(SM_DEVELOPER_MODE){
@@ -395,7 +385,7 @@ class SmartestQuery{
 				
     			}
     		
-			    return $this->createDataSet($conditions, $draft);
+			    return $this->createDataSet($conditions, $set_item_draft_mode);
 			    
 			}else{
 			    

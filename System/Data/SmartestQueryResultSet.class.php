@@ -14,10 +14,10 @@ class SmartestQueryResultSet{
 	protected $_is_draft = false;
 	protected $database;
 	
-	public function __construct($model_id, $model_class, $draft=false){
+	public function __construct($model_id, $model_class, $set_item_draft_mode=false){
 		$this->_model_id = $model_id;
 		$this->_model_class = $model_class;
-		$this->_is_draft = $draft;
+		$this->_is_draft = $set_item_draft_mode;
 		$this->database = SmartestPersistentObject::get('db:main');
 	}
 	
@@ -177,7 +177,11 @@ class SmartestQueryResultSet{
 	            foreach($this->_item_ids as $id){
 	            
     	            $obj = new $this->_model_class;
-	            
+	                
+	                if($this->_is_draft){
+	                    $obj->setDraftMode(true);
+	                }
+	                
     	            if($obj->hydrate($id, $this->_is_draft)){
     	                $this->_items[] = $obj;
                     }
