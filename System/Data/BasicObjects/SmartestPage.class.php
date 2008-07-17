@@ -623,14 +623,14 @@ class SmartestPage extends SmartestDataObject{
 	    
 	}
 	
-	public function getParentPage(){
+	public function getParentPage($get_item_page=true){
 	    
-	    if(!$this->_parent_page){
+	    if(!$this->_parent_page || $get_item_page){
 	        
 	        $helper = new SmartestPageManagementHelper;
     		$type_index = $helper->getPageTypesIndex($this->getParentSite()->getId());
 	        
-	        if($type_index[$this->getParent()] == 'ITEMCLASS'){
+	        if($type_index[$this->getParent()] == 'ITEMCLASS' && $get_item_page){
                 
                 if($this instanceof SmartestItemPage){
                     
@@ -699,7 +699,11 @@ class SmartestPage extends SmartestDataObject{
 	        
 	        $parent->setDraftMode($this->getDraftMode());
 	        
-	        $this->_parent_page = $parent;
+	        // if($get_item_page || $parent->getType() != 'ITEMCLASS'){
+	            $this->_parent_page = $parent;
+	        // }
+	        
+	        return $this->_parent_page;
 	        
         }
         

@@ -315,17 +315,19 @@ class Pages extends SmartestSystemApplication{
                         
                         if($model->hydrate($page->getDatasetId())){
                             $editorContent['model_name'] = $model->getName();
-                        
-                            if($page->getParentPage() && $page->getParentPage()->getType() == 'ITEMCLASS'){
+                            
+                            // $type_index[$page_webid]
+                            
+                            if($page->getParent() && $type_index[$page->getParent()] == 'ITEMCLASS'){
                                 
-                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage()->getDatasetId(), (int) $get['item_id']);
+                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage(false)->getDatasetId(), (int) $get['item_id']);
                             
                                 // print_r($parent_indicator_properties);
                                 
                                 $this->send(true, 'show_parent_meta_page_property_control');
                                 $this->send($model->__toArray(), 'model');
                                 
-                                if($page->getParentPage()->getDatasetId() == $page->getDatasetId()){
+                                if($page->getParentPage(false)->getDatasetId() == $page->getDatasetId()){
                                     
                                     // parent metapage has same model as this one
                                     $parent_model = &$model;
@@ -336,7 +338,7 @@ class Pages extends SmartestSystemApplication{
                                     // quickly fetch parent meta-page's model
                                     $parent_model = new SmartestModel;
                                 
-                                    if($parent_model->hydrate($page->getParentPage()->getDatasetId())){
+                                    if($parent_model->hydrate($page->getParentPage(false)->getDatasetId())){
                                         
                                     }else{
                                         $this->addUserMessage("The parent of this page is a meta-page, but not linked to any existing model", SmartestUserMessage::WARNING);
@@ -410,7 +412,7 @@ class Pages extends SmartestSystemApplication{
                                 }else{
                                     
                                     // there are no properties in this meta-page that point to the data type of the parent meta-page. this is a problem so we nnotify the user.
-                                    if($page->getParentPage()->getDatasetId() == $page->getDatasetId()){
+                                    if($page->getParentPage(false)->getDatasetId() == $page->getDatasetId()){
                                         $this->addUserMessage("This ".$model->getName()." meta-page is the child of a meta-page that is also used to represent ".$model->getPluralName().", but the ".$model->getName()." model has no foreign-key properties that refer to other ".$model->getPluralName().". This page will assign its own item to it's parent meta-page.", SmartestUserMessage::WARNING);
                                         $page->setParentMetaPageReferringPropertyId('_SELF');
                                         $this->send('_SELF', 'parent_meta_page_property');
