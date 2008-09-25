@@ -295,15 +295,19 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                     return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid();
                 }
             }else{
-                if($this->_page->getIsPublished() == 'TRUE'){
-                    if($this->_page_not_found){
-                        return '#';
-                    }else{
-                        if($this->shouldUseId()){
-                            return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid();
+                if($this->_page){
+                    if($this->_page->getIsPublished() == 'TRUE'){
+                        if($this->_page_not_found){
+                            return '#';
                         }else{
-                            return SM_CONTROLLER_DOMAIN.$this->_page->getDefaultUrl();
+                            if($this->shouldUseId()){
+                                return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid();
+                            }else{
+                                return SM_CONTROLLER_DOMAIN.$this->_page->getDefaultUrl();
+                            }
                         }
+                    }else{
+                        return '#';
                     }
                 }else{
                     return '#';
