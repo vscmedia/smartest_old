@@ -43,7 +43,7 @@ class SmartestObjectModelHelper{
 				$constant_name = '_'.$constant_name;
 			}
 			
-			$new_constant = 'const '.$constant_name.' = '.$constant_value.";\n";
+			$new_constant = '    const '.$constant_name.' = '.$constant_value.";\n";
 			
 			$constants .= $new_constant;
 			
@@ -51,8 +51,11 @@ class SmartestObjectModelHelper{
 		
 		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt')){
 			
+			$functions = self::buildAutoClassFunctionCode($model);
+			
 			$file = str_replace('__THISCLASSNAME__', 'auto'.$className, $file);
 			$file = str_replace('__THECONSTANTS__', $constants, $file);
+			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
 			$file = str_replace('__MODEL_ID__', $id, $file);
 			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
 		
@@ -64,6 +67,29 @@ class SmartestObjectModelHelper{
 			return false;
 		}
 		
+	}
+	
+	static function buildAutoClassFunctionCode(SmartestModel $m){
+	    
+	    $file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_datafunctions.txt');
+	    $code = '';
+	    
+	    foreach($m->getProperties() as $property){
+			
+			$constant_name  = SmartestStringHelper::toCamelCase($property->getName());
+			$constant_value = $property->getId();
+			$bool_typecast = $property->getDatatype() == '' ? '(bool) ' : '';
+			
+			$f = str_replace('__PROPNAME__', $constant_name, $file);
+			$f = str_replace('__PROPID__', $constant_value, $f);
+			$f = str_replace('__BOOLTYPECAST__', $bool_typecast, $f);
+			
+			$code .= $f;
+			
+		}
+		
+		return $code;
+	    
 	}
 
 }

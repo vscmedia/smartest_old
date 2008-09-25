@@ -1,0 +1,8 @@
+    public function get__PROPNAME__($draft=false){
+        return $this->getPropertyValueByNumericKey(__PROPID__, $draft);
+    }
+    
+    public function set__PROPNAME__($value){
+        return $this->setPropertyValueByNumericKey(__PROPID__, $value);
+    }
+
