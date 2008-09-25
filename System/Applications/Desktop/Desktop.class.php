@@ -147,6 +147,7 @@ class Desktop extends SmartestSystemApplication{
 	    $home_page = new SmartestPage;
 	    $home_page->setTitle($post['site_home_page_title']);
 	    $home_page->setName(SmartestStringHelper::toSlug($post['site_home_page_title']));
+	    $home_page->setDraftTemplate($post['site_home_page_template']);
 	    $home_page->setWebid(SmartestStringHelper::random(32));
 	    $home_page->setSiteId($site->getId());
 	    $home_page->setCreatedbyUserid($this->getUser()->getId());
@@ -156,12 +157,15 @@ class Desktop extends SmartestSystemApplication{
 	    
 	    $error_page = new SmartestPage;
 	    $error_page->setTitle($post['site_error_page_title']);
-	    $error_page->setName(SmartestStringHelper::toSlug($post['site_error_page_title']));
+	    $error_page->setName('404-error');
 	    $error_page->setSiteId($site->getId());
+	    $error_page->setDraftTemplate($post['site_error_page_template']);
+	    $error_page->setLiveTemplate($post['site_error_page_template']);
 	    $error_page->setParent($home_page->getId());
 	    $error_page->setWebid(SmartestStringHelper::random(32));
 	    $error_page->setCreatedbyUserid($this->getUser()->getId());
 	    $error_page->setOrderIndex(1024);
+	    $error_page->setIsPublished('TRUE');
 	    $error_page->save();
 	    $site->setErrorPageId($error_page->getId());
 	    
@@ -172,7 +176,7 @@ class Desktop extends SmartestSystemApplication{
 	    $tag_page->setParent($home_page->getId());
 	    $tag_page->setWebid(SmartestStringHelper::random(32));
 	    $tag_page->setCreatedbyUserid($this->getUser()->getId());
-	    $tag_page->setOrderIndex(1022);
+	    $tag_page->setOrderIndex(1023);
 	    $tag_page->save();
 	    $site->setTagPageId($tag_page->getId());
 	    
@@ -183,9 +187,9 @@ class Desktop extends SmartestSystemApplication{
 	    $search_page->setParent($home_page->getId());
 	    $search_page->setWebid(SmartestStringHelper::random(32));
 	    $search_page->setCreatedbyUserid($this->getUser()->getId());
-	    $tag_page->setOrderIndex(1023);
+	    $search_page->setOrderIndex(1022);
 	    $search_page->save();
-	    $site->setTagPageId($search_page->getId());
+	    $site->setSearchPageId($search_page->getId());
 	    
 	    $logo_upload = new SmartestUploadHelper('site_logo');
 	    $logo_upload->setUploadDirectory(SM_ROOT_DIR.'Public/Resources/Images/SiteLogos/');

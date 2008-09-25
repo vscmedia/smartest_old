@@ -93,7 +93,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    $this->setDraftMode($draft_mode);
 	    // $this->_page_rendering_data_retrieved = true;
 	    $this->prepareForRender();
-	    
+	    // var_dump($this->page);
+	    // echo 'test';
 	    if($draft_mode){
 	        $template = SM_ROOT_DIR."Presentation/Masters/".$page->getDraftTemplate();
 	    }else{

@@ -32,7 +32,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        $this->_page = new SmartestPage;
 		        $this->_page->hydrate($this->_site->getTopPageId());
 		        
-		        // print_r($page);
+		        // print_r($this->_page);
 		        $this->send($this->_page, '_page');
 		        
 		    }else if($this->_page = $this->manager->getNormalPageByUrl($this->url, $this->_site->getId())){

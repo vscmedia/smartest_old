@@ -47,14 +47,16 @@ class SmartestMysql{
             $this->options['password_needed'] = false;
         }
 	    
-	    
-	    
-		if($this->dblink = @mysql_connect($server, $username, $password)){
-			// @mysql_set_charset("UTF-8", $this->dblink);
+	    if($this->dblink = @mysql_connect($server, $username, $password)){
+			
 			$this->queryHistory = array();
 			$this->rawQuery("SET NAMES 'utf8'");
-			mysql_select_db($database, $this->dblink);
 			$this->databaseName = $database;
+			
+			if(!mysql_select_db($this->databaseName, $this->dblink)){
+			    throw new SmartestException("Could not select DB: ".$database.". ".mysql_error($this->dblink), SM_ERROR_DB);
+			}
+			
 			$this->lastQuery = "No queries made yet.";
 			
 		}else{
@@ -72,8 +74,11 @@ class SmartestMysql{
 	        if($this->dblink = @mysql_connect($this->options['server'], $this->options['username'], $this->options['password'], true)){
     			// @mysql_set_charset("UTF-8", $this->dblink);
     			$this->rawQuery("SET NAMES 'utf8'");
-    			@mysql_select_db($this->databaseName, $this->dblink);
-    			return true;
+    			if(mysql_select_db($this->databaseName, $this->dblink)){
+    			    return true;
+    			}else{
+    			    return false;
+    			}
     		}else{
     			return false;
     		}
