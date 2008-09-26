@@ -33,8 +33,9 @@ class SmartestObjectModelHelper{
 		$constants = '';
 		$model = new SmartestModel;
 		$model->hydrate($id);
+		$properties = $model->getProperties();
 		
-		foreach($model->getProperties() as $property){
+		foreach($properties as $property){
 			
 			$constant_name  = SmartestStringHelper::toConstantName($property->getName());
 			$constant_value = $property->getId();
@@ -49,6 +50,46 @@ class SmartestObjectModelHelper{
 			
 		}
 		
+		/* $varnames_lookup = '    protected $_properties_varnames_lookup = array('."\n";
+		$i = 1;
+		
+		foreach($properties as $property){
+			
+			$new_constant = "        '".SmartestStringHelper::toCamelCase($property->getName())."' => '".$property->getVarname()."'";
+			
+			if($i < count($properties)){
+			    $new_constant .= ',';
+			}
+			
+			$new_constant .= "\n";
+			
+			$varnames_lookup .= $new_constant;
+			$i++;
+			
+		}
+		
+		$varnames_lookup .= '    );'."\n\n"; */
+		
+		$varnames_lookup = '    protected $_varnames_lookup = array('."\n";
+		$i = 1;
+		
+		foreach($properties as $property){
+			
+			$new_constant = "        '".$property->getVarname()."' => ".$property->getId();
+			
+			if($i < count($properties)){
+			    $new_constant .= ',';
+			}
+			
+			$new_constant .= "\n";
+			
+			$varnames_lookup .= $new_constant;
+			$i++;
+			
+		}
+		
+		$varnames_lookup .= '    );'."\n\n";
+		
 		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt')){
 			
 			$functions = self::buildAutoClassFunctionCode($model);
@@ -56,6 +97,7 @@ class SmartestObjectModelHelper{
 			$file = str_replace('__THISCLASSNAME__', 'auto'.$className, $file);
 			$file = str_replace('__THECONSTANTS__', $constants, $file);
 			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
+			$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);
 			$file = str_replace('__MODEL_ID__', $id, $file);
 			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
 		

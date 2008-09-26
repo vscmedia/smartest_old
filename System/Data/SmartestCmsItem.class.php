@@ -53,13 +53,6 @@ class SmartestCmsItem implements ArrayAccess{
 	protected $_properties_lookup = array();
 	
 	/** 
-	* A mapping of the items' property names to the varnames of the properties.
-	* @access protected
-	* @var array
-	*/
-	protected $_properties_varnames_lookup = array();
-	
-	/** 
 	* A mapping of the varnames of the properties to the ids of the properties, for speed.
 	* @access protected
 	* @var array
@@ -105,7 +98,7 @@ class SmartestCmsItem implements ArrayAccess{
 		$this->_item = new SmartestItem;
 		
 		$this->generateModel();
-		$this->generatePropertiesLookup();
+		// $this->generatePropertiesLookup();
 		
 	}
 	
@@ -145,38 +138,38 @@ class SmartestCmsItem implements ArrayAccess{
 		
 	}
 	
-	private function generatePropertiesLookup(){
+	// private function generatePropertiesLookup(){
 		
-		if(isset($this->_model_id)){
+		// if(isset($this->_model_id)){
 		
-		    if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
+		    /* if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
 			    $result = SmartestCache::load('model_properties_'.$this->_model_id, true);
 		    }else{
 			    // gotta get that from the database too
 			    $sql = "SELECT itemproperty_id, itemproperty_name, itemproperty_varname FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_model_id."'";
 			    $result = $this->database->queryToArray($sql);
 			    SmartestCache::save('model_properties_'.$this->_model_id, $result, -1, true);
-		    }
+		    } */
 			
-		    $properties = array();
+		    // $properties = array();
 			
-		    foreach($result as $key => $raw_property){
+		    /* foreach($result as $key => $raw_property){
 			    $this->_properties_lookup[SmartestStringHelper::toCamelCase($raw_property['itemproperty_name'])] = $raw_property['itemproperty_id'];
-		    }
+		    } */
 		
-		    foreach($result as $key => $raw_property){
+		    /* foreach($result as $key => $raw_property){
 			    $this->_properties_varnames_lookup[SmartestStringHelper::toCamelCase($raw_property['itemproperty_name'])] = $raw_property['itemproperty_varname'];
 		    }
 		    
 		    foreach($result as $key => $raw_property){
 			    $this->_varnames_lookup[$raw_property['itemproperty_varname']] = $raw_property['itemproperty_id'];
-		    }
+		    } */
 		    
-		    $this->_lookups_built = true;
+		    // $this->_lookups_built = true;
 		
-	    }
+	    // }
 		
-	}
+	// }
 	
 	function __call($name, $args){
 		if (strtolower(substr($name, 0, 3)) == 'get') {
@@ -284,6 +277,7 @@ class SmartestCmsItem implements ArrayAccess{
 		                return $this->_properties[$this->_properties_lookup[$field_name]]->getData()->getContent();
 		            }
 		        }else{
+		            
 		            // no value found, so create one
 		            $ipv = new SmartestItemPropertyValue;
     	            $ipv->setPropertyId($this->_properties[$this->_properties_lookup[$field_name]]->getId());
@@ -333,9 +327,8 @@ class SmartestCmsItem implements ArrayAccess{
 	            throw new SmartestException('The model ID '.$this->_model_id.' doesn\'t exist.');
 	        }
 	        
-	        if(!$this->_lookups_built){
+	        if(!$this->_model_built){
     	        $this->generateModel();
-    	        $this->generatePropertiesLookup();
     	    }
 	        
 	    }
@@ -432,9 +425,9 @@ class SmartestCmsItem implements ArrayAccess{
 		        $this->generateModel();
 		    }
 		    
-		    if(!$this->_lookups_built){
+		    /* if(!$this->_lookups_built){
 		        $this->generatePropertiesLookup();
-		    }
+		    } */
 		    
 		    if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
 			    $properties_result = SmartestCache::load('model_properties_'.$this->_model_id, true);
@@ -625,23 +618,17 @@ class SmartestCmsItem implements ArrayAccess{
 		// return associative array of property names and values
 		$result = array();
 		
-		// print_r($this->_properties_varnames_lookup);
-		// print_r($this);
-		
-		// print_r($draft);
-		
 		$result = $this->_item->__toArray(true);
 		
-		foreach($this->_properties_lookup as $fn => $id){
+		foreach($this->_varnames_lookup as $vn => $id){
 		    
 		    if($numeric_keys){
 		        $key = $id;
 		    }else{
-		        $key = $this->_properties_varnames_lookup[$fn];
+		        $key = $vn;
 		    }
 		    
 		    if($draft){
-		        // echo $this->_properties[$id]->getData()->getDraftContent().', ';
 		        if(isset($this->_properties[$id]) && is_object($this->_properties[$id]->getData())){
 		            $result[$key] = $this->_properties[$id]->getData()->getDraftContent();
 	            }
@@ -651,10 +638,6 @@ class SmartestCmsItem implements ArrayAccess{
                 }
 	        }
 		}
-		
-		/*$result['id'] = $this->getItem()->getId();
-		$result['web_id'] = $this->getItem()->getWebid();
-		$result['name'] = $this->getItem()->getName(); */
 		
 		switch($this->getWorkflowStatus()){
 		    case self::NOT_CHANGED:
@@ -683,12 +666,12 @@ class SmartestCmsItem implements ArrayAccess{
 	    
 	    $result = array();
 	    
-	    foreach($this->_properties_lookup as $fn => $id){
+	    foreach($this->_varnames_lookup as $vn => $id){
 	    
 	        if($numeric_keys){
 	            $key = $id;
 	        }else{
-	            $key = $this->_properties_varnames_lookup[$fn];
+	            $key = $vn;
 	        }
 	    
 	        $result[$key] = $this->_properties[$id];
@@ -707,12 +690,12 @@ class SmartestCmsItem implements ArrayAccess{
 	    
 	    $result = array();
 	    
-	    foreach($this->_properties_lookup as $fn => $id){
+	    foreach($this->_varnames_lookup as $fn => $id){
 	    
 	        if($numeric_keys){
 	            $key = $id;
 	        }else{
-	            $key = $this->_properties_varnames_lookup[$fn];
+	            $key = $vn;
 	        }
 	    
 	        $result[$key] = $this->_properties[$id]->__toArray();

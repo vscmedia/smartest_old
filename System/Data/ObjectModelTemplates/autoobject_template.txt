@@ -5,8 +5,10 @@
 class __THISCLASSNAME__ extends SmartestCmsItem{
 
     protected $_model_id = __MODEL_ID__;
-
+    
 __THECONSTANTS__
+
+__THEVARNAMELOOKUPS__
 
 __THEFUNCTIONS__
 
