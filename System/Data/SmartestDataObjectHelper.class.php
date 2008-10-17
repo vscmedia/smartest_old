@@ -393,7 +393,7 @@ class SmartestDataObjectHelper{
 				    include $h['file'];
 				}
 			}else{
-				// File was there amoment ago but has now disappeared (???)
+				// File was there a moment ago but has now disappeared (???)
 			}
 		}
 		

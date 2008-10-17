@@ -1066,7 +1066,7 @@ class SmartestResponse{
 		        break;
 		    default:
 		        echo $this->fetch();
-		        echo $this->fullTimeTaken.'<br />';
+		        // echo $this->fullTimeTaken.'<br />';
 		        // 
 		        break;
 	    }
