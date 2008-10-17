@@ -96,14 +96,15 @@ class SmartestDataObjectHelper{
 	    $directory = $is_smartest ? SM_ROOT_DIR.'System/Data/BasicObjects/' : SM_ROOT_DIR.'Library/ObjectModel/DataObjects/';
 	    $file_name = $directory.$class_name.'.class.php';
 	    
+	    if(!is_dir($directory)){
+	        if(@mkdir($directory)){
+	            
+	        }else{
+	            throw new SmartestException("Couldn't create new directory: ".$directory);
+	        }
+	    }
+	    
 	    if(!file_exists($file_name)){
-	        
-	        // $database = SmartestPersistentObject::get('db:main');
-	        
-	        /* $dbTableHelper = new SmartestDatabaseTableHelper('SMARTEST');
-	        $columns = $dbTableHelper->getColumnNames($table_info['name']);
-	        $offset = strlen($table_info['prefix']);
-	        $pns = array(); */
 	        
 	        $file_contents = SmartestFileSystemHelper::load(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/dataobject_template.txt');
 	        $sp = $is_smartest ? 'Smartest' : '';
@@ -122,9 +123,15 @@ class SmartestDataObjectHelper{
 	    $directory = $is_smartest ? SM_ROOT_DIR.'System/Cache/ObjectModel/DataObjects/' : SM_ROOT_DIR.'Library/ObjectModel/DataObjects/Base/';
 	    $file_name = $directory.$class_name.'.class.php';
 	    
+	    if(!is_dir($directory)){
+	        if(@mkdir($directory)){
+	            
+	        }else{
+	            throw new SmartestException("Couldn't create new directory: ".$directory);
+	        }
+	    }
+	    
 	    if(!file_exists($file_name)){
-	        
-	        // $database = SmartestPersistentObject::get('db:main');
 	        
 	        $dbTableHelper = new SmartestDatabaseTableHelper('SMARTEST');
 	        $columns = $dbTableHelper->getColumnNames($table_info['name']);
@@ -240,8 +247,7 @@ class SmartestDataObjectHelper{
 		
 		$this->buildBasicObjects();
 		
-		// find the helpers if this hasn't already been done
-		// if(!is_array($available_objects) || !is_file(SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Cache'.DIRECTORY_SEPARATOR.'Includes'.DIRECTORY_SEPARATOR.'SmartestBasicObjects.cache.php')){
+		// find the tables info if this hasn't already been done
 		
 		$tables = self::getBasicObjectSchemaInfo();
 		
@@ -295,7 +301,6 @@ class SmartestDataObjectHelper{
 	        include SM_ROOT_DIR.'System/Data/BasicObjects/SmartestDataObject.class.php';
 	    }
 	
-		// foreach($object_types as $h){
 		foreach($tables as $t){
 		    
 		    $base_class_name = 'SmartestBase'.$t['class'];
