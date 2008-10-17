@@ -1,6 +1,6 @@
 <?php
 
-class SmartestItem extends SmartestDataObject{
+class SmartestItem extends SmartestBaseItem{
 	
 	protected $_model;
 	protected $_model_properties = array();
@@ -31,6 +31,10 @@ class SmartestItem extends SmartestDataObject{
 	    
 	}
 	
+	public function getModelId(){
+	    return $this->_properties['itemclass_id'];
+	}
+	
 	public function __toArray($include_foreign_object_data=false){
 	    
 	    $array = $this->_properties;
@@ -44,6 +48,8 @@ class SmartestItem extends SmartestDataObject{
 	}
 	
 	public function offsetGet($offset){
+	    
+	    $offset = strtolower($offset);
 	    
 	    switch($offset){
 	        
@@ -205,6 +211,7 @@ class SmartestItem extends SmartestDataObject{
 	        }
 	    }
 	    
+	    // print_r($tags);
 	    return $tags;
 	    
 	}
@@ -367,7 +374,7 @@ class SmartestItem extends SmartestDataObject{
 	    
 	    if($model->hydrate($model_id)){
 	    
-	        $ds = new SmartestQueryResultSet($model->getId(), $model->getClassName(), $this->getDraftMode());
+	        $ds = new SmartestQueryResultSet($model->getId(), $model->getClassName(), $draft_mode);
 	    
 	        foreach($ids_array as $item_id){
 		        $ds->insertItemId($item_id);

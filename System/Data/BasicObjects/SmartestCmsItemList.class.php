@@ -1,6 +1,6 @@
 <?php
 
-class SmartestCmsItemList extends SmartestDataObject{
+class SmartestCmsItemList extends SmartestBaseCmsItemList{
     
     protected $_list_items = array();
     protected $_data_set;

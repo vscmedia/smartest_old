@@ -7,7 +7,7 @@
  * @author Your name here
  **/
  
-class SmartestUser extends SmartestBaseUser{
+class myUser extends SmartestUser{
     
     public function __myConstructor($arguments){
         

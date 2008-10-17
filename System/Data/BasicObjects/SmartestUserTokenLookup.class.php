@@ -1,6 +1,6 @@
 <?php
 
-class SmartestUserTokenLookup extends SmartestDataObject{
+class SmartestUserTokenLookup extends SmartestBaseUserTokenLookup{
 
 	protected function __objectConstruct(){
 		

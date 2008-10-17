@@ -4,9 +4,17 @@ class SmartestDatabaseTableHelper{
     
     protected $database;
     
-    public function __construct(){
+    public function __construct($connection_name = ''){
         
-        $this->database = SmartestPersistentObject::get('db:main');
+        if(strlen($connection_name)){
+            $this->database = SmartestDatabase::getInstance($connection_name);
+        }else{
+            if(isset($_SESSION)){
+                $this->database = SmartestPersistentObject::get('db:main');
+            }else{
+                throw new SmartestException("Tried to construct a SmartestDatabaseTableHelper object with neither an active session or a specified connection name;");
+            }
+        }
         
     }
     

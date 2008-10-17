@@ -1,6 +1,6 @@
 <?php
 
-class SmartestTag extends SmartestDataObject{
+class SmartestTag extends SmartestBaseTag{
     
     protected $_pages = array();
     protected $_page_ids = array();

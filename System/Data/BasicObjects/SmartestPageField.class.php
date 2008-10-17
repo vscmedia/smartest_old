@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPageField extends SmartestDataObject{
+class SmartestPageField extends SmartestBasePageField{
 	
 	
 	protected $_contextual_page_id = null;

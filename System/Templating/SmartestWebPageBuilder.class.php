@@ -65,12 +65,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
         }
 	}
 	
-	// overrides Smarty method which actually causes E_USER_ERROR
-	// public function trigger_error($error_msg){
-	//     $this->raiseError($error_msg);
-	// }
-	
 	public function raiseError($error_msg='Unknown Template Error'){
+	    
+	    $this->_log($error_msg);
+	    
 	    if($this->getDraftMode()){
 	        $this->assign('_error_text', $error_msg);
 	        $error_markup = $this->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/markup_error.tpl");
@@ -91,10 +89,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    
 	    $this->page = $page;
 	    $this->setDraftMode($draft_mode);
-	    // $this->_page_rendering_data_retrieved = true;
+	    
 	    $this->prepareForRender();
-	    // var_dump($this->page);
-	    // echo 'test';
+	    
 	    if($draft_mode){
 	        $template = SM_ROOT_DIR."Presentation/Masters/".$page->getDraftTemplate();
 	    }else{
@@ -105,15 +102,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	        $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
 	    }
 	    
-	    // $this->_smarty_include(array('smarty_include_tpl_file'=>$template, 'smarty_include_vars'=>array()));
 	    $this->run($template, array());
 	}
     
     public function renderContainer($container_name, $params, $parent){
-        
-        // print_r($this->getPage()->getContainerDefinitionNames());
-        
-        // echo 'container:'.$container_name.', rendering process id:'.$this->getProcessId().', context:'.$this->_context.'<br />';
         
         if($this->_context == SM_CONTEXT_CONTENT_PAGE){
             
@@ -206,10 +198,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function renderPlaceholder($placeholder_name, $params, $parent){
         
-        // $placeholder = new SmartestPlaceholderDefinition;
         $assetclass_types = SmartestDataUtility::getAssetClassTypes();
-        
-        // if($asset_id = $placeholder->load($placeholder_name, $this->getPage(), $this->getDraftMode())){
         
         if($this->getPage()->hasPlaceholderDefinition($placeholder_name, $this->getDraftMode())){
             
@@ -227,8 +216,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         $render_data['width'] = $asset->getWidth();
                         $render_data['height'] = $asset->getHeight();
                     }
-                    
-                    // var_dump($this->getDraftMode());
                     
                     if($this->getDraftMode()){
                         $rd = $placeholder->getDraftRenderData();
@@ -295,15 +282,11 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function renderItemSpace($itemspace_name, $params){
         
-        // echo 'called';
-        
         if($this->_context == SM_CONTEXT_CONTENT_PAGE){
             
             if($this->getPage()->hasItemSpaceDefinition($itemspace_name, $this->getDraftMode())){
             
                 $def = $this->getPage()->getItemSpaceDefinition($itemspace_name, $this->getDraftMode());
-                
-                // var_dump($def->getItemspace()->getTemplateAssetId());
                 
                 if($def->getItemspace()->usesTemplate()){
                 
@@ -312,15 +295,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     
                     if($template->hydrate($template_id)){
                         $template_path = SM_ROOT_DIR.'Presentation/Layouts/'.$template->getUrl();
-                        // echo $template_path;
                         $render_process_id = SmartestStringHelper::toVarName('itemspace_template_'.SmartestStringHelper::removeDotSuffix($template->getUrl()).'_'.substr(microtime(true), -6));
-            	        // echo $render_process_id;
+            	        
             	        $child = $this->startChildProcess($render_process_id);
             	        $child->setContext(SM_CONTEXT_ITEMSPACE_TEMPLATE);
             	        $content = $child->fetch($template_path);
             	        $this->killChildProcess($child->getProcessId());
             	        return $content;
-            	        // $this->run($template_path, array());
+            	        
                     }else{
                         $this->raiseError("Problem rendering itemspace with template ID ".$template_id.": template not found.");
                     }
@@ -328,12 +310,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }else{
                 
                     // itemspace doesn't use template, but data is still loaded
+                    $this->_comment("ItemSpace '".$itemspace_name."' does not use a template.");
                 
                 }
             
             }else{
                 
                 // item space is not defined
+                $this->_comment("ItemSpace '".$itemspace_name."' is not defined.");
                 
             }
         
@@ -373,6 +357,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         
                     }else{
                         // asset tag exists, but isn't defined.
+                        $this->_comment("asset tag exists, but isn't defined.");
                     }
                 }else{
                     echo $this->raiseError('Attachment \''.$name.'\' does not exist.');
@@ -854,7 +839,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 	        
                 	        echo $content;
                         }else{
-                            // echo '<br />ERROR: TextFragment render preview could not be created.';
                             $this->raiseError('TextFragment render preview could not be created.');
                         }
                     }else{
@@ -868,7 +852,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 	        $this->killChildProcess($child->getProcessId());
                 	        echo $content;
                         }else{
-                            echo "<!--Asset '".$asset->getStringid()."' not published-->";
+                            echo $this->_comment("Asset '".$asset->getStringid()."' is not published");
                         }
                     }
                     
@@ -905,284 +889,278 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         if(isset($params["name"]) && strlen($params["name"])){
             
-            $requested_property_name = $params["name"];
+            // $requested_property_name = $params["name"];
+            $property_name_parts = explode(':', $params["name"]);
+            $requested_property_name = $property_name_parts[0];
+            array_shift($property_name_parts);
+            $display_type = (isset($property_name_parts[0]) && strlen($property_name_parts[0])) ? implode(':', $property_name_parts) : null;
+            $params['_display_type'] = $display_type;
             
-            // echo $requested_property_name;
+        }else{
+            return $this->raiseError("&lt;?sm:property:?&gt; tag missing required 'name' attribute.");
+        }
             
-            // for rendering the properties of the principal item of a meta-page
-            if(!isset($params['context']) || $params['principal_item']){
             
-                if(is_object($this->page) && $this->page instanceof SmartestItemPage){
-                    
-                    if(is_object($this->page->getPrincipalItem())){
-                        
-                        if(in_array($requested_property_name, $this->page->getPrincipalItem()->getModel()->getPropertyVarNames())){
-                        
-                            $lookup = $this->page->getPrincipalItem()->getModel()->getPropertyVarNamesLookup();
-                            $property = $this->page->getPrincipalItem()->getPropertyByNumericKey($lookup[$requested_property_name]);
-                            $property_type_info = $property->getTypeInfo();
-                        
-                            $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
-                            
-                            if(is_file($render_template)){
-                    
-                                if($this->getDraftMode()){
-                                    $value = $property->getData()->getDraftContent();
-                                }else{
-                                    $value = $property->getData()->getContent();
-                                }
-                                
-                                
-                                
-				                // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
-                                if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
-                                    
-                                    // print_r($property->getData()->getInfo($this->getDraftMode()));
-
-                                    // 
-
-                                    foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
-                                        $params[$key] = $param_value;
-                                    }
-                                    
-                                    // print_r($params);
-                                    
-                                    if(SmartestStringHelper::toRealBool($value)){
-                                        return $this->renderAssetById($value, $params, $path);
-                                    }
-                                    
-                                }else{
-                                    // echo 'asset';
-                                    $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
-                                }
-                        
-                            }else{
-                                return $this->raiseError("Render template '".$render_template."' is missing.");
-                            }
-                            
-                        }else{
-                            return $this->raiseError("Unknown Property: ".$requested_property_name);
-                        }
-                    }else{
-                        return $this->raiseError("Page Item failed to build.");
-                    }
-                }else{
-                    
-                    return $this->raiseError("&lt;?sm:property:&gt; tag used on static page.");
-                    
-                }
-            
-            // for rendering the properties of an item loaded using item spaces
-            }else if(isset($params['context']) && ($params['context'] == 'itemspace' || $this->_context == SM_CONTEXT_ITEMSPACE_TEMPLATE)){
+        // for rendering the properties of the principal item of a meta-page
+        if(!isset($params['context']) || $params['principal_item']){
+        
+            if(is_object($this->page) && $this->page instanceof SmartestItemPage){
                 
-                $requested_property_name = $params["name"];
-                
-                // you have to tell it which itemspace you are referring to
-                if(isset($params['itemspace']) && strlen($params['itemspace'])){
+                if(is_object($this->page->getPrincipalItem())){
                     
-                    // print_r($this->getPage()->getItemSpaceDefinitionNames());
+                    if(in_array($requested_property_name, $this->page->getPrincipalItem()->getPropertyVarNames())){
                     
-                    if($this->getPage()->hasItemSpaceDefinition($params['itemspace'], $this->getDraftMode())){
-			
-			
-			
-                        $def = $this->getPage()->getItemSpaceDefinition($params['itemspace'], $this->getDraftMode());
-                        $object = $def->getItem(false, $this->getDraftMode());
-                        
-                        if(is_object($object)){
-                            
-                            if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
-
-                                $lookup = $object->getModel()->getPropertyVarNamesLookup();
-                                $property = $object->getPropertyByNumericKey($lookup[$requested_property_name]);
-                                $property_type_info = $property->getTypeInfo();
-                                
-                                $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
-
-                                if(is_file($render_template)){
-
-                                    if($this->getDraftMode()){
-                                        $value = $property->getData()->getDraftContent();
-                                    }else{
-                                        $value = $property->getData()->getContent();
-                                    }
-				                    
-				                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
-                                        
-                                        foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
-                                            $params[$key] = $param_value;
-                                        }
-                                        
-                                        if(SmartestStringHelper::toRealBool($value)){
-                                            return $this->renderAssetById($value, $params, $path);
-                                        }
-                                        
-                                    }else{
-                                        $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
-                                    }
-
-                                }else{
-                                    return $this->raiseError("Render template '".$render_template."' is missing.");
-                                }
-                                
-                            }else if(in_array($requested_property_name, array_keys($object->__toArray(true)))){
-                                
-                                $array = $object->__toArray(true);
-                                return $array[$requested_property_name];
-                                
-                            }else{
-                                
-                                return $this->raiseError("Unknown Property: ".$requested_property_name);
-                                
-                            }
-                            
-                        }else{
-                            
-                            // item space is not defined
-                            return $this->raiseError("&lt;?sm:property:&gt; tag used in itemspace context, but itemspace '".$params['itemspace']."' has no object.");
-                            
-                        }
-
-                    }else{
-
-                        // item space is not defined
-                        // return $this->raiseError("Itemspace '".$params['itemspace']."' not defined yet.");
-                        if($this->getDraftMode()){
-                            echo "Itemspace '".$params['itemspace']."' not defined yet.";
-                        }
-
-                    }
-                    
-                }else{
-                    return $this->raiseError("&lt;?sm:property:&gt; tag must have itemspace=\"\" attribute when used in itemspace context.");
-                }
-            
-            // for rendering the properties of an item in a list
-            }else if(isset($params['context']) && ($params['context'] == 'other') && isset($params['item'])){
-                
-                $requested_property_name = $params["name"];
-                                        
-                $object = $params['item'];
-                        
-                if(is_object($object)){
-                            
-                    if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
-
-                        $lookup = $object->getModel()->getPropertyVarNamesLookup();
-                        $property = $object->getPropertyByNumericKey($lookup[$requested_property_name]);
+                        $lookup = $this->page->getPrincipalItem()->getModel()->getPropertyVarNamesLookup();
+                        $property = $this->page->getPrincipalItem()->getPropertyByNumericKey($lookup[$requested_property_name]);
                         $property_type_info = $property->getTypeInfo();
                         
                         $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
-
+                        
                         if(is_file($render_template)){
-
+                
                             if($this->getDraftMode()){
                                 $value = $property->getData()->getDraftContent();
                             }else{
                                 $value = $property->getData()->getContent();
                             }
-		                    
-		                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                            
+                            // TODO: It's more direct to do this, though not quite so extensible. We can update this later.
+                            if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
                                 
                                 foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
                                     $params[$key] = $param_value;
                                 }
                                 
                                 if(SmartestStringHelper::toRealBool($value)){
-                                    return $this->renderAssetById($value, $params, $path);
+                                    return $this->_renderAssetObject($value, $params, $params, $path);
+                                }else{
+                                    return $this->_comment('No asset selected for property: '.$property->getVarname().' on item ID '.$this->page->getPrincipalItem()->getId());
                                 }
                                 
                             }else{
-                                $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
+                                $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$params));
                             }
-
+                    
                         }else{
                             return $this->raiseError("Render template '".$render_template."' is missing.");
                         }
                         
-                    }else if(in_array($requested_property_name, array_keys($object->__toArray(true)))){
-                        
-                        $array = $object->__toArray(true);
-                        return $array[$requested_property_name];
-                        
                     }else{
-                        
                         return $this->raiseError("Unknown Property: ".$requested_property_name);
-                        
                     }
-                    
                 }else{
-                    
-                    // $object is not an object
-                    if($this->getDraftMode()){
-                        echo "Item is not an object.";
-                        print_r($object);
-                    }
-                    
+                    return $this->raiseError("Page Item failed to build.");
                 }
-
-            
-            // for rendering the properties of an item in a list
-            }else if(isset($params['context']) && ($params['context'] == 'repeat' || $params['context'] == 'list')){
+            }else{
                 
-                if(is_object($this->_tpl_vars['repeated_item_object'])){
+                return $this->raiseError("&lt;?sm:property:&gt; tag used on static page.");
+                
+            }
+        
+        // for rendering the properties of an item loaded using item spaces
+        }else if(isset($params['context']) && ($params['context'] == 'itemspace' || $this->_context == SM_CONTEXT_ITEMSPACE_TEMPLATE)){
+            
+            // you have to tell it which itemspace you are referring to
+            if(isset($params['itemspace']) && strlen($params['itemspace'])){
+                
+                // print_r($this->getPage()->getItemSpaceDefinitionNames());
+                
+                if($this->getPage()->hasItemSpaceDefinition($params['itemspace'], $this->getDraftMode())){
+		
+		            $def = $this->getPage()->getItemSpaceDefinition($params['itemspace'], $this->getDraftMode());
+                    $object = $def->getItem(false, $this->getDraftMode());
                     
-                    if(in_array($requested_property_name, $this->_tpl_vars['repeated_item_object']->getModel()->getPropertyVarNames())){
-                    
-                        $lookup = $this->_tpl_vars['repeated_item_object']->getModel()->getPropertyVarNamesLookup();
-                        $property = $this->_tpl_vars['repeated_item_object']->getPropertyByNumericKey($lookup[$requested_property_name]);
-                        $property_type_info = $property->getTypeInfo();
-                    
-                        $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
+                    if(is_object($object)){
                         
-                        if(is_file($render_template)){
-                        
-                            if($this->getDraftMode()){
-                                $value = $property->getData()->getDraftContent();
+                        if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
+
+                            $lookup = $object->getModel()->getPropertyVarNamesLookup();
+                            $property = $object->getPropertyByNumericKey($lookup[$requested_property_name]);
+                            $property_type_info = $property->getTypeInfo();
+                            
+                            $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
+
+                            if(is_file($render_template)){
+
+                                if($this->getDraftMode()){
+                                    $value = $property->getData()->getDraftContent();
+                                }else{
+                                    $value = $property->getData()->getContent();
+                                }
+			                    
+			                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                                    
+                                    foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
+                                        $params[$key] = $param_value;
+                                    }
+                                    
+                                    if(SmartestStringHelper::toRealBool($value)){
+                                        return $this->_renderAssetObject($value, $params, $params, $path);
+                                    }
+                                    
+                                }else{
+                                    $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$params));
+                                }
+
                             }else{
-                                $value = $property->getData()->getContent();
+                                return $this->raiseError("Render template '".$render_template."' is missing.");
                             }
                             
-                            // It's more direct to do this, though not quite so extensible. We can update this later.
-                            if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
-                                if(SmartestStringHelper::toRealBool($value)){
-                                    return $this->renderAssetById($value, $params, $path);
-                                }
-                            }else{
-                                $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$render_data));
+                        }else if(in_array($requested_property_name, array_keys($object->__toArray(true)))){
+                            
+                            $array = $object->__toArray(true);
+                            return $array[$requested_property_name];
+                            
+                        }else{
+                            
+                            return $this->raiseError("Unknown Property: ".$requested_property_name);
+                            
+                        }
+                        
+                    }else{
+                        
+                        // item space is not defined
+                        return $this->raiseError("&lt;?sm:property:&gt; tag used in itemspace context, but itemspace '".$params['itemspace']."' has no object.");
+                        
+                    }
+
+                }else{
+
+                    // item space is not defined
+                    // return $this->raiseError("Itemspace '".$params['itemspace']."' not defined yet.");
+                    if($this->getDraftMode()){
+                        echo "Itemspace '".$params['itemspace']."' not defined yet.";
+                    }
+
+                }
+                
+            }else{
+                return $this->raiseError("&lt;?sm:property:&gt; tag must have itemspace=\"\" attribute when used in itemspace context.");
+            }
+        
+        // for rendering the properties of an item in a list
+        }else if(isset($params['context']) && ($params['context'] == 'other') && isset($params['item'])){
+            
+            $object = $params['item'];
+                    
+            if(is_object($object)){
+                        
+                if(in_array($requested_property_name, $object->getPropertyVarNames())){
+
+                    $lookup = $object->getModel()->getPropertyVarNamesLookup();
+                    $property = $object->getPropertyByNumericKey($lookup[$requested_property_name]);
+                    $property_type_info = $property->getTypeInfo();
+                    
+                    $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
+
+                    if(is_file($render_template)){
+
+                        if($this->getDraftMode()){
+                            $value = $property->getData()->getDraftContent();
+                        }else{
+                            $value = $property->getData()->getContent();
+                        }
+	                    
+	                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                            
+                            foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
+                                $params[$key] = $param_value;
+                            }
+                            
+                            if(SmartestStringHelper::toRealBool($value)){
+                                return $this->_renderAssetObject($value, $params, $params, $path);
                             }
                             
                         }else{
-                            return $this->raiseError("Render template '".$render_template."' is missing.");
+                            $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$params));
                         }
-                        
-                    
+
                     }else{
-                        return $this->raiseError("Unknown Property: ".$requested_property_name.".");
+                        return $this->raiseError("Render template '".$render_template."' is missing.");
                     }
+                    
+                }else if(in_array($requested_property_name, array_keys($object->__toArray(true)))){
+                    
+                    $array = $object->__toArray(true);
+                    return $array[$requested_property_name];
                     
                 }else{
                     
-                    return $this->raiseError("Repeated item is not an object.");
+                    return $this->raiseError("Unknown Property: ".$requested_property_name);
                     
                 }
                 
+            }else{
+                
+                // $object is not an object
+                if($this->getDraftMode()){
+                    echo "Item is not an object.";
+                    print_r($object);
+                }
+                
+            }
+
+        
+        // for rendering the properties of an item in a list
+        }else if(isset($params['context']) && ($params['context'] == 'repeat' || $params['context'] == 'list')){
+            
+            if(is_object($this->_tpl_vars['repeated_item_object'])){
+                
+                if(in_array($requested_property_name, $this->_tpl_vars['repeated_item_object']->getPropertyVarNames())){
+                
+                    $lookup = $this->_tpl_vars['repeated_item_object']->getModel()->getPropertyVarNamesLookup();
+                    $property = $this->_tpl_vars['repeated_item_object']->getPropertyByNumericKey($lookup[$requested_property_name]);
+                    $property_type_info = $property->getTypeInfo();
+                
+                    $render_template = SM_ROOT_DIR.$property_type_info['render']['template'];
+                    
+                    if(is_file($render_template)){
+                    
+                        if($this->getDraftMode()){
+                            $value = $property->getData()->getDraftContent();
+                        }else{
+                            $value = $property->getData()->getContent();
+                        }
+                        
+                        if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
+                            
+                            foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
+                                $params[$key] = $param_value;
+                            }
+                            
+                            if(SmartestStringHelper::toRealBool($value)){
+                                return $this->_renderAssetObject($value, $params, $params, $path);
+                            }
+                            
+                        }else{
+                            $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$params));
+                        }
+                        
+                    }else{
+                        return $this->raiseError("Render template '".$render_template."' is missing.");
+                    }
+                    
+                
+                }else{
+                    return $this->raiseError("Unknown Property: ".$requested_property_name.".");
+                }
+                
+            }else{
+                
+                return $this->raiseError("Repeated item is not an object.");
+                
             }
             
-        }else{
-            if($this->_tpl_vars['this']['principal_item']){
-                return $this->raiseError("&lt;?sm:property:&gt; tag missing required 'name' attribute.");
-            }
         }
+        
     }
     
-	public function renderSiteMap(){
+	public function renderSiteMap($params){
 	    
 	    $pagesTree = $this->page->getSite()->getPagesTree(true);
 	    $this->_tpl_vars['site_tree'] = $pagesTree;
 	    $file = SM_ROOT_DIR."Presentation/Special/sitemap.tpl";
 	    $this->run($file, array());
-	    // $this->_smarty_include(array('smarty_include_tpl_file'=>$file, 'smarty_include_vars'=>array()));
 
 	}
 	
@@ -1256,7 +1234,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
 		
 		if($result['header']!="" && is_file(SM_ROOT_DIR."Presentation/ListItems/".$result['header'])){
 			$header = "ListItems/".$result['header'];
-			// $this->_smarty_include(array('smarty_include_tpl_file'=>$header, 'smarty_include_vars'=>array()));
 			$this->run($header, array());
 		}
 		
@@ -1267,7 +1244,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
 				$properties=$item['property_details'];	
 				$this->assign('name', $item_name);
 				$this->assign('properties', $properties);
-				// $this->_smarty_include(array('smarty_include_tpl_file'=>$tpl_filename, 'smarty_include_vars'=>array()));
 				$this->run($tpl_filename, array());
 			}
 			
@@ -1275,7 +1251,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
 		
 		if($result['footer']!="" && is_file(SM_ROOT_DIR."Presentation/ListItems/".$result['footer'])){
 			$footer="ListItems/".$result['footer'];
-			// $this->_smarty_include(array('smarty_include_tpl_file'=>$footer, 'smarty_include_vars'=>array()));
 			$this->run($footer, array());
 		}
 		

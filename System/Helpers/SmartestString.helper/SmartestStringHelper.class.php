@@ -222,7 +222,7 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	static function isFalse($string){
-	    if(in_array(strtolower($string), array('false', 'off', '0'))){
+	    if(strlen($string) == 0 || in_array(strtolower($string), array('false', 'off', '0'))){
 	        return true;
 	    }else{
 	        return false;
@@ -444,7 +444,7 @@ class SmartestStringHelper extends SmartestHelper{
     
     static function toRegularExpression($string, $add_slashes=false){
 	    $regexp = str_replace('/', '\/', $string);
-	    $regexp = str_replace('|', '\|', $string);
+	    $regexp = str_replace('|', '\|', $regexp);
 		$regexp = str_replace('+', '\+', $regexp);
 		$regexp = str_replace('(', '\(', $regexp);
 		$regexp = str_replace(')', '\)', $regexp);

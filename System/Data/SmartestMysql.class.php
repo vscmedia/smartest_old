@@ -19,6 +19,7 @@ class SmartestMysql{
 
 	protected $dblink;
 	public $lastQuery;
+	protected $connection_config;
 	protected $cachedQueryHistory = array();
 	protected $queryHistory = array();
 	protected $id;
@@ -30,30 +31,16 @@ class SmartestMysql{
 	
 	// protected $remember_password;
   
-	public function __construct($server, $username, $database, $password="", $remember_password=true){
+	public function __construct(SmartestParameterHolder $dbconfig){
 	    
-	    $this->options['server'] = $server;
-	    $this->options['username'] = $username;
-	    $this->options['database'] = $database;
-	    $this->options['remember_password'] = $remember_password;
+	    $this->connection_config = $dbconfig;
 	    
-	    if($remember_password){
-	        $this->options['password'] = $password;
-        }
-        
-        if($password){
-	        $this->options['password_needed'] = true;
-        }else{
-            $this->options['password_needed'] = false;
-        }
-	    
-	    if($this->dblink = @mysql_connect($server, $username, $password)){
+        if($this->dblink = @mysql_connect($this->connection_config['server'], $this->connection_config['username'], $this->connection_config['password'])){
 			
 			$this->queryHistory = array();
 			$this->rawQuery("SET NAMES 'utf8'");
-			$this->databaseName = $database;
 			
-			if(!mysql_select_db($this->databaseName, $this->dblink)){
+			if(!mysql_select_db($this->connection_config['database'], $this->dblink)){
 			    throw new SmartestException("Could not select DB: ".$database.". ".mysql_error($this->dblink), SM_ERROR_DB);
 			}
 			
@@ -65,40 +52,32 @@ class SmartestMysql{
 	}
 	
 	public function __destruct(){
-	    // mysql_close($this->dblink);
 	    $this->clearQueryHistoryCache();
 	}
 	
 	protected function reconnect(){
-	    if($this->options['password_needed'] && isset($this->options['password'])){
-	        if($this->dblink = @mysql_connect($this->options['server'], $this->options['username'], $this->options['password'], true)){
-    			// @mysql_set_charset("UTF-8", $this->dblink);
-    			$this->rawQuery("SET NAMES 'utf8'");
-    			if(mysql_select_db($this->databaseName, $this->dblink)){
-    			    return true;
-    			}else{
-    			    return false;
-    			}
-    		}else{
-    			return false;
-    		}
-	    }else{
-	        // password is needed to connect, but not supplied
-	        return false;
-	    }
+        if($this->dblink = @mysql_connect($this->connection_config['server'], $this->connection_config['username'], $this->connection_config['password'])){
+			$this->rawQuery("SET NAMES 'utf8'");
+			if(mysql_select_db($this->connection_config['database'], $this->dblink)){
+			    return true;
+			}else{
+			    throw new SmartestException("Could not select DB: ".$database.". ".mysql_error($this->dblink), SM_ERROR_DB);
+			}
+		}else{
+			return false;
+		}
 	}
 	
 	public function getTables(){
 		
-		$sql = "SHOW TABLES FROM ".$this->databaseName;
-		// $result = mysql_query($sql);
-
+		$sql = "SHOW TABLES FROM ".$this->connection_config['database'];
+		
 		$tables = $this->queryToArray($sql);
 		
 		$table_names = array();
 		
 		foreach($tables as $tr){
-			$table_names[] = $tr["Tables_in_".$this->databaseName];
+			$table_names[] = $tr["Tables_in_".$this->connection_config['database']];
 		}
 		
 		return $table_names;
@@ -108,8 +87,7 @@ class SmartestMysql{
 	public function getColumns($table){
 		
 		$sql = "SHOW COLUMNS FROM ".$table;
-		// $result = mysql_query($sql);
-
+		
 		$columns = $this->queryToArray($sql);
 		
 		return $columns;
@@ -191,8 +169,6 @@ class SmartestMysql{
         
         }else{
 		    
-		    // echo $querystring.'<br />';
-		    
 		    if($this->queryReturnsData($querystring)){
 		        
 		        $result = $this->getSelectQueryResult($querystring);
@@ -208,8 +184,6 @@ class SmartestMysql{
 	}
 	
 	protected function getSelectQueryResult($query, $refresh=false){
-	    
-	    // echo $query.'<br />';
 	    
 	    $hash = $this->getHashFromQuery($query);
 	    
@@ -299,16 +273,10 @@ class SmartestMysql{
         $bits = explode(' ', $querystring);
         if(isset($bits[0])){
             $first = $bits[0];
-            return $first;
+            return strtoupper($first);
         }else{
             return false;
         }
-                
-    	/* if(preg_match( '/^(\w+)\s/i', $querystring, $match)){
-			return strtoupper(trim($match[0]));
-    	}else{
-			return false;
-    	} */
 	}
 	
 	
@@ -325,10 +293,8 @@ class SmartestMysql{
 				break;
 
 			case 'INSERT': // do insert query and return id of last newly inserted row.
-				// echo $querystring;
-        		$result = $this->rawQuery($querystring);
-        		// var_dump($result);
-				return @mysql_insert_id($this->dblink);
+				$result = $this->rawQuery($querystring);
+        		return @mysql_insert_id($this->dblink);
 				
 				break;
 

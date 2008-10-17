@@ -109,7 +109,7 @@ class SmartestCmsItem implements ArrayAccess{
 		if(isset($this->_model_id) && !$this->_model_built){
 		
 		    if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
-			    $result = SmartestCache::load('model_properties_'.$this->_model_id, true);
+		        $result = SmartestCache::load('model_properties_'.$this->_model_id, true);
 		    }else{
 			    // gotta get that from the database too
 			    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_model_id."'";
@@ -138,47 +138,14 @@ class SmartestCmsItem implements ArrayAccess{
 		
 	}
 	
-	// private function generatePropertiesLookup(){
-		
-		// if(isset($this->_model_id)){
-		
-		    /* if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
-			    $result = SmartestCache::load('model_properties_'.$this->_model_id, true);
-		    }else{
-			    // gotta get that from the database too
-			    $sql = "SELECT itemproperty_id, itemproperty_name, itemproperty_varname FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_model_id."'";
-			    $result = $this->database->queryToArray($sql);
-			    SmartestCache::save('model_properties_'.$this->_model_id, $result, -1, true);
-		    } */
-			
-		    // $properties = array();
-			
-		    /* foreach($result as $key => $raw_property){
-			    $this->_properties_lookup[SmartestStringHelper::toCamelCase($raw_property['itemproperty_name'])] = $raw_property['itemproperty_id'];
-		    } */
-		
-		    /* foreach($result as $key => $raw_property){
-			    $this->_properties_varnames_lookup[SmartestStringHelper::toCamelCase($raw_property['itemproperty_name'])] = $raw_property['itemproperty_varname'];
-		    }
-		    
-		    foreach($result as $key => $raw_property){
-			    $this->_varnames_lookup[$raw_property['itemproperty_varname']] = $raw_property['itemproperty_id'];
-		    } */
-		    
-		    // $this->_lookups_built = true;
-		
-	    // }
-		
-	// }
-	
 	function __call($name, $args){
-		if (strtolower(substr($name, 0, 3)) == 'get') {
-			return $this->getField(substr($name, 3), $args[0]);
-		}
-    
-		if ((strtolower(substr($name, 0, 3)) == 'set') && count($args)) {
-			return $this->setField(substr($name, 3), $args[0]);
-		}
+		
+		throw new SmartestException("Call to undefined function: ".get_class($this).'->'.$name.'()');
+		
+	}
+	
+	function getPropertyVarNames(){
+	    return array_keys($this->_varnames_lookup);
 	}
 	
 	public function setDraftMode($mode){
@@ -746,11 +713,11 @@ class SmartestCmsItem implements ArrayAccess{
 	}
 	
 	public function getPropertyValueByVarName($varname, $draft=false){
-	    if(isset($varname, $this->_properties)){
+	    if(array_key_exists($varname, $this->_varnames_lookup)){
 	        if($this->getDraftMode()){
-	            return $this->_properties[$key]->getData()->getDraftContent();
+	            return $this->_properties[$this->_varnames_lookup[$varname]]->getData()->getDraftContent();
             }else{
-                return $this->_properties[$key]->getData()->getContent();
+                return $this->_properties[$this->_varnames_lookup[$varname]]->getData()->getContent();
             }
 	    }else{
 	        return null;

@@ -1,6 +1,6 @@
 <?php
 
-class SmartestDropdown extends SmartestDataObject{
+class SmartestDropdown extends SmartestBaseDropdown{
     
     protected function __objectConstruct(){
         

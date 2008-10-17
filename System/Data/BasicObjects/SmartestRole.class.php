@@ -1,6 +1,6 @@
 <?php
 
-class SmartestRole extends SmartestDataObject{
+class SmartestRole extends SmartestBaseRole{
 	
 	protected $_tokens = array();
 	

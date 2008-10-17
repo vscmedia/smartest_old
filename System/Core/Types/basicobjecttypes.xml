@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dataobjects>
+
+  <table name="AssetClasses">
+    <prefix>assetclass_</prefix>
+    <class>AssetClass</class>
+  </table>
+
+  <table name="AssetIdentifiers">
+    <prefix>assetidentifier_</prefix>
+    <class>AssetIdentifier</class>
+  </table>
+
+  <table name="Assets">
+    <prefix>asset_</prefix>
+    <class>Asset</class>
+  </table>
+
+  <table name="DataExports">
+    <prefix>dataexport_</prefix>
+    <class>DataExport</class>
+  </table>
+
+  <table name="DropDowns">
+    <prefix>dropdown_</prefix>
+    <class>Dropdown</class>
+  </table>
+
+  <table name="DropDownValues">
+    <prefix>dropdownvalue_</prefix>
+    <class>DropdownOption</class>
+  </table>
+
+  <table name="ItemClasses">
+    <prefix>itemclass_</prefix>
+    <class>Model</class>
+  </table>
+
+  <table name="ItemProperties">
+    <prefix>itemproperty_</prefix>
+    <class>ItemProperty</class>
+  </table>
+
+  <table name="ItemPropertyValues">
+    <prefix>itempropertyvalue_</prefix>
+    <class>ItemPropertyValue</class>
+  </table>
+
+  <table name="Items">
+    <prefix>item_</prefix>
+    <class>Item</class>
+  </table>
+
+  <table name="Lists">
+    <prefix>list_</prefix>
+    <class>CmsItemList</class>
+  </table>
+
+  <table name="ManyToManyLookups">
+    <prefix>mtmlookup_</prefix>
+    <class>ManyToManyLookup</class>
+  </table>
+
+  <table name="PageLayoutPresetDefinitions">
+    <prefix>plpd_</prefix>
+    <class>PagePresetDefinition</class>
+  </table>
+
+  <table name="PageLayoutPresets">
+    <prefix>plp_</prefix>
+    <class>PagePreset</class>
+  </table>
+
+  <table name="PageProperties">
+    <prefix>pageproperty_</prefix>
+    <class>PageField</class>
+  </table>
+
+  <table name="PagePropertyValues">
+    <prefix>pagepropertyvalue_</prefix>
+    <class>PageFieldDefinition</class>
+  </table>
+
+  <table name="Pages">
+    <prefix>page_</prefix>
+    <class>Page</class>
+  </table>
+
+  <table name="PageUrls">
+    <prefix>pageurl_</prefix>
+    <class>PageUrl</class>
+  </table>
+
+  <table name="PairingDetails">
+    <prefix>pairingdetail_</prefix>
+    <class>PairingDetail</class>
+    <noprefix>id</noprefix>
+    <noprefix>pairing_id</noprefix>
+    <noprefix>property_id</noprefix>
+    <noprefix>vocabulary_id</noprefix>
+    <noprefix>setting_id</noprefix>
+    <noprefix>setting_value</noprefix>
+  </table>
+
+  <table name="Pairings">
+    <prefix>pairing_</prefix>
+    <class>Pairing</class>
+  </table>
+
+  <table name="Roles">
+    <prefix>role_</prefix>
+    <class>Role</class>
+  </table>
+
+  <table name="RolesTokensLookup">
+    <prefix>rtlookup_</prefix>
+    <class>RoleTokenLookup</class>
+  </table>
+
+  <table name="SchemaDefinitions">
+    <prefix>schemadefinition_</prefix>
+    <class>SchemaDefinition</class>
+  </table>
+
+  <table name="Schemas">
+    <prefix>schema_</prefix>
+    <class>Schema</class>
+  </table>
+
+  <table name="SetRules">
+    <prefix>setrule_</prefix>
+    <class>DynamicDataSetCondition</class>
+  </table>
+
+  <table name="Sets">
+    <prefix>set_</prefix>
+    <class>CmsItemSet</class>
+  </table>
+
+  <table name="SetsItemsLookup">
+    <prefix>setlookup_</prefix>
+    <class>SetItemLookup</class>
+  </table>
+
+  <table name="SettingCategories">
+    <prefix>settingcategory_</prefix>
+    <class>SettingCategory</class>
+  </table>
+
+  <table name="Settings">
+    <prefix>setting_</prefix>
+    <class>PreferenceValue</class>
+    <noprefix>site_id</noprefix>
+  </table>
+
+  <table name="Sites">
+    <prefix>site_</prefix>
+    <class>Site</class>
+  </table>
+
+  <table name="Tags">
+    <prefix>tag_</prefix>
+    <class>Tag</class>
+  </table>
+
+  <table name="TagsObjectsLookup">
+    <prefix>taglookup_</prefix>
+    <class>TagLookup</class>
+  </table>
+
+  <table name="TextFragments">
+    <prefix>textfragment_</prefix>
+    <class>TextFragment</class>
+  </table>
+
+  <table name="TodoItems">
+    <prefix>todoitem_</prefix>
+    <class>TodoItem</class>
+  </table>
+
+  <table name="Users">
+    <prefix>user_</prefix>
+    <class>User</class>
+    <noprefix>username</noprefix>
+    <noprefix>password</noprefix>
+  </table>
+
+  <table name="UsersTokensLookup">
+    <prefix>utlookup_</prefix>
+    <class>UserTokenLookup</class>
+  </table>
+
+  <table name="UserTokens">
+    <prefix>token_</prefix>
+    <class>UserToken</class>
+  </table>
+
+  <table name="Vocabulary">
+    <prefix>vocabulary_</prefix>
+    <class>VocabularyItem</class>
+  </table>
+
+</dataobjects>

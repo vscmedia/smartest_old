@@ -1,9 +1,10 @@
 <?php
 
-class SmartestItemPropertyValue extends SmartestDataObject{
+class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     
     protected $_item;
     protected $_property = null;
+    protected $_value_object = null;
     
     const OMISSION_ERROR = 100;
     
@@ -54,20 +55,88 @@ class SmartestItemPropertyValue extends SmartestDataObject{
         }
     }
     
+    protected function getValueObject($draft=false){
+        
+        if(!$this->_value_object){
+            
+            $t = $this->getProperty()->getTypeInfo();
+            $class = $t['class'];
+            
+            // echo $class;
+            
+            if(!class_exists($class)){
+                throw new SmartestException("Class ".$class." required for handling properties of type ".$t['id']." does not exist.");
+            }
+            
+            if($draft){
+                $raw_data = $this->_properties['draft_content'];
+            }else{
+                $raw_data = $this->_properties['content'];
+            }
+            
+            if($t['valuetype'] == 'foreignkey'){
+                
+                // these first two options are both hacks, but will be fixed in the future
+                if($class == 'SmartestCmsItem'){
+                    // get model id
+                    $model_id = $this->getProperty()->getForeignKeyFilter();
+                    $model = new SmartestModel;
+                    $model->hydrate($model_id);
+                    $class = $model->getClassName();
+                    // echo $class;
+                }
+                
+                $obj = new $class;
+                
+                if($class == 'SmartestDropdownOption'){
+                    $obj->hydrateByValueWithDropdownId($raw_data, $this->getProperty()->getForeignKeyFilter());
+                }else{
+                    // get the asset, dropdown menu option or what have you
+                    if($obj instanceof SmartestCmsItem){
+                        
+                        // only bother trying to hydrate the SmartestCmsItem subclass if we have an actual foreign key to use:
+                        if(strlen($raw_data)){
+                            $obj->hydrate($raw_data);
+                        }
+                        
+                    }else{
+                        $obj->hydrate($raw_data);
+                    }
+                }
+                
+            }else{
+                // get a SmartestBasicType object
+                $obj = new $class;
+                $obj->setValue($raw_data);
+            }
+            
+            $this->_value_object = $obj;
+            
+        }
+        
+        return $this->_value_object;
+        
+    }
+    
+    protected function assignNewValueToValueObject($raw_data){
+        
+        
+        
+    }
+    
+    // function that processes data for output/GET functions
+    // Now no longer used
     protected function processContent($draft=false){
         
-        if($draft){
+        /* if($draft){
             $raw_data = $this->_properties['draft_content'];
         }else{
             $raw_data = $this->_properties['content'];
-        }
-	
-       // var_dump($raw_data.' ');
-        // print_r($this->_properties);
-	
+        } */
+        
         switch($this->getProperty()->getDatatype()){
             
-            case "SM_DATATYPE_DATE":
+            /* case "SM_DATATYPE_DATE":
                 
                 if(!is_numeric($raw_data)){
                     $time = strtotime($raw_data);
@@ -85,32 +154,33 @@ class SmartestItemPropertyValue extends SmartestDataObject{
             
             case "SM_DATATYPE_BOOLEAN":
                 
+                $data = new SmartestBoolean($data);
+                
                 if($raw_data == "FALSE" || $raw_data == "0"){
                     $data = false;
                 }else{
                     $data = true;
                 }
                 
-                // echo $raw_data;
+                break; 
                 
-                // var_dump($data);
-                
-                break;
+            case "SM_DATATYPE_CMS_ITEM":
+                break; */
                 
             default:
-                $data = $raw_data;
+                $data = $this->getValueObject($draft);
                 break;
         }
         
-	// var_dump($data);
-	
-        return $data;
+	    return $data;
         
     }
     
+    // function that processes data for input/SET functions
+    // converts data to storeable format
     protected function filterNewContent($raw_data){
         
-        // echo $this->getProperty()->getDatatype();
+        // $this->assignNewValueToValueObject();
         
         switch($this->getProperty()->getDatatype()){
             
@@ -171,20 +241,21 @@ class SmartestItemPropertyValue extends SmartestDataObject{
     
     public function getContent(){
         
-        return $this->processContent();
+        // return $this->processContent();
+        return $this->getValueObject();
         
     }
     
     public function getDraftContent(){
         
-        return $this->processContent(true);
+        // return $this->processContent(true);
+        return $this->getValueObject(true);
         
     }
     
     public function getInfoField($field_name){
 	    
 	    $field_name = SmartestStringHelper::toVarName($field_name);
-	    
 	    $data = $this->getInfo();
 	    
 	    if(isset($data[$field_name])){
@@ -197,11 +268,8 @@ class SmartestItemPropertyValue extends SmartestDataObject{
 	public function setInfoField($field_name, $data){
 	    
 	    $field_name = SmartestStringHelper::toVarName($field_name);
-	    
 	    $existing_data = $this->getInfo(true);
-	    
 	    $existing_data[$field_name] = $data;
-	    
 	    $this->setInfo($existing_data);
 	    
 	}

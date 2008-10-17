@@ -2,41 +2,34 @@
 
 class SmartestDatabase{
     
-    protected $pdo;
-    protected $lastQuery;
-	protected $queryHistory;
-	protected $id;
-	protected $databaseName;
-	
-	public function __construct(){
-	    
-	    // $pdo_dsn = 
-	    
-	    try{
-	        $this->pdo = new PDO();
-        }catch (PDOException $e){
-            
-        }
-	}
-    
-    public function queryToArray(){
+    public static function getInstance($connection_name){
+        
+        $config = self::readConfiguration($connection_name);
+        $class = $config['class'];
+        $object = new $class($config);
+        return $object;
         
     }
     
-    public function rawQuery(){
+    public static function readConfiguration($connection_name){
         
-    }
-    
-    public function specificQuery(){
+        $dbconfig = parse_ini_file(SM_ROOT_DIR."Configuration/database.ini", true);
         
-    }
-    
-    protected function recordQuery(){
+        if(isset($dbconfig[$connection_name])){
         
-    }
-    
-    public function getDebugInfo(){
-        
+		    $ph = new SmartestParameterHolder($dbconfig[$connection_name]['name']);
+		
+		    foreach($dbconfig[$connection_name] as $key => $value){
+		        $ph->setParameter($key, $value);
+		    }
+		    
+		    return $ph;
+		
+	    }else{
+	        
+	        throw new SmartestException("Unknown database connection name: ".$connection_name);
+	        
+	    }
     }
     
 }

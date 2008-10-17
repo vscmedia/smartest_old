@@ -145,10 +145,10 @@
           <entitysource type="db" table="DropDownValues" matchfield="dropdownvalue_dropdown_id" class="SmartestDropdownOption" />
         </filter>
         
-        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
+        <render template="System/Applications/Items/Presentation/CMS/property.dropdownvalue.tpl" />
         <menu value="value" display="label" />
         
-        <class>SmartestDropdown</class>
+        <class>SmartestDropdownOption</class>
         
     </type>
     

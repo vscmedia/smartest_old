@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPagePresetDefinition extends SmartestDataObject{
+class SmartestPagePresetDefinition extends SmartestBasePagePresetDefinition{
     
     const CONTAINER = 'SM_PAGE_PRESET_DEF_CONTAINER';
 	const PLACEHOLDER = 'SM_PAGE_PRESET_DEF_PLACEHOLDER';

@@ -1,6 +1,6 @@
 <?php
 
-class SmartestItemProperty extends SmartestDataObject{
+class SmartestItemProperty extends SmartestBaseItemProperty{
 	
 	protected $_type_info;
 	protected $_possible_values = array();

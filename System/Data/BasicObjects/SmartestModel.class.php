@@ -1,6 +1,6 @@
 <?php
 
-class SmartestModel extends SmartestDataObject{
+class SmartestModel extends SmartestBaseModel{
 
 	protected $_model_properties = array();
 

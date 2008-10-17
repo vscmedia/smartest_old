@@ -2,7 +2,7 @@
 
 // this class is not supposed to be instantiated directly.
 
-class SmartestAssetIdentifier extends SmartestDataObject{
+class SmartestAssetIdentifier extends SmartestBaseAssetIdentifier{
     
     protected $_ancestor_chain = array();
     protected $_level;

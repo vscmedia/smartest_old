@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPage extends SmartestDataObject{
+class SmartestPage extends SmartestBasePage{
 
 	protected $_save_url = true;
 	protected $_fields_retrieval_attempted = false;
@@ -92,6 +92,10 @@ class SmartestPage extends SmartestDataObject{
 		        
 		    }
 	    }
+	}
+	
+	public function getPreset(){
+	    
 	}
 	
 	public function save(){
@@ -976,7 +980,7 @@ class SmartestPage extends SmartestDataObject{
 	    $data = array();
 	    
 	    $data['page'] = $this;
-	    $data['tags'] = $this->getTagsAsArrays();
+	    $data['tags'] = $this->getTags();
 	    
 	    if($this instanceof SmartestItemPage){
 	        if($this->getPrincipalItem()){
@@ -1053,8 +1057,8 @@ class SmartestPage extends SmartestDataObject{
 	    $array['is_tag_page'] = $this->isTagPage();
 	    
 	    if($this->getType() == 'ITEMCLASS'){
-	        if(is_object($this->getSimpleItem())){
-	            $array['link_contents'] = 'metapage:'.$this->getName().':id='.$this->getSimpleItem()->getId();
+	        if(is_object($this->_principal_item)){
+	            $array['link_contents'] = 'metapage:'.$this->getName().':id='.$this->_principal_item->getId();
             }else{
                 $array['link_contents'] = 'page:'.$this->getName();
             }
@@ -1072,23 +1076,21 @@ class SmartestPage extends SmartestDataObject{
 	
 	public function offsetGet($offset){
 	    
+	    $offset = strtolower($offset);
+	    
 	    switch($offset){
 	        
 	        case "title":
 	        return $this->getTitle();
-	        break;
 	        
 	        case "url":
 	        return $this->getDefaultUrl();
-	        break;
 	        
 	        case "formatted_title":
 	        return $this->getFormattedTitle();
-	        break;
 	        
 	        case "static_title":
 	        return $this->_properties['title'];
-	        break;
 	        
 	        case "link_contents":
 	        
@@ -1106,23 +1108,30 @@ class SmartestPage extends SmartestDataObject{
 	        
 	        case "is_tag_page":
 	        return $this->isTagPage();
-	        break;
 	        
 	        case "child_pages":
 	        return $this->getPageChildrenForWeb();
-	        break;
 	        
 	        case "sibling_level_pages":
 	        return $this->getParentPage()->getPageChildrenForWeb();
-	        break;
 	        
 	        case "parent_level_pages":
 			return $this->getGrandParentPage()->getPageChildrenForWeb();
-			break;
 	        
 	        case "level":
 	        return $this->getTreeLevel();
-	        break;
+	        
+	        case "tags":
+	        return $this->getTags();
+	        
+	        case "tags_list":
+	        return implode(', ', $this->getTags());
+	        
+	        case "authors":
+	        return $this->getAuthors();
+	        
+	        case "authors_list":
+	        return implode(', ', $this->getAuthors());
 	        
 	    }
 	    
@@ -1245,6 +1254,7 @@ class SmartestPage extends SmartestDataObject{
 	        }
 	    }
 	    
+	    // print_r($tags);
 	    return $tags;
 	    
 	}
@@ -1403,6 +1413,7 @@ class SmartestPage extends SmartestDataObject{
 		    }
 	    
 	        return $ds->getItems();
+	        // return array();
 	    
         }else{
             return array();

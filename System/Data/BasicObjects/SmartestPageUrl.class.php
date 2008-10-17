@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPageUrl extends SmartestDataObject{
+class SmartestPageUrl extends SmartestBasePageUrl{
 
 	protected function __objectConstruct(){
 		
@@ -16,6 +16,10 @@ class SmartestPageUrl extends SmartestDataObject{
 	    
 	    return count($result) ? true : false;
 	    
+	}
+	
+	public function __toString(){
+	    return $this->getUrl();
 	}
 	
 }

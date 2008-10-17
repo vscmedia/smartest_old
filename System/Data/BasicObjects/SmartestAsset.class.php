@@ -1,6 +1,6 @@
 <?php
 
-class SmartestAsset extends SmartestDataObject{
+class SmartestAsset extends SmartestBaseAsset{
     
     protected $_allowed_types = array();
     protected $_draft_mode = false;
@@ -54,9 +54,11 @@ class SmartestAsset extends SmartestDataObject{
 	}
 	
 	public function __toString(){
-	    
-	    return $this->_properties['stringid'].' ('.$this->_properties['url'].')';
-	    
+	    if($this->_properties['id']){
+	        return $this->_properties['stringid'].' ('.$this->_properties['url'].')';
+        }else{
+            return '';
+        }
 	}
 	
 	public function getSite(){

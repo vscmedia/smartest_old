@@ -1,0 +1,12 @@
+    public function get__FUNCNAME__(){
+        
+        return $this->getField('__PROPNAME__');
+        
+    }
+    
+    public function set__FUNCNAME__($value){
+        
+        return $this->setField('__PROPNAME__', $value);
+        
+    }
+    

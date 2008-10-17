@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPageFieldDefinition extends SmartestDataObject{
+class SmartestPageFieldDefinition extends SmartestBasePageFieldDefinition{
 	
 	protected $_page;
 	

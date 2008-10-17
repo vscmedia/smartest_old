@@ -40,7 +40,7 @@ Found templates. View as:
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Template Options</b></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="workWithItem('addTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add Another Master Template</a></li>
+	<li class="disabled-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addTemplate?type=SM_PAGE_MASTER_TEMPLATE';" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add Another Master Template</a></li>
 </ul>
 
 </div>

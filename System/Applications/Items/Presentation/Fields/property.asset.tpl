@@ -2,7 +2,7 @@
 <select name="item[{$property.id}]" id="item_property_{$property.id}">
   {if $property.required != 'TRUE'}<option value="0"></option>{/if}
   {foreach from=$property._options item="asset"}
-    <option value="{$asset.id}"{if $value==$asset.id} selected="selected"{/if}>{$asset.url}</option>
+    <option value="{$asset.id}"{if $value.id==$asset.id} selected="selected"{/if}>{$asset.url}</option>
   {/foreach}
 </select>
 

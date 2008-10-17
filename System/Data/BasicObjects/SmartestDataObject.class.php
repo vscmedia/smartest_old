@@ -40,7 +40,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	private function generateModel(){
 		
-		if($this->_table_name){
+		/*if($this->_table_name){
 			
 			$tables = $this->_dbTableHelper->getTables();
 			
@@ -48,8 +48,8 @@ class SmartestDataObject implements ArrayAccess{
 				
 				// build model
 				
-				$columns = $this->_dbTableHelper->getColumnNames($this->_table_name);
-			    $this->_original_fields = $columns;
+				// $columns = $this->_dbTableHelper->getColumnNames($this->_table_name);
+			    // $this->_original_fields = $columns;
 				
 				if(SmartestCache::hasData('internal_property_names_'.$this->_table_name, true)){
 				
@@ -71,8 +71,6 @@ class SmartestDataObject implements ArrayAccess{
     				SmartestCache::save('internal_property_names_'.$this->_table_name, $this->_properties, -1, true);
 				
 			    }
-			    
-			    
 				
 				$this->_original_fields_hash = $this->calculateFieldsHash($this->_original_fields);
 				
@@ -84,7 +82,7 @@ class SmartestDataObject implements ArrayAccess{
 		}else{
 			// ERROR: no table set
 			throw new SmartestException('Tables list could not be found. Please check the database connection settings');
-		}
+		} */
 		
 	}
 	
@@ -116,7 +114,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	protected function generatePropertiesLookup(){
 		
-		if(SmartestCache::hasData('properties_lookup_'.$this->_table_name)){
+		/* if(SmartestCache::hasData('properties_lookup_'.$this->_table_name)){
 		    
 		    $this->_properties_lookup = SmartestCache::load('properties_lookup_'.$this->_table_name, true);
 		    
@@ -130,18 +128,25 @@ class SmartestDataObject implements ArrayAccess{
 		    
 		    SmartestCache::save('properties_lookup_'.$this->_table_name, $this->_properties_lookup, -1, true);
 		
-	    }
+	    } */
 		
 	}
 	
 	public function offsetExists($offset){
+	    $offset = strtolower($offset);
 	    return isset($this->_properties[$offset]);
 	}
 	
 	public function offsetGet($offset){
+	    
+	    $offset = strtolower($offset);
+	    
 	    if(isset($this->_properties[$offset])){
 	        return $this->_properties[$offset];
+	    }else{
+	        return $this->__toString();
 	    }
+	    
 	}
 	
 	public function offsetSet($offset, $value){
@@ -157,9 +162,9 @@ class SmartestDataObject implements ArrayAccess{
 	}
 	
 	public function addPropertyAlias($alias, $column){
-		if(!isset($this->_properties_lookup[$alias])){
+		/* if(!isset($this->_properties_lookup[$alias])){
 			$this->_properties_lookup[$alias] = $column;
-		}
+		} */
 	}
 	
 	public function exemptFromPrefix($field_name){
@@ -175,11 +180,11 @@ class SmartestDataObject implements ArrayAccess{
 	}
 	
 	protected function setTableName($name){
-		$this->_table_name = $name;
+		// $this->_table_name = $name;
 	}
 	
 	public function getTablePrefix(){
-		return $this->_table_prefix;
+		// return $this->_table_prefix;
 	}
 	
 	public function getTableName($name){
@@ -240,11 +245,11 @@ class SmartestDataObject implements ArrayAccess{
 	}
 	
 	public function __toString(){
-		if($this->getLabel()){
+		if(isset($this->_properties['label'])){
 			return $this->getLabel();
-		}else if($this->getTitle()){
+		}else if(isset($this->_properties['title'])){
 			return $this->getTitle();
-		}else if($this->getName()){
+		}else if(isset($this->_properties['name'])){
 			return $this->getName();
 		}else{
 			return $this->getId();
@@ -255,8 +260,8 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    $methods = array();
 	    
-	    foreach($this->_properties_lookup as $property_name){
-	        $methods[] = 'get'.$property_name;
+	    foreach($this->_properties as $property_name=>$V){
+	        $methods[] = 'get'.SmartestStringHelper::toCamelCase($property_name);
 	    }
 	    
 	    return $methods;
@@ -273,29 +278,33 @@ class SmartestDataObject implements ArrayAccess{
 	
 	public function __call($name, $args){
 		
-		if (strtolower(substr($name, 0, 3)) == 'get') {
+		/* if (strtolower(substr($name, 0, 3)) == 'get') {
 			return $this->getField(substr($name, 3));
 		}
     
 		if ((strtolower(substr($name, 0, 3)) == 'set') && count($args)) {
 			return $this->setField(substr($name, 3), $args[0]);
-		}
+		} */
+		
+		throw new SmartestException('Call to undefined function: '.get_class($this).'->'.$name.'()');
+		
 	}
 	
 	protected function getField($field_name){
-		if(isset($this->_properties_lookup[$field_name])){
-			return $this->_properties[$this->_properties_lookup[$field_name]];
-		}else if(array_key_exists($field_name.'Id', $this->_properties_lookup)){
+		if(isset($this->_properties[$field_name])){
+			// return $this->_properties[$this->_properties_lookup[$field_name]];
+			return $this->_properties[$field_name];
+		}else if(array_key_exists($field_name.'_id', $this->_properties)){
 			// retrieve foreign key object, getSite(), getModel(), etc...
-			if(array_key_exists($this->_properties_lookup[$field_name.'Id'], $this->_foreign_key_objects)){
-				return $this->_foreign_key_objects[$this->_properties_lookup[$field_name.'Id']];
+			if(array_key_exists($this->_properties[$field_name], $this->_foreign_key_objects)){
+				return $this->_foreign_key_objects[$field_name];
 			}else{
 				$foreign_model_name = 'Smartest'.$field_name;
 				if(class_exists($foreign_model_name)){
 					$obj = new $foreign_model_name;
-					$obj->hydrate($this->_properties[$this->_properties_lookup[$field_name.'Id']]);
-					$this->_foreign_key_objects[$this->_properties_lookup[$field_name.'Id']] = $obj;
-					return $this->_foreign_key_objects[$this->_properties_lookup[$field_name.'Id']];
+					$obj->hydrate($this->_properties[$field_name.'_id']);
+					$this->_foreign_key_objects[$field_name] = $obj;
+					return $this->_foreign_key_objects[$field_name];
 				}else{
 					return null;
 				}
@@ -315,8 +324,8 @@ class SmartestDataObject implements ArrayAccess{
 		    return $this->_properties[substr($field_name, strlen($this->_table_prefix))];
 		}else if(isset($this->_properties[$field_name.'_id'])){
 			// retrieve foreign key object, getSite(), getModel(), etc...
-			if(isset($this->_foreign_key_objects[$field_name.'_id'])){
-				return $this->_foreign_key_objects[$field_name.'_id'];
+			if(isset($this->_foreign_key_objects[$field_name])){
+				return $this->_foreign_key_objects[$field_name];
 			}else{
 			    $cn = SmartestStringHelper::toCamelCase($field_name);
 				$foreign_model_name = 'Smartest'.$cn;
@@ -324,8 +333,8 @@ class SmartestDataObject implements ArrayAccess{
 				if(class_exists($foreign_model_name)){
 					$obj = new $foreign_model_name;
 					$obj->hydrate($this->_properties[$field_name.'_id']);
-					$this->_foreign_key_objects[$field_name.'_id'] = $obj;
-					return $this->_foreign_key_objects[$field_name.'_id'];
+					$this->_foreign_key_objects[$field_name] = $obj;
+					return $this->_foreign_key_objects[$field_name];
 				}else{
 					return null;
 				}
@@ -339,12 +348,12 @@ class SmartestDataObject implements ArrayAccess{
 	
 	protected function setField($field_name, $value){
 		
-		if(isset($this->_properties_lookup[$field_name])){
+		if(isset($this->_properties[$field_name])){
 			
 			// field being set is part of the model and corresponds to a column in the db table
-			$this->_properties[$this->_properties_lookup[$field_name]] = $value;
+			$this->_properties[$field_name] = $value;
 			$value = str_replace("'", "\\'", $value);
-			$this->_modified_properties[$this->_properties_lookup[$field_name]] = SmartestStringHelper::sanitize($value);
+			$this->_modified_properties[$field_name] = SmartestStringHelper::sanitize($value);
 			
 		}else{
 		    
@@ -424,7 +433,7 @@ class SmartestDataObject implements ArrayAccess{
 				    foreach($result[0] as $name => $value){
 					    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
 						    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
-						    $this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix));
+						    /* $this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix)); */
 					    }else if(isset($this->_no_prefix[$name])){
 						    $this->_properties[$name] = $value;
 					    }
@@ -466,7 +475,7 @@ class SmartestDataObject implements ArrayAccess{
 		    foreach($result[0] as $name => $value){
 			    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
 				    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
-				    $this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix));
+				    // $this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix));
 			    }else if(isset($this->_no_prefix[$name])){
 				    $this->_properties[$name] = $value;
 			    }
@@ -542,7 +551,7 @@ class SmartestDataObject implements ArrayAccess{
     			$id = $this->database->query($sql);
 			
     			$this->_properties['id'] = $id;
-    			$this->generatePropertiesLookup();
+    			// $this->generatePropertiesLookup();
     			$this->_came_from_database = true;
     		}
 		

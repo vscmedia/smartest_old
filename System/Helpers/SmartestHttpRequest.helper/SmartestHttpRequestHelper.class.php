@@ -14,7 +14,7 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		curl_setopt($ch, CURLOPT_URL, $address);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, 'Smartest HTTP Request Helper (Version'.SM_SYSTEM_VERSION.')');
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Smartest PageGrab [HTTP Request Helper], (Version'.SM_SYSTEM_VERSION.')');
 		
 		if($type == 'POST'){
 			curl_setopt($ch, CURLOPT_POST, 1);
@@ -39,11 +39,13 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 				foreach($urls as $resource_url){
 				    if(!in_array($resource_url, $already_processed)){
 					    if($resource_url{0} == '/'){
-					        // echo $resource_url.' - '.$protocol.$hostname.$resource_url."\n";
-    						// $page = str_replace($resource_url, $protocol.$hostname.$resource_url, $page);
-    						$regexp = SmartestStringHelper::toRegularExpression($resource_url);
-    						$page = preg_replace('/href=[\'"]?'.$regexp.'[\'"]/', 'href="'.$protocol.$hostname.$resource_url."\\1".'"', $page);
+					        
+					        $regexp = SmartestStringHelper::toRegularExpression($resource_url);
+    						$regexp = '/href=[\'"]?'.$regexp.'[\'"]/';
+    						
+    						$page = preg_replace($regexp, 'href="'.$protocol.$hostname.$resource_url."\\1".'"', $page);
     						$already_processed[] = $resource_url;
+    						
     					}else{
     						if(substr($resource_url, 0, $protocol_length) != $protocol && strlen($resource_url) > 1){
     							$regexp = SmartestStringHelper::toRegularExpression($resource_url);
@@ -53,12 +55,8 @@ class SmartestHttpRequestHelper extends SmartestHelper{
     					}
 				    }
 				}
-				
-				// print_r($already_processed);
-				
 			}
 			
-			// print_r($res);
 			$already_processed = array();
 		
 			if(is_array($res)){

@@ -1,6 +1,6 @@
 <?php
 
-class SmartestManyToManyLookup extends SmartestDataObject{
+class SmartestManyToManyLookup extends SmartestBaseManyToManyLookup{
 
     protected function __objectConstruct(){
 		

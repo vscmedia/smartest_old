@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPagePreset extends SmartestDataObject{
+class SmartestPagePreset extends SmartestBasePagePreset{
 
 	protected $_preset_definitions = array();
 	protected $_original_page;

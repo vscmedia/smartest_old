@@ -50,30 +50,33 @@ class SmartestObjectModelHelper{
 			
 		}
 		
-		/* $varnames_lookup = '    protected $_properties_varnames_lookup = array('."\n";
-		$i = 1;
+		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt')){
+			
+			$functions = self::buildAutoClassFunctionCode($model);
+			$varnames_lookup = self::buildAutoClassVarnameLookupCode($model);
+			
+			$file = str_replace('__THISCLASSNAME__', 'auto'.$className, $file);
+			$file = str_replace('__THECONSTANTS__', $constants, $file);
+			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
+			$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);
+			$file = str_replace('__MODEL_ID__', $id, $file);
+			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
 		
-		foreach($properties as $property){
+			file_put_contents(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$className.'.class.php', $file);
+			return true;
 			
-			$new_constant = "        '".SmartestStringHelper::toCamelCase($property->getName())."' => '".$property->getVarname()."'";
-			
-			if($i < count($properties)){
-			    $new_constant .= ',';
-			}
-			
-			$new_constant .= "\n";
-			
-			$varnames_lookup .= $new_constant;
-			$i++;
-			
+		}else{
+			return false;
 		}
 		
-		$varnames_lookup .= '    );'."\n\n"; */
-		
-		$varnames_lookup = '    protected $_varnames_lookup = array('."\n";
+	}
+	
+	static function buildAutoClassVarnameLookupCode(SmartestModel $m){
+	    
+	    $varnames_lookup = '    protected $_varnames_lookup = array('."\n";
 		$i = 1;
 		
-		foreach($properties as $property){
+		foreach($m->getProperties() as $property){
 			
 			$new_constant = "        '".$property->getVarname()."' => ".$property->getId();
 			
@@ -90,25 +93,8 @@ class SmartestObjectModelHelper{
 		
 		$varnames_lookup .= '    );'."\n\n";
 		
-		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt')){
-			
-			$functions = self::buildAutoClassFunctionCode($model);
-			
-			$file = str_replace('__THISCLASSNAME__', 'auto'.$className, $file);
-			$file = str_replace('__THECONSTANTS__', $constants, $file);
-			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
-			$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);
-			$file = str_replace('__MODEL_ID__', $id, $file);
-			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
-		
-			// echo $file;
-		
-			file_put_contents(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$className.'.class.php', $file);
-			return true;
-		}else{
-			return false;
-		}
-		
+		return $varnames_lookup;
+	    
 	}
 	
 	static function buildAutoClassFunctionCode(SmartestModel $m){

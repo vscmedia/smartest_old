@@ -1,6 +1,6 @@
 <?php
 
-class SmartestTextFragment extends SmartestDataObject{
+class SmartestTextFragment extends SmartestBaseTextFragment{
     
     protected function __objectConstruct(){
         

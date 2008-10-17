@@ -1,6 +1,6 @@
 <?php
 
-class SmartestCmsItemSet extends SmartestDataObject{
+class SmartestCmsItemSet extends SmartestBaseCmsItemSet{
     
     protected $_set_members = array();
     protected $_set_members_simple = array();
@@ -459,6 +459,10 @@ class SmartestCmsItemSet extends SmartestDataObject{
         }
         
         return $this->_model;
+	}
+	
+	public function getModelId(){
+	    return $this->getItemclassId();
 	}
 	
 	public function getConditions(){

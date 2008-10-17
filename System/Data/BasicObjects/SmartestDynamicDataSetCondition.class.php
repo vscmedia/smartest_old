@@ -1,6 +1,6 @@
 <?php
 
-class SmartestDynamicDataSetCondition extends SmartestDataObject{
+class SmartestDynamicDataSetCondition extends SmartestBaseDynamicDataSetCondition{
     
     protected function __objectConstruct(){
 		

@@ -1,6 +1,6 @@
 <?php
 
-class SmartestBaseUser extends SmartestDataObject{
+class SmartestUser extends SmartestBaseUser{
 	
 	protected $_tokens = array();
 	protected $_site_ids = array();
@@ -285,20 +285,45 @@ class SmartestBaseUser extends SmartestDataObject{
 	    return $this->getFirstname().' '.$this->getLastname();
 	}
 	
-	public function __toArray(){
+	public function getFullName(){
 	    
-	    $data = parent::__toArray();
-	    $data['full_name'] = $this->_properties['firstname'];
+	    $full_name = $this->_properties['firstname'];
 	    
 	    if($this->_properties['firstname']){
-	        $data['full_name'] .= ' ';
+	        $full_name .= ' ';
 	    }
 	    
 	    if($this->_properties['lastname']){
-	        $data['full_name'] .= $this->_properties['lastname'];
+	        $full_name .= $this->_properties['lastname'];
 	    }
 	    
+	    return $full_name;
+	    
+	}
+	
+	public function __toArray(){
+	    
+	    $data = parent::__toArray();
+	    $data['full_name'] = $this->getFullName();
+	    
 	    return $data;
+	    
+	}
+	
+	public function offsetGet($offset){
+	    
+	    $offset = strtolower($offset);
+	    
+	    switch($offset){
+	        case "password":
+	        return null;
+	        
+	        case "full_name":
+	        case "fullname":
+	        return $this->getFullName();
+	    }
+	    
+	    return parent::offsetGet($offset);
 	    
 	}
 	

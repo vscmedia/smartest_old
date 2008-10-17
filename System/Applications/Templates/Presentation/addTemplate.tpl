@@ -5,16 +5,13 @@ function showUploader(){
 	document.getElementById('tplUploader').style.display = 'block';
 	document.getElementById('tplUploadShowButton').style.display = 'none';
 	document.getElementById('editTemplateText').style.display = 'none';
-	// document.getElementById('editorButtons').style.display = 'none';
 	document.getElementById('add_type').value = 'UPLOAD';
-	alert(document.getElementById('add_type').value);
 }
 
 function hideUploader(){
 	document.getElementById('tplUploader').style.display = 'none';
 	document.getElementById('tplUploadShowButton').style.display = 'block';
 	document.getElementById('editTemplateText').style.display = 'block';
-	// document.getElementById('editorButtons').style.display = 'inline';
 	document.getElementById('add_type').value = 'DIRECT';
 }
 

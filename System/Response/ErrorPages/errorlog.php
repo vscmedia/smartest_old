@@ -62,7 +62,7 @@
                 <br clear="all" />
                 <ul>
                     <?php $i=0; foreach($error->getBackTrace() as $clue): ?>
-                    <li><?php echo $clue['function'].'() in '.basename($clue['file']).' on line '.$clue['line']; ++$i; ?></li>
+                    <li><?php echo $clue['class'].$clue['type'].$clue['function'].'() in '.basename($clue['file']).' on line '.$clue['line']; ++$i; ?></li>
                     <?php if($i > 6){break;} ?>
                 <?php endforeach; ?>
                 </ul>

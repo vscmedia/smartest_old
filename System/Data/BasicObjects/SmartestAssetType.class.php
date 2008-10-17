@@ -1,6 +1,6 @@
 <?php
 
-class SmartestAssetType extends SmartestDataObject{
+class SmartestAssetType extends SmartestBaseAssetType{
 
 	protected $_category;
 	

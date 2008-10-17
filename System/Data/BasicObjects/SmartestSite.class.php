@@ -1,6 +1,6 @@
 <?php
 
-class SmartestSite extends SmartestDataObject{
+class SmartestSite extends SmartestBaseSite{
     
     protected $_home_page = null;
     protected $_containers = array();

@@ -1,6 +1,6 @@
 <?php
 
-class SmartestTodoItem extends SmartestDataObject{
+class SmartestTodoItem extends SmartestBaseTodoItem{
     
     protected $_type_object;
     protected $_target_object;

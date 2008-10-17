@@ -13,6 +13,7 @@ class SmartestEngine extends Smarty{
 	protected $_child_processes = array();
 	protected $_context;
 	protected $_abstractPropertyHolder = array();
+	protected $_log = array();
 	
 	public function __construct($process_id){
 	    
@@ -131,6 +132,16 @@ class SmartestEngine extends Smarty{
         }else{
             echo '<br />ERROR: Template \''.$template.'\' does not exist.';
         }
+	}
+	
+	protected function _log($message){
+	    $this->_log[] = $message;
+	}
+	
+	protected function _comment($message){
+	    $message = str_replace('-->', '', $message);
+	    $this->_log($message);
+	    return "<!-- SmartestEngine Message: ".$message." -->\n";
 	}
 	
 	public function evaluate($string, $compile_name=null){

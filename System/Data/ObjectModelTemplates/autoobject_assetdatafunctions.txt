@@ -1,0 +1,11 @@
+    public function get__PROPNAME__AssetId($draft=false){
+        return $this->getPropertyValueByNumericKey(__PROPID__, $draft);
+    }
+    
+    public function get__PROPNAME__($draft=false){
+        $id = $this->getPropertyValueByNumericKey(__PROPID__, $draft);
+    }
+
+    public function set__PROPNAME__AssetId($value){
+        return $this->setPropertyValueByNumericKey(__PROPID__, $value);
+    }

@@ -112,13 +112,13 @@ class SmartestResponse{
 	
 	function __construct(){
 		
+		// These files can't be included using the include optimisation because it depends on their already having been included
 		require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
         require SM_ROOT_DIR.'System/Helpers/SmartestHelper.class.php';
         require SM_ROOT_DIR.'System/Base/SmartestException.class.php';
         require SM_ROOT_DIR.'System/Base/SmartestError.class.php';
         require SM_ROOT_DIR.'System/Base/SmartestErrorStack.class.php';
-        
-        // These files can't be included using the include optimisation because it depends on their already having been included
+        require SM_ROOT_DIR.'System/Data/SmartestDatabase.class.php';
         
         $this->errorStack = new SmartestErrorStack();
 
@@ -135,6 +135,7 @@ class SmartestResponse{
         	'System/Data/SmartestSession.class.php',
         	'System/Data/SmartestPersistentObject.class.php',
         	'System/Data/SmartestDataAccessClass.interface.php',
+        	'System/Data/Types/SmartestBasicType.interface.php',
         	'System/Response/SmartestResponseDataHolder.class.php',
         	'System/Data/SmartestMysql.class.php',
         	'System/Data/SmartestSqllite.class.php',
@@ -147,13 +148,11 @@ class SmartestResponse{
 
         );
 
-        include 'PEAR.php';
-        include 'XML/Unserializer.php';
-        include 'XML/Serializer.php';
+        require 'PEAR.php';
+        require 'XML/Unserializer.php';
+        require 'XML/Serializer.php';
 
         SmartestDataUtility::loadTypeObjects();
-        SmartestDataUtility::loadBasicObjects();
-        SmartestDataUtility::loadExtendedObjects();
 
         // include SM_ROOT_DIR.'Libraries/Plugins/SmartestXml/SmartestXmlSerializer.class.php';
 
@@ -176,16 +175,53 @@ class SmartestResponse{
         	'System/Base/SmartestBaseProcess.class.php',
         	'System/Base/SmartestBaseApplication.class.php',
         	'System/Base/SmartestSystemApplication.class.php',
-        	'Library/API/SmartestApplication.class.php',
-        	'Library/API/SmartestUser.class.php'
+        	'System/Data/SmartestDataObjectHelper.class.php',
+        	'System/Templating/SmartestWebPageBuilder.class.php'
 
         );
         
-        include SM_ROOT_DIR.'System/Templating/SmartestWebPageBuilder.class.php';
+        // load database connection settings
+        // this has to be done here so that it is available to dataobject builder
+		/* if(SmartestCache::hasData('dbconfig', true)){
+			
+			$this->dbconfig = SmartestCache::load('dbconfig', true);
+			$this->_log("Database settings loaded from disk cache.");
+			
+		}else{ */
+			
+			/* $dbconfig = parse_ini_file(SM_ROOT_DIR."Configuration/database.ini", true);
+			$this->dbconfig = new SmartestParameterHolder('Main Database Configuration Parameters');
+			
+			foreach($dbconfig['SMARTEST'] as $key => $value){
+			    $this->dbconfig->setParameter($key, $value);
+			} */
+			
+			$this->dbconfig = SmartestDatabase::readConfiguration('SMARTEST');
+			
+			// SmartestCache::save('dbconfig', $this->dbconfig, -1, true);
+			$this->_log("Database settings loaded from ".SM_ROOT_DIR."Configuration/database.ini.");
+			
+		// }
+        
+        try{
+	        
+	        $d = new SmartestDataObjectHelper($this->dbconfig);
+	        $d->loadBasicObjects();
+            $d->loadExtendedObjects();
+            
+            SmartestFileSystemHelper::include_group(
+
+            	'Library/API/SmartestApplication.class.php',
+            	'Library/API/myUser.class.php'
+
+            );
+            
+	    }catch(SmartestException $e){
+    		$this->errorFromException($e);
+    	}
         
         define('SM_START_TIME', microtime(true));
 		$this->startTime = SM_START_TIME;
-		// echo $this->startTime;
 		
 	}
 	
@@ -193,32 +229,14 @@ class SmartestResponse{
 		
 		@session_start();
 		
-		// print_r(SmartestPersistentObject::getRegisteredNames(SmartestSession::NOTFALSE));
-		// print_r($_SESSION);
-		
 		$this->_log("Session started");
 		
 		SmartestPersistentObject::set('errors:stack', $this->errorStack);
 		SmartestPersistentObject::set('centralDataHolder', new SmartestResponseDataHolder);
 		
-		// print_r(SmartestSession::clearAll(true));
-		
 		$this->checkRequiredExtensionsLoaded();
 		$this->checkRequiredFilesExist();
 		$this->checkWritablePermissions();
-		
-		// load database connection settings
-		if(SmartestCache::hasData('dbconfig', true)){
-			$this->dbconfig = SmartestCache::load('dbconfig', true);
-			$this->_log("Database settings loaded from disk cache.");
-		}else{
-			$dbconfig = parse_ini_file(SM_ROOT_DIR."Configuration/database.ini");
-			$this->dbconfig = $dbconfig;
-			SmartestCache::save('dbconfig', $dbconfig, -1, true);
-			$this->_log("Database settings loaded from ".SM_ROOT_DIR."Configuration/database.ini.");
-		}
-		
-		// print_r($this->dbconfig);
 		
 		// load up settings
 		$this->configuration = new SmartestConfigurationHelper();
@@ -238,14 +256,14 @@ class SmartestResponse{
 		// load system-essential settings
 		// this will probably be moved to sqlite
 		try{
-			$this->systemOptions   = $this->configuration->getSystemOptions();
+			$this->systemOptions = $this->configuration->getSystemOptions();
 		} catch(SmartestException $e){
 			$this->errorFromException($e);
 		}
 		
 		// load measuring units
 		try{
-			$this->measuringUnits  = $this->configuration->getMeasuringUnits();
+			$this->measuringUnits = $this->configuration->getMeasuringUnits();
 		} catch(SmartestException $e){
 			$this->errorFromException($e);
 		}
@@ -254,11 +272,8 @@ class SmartestResponse{
 		
 		// instantiate database object
 		try{
-			$mysql = new SmartestMysql($this->dbconfig['host'], $this->dbconfig['username'], $this->dbconfig['database'], $this->dbconfig['password']);
-			// var_dump($mysql);
-			// $_SESSION['database'] = $mysql;
+			$mysql = new SmartestMysql($this->dbconfig);
 			SmartestPersistentObject::set('db:main', $mysql);
-			// var_dump(SmartestPersistentObject::get('db:main'));
 		} catch(SmartestException $e){
 			$this->errorFromException($e);
 	    }
@@ -1040,6 +1055,8 @@ class SmartestResponse{
 		    $this->content = new stdClass;
 		}
 		
+		// print_r($this->getClasses());
+		
 		switch($this->controller->getNamespace()){
 		    case 'ui':
 		        echo $this->fetch(true);
@@ -1049,7 +1066,7 @@ class SmartestResponse{
 		        break;
 		    default:
 		        echo $this->fetch();
-		        // echo $this->fullTimeTaken.'<br />';
+		        echo $this->fullTimeTaken.'<br />';
 		        // 
 		        break;
 	    }

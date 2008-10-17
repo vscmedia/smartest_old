@@ -2,7 +2,7 @@
 
 // this class is not supposed to be instantiated directly.
 
-class SmartestAssetClass extends SmartestDataObject{
+class SmartestAssetClass extends SmartestBaseAssetClass{
     
     protected $_type_info;
     
