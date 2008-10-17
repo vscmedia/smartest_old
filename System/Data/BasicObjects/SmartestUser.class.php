@@ -392,7 +392,7 @@ class SmartestUser extends SmartestBaseUser{
 	    
 	    $task = new SmartestTodoItem;
 	    $task->setReceivingUserId($this->_properties['id']);
-	    $task->setAssigningUserIs($assigner_id);
+	    $task->setAssigningUserId($assigner_id);
 	    $task->setForeignObjectId($entity_id);
 	    $task->setTimeAssigned(time());
 	    $task->setDescription($input_message);
