@@ -180,7 +180,7 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	
 	public function save(){
 	    
-	    $this->setLastModified(time());
+	    $this->setModified(time());
 	    $this->createPreviewFile();
 	    // print_r($this->_modified_properties);
 	    
