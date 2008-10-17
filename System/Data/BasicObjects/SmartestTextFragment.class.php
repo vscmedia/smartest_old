@@ -174,15 +174,13 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	}
 	
 	protected function _setContent($content){
-	    // echo $content;
-	    return $this->setField('Content', $content);
+	    return $this->setField('content', $content);
 	}
 	
 	public function save(){
 	    
 	    $this->setModified(time());
 	    $this->createPreviewFile();
-	    // print_r($this->_modified_properties);
 	    
 	    parent::save();
 	    
