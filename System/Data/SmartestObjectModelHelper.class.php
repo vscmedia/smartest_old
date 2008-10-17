@@ -75,8 +75,9 @@ class SmartestObjectModelHelper{
 	    
 	    $varnames_lookup = '    protected $_varnames_lookup = array('."\n";
 		$i = 1;
+		$properties = $m->getProperties();
 		
-		foreach($m->getProperties() as $property){
+		foreach($properties as $property){
 			
 			$new_constant = "        '".$property->getVarname()."' => ".$property->getId();
 			
