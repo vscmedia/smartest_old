@@ -1,16 +1,5 @@
 <?php
 
-define("SM_ERROR_MISC", 100);
-define("SM_ERROR_TMPL", 101);
-define("SM_ERROR_FILES", 102);
-define("SM_ERROR_PERMISSIONS", 102);
-define("SM_ERROR_AUTH", 103);
-define("SM_ERROR_DB", 104);
-define("SM_ERROR_DATABASE", 104);
-define("SM_ERROR_PHP", 105);
-define("SM_ERROR_USER", 106);
-define("SM_ERROR_MODEL", 107);
-
 class SmartestErrorStack{
 	
 	protected $stack = array();
@@ -27,7 +16,8 @@ class SmartestErrorStack{
 			"104" => "Database",
 			"105" => "PHP",
 			"106" => "User Code",
-			"107" => "Object Model Automation"
+			"107" => "Object Model Automation",
+			"108" => "Internal Smartest"
 		);
 		
 	}

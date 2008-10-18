@@ -53,7 +53,7 @@ function viewPage(){
 </script>
 <div id="work-area">
 
-<h3><a href="{$domain}{$section}">Data Manager</a> &gt; <a href="{$domain}{$section}">Model Structure</a>  &gt;  {$itemclass.name}</h3>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$itemclass.id}">{$itemclass.plural_name}</a> &gt; Properties</h3>
 <a name="top"></a>
 <div class="text" style="margin-bottom:10px">Click a property once and choose from the options on the right.</div>
 
@@ -65,7 +65,7 @@ function viewPage(){
 <ul class="tree-parent-node-open" id="tree-root">
   {defun name="menurecursion" list=$definition}
        {foreach from=$list item="element"}
-    <li >
+    <li>
        <a id="item_{$element.id}" class="option" href="javascript:nothing()" onclick="setSelectedItem('{$element.id}','{$element.varname}', 'fff');" ondblclick="window.location='{$domain}{$section}/editItemProperty?class_id={$itemclass.id}&amp;itemproperty_id={$element.id}'">		 
         <img border="0" src="{$domain}Resources/Icons/page_code.png" />
         {$element.varname}
@@ -80,16 +80,15 @@ function viewPage(){
 
 <div id="actions-area">
 
-<ul class="actions-list" id="item-specific-actions">
+<ul class="actions-list" id="item-specific-actions" style="display:none">
 	<li class="permanent-action"><b>Node Options</b></li>
-	
 	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('editItemProperty'); }{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt="">Edit</a></li>
 	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="">Delete</a></li>
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
     <li class="disabled-action"><i>Please Select a Node</i></li>
-<li class="permanent-action"><a href="#" onclick="{literal}workWithItem('addPropertyToClass');{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_add.png" border="0" alt="">Add Property</a></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addPropertyToClass?class_id={$itemclass.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_add.png" border="0" alt="">Add Property</a></li>
 </ul>
 
 </div>

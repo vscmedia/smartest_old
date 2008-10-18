@@ -286,7 +286,7 @@ class SmartestDataObject implements ArrayAccess{
 			return $this->setField(substr($name, 3), $args[0]);
 		} */
 		
-		throw new SmartestException('Call to undefined function: '.get_class($this).'->'.$name.'()');
+		throw new SmartestException('Call to undefined function: '.get_class($this).'->'.$name.'()', SM_ERROR_USER);
 		
 	}
 	

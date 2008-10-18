@@ -51,8 +51,8 @@
         <long>false</long>
         
         <filter>
-          <typesource type="smartest:assettypes" />
-          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" />
+          <typesource type="smartest:assettypes" label="File Type" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.assettypes.tpl" />
+          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" label="File" />
           <condition field="asset_deleted" value="1" operator="NOT_EQUAL" />
         </filter>
         
@@ -72,8 +72,9 @@
         <long>false</long>
         
         <filter>
-          <typesource type="smartest:assettypes" />
-          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" />
+          <typesource type="smartest:assettypes" label="File Type" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.assettypes.tpl" />
+          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" label="File" />
+          <condition field="asset_deleted" value="1" operator="NOT_EQUAL" />
         </filter>
         
         <menu value="id" display="stringid" />
@@ -101,7 +102,7 @@
         <long>false</long>
         
         <filter>
-          <typesource type="db" table="ItemClasses" matchfield="id" />
+          <typesource type="db" table="ItemClasses" matchfield="id" label="Model" class="SmartestModel" orderfield="itemclass_plural_name" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.models.tpl" />
           <entitysource type="db" table="Items" matchfield="item_itemclass_id" sitefield="item_site_id" sharedfield="item_shared" class="SmartestItem" />
         </filter>
         
@@ -141,7 +142,7 @@
         <long>false</long>
         
         <filter>
-          <typesource type="db" table="DropDowns" matchfield="id" />
+          <typesource type="db" table="DropDowns" matchfield="id" label="Dropdown Menu" class="SmartestDropdown" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.dropdownmenus.tpl" />
           <entitysource type="db" table="DropDownValues" matchfield="dropdownvalue_dropdown_id" class="SmartestDropdownOption" />
         </filter>
         

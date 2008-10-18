@@ -1723,8 +1723,12 @@ class Items extends SmartestSystemApplication{
 		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
 		$property->setDatatype($post['itemproperty_datatype']);
 		$property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
-		$property->setItemclassId($model->getId());
 		
+		if(isset($post['itemproperty_foreign_key_filter'])){
+		    $property->setForeignKeyFilter($post['itemproperty_foreign_key_filter']);
+		}
+		
+		$property->setItemClassId($model->getId());
 		$property->save();
 	    
 	    SmartestCache::clear('model_properties_'.$model->getId(), true);
@@ -1733,7 +1737,7 @@ class Items extends SmartestSystemApplication{
 	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
 	    
 	    if($post['continue'] == 'NEW_PROPERTY'){
-	        $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId());
+	        $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId().'&continue=NEW_PROPERTY');
 	    }else{
 	        $this->redirect('/datamanager/getItemClassProperties?class_id='.$model->getId());
 	    }
@@ -1750,24 +1754,66 @@ class Items extends SmartestSystemApplication{
     		$model_id=$get["class_id"];
 		
     		$model = new SmartestModel;
-    		$model->hydrate($model_id);
-		
-    		$this->setTitle('Add a Property to Model | '.$model->getPluralName());
-		
-    		// $itemClasses = $this->manager->getItemClasses($get["class_id"]);
-    		$data_types = SmartestDataUtility::getDataTypes();
-		
-    		$this->send($model->compile(), 'model');
-    		$this->send($data_types, 'data_types');
+    		
+    		if($model->hydrate($model_id)){
+    		    
+    		    $data_types = SmartestDataUtility::getDataTypes();
+    		    
+    		    $this->send($data_types, 'data_types');
+    		    $this->send($model, 'model');
+    		    $this->setTitle('Add a Property to Model | '.$model->getPluralName());
+    		    $this->send(isset($get['continue']) ? $get['continue'] : 'PROPERTIES', 'continue');
+    		    
+    		    if(isset($get['itemproperty_datatype'])){
+    		        
+    		        $data_type_code = $get['itemproperty_datatype'];
+    		        
+    		        if(isset($data_types[$data_type_code])){
+    		            
+    		            $property = new SmartestItemProperty;
+    		            $property->setDataType($data_type_code);
+    		            
+    		            $data_type = $data_types[$data_type_code];
+    		            
+    		            if($data_type['valuetype'] == 'foreignkey' && isset($data_type['filter']['typesource'])){
+    		                
+    		                if(is_file($data_type['filter']['typesource']['template'])){
+    		                    $this->send(SmartestDataUtility::getForeignKeyFilterOptions($data_type_code), 'foreign_key_filter_options');
+    		                    $this->send(SM_ROOT_DIR.$data_type['filter']['typesource']['template'], 'filter_select_template');
+    		                }else{
+    		                    $this->send($data_type['filter']['typesource']['template'], 'intended_file');
+    		                    $this->send(SM_ROOT_DIR.'System/Applications/Items/Presentation/FKFilterSelectors/filtertype.unknown.tpl', 'filter_select_template');
+    		                }
+    		                
+    		                $this->send(true, 'foreign_key_filter_select');
+    		            }
+    		            
+    		            $this->send(true, 'show_full_form');
+    		            $this->send($property, 'property');
+    		            
+		            }else{
+		                $this->send(false, 'show_full_form');
+		            }
+    		    
+		        }else{
+		            
+		            $this->send(false, 'show_full_form');
+		            
+		        }
+    		
+		    }else{
+		        
+		        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::WARNING);
+    	        $this->redirect('/smartest/models');
+		        
+		    }
 		
 	    }else{
 	        
-	        $this->addUserMessageToNextRequest("You don't have permission to add model properties.");
+	        $this->addUserMessageToNextRequest("You don't have permission to add model properties.", SmartestUserMessage::ACCESSDENIED);
 	        $this->redirect('/smartest/models');
 	        
 	    }
-		
-		// print_r($data_types);
 		
 	}
 	
@@ -1802,7 +1848,6 @@ class Items extends SmartestSystemApplication{
 		// get properties and their values
 		$itemspropertyvalues = $this->manager->getItemPropertyValues($item_id,$itemsclass_id);
 
-		
 		// populate popup menus, if any
 		$selectMenus = array();
 		$dates = array();

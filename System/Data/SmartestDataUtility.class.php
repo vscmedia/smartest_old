@@ -4,9 +4,19 @@ class SmartestDataUtility{
 
 	protected $database;
 	
-	public function __construct(){
-		$this->database = SmartestPersistentObject::get('db:main');
-	}
+	public function __construct($connection_name = ''){
+        
+        if(strlen($connection_name)){
+            $this->database = SmartestDatabase::getInstance($connection_name);
+        }else{
+            if(isset($_SESSION)){
+                $this->database = SmartestPersistentObject::get('db:main');
+            }else{
+                throw new SmartestException("Tried to construct a SmartestDataUtility object with neither an active session or a specified connection name;");
+            }
+        }
+        
+    }
 	
 	public function getModels($simple = false, $site_id=''){
 		
@@ -102,6 +112,57 @@ class SmartestDataUtility{
 	    }
 	    
 	    return $arrays;
+	}
+	
+	public static function getForeignKeyFilterOptions($data_type_code){
+	    
+	    $data_types = self::getDataTypes();
+	    
+	    if(isset($data_types[$data_type_code])){
+	        $dt = $data_types[$data_type_code];
+	        
+	        if($dt['valuetype'] == 'foreignkey' && isset($dt['filter']['typesource'])){
+	            
+	            $t = $dt['filter']['typesource']['type'];
+	            
+	            if($t == 'smartest:assettypes'){
+	                $options = self::getAssetTypes();
+	                return $options;
+	            }else{
+	                $database = SmartestDatabase::getInstance('SMARTEST');
+	                $sql = "SELECT * FROM ".$dt['filter']['typesource']['table'];
+	                // add WHERE conditions here later
+	                if(isset($dt['filter']['typesource']['orderfield'])){
+	                    $sql .= " ORDER BY ".$dt['filter']['typesource']['orderfield'];
+	                }
+	                
+	                $c = $dt['filter']['typesource']['class'];
+	                
+	                if(strlen($c) && class_exists($c)){
+	                    
+	                    $result = $database->queryToArray($sql);
+	                    $options = array();
+	                    
+	                    foreach($result as $r){
+	                        $type = new $c;
+	                        $type->hydrate($r);
+	                        $options[] = $type;
+	                    }
+	                    
+	                    return $options;
+	                    
+                    }else{
+                        throw new SmartestException("Data type '".$data_type_code."' foreign key entity type does not have a value class.", SM_ERROR_SMARTEST_INTERNAL);
+                    }
+	            }
+	        }else{
+	            throw new SmartestException("Tried to get foreign key filter options for non foreign key data type: ".$data_type_code, SM_ERROR_SMARTEST_INTERNAL);
+	        }
+	        
+	    }else{
+	        throw new SmartestException("Tried to get foreign key filter options for non existent data type: ".$data_type_code, SM_ERROR_SMARTEST_INTERNAL);
+	    }
+	    
 	}
 	
 	public function getTags(){

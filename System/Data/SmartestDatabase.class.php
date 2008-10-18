@@ -6,8 +6,13 @@ class SmartestDatabase{
         
         $config = self::readConfiguration($connection_name);
         $class = $config['class'];
-        $object = new $class($config);
-        return $object;
+        
+        if(strlen($class)){
+            $object = new $class($config);
+            return $object;
+        }else{
+            throw new SmartestException("Database connection '".$connection_name."' does not have a valid class, e.g. SmartestMysql");
+        }
         
     }
     
