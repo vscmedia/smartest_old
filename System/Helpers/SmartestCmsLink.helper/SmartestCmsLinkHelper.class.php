@@ -229,6 +229,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     
     public function parseContent($with){
         if(substr($with, 0, 6) == 'image:'){
+            // if the content is supposed to be an image, create the tag
             $with = '<img src="'.SM_CONTROLLER_DOMAIN.'Resources/Images/'.substr($with, 6).'"';
             if(isset($this->_params['alt'])){
                 $with .= ' alt="'.$this->_params['alt'].'" />';
@@ -237,16 +238,18 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             }
             return $with;
         }else{
+            // otherwise just return whatever was in with=""
             return $with;
         }
     }
     
     public function getContent($ignore_with=false){
         
+        // if the with="" attribute is specified
         if($this->_params['with'] && !$ignore_with){
             return $this->parseContent($this->_params['with']);
         }else{
-            
+            // otherwise guess
             switch($this->_type){
 
                 case "page":

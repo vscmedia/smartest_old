@@ -46,11 +46,12 @@ class Pages extends SmartestSystemApplication{
 	            
 	            if($this->getUser()->hasToken('modify_page_properties')){
 	            
-	                if($page->getIsHeld() && $page->getHeldBy() != $this->getUser()->getId()){
+	                if($page->getIsHeld() && $page->getHeldBy() && $page->getHeldBy() != $this->getUser()->getId()){
     	                
     	                // page is already being edited by another user
     	                $editing_user = new SmartestUser;
-	                
+	                    // var_dump($page->getIsHeld());
+	                    
     	                if($editing_user->hydrate($page->getHeldBy())){
     	                    $this->addUserMessageToNextRequest($editing_user->__toString().' is already editing this page.', SmartestUserMessage::ACCESS_DENIED);
     	                }else{

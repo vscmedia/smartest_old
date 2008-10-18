@@ -19,6 +19,10 @@ class SmartestItem extends SmartestBaseItem{
 		return ($this->getPublic() == 'TRUE') ? true : false;
 	}
 	
+	public function getIsPublished(){
+	    return $this->getIsPublic();
+	}
+	
 	public function getModel(){
 	    
 	    if(!is_object($this_model)){

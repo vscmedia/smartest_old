@@ -86,11 +86,11 @@ class SmartestGenericListedObject implements ArrayAccess{
                 $this->_properties['webid'] = $this->_internal_object->getWebid();
                 
             }else{
-                throw new SmartestException("Supplied data must be an object that is either a SmartestPage or a subclass of either SmartestPage or SmartestCmsItem");
+                throw new SmartestException("Supplied data must be an object that is either a SmartestPage or a subclass of either SmartestPage or SmartestCmsItem", SM_ERROR_SMARTEST_INTERNAL);
             }
             
         }else{
-            throw new SmartestException("Supplied data must be an object in SmartestGenericListedObject");
+            throw new SmartestException("Supplied data must be an object in SmartestGenericListedObject", SM_ERROR_SMARTEST_INTERNAL);
         }
     }
     
@@ -120,7 +120,7 @@ class SmartestGenericListedObject implements ArrayAccess{
     }
     
     public function offsetExists($offset){
-        
+        return (isset($this->_properties[$offset]) || isset($this->_internal_object[$offset]));
     }
     
     public function offsetGet($offset){
