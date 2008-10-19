@@ -112,7 +112,7 @@ class SmartestAssetIdentifier extends SmartestBaseAssetIdentifier{
 	    
 	    $field_name = SmartestStringHelper::toVarName($field_name);
 	    $data = $this->getRenderData(true);
-	    $data[$field_name] = $new_data;
+	    $data[$field_name] = utf8_decode($new_data);
 	    $this->setRenderData($data);
 	    
 	}
@@ -124,7 +124,7 @@ class SmartestAssetIdentifier extends SmartestBaseAssetIdentifier{
 	    $field_name = SmartestStringHelper::toVarName($field_name);
 	    
 	    if(isset($data[$field_name])){
-	        return $data[$field_name];
+	        return utf8_encode($data[$field_name]);
 	    }else{
 	        return null;
 	    }
@@ -179,8 +179,8 @@ class SmartestAssetIdentifier extends SmartestBaseAssetIdentifier{
 	
 	public function publish($do_save=true){
 	    
-	    $this->setField('LiveRenderData', $this->_properties['draft_render_data']);
-		$this->setField('LiveAssetId', $this->_properties['draft_asset_id']);
+	    $this->setField('live_render_data', $this->_properties['draft_render_data']);
+		$this->setField('live_asset_id', $this->_properties['draft_asset_id']);
 		
 		// print_r($this->_properties['draft_asset_id']);
 		
@@ -189,8 +189,6 @@ class SmartestAssetIdentifier extends SmartestBaseAssetIdentifier{
 		if($do_save){
 		    $this->save();
 	    }
-	    
-	    // print_r($this);
 	    
 	}
 	

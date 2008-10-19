@@ -163,7 +163,7 @@ class SmartestAsset extends SmartestBaseAsset{
                         $tf->setAssetId($this->getId());
                         $tf->setCreated(time());
                         // $tf->save();
-                        $this->setField('FragmentId', $tf->getId());
+                        $this->setField('fragment_id', $tf->getId());
                     }
                     
                     // $this->save();

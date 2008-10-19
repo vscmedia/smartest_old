@@ -305,7 +305,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
 	}
 	
 	protected function _setInfo($serialized_data){
-	    $this->setField('DraftInfo', $serialized_data);
+	    $this->setField('draft_info', $serialized_data);
 	}
     
     public function setContent($data){

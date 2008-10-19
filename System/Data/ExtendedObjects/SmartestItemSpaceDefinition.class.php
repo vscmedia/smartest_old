@@ -101,14 +101,14 @@ class SmartestItemSpaceDefinition extends SmartestAssetIdentifier{
     public function setItemSpaceId($id){
         
         $id = (int) $id;
-        $this->setField('AssetclassId', $id);
+        $this->setField('assetclass_id', $id);
         
     }
     
     public function setDraftItemId($id){
         
         $id = (int) $id;
-        $this->setField('DraftAssetId', $id);
+        $this->setField('draft_asset_id', $id);
         
     }
     
@@ -117,9 +117,9 @@ class SmartestItemSpaceDefinition extends SmartestAssetIdentifier{
         $id = (int) $id;
         
         if($draft){
-            return $this->getField('DraftAssetId');
+            return $this->getField('draft_asset_id');
         }else{
-            return $this->getField('LiveAssetId');
+            return $this->getField('live_asset_id');
         }
         
     }

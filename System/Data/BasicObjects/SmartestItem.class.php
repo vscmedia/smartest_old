@@ -115,7 +115,8 @@ class SmartestItem extends SmartestBaseItem{
 		    $this->database->rawQuery($sql);
 		    $this->_came_from_database = false;
 	    }else{
-	        $this->setField('Deleted', 1);
+	        $this->setField('deleted', 1);
+	        $this->setField('id', null);
 	        $this->save();
 	    }
 	}

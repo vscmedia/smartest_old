@@ -85,7 +85,7 @@ class SmartestAssetClass extends SmartestBaseAssetClass{
 	}
 	
 	protected function _setInfo($serialized_data){
-	    $this->setField('Info', $serialized_data);
+	    $this->setField('info', $serialized_data);
 	}
 
 }

@@ -232,10 +232,12 @@ class SmartestPage extends SmartestBasePage{
 	        
 	        $ai = new SmartestAssetIdentifier;
 	        $ai->hydrateFromGiantArray($r);
-	        // print_r($ai);
+	        // print_r($ai->__toArray());
 	        $ais[] = $ai;
 	        
 	    }
+	    
+	    // print_r($ais);
 	    
 	    return $ais;
 	    
@@ -289,10 +291,13 @@ class SmartestPage extends SmartestBasePage{
 		        }
 	        }
 		    
+		    // var_dump($ai->getAssetClass()->getUpdateOnPagePublish());
 		    if($ai->getAssetClass()->getUpdateOnPagePublish() == 1 || $item_published){
 		        $ai->publish();
 		    }
 		}
+		
+		// print_r($this->database->getDebugInfo());
 		
 		$sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);

@@ -87,7 +87,7 @@ class SmartestItemSpace extends SmartestAssetClass{
 	public function save(){
 	    
 	    if($this->_properties['type'] != 'SM_ASSETCLASS_ITEM_SPACE'){
-	        $this->setField('Type', 'SM_ASSETCLASS_ITEM_SPACE');
+	        $this->setField('type', 'SM_ASSETCLASS_ITEM_SPACE');
 	    }
 	    
 	    parent::save();
