@@ -692,6 +692,14 @@ class SmartestCmsItem implements ArrayAccess{
 	    
 	}
 	
+	public function getAuthors(){
+	    return $this->getItem()->getAuthors();
+	}
+	
+	public function addAuthorById($user_id){
+	    return $this->getItem()->addAuthorById($user_id);
+	}
+	
 	public function getPropertyByNumericKey($key){
 	    if(array_key_exists($key, $this->_properties)){
 	        return $this->_properties[$key];
