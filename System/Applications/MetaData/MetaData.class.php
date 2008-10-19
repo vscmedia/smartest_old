@@ -303,18 +303,53 @@ class MetaData extends SmartestSystemApplication{
 			$this->manager->insertPropertyValue($page_id, $pageproperty_id, $propertyValue);
 		}
 		
-		// print_r();
-		// print_r($this->manager->database->getDebugInfo());
-		
 		$this->formForward();
 		
 	}
 	
 	function addPageProperty($get){
+	    
 		$site_id = $get['site_id'];
 		$propertyTypes = $this->manager->getPropertyTypes();
-		$name = $get['name'];
-		return array("site_id"=>$site_id, "propertytypes"=>$propertyTypes, "name"=>$name);
+		
+		$types = SmartestDataUtility::getDataTypes('field');
+		$this->send($types, 'property_types');
+		
+		$acceptable_types = array_keys($types);
+		
+		if(isset($get['name'])){
+		    $this->send(SmartestStringHelper::toVarName($get['name']), 'field_name');
+	    }
+	    
+	    if(isset($get['type'])){
+		    
+		    if(in_array($get['type'], $acceptable_types)){
+		        
+		        $data_type_code = $get['type'];
+		        $data_type = $types[$data_type_code];
+		        $this->send($data_type_code, 'selected_type');
+		        
+		        if($data_type['valuetype'] == 'foreignkey' && isset($data_type['filter']['typesource'])){
+	                
+	                if(is_file($data_type['filter']['typesource']['template'])){
+	                    $this->send(SmartestDataUtility::getForeignKeyFilterOptions($data_type_code), 'foreign_key_filter_options');
+	                    $this->send(SM_ROOT_DIR.$data_type['filter']['typesource']['template'], 'filter_select_template');
+	                }else{
+	                    $this->send($data_type['filter']['typesource']['template'], 'intended_file');
+	                    $this->send(SM_ROOT_DIR.'System/Applications/Items/Presentation/FKFilterSelectors/filtertype.unknown.tpl', 'filter_select_template');
+	                }
+	                
+	                $this->send(true, 'foreign_key_filter_select');
+	            }
+		        
+		        $this->send(true, 'show_full_form');
+		        $this->send($this->getSite()->getId(), 'site_id');
+		    }
+		    
+	    }
+	    
+		// return array("site_id"=>$site_id, "propertytypes"=>$propertyTypes, "name"=>$name);
+		
 	}
 	
 	function insertPageProperty($get, $post){
@@ -325,8 +360,11 @@ class MetaData extends SmartestSystemApplication{
 		$property_name = $post['property_name'];
 		$property->setLabel($property_name);
 		$property->setSiteId($this->getSite()->getId());
-		$property->setType('SM_DATATYPE_SL_TEXT');
+		$property->setType($post['pageproperty_type']);
 		$property->setName(SmartestStringHelper::toVarName($property_name));
+		if(isset($post['foreign_key_filter'])){
+		    $property->setForeignKeyFilter($post['foreign_key_filter']);
+		}
 		$property->save();
         
         /*

@@ -268,7 +268,7 @@ class SmartestDataUtility{
         
 	}
 	
-	static function getDataTypes(){
+	static function getDataTypes($usage_filter=''){
 	    
 	    $data = self::getDataTypesXmlData();
 	    
@@ -277,8 +277,17 @@ class SmartestDataUtility{
 	    $raw_types = $data;
 	    $types = array();
 	    
+	    $usage_filter = strlen($usage_filter) ? $usage_filter : null;
+	    
 	    foreach($raw_types as $raw_type){
-	        $types[$raw_type['id']] = $raw_type;
+	        if($usage_filter){
+	            $usages = explode(',', $raw_type['usage']);
+	            if(in_array($usage_filter, $usages)){
+	                $types[$raw_type['id']] = $raw_type;
+	            }
+	        }else{
+	            $types[$raw_type['id']] = $raw_type;
+            }
 	    }
 	    
 	    return $types;

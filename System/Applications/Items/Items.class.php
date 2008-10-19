@@ -1724,8 +1724,8 @@ class Items extends SmartestSystemApplication{
 		$property->setDatatype($post['itemproperty_datatype']);
 		$property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
 		
-		if(isset($post['itemproperty_foreign_key_filter'])){
-		    $property->setForeignKeyFilter($post['itemproperty_foreign_key_filter']);
+		if(isset($post['foreign_key_filter'])){
+		    $property->setForeignKeyFilter($post['foreign_key_filter']);
 		}
 		
 		$property->setItemClassId($model->getId());
