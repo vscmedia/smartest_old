@@ -1790,7 +1790,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	            if($definition->load($container_name, $page)){
 	                // container has live definition
-	                $this->send($container->getLiveAssetId(), 'selected_template_id');
+	                $this->send($definition->getLiveAssetId(), 'selected_template_id');
 	                $this->send(true, 'is_defined');
 	            }else{
 	                // container has no live definition
