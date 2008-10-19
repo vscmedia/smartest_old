@@ -1054,8 +1054,6 @@ class Pages extends SmartestSystemApplication{
 	
 	function insertPage($get, $post){
 	    
-	    // print_r(SmartestPersistentObject::get('__newPage'));
-	    
 	    if($this->getSite() instanceof SmartestSite){
 	        
 	        if(SmartestPersistentObject::get('__newPage') instanceof SmartestPage){
@@ -1065,17 +1063,16 @@ class Pages extends SmartestSystemApplication{
 	            $page->setOrderIndex($page->getParentPage()->getNextChildOrderIndex());
 	            $page->setCreated(time());
 	            
+	            $page->save();
+	            
 	            if($page->getType() == 'NORMAL'){
 	                $page->addAuthorById($this->getUser()->getId());
                 }
-                
-	            $page->save();
 	            
 	            // should the page have a preset?
 	            if($preset_id = SmartestSession::get('__newPage_preset_id')){
 	                
 	                $preset = new SmartestPagePreset;
-	                
 	                // if so, apply those definitions
 	                if($preset->hydrate($preset_id)){
 	                    $preset->applyToPage($page);
@@ -1084,23 +1081,12 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $page_webid = $page->getWebId();
     		    $site_id = $page->getSiteId();
-    		    // $site_id = $this->getSite()->getId();
     		    
     		    // clear session and cached page tree
     		    SmartestCache::clear('site_pages_tree_'.$site_id, true);
 	            SmartestPersistentObject::clear('__newPage');
 	    
-	            // print_r(SmartestPersistentObject::get('__newPage'));
-	    
-        		/* if(SmartestPersistentObject::get('__newPage')->save()){
-        		    $page_webid = SmartestPersistentObject::get('__newPage')->getWebId();
-            		$site_id = SmartestPersistentObject::get('__newPage')->getSiteId();
-            		SmartestPersistentObject::clear('__newPage');
-        		} */
-		
-        		// $this->addUserMessageToNextRequest("Your page was successfully added.");
-		
-    		    switch($post['destination']){
+	            switch($post['destination']){
 			
         			case "SITEMAP":
         			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
@@ -1736,8 +1722,6 @@ class Pages extends SmartestSystemApplication{
 		
 		$preset = new SmartestPagePreset;
 		
-		// print_r($post);
-		
 		$preset->setOrigFromPageId($post['page_id']);
 		$preset->setMasterTemplateName($preset->getOriginalPage()->getDraftTemplate());
 		$preset->setCreatedByUserId($this->getUser()->getId());
@@ -1774,8 +1758,6 @@ class Pages extends SmartestSystemApplication{
 		    }
 		    
 		}
-		
-		// print_r($preset);
 		
 		if($num_elements > 0){
 		    $preset->save();

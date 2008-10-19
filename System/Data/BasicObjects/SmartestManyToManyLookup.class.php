@@ -28,7 +28,7 @@ class SmartestManyToManyLookup extends SmartestBaseManyToManyLookup{
 	    
 	    $field = SmartestStringHelper::toVarName($field);
 	    $data = $this->getContextData();
-	    $data[$field] = $new_data;
+	    $data[$field] = utf8_decode($new_data);
 	    // echo $field.'=>'.var_export($new_data, true).'<br />';
 	    // var_dump($data);
 	    $this->setContextData($data);
@@ -42,7 +42,7 @@ class SmartestManyToManyLookup extends SmartestBaseManyToManyLookup{
 	    $field = SmartestStringHelper::toVarName($field);
 	    
 	    if(isset($data[$field])){
-	        return $data[$field];
+	        return utf8_encode($data[$field]);
 	    }else{
 	        return null;
 	    }

@@ -114,7 +114,15 @@ div#preview{
     background-color:#fff;
 }
 
-textarea#tpl_textArea, div#preview iframe{
+div#preview iframe.building{
+    border:0px;
+}
+
+div#preview iframe.built{
+    border:1px solid #999;
+}
+
+textarea#tpl_textArea{
 	border:1px solid #999;
 }
 

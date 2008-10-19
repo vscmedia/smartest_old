@@ -548,6 +548,8 @@ class PagesManager{
 				$info[$i]['info']['asset_id'] = $asset;
 				$assetObj = new SmartestAsset();
 				
+				// var_dump($asset);
+				
 				if($assetObj->hydrate($asset)){
 				    
 				    // $child = array();
@@ -655,6 +657,36 @@ class PagesManager{
 			}
 
 		}
+		
+		/* $templateNames = $this->getTemplateIncludedTemplateNames($template_file_path);
+		
+		if(is_array($templateNames)){
+		    
+		    foreach($templateNames as $templateName){
+		        
+		        if(is_file(SM_ROOT_DIR."Presentation/Layouts/".$templateName)){
+		            
+		            $assetObj = new SmartestContainerTemplateAsset();
+		            
+		            $info[$i]['info']['asset_id'] = $asset;
+    			    // $info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
+    			    $info[$i]['info']['asset_webid'] = $assetObj->getWebid();
+
+    			    $child_template_file = SM_ROOT_DIR."Presentation/Layouts/".$assetObj->getUrl();
+    			    $info[$i]['info']['filename'] = '';
+
+    			    // $info[$i]['info']['filename'] = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
+                    $child = $assetObj->getArrayForElementsTree($level+1);
+                    $child['children'] = $this->getTemplateAssetClasses($child_template_file, $page, $level+2, $version);
+                    $info[$i]['children'] = array($child);
+
+                    $i++;
+		            
+		        }
+		        
+		    }
+		    
+		} */
 
 		$containerNames = $this->getTemplateContainerNames($template_file_path);
 		
@@ -914,9 +946,30 @@ class PagesManager{
 			if($template_contents = file_get_contents($template_file_path)){
 
 				$regexp = preg_match_all("/\<\?sm:container.+name=\"([\w-_]+)\".*(instance=\"([\w-_]+)\")?:\?>/i", $template_contents, $matches);
-				// print_r($matches);
-				// print_r($this->getTemplateTags($template_file_path));
 				$foundClasses = $matches[1];
+				return $foundClasses;
+
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
+	
+	public function getTemplateIncludedTemplateNames(){
+	    if(is_file($template_file_path)){
+			if($template_contents = file_get_contents($template_file_path)){
+
+				$regexp = preg_match_all("/\<\?sm:template.+name=\"([\w-_]+)\".*?:\?>/i", $template_contents, $matches);
+				$foundClasses = $matches[1];
+				
+				foreach($foundClasses as &$t){
+				    if(substr($t, -4, 4) != '.tpl'){
+				        $t .= '.tpl';
+				    }
+				}
+				
 				return $foundClasses;
 
 			}else{

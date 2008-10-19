@@ -57,7 +57,7 @@ class SmartestPagePreset extends SmartestBasePagePreset{
 	    
 	    $container = new SmartestContainer;
         
-        if($container->hydrate($container_id)){
+        if($container->hydrateBy('name', $container_id)){
             
             $definition = new SmartestContainerDefinition;
             
@@ -65,7 +65,7 @@ class SmartestPagePreset extends SmartestBasePagePreset{
                 
                 $def = new SmartestPagePresetDefinition;
                 $def->setElementType(SmartestPagePresetDefinition::CONTAINER);
-                $def->setElementId($container_id);
+                $def->setElementId($container->getId());
                 $def->setElementValue($definition->getDraftAssetId());
                 $this->_preset_definitions[] = $def;
             }
@@ -80,7 +80,7 @@ class SmartestPagePreset extends SmartestBasePagePreset{
 	    
 	    $placeholder = new SmartestPlaceholder;
         
-        if($placeholder->hydrate($placeholder_id)){
+        if($placeholder->hydrateBy('name', $placeholder_id)){
             
             $definition = new SmartestPlaceholderDefinition;
             
@@ -88,7 +88,7 @@ class SmartestPagePreset extends SmartestBasePagePreset{
                 
                 $def = new SmartestPagePresetDefinition;
                 $def->setElementType(SmartestPagePresetDefinition::PLACEHOLDER);
-                $def->setElementId($placeholder_id);
+                $def->setElementId($placeholder->getId());
                 $def->setElementValue($definition->getDraftAssetId());
                 $this->_preset_definitions[] = $def;
             }
@@ -102,10 +102,10 @@ class SmartestPagePreset extends SmartestBasePagePreset{
 	    
 	    $field = new SmartestPageField;
 	
-		if($field->hydrate($field_id)){
+		if($field->hydrateBy('name', $field_id, $this->getCurrentSiteId())){
 	
 		    $definition = new SmartestPageFieldDefinition;
-    		$definition->loadForUpdate($field->getName(), $page);
+    		$definition->loadForUpdate($field, $page);
 		    
 		    $def = new SmartestPagePresetDefinition;
             $def->setElementType(SmartestPagePresetDefinition::FIELD);
@@ -121,9 +121,13 @@ class SmartestPagePreset extends SmartestBasePagePreset{
 	    
 	    if($page instanceof SmartestPage){
 	        
+	        $page->setDraftTemplate($this->getMasterTemplateName());
+	        
 	        foreach($this->getDefinitions() as $def){
 	            $def->applyToPage($page);
 	        }
+	        
+	        $page->save();
 	        
 	    }
 	}

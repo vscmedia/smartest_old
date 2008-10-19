@@ -112,7 +112,7 @@ class SmartestPage extends SmartestBasePage{
 		
 		$i = 0;
 		
-		// Add URL
+		// Add any new URLs
 		foreach($this->_new_urls as $url_string){
 		    
 		    $url = new SmartestPageUrl;
@@ -129,26 +129,30 @@ class SmartestPage extends SmartestBasePage{
     	    $i++;
 		}
 		
-		// Add definitions from preset, if any
-		if($this->getPreset() && $this->_properties['id']){
-			
-			$preset = new SmartestPageLayoutPreset;
-			$preset->hydrate($this->getPreset());
-			$defs = $preset->getDefinitions();
-			
-			foreach($defs as $definition){
-				$sql = "INSERT INTO AssetIdentifiers (assetidentifier_draft_asset_id, assetidentifier_assetclass_id, assetidentifier_page_id) VALUES ('".$definition['plpd_asset_id']."', '".$definition['plpd_assetclass_id']."', '".$this->_properties['id']."')";
-			}
-		}
+		$this->_new_urls = array();
+		
 	}
 	
 	public function delete($remove=false){
 	    if($remove){
+		    
+		    $sql = "DELETE FROM PagePropertyValues WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
+		    $this->database->rawQuery($sql);
+		    
+		    $sql = "DELETE FROM AssetIdentifiers WHERE assetidentifier_page_id='".$this->_properties['id']."'";
+		    $this->database->rawQuery($sql);
+		    
+		    $sql = "DELETE FROM PageUrls WHERE pageurl_page_id='".$this->_properties['id']."'";
+		    $this->database->rawQuery($sql);
+		    
 		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
 		    $this->database->rawQuery($sql);
+		    
+		    $this->_properties['id'] = null;
 		    $this->_came_from_database = false;
+		    
 	    }else{
-	        $this->setField('Deleted', 1);
+	        $this->setField('deleted', 1);
 	        $this->save();
 	    }
 	}

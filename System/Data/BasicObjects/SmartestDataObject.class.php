@@ -348,7 +348,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	protected function setField($field_name, $value){
 		
-		if(isset($this->_properties[$field_name])){
+		if(array_key_exists($field_name, $this->_properties)){
 			
 			// field being set is part of the model and corresponds to a column in the db table
 			$this->_properties[$field_name] = $value;
@@ -365,7 +365,7 @@ class SmartestDataObject implements ArrayAccess{
 		return true;
 	}
 	
-	public function hydrate($id){
+	public function hydrate($id, $site_id=''){
 		
 		if(is_array($id)){
 			
@@ -423,28 +423,41 @@ class SmartestDataObject implements ArrayAccess{
 		        // $this =& $this->getCentralDataHolder()->set($this->_table_name.':'.$this->getId());
 		        
 		    // }else{
-		    
-			    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='$id'";
-		        $this->_last_query = $sql;
-			    $result = $this->database->queryToArray($sql, $file, $line);
+		        
+		        if(strlen($id)){
+		        
+		            $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$id."'";
+			    
+        			if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
+        			    $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
+        			}
+			    
+        		    $this->_last_query = $sql;
+        			$result = $this->database->queryToArray($sql, $file, $line);
 		
-			    if(count($result)){
+    			    if(count($result)){
 			
-				    foreach($result[0] as $name => $value){
-					    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
-						    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
-						    /* $this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix)); */
-					    }else if(isset($this->_no_prefix[$name])){
-						    $this->_properties[$name] = $value;
-					    }
-				    }
+    				    foreach($result[0] as $name => $value){
+    					    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
+    						    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
+    						    /* $this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix)); */
+    					    }else if(isset($this->_no_prefix[$name])){
+    						    $this->_properties[$name] = $value;
+    					    }
+    				    }
 			
-				    $this->_came_from_database = true;
+    				    $this->_came_from_database = true;
 				    
-				    return true;
-			    }else{
-				    return false;
-			    }
+    				    return true;
+    			    }else{
+    				    return false;
+    			    }
+			    
+		        }else{
+		            
+		            // throw new SmartestException("SmartestDataObject->hydrate() must be called with a valid ID or data array.");
+		            
+		        }
 			
 	        // }
 		}
@@ -461,7 +474,7 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
 	    
-	    if($site_id && is_numeric($site_id)){
+	    if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
 	        if(isset($this->_properties['site_id'])){
 	            $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
 	        }
