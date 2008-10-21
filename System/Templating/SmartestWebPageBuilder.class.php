@@ -210,42 +210,64 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 
                 if(is_object($asset)){
                     
-                    $render_data = array();
+                    $display = (isset($params['display']) && in_array($params['display'], array('file', 'full', 'normal'))) ? $params['display'] : 'normal';
                     
-                    if($asset->isImage()){
-                        $render_data['width'] = $asset->getWidth();
-                        $render_data['height'] = $asset->getHeight();
-                    }
-                    
-                    if($this->getDraftMode()){
-                        $rd = $placeholder->getDraftRenderData();
+                    if($display == 'file'){
+                        
+                        return $asset->getUrl();
+                        
+                    }else if($display == 'full'){
+                        
+                        if($asset->usesLocalFile()){
+                            
+                            return $asset->getFullWebPath();
+                            
+                        }else{
+                            
+                            return $this->raiseError('display="full" used on asset type that does not have a local file: '.$asset->getType());
+                            
+                        }
+                        
                     }else{
-                        $rd = $placeholder->getLiveRenderData();
-                    }
                     
-                    if($data = @unserialize($rd)){
-                        $external_render_data = $data;
-                    }else{
-                        $external_render_data = array();
-                    }
+                        $render_data = array();
                     
-                    foreach($external_render_data as $key => $value){
-                        $render_data[$key] = $value;
-                    }
+                        if($asset->isImage()){
+                            $render_data['width'] = $asset->getWidth();
+                            $render_data['height'] = $asset->getHeight();
+                        }
+                    
+                        if($this->getDraftMode()){
+                            $rd = $placeholder->getDraftRenderData();
+                        }else{
+                            $rd = $placeholder->getLiveRenderData();
+                        }
+                    
+                        if($data = @unserialize($rd)){
+                            $external_render_data = $data;
+                        }else{
+                            $external_render_data = array();
+                        }
+                    
+                        foreach($external_render_data as $key => $value){
+                            $render_data[$key] = $value;
+                        }
         	        
-        	        foreach($params as $key => $value){
-                        if($key != 'name'){
-    	                    if(isset($params[$key])){
-            	                $render_data[$key] = $value;
-            	            }else{
-            	                if(!isset($render_data[$key])){
-            	                    $render_data[$key] = '';
-        	                    }
+            	        foreach($params as $key => $value){
+                            if($key != 'name'){
+        	                    if(isset($params[$key])){
+                	                $render_data[$key] = $value;
+                	            }else{
+                	                if(!isset($render_data[$key])){
+                	                    $render_data[$key] = '';
+            	                    }
+                	            }
             	            }
         	            }
-    	            }
                     
-                    $this->_renderAssetObject($asset, $params, $render_data);
+                        $this->_renderAssetObject($asset, $params, $render_data);
+                    
+                    }
                     
                 }
                 

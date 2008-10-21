@@ -29,6 +29,7 @@
 
 <div id="preview-loading" style="padding-top:50px;text-align:center">
     <p>Please wait. Rendering preview...</p>
+    <p><img src="{$domain}Resources/System/Images/smartest_working.gif" /></p>
 </div>
 
 {elseif $show_item_list}

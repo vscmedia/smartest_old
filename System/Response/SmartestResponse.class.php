@@ -852,7 +852,7 @@ class SmartestResponse{
 		if(defined("SM_DEVELOPER_MODE") && @SM_DEVELOPER_MODE == true && SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
 			$html = "<div class=\"smartest_preview_top_bar\">";
 			// $html .= "&nbsp;Controller Overhead: ".$this->controllerPrepareTimeTaken."ms | ";
-			$html .= "Smartest Pre-Render Overhead: ".$this->timeTaken."ms (of which controller: ".$this->controllerPrepareTimeTaken."ms) | ";
+			$html .= "Smartest Pre-Render Overhead: ".$this->timeTaken."ms | ";
 			$html .= "Page Build Time: ".($this->fullTimeTaken - $this->timeTaken)."ms | ";
 			$html .= "Total time taken: ".$this->fullTimeTaken."ms";
 			// $html .= "<a href=\"".SM_CONTROLLER_DOMAIN."websitemanager/getPageAssets?page_id=".SM_PAGE_WEBID."\">Edit Page Assets</a> | ";
