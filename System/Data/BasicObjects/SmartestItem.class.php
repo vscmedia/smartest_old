@@ -9,7 +9,6 @@ class SmartestItem extends SmartestBaseItem{
 	
 	protected function __objectConstruct(){
 		
-		$this->addPropertyAlias('ModelId', 'itemclass_id');
 		$this->_table_prefix = 'item_';
 		$this->_table_name = 'Items';
 		

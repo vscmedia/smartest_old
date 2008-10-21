@@ -1023,7 +1023,7 @@ class SmartestPage extends SmartestBasePage{
 	    $tags = $du->getTags();
 	    $data['all_tags'] = $tags;
 	    
-	    $data['authors'] = $this->getAuthors();
+	    $data['authors'] = array_values($this->getAuthors());
 	    
 	    $data['fields'] = $this->getPageFieldValuesAsAssociativeArray();
 	    $data['navigation'] = $this->getNavigationStructure();
