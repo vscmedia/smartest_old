@@ -200,6 +200,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         $assetclass_types = SmartestDataUtility::getAssetClassTypes();
         
+        $display = (isset($params['display']) && in_array($params['display'], array('file', 'full', 'normal'))) ? $params['display'] : 'normal';
+        
         if($this->getPage()->hasPlaceholderDefinition($placeholder_name, $this->getDraftMode())){
             
             $placeholder = $this->getPage()->getPlaceholderDefinition($placeholder_name, $this->getDraftMode());
@@ -209,8 +211,6 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 $asset = $placeholder->getAsset($this->getDraftMode());
                 
                 if(is_object($asset)){
-                    
-                    $display = (isset($params['display']) && in_array($params['display'], array('file', 'full', 'normal'))) ? $params['display'] : 'normal';
                     
                     if($display == 'file'){
                         
@@ -277,10 +277,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	            
 	        }
             
-            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-			    $edit_link = "<a title=\"Click to edit definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
-		    }else{
-			    $edit_link = "<!--edit link-->";
+            if(!isset($params['showcontrol']) || SmartestStringHelper::isFalse($params['showcontrol'])){
+            
+                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+			        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
+		        }else{
+			        $edit_link = "<!--edit link-->";
+		        }
+		    
 		    }
             
             return $html.$edit_link;
@@ -290,10 +294,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
             if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
             
                 $ph = new SmartestPlaceholder;
-            
-                if($ph->hydrateBy('name', $placeholder_name)){
-                    $edit_link = "<a title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
-                    return $edit_link;
+                
+                if(!isset($params['showcontrol']) || SmartestStringHelper::isFalse($params['showcontrol'])){
+                
+                    if($ph->hydrateBy('name', $placeholder_name)){
+                        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
+                        return $edit_link;
+                    }
+                
                 }
             
             }
