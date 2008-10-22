@@ -11,7 +11,7 @@ class SmartestTagPage extends SmartestPage{
     public function getTitle(){
         if(is_object($this->_tag)){
             // return $this->_properties['title'].' | '.$this->_tag->getLabel();
-            return "Pages Tagged With '".$this->_tag->getLabel()."'";
+            return $this->_tag->getLabel();
         }else{
             return $this->_properties['title'];
         }
@@ -21,14 +21,14 @@ class SmartestTagPage extends SmartestPage{
         return 'tags/'.$this->_tag->getName().'.html';
     }
     
-    public function fetchRenderingData(){
+    /* public function fetchRenderingData(){
         
         $data = parent::fetchRenderingData();
         $data['tagged_objects'] = $this->_tag->getObjectsOnSiteAsArrays($this->getSite()->getId(), false);
         // print_r($data);
         return $data;
         
-    }
+    } */
     
     public function __toArray(){
         $data = parent::__toArray();
@@ -37,6 +37,17 @@ class SmartestTagPage extends SmartestPage{
         $data['title'] = $this->getTitle();
         $data['tag'] = $this->_tag->__toArray();
         return $data;
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "tag":
+            return $this->_tag;
+        }
+        
+        return parent::offsetGet($offset);
+        
     }
     
     public function getCacheAsHtml(){

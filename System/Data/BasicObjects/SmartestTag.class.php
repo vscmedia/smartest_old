@@ -287,4 +287,15 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "objects":
+            return $this->getObjectsOnSiteAsArrays($this->getSite()->getId(), true);
+        }
+        
+        return parent::offsetGet($offset);
+        
+    }
+    
 }
