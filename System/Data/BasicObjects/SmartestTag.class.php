@@ -28,8 +28,6 @@ class SmartestTag extends SmartestBaseTag{
         
             $sql = "SELECT * FROM TagsObjectsLookup, Pages WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=page_id AND taglookup_type='SM_PAGE_TAG_LINK'";
             
-            // echo $site_id;
-            
             if(is_numeric($site_id)){
                 $sql .= " AND page_site_id='".$site_id."'";
             }
@@ -37,8 +35,6 @@ class SmartestTag extends SmartestBaseTag{
             if(!$draft){
                 $sql .= " AND page_is_published='TRUE'";
             }
-            
-            // echo $sql;
             
             $result = $this->database->queryToArray($sql);
             
@@ -105,13 +101,7 @@ class SmartestTag extends SmartestBaseTag{
                 $sql .= " AND item_itemclass_id='".$model_id."'";
             }
             
-            // echo $sql;
-            
             $result = $this->database->queryToArray($sql);
-            
-            // echo $sql;
-            
-            // print_r($result);
             
             $items = array();
         
@@ -175,10 +165,6 @@ class SmartestTag extends SmartestBaseTag{
             $items = array();
         
             foreach($result as $item_array){
-                /* $page->hydrate($page_array);
-                $pages[] = $page; */
-                
-                // print_r($item_array);
                 
                 $item = SmartestCmsItem::retrieveByPk($item_array['item_id']);
                 
@@ -214,9 +200,6 @@ class SmartestTag extends SmartestBaseTag{
         // make sure pages have been retrieved
         $this->getSimpleItems();
         
-        // echo $item_id;
-        // print_r($this->_item_ids);
-        
         if(in_array($item_id, $this->_item_ids)){
             return true;
         }else{
@@ -241,7 +224,6 @@ class SmartestTag extends SmartestBaseTag{
             }
             
             if(in_array($key, array_keys($master_array))){
-                // $master_array[$key] = $i;
                 while(in_array($key, array_keys($master_array))){
                     $key++;
                 }
@@ -305,6 +287,9 @@ class SmartestTag extends SmartestBaseTag{
             
             case "url":
             return '/tags/'.$this->getName().'.html';
+            
+            case "feed_url":
+            return SM_CONTROLLER_DOMAIN.'tags/'.$this->getName().'/feed';
             
         }
         
