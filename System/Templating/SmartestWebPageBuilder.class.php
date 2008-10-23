@@ -277,7 +277,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	            
 	        }
             
-            if(!isset($params['showcontrol']) || SmartestStringHelper::isFalse($params['showcontrol'])){
+            if(isset($params['showcontrol']) && SmartestStringHelper::isFalse($params['showcontrol'])){
+                
+            }else{
             
                 if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
 			        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
@@ -295,7 +297,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
                 $ph = new SmartestPlaceholder;
                 
-                if(!isset($params['showcontrol']) || SmartestStringHelper::isFalse($params['showcontrol'])){
+                if(isset($params['showcontrol']) && SmartestStringHelper::isFalse($params['showcontrol'])){
+                    
+                }else{
                 
                     if($ph->hydrateBy('name', $placeholder_name)){
                         $edit_link = "<a title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
@@ -983,7 +987,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }
             }else{
                 
-                return $this->raiseError("&lt;?sm:property:&gt; tag used on static page.");
+                return $this->raiseError("&lt;?sm:property:?&gt; tag used on static page.");
                 
             }
         
@@ -1050,7 +1054,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     }else{
                         
                         // item space is not defined
-                        return $this->raiseError("&lt;?sm:property:&gt; tag used in itemspace context, but itemspace '".$params['itemspace']."' has no object.");
+                        return $this->raiseError("&lt;?sm:property:?&gt; tag used in itemspace context, but itemspace '".$params['itemspace']."' has no object.");
                         
                     }
 
@@ -1065,7 +1069,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }
                 
             }else{
-                return $this->raiseError("&lt;?sm:property:&gt; tag must have itemspace=\"\" attribute when used in itemspace context.");
+                return $this->raiseError("&lt;?sm:property:?&gt; tag must have itemspace=\"\" attribute when used in itemspace context.");
             }
         
         // for rendering the properties of an item in a list
