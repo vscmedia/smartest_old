@@ -1627,13 +1627,13 @@ class Pages extends SmartestSystemApplication{
 	    if($page->hydrate($page_id)){
 	        
 	        if(isset($post['users']) && count($post['users'])){
-	        
+	            
 	            $uhelper = new SmartestUsersHelper;
                 $users = $uhelper->getUsersOnSite($this->getSite()->getId());
             
                 $new_author_ids = array_keys($post['users']);
                 $old_author_ids = $page->getAuthorIds();
-            
+                
                 foreach($users as $u){
                     
                     if(in_array($u->getId(), $old_author_ids) && !in_array($u->getId(), $new_author_ids)){
@@ -1666,8 +1666,6 @@ class Pages extends SmartestSystemApplication{
 	    }else{
             $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
         }
-	    
-	    // print_r($post);
 	    
 	    $this->formForward();
 	    

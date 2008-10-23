@@ -4,6 +4,8 @@ function smarty_function_byline($params, &$smartest_engine){
     
     $authors = $smartest_engine->_tpl_vars['this']['authors'];
     
+    // print_r(array_keys($authors));
+    
     $num_authors = count($authors);
     $byline = '';
     

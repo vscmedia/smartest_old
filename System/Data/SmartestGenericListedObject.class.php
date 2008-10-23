@@ -94,6 +94,10 @@ class SmartestGenericListedObject implements ArrayAccess{
         }
     }
     
+    public function __toString(){
+        return $this->_internal_object->__toString();
+    }
+    
     public function getTitle(){
         return $this->_properties['title'];
     }

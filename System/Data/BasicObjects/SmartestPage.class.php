@@ -986,24 +986,29 @@ class SmartestPage extends SmartestBasePage{
 	
 	public function fetchRenderingData(){
 	    
-	    $data = array();
+	    $data = new SmartestParameterHolder('Page Rendering Data');
 	    
-	    $data['page'] = $this;
-	    $data['tags'] = $this->getTags();
+	    // $data['page'] = $this;
+	    $data->setParameter('page', $this);
+	    // $data['tags'] = $this->getTags();
+	    $data->setParameter('tags', $this->getTags());
 	    
 	    if($this instanceof SmartestItemPage){
 	        if($this->getPrincipalItem()){
 	            
-	            $data['principal_item'] = $this->getPrincipalItem();
+	            // $data['principal_item'] = $this->getPrincipalItem();
+	            $data->setParameter('principal_item', $this->getPrincipalItem());
 	            
 	            // $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
 	            // $data['data_set'] = $this->getDataSet()->__toArray();
 	            
-	            $data['is_item'] = true;
+	            // $data['is_item'] = true;
+	            $data->setParameter('is_item', true);
 	            
             }else{
                 
-                $data['principal_item'] = array();
+                // $data['principal_item'] = array();
+                $data->setParameter('principal_item', array());
                 
                 /* if($this->getDataSet() instanceof SmartestCmsItemSet){
                     $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
@@ -1013,20 +1018,27 @@ class SmartestPage extends SmartestBasePage{
                     $data['data_set'] = array();
                 } */
                 
-                $data['is_item'] = true;
+                // $data['is_item'] = true;
+                $data->setParameter('is_item', true);
             }
 	    }else{
-	        $data['is_item'] = false;
+	        // $data['is_item'] = false;
+	        $data->setParameter('is_item', false);
 	    }
 	    
 	    $du = new SmartestDataUtility;
 	    $tags = $du->getTags();
-	    $data['all_tags'] = $tags;
+	    // $data['all_tags'] = $tags;
+	    $data->setParameter('all_tags', $tags);
 	    
-	    $data['authors'] = array_values($this->getAuthors());
+	    // $data['authors'] = array_values($this->getAuthors());
+	    $data->setParameter('authors', array_values($this->getAuthors()));
 	    
-	    $data['fields'] = $this->getPageFieldValuesAsAssociativeArray();
-	    $data['navigation'] = $this->getNavigationStructure();
+	    // $data['fields'] = $this->getPageFieldValuesAsAssociativeArray();
+	    $data->setParameter('fields', $this->getPageFieldValuesAsAssociativeArray());
+	    
+	    // $data['navigation'] = $this->getNavigationStructure();
+	    $data->setParameter('navigation', $this->getNavigationStructure());
 	    
 	    return $data;
 	}
@@ -1141,6 +1153,9 @@ class SmartestPage extends SmartestBasePage{
 	        
 	        case "authors_list":
 	        return implode(', ', $this->getAuthors());
+	        
+	        case "cache_file":
+	        return $this->getCacheFileName();
 	        
 	    }
 	    
@@ -1530,7 +1545,20 @@ class SmartestPage extends SmartestBasePage{
 		
 		// var_dump($this->getDraftMode());
 		
-		return array(
+		$data = new SmartestParameterHolder('Page Navigation Structure');
+		
+		$data->setParameter('parent', $this->getParentPage());
+		$data->setParameter('section', $this->getSectionPage());
+		$data->setParameter('_breadcrumb_trail', $this->getPageBreadCrumbs());
+		$data->setParameter('sibling_level_pages', $this->getParentPage()->getPageChildrenForWeb());
+		$data->setParameter('parent_level_pages', $this->getGrandParentPage()->getPageChildrenForWeb());
+		$data->setParameter('child_pages', $this->getPageChildrenForWeb());
+		$data->setParameter('main_sections', $home_page->getPageChildrenForWeb(true));
+		$data->setParameter('related', $this->getRelatedContentForRender());
+		
+		return $data;
+		
+		/* return array(
 		    "parent"=>$this->getParentPage(), 
 			"section"=>$this->getSectionPage(), 
 //          "breadcrumbs"=>$this->getPageBreadCrumbsAsArrays(),
@@ -1540,7 +1568,7 @@ class SmartestPage extends SmartestBasePage{
 			"child_pages"=>$this->getPageChildrenForWeb(),
 			"main_sections"=>$home_page->getPageChildrenForWeb(true),
 			"related"=>$this->getRelatedContentForRender()
-		);
+		); */
 	}
 	
 	public function loadAssetClassDefinitions(){
@@ -1667,7 +1695,7 @@ class SmartestPage extends SmartestBasePage{
 	    
 	}
 	
-	public function removeAuthorById($item_id){
+	public function removeAuthorById($user_id){
 	    
 	    $user_id = (int) $user_id;
 	    
@@ -1966,6 +1994,7 @@ class SmartestPage extends SmartestBasePage{
 		
 		if(SmartestStringHelper::isFalse($this->getIsSection())){
 		    
+		    // if the page is not a section page
 		    $section_page = $this->getSectionPage();
 		    
 		    if($section_page->isHomePage()){
