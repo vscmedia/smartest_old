@@ -2054,5 +2054,13 @@ class SmartestPage extends SmartestBasePage{
 		return $page_cache_name.'.html';
 		
 	}
+	
+	public function hasPrincipalItem(){
+	    return (($this instanceof SmartestItemPage) && is_object($this->_principal_item));
+	}
+	
+	public function hasSimpleItem(){
+	    return (($this instanceof SmartestItemPage) && is_object($this->_simple_item));
+	}
 
 }

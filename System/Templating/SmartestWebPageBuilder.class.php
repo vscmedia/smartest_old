@@ -552,7 +552,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         
                     }else{
                     
-    			        if(is_object($page->getPrincipalItem())){
+    			        if($page->hasPrincipalItem()){
     			            $id = $page->getPrincipalItem()->getId();
     			            $to = 'metapage:webid='.$page->getWebid().':id='.$id;
     			        }else{

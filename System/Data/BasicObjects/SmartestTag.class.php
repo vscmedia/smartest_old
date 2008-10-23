@@ -41,11 +41,20 @@ class SmartestTag extends SmartestBaseTag{
             // echo $sql;
             
             $result = $this->database->queryToArray($sql);
+            
+            $helper = new SmartestPageManagementHelper;
+    		$type_index = $helper->getPageTypesIndex($this->getCurrentSiteId());
         
             $pages = array();
         
             foreach($result as $page_array){
-                $page = new SmartestPage;
+                
+                if($type_index[$page_array['page_id']] == 'ITEMCLASS'){
+                    $page = new SmartestItemPage;
+                }else{
+                    $page = new SmartestPage;
+                }
+                
                 $page->hydrate($page_array);
                 $pages[] = $page;
                 
@@ -290,8 +299,13 @@ class SmartestTag extends SmartestBaseTag{
     public function offsetGet($offset){
         
         switch($offset){
+            
             case "objects":
-            return $this->getObjectsOnSite($this->getSite()->getId(), true);
+            return $this->getObjectsOnSite($this->getCurrentSiteId(), true);
+            
+            case "url":
+            return '/tags/'.$this->getName().'.html';
+            
         }
         
         return parent::offsetGet($offset);

@@ -141,6 +141,11 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    $offset = strtolower($offset);
 	    
+	    switch($offset){
+	        case "class":
+	        return get_class($this);
+	    }
+	    
 	    if(isset($this->_properties[$offset])){
 	        return $this->_properties[$offset];
 	    }else{

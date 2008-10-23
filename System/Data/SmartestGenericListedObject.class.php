@@ -128,10 +128,16 @@ class SmartestGenericListedObject implements ArrayAccess{
     }
     
     public function offsetGet($offset){
+        
+        /* switch($offset){
+	        case "class":
+	        return get_class($this->_internal_object);
+	    } */
+        
         if(isset($this->_properties[$offset])){
             return $this->_properties[$offset];
         }else{
-            return $this->_internal_object[$offset];
+            return $this->_internal_object->offsetGet($offset);
         }
     }
     

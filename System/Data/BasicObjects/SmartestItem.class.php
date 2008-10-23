@@ -70,8 +70,16 @@ class SmartestItem extends SmartestBaseItem{
     	        
     	        return 'metapage:id='.$this->getMetapageId().':id='.$this->getId();
                 
+    	    }else{
+    	        
+    	        return '#';
+    	        
     	    }
             
+	        break;
+	        
+	        case "class":
+	        return $this->getModel()->getClassName();
 	        break;
 	        
 	        case "model":
