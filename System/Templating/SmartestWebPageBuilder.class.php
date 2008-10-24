@@ -408,7 +408,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
     }
     
     public function renderField($field_name, $params){
-            
+        
+        // print_r($this->_page_rendering_data['fields']);
+        
         if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
     
             $value = $this->_page_rendering_data['fields'][$field_name];
@@ -435,7 +437,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         $markup = '<!--edit link-->';
         
-        if(is_array($this->_page_rendering_data) && is_array($this->_page_rendering_data['fields'])){
+        if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
         
             if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
 		        $markup = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".SM_CONTROLLER_DOMAIN."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
