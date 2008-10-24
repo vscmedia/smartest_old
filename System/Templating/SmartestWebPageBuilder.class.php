@@ -408,31 +408,25 @@ class SmartestWebPageBuilder extends SmartestEngine{
     }
     
     public function renderField($field_name, $params){
+            
+        if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
+    
+            $value = $this->_page_rendering_data['fields'][$field_name];
         
-        if(is_array($this->_page_rendering_data) && is_array($this->_page_rendering_data['fields'])){
-            
-            if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
-            
-                $value = $this->_page_rendering_data['fields'][$field_name];
-            
-                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-    			    $edit_link = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".SM_CONTROLLER_DOMAIN."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
-    		    }else{
-    			    $edit_link = '';
-    		    }
-        
-                $value .= $edit_link;
-            
-                return $value;
-            
-            }else{
-                
-                return $this->raiseError('Field \''.$field_name.'\' does not exist on this site.');
-                
-            }
-            
+            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+			    $edit_link = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".SM_CONTROLLER_DOMAIN."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+		    }else{
+			    $edit_link = '';
+		    }
+
+            $value .= $edit_link;
+    
+            return $value;
+    
         }else{
-            return null;
+        
+            return $this->raiseError('Field \''.$field_name.'\' does not exist on this site.');
+        
         }
         
     }

@@ -1028,6 +1028,7 @@ class SmartestPage extends SmartestBasePage{
 	    
 	    $du = new SmartestDataUtility;
 	    $tags = $du->getTags();
+	    
 	    // $data['all_tags'] = $tags;
 	    $data->setParameter('all_tags', $tags);
 	    
