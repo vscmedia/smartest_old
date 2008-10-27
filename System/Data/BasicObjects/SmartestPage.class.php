@@ -1373,7 +1373,7 @@ class SmartestPage extends SmartestBasePage{
 	    }
 	    
 	    $related_pages = $q->retrieve();
-	    // print_r($related_pages);
+	    
 	    return $related_pages;
 	}
 	
@@ -1544,8 +1544,6 @@ class SmartestPage extends SmartestBasePage{
 		
 		$this->getGrandParentPage();
 		
-		// var_dump($this->getDraftMode());
-		
 		$data = new SmartestParameterHolder('Page Navigation Structure');
 		
 		$data->setParameter('parent', $this->getParentPage());
@@ -1559,17 +1557,6 @@ class SmartestPage extends SmartestBasePage{
 		
 		return $data;
 		
-		/* return array(
-		    "parent"=>$this->getParentPage(), 
-			"section"=>$this->getSectionPage(), 
-//          "breadcrumbs"=>$this->getPageBreadCrumbsAsArrays(),
-			"_breadcrumb_trail"=>$this->getPageBreadCrumbs(), 
-			"sibling_level_pages"=>$this->getParentPage()->getPageChildrenForWeb(), 
-			"parent_level_pages"=>$this->getGrandParentPage()->getPageChildrenForWeb(),
-			"child_pages"=>$this->getPageChildrenForWeb(),
-			"main_sections"=>$home_page->getPageChildrenForWeb(true),
-			"related"=>$this->getRelatedContentForRender()
-		); */
 	}
 	
 	public function loadAssetClassDefinitions(){
@@ -1776,20 +1763,23 @@ class SmartestPage extends SmartestBasePage{
 	
 	public function getRelatedContentForRender(){
 	    
-	    $content = array();
+	    // $content = array();
+	    $data = new SmartestParameterHolder('Related Content');
 	    
 	    $du = new SmartestDataUtility;
         $models = $du->getModels();
     
         foreach($models as $m){
             $key = SmartestStringHelper::toVarName($m->getPluralName());
-            $content[$key] = $this->getRelatedItems($m->getId());
+            // $content[$key] = $this->getRelatedItems($m->getId());
+            $data->setParameter($key, $this->getRelatedItems($m->getId()));
         }
         
-        $content['pages'] = $this->getRelatedPages();
+        // $content['pages'] = $this->getRelatedPages();
+        $data->setParameter('pages', $this->getRelatedPages());
         
-        return $content;
-        
+        // return $content;
+        return $data;
 	}
 	
 	public function getPageBreadCrumbs(){
@@ -1797,14 +1787,10 @@ class SmartestPage extends SmartestBasePage{
 		$helper = new SmartestPageManagementHelper;
 		$type_index = $helper->getPageTypesIndex($this->getParentSite()->getId());
 		
-		// print_r($index);
-		
 		$home_page = $this->getParentSite()->getHomePage($this->getDraftMode());
 		$breadcrumbs = array();
 		
 		$limit = self::HIERARCHY_DEPTH_LIMIT;
-		
-		// $page_id = $this->_properties['id'];
 		
 		$page = &$this;
 		
@@ -1812,65 +1798,7 @@ class SmartestPage extends SmartestBasePage{
 		
 		while($home_page->getId() != $page->getId() && $limit > 0){
 		    
-		    /* if($type_index[$page_id] == 'ITEMCLASS'){
-		        
-		        // echo 'meta-page ';
-			    
-			    if($breadcrumb_index > 0){
-			        
-			        $page = new SmartestItemPage;
-    			    $page->hydrate($page_id);
-			        
-    		        // we are not dealing with the principal_item, but a parent meta-page higher up the site
-    		        
-    		        $property_id = $child->getParentMetaPageReferringPropertyId();
-    		        $property = new SmartestItemPropertyValueHolder;
-    		        $property->hydrate($property_id);
-    		        
-    		        $property->setContextualItemId($child->getSimpleItem()->getId());
-    		        
-    		        if($this->getDraftMode()){
-    		            $parent_item_id = $property->getData()->getDraftContent();
-		            }else{
-		                $parent_item_id = $property->getData()->getContent();
-		            }
-    		        
-    		        $breadcrumbs[] = $page;
-    		        $child = $page;
-    		        
-    		        // print_r();
-    		    }else{
-    		        // we are dealing with the principal_item
-    		        // print_r($this->getPrincipalItem());
-    		        $child = $this;
-    		        // var_dump($this);
-    		        $breadcrumbs[] = $this;
-    		        
-    		    }
-			    
-		    }else{
-		        // echo 'static ';
-		        
-		        $page = new SmartestPage;
-		        $page->hydrate($page_id);
-		        $breadcrumbs[] = $page;
-		    }
-		    
-		    if($breadcrumb_index > 0){
-			    $page_id = $page->getParent();
-			    // echo $page->getTitle();
-		    }else{
-	            $page_id = $this->getParent();
-	            // echo $this->getTitle();
-	        }
-			
-			 */
-			
-			// var_dump($this->getDraftMode());
-			
-			// $this->_level++;
-			
-			$breadcrumbs[] = $page;
+		    $breadcrumbs[] = $page;
 			$page = $page->getParentPage();
 			
 			$limit--;

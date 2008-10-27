@@ -1,8 +1,8 @@
 <?php
 
-require_once "Libraries/Tlog/TLog.class.php";
+// require_once "Libraries/Tlog/TLog.class.php";
 
-class SmartestLog extends TLog{
+/* class SmartestLog extends TLog{
 
 	private static $instance = false;
 	private $level = false;
@@ -29,4 +29,43 @@ class SmartestLog extends TLog{
 		}
 	}
 	
+} */
+
+class SmartestLog{
+    
+    // static/factory stuff
+    private static $_instances = array();
+    private static $_log_types = array();
+    
+    protected function __construct($log_id){
+        
+    }    
+
+    public static function getInstance(){
+        
+        if (self::$_instances[$log_id] === false) {
+          
+            if(empty(self::$_log_types)){
+                
+                self::$_log_types = self::getLogTypes();
+                
+            }
+            
+            self::$_instances[$log_id] = new SmartestLog($log_id);
+          
+        }
+        
+        return self::$_instances[$log_id];
+        
+    }
+    
+    public static function getLogTypes(){
+        
+    }
+    
+    // dynamic logging stuff
+    public function log($message, $type=''){
+        
+    }
+    
 }

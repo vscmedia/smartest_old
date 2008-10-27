@@ -4,9 +4,11 @@ class SmartestParameterHolder implements ArrayAccess{
     
     protected $_data = array();
     protected $_name;
+    protected $_read_only = false;
     
-    public function __construct($name){
+    public function __construct($name, $read_only=false){
         $this->_name = $name;
+        $this->_read_only = $read_only;
     }
     
     public function __toString(){
@@ -56,6 +58,16 @@ class SmartestParameterHolder implements ArrayAccess{
     }
     
     public function offsetGet($offset){
+        
+        switch($offset){
+            case "_count":
+            return count($this->_data);
+            case "_first":
+            return reset($this->_data);
+            case "_last":
+            return end($this->_data);
+        }
+        
         return $this->getParameter($offset);
     }
     
@@ -64,11 +76,15 @@ class SmartestParameterHolder implements ArrayAccess{
     }
     
     public function offsetSet($offset, $value){
-        return $this->setParameter($offset, $value);
+        if(!$this->_read_only){
+            return $this->setParameter($offset, $value);
+        }
     }
     
     public function offsetUnset($offset){
-        return $this->clearParameter($offset);
+        if(!$this->_read_only){
+            return $this->clearParameter($offset);
+        }
     }
     
 }

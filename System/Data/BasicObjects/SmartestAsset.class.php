@@ -27,7 +27,6 @@ class SmartestAsset extends SmartestBaseAsset{
 	        $data['full_path'] = $this->_properties['url'];
 	    }else{
 	        $data['full_path'] = $this->getFullPathOnDisk();
-	        
         }
         
         $data['size'] = $this->getSize();
@@ -52,6 +51,50 @@ class SmartestAsset extends SmartestBaseAsset{
         
 	    return $data;
 	}
+	
+	public function offsetGet($offset){
+        
+        switch($offset){
+            
+            case "text_content":
+            return $this->getContent();
+            
+            case "type_info":
+            return $this->getTypeInfo();
+            
+            case "default_parameters":
+            return $this->getDefaultParams();
+            
+            case "full_path":
+            $type_info = $this->getTypeInfo();
+            if($type_info['storage']['type'] == 'database'){
+    	        return $this->_properties['url'];
+    	    }else{
+    	        return $this->getFullPathOnDisk();
+            }
+            
+            case "size":
+            return $this->getSize();
+            
+            case "owner":
+            $o = new SmartestUser;
+	        if($o->hydrate($this->_properties['user_id'])){
+	            return $o->__toArray();
+            }else{
+                return array();
+            }
+            
+            case "width":
+            return $this->isImage() ? $this->getWidth() : null;
+            
+            case "height":
+            return $this->isImage() ? $this->getHeight() : null;
+            
+        }
+        
+        return parent::offsetGet($offset);
+        
+    }
 	
 	public function __toString(){
 	    if($this->_properties['id']){

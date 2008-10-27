@@ -99,15 +99,9 @@ class SmartestItemPage extends SmartestPage{
     
     public function isAcceptableItem($draft_mode=false){
         
-        // echo $this->_identifying_field_name;
-        // echo $this->_identifying_field_value;
-        
         if($this->_identifying_field_name && $this->_identifying_field_value){
             
             if(is_object($this->_simple_item)){
-                
-                // echo $this->getDatasetId().' ';
-                // print_r($this);
                 
                 if($this->getDatasetId() == $this->_simple_item->getItemclassId()){
                     return true;
@@ -119,15 +113,11 @@ class SmartestItemPage extends SmartestPage{
                 
                 $sql = "SELECT * FROM Items WHERE item_".$this->_identifying_field_name."='".$this->_identifying_field_value."'";
                 
-                // var_dump($this->getDraftMode());
-                
                 if(!$this->getDraftMode()){
                     $sql .= " AND item_public='TRUE'";
                 }
             
                 $sql .= " AND item_deleted !='1' LIMIT 1";
-            
-                // echo $sql;
             
                 $result = $this->database->queryToArray($sql);
                 
@@ -160,15 +150,14 @@ class SmartestItemPage extends SmartestPage{
         if($this->_properties['force_static_title']){
             return $this->_properties['title'];
         }else{
-            // var_dump($this->_properties['title']);
-            // var_dump($this->_simple_item);
             return $this->_simple_item->getName();
         }
     }
     
     public function getRelatedContentForRender(){
 	    
-	    $content = array();
+	    // $content = array();
+	    $data = new SmartestParameterHolder('Related Content');
 	    
 	    $du = new SmartestDataUtility;
         $models = $du->getModels();
@@ -177,17 +166,19 @@ class SmartestItemPage extends SmartestPage{
             $key = SmartestStringHelper::toVarName($m->getPluralName());
             
             if($m->getId() == $this->_simple_item->getModelId()){
-                $content[$key] = $this->_simple_item->getRelatedItems($this->getDraftMode());
+                // $content[$key] = $this->_simple_item->getRelatedItems($this->getDraftMode());
+                $data->setParameter($key, $this->_simple_item->getRelatedItems($this->getDraftMode()));
             }else{
-                $content[$key] = $this->_simple_item->getRelatedForeignItems($this->getDraftMode(), $m->getId());
+                // $content[$key] = $this->_simple_item->getRelatedForeignItems($this->getDraftMode(), $m->getId());
+                $data->setParameter($key, $this->_simple_item->getRelatedForeignItems($this->getDraftMode(), $m->getId()));
             }
         }
         
-        // print_r($models);
+        // $content['pages'] = $this->_simple_item->getRelatedPages($this->getDraftMode());
+        $data->setParameter('pages', $this->_simple_item->getRelatedPages($this->getDraftMode()));
         
-        $content['pages'] = $this->_simple_item->getRelatedPages($this->getDraftMode());
-        
-        return $content;
+        // return $content;
+        return $data;
         
 	}
 	

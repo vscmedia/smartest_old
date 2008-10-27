@@ -5,6 +5,8 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
     protected $_defined = false;
     protected $_asset;
     protected $_textFragment;
+    protected $_div_width = null;
+    protected $_edit_link = null;
     
     public function getTextFragmentId(){
         return $this->getEntityForeignKeyValue(1);
@@ -59,12 +61,71 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
         
     }
     
+    public function offsetGet($offset){
+        
+        switch($offset){
+            
+            case "name":
+            return $this->getInstanceName();
+            
+            case "status":
+            return $this->hasAsset() ? 'DEFINED' : 'UNDEFINED';
+            
+            case "caption":
+            return $this->hasAsset() ? $this->getCaption() : '';
+            
+            case "alignment":
+            return $this->hasAsset() ? $this->getAlignment() : null;
+            
+            case "caption_alignment":
+            return $this->hasAsset() ? $this->getCaptionAlignment() : null;
+            
+            case "float":
+            return $this->hasAsset() ? $this->getFloat() : null;
+            
+            case "border":
+            return $this->hasAsset() ? $this->getBorder() : null;
+            
+            case "edit_link":
+            return $this->_edit_link;
+            
+            case "div_width":
+            return $this->_div_width;
+            
+            case "asset":
+            return $this->hasAsset() ? $this->_asset : null;
+            
+            case "asset_object":
+            return $this->hasAsset() ? $this->_asset : null;
+            
+        }
+        
+        return parent::offsetGet($offset);
+        
+    }
+    
+    public function offsetSet($offset, $value){
+        
+        switch($offset){
+            
+            case "edit_link":
+            $this->_edit_link = $value;
+            break;
+            
+            case "div_width":
+            $this->_div_width = $value;
+            break;
+            
+        }
+        
+    }
+    
     public function setAttachmentName($name){
         $this->setInstanceName($name);
     }
     
     public function getAttachmentName(){
-        return $this->getInstanceName($name);
+        return $this->getInstanceName();
     }
     
     public function getCaption(){

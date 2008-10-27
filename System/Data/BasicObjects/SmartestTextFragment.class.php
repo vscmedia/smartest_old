@@ -14,6 +14,8 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
         $attachment_names = $this->parseAttachmentNames();
         $attachments = array();
         
+        // print_r($attachment_names);
+        
         foreach($attachment_names as $a){
             $attachments[$a] = '';
         }
@@ -90,7 +92,15 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
     
     public function parseAttachmentNames(){
         $regexp = preg_match_all('/<\?sm:attachment.+?name="([\w_-]+)"/', $this->_properties['content'], $matches);
-        $attachment_names = $matches[1];
+        $attachment_names = array();
+        
+        foreach($matches[1] as $an){
+            $n = SmartestStringHelper::toVarName($an);
+            if(!in_array($n, $attachment_names)){
+                $attachment_names[] = $n;
+            }
+        }
+        
         return $attachment_names;
     }
     
