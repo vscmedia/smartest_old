@@ -912,6 +912,7 @@ class SmartestResponse{
 		$preview_html = $this->getPagePreviewHtml();
 		
 		$html = str_replace($body_tag, $body_tag.$creator.$preview_html, $html);
+		$html = str_replace('<body', '<body onload="initLightbox();"', $html);
 		
 		/* if(SM_CONTROLLER_METHOD == "renderPageFromUrl" || SM_CONTROLLER_METHOD == "renderPageFromId"){
 			$html = str_replace('</body>', "<!--Page built in: ".$this->fullTimeTaken."ms -->\n</body>", $html);

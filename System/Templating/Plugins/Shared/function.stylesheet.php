@@ -1,17 +1,20 @@
 <?php
 
-/**
- * Smarty plugin
- * @package Smartest CMS Smarty Plugins
- * @subpackage page manager
- */
-
-function smarty_function_stylesheet($params, &$smarty){
-	if(@$params['file']){
-		return $smarty->getStylesheet($params);
-	}else{
-		return null;
-	}
+function smarty_function_stylesheet($params, &$smartest_engine){
+    
+    if(isset($params['file']) && strlen($params['file'])){
+        
+        $file = $params['file'];
+        
+        if(!$smartest_engine->getStylesheetIncluded($file)){
+            
+            $smartest_engine->setStylesheetIncluded($file);
+            
+            if(substr($file, 0, 4) == 'http'){
+                return '<link rel="stylesheet" type="text/css" href="'.$file.'"></script>';
+            }else{
+                return '<link rel="stylesheet" type="text/css" href="'.SM_CONTROLLER_DOMAIN.'Resources/'.$file.'"></script>';
+            }
+        }
+    }
 }
-
-?>

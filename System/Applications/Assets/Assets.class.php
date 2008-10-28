@@ -881,6 +881,10 @@ class Assets extends SmartestSystemApplication{
 	    $asset = new SmartestAsset;
 	    $asset_id = (int) $get['asset_id'];
 	    
+	    if(!defined('SM_CMS_PAGE_SITE_ID')){
+	        define('SM_CMS_PAGE_SITE_ID', $this->getSite()->getId());
+        }
+	    
 	    if($asset->hydrate($asset_id)){
 	        
 	        $data = $asset->__toArray(false, true); // don't include object, do include owner info
@@ -1065,7 +1069,13 @@ class Assets extends SmartestSystemApplication{
                 
                         $attached_asset_id = $current_def->getAttachedAssetId();
                         $this->send($attached_asset_id, 'attached_asset_id');
-                
+                        
+                        $zoom = $current_def->getZoomFromThumbnail();
+                        $this->send($zoom, 'zoom');
+                        
+                        $trs = $current_def->getThumbnailRelativeSize();
+                        $this->send($trs, 'relative_size');
+                        
                         $alignment = $current_def->getAlignment();
                         $this->send($alignment, 'alignment');
                 
@@ -1123,6 +1133,8 @@ class Assets extends SmartestSystemApplication{
 	        
 	        $current_def->setAttachedAssetId((int) $post['attached_file_id']);
 	        $current_def->setAttachmentName($attachment_name);
+	        $current_def->setZoomFromThumbnail(isset($post['attached_file_zoom']));
+	        $current_def->setThumbnailRelativeSize((int) $post['thumbnail_relative_size']);
 	        $current_def->setCaption(htmlentities($post['attached_file_caption']));
 	        $current_def->setAlignment(SmartestStringHelper::toVarName($post['attached_file_alignment']));
 	        $current_def->setCaptionAlignment(SmartestStringHelper::toVarName($post['attached_file_caption_alignment']));

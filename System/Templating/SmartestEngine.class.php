@@ -14,6 +14,8 @@ class SmartestEngine extends Smarty{
 	protected $_context;
 	protected $_abstractPropertyHolder = array();
 	protected $_log = array();
+	protected $_included_scripts = array();
+	protected $_included_stylesheets = array();
 	
 	public function __construct($process_id){
 	    
@@ -162,8 +164,20 @@ class SmartestEngine extends Smarty{
         
 	}
 	
-	public function __destruct(){
-	    
+	public function getScriptIncluded($script_file){
+	    return in_array($script_file, $this->_included_scripts);
+	}
+	
+	public function setScriptIncluded($script_file){
+	    $this->_included_scripts[] = $script_file;
+	}
+	
+	public function getStylesheetIncluded($file){
+	    return in_array($file, $this->_included_stylesheets);
+	}
+	
+	public function setStylesheetIncluded($file){
+	    $this->_included_stylesheets[] = $file;
 	}
 
 }

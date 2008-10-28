@@ -74,6 +74,12 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
             case "caption":
             return $this->hasAsset() ? $this->getCaption() : '';
             
+            case "zoom":
+            return $this->hasAsset() ? $this->getZoomFromThumbnail() : false;
+            
+            case "thumbnail_relative_size":
+            return $this->getZoomFromThumbnail() ? $this->getThumbnailRelativeSize() : null;
+            
             case "alignment":
             return $this->hasAsset() ? $this->getAlignment() : null;
             
@@ -180,6 +186,22 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
     
     public function setBorder($border){
         $this->setContextDataField('border', SmartestStringHelper::toRealBool($border));
+    }
+    
+    public function getZoomFromThumbnail(){
+        return $this->getContextDataField('zoom');
+    }
+    
+    public function setZoomFromThumbnail($zoom){
+        $this->setContextDataField('zoom', (bool) $zoom);
+    }
+    
+    public function getThumbnailRelativeSize(){
+        return $this->getContextDataField('thumbnail_relative_size');
+    }
+    
+    public function setThumbnailRelativeSize($size){
+        $this->setContextDataField('thumbnail_relative_size', (int) $size);
     }
     
     public function hasAsset(){

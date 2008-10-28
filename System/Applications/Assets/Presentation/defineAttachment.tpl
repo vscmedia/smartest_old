@@ -1,6 +1,19 @@
+{literal}
+<script language="javascript">
+
+function toggleZoomImageOption(){
+    if($('attached_file_zoom').checked){
+        new Effect.BlindDown('thumbnail_size_selector', {duration:0.4});
+    }else{
+        new Effect.BlindUp('thumbnail_size_selector', {duration:0.4});
+    }
+}
+
+</script>
+{/literal}
 <div id="work-area">
   <h3>Define Attachment</h3>
-  <form action="{$domain}{$section}/updateAttachmentDefinition" method="post">
+  <form action="{$domain}{$section}/updateAttachmentDefinition" method="post" id="attachment-form">
   <div id="edit-form-layout">
     <div class="edit-form-row">
       <div class="form-section-label">Attachment Name</div>
@@ -18,6 +31,14 @@
         <option value="{$file.id}"{if $file.id == $attached_asset_id} selected="selected"{/if}>{$file.stringid} ({$file.url})</option>
         {/foreach}
       </select>
+    </div>
+    <div class="edit-form-row">
+      <div class="form-section-label">Zoom</div>
+      <input type="checkbox" name="attached_file_zoom" value="TRUE" id="attached_file_zoom"{if $zoom} checked="checked"{/if} onchange="toggleZoomImageOption()" />&nbsp;<label for="attached_file_zoom">Zoom from thumbnail file</label>
+    </div>
+    <div class="edit-form-row" style="display:{if $zoom}block{else}none{/if}" id="thumbnail_size_selector">
+      <div class="form-section-label">Thumbnail Relative Size:</div>
+      {slider name="thumbnail_relative_size" value=$relative_size min="20" max="90" value_unit="%"}
     </div>
     <div class="edit-form-row">
       <div class="form-section-label">Position</div>

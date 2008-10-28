@@ -369,7 +369,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
             if($this->_context == SM_CONTEXT_DYNAMIC_TEXTFRAGMENT){
             
-                $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
+                
                 $attachments = $this->getProperty('attachments');
                 $asset = $this->getProperty('asset');
                 
@@ -380,6 +380,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     $attachment = $attachments[$name];
                     
                     if($attachment['status'] == 'DEFINED'){
+                        
+                        if($attachment['zoom']){
+                            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/zoom_attachment.tpl';
+                        }else{
+                            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
+                        }
                         
                         $attachment['div_width'] = (int) $attachment['asset']['width'] + 10;
                         

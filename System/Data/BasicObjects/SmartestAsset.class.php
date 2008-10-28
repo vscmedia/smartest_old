@@ -73,6 +73,11 @@ class SmartestAsset extends SmartestBaseAsset{
     	        return $this->getFullPathOnDisk();
             }
             
+            case "web_path":
+            if($this->usesLocalFile()){
+                return $this->getFullWebPath();
+            }
+            
             case "size":
             return $this->getSize();
             
