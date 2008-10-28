@@ -318,7 +318,11 @@ class SmartestAsset extends SmartestBaseAsset{
 	    return in_array($this->getType(), array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'));
 	}
 	
-	
+	public function getImage(){
+	    if($this->isImage()){
+	        return $this->_image;
+	    }
+	}
 	
 	public function getDefaultParams(){
 	    

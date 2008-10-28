@@ -101,6 +101,13 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
             case "asset":
             return $this->hasAsset() ? $this->_asset : null;
             
+            case "thumbnail_image_url":
+            if($this->_asset->isImage()){
+                $percentage = $this->getThumbnailRelativeSize() > 1 ? $this->getThumbnailRelativeSize() : 10;
+                return SM_CONTROLLER_DOMAIN.$this->_asset->getImage()->getResizedVersionFromPercentage($percentage);
+            }
+            break;
+            
             case "asset_object":
             return $this->hasAsset() ? $this->_asset : null;
             

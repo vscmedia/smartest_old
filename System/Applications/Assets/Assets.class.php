@@ -1049,14 +1049,14 @@ class Assets extends SmartestSystemApplication{
 
 		if($asset->hydrate($asset_id)){
             
-            if($asset->getUserId() == $this->getUser()->getId() || $this->getUser()->hasToken('modify_assets')){
+           if($asset->getUserId() == $this->getUser()->getId() || $this->getUser()->hasToken('modify_assets')){
             
 			    $assettype_code = $asset->getType();
     			$types_data = SmartestDataUtility::getAssetTypes();
 			
     			if(array_key_exists($assettype_code, $types_data)){
                 
-                    $attachable_files = $this->manager->getAttachableFilesAsArrays($this->getSite()->getId());
+                    $attachable_files = $this->manager->getAttachableFiles($this->getSite()->getId());
                     $this->send($attachable_files, 'files');
                 
                     $textfragment = $asset->getTextFragment();
