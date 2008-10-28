@@ -62,6 +62,22 @@ class SmartestFile implements ArrayAccess{
     
     public function offsetGet($offset){
         
+        switch($offset){
+	        
+	        case "url":
+	        return $this->getWebUrl();
+	        break;
+	        
+	        case "file_path":
+	        return $this->getFullPath();
+	        break;
+	        
+	        case "public_file_path":
+	        return $this->getPublicPath();
+	        break;
+	        
+	    }
+        
     }
     
     public function offsetExists($offset){

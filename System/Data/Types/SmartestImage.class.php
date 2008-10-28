@@ -282,19 +282,9 @@ class SmartestImage extends SmartestFile{
 	        case "height":
 	        return $this->getHeight();
 	        
-	        case "url":
-	        return $this->getWebUrl();
-	        break;
-	        
-	        case "file_path":
-	        return $this->getFullPath();
-	        break;
-	        
-	        case "public_file_path":
-	        return $this->getPublicPath();
-	        break;
-	        
 	    }
+	    
+	    return parent::offsetGet($offset);
 	    
 	}
     
