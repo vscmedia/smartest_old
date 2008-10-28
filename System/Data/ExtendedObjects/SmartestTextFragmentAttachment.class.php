@@ -7,6 +7,7 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
     protected $_textFragment;
     protected $_div_width = null;
     protected $_edit_link = null;
+    protected $_thumbnail_image;
     
     public function getTextFragmentId(){
         return $this->getEntityForeignKeyValue(1);
@@ -101,12 +102,55 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
             case "asset":
             return $this->hasAsset() ? $this->_asset : null;
             
-            case "thumbnail_image_url":
+            case "thumbnail":
+            
             if($this->_asset->isImage()){
                 $percentage = $this->getThumbnailRelativeSize() > 1 ? $this->getThumbnailRelativeSize() : 10;
-                return SM_CONTROLLER_DOMAIN.$this->_asset->getImage()->getResizedVersionFromPercentage($percentage);
+                $this->_thumbnail_image = $this->_asset->getImage()->getResizedVersionFromPercentage($percentage);
+                return $this->_thumbnail_image;
+            }
+            
+            break;
+            
+            /* case "thumbnail_image_url":
+            if($this->_asset->isImage()){
+                $percentage = $this->getThumbnailRelativeSize() > 1 ? $this->getThumbnailRelativeSize() : 10;
+                $url = $this->_asset->getImage()->getResizedVersionFromPercentage($percentage);
+                $this->_thumbnail_image = new SmartestImage;
+                $this->_thumbnail_image->loadFile(SM_ROOT_DIR.'Public/'.$url);
+                return SM_CONTROLLER_DOMAIN.$url;
             }
             break;
+            
+            case "thumbnail_image_height":
+            if($this->_asset->isImage()){
+                
+                $percentage = $this->getThumbnailRelativeSize() > 1 ? $this->getThumbnailRelativeSize() : 10;
+                $url = $this->_asset->getImage()->getResizedVersionFromPercentage($percentage);
+                
+                if(!$this->_thumbnail_image){
+                    $this->_thumbnail_image = new SmartestImage;
+                    $this->_thumbnail_image->loadFile(SM_ROOT_DIR.'Public/'.$url);
+                }
+                
+                return $this->_thumbnail_image->getWidth();
+            }
+            break;
+            
+            case "thumbnail_image_width":
+            if($this->_asset->isImage()){
+                
+                $percentage = $this->getThumbnailRelativeSize() > 1 ? $this->getThumbnailRelativeSize() : 10;
+                $url = $this->_asset->getImage()->getResizedVersionFromPercentage($percentage);
+                
+                if(!$this->_thumbnail_image){
+                    $this->_thumbnail_image = new SmartestImage;
+                    $this->_thumbnail_image->loadFile(SM_ROOT_DIR.'Public/'.$url);
+                }
+                
+                return $this->_thumbnail_image->getHeight();
+            }
+            break; */
             
             case "asset_object":
             return $this->hasAsset() ? $this->_asset : null;

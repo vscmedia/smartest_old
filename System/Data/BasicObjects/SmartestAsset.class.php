@@ -89,6 +89,9 @@ class SmartestAsset extends SmartestBaseAsset{
                 return array();
             }
             
+            case "image":
+            return $this->isImage() ? $this->getImage() : null;
+            
             case "width":
             return $this->isImage() ? $this->getWidth() : null;
             
@@ -320,8 +323,12 @@ class SmartestAsset extends SmartestBaseAsset{
 	
 	public function getImage(){
 	    if($this->isImage()){
-	        return $this->_image;
-	    }
+	        if(!$this->_image){
+		        $this->_image = new SmartestImage;
+	            $this->_image->loadFile($this->getFullPathOnDisk());
+	        }
+		    return $this->_image;
+		}
 	}
 	
 	public function getDefaultParams(){

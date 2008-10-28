@@ -382,12 +382,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     if($attachment['status'] == 'DEFINED'){
                         
                         if($attachment['zoom']){
+                            $attachment['div_width'] = (int) $attachment['thumbnail']['width'] + 10;
                             $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/zoom_attachment.tpl';
                         }else{
+                            $attachment['div_width'] = (int) $attachment['asset']['width'] + 10;
                             $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
                         }
-                        
-                        $attachment['div_width'] = (int) $attachment['asset']['width'] + 10;
                         
                         if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
             			    $attachment['edit_link'] = "<a title=\"Click to edit definition for attachment: ".$name."\" href=\"".SM_CONTROLLER_DOMAIN."assets/defineAttachment?attachment=".$name."&amp;asset_id=".$asset->getId()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Attach a different file--></a>";

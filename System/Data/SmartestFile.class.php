@@ -7,7 +7,7 @@
  * @author Marcus Gilroy-Ware
  **/
  
-class SmartestFile{
+class SmartestFile implements ArrayAccess{
     
     protected $_original_file_path;
     protected $_current_file_path;
@@ -58,6 +58,22 @@ class SmartestFile{
     
     public function getMimeType(){
         // use xml file to get mime type from dot suffix
+    }
+    
+    public function offsetGet($offset){
+        
+    }
+    
+    public function offsetExists($offset){
+        
+    }
+    
+    public function offsetSet($offset, $value){
+        
+    }
+    
+    public function offsetUnset($offset){
+        
     }
 
 } // END class 

@@ -6,6 +6,7 @@ class SmartestImage extends SmartestFile{
     protected $_image_type;
     protected $_width;
     protected $_height;
+    protected $_thumbnail_resource;
     // these vars are already declared in SmartestFile:
     // protected $_original_file_path;
     // protected $_current_file_path;
@@ -19,8 +20,8 @@ class SmartestImage extends SmartestFile{
         
         if(is_file($file_path)){
             
-            $this->_original_file_path = $file_path;
-            $this->_current_file_path = $file_path;
+            $this->_original_file_path = realpath($file_path);
+            $this->_current_file_path = realpath($file_path);
             
             if($parse_image){
             
@@ -63,25 +64,49 @@ class SmartestImage extends SmartestFile{
     }
     
     public function getFullPath(){
-        return $this->_directory.$this->_file_name;
+        // return $this->_directory.$this->_file_name;
+        return $this->_current_file_path;
+    }
+    
+    public function isPublic(){
+        
+        $path_start = SM_ROOT_DIR.'Public';
+        $path_start_length = strlen($path_start);
+        
+        return substr($this->_current_file_path, 0, $path_start_length) == $path_start;
+        
+    }
+    
+    public function getPublicPath(){
+        
+        if($this->isPublic()){
+            
+            $path_start = SM_ROOT_DIR.'Public/';
+            $path_start_length = strlen($path_start);
+            return substr($this->_current_file_path, $path_start_length);
+            
+        }
+        
+    }
+    
+    public function getWebUrl(){
+        if($this->isPublic()){
+            return SM_CONTROLLER_DOMAIN.$this->getPublicPath();
+        }
     }
     
     public function getType(){
-        
+        return $this->_image_type;
     }
     
-    public function setType($type){
-        
-    }
-    
-    public function setFilename($filename){
+    /* public function setFilename($filename){
         
     }
     
     public function getThumbnail($max_width, $max_height, $refresh=false, $round_corners=false){
         // $proposed_thumbnail_filename = SmartestStringHelper::removeDotSuffix($this->_current_file_path).'_'.$max_width.'_'.$max_height.'.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
         
-    }
+    } */
     
     public function getResizedVersionFromMaxLongSide($max_long_side){
         
@@ -100,37 +125,46 @@ class SmartestImage extends SmartestFile{
         // check the work hasn't already been done
         if(file_exists($full_path)){
             
-            return $url;
+            $thumbnail = new SmartestImage;
+            $thumbnail->loadFile($full_path);
+            return $thumbnail;
             
         }else{
         
             $new_width = ceil($percentage/100*$this->getWidth());
             $new_height = ceil($percentage/100*$this->getHeight());
-            $thumbnail_image = ImageCreateTrueColor($new_width, $new_height);
-            imagecopyresampled($thumbnail_image, $this->_resource, 0,0,0,0, $new_width, $new_height, $this->getWidth(), $this->getHeight());
-        
+            $this->_thumbnail_resource = ImageCreateTrueColor($new_width, $new_height);
+            imagecopyresampled($this->_thumbnail_resource, $this->_resource, 0,0,0,0, $new_width, $new_height, $this->getWidth(), $this->getHeight());
+            $thumbnail = new SmartestImage;
+            
             switch($this->_image_type){
             
                 case self::JPEG:
             
-                if(imagejpeg($thumbnail_image, $full_path, 100)){
-                    return $url;
+                if(imagejpeg($this->_thumbnail_resource, $full_path, 100)){
+                    $this->clearThumbnailResource();
+                    $thumbnail->loadFile($full_path);
+                    return $thumbnail;
                 }
             
                 break;
             
                 case self::PNG:
             
-                if(imagepng($thumbnail_image, $full_path, 100)){
-                    return $url;
+                if(imagepng($this->_thumbnail_resource, $full_path, 100)){
+                    $this->clearThumbnailResource();
+                    $thumbnail->loadFile($full_path);
+                    return $thumbnail;
                 }
             
                 break;
             
                 case self::GIF:
             
-                if(imagegif($thumbnail_image, $full_path, 100)){
-                    return $url;
+                if(imagegif($this->_thumbnail_resource, $full_path, 100)){
+                    $this->clearThumbnailResource();
+                    $thumbnail->loadFile($full_path);
+                    return $thumbnail;
                 }
             
                 break;
@@ -138,6 +172,12 @@ class SmartestImage extends SmartestFile{
             }
         
         }
+        
+    }
+    
+    public function clearThumbnailResource(){
+        
+        imagedestroy($this->_thumbnail_resource);
         
     }
     
@@ -230,6 +270,32 @@ class SmartestImage extends SmartestFile{
 			// $this->error("File could not be found.", "getExifData");
 			return null;
 		}
+	}
+	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        
+	        case "width":
+	        return $this->getWidth();
+	        
+	        case "height":
+	        return $this->getHeight();
+	        
+	        case "url":
+	        return $this->getWebUrl();
+	        break;
+	        
+	        case "file_path":
+	        return $this->getFullPath();
+	        break;
+	        
+	        case "public_file_path":
+	        return $this->getPublicPath();
+	        break;
+	        
+	    }
+	    
 	}
     
 }
