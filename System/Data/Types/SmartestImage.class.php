@@ -16,86 +16,44 @@ class SmartestImage extends SmartestFile{
     const GIF = 'gif';
     const PNG = 'png';
     
-    public function loadFile($file_path, $parse_image=true){
-        
-        if(is_file($file_path)){
-            
-            $this->_original_file_path = realpath($file_path);
-            $this->_current_file_path = realpath($file_path);
-            
-            if($parse_image){
-            
-                $suffix = strtoupper(SmartestStringHelper::getDotSuffix($this->_current_file_path));
-                
-                switch($suffix){
-                
-                    case "JPG":
-                    case "JPEG":
-                    $resource = imagecreatefromjpeg($this->_current_file_path);
-                    $this->_image_type = self::JPEG;
-                    break;
-                
-                    case "PNG":
-                    $resource = imagecreatefrompng($this->_current_file_path);
-                    $this->_image_type = self::PNG;
-                    break;
-                
-                    case "GIF":
-                    $resource = imagecreatefromgif($this->_current_file_path);
-                    $this->_image_type = self::GIF;
-                    break;
-                }
-            
-                if($resource){
-                    $this->_resource = $resource;
-                    return true;
-                }else{
-                    return false;
-                }
-            
-            }else{
-                return true;
-            }
-            
-        }else{
-            // throw new SmartestException($file_path.' does not exist or is not a valid file.');
-            return false;
-        }
-    }
-    
     public function getFullPath(){
         // return $this->_directory.$this->_file_name;
         return $this->_current_file_path;
     }
     
-    public function isPublic(){
-        
-        $path_start = SM_ROOT_DIR.'Public';
-        $path_start_length = strlen($path_start);
-        
-        return substr($this->_current_file_path, 0, $path_start_length) == $path_start;
-        
-    }
-    
-    public function getPublicPath(){
-        
-        if($this->isPublic()){
-            
-            $path_start = SM_ROOT_DIR.'Public/';
-            $path_start_length = strlen($path_start);
-            return substr($this->_current_file_path, $path_start_length);
-            
+    public function getResource(){
+      
+       $suffix = strtoupper(SmartestStringHelper::getDotSuffix($this->_current_file_path));
+
+        switch($suffix){
+
+            case "JPG":
+            case "JPEG":
+            $resource = imagecreatefromjpeg($this->_current_file_path);
+            $this->_image_type = self::JPEG;
+            break;
+
+            case "PNG":
+            $resource = imagecreatefrompng($this->_current_file_path);
+            $this->_image_type = self::PNG;
+            break;
+
+            case "GIF":
+            $resource = imagecreatefromgif($this->_current_file_path);
+            $this->_image_type = self::GIF;
+            break;
         }
-        
-    }
-    
-    public function getWebUrl(){
-        if($this->isPublic()){
-            return SM_CONTROLLER_DOMAIN.$this->getPublicPath();
+
+        if($resource){
+            $this->_resource = $resource;
+            return $this->_resource;
+        }else{
+            return null;
         }
+      
     }
     
-    public function getType(){
+    public function getImageType(){
         return $this->_image_type;
     }
     
@@ -134,7 +92,7 @@ class SmartestImage extends SmartestFile{
             $new_width = ceil($percentage/100*$this->getWidth());
             $new_height = ceil($percentage/100*$this->getHeight());
             $this->_thumbnail_resource = ImageCreateTrueColor($new_width, $new_height);
-            imagecopyresampled($this->_thumbnail_resource, $this->_resource, 0,0,0,0, $new_width, $new_height, $this->getWidth(), $this->getHeight());
+            imagecopyresampled($this->_thumbnail_resource, $this->getResource(), 0,0,0,0, $new_width, $new_height, $this->getWidth(), $this->getHeight());
             $thumbnail = new SmartestImage;
             
             switch($this->_image_type){

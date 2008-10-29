@@ -16,11 +16,13 @@ class SmartestFile implements ArrayAccess{
         
     }
     
-    public function loadFile($file_path){
+    public function loadFile($file_path, $parse_image=true){
+        
         if(is_file($file_path)){
-            $this->_original_file_path = $file_path;
-            $this->_current_file_path = $file_path;
-            return true;
+            
+            $this->_original_file_path = realpath($file_path);
+            $this->_current_file_path = realpath($file_path);
+            
         }else{
             // throw new SmartestException($file_path.' does not exist or is not a valid file.');
             return false;
@@ -41,6 +43,33 @@ class SmartestFile implements ArrayAccess{
     
     public function getOriginalPath(){
         return $this->_original_file_path;
+    }
+    
+    public function isPublic(){
+        
+        $path_start = SM_ROOT_DIR.'Public';
+        $path_start_length = strlen($path_start);
+        
+        return substr($this->_current_file_path, 0, $path_start_length) == $path_start;
+        
+    }
+    
+    public function getPublicPath(){
+        
+        if($this->isPublic()){
+            
+            $path_start = SM_ROOT_DIR.'Public/';
+            $path_start_length = strlen($path_start);
+            return substr($this->_current_file_path, $path_start_length);
+            
+        }
+        
+    }
+    
+    public function getWebUrl(){
+        if($this->isPublic()){
+            return SM_CONTROLLER_DOMAIN.$this->getPublicPath();
+        }
     }
     
     public function rename($new_name, $force=false){
@@ -69,7 +98,7 @@ class SmartestFile implements ArrayAccess{
 	        break;
 	        
 	        case "file_path":
-	        return $this->getFullPath();
+	        return $this->getPath();
 	        break;
 	        
 	        case "public_file_path":
@@ -92,4 +121,4 @@ class SmartestFile implements ArrayAccess{
         
     }
 
-} // END class 
+}
