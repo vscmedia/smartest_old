@@ -614,7 +614,7 @@ class SmartestResponse{
 		    "dom",
 			"PDO",
 			"pdo_mysql",
-			"pdo_sqlite",
+//			"pdo_sqlite",
 			"json",
 			"curl",
 			"xmlreader",
