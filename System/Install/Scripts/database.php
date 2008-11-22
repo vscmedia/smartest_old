@@ -38,7 +38,12 @@ function getDetailsFromUser(){
     $correct = (strtolower(trim(fread(STDIN, 1024))) == 'n') ? false : true;
     
     if($correct){
-        return array("u"=>$smartest_username, "p"=>$smartest_password, "d"=>$smartest_database, "h"=>$smartest_host);
+        $dbparams = new SmartestParameterHolder("SMARTEST");
+        $dbparams->setParameter('username', $smartest_username);
+        $dbparams->setParameter('password', $smartest_password);
+        $dbparams->setParameter('database', $smartest_database);
+        $dbparams->setParameter('server', $smartest_host);
+        return $dbparams;
     }else{
         return getDetailsFromUser();
     }
@@ -106,10 +111,10 @@ if(!file_exists(SM_ROOT_DIR."Configuration/database.ini")){
     if(file_exists(SM_ROOT_DIR."System/Install/Samples/database-sample.ini")){
         
         $config = file_get_contents(SM_ROOT_DIR."System/Install/Samples/database-sample.ini");
-        $config = str_replace("__USERNAME__", $details['u'], $config);
-        $config = str_replace("__PASSWORD__", $details['p'], $config);
-        $config = str_replace("__DATABASE__", $details['d'], $config);
-        $config = str_replace("__HOST__", $details['h'], $config);
+        $config = str_replace("__USERNAME__", $details->getParameter('username'), $config);
+        $config = str_replace("__PASSWORD__", $details->getParameter('password'), $config);
+        $config = str_replace("__DATABASE__", $details->getParameter('database'), $config);
+        $config = str_replace("__HOST__", $details->getParameter('server'), $config);
         $config = str_replace("__NOW__", date("Y-m-d h:i:s"), $config);
         
         if(!file_put_contents(SM_ROOT_DIR."Configuration/database.ini", $config)){
@@ -117,7 +122,7 @@ if(!file_exists(SM_ROOT_DIR."Configuration/database.ini")){
             exit(0);
         }    
         
-        $database = new SmartestMysql($details['h'], $details['u'], $details['d'], $details['p']);
+        $database = new SmartestMysql($details);
         
         fwrite(STDOUT, "* Creating Smartest database structure from schema file...\n");
         
@@ -172,7 +177,7 @@ if(!file_exists(SM_ROOT_DIR."Configuration/database.ini")){
             $log_contents .= $query."\n----------------------------------------------------------\n";
         }
         
-        file_put_contents(SM_ROOT_DIR."System/Install/install.log", $setup);
+        file_put_contents(SM_ROOT_DIR."Logs/install.log", $setup);
         
     }else{
         fwrite(STDOUT, "* ERROR: ".SM_ROOT_DIR."System/Install/Samples/database-sample.ini could not be found! \n");
