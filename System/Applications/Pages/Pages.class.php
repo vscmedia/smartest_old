@@ -187,7 +187,9 @@ class Pages extends SmartestSystemApplication{
                             $untouched_files = $f;
                         }
                     }
-            
+                    
+                    SmartestLog::getInstance('site')->log("{$this->getUser()} cleared the pages cache. ".count($deleted_files[])." files were removed.", SmartestLog::USER_ACTION);
+                    
                     $this->send(true, 'show_result');
                     $this->send($deleted_files, 'deleted_files');
                     $this->send(count($deleted_files), 'num_deleted_files');
@@ -202,7 +204,8 @@ class Pages extends SmartestSystemApplication{
                 }
             
             }else{
-
+                
+                SmartestLog::getInstance('site')->log("{$this->getUser()} tried to cleared the pages cache but did not have permission.", SmartestLog::ACCESS_DENIED);
                 $this->addUserMessageToNextRequest('You don\'t have permission to clear the page cache for this site.', SmartestUserMessage::ACCESS_DENIED);
                 $this->redirect('/smartest/pages');
 
@@ -2397,6 +2400,7 @@ class Pages extends SmartestSystemApplication{
 	        if(((boolean) $page->getChangesApproved() || $this->getUser()->hasToken('approve_page_changes')) && ($this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
 		        
 		        $page->publish();
+		        SmartestLog::getInstance('site')->log("{$this->getUser()} published page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        $this->addUserMessageToNextRequest('The page has been successfully published.', SmartestUserMessage::SUCCESS);
 		        
 	        }else{
@@ -2801,6 +2805,7 @@ class Pages extends SmartestSystemApplication{
 		        $page->setDraftMode(true);
 		        $page->addUrl($post['page_url']);
 		        $page->save();
+		        SmartestLog::getInstance('site')->log("{$this->getUser()} added URL '{$post['page_url']}' to page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        $this->addUserMessageToNextRequest("The new URL was successully added.", SmartestUserMessage::SUCCESS);
 		    }else{
 		        $this->addUserMessageToNextRequest("The page ID was not recognized.", SmartestUserMessage::ERROR);
@@ -2877,8 +2882,10 @@ class Pages extends SmartestSystemApplication{
 		$url = new SmartestPageUrl;
 		
 		if($url->hydrate($get['url'])){
-		
+		    
+		    $u = $url->getUrl();
 		    $url->delete();
+		    SmartestLog::getInstance('site')->log("{$this->getUser()} deleted URL '$u' from page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		    $this->addUserMessageToNextRequest("The URL has been successfully deleted. It's recommended that you now clear the pages cache to avoid dead links.", SmartestUserMessage::SUCCESS);
 		
 	    }else{

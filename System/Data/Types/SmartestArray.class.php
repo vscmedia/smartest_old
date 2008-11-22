@@ -12,4 +12,8 @@ class SmartestArray extends ArrayObject{
         return $_data;
     } */
     
+    public function reverse(){
+        return array_flip($this);
+    }
+    
 }

@@ -16,8 +16,11 @@ class SmartestXmlHelper extends SmartestHelper{
 		
 		if(is_file($filename)){
 			
-			if(!class_exists("XML_Unserializer")){
+			if(!class_exists("PEAR")){
 				@include_once 'PEAR.php';
+			}
+			
+			if(!class_exists("XML_Unserializer")){
 				@include_once 'XML/Unserializer.php'; 
 				@include_once 'XML/Serializer.php';
 			}

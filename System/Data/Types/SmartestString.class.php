@@ -42,6 +42,10 @@ class SmartestString implements SmartestBasicType, ArrayAccess{
     	return SmartestStringHelper::isMd5Hash($this->_string);
     }
     
+    public function toParagraphsArray(){
+        return SmartestStringHelper::toParagraphsArray($this->_string);
+    }
+    
     public function offsetExists($offset){
         return in_array(strtolower($offset), array('slug', 'varname', 'constantname', 'camelcase', 'is_md5', 'length'));
     }
@@ -60,6 +64,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess{
             return $this->isMd5Hash();
             case "length":
             return strlen($this->_string);
+            case "paragraphs":
+            return $this->toParagraphsArray();
         }
     }
     

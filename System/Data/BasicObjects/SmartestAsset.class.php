@@ -250,17 +250,23 @@ class SmartestAsset extends SmartestBaseAsset{
 	}
 	
 	public function getContent(){
+	    
 	    if($this->getTextFragment()){
 	        if($this->isParsable()){
-    	        return $this->getTextFragment()->getContent();
+    	        $string = $this->getTextFragment()->getContent();
             }else{
-                return htmlspecialchars($this->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
+                $string = htmlspecialchars($this->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
             }
 	    }else if($this->isEditable() && is_file($this->getFullPathOnDisk())){
-	        return SmartestFileSystemHelper::load($this->getFullPathOnDisk(), true);
+	        $string = SmartestFileSystemHelper::load($this->getFullPathOnDisk(), true);
 	    }else{
-    	    return null;
+    	    $string = null;
     	}
+    	
+    	$s = new SmartestString($string);
+    	
+    	return $s;
+    	
 	}
 	
 	public function setContent($raw_content, $escapeslashes=true){

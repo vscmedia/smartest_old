@@ -110,8 +110,13 @@ class SmartestRssOutputHelper{
 	        $pubDate_text = $this->_domObject->createTextNode(date('r', $object->getDate()));
 	        $pubDate->appendChild($pubDate_text);
 	        
+	        $link = $this->_domObject->createElement("link");
+	        $link_text = $this->_domObject->createTextNode($object->getUrl());
+	        $link->appendChild($link_text);
+	        
 	        $item->appendChild($title);
     	    $item->appendChild($description);
+    	    $item->appendChild($link);
     	    $item->appendChild($pubDate);
 	        
 	        $channel->appendChild($item);

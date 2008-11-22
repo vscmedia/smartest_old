@@ -167,9 +167,7 @@ class SmartestDataObject implements ArrayAccess{
 	}
 	
 	public function addPropertyAlias($alias, $column){
-		/* if(!isset($this->_properties_lookup[$alias])){
-			$this->_properties_lookup[$alias] = $column;
-		} */
+		
 	}
 	
 	public function exemptFromPrefix($field_name){
@@ -202,6 +200,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	public function __toArray(){
 		$data = $this->_properties;
+		// SmartestLog::getInstance('SYSTEM')->log('Deprecated API function used: SmartestDataObject::__toArray()');
 		return $data;
 	}
 	
@@ -230,8 +229,8 @@ class SmartestDataObject implements ArrayAccess{
 	}
 	
 	public function getOriginalDbRecord(){
-	    $neat_data = $this->_properties;
 	    
+	    $neat_data = $this->_properties;
 	    $messy_data = array();
 	    
 	    foreach($neat_data as $key => $value){
@@ -373,103 +372,72 @@ class SmartestDataObject implements ArrayAccess{
 	public function hydrate($id, $site_id=''){
 		
 		if(is_array($id)){
-			
-			/*foreach($id as $key => $value){
-			    
-			    if(in_array($name, $this->_no_prefix)){
-					$this->_properties[$name] = $value;
-				}else{
-				    
-				    // automatically turns $careful on and off by hashing array_keys() and seeing if the result matches $this->_original_fields_hash;
-        			// note that this won't work if fields are in wrong order, but this should seldom happen
-        			
-        			$careful = ($this->calculateFieldsHash(array_keys($id)) != $this->_original_fields_hash);
-				    // $careful = false;
-				    
-			        if($careful){
-				        if(substr($key, 0, strlen($this->_table_prefix)) == $this->_table_prefix){
-					        $this->_properties[substr($key, strlen($this->_table_prefix))] = $value;
-				        }
-			        }else{
-			            $this->_properties[substr($key, strlen($this->_table_prefix))] = $value;
-			        }
-		        } */
 		        
-		        // $internal_property_names = array_keys($this->_properties);
-		        
-		        $offset = strlen($this->_table_prefix);
-		        
-		        foreach($this->_original_fields as $fn){
-		            // if the new array has a value with a key that exists in this object's table 
-		            if(isset($id[$fn])){
-		                // if the field is exempted from prefix (rare)
-		                if(isset($this->_no_prefix[$fn])){
-		                    $this->_properties[$fn] = $id[$fn];
-		                }else{
-		                    $this->_properties[substr($fn, $offset)] = $id[$fn];
-		                }
-		            }
-		        }
+	        $offset = strlen($this->_table_prefix);
+	        
+	        foreach($this->_original_fields as $fn){
+	            // if the new array has a value with a key that exists in this object's table 
+	            if(isset($id[$fn])){
+	                // if the field is exempted from prefix (rare)
+	                if(isset($this->_no_prefix[$fn])){
+	                    $this->_properties[$fn] = $id[$fn];
+	                }else{
+	                    $this->_properties[substr($fn, $offset)] = $id[$fn];
+	                }
+	            }
+	        }
 				
-			// }
-			
 			$this->_came_from_database = true;
-			
-			/* if(!$this->getCentralDataHolder()->has($this->_table_name.':'.$this->getId())){
-			    $this->getCentralDataHolder()->set($this->_table_name.':'.$this->getId(), $this);
-			} */
 			
 			return true;
 			
 		}else{
 		    
-		    // if($this->getCentralDataHolder()->has($this->_table_name.':'.$this->getId())){
-		        
-		        // $this =& $this->getCentralDataHolder()->set($this->_table_name.':'.$this->getId());
-		        
-		    // }else{
-		        
-		        if(strlen($id)){
-		        
-		            $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$id."'";
-			    
-        			if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
-        			    $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
-        			}
-			    
-        		    $this->_last_query = $sql;
-        			$result = $this->database->queryToArray($sql, $file, $line);
-		
-    			    if(count($result)){
-			
-    				    foreach($result[0] as $name => $value){
-    					    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
-    						    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
-    						    /* $this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix)); */
-    					    }else if(isset($this->_no_prefix[$name])){
-    						    $this->_properties[$name] = $value;
-    					    }
-    				    }
-			
-    				    $this->_came_from_database = true;
-				    
-    				    return true;
-    			    }else{
-    				    return false;
-    			    }
-			    
-		        }else{
-		            
-		            // throw new SmartestException("SmartestDataObject->hydrate() must be called with a valid ID or data array.");
-		            
-		        }
-			
-	        // }
+		    return $this->find($id);
+	        
 		}
 		
 	}
 	
-	public function hydrateBy($field, $value, $site_id=''){
+	public function find($id, $site_id=''){
+	    
+	    if(strlen($id)){
+        
+            $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$id."'";
+	    
+			if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
+			    $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
+			}
+	    
+		    $this->_last_query = $sql;
+			$result = $this->database->queryToArray($sql, $file, $line);
+
+		    if(count($result)){
+	
+			    foreach($result[0] as $name => $value){
+				    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
+					    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
+				    }else if(isset($this->_no_prefix[$name])){
+					    $this->_properties[$name] = $value;
+				    }
+			    }
+	
+			    $this->_came_from_database = true;
+		    
+			    return true;
+		    }else{
+			    return false;
+		    }
+	    
+        }else{
+            
+            // throw new SmartestException("SmartestDataObject->find() must be called with a valid ID or data array.");
+            
+        }
+	    
+	}
+	
+	public function findBy($field, $value, $site_id=''){
 	    
 	    if(isset($this->_no_prefix[$field])){
 		    $column_name = $field;
@@ -493,7 +461,6 @@ class SmartestDataObject implements ArrayAccess{
 		    foreach($result[0] as $name => $value){
 			    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
 				    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
-				    // $this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, strlen($this->_table_prefix)))] = substr($name, strlen($this->_table_prefix));
 			    }else if(isset($this->_no_prefix[$name])){
 				    $this->_properties[$name] = $value;
 			    }
@@ -505,6 +472,12 @@ class SmartestDataObject implements ArrayAccess{
 	    }else{
 		    return false;
 	    }
+	    
+	}
+	
+	public function hydrateBy($field, $value, $site_id=''){
+	    
+	    return $this->findBy($field, $value, $site_id);
 	    
 	}
 	
@@ -569,7 +542,6 @@ class SmartestDataObject implements ArrayAccess{
     			$id = $this->database->query($sql);
 			
     			$this->_properties['id'] = $id;
-    			// $this->generatePropertiesLookup();
     			$this->_came_from_database = true;
     		}
 		
@@ -610,13 +582,5 @@ class SmartestDataObject implements ArrayAccess{
 	public function getDbConnectionLastQuery(){
 	    return $this->database->getLastQuery();
 	}
-	
-	/* public static function retrieveAllAsRawArrays(){
-	    
-	    $sql = "SELECT * FROM ".$this->_table_name;
-	    $result = SmartestPersistentObject::get('db:main')->queryToArray($sql);
-	    return $result;
-	    
-	}*/
 	
 }

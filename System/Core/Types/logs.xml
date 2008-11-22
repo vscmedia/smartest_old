@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+
+<logs>
+  
+  <log id="SM_LOG_DEFAULT">
+    <name>default</name>
+    <description>Default log, used in cases of ambiguity</description>
+    <file>Logs/default.log</file>
+    <format>%TIMESTAMP%: (%LEVEL%) %MESSAGE% (%FILE%:%LINE% %CLASS%%CALLTYPE%%FUNCTION%())</format>
+  </log>
+  
+  <log id="SM_LOG_SYSTEM_INTERNAL">
+    <name>system</name>
+    <description>Internal System Debug Log</description>
+    <file>System/Logs/%DAY%_system.log</file>
+    <format>%TIMESTAMP%: (%LEVEL%) %MESSAGE% (%FILE%:%LINE% %CLASS%%CALLTYPE%%FUNCTION%())</format>
+  </log>
+  
+  <log id="SM_LOG_SITE_ACTIONS">
+    <name>site</name>
+    <description>Per-site User Actions Log</description>
+    <file>Logs/%DAY%_%SITEID%_actions.log</file>
+    <format>%TIMESTAMP%: (%LEVEL%) %MESSAGE%</format>
+  </log>
+  
+</logs>

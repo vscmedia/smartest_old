@@ -405,7 +405,8 @@ class Assets extends SmartestSystemApplication{
 		            
 		            
     		        }else{
-    		            $this->addUserMessageToNextRequest("Error: Neither a file name nor a string_id were provided.", SmartestUserMessage::ERROR);
+    		            $this->addUserMessageToNextRequest("Error: Neither a file name nor a string_id were provided.", SmartestUserMessage::WARNING);
+    		            SmartestLog::getInstance('site')->log('Neither a file name nor a string_id were provided when adding a new file.', SmartestLog::WARNING);
     		            $everything_ok = false;
     		        }
 		        
@@ -436,7 +437,9 @@ class Assets extends SmartestSystemApplication{
     		        
         		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
         		            $everything_ok = false;
-        		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
+        		            $message = sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name));
+        		            $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
+        		            SmartestLog::getInstance('site')->log($message, SmartestLog::ERROR);
         		        }else{
         		            $asset->setUrl(basename($final_file_name));
         		            $asset->setWebid(SmartestStringHelper::random(32));
@@ -509,11 +512,12 @@ class Assets extends SmartestSystemApplication{
     		    if($everything_ok){
     		        $asset->setCreated(time());
     		        $asset->save();
-    		        $this->addUserMessageToNextRequest(sprintf("The file was successfully saved as: %s", $asset->getUrl()), SmartestUserMessage::SUCCESS);
-    		        // $this->addUserMessage(sprintf("The file was successfully saved as: %s", $asset->getUrl()));
+    		        $message = sprintf("The file was successfully saved as: %s", $asset->getUrl());
+    		        $this->addUserMessageToNextRequest($message, SmartestUserMessage::SUCCESS);
+    		        SmartestLog::getInstance('site')->log($this->getUser().' created file: '.$asset->getUrl(), SmartestLog::USER_ACTION);
     		    }else{
     		        $this->addUserMessageToNextRequest("There was an error creating the new file.", SmartestUserMessage::ERROR);
-    		        // $this->addUserMessage("There was an error creating the new file.");
+    		        SmartestLog::getInstance('site')->log("There was an error creating the new file.", SmartestLog::ERROR);
     		    }
 		    
     		    $this->formForward();
@@ -521,7 +525,7 @@ class Assets extends SmartestSystemApplication{
     		}else{
 		    
     		    $this->addUserMessageToNextRequest("The asset type was not recognized.", SmartestUserMessage::ERROR);
-    		    // $this->addUserMessage("The asset type was not recognized.");
+    		    SmartestLog::getInstance('site')->log("The asset type was not recognized.", SmartestLog::ERROR);
     		    $this->formForward();
 		    
     		}
@@ -529,6 +533,7 @@ class Assets extends SmartestSystemApplication{
 	    }else{
 	        
 	        $this->addUserMessageToNextRequest("You don't currently have permission to add new files.", SmartestUserMessage::ACCESS_DENIED);
+	        SmartestLog::getInstance('site')->log("You don't currently have permission to add new files.", SmartestLog::ACCESS_DENIED);
 	        $this->formForward();
 	        
 	    }
@@ -714,6 +719,7 @@ class Assets extends SmartestSystemApplication{
     		if($asset->hydrate($asset_id)){
     		    
     		    $asset->setIsApproved(1);
+    		    SmartestLog::getInstance('site')->log("User {$this->getUser()} approved changes to file: {$asset->getUrl()} ({$asset->getId()}).", SmartestLog::USER_ACTION);
     		    
     		    if($todo = $this->getUser()->getTodo('SM_TODOITEMTYPE_APPROVE_ASSET', $asset->getId())){
 	                $todo->complete();

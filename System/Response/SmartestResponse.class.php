@@ -119,11 +119,31 @@ class SmartestResponse{
         require SM_ROOT_DIR.'System/Base/SmartestError.class.php';
         require SM_ROOT_DIR.'System/Base/SmartestErrorStack.class.php';
         require SM_ROOT_DIR.'System/Data/SmartestDatabase.class.php';
+        require SM_ROOT_DIR.'System/Data/SmartestDataUtility.class.php';
+        
+        require 'PEAR.php';
+        require 'XML/Unserializer.php';
+        require 'XML/Serializer.php';
         
         $this->errorStack = new SmartestErrorStack();
 
         try{
             SmartestHelper::loadAll();
+        }catch(SmartestException $e){
+            $this->error($e->getMessage());
+            $this->errorStack->display();
+        }
+
+        try{
+            
+            // gather SVN data
+            $in_svn_working_directory = file_exists(SM_ROOT_DIR . ".svn");
+    	    define('SM_SVN_IN_REPOSITORY', $in_svn_working_directory);
+    	    $svn_data = SmartestXmlHelper::loadFile(SM_ROOT_DIR . ".svn/entries");
+    	    define('SM_SVN_REVISION_NUMBER', $raw_data['entry'][0]['revision']);
+    	    $last_updated = filemtime(SM_ROOT_DIR . ".svn/entries");
+            define('SM_SVN_LAST_UPDATED', $last_updated);
+            
         }catch(SmartestException $e){
             $this->error($e->getMessage());
             $this->errorStack->display();
@@ -141,23 +161,28 @@ class SmartestResponse{
         	'System/Data/SmartestSqllite.class.php',
         	'System/Data/SmartestCacheDb.class.php',
         	'System/Data/SmartestCmsItem.class.php',
-        	'System/Data/SmartestDataUtility.class.php',
         	'System/Data/SmartestFile.class.php',
         	'System/Base/SmartestWebPageBuilderException.class.php',
-        	'System/Base/SmartestInterfaceBuilderException.class.php'
+        	'System/Base/SmartestInterfaceBuilderException.class.php',
+        	'System/Base/SmartestUpdater.class.php'
 
         );
-
-        require 'PEAR.php';
-        require 'XML/Unserializer.php';
-        require 'XML/Serializer.php';
-
+        
         SmartestDataUtility::loadTypeObjects();
+        
+        try{
+            SmartestUpdater::run();
+        }catch(SmartestException $e){
+            $this->error($e->getMessage());
+            $this->errorStack->display();
+        }
 
         // include SM_ROOT_DIR.'Libraries/Plugins/SmartestXml/SmartestXmlSerializer.class.php';
 
         SmartestFileSystemHelper::include_group(
 
+        	'System/Response/SmartestLog.class.php',
+        	'System/Response/SmartestLogType.class.php',
         	'System/Data/DataQuery.class.php',
         	'System/Data/SmartestQuery.class.php',
         	'System/Data/SmartestQueryResultSet.class.php',
@@ -181,27 +206,10 @@ class SmartestResponse{
         );
         
         // load database connection settings
-        // this has to be done here so that it is available to dataobject builder
-		/* if(SmartestCache::hasData('dbconfig', true)){
+        $this->dbconfig = SmartestDatabase::readConfiguration('SMARTEST');
 			
-			$this->dbconfig = SmartestCache::load('dbconfig', true);
-			$this->_log("Database settings loaded from disk cache.");
-			
-		}else{ */
-			
-			/* $dbconfig = parse_ini_file(SM_ROOT_DIR."Configuration/database.ini", true);
-			$this->dbconfig = new SmartestParameterHolder('Main Database Configuration Parameters');
-			
-			foreach($dbconfig['SMARTEST'] as $key => $value){
-			    $this->dbconfig->setParameter($key, $value);
-			} */
-			
-			$this->dbconfig = SmartestDatabase::readConfiguration('SMARTEST');
-			
-			// SmartestCache::save('dbconfig', $this->dbconfig, -1, true);
-			$this->_log("Database settings loaded from ".SM_ROOT_DIR."Configuration/database.ini.");
-			
-		// }
+		// SmartestCache::save('dbconfig', $this->dbconfig, -1, true);
+		$this->_log("Database settings loaded from ".SM_ROOT_DIR."Configuration/database.ini.");
         
         try{
 	        

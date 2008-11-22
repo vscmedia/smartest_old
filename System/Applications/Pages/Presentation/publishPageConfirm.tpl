@@ -14,7 +14,7 @@
 
 {elseif $count == 1}
 
-<div class="instruction"><b>Warning</b>: The {$undefined_asset_classes[0].info.type} "{$undefined_asset_classes[0].info.assetclass_label}" is not defined.</div>
+<div class="instruction"><b>Warning</b>: The {$undefined_asset_classes[0].info.type} <strong>{$undefined_asset_classes[0].info.assetclass_name}</strong> is not defined.</div>
 	
 {elseif $count > 1}
 

@@ -12,7 +12,7 @@ class SmartestParameterHolder implements ArrayAccess{
     }
     
     public function __toString(){
-        return $this->_name;
+        return 'SmartestParameterHolder: '.$this->_name;
     }
     
     public function getParameter($n){
