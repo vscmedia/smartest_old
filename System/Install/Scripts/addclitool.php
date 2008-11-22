@@ -5,8 +5,9 @@ define('SM_ROOT_DIR', getcwd().DIRECTORY_SEPARATOR);
 
 if(!is_file('/usr/share/php/smartest.php')){
 
-    copy(SM_ROOT_DIR.'System/Install/Scripts/smartest.php', '/usr/share/php/');
-    fwrite(STDOUT, "* Created /usr/share/php/smartest.php.\n");
+    if(@copy(SM_ROOT_DIR.'System/Install/Scripts/smartest.php', '/usr/share/php/')){
+        fwrite(STDOUT, "* Created /usr/share/php/smartest.php.\n");
+    }
 
 }else{
     
@@ -16,8 +17,9 @@ if(!is_file('/usr/share/php/smartest.php')){
 
 if(!is_file('/usr/bin/smartest')){
 
-    copy(SM_ROOT_DIR.'System/Install/Scripts/smartest', '/usr/bin/');
-    fwrite(STDOUT, "* Created /usr/bin/smartest.\n");
+    if(@copy(SM_ROOT_DIR.'System/Install/Scripts/smartest', '/usr/bin/smartest')){
+        fwrite(STDOUT, "* Created /usr/bin/smartest.\n");
+    }
 
 }else{
     

@@ -6,6 +6,7 @@ define('SM_DEVELOPER_MODE', true);
 
 require SM_ROOT_DIR."System/Base/SmartestException.class.php";
 require SM_ROOT_DIR."System/Data/SmartestDataAccessClass.interface.php";
+require SM_ROOT_DIR."System/Data/Types/SmartestParameterHolder.class.php";
 require SM_ROOT_DIR."System/Data/SmartestMysql.class.php";
 require SM_ROOT_DIR."System/Data/SmartestCache.class.php";
 require SM_ROOT_DIR."System/Helpers/SmartestHelper.class.php";
