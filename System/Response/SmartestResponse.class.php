@@ -134,7 +134,9 @@ class SmartestResponse{
             $this->errorStack->display();
         }
 
-        try{
+        /// This neds more compatibility work as it breaks on newer servers
+        
+        /* try{
             
             // gather SVN data
             $in_svn_working_directory = file_exists(SM_ROOT_DIR . ".svn");
@@ -147,7 +149,7 @@ class SmartestResponse{
         }catch(SmartestException $e){
             $this->error($e->getMessage());
             $this->errorStack->display();
-        }
+        } */
 
         SmartestFileSystemHelper::include_group(
 
@@ -170,12 +172,12 @@ class SmartestResponse{
         
         SmartestDataUtility::loadTypeObjects();
         
-        try{
+        /* try{
             SmartestUpdater::run();
         }catch(SmartestException $e){
             $this->error($e->getMessage());
             $this->errorStack->display();
-        }
+        } */
 
         // include SM_ROOT_DIR.'Libraries/Plugins/SmartestXml/SmartestXmlSerializer.class.php';
 
