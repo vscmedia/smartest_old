@@ -859,7 +859,7 @@ class SmartestResponse{
 	    
 	    // echo $this->fullTimeTaken;
 	    
-		if(defined("SM_DEVELOPER_MODE") && @SM_DEVELOPER_MODE == true && SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+		if(SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
 			$html = "<div class=\"smartest_preview_top_bar\">";
 			// $html .= "&nbsp;Controller Overhead: ".$this->controllerPrepareTimeTaken."ms | ";
 			$html .= "Smartest Pre-Render Overhead: ".$this->timeTaken."ms | ";
@@ -914,7 +914,7 @@ class SmartestResponse{
 		}
 		
 		if(SM_CONTROLLER_METHOD == "renderPageFromUrl" || SM_CONTROLLER_METHOD == "renderPageFromId"){
-			$creator = "\n<!--Powered by Smartest(TM) Web Platform-->\n";
+			$creator = "\n<!--Powered by Smartest-->\n";
 		}else{
 			$creator = "";
 		}
@@ -922,22 +922,20 @@ class SmartestResponse{
 		$preview_html = $this->getPagePreviewHtml();
 		
 		$html = str_replace($body_tag, $body_tag.$creator.$preview_html, $html);
-		// $html = str_replace('<body', '<body onload="initLightbox();"', $html);
 		
-		/* if(SM_CONTROLLER_METHOD == "renderPageFromUrl" || SM_CONTROLLER_METHOD == "renderPageFromId"){
-			$html = str_replace('</body>', "<!--Page built in: ".$this->fullTimeTaken."ms -->\n</body>", $html);
-		} */
-		
-		if(defined("SM_DEVELOPER_MODE") && @SM_DEVELOPER_MODE == true && SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+		if(SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
 			$preview_css = '	<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/System/Stylesheets/sm_preview_main.css" />
 	<!--[if IE 6]>
 	<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/System/Stylesheets/sm_preview_ie6.css" />
 	<![endif]-->
 ';
 			$html = str_replace('</head>', $preview_css.'</head>', $html);
-			$html = str_replace('</body>', "<script language=\"javascript\">parent.showPreview();</script>\n<!--Page returned in: ".$this->fullTimeTaken."ms -->\n</body>", $html);
 			
-		}
+	    }
+	    
+	    if(SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+		    $html = str_replace('</body>', "<script language=\"javascript\">parent.showPreview();</script>\n<!--Page was built in: ".$this->fullTimeTaken."ms -->\n</body>", $html);	
+	    }
 		
 		return $html;
 	}

@@ -8,10 +8,23 @@
 
 {literal}
 <script language="javascript">
+    
+    var t;
+    
     function showPreview(){
         $('preview-iframe').style.height = '500px';
         $('preview-iframe').className = 'built';
+        clearTimeout(t);
     }
+    
+    function previewTimedOut(){
+        $('preview-loading').style.display = 'none';
+        $('preview-failed').style.display = 'block';
+        alert('The building of the preview failed');
+    }
+    
+    t = setTimeout('previewTimedOut()', 10000);
+    
 </script>
 {/literal}
 
@@ -28,6 +41,11 @@
 </div>
 
 <div id="preview-loading" style="padding-top:50px;text-align:center">
+    <p>Please wait. Rendering preview...</p>
+    <p><img src="{$domain}Resources/System/Images/smartest_working.gif" /></p>
+</div>
+
+<div id="preview-failed" style="padding-top:50px;text-align:center;display:none">
     <p>Please wait. Rendering preview...</p>
     <p><img src="{$domain}Resources/System/Images/smartest_working.gif" /></p>
 </div>
