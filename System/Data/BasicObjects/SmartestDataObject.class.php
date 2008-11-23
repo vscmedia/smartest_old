@@ -403,7 +403,7 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    if(strlen($id)){
         
-            $sql = "SELECT * FROM `".$this->_table_name."` WHERE ".$this->_table_prefix."id='".$id."'";
+            $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$id."'";
 	    
 			if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
 			    $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
@@ -445,7 +445,7 @@ class SmartestDataObject implements ArrayAccess{
 			$column_name = $this->_table_prefix.$field;
 		}
 	    
-	    $sql = "SELECT * FROM `".$this->_table_name."` WHERE ".$column_name." = '".$value."'";
+	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
 	    
 	    if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
 	        if(isset($this->_properties['site_id'])){
@@ -487,7 +487,7 @@ class SmartestDataObject implements ArrayAccess{
 		
 		    if($this->_came_from_database){
 			
-    			$sql = "UPDATE `".$this->_table_name."` SET ";
+    			$sql = "UPDATE ".$this->_table_name." SET ";
 			
     			$i = 0;
 			
@@ -512,7 +512,7 @@ class SmartestDataObject implements ArrayAccess{
 			
     		}else{
 			
-    			$sql = "INSERT INTO `".$this->_table_name."` (";
+    			$sql = "INSERT INTO ".$this->_table_name." (";
     			$fields = array();
 			
     			foreach($this->_modified_properties as $key => $value){
@@ -551,7 +551,7 @@ class SmartestDataObject implements ArrayAccess{
 	}
 	
 	public function delete(){
-		$sql = "DELETE FROM `".$this->_table_name."` WHERE ".$this->_table_prefix."id='".$this->getId()."' LIMIT 1";
+		$sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->getId()."' LIMIT 1";
 		$this->_last_query = $sql;
 		$this->database->rawQuery($sql);
 		$this->_came_from_database = false;

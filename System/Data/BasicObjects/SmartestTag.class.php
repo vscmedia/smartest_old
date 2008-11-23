@@ -24,7 +24,7 @@ class SmartestTag extends SmartestBaseTag{
             $site_id = 'all';
         }
         
-        if(!$this->_page_lookup_attempted[$site_id]){
+        if(!isset($this->_page_lookup_attempted[$site_id])){
         
             $sql = "SELECT * FROM TagsObjectsLookup, Pages WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=page_id AND taglookup_type='SM_PAGE_TAG_LINK'";
             

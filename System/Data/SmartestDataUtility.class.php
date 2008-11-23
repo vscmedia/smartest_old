@@ -433,7 +433,9 @@ class SmartestDataUtility{
 		$object_types = array();
 		
 		if($res = opendir(SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Data'.DIRECTORY_SEPARATOR.'Types'.DIRECTORY_SEPARATOR)){
-		
+		    
+		    $object_type_cache_string = '';
+		    
 			while (false !== ($file = readdir($res))) {
     		
     			if(preg_match('/^Smartest([A-Z]\w+)\.class\.php$/', $file, $matches)){

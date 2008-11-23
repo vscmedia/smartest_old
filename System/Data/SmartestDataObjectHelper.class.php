@@ -253,6 +253,8 @@ class SmartestDataObjectHelper{
 		
 		$object_types = array();
 		
+		$object_type_cache_string = '';
+		
 		foreach($tables as $t){
 		    $base_class_name = 'SmartestBase'.$t['class'];
 		    $class_name = 'Smartest'.$t['class'];
@@ -354,7 +356,9 @@ class SmartestDataObjectHelper{
 		
 		// find the helpers if this hasn't already been done
 		$object_types = array();
-			
+		
+		$object_type_cache_string = '';
+		
 		if($res = opendir(SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Data'.DIRECTORY_SEPARATOR.'ExtendedObjects'.DIRECTORY_SEPARATOR)){
 			
 			while (false !== ($file = readdir($res))) {

@@ -5,8 +5,8 @@ class TemplatesManager{
 		var $database;
 
 	function TemplatesManager(){
-		$this->database = $_SESSION['database'];
-
+		// $this->database = $_SESSION['database'];
+        $this->database = SmartestPersistentObject::get('db:main');
 	}
 	function getTemplateNames($path){
 		$directory = opendir($path);

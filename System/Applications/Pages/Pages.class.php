@@ -188,7 +188,7 @@ class Pages extends SmartestSystemApplication{
                         }
                     }
                     
-                    SmartestLog::getInstance('site')->log("{$this->getUser()} cleared the pages cache. ".count($deleted_files[])." files were removed.", SmartestLog::USER_ACTION);
+                    SmartestLog::getInstance('site')->log("{$this->getUser()} cleared the pages cache. ".count($deleted_files)." files were removed.", SmartestLog::USER_ACTION);
                     
                     $this->send(true, 'show_result');
                     $this->send($deleted_files, 'deleted_files');
@@ -441,7 +441,7 @@ class Pages extends SmartestSystemApplication{
     		
             		$this->send($editorContent, "pageInfo");
             		$this->send($parent_pages, "parent_pages");
-            		$this->send($saved, "saved");
+            		// $this->send($saved, "saved");
             		$this->send($pageUrls, "pageurls");
             		$this->send($count_url, "count");
             		$this->send($ishomepage, "ishomepage");
@@ -712,13 +712,13 @@ class Pages extends SmartestSystemApplication{
 		    $this->addUserMessageToNextRequest("The page has been successfully moved to the trash.", SmartestUserMessage::SUCCESS);
 		    
 		    // log deletion
-    		$this->log("Page '".$title."' was deleted by user '".$this->_user['username']."'");
+    		SmartestLog::getInstance('site')->log("Page '".$title."' was deleted by user '".$this->getUser()->getUsername()."'", SmartestLog::USER_ACTION);
 		    
 		}else{
 		    $this->addUserMessageToNextRequest("There was an error deleting the page.", SmartestUserMessage::ERROR);
 		}
 		
-		//forward
+		// forward
 		$this->formForward();
 	}
 	

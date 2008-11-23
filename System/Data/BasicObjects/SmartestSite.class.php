@@ -95,7 +95,9 @@ class SmartestSite extends SmartestBaseSite{
 			$this->displayPages[$this->displayPagesIndex]['info'] = $page['info'];
 			$this->displayPages[$this->displayPagesIndex]['treeLevel'] = $page['treeLevel'];
 			$children = $page['children'];
-			$this->displayPages[$this->displayPagesIndex]['child_items'] = $page['child_items'];
+			if(isset($page['child_items'])){
+			    $this->displayPages[$this->displayPagesIndex]['child_items'] = $page['child_items'];
+		    }
 			
 			$this->displayPagesIndex++;
 			
