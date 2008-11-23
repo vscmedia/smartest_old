@@ -143,11 +143,6 @@
     <class>SetItemLookup</class>
   </table>
 
-  <table name="SettingCategories">
-    <prefix>settingcategory_</prefix>
-    <class>SettingCategory</class>
-  </table>
-
   <table name="Settings">
     <prefix>setting_</prefix>
     <class>PreferenceValue</class>
