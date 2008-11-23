@@ -86,7 +86,7 @@ class SmartestMysql{
 	
 	public function getColumns($table){
 		
-		$sql = "SHOW COLUMNS FROM ".$table;
+		$sql = "SHOW COLUMNS FROM `".$table.'`';
 		
 		$columns = $this->queryToArray($sql);
 		
@@ -96,7 +96,7 @@ class SmartestMysql{
 	
 	public function getColumnNames($table){
 		
-		$sql = "SHOW COLUMNS FROM ".$table;
+		$sql = "SHOW COLUMNS FROM `".$table."`";
 
 		$columns = $this->queryToArray($sql);
 		
