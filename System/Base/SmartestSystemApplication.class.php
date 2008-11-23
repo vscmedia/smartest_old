@@ -169,18 +169,6 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		exit;
 	}
 	
-	protected function redirect($destination=""){
-		
-		if(strlen($destination) == 0){
-			$destination = constant('SM_CONTROLLER_DOMAIN');
-		}else if($destination{0} == "/"){
-		    $destination = constant('SM_CONTROLLER_DOMAIN').substr($destination, 1);
-		}
-		
-		header("location:".$destination);
-		// exit;
-	}
-	
 	///// Errors /////
     
     function _error($message, $type=''){

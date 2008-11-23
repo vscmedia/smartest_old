@@ -272,6 +272,20 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     	}
     }
     
+    ///// Flow Control //////
+    
+    protected function redirect($destination=""){
+		
+		if(strlen($destination) == 0){
+			$destination = constant('SM_CONTROLLER_DOMAIN');
+		}else if($destination{0} == "/"){
+		    $destination = constant('SM_CONTROLLER_DOMAIN').substr($destination, 1);
+		}
+		
+		header("location:".$destination);
+		// exit;
+	}
+    
     ///// Check for Libraries /////
     
     function isInstalled($library){
