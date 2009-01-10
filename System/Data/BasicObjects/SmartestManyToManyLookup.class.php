@@ -2,14 +2,7 @@
 
 class SmartestManyToManyLookup extends SmartestBaseManyToManyLookup{
 
-    protected function __objectConstruct(){
-		
-		$this->setTablePrefix('mtmlookup_');
-		$this->setTableName('ManyToManyLookups');
-		
-	}
-	
-	public function getEntityForeignKeyValue($entity_num){
+    public function getEntityForeignKeyValue($entity_num){
 	    if(ceil($entity_num) > 0 && ceil($entity_num) < 5){
 	        $field = 'entity_'.$entity_num.'_foreignkey';
 	        return $this->_properties[$field];

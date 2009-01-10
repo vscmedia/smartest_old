@@ -676,7 +676,9 @@ class Assets extends SmartestSystemApplication{
 			            $file = SM_ROOT_DIR.$asset_type['storage'].$asset->getUrl();
 			            $content = htmlspecialchars(SmartestFileSystemHelper::load($asset->getFullPathOnDisk()), ENT_COMPAT, 'UTF-8');
 			        }
-
+                    
+                    // SmartestEasyLinkHelper::findAll($content);
+                    
 			        $this->send($content, 'textfragment_content');
 			        
 			        if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
@@ -1129,7 +1131,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $tf = new SmartestTextFragment;
 	    
-	    if($tf->hydrate($textfragment_id)){
+	    if($tf->find($textfragment_id)){
 	        
 	        $current_def = $tf->getAttachmentCurrentDefinition($attachment_name);
 	        

@@ -12,7 +12,7 @@ define("SM_ERROR_USER", 106);
 define("SM_ERROR_MODEL", 107);
 define("SM_ERROR_SMARTEST_INTERNAL", 108);
 
-define('SM_QUERY_ALL_DRAFT', 0); // 
+define('SM_QUERY_ALL_DRAFT', 0);
 define('SM_QUERY_ALL_DRAFT_ARCHIVED', 1);
 define('SM_QUERY_ALL_DRAFT_CURRENT', 2);
 
@@ -20,13 +20,39 @@ define('SM_QUERY_ALL_LIVE', 3);
 define('SM_QUERY_ALL_LIVE_ARCHIVED', 4);
 define('SM_QUERY_ALL_LIVE_CURRENT', 5);
 
-define('SM_QUERY_PUBLIC_DRAFT', 6); // 
+define('SM_QUERY_PUBLIC_DRAFT', 6);
 define('SM_QUERY_PUBLIC_DRAFT_ARCHIVED', 7);
 define('SM_QUERY_PUBLIC_DRAFT_CURRENT', 8);
 
 define('SM_QUERY_PUBLIC_LIVE', 9);
 define('SM_QUERY_PUBLIC_LIVE_ARCHIVED', 10);
 define('SM_QUERY_PUBLIC_LIVE_CURRENT', 11);
+
+define('SM_QUERY_EQUAL', 0);
+define('SM_QUERY_EQUALS', 0);
+define('SM_QUERY_NOT_EQUAL', 1);
+define('SM_QUERY_NOTEQUAL', 1);
+
+define('SM_QUERY_CONTAINS', 2);
+define('SM_QUERY_NOTCONTAINS', 3);
+define('SM_QUERY_NOT_CONTAINS', 3);
+define('SM_QUERY_DOESNOTCONTAIN', 3);
+define('SM_QUERY_DOES_NOT_CONTAIN', 3);
+
+define('SM_QUERY_STARTSWITH', 4);
+define('SM_QUERY_STARTS_WITH', 4);
+define('SM_QUERY_ENDSWITH', 5);
+define('SM_QUERY_ENDS_WITH', 5);
+
+define('SM_QUERY_GREATERTHAN', 6);
+define('SM_QUERY_GREATER_THAN', 6);
+define('SM_QUERY_LESSTHAN', 7);
+define('SM_QUERY_LESS_THAN', 7);
+
+define('SM_QUERY_TAGGEDWITH', 8);
+define('SM_QUERY_TAGGED_WITH', 8);
+define('SM_QUERY_NOTTAGGEDWITH', 9);
+define('SM_QUERY_NOT_TAGGED_WITH', 9);
 
 define('SM_STATUS_ALL', 0);
 
@@ -55,3 +81,19 @@ define('SM_USER_MESSAGE_ERROR', 8);
 define('SM_USER_MESSAGE_FAIL', 8);
 define('SM_USER_MESSAGE_ACCESSDENIED', 16);
 define('SM_USER_MESSAGE_ACCESS_DENIED', 16);
+
+define('SM_LOG_DEBUG', 0);
+define('SM_LOG_NOTICE', 1);
+define('SM_LOG_WARNING', 2);
+define('SM_LOG_ERROR', 4);
+define('SM_LOG_PERMISSIONS', 8);
+define('SM_LOG_ACCESS_DENIED', 8);
+define('SM_LOG_ACCESSDENIED', 8);
+define('SM_LOG_USER_ACTION', 16);
+
+define('SM_LINKTYPE_PAGE', 1);
+define('SM_LINKTYPE_METAPAGE', 2);
+define('SM_LINKTYPE_IMAGE', 4);
+define('SM_LINKTYPE_DOWNLOAD', 8);
+define('SM_LINKTYPE_TAG', 16);
+define('SM_LINKTYPE_EXTERNAL', 256);

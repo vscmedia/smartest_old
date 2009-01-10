@@ -203,7 +203,10 @@ class SmartestResponse{
         	'System/Base/SmartestBaseApplication.class.php',
         	'System/Base/SmartestSystemApplication.class.php',
         	'System/Data/SmartestDataObjectHelper.class.php',
-        	'System/Templating/SmartestWebPageBuilder.class.php'
+        	'System/Base/SmartestSiteActions.class.php',
+        	'System/Templating/SmartestWebPageBuilder.class.php',
+        	'System/Response/SmartestFilterChain.class.php',
+        	'System/Response/SmartestFilter.class.php'
 
         );
         
@@ -314,17 +317,8 @@ class SmartestResponse{
 		$this->browser = new SmartestUserAgentHelper();
 		SmartestPersistentObject::set('userAgent', $this->browser);
 		
-		// Todo: Re-Write Data access class as a wrapper of Pear MDB2
-		// $this->database = new Database("Configuration/database.xml");
-		// $this->database->connect();
-		
 		// instantiate controller
-		
 		$this->_log("Starting controller...");
-		
-		// var_dump(SmartestSession::get('user:isAuthenticated'));
-		
-		
 		
 		$this->controller = new SmartestController(SM_ROOT_DIR."Configuration/controller.xml", false);
 		
@@ -335,14 +329,6 @@ class SmartestResponse{
 		
 		// Everything after the hostname and before the query qtring
 		define("SM_CONTROLLER_URL", $this->controller->getRequest());
-		
-		/* if(!is_object(SmartestPersistentObject::get('user'))){
-		    $user = new SmartestUser;
-		    $user->hydrate(SmartestSession::get('user:array'));
-		    print_r($user);
-		} */
-		
-		// print_r(SmartestSession::getRegisteredNames(SmartestSession::OBJECTS));
 		
 		$this->errorStack->display();
 		
@@ -387,11 +373,7 @@ class SmartestResponse{
 		$this->_log("Starting presentation layer...");
 		
 		if($this->isSystemClass()){
-		    if($this->isWebsitePage()){
-		        $templateLayerContext = 'WebPageBuilder';
-		    }else{
-		        $templateLayerContext = 'InterfaceBuilder';
-		    }
+		    $templateLayerContext = 'InterfaceBuilder';
 		}else{
 		    $templateLayerContext = 'Normal';
 		}
@@ -532,60 +514,21 @@ class SmartestResponse{
 		
 		define('SM_CONTROLLER_MODULE_PRES_DIR', SM_CONTROLLER_MODULE_DIR.'Presentation/');
 		
-		/* if(SM_SYSTEM_IS_BACKEND_MODULE){ 
-		    
-		    if(SM_CONTROLLER_MODULE != 'website' && $this->browser->isExplorer() && $this->browser->isMacintosh()){
-		        // the administration part of Smartest isn't supported in IE for Mac
-			    include SM_ROOT_DIR."System/Response/ErrorPages/mac_ie.php";
-				exit;
-			}
+		$user_interface = (strlen($this->method)) ? SM_CONTROLLER_MODULE_DIR.'Presentation/'.SM_CONTROLLER_METHOD.".tpl" : null;
 			
-			// if the current class is part of system functionality
-			// tell smarty to look at the system interface templates
-			
-			// $system_interface = (strlen($this->method)) ? SM_SYSTEM_SYS_TEMPLATES_DIR.SM_CONTROLLER_TEMPLATE_FAMILY."/".SM_CONTROLLER_METHOD.".tpl" : null;
-			$system_interface = (strlen($this->method)) ? SM_CONTROLLER_MODULE_DIR.'Presentation/'.SM_CONTROLLER_METHOD.".tpl" : null;
-			
-			if(is_file($system_interface)){
-				$this->smarty->assign("sm_system_interface", $system_interface);
-			}else{
-				$this->smarty->assign("sm_system_interface", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_subTemplateNotFound.tpl");
-				$this->smarty->assign("sm_intended_interface", $system_interface);
-			}
-			
-			// $this->templateFile = SM_SYSTEM_SYS_TEMPLATES_DIR.$this->controller->getTemplateName()."/_default.tpl";
-			$this->templateFile = SM_CONTROLLER_MODULE_DIR.'Presentation/_default.tpl';
-			
-			if(!is_file($this->templateFile)){
-				$this->smarty->assign("sm_main_interface", $this->templateFile);
-				$this->templateFile = SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_templateNotFound.tpl";
-			}
-			
-		}else{ */
-			
-			// tell smarty to look for user templates
-			// $this->smarty->assign("sm_interface", (strlen($this->method)) ? SM_SYSTEM_APP_TEMPLATES_DIR.SM_CONTROLLER_TEMPLATE_FAMILY."/".SM_CONTROLLER_METHOD.".tpl" : null);
-			
-			// $user_interface = (strlen($this->method)) ? SM_SYSTEM_APP_TEMPLATES_DIR.SM_CONTROLLER_TEMPLATE_FAMILY."/".SM_CONTROLLER_METHOD.".tpl" : null;
-			$user_interface = (strlen($this->method)) ? SM_CONTROLLER_MODULE_DIR.'Presentation/'.SM_CONTROLLER_METHOD.".tpl" : null;
-			
-			if(is_file($user_interface)){
-				$this->smarty->assign("sm_interface", $user_interface);
-			}else{
-				$this->smarty->assign("sm_interface", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_subTemplateNotFound.tpl");
-				$this->smarty->assign("sm_intended_interface", $user_interface);
-			}
-			
-			// $this->templateFile = SM_SYSTEM_APP_TEMPLATES_DIR.$this->template."/_default.tpl";
-			$this->templateFile = SM_CONTROLLER_MODULE_DIR.'Presentation/_default.tpl';
-			
-			if(!is_file($this->templateFile)){
-				$this->smarty->assign("sm_main_interface", $this->templateFile);
-				$this->templateFile = SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_templateNotFound.tpl";
-			}
-		// }
-        
-        // echo $user_interface;
+		if(is_file($user_interface)){
+			$this->smarty->assign("sm_interface", $user_interface);
+		}else{
+			$this->smarty->assign("sm_interface", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_subTemplateNotFound.tpl");
+			$this->smarty->assign("sm_intended_interface", $user_interface);
+		}
+		
+		$this->templateFile = SM_CONTROLLER_MODULE_DIR.'Presentation/_default.tpl';
+		
+		if(!is_file($this->templateFile)){
+			$this->smarty->assign("sm_main_interface", $this->templateFile);
+			$this->templateFile = SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_templateNotFound.tpl";
+		}
         
         $this->userInterfaceTemplate = $user_interface;
         $this->smarty->assign("template", $this->templateFile);
@@ -599,7 +542,6 @@ class SmartestResponse{
 	
 	public function isWebsitePage(){
 	    
-	    // echo $this->controller->getMethodName();
 	    return in_array($this->controller->getMethodName(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage', 'searchDomain'));
 	    
 	}
@@ -607,8 +549,6 @@ class SmartestResponse{
 	private function checkRequiredExtensionsLoaded(){
 		
 		$extensions = get_loaded_extensions();
-		
-		// print_r($extensions);
 		
 		$dependencies = array(
 		    "dom",
@@ -663,8 +603,6 @@ class SmartestResponse{
 	
 	function checkWritablePermissions(){
 		
-		// print_r($this->smarty);
-		
 		$writable_files = array(
 			"System Core Info Directory" => SM_ROOT_DIR."System/Core/Info/",
 			"Smartest Engine Cache"      => SM_ROOT_DIR."System/Cache/SmartestEngine/",
@@ -673,10 +611,14 @@ class SmartestResponse{
 			"Data Cache"                 => SM_ROOT_DIR."System/Cache/Data/",
 			"Logic Cache"                => SM_ROOT_DIR."System/Cache/Includes/",
 			"Auto-generated Objects"     => SM_ROOT_DIR."System/Cache/ObjectModel/Models/",
+			"System Data-Objects"        => SM_ROOT_DIR."System/Cache/ObjectModel/DataObjects/",
 			"System-saved settings"      => SM_ROOT_DIR."System/Cache/Settings/",
 			"User-editable objects"      => SM_ROOT_DIR."Library/ObjectModel/",
 			"Documents Folder"           => SM_ROOT_DIR."Documents/",
-			"Deleted Files Folder"       => SM_ROOT_DIR."Documents/Deleted/"
+			"Deleted Files Folder"       => SM_ROOT_DIR."Documents/Deleted/",
+			"System Temp Folder"         => SM_ROOT_DIR."System/Temporary/",
+			"Text previews cache"        => SM_ROOT_DIR."System/Cache/TextFragments/Previews/",
+			"Live text cache"            => SM_ROOT_DIR."System/Cache/TextFragments/Live/"
 		);
 		
 		$errors = array();
@@ -747,8 +689,6 @@ class SmartestResponse{
 		
 		$remaining = "/".substr($actual, strlen($controller_url));
 		
-		// echo $controller_url.'<br />';
-		
 		$getUrl = preg_match("/^\/([^\?]+)\??.*/i", $remaining, $matches);
 		
 		if(isset($matches[1])){
@@ -778,6 +718,12 @@ class SmartestResponse{
 			$this->errorFromException($e);
 		}
 		
+		if(!defined("SM_OVERHEAD_TIME")){
+		    $overhead_finish_time = microtime(true);
+    		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
+		    define("SM_OVERHEAD_TIME", $overhead_time_taken);
+	    }
+		
 		$this->errorStack->display();
 			
 		// retrieve the result
@@ -786,14 +732,9 @@ class SmartestResponse{
 		$this->controller->setDebugLevel(0);
 		$debug_info = $this->controller->getDebugContent();
 		
-		// print_r($this->controller->getDebugContent()); // 渡辺香津美.html
-		
 		if($this->controller->getUserActionObject() instanceof SmartestSystemApplication){
 		    $this->smarty->assign('sm_messages', $this->controller->getUserActionObject()->getUserMessages());
 	    }
-		
-		// print_r($this->controller->getUserActionObject()->getUserMessages());
-		// print_r(SmartestSession::get('user:messages:nextRequest'));
 		
 		if(defined('SM_CONTROLLER_DEBUG_JS') && defined('SM_CONTROLLER_DEBUG_HTML')){
 			$this->smarty->assign("sm_controllerDebugJs", SM_CONTROLLER_DEBUG_JS);
@@ -816,8 +757,6 @@ class SmartestResponse{
 	function getConstants($keys=false){
 		$all_constants = get_defined_constants();
 		
-		// print_r($all_constants);
-		
 		$smartest_constants = array();
 		
 		foreach ($all_constants as $constant_name=>$constant_value){
@@ -836,8 +775,6 @@ class SmartestResponse{
 	function getClasses($keys=false){
 		$all_classes = get_declared_classes();
 		
-		// print_r($all_constants);
-		
 		$smartest_classes = array();
 		
 		foreach ($all_classes as $class_name=>$class_value){
@@ -855,26 +792,6 @@ class SmartestResponse{
 		}
 	}
 	
-	function getPagePreviewHtml(){
-	    
-	    // echo $this->fullTimeTaken;
-	    
-		if(SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-			$html = "<div class=\"smartest_preview_top_bar\">";
-			// $html .= "&nbsp;Controller Overhead: ".$this->controllerPrepareTimeTaken."ms | ";
-			$html .= "Smartest Pre-Render Overhead: ".$this->timeTaken."ms | ";
-			$html .= "Page Build Time: ".($this->fullTimeTaken - $this->timeTaken)."ms | ";
-			$html .= "Total time taken: ".$this->fullTimeTaken."ms";
-			// $html .= "<a href=\"".SM_CONTROLLER_DOMAIN."websitemanager/getPageAssets?page_id=".SM_PAGE_WEBID."\">Edit Page Assets</a> | ";
-			// $html .= "<a href=\"".SM_CONTROLLER_DOMAIN."websitemanager/editPage?page_id=".SM_PAGE_WEBID."\">Edit Page Properties</a> | ";
-			// $html .= "<a href=\"#\" onclick=\"document.getElementById('smartest_preview_top_bar').style.display = 'none';\">Hide</a>\n";
-			$html .= "</div>\n";
-			return $html;
-		}else{
-			return null;
-		}
-	}
-	
 	function _log($message){
 		$time = number_format(microtime(true)*100000, 0, ".", "");
 		$this->log[$time] = "Smartest: ".$message;
@@ -882,10 +799,8 @@ class SmartestResponse{
 	
 	function getUnfilteredOutput($fragment_only = false){
 		
-		// echo $this->templateFile;
-		
 		if($this->content == Quince::NODISPLAY){
-			$output = "";
+			$output = null;
 		}else{
 		    try{
 		        if($fragment_only){
@@ -902,42 +817,20 @@ class SmartestResponse{
 		
 		return $output;
 	}
-	
-	function executeFilterChain($html){
-		
-		preg_match('/<body[^>]*?'.'>/i', $html, $match);
-		
-		if(!empty($match[0])){
-			$body_tag = $match[0];
-		}else{
-			$body_tag = '';
-		}
-		
-		if(SM_CONTROLLER_METHOD == "renderPageFromUrl" || SM_CONTROLLER_METHOD == "renderPageFromId"){
-			$creator = "\n<!--Powered by Smartest-->\n";
-		}else{
-			$creator = "";
-		}
-		
-		$preview_html = $this->getPagePreviewHtml();
-		
-		$html = str_replace($body_tag, $body_tag.$creator.$preview_html, $html);
-		
-		if(SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-			$preview_css = '	<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/System/Stylesheets/sm_preview_main.css" />
-	<!--[if IE 6]>
-	<link rel="stylesheet" href="'.SM_CONTROLLER_DOMAIN.'Resources/System/Stylesheets/sm_preview_ie6.css" />
-	<![endif]-->
-';
-			$html = str_replace('</head>', $preview_css.'</head>', $html);
-			
-	    }
+    
+    private function executeFilterChain($html){
+        
+        if($this->isSystemClass()){
+            $filterchain = "InterfaceBuilder";
+        }else{
+            $filterchain = "ApplicationFilters";
+        }
+        
+        $fc = new SmartestFilterChain($filterchain);
+        $html = $fc->execute($html);
 	    
-	    if(SM_CONTROLLER_MODULE == "website" && SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-		    $html = str_replace('</body>', "<script language=\"javascript\">parent.showPreview();</script>\n<!--Page was built in: ".$this->fullTimeTaken."ms -->\n</body>", $html);	
-	    }
-		
-		return $html;
+	    return $html;
+	    
 	}
 	
 	public function redirect($destination=""){
@@ -950,114 +843,32 @@ class SmartestResponse{
 		exit;
 	}
 	
-	public function getFlatHtmlFileName(){
-		
-		if($this->isWebsitePage() && is_object($this->controller->getUserActionObject()->getPage())){
-		    $file_name = $this->controller->getUserActionObject()->getPage()->getCacheFileName();
-		    return SM_ROOT_DIR.'System/Cache/Pages/'.$file_name;
-		}else{
-		    return null;
-		}
-		
-		/* if(defined("SM_PAGE_CACHE_NAME")){
-			$filename = SM_ROOT_DIR."System/Cache/Pages/".SM_PAGE_CACHE_NAME;
-		}else{
-			$filename = SM_ROOT_DIR."System/Cache/Pages/smartest_page_".constant('SM_PAGE_ID').".html";
-		}
-		
-		return $filename; */
-	}
-	
-	function addFilter($filter_name){
-		
-	}
-	
 	public function fetch($fragment_only = false){
-		
-		if(defined("SM_DEVELOPER_MODE") && constant('SM_DEVELOPER_MODE') && !$fragment_only){
-			$this->addFilter('DeveloperInfo');
-		}
 		
 		// get all Smartest defined classes and constants
 		// $smartest_constants = $this->getConstants();
 		// $smartest_classes = $this->getClasses();
 		
 		// Calculate time taken and assign to smarty
-		$this->endTime   = microtime(true);
+		/* $this->endTime   = microtime(true);
 		$this->timeTaken = number_format(($this->endTime - $this->startTime)*1000, 2, ".", "");
-		// echo $this->endTime - $this->startTime;
 		
 		$this->controllerPrepareTimeTaken = number_format(($this->controller->prepareTime - $this->startTime)*1000, 2, ".", "");
 		$this->controllerActionTimeTaken  = number_format(($this->controller->postActionTime - $this->startTime)*1000, 2, ".", "");
 		
-		$this->smarty->assign("sm_execTime", $this->timeTaken);
+		$this->smarty->assign("sm_execTime", $this->timeTaken); */
 		
 		// Last chance to display any errors before trying to render the page
 		$this->errorStack->display();
 		
 		// Calculate time taken and assign to smarty
-		$endTime   = microtime(true);
-		$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
+		// $endTime   = microtime(true);
+		// $this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
 		
-		// Display HTML from templates
-		if((SM_CONTROLLER_METHOD == "renderPageFromUrl" || SM_CONTROLLER_METHOD == "renderPageFromId")){
+		$output = $this->getUnfilteredOutput($fragment_only);
+		$output = $this->executeFilterChain($output);
 			
-			$page = $this->controller->getUserActionObject()->getPage();
-			
-			// We are rendering a CMS Page
-			if(is_object($page)){	
-			
-				if(file_exists($this->getFlatHtmlFileName()) && $page->getCacheAsHtml() == "TRUE"){	
-					
-					// Just return the cached file
-					return SmartestFileSystemHelper::load($this->getFlatHtmlFileName(), true);
-					
-				}else{
-					
-					// Cached file not found; Build page
-					$output     = $this->getUnfilteredOutput();
-					$endTime    = microtime(true);
-					$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
-					$html       = $this->executeFilterChain($output);
-					
-					$filename = $this->getFlatHtmlFileName();
-					
-					if($page->getCacheAsHtml() == "TRUE"){
-					
-						if(SmartestFileSystemHelper::save($filename, $html, true)){
-							return SmartestFileSystemHelper::load($filename, true);
-						}else{
-							return $html;
-						}
-					
-					}else{
-						return $html;
-					}
-				}
-			
-			}else{
-			
-				// Page is a 404 page, so don't bother with cache
-				$output = $this->getUnfilteredOutput();
-				$endTime   = microtime(true);
-				$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
-				$html = $this->executeFilterChain($output);
-				return $html;
-			}
-				
-		}else{
-			
-			// Output is not a live CMS page, just a normal actions
-			
-			$output = $this->getUnfilteredOutput($fragment_only);
-			
-			$endTime   = microtime(true);
-			
-			$this->fullTimeTaken = number_format(($endTime - $this->startTime)*1000, 2, ".", "");
-			$html = $this->executeFilterChain($output);
-			
-			return $html;
-		}
+		return $output;
 	}
 	
 	public function finish(){
@@ -1066,7 +877,7 @@ class SmartestResponse{
 		    $this->content = new stdClass;
 		}
 		
-		// print_r($this->getClasses());
+		// print_r($this->getConstants());
 		
 		switch($this->controller->getNamespace()){
 		    case 'ui':
@@ -1088,8 +899,6 @@ class SmartestResponse{
 		// echo '<pre>';
 		// print_r($this->database->getDebugInfo());
 		// echo '</pre>';
-		
-		// SmartestPersistentObject::clear('centralDataHolder');
 		
 		exit;
 	}

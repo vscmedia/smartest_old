@@ -30,26 +30,30 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        
 		        // this is the home page
 		        $this->_page = new SmartestPage;
-		        $this->_page->hydrate($this->_site->getTopPageId());
+		        $this->_page->find($this->_site->getTopPageId());
 		        
-		        // print_r($this->_page);
-		        $this->send($this->_page, '_page');
+		        // $this->send($this->_page, '_page');
+		        $this->renderPage();
 		        
 		    }else if($this->_page = $this->manager->getNormalPageByUrl($this->url, $this->_site->getId())){
 		        
 		        // we are viewing a static page
-		        $this->send($this->_page, '_page');
+		        // $this->send($this->_page, '_page');
+		        $this->renderPage();
 		        
 		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->url, $this->_site->getId())){
 		        
 		        // we are viewing a meta-page (based on an item from a data set)
-		        $this->send($this->_page, '_page');
+		        // $this->send($this->_page, '_page');
+		        $this->renderPage();
 		        
 		    }else{
 		        
-        		$this->send($this->getNotFoundPage(), '_page');
+        		$this->send($this->renderNotFoundPage(), '_page');
         		
         	}
+        	
+        	return Quince::NODISPLAY;
 		    
 	    }else{
         	    
@@ -61,10 +65,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	}
 	
 	public function renderPageFromId($get){
-		
-		// echo SM_CONTROLLER_METHOD;
-		
-		// print_r($get);
 		
 		if(is_object($this->_site)){
 		    
@@ -80,40 +80,44 @@ class CmsFrontEnd extends SmartestSystemApplication{
         	        $tag_page_id = $this->_site->getTagPageId();
         	        
                     $p = new SmartestTagPage;
-                    $p->hydrate($tag_page_id);
+                    $p->find($tag_page_id);
                     $p->assignTag($tag);
                     
                     $this->_page = $p;
-                    $this->send($this->_page, '_page');
+                    // $this->send($this->_page, '_page');
+                    $this->renderPage();
 
         	    }else{
-        	        $objects = array();
-        	        $this->send($this->getNotFoundPage(), '_page');
+        	        // $this->send($this->renderNotFoundPage(), '_page');
+        	        $this->renderNotFoundPage();
         	    }
 		        
 		    }else{
     		    
     		    $page_webid = $get['page_id'];
     		    
-    		    // echo $page_id;
-    		
-		        if($this->_page = $this->manager->getNormalPageByWebId($page_webid, $this->_site->getId())){
+    		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, $this->_site->getId())){
 		        
 		            // we are viewing a static page
-		            $this->send($this->_page, '_page');
+		            // $this->send($this->_page, '_page');
+		            $this->renderPage();
 		        
 		        }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], $this->_site->getId())){
 		        
 		            // we are viewing a meta-page (based on an item from a data set)
-		            $this->send($this->_page, '_page');
+		            // $this->send($this->_page, '_page');
+		            $this->renderPage();
 		        
 		        }else{
         		
-        		    $this->send($this->getNotFoundPage(), '_page');
+        		    // $this->send($this->renderNotFoundPage(), '_page');
+        		    $this->renderNotFoundPage();
         		
         	    }
         	
     	    }
+    	    
+    	    return Quince::NODISPLAY;
 		    
 	    }else{
         	    
@@ -132,21 +136,25 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		    
 		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, $this->_site->getId(), true)){
 		        
-		        // if(){
-		            // we are viewing a static page
-		            $this->send($this->_page, '_page');
-	            // }
+		        // $this->send($this->_page, '_page');
+		        $this->_page->setDraftMode(true);
+		        $this->renderPage(true);
 		        
 		    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], $this->_site->getId(), true)){
 		        
 		        // we are viewing a meta-page (based on an item from a data set)
-		        $this->send($this->_page, '_page');
+		        // $this->send($this->_page, '_page');
+		        $this->_page->setDraftMode(true);
+		        $this->renderPage(true);
 		        
 		    }else{
         		
-        		$this->send($this->getNotFoundPage(), '_page');
+        		// $this->send($this->renderNotFoundPage(), '_page');
+        		$this->renderNotFoundPage();
         		
         	}
+        	
+        	return Quince::NODISPLAY;
 		    
 	    }else{
         	    
@@ -161,8 +169,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	    if(is_object($this->_site)){
             
-            // echo $get['q'];
-            
             // search pages and stuff
             $search_page_id = $this->_site->getSearchPageId();
 	        
@@ -170,12 +176,10 @@ class CmsFrontEnd extends SmartestSystemApplication{
             $p->hydrate($search_page_id);
             $p->setSearchQuery($get['q']);
             
-            // print_r($p);
-            
             $this->_page = $p;
             $this->send($this->_page, '_page');
             
-            // print_r($p);
+            return Quince::NODISPLAY;
             
         }else{
 
@@ -218,9 +222,11 @@ class CmsFrontEnd extends SmartestSystemApplication{
     	        $rss->send();
     	        
     	    }else{
-    	        $objects = array();
-    	        return $this->getNotFoundPage();
+    	        // $objects = array();
+    	        $this->renderNotFoundPage();
     	    }
+    	    
+    	    return Quince::NODISPLAY;
 	    
 	    }else{
         	    
@@ -237,7 +243,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        
 	        $database = SmartestPersistentObject::get('db:main');
 	        
-	        // print_r($get);
 	        $asset_url = $get['url'].'.'.$get['suffix'];
 	        $asset_webid = $get['key'];
 	    
@@ -245,6 +250,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        $result = $database->queryToArray($sql);
 	        
 	        if(count($result)){
+	            
 	            $asset = new SmartestAsset;
 	            $asset->hydrate($result[0]);
 	            
@@ -255,17 +261,13 @@ class CmsFrontEnd extends SmartestSystemApplication{
     		        $download->setDownloadFilename($asset->getDownloadableFilename());
     		    }
 
-    		    // echo $download->getDownloadSize();
-
-        		$ua = $this->getUserAgent()->getAppName();
+    		    $ua = $this->getUserAgent()->getAppName();
 
         		if($ua == 'Explorer' || $ua == 'Opera'){
         		    $mime_type = 'application/octetstream';
         		}else{
         		    $mime_type = 'application/octet-stream';
         		}
-
-        		// echo $download->getType();
 
         		$download->setMimeType($mime_type);
         		$download->send();
@@ -278,15 +280,38 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	}
 	
-	private function getNotFoundPage(){
+	private function renderPage($draft_mode=false){
+	    
+	    $ph = new SmartestWebPagePreparationHelper($this->_page);
+	    
+	    $overhead_finish_time = microtime(true);
+		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
+		
+		define("SM_OVERHEAD_TIME", $overhead_time_taken);
+	    
+	    $html = $ph->fetch($draft_mode);
+	    
+	    $fc = new SmartestFilterChain("WebPageBuilder");
+	    $fc->setDraftMode($draft_mode);
+	    $html = $fc->execute($html);
+	    
+	    echo $html;
+	    
+	    exit;
+	    
+	}
+	
+	private function renderNotFoundPage(){
 	    
 	    if(is_object($this->_site)){
 	        
 	        $error_page_id = $this->_site->getErrorPageId();
-	        $page = new SmartestPage;
-	        $page->hydrate($error_page_id);
-	        // print_r($page);
-	        return $page;
+	        $this->_page = new SmartestPage;
+	        $this->_page->find($error_page_id);
+	        
+	        $this->renderPage();
+	        
+	        return Quince::NODISPLAY;
 	        
         }
 		

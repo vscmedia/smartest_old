@@ -18,6 +18,10 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    $this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/WebPageBuilder/";
 	    $this->left_delimiter = '<'.'?sm:';
 		$this->right_delimiter = ':?'.'>';
+		
+		if(!defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS')){
+		    define('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS', true);
+		}
 	    
 	}
 	
@@ -102,7 +106,16 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	        $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
 	    }
 	    
+	    if(!defined('SM_CMS_PAGE_ID')){
+		    define('SM_CMS_PAGE_ID', $this->page->getId());
+		}
+	    
+	    ob_start();
 	    $this->run($template, array());
+	    $content = ob_get_contents();
+	    ob_end_clean();
+	    
+	    return $content;
 	}
     
     public function renderContainer($container_name, $params, $parent){
@@ -322,6 +335,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
                 $def = $this->getPage()->getItemSpaceDefinition($itemspace_name, $this->getDraftMode());
                 
+                // Tell Smartest that this particular item appears on this page.
+                // Strictly speaking, this information is already stored as the itemspace def, 
+                // but we want to standardise this information so that it can be processed efficiently
+                $dah = new SmartestDataAppearanceHelper;
+                $dah->setItemAppearsOnPage($def->getSimpleItem($this->getDraftMode())->getId(), $this->getPage()->getId());
+                
                 if($def->getItemspace()->usesTemplate()){
                 
                     $template_id = $def->getItemspace()->getTemplateAssetId();
@@ -480,14 +499,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     $this->run($list->getHeaderTemplate($this->getDraftMode()), array());
                 }
                 
-                // print_r($list);
-                
                 $data = $list->getItems($this->getDraftMode());
                 
-                // print_r($data);
-                
                 foreach($data as $item){
-                    // print_r($item);
                     $this->_tpl_vars['item'] = $item;
                     $this->assign("repeated_item", $item->__toArray());
                     $this->assign("repeated_item_object", $item);
@@ -599,7 +613,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             $preview_mode = (SM_CONTROLLER_METHOD == "renderEditableDraftPage") ? true : false;
             
             $link_helper = new SmartestCmsLinkHelper($this->getPage(), $params, $this->getDraftMode(), $preview_mode);
-            $link_helper->parse($to);
+            $l = $link_helper->parse($to);
             
             $render_data = array();
             
@@ -718,7 +732,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }
                 
                 break;
-                
+            
+            case "set":
+            case "dataset":
             default:
                 
                 if(isset($params['query_vars'])){
@@ -737,6 +753,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
 
         		if($set->hydrateBy('name', $name)){
         		    
+        		    $dah = new SmartestDataAppearanceHelper;
+                    $dah->setDataSetAppearsOnPage($set->getId(), $this->getPage()->getId());
+                    
         		    $set_mode = $this->getDraftMode() ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT ;
         		    $items = $set->getMembers($set_mode, false, $limit, $query_vars);
         		    
@@ -886,8 +905,11 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
                 	        $child->setProperty('asset', $asset);
                 	        $child->setProperty('attachments', $attachments);
+                	        
                 	        $content = $child->fetch($asset->getTextFragment()->getParsableFilePath());
+                	        
                 	        $this->killChildProcess($child->getProcessId());
+                	        
                 	        echo $content;
                         }else{
                             echo $this->_comment("Asset '".$asset->getStringid()."' is not published");
@@ -895,7 +917,9 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     }
                     
                 }else{
-                    $this->run($render_template, array('asset_info'=>$asset->__toArray(), 'render_data'=>$render_data));
+                    
+                    $this->run($render_template, array('asset_info'=>$asset, 'render_data'=>$render_data));
+                    
                 }
             }
             

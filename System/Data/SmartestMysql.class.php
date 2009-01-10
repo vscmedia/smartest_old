@@ -161,7 +161,7 @@ class SmartestMysql{
 	    return $hash;
 	}
 	
-	public function queryToArray($querystring){
+	public function queryToArray($querystring, $refresh=false){
 	    
 		if(!$this->dblink && !$this->reconnect()){
 	    
@@ -171,7 +171,7 @@ class SmartestMysql{
 		    
 		    if($this->queryReturnsData($querystring)){
 		        
-		        $result = $this->getSelectQueryResult($querystring);
+		        $result = $this->getSelectQueryResult($querystring, $refresh);
 		        return $result;
 		    
 	        }else{

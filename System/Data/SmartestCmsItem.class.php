@@ -164,6 +164,11 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function offsetGet($offset){
 	    
+	    if(defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && constant('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && defined('SM_CMS_PAGE_ID')){
+		    $dah = new SmartestDataAppearanceHelper;
+            $dah->setItemAppearsOnPage($this->getId(), constant('SM_CMS_PAGE_ID'));
+		}
+	    
 	    if($this->_item->offsetExists($offset)){
 	        
 	        return $this->_item->offsetGet($offset);

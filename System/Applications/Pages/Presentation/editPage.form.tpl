@@ -113,7 +113,7 @@
   	  <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
   	    <td>
   		    <div style="display:inline" id="siteDomainField_{$pageurl.id}">
-  		      {if $pageInfo.is_published == "TRUE" && $pageInfo.type != "ITEMCLASS"}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}</div></td>
+  		      {if $pageInfo.is_published == "TRUE"}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}</div></td>
   	    <td>
   		    <input type="button" name="edit" value="Edit" onclick="window.location='{$domain}{$section}/editPageUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage}'" />
   		    <input type="button" name="mkdefault" value="Make Default" onclick="window.location='{$domain}{$section}/setPageDefaultUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}'"{if $pageurl.is_default == 1} disabled="disabled"{/if} />

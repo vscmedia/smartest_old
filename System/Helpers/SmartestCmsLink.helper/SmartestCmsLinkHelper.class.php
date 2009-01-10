@@ -41,16 +41,17 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         $link_parts = explode(':', $link);
         $type = $link_parts[0];
         
+        $l = new SmartestCmsLink;
+        
         switch($type){
             
             case "page":
             $this->_type = 'page';
+            $l->setType(SM_LINKTYPE_PAGE);
             // print_r($link_parts);
             if($link_parts[1]){
                 
                 $page_identifier = $link_parts[1];
-                
-                // echo $page_identifier;
                 
                 if($lookup = $this->parseLinkIdentifier($page_identifier)){
                     
@@ -59,7 +60,6 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                     $sql = "SELECT * FROM Pages WHERE page_".$lookup['key']."='".$lookup['value']."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_deleted != 'TRUE'";
                     $result = $this->database->queryToArray($sql);
                     
-                    // if($this->_page->hydrateBy($lookup['key'], $lookup['value'])){
                     if(count($result)){
                         $this->_page->hydrate($result[0]);
                         // success!
@@ -67,11 +67,6 @@ class SmartestCmsLinkHelper extends SmartestHelper{
                         $this->_page_not_found = true;
                         $this->_error = true;
                     }
-                    /* else{
-                        $this->_error_message = 'Page not found';
-                        $this->_error = true;
-                        return false;
-                    } */
                     
                 }else{
                     $this->_page_not_found = true;
@@ -92,6 +87,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             case "metapage":
             $this->_type = 'metapage';
+            $l->setType(constant('SM_LINKTYPE_METAPAGE'));
             
             if($link_parts[1] && $link_parts[2]){
                 
@@ -157,6 +153,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             case "image":
             $this->_type = 'image';
+            $l->setType(constant('SM_LINKTYPE_IMAGE'));
             
             if($link_parts[1]){
                 // $image_file = $link_parts[1];
@@ -171,6 +168,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             case "tag":
             $this->_type = 'tag_page';
+            $l->setType(constant('SM_LINKTYPE_TAG'));
             
             if($link_parts[1]){
                 $this->_tag_name = $link_parts[1];
@@ -184,6 +182,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             case "download":
             $this->_type = 'download';
+            $l->setType(constant('SM_LINKTYPE_DOWNLOAD'));
             
             $asset_identifier = $link_parts[1];
             
@@ -217,7 +216,12 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             default:
             // return
+            /* if(in_array($type, )){
+                
+            } */
+            
             $this->_type = 'external';
+            $l->setType(constant('SM_LINKTYPE_EXTERNAL'));
             $this->_external_destination = $link;
             break;
             
@@ -362,6 +366,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             break;
             
             case "tag_page":
+            case "tag":
             return SM_CONTROLLER_DOMAIN.'tags/'.$this->_tag_name.'.html';
             break;
             
@@ -372,6 +377,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             case "external":
             return $this->_external_destination;
             break;
+            
         }
         
     }

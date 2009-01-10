@@ -54,4 +54,16 @@
     <instances>true</instances>
   </type>
   
+  <type id="SM_MTMLOOKUP_PAGE_SET_APPS" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Maps data sets to pages where they appear.</label>
+    <entity table="Pages" class="SmartestPage" foreignkey="page_id" index="1" required="true" />
+    <entity table="Sets" class="SmartestCmsItemSet" foreignkey="set_id" index="2" required="true" />
+  </type>
+  
+  <type id="SM_MTMLOOKUP_PAGE_ITEM_APPS" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Maps items to pages where they appear.</label>
+    <entity table="Pages" class="SmartestPage" foreignkey="page_id" index="1" required="true" />
+    <entity table="Items" class="SmartestItem" foreignkey="item_id" index="2" required="true" />
+  </type>
+  
 </relationshiptypes>

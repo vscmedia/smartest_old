@@ -217,12 +217,9 @@ class SmartestAsset extends SmartestBaseAsset{
                         $this->setField('fragment_id', $tf->getId());
                     }
                     
-                    // $this->save();
                     $this->_text_fragment = $tf;
                     
     	        }else{
-    	            
-    	            // echo "No Fragment ID";
     	            
     	            // whoops, this asset doesn't have a text fragment - create one, but log that this was what happened
     	            if($this->getId()){
@@ -242,8 +239,6 @@ class SmartestAsset extends SmartestBaseAsset{
     	    }
 	    
         }
-        
-        // print_r($this->_text_fragment);
         
         return $this->_text_fragment;
 	    

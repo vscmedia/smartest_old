@@ -7,6 +7,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess{
     public function __construct($string=''){
         if(strlen($string)){
             $this->_string = $string;
+        }else{
+            $this->_string = '';
         }
     }
     

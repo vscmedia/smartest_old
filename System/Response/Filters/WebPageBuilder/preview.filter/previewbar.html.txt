@@ -1,0 +1,6 @@
+<div class="smartest_preview_top_bar" id="sm_previewBar">
+    Smartest Pre-Render Overhead: %OVERHEAD%ms |
+    Page Build Time: %BUILDTIME%ms |
+    Total time taken: %TOTAL%ms |
+    <a href="#" onclick="document.getElementById('sm_previewBar').style.display = 'none';">Hide</a>
+</div>

@@ -8,6 +8,8 @@
 
 function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	
+	$dah = new SmartestDataAppearanceHelper;
+	
 	if ($repeat) {
 	
 		$items = $smartest_engine->getRepeatBlockData($params);
@@ -16,8 +18,6 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 		if($params['limit'] > 0){
 			$items = array_slice($items, 0, $params['limit']);
 		}
-		
-		// $block_name = md5(microtime(true));
 
 	}else{
 		
@@ -31,22 +31,24 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	$repeat = !empty($item);
 
 	if($item){
-		// $properties = $item->__toArray();
 		
-		// $properties["_name"] = $item["item_name"];
-		// $properties["_id"] = $item["item_id"];
-		$smartest_engine->assign("repeated_item", $item);
 		$smartest_engine->_set_items_res[] = &$items;
 		$smartest_engine->_set_items_index[] = &$index;
 		
-	}else{
-	    
 	}
-	
-	// echo $block_name;
 	
 	echo $content;
 	
-	$smartest_engine->assign("repeated_item_object", $item);
-	// echo "repeated_item_object".$item->getName();
+	if($item){
+	    
+	    // these instructions are executed right before the item is displayed.
+	    $smartest_engine->assign("repeated_item", $item);
+	    $smartest_engine->assign("repeated_item_object", $item);
+	    // var_dump($item->getId());
+	    
+	    // if($smartest_engine->getDraftMode()){
+	        $dah->setItemAppearsOnPage($item->getId(), $smartest_engine->getPage()->getId());
+        // }
+	}
+	
 }

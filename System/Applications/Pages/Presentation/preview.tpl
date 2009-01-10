@@ -9,21 +9,27 @@
 {literal}
 <script language="javascript">
     
-    var t;
+    var t1, t2;
     
     function showPreview(){
         $('preview-iframe').style.height = '500px';
         $('preview-iframe').className = 'built';
-        clearTimeout(t);
+        clearTimeout(t1);
+        clearTimeout(t2);
+    }
+    
+    function previewSlow(){
+        $('preview-loading').style.display = 'none';
+        $('preview-slow').style.display = 'block';
     }
     
     function previewTimedOut(){
-        $('preview-loading').style.display = 'none';
+        $('preview-slow').style.display = 'none';
         $('preview-failed').style.display = 'block';
-        alert('The building of the preview failed');
     }
     
-    t = setTimeout('previewTimedOut()', 10000);
+    t1 = setTimeout('previewSlow()', 4000);
+    t2 = setTimeout('previewTimedOut()', 15000);
     
 </script>
 {/literal}
@@ -45,9 +51,13 @@
     <p><img src="{$domain}Resources/System/Images/smartest_working.gif" /></p>
 </div>
 
-<div id="preview-failed" style="padding-top:50px;text-align:center;display:none">
-    <p>Please wait. Rendering preview...</p>
+<div id="preview-slow" style="padding-top:50px;text-align:center;display:none">
+    <p>Sorry for the wait. Just a bit longer...</p>
     <p><img src="{$domain}Resources/System/Images/smartest_working.gif" /></p>
+</div>
+
+<div id="preview-failed" style="padding-top:50px;text-align:center;display:none">
+    <p>Still no luck. Something stopped the page from building. <br />Try having a look at <a href="javascript:window.open('{$site_domain}website/renderEditableDraftPage?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}');">the page by itself</a>.</p>
 </div>
 
 {elseif $show_item_list}

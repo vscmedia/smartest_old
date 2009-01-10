@@ -147,7 +147,7 @@ class AssetsManager{
 	public function getAssetsByTypeCode($code, $site_id=''){
 		
 		$helper = new SmartestAssetsLibraryHelper;
-	    return $helper->getAssetsByTypeCodeAsArrays($code, $site_id);
+	    return $helper->getAssetsByTypeCode($code, $site_id);
 		
 		/* $sql = "SELECT * FROM Assets WHERE asset_type='$code' AND asset_deleted != 1";
 		

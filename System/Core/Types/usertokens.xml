@@ -1,0 +1,167 @@
+<?xml version="1.0" ?>
+
+<tokens>
+  
+  <token id="0">
+    <name>root_permission</name>
+    <description>Carry out any action on any site.</description>
+    <type>permission</type>
+  </token>
+  <token id="1">
+    <name>create_remove_settings</name>
+    <description>Create, remove, and edit settings themselves.</description>
+    <type>permission</type>
+  </token>
+  <token id="2">
+    <name>modify_system_settings</name>
+    <description>Modify values of system settings.</description>
+    <type>permission</type>
+  </token>
+  <token id="3">
+    <name>add_new_pages</name>
+    <description>Add pages to the sitemap.</description>
+    <type>permission</type>
+  </token>
+  <token id="4">
+    <name>remove_pages</name>
+    <description>Remove pages from the sitemap.</description>
+    <type>permission</type>
+  </token>
+  <token id="5">
+    <name>create_remove_models</name>
+    <description>Create, remove, and edit item classes.</description>
+    <type>permission</type>
+  </token>
+  <token id="6">
+    <name>create_remove_properties</name>
+    <description>Create, remove and edit item class properties.</description>
+    <type>permission</type>
+  </token>
+  <token id="7">
+    <name>add_items</name>
+    <description>Add items to existing item classes.</description>
+    <type>permission</type>
+  </token>
+  <token id="8">
+    <name>delete_items</name>
+    <description>Delete items from existing item classes.</description>
+    <type>permission</type>
+  </token>
+  <token id="9">
+    <name>modify_page_properties</name>
+    <description>Modify the basic properties of pages.</description>
+    <type>permission</type>
+  </token>
+  <token id="10">
+    <name>modify_draft_pages</name>
+    <description>Modify draft versions of the pages in the CMS.</description>
+    <type>permission</type>
+  </token>
+  <token id="11">
+    <name>approve_page_changes</name>
+    <description>Approve pages marked as ready for approval.</description>
+    <type>permission</type>
+  </token>
+  <token id="12">
+    <name>see_advanced_page_edit_ui</name>
+    <description>See the page elements tree in its complex form.</description>
+    <type>complexity</type>
+  </token>
+  <token id="13">
+    <name>modify_user_permissions</name>
+    <description>Edit the permissions of other users.</description>
+    <type>permission</type>
+  </token>
+  <token id="14">
+    <name>modify_items</name>
+    <description>Modify CMS Items that do not necessarily belong to the user.</description>
+    <type>permission</type>
+  </token>
+  <token id="15">
+    <name>approve_item_changes</name>
+    <description>Approve changes to all items.</description>
+    <type>permission</type>
+  </token>
+  <token id="16">
+    <name>publish_approved_pages</name>
+    <description>Publish pages that have been modified and approved.</description>
+    <type>permission</type>
+  </token>
+  <token id="17">
+    <name>publish_approved_items</name>
+    <description>Publish items that have been modified and approved.</description>
+    <type>permission</type>
+  </token>
+  <token id="18">
+    <name>publish_all_pages</name>
+    <description>Publish changed pages even if they have not been approved.</description>
+    <type>permission</type>
+  </token>
+  <token id="19">
+    <name>publish_all_items</name>
+    <description>Publish changed items even if they have not been approved.</description>
+    <type>permission</type>
+  </token>
+  <token id="20">
+    <name>modify_site_parameters</name>
+    <description>Edit site parameters.</description>
+    <type>permission</type>
+  </token>
+  <token id="21">
+    <name>site_access</name>
+    <description>Access a site. See it listed in the list of available sites.</description>
+    <type>permission</type>
+  </token>
+  <token id="22">
+    <name>modify_other_user_details</name>
+    <description>Edit the details of other users.</description>
+    <type>permission</type>
+  </token>
+  <token id="23">
+    <name>grant_site_access</name>
+    <description>Grant another user access to a site.</description>
+    <type>permission</type>
+  </token>
+  <token id="24">
+    <name>grant_global_permissions</name>
+    <description>Grant permissions that will persist across all sites.</description>
+    <type>permission</type>
+    <sitespecific>false</sitespecific>
+  </token>
+  <token id="25">
+    <name>create_sites</name>
+    <description>Create new sites.</description>
+    <type>permission</type>
+  </token>
+  <token id="26">
+    <name>modify_assets</name>
+    <description>Modify existing media assets that do not belong to the user.</description>
+    <type>permission</type>
+  </token>
+  <token id="27">
+    <name>delete_assets</name>
+    <description>Delete media assets that do not belong to the user.</description>
+    <type>permission</type>
+  </token>
+  <token id="28">
+    <name>create_assets</name>
+    <description>Add new media to the system.</description>
+    <type>permission</type>
+  </token>
+  <token id="29">
+    <name>clear_pages_cache</name>
+    <description>Clear the pages cache.</description>
+    <type>permission</type>
+  </token>
+  <token id="30">
+    <name>modify_assets</name>
+    <description>Modify existing media assets that do not belong to the user.</description>
+    <type>permission</type>
+  </token>
+  <token id="31">
+    <name>create_users</name>
+    <description>Create other user accounts.</description>
+    <type>permission</type>
+  </token>
+  
+</tokens>

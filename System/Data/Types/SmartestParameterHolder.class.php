@@ -11,6 +11,22 @@ class SmartestParameterHolder implements ArrayAccess{
         $this->_read_only = $read_only;
     }
     
+    public function loadArray($array, $create_phobjects=true){
+        foreach($array as $key=>$value){
+            if(is_array($value)){
+                if($create_phobjects){
+                    $data = new SmartestParameterHolder('Param: '.$key, $this->_read_only);
+                    $data->loadArray($array, true);
+                    $this->setParameter($key, $data);
+                }else{
+                    $this->setParameter($key, $value);
+                }
+            }else{
+                $this->setParameter($key, $value);
+            }
+        }
+    }
+    
     public function __toString(){
         return 'SmartestParameterHolder: '.$this->_name;
     }

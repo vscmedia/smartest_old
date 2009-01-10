@@ -99,12 +99,40 @@ class Desktop extends SmartestSystemApplication{
 		        if($site->hydrate($get['site_id'])){
 			        SmartestSession::set('current_open_project', $site);
 			        $this->getUser()->reloadTokens();
+			        
+			        if(!$site->getDirectoryName()){
+			        
+			            $site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64).'/';
+
+                	    if(is_dir($site_dir)){
+                	        $old_site_dir = 
+                	        $folder = $site->getName().microtime();
+                	        $site_dir = SM_ROOT_DIR.'Sites/'.sha1($folder).'/';
+                	    }
+
+                	    mkdir($site_dir);
+                	    if(!is_dir($site_dir.'Presentation')){mkdir($site_dir.'Presentation');}
+                	    if(!is_dir($site_dir.'Configuration')){mkdir($site_dir.'Configuration');}
+                	    if(!is_file($site_dir.'Configuration/site.yml')){file_put_contents($site_dir.'Configuration/site.yml', '');}
+                	    if(!is_dir($site_dir.'Library')){mkdir($site_dir.'Library');}
+                	    if(!is_dir($site_dir.'Library/Actions')){mkdir($site_dir.'Library/Actions');}
+                	    $actions_class_name = SmartestStringHelper::toCamelCase($site->getName()).'Actions';
+                	    $class_file_contents = file_get_contents(SM_ROOT_DIR.'System/Base/ClassTemplates/SiteActions.class.php.txt');
+                	    $class_file_contents = str_replace('__TIMESTAMP__', time('Y-m-d h:i:s'), $class_file_contents);
+                	    if(!is_file($site_dir.'Library/Actions/SiteActions.class.php')){file_put_contents($site_dir.'Library/Actions/SiteActions.class.php', $class_file_contents);}
+                	    chmod($site_dir.'Library/Actions/SiteActions.class.php', 0666);
+                	    $site->setDirectoryName(substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64));
+                	    $site->save();
+            		
+        		    }
+            		
 			        $this->redirect('/smartest');
 		        }
 		        
 	        }else{
 	            
 	            $this->addUserMessageToNextRequest('You don\'t have permission to access that site. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
+	            SmartestLog::getInstance('site')->log("User ".$this->getUser()->__toString()." tried to access this site but is not currently granted permission to do so.");
 	            $this->redirect('/smartest');
 	            
 	        }
@@ -201,7 +229,29 @@ class Desktop extends SmartestSystemApplication{
 		    $site->setLogoImageFile('default_site.jpg');
 		}
 		
+		$site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64).'/';
+	    
+	    if(is_dir($site_dir)){
+	        $old_site_dir = 
+	        $folder = $site->getName().microtime();
+	        $site_dir = SM_ROOT_DIR.'Sites/'.sha1($folder).'/';
+	    }
+	    
+	    mkdir($site_dir);
+	    if(!is_dir($site_dir.'Presentation')){mkdir($site_dir.'Presentation');}
+	    if(!is_dir($site_dir.'Configuration')){mkdir($site_dir.'Configuration');}
+	    if(!is_file($site_dir.'Configuration/site.yml')){file_put_contents($site_dir.'Configuration/site.yml', '');}
+	    if(!is_dir($site_dir.'Library')){mkdir($site_dir.'Library');}
+	    if(!is_dir($site_dir.'Library/Actions')){mkdir($site_dir.'Library/Actions');}
+	    $actions_class_name = SmartestStringHelper::toCamelCase($site->getName()).'Actions';
+	    $class_file_contents = file_get_contents(SM_ROOT_DIR.'System/Base/ClassTemplates/SiteActions.class.php.txt');
+	    $class_file_contents = str_replace('__TIMESTAMP__', time('Y-m-d h:i:s'), $class_file_contents);
+	    if(!is_file($site_dir.'Library/Actions/SiteActions.class.php')){file_put_contents($site_dir.'Library/Actions/SiteActions.class.php', $class_file_contents);}
+	    chmod($site_dir.'Library/Actions/SiteActions.class.php', 0666);
+	    $site->setDirectoryName(substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64));
+		
 		$site->save();
+		
 		
 		if(!$this->getUser()->hasGlobalPermission('site_access')){
 		    $this->getUser()->addToken('site_access', $site->getId());
@@ -275,6 +325,25 @@ class Desktop extends SmartestSystemApplication{
 	    $this->formForward();
 	    
 	}
+    
+    public function caches(){
+        
+        // Controller cache
+        // Data cache
+        // Includes cache
+        // Data objects
+        // Models
+        // Pages
+        // Smarty
+        // Draft Text-Fragments
+        
+    }
+    
+    public function clearCaches(){
+        
+        
+        
+    }
     
     public function todoList(){
         
@@ -361,8 +430,6 @@ class Desktop extends SmartestSystemApplication{
         }
         
         $this->send($total_num_duty_items, 'num_duty_items'); */
-        
-        
         
     }
     

@@ -1,0 +1,4 @@
+	<link rel="stylesheet" href="%DOMAIN%Resources/System/Stylesheets/sm_preview_main.css" />
+    <!--[if IE 6]>
+      <link rel="stylesheet" href="%DOMAIN%Resources/System/Stylesheets/sm_preview_ie6.css" />
+    <![endif]-->

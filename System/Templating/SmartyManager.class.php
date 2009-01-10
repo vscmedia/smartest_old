@@ -24,7 +24,7 @@ if(!class_exists('SmartestEngine')){
 }
 
 
-class SmartyManager {
+class SmartyManager{
 
 	private $options = array();
 	private $context = null;

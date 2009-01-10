@@ -12,12 +12,8 @@ class CmsFrontEndManager{
 	
 	function getSiteByDomain($domain){
 	    
-	    $sql = "SELECT * FROM Sites WHERE site_domain='".$domain."' AND site_is_enabled=1";
+	    $sql = "SELECT * FROM Sites WHERE site_domain='".$domain."'";
 	    $result = $this->database->queryToArray($sql);
-	    
-	    // print_r($this->database);
-	    
-	    // print_r($result);
 	    
 	    if(count($result)){
 	        $site = new SmartestSite;
@@ -34,12 +30,11 @@ class CmsFrontEndManager{
 		$sql = "SELECT Pages.* FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		$page = $this->database->queryToArray($sql);
 		
-		$pageObj = new SmartestPage;
+		$p = new SmartestPage;
 		
 		if(count($page) > 0){
-			// print_r($page[0]);
-			$pageObj->hydrate($page[0]);
-			return $pageObj;
+			$p->hydrate($page[0]);
+			return $p;
 		}else{
 			return null;
 		}
@@ -48,7 +43,7 @@ class CmsFrontEndManager{
 	
 	function getNormalPageByWebId($web_id, $site_id, $draft_mode=false){
 	    
-	    $sql = "SELECT * FROM Pages WHERE page_webid='".$web_id."' AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."'";
+	    $sql = "SELECT * FROM Pages WHERE page_webid='".$web_id."' AND page_type='NORMAL'";
 	    
 	    if(!$draft_mode){
 	        $sql .= " AND page_is_published='TRUE'";
@@ -75,7 +70,7 @@ class CmsFrontEndManager{
 	
 	function getItemClassPageByWebId($web_id, $item_id, $site_id, $draft_mode=false){
 	    
-	    $sql = "SELECT * FROM Pages WHERE page_webid='".$web_id."' AND page_type='ITEMCLASS' AND Pages.page_site_id='".$site_id."'";
+	    $sql = "SELECT * FROM Pages WHERE page_webid='".$web_id."' AND page_type='ITEMCLASS'";
 	    
 	    if(!$draft_mode){
 	        $sql .= " AND page_is_published='TRUE'";
@@ -85,10 +80,8 @@ class CmsFrontEndManager{
 	    
 	    $result = $this->database->queryToArray($sql);
 	    
-	    // print_r($result);
-	    
 	    if(count($result) > 0){
-			// print_r($result[0]);
+			
 			$page = new SmartestItemPage;
 			$page->hydrate($result[0]);
 			
@@ -104,21 +97,15 @@ class CmsFrontEndManager{
 		    
 			$page->setIdentifyingFieldValue($item_id);
 			
-			// print_r($page);
-			
 			if($page->isAcceptableItem($draft_mode)){
 			    // the item id was ok. get the item
-			    // echo 'true';
 			    $page->assignPrincipalItem();
 			    return $page;
 			    
 			}else{
 			    // the item was not in the set, so I guess it's a 404
-			    // print_r($page);
-			    // return false;
+			    SmartestLog::getInstance('system')->log("Unacceptable item ID: $item_id requested while trying to build Page ID: ".$page->getId());
 			}
-			
-			// print_r($page);
 		    
 		}else{
 			return null;

@@ -1,0 +1,1 @@
+ALTER TABLE `Sites` ADD `site_directory_name` VARCHAR( 64 ) NOT NULL AFTER `site_root` ;

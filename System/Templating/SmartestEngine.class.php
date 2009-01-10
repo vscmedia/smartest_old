@@ -179,5 +179,20 @@ class SmartestEngine extends Smarty{
 	public function setStylesheetIncluded($file){
 	    $this->_included_stylesheets[] = $file;
 	}
+	
+	public function addPluginDirectory($directory){
+	    
+	    $directory = realpath($directory);
+	    
+	    if(is_dir($directory)){
+	        if(SmartestFileSystemHelper::isSafeFileName($directory)){
+	            $this->plugins_dir[] = $directory;
+	        }else{
+	            throw new SmartestException("Tried to add plugin directory outside Smartest: ".$directory, SM_ERROR_USER);
+	        }
+	    }else{
+	        throw new SmartestException("Tried to add non-existent plugin directory: ".$directory, SM_ERROR_USER);
+	    }
+	}
 
 }

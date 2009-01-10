@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<caches>
+  <cache id="SM_CACHE_QUINCE">
+    <label>Quince Controller Cache</label>
+    <description>Information for the Quince Controller</description>
+    <location>System/Cache/Controller/</location>
+    <match>^quincexml.+\.tmp$</match>
+  </cache>
+  <cache id="SM_CACHE_SYSTEM_DATA">
+    <label>System Data Cache</label>
+    <description>Information retrieved and stored internally by Smartest</description>
+    <location>System/Cache/Data/</location>
+    <match>^scd_[a-f0-9]+.tmp$</match>
+  </cache>
+  <cache id="SM_CACHE_USER_DATA">
+    <label>User Data Cache</label>
+    <description>Information retrieved and stored by user application and helper code</description>
+    <location>System/Cache/Data/</location>
+    <match>^ucd_[a-f0-9]+.tmp$</match>
+  </cache>
+  <cache id="SM_CACHE_INCLUDES">
+    <label>Includes Cache</label>
+    <description>Production sites save all required includes into a smaller number of large files.</description>
+    <location>System/Cache/Includes/</location>
+    <match>.+\.php$</match>
+  </cache>
+  <cache id="SM_CACHE_DATA_OBJECTS">
+    <label>Active Records Base Class Cache</label>
+    <description>SmartestDataObject active records use these auto-generated classes.</description>
+    <location>System/Cache/ObjectModel/DataObjects/</location>
+    <match>.+\.php$</match>
+  </cache>
+  <cache id="SM_CACHE_MODELS">
+    <label>Model Class Cache</label>
+    <description>CMS Items/Objects use these auto-generated classes.</description>
+    <location>System/Cache/ObjectModel/Models/</location>
+    <match>.+\.php$</match>
+  </cache>
+  <cache id="SM_CACHE_PAGES">
+    <label>Complete Pages Cache</label>
+    <description>HTML pages generated from CMS output and saved for faster page delivery.</description>
+    <location>System/Cache/Pages/</location>
+    <match>.+\.html$</match>
+  </cache>
+  <cache id="SM_CACHE_SMARTY_COMPILER">
+    <label>Smarty Compiled Templates Cache</label>
+    <description>Smarty compiles 'tpl' templates into regular PHP files are stores them here.</description>
+    <location>System/Cache/Smarty/</location>
+    <match>.+\.tpl\.php$</match>
+  </cache>
+</caches>

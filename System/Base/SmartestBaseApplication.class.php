@@ -29,6 +29,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 	protected $_formFailUri;
 	protected $_userTokenHelper;
 	public $_auth;
+	private $_user_loaded_classes;
 	
 	final public function __construct(){
 	
@@ -42,19 +43,23 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		SmartestSession::set('user:currentApp', SM_CONTROLLER_MODULE);
 		SmartestSession::set('user:currentAction', SM_CONTROLLER_METHOD);
 		
-		
+		// Applications can come bundled with their own template plugins
+		if(is_dir(SM_CONTROLLER_MODULE_DIR.'Library/Templating/Plugins/')){
+		    $this->getPresentationLayer()->addPluginDirectory(SM_CONTROLLER_MODULE_DIR.'Library/Templating/Plugins/');
+		}
 		
 		// load user-defined application-wide settings
 		// TODO: add caching here
-		if(is_file(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml")){
-			// if($this->_settings['application'] = @parse_ini_file(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml")){
+		/* if(is_file(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml")){
+			
 			$appSettingsFileData = SmartestYamlHelper::load(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml");
 			
 			if(is_array($appSettingsFileData)){
-			    // 
+			    
+			    // $this->settings['application'] = new SmartestParameterHolder('Application Settings Holder', true);
+			    // $this->settings['application']->loadArray($appSettingsFileData, true);
 			    $this->settings['application'] = $appSettingsFileData;
-			    // $this->settings['application'] = SmartestConfigurationHelper::parseConfigDataArray($appSettingsFileData, 'application');
-			    // print_r($this->settings['application']);
+			    
 			}else{
 				throw new SmartestException("Error parsing config file: ".SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml");
 			}
@@ -68,52 +73,48 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 			}else{
 				throw new SmartestException("Error parsing config file: ".SM_ROOT_DIR."Configuration/user.ini");
 			}
-		}
+		} */
 		
-		if(SM_OPTIONS_MANAGERS_AUTOLOAD || SM_SYSTEM_IS_BACKEND_MODULE){
 		
-			// Detect to see if manager classes exist and initiate them, if configured to do so
-			$managerClassFile = SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php";
-			$managerClass = SM_CONTROLLER_CLASS."Manager";
+		/////////////// MANAGERS CODE WILL BE DEPRECATED SOON - FUNCTIONALITIES IN MANAGERS ARE BEING MOVED TO HELPERS ////////////////
+		// Detect to see if manager classes exist and initiate them, if configured to do so
+		$managerClassFile = SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php";
+		$managerClass = SM_CONTROLLER_CLASS."Manager";
+		
+		define("SM_MANAGER_CLASS", $managerClass);
+		
+		if(@is_file(SM_ROOT_DIR.SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php")){
+		
+			define("SM_MANAGER_CLASS_FILE", SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php");
+			include_once(SM_MANAGER_CLASS_FILE);
+		
+			if(class_exists(SM_MANAGER_CLASS)){
+				
+				if(SM_OPTIONS_MANAGERS_GET_AUTO_DB){
+					$this->manager = new $managerClass($this->database);
+				}else{
+					$this->manager = new $managerClass();
+				}
+				
+			}
 			
-			define("SM_MANAGER_CLASS", $managerClass);
+		}else if(defined("SM_CONTROLLER_MODULE_DIR")){
+		  
+		    if(@is_file(SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php")){
 			
-			if(@is_file(SM_ROOT_DIR.SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php")){
-			
-				define("SM_MANAGER_CLASS_FILE", SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php");
+				define("SM_MANAGER_CLASS_FILE", SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php");
 				include_once(SM_MANAGER_CLASS_FILE);
-			
+				
 				if(class_exists(SM_MANAGER_CLASS)){
-					
+				
 					if(SM_OPTIONS_MANAGERS_GET_AUTO_DB){
 						$this->manager = new $managerClass($this->database);
 					}else{
 						$this->manager = new $managerClass();
 					}
-					
-				}
-				
-			}else if(defined("SM_CONTROLLER_MODULE_DIR")){
-			  
-			  // echo SM_CONTROLLER_MODULE_DIR;
-			  
-				if(@is_file(SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php")){
-				
-					define("SM_MANAGER_CLASS_FILE", SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php");
-					include_once(SM_MANAGER_CLASS_FILE);
-					
-					if(class_exists(SM_MANAGER_CLASS)){
-					
-						if(SM_OPTIONS_MANAGERS_GET_AUTO_DB){
-							$this->manager = new $managerClass($this->database);
-						}else{
-							$this->manager = new $managerClass();
-						}
-					
-					}
 				
 				}
-				
+			
 			}
 			
 		}
@@ -131,10 +132,9 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 	    }
 	    
 	    if(SmartestSession::get('user:isAuthenticated')){
-	        $this->send($this->getUser()->__toArray(), '_user');
+	        $this->send($this->getUser(), '_user');
 	    }
 	    
-	    // print_r(SmartestCache::load('user:messages:nextRequest:'.$this->getUser()->getId(), true));
 	}
 	
 	final public function __destruct(){
@@ -143,18 +143,12 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 			$this->__moduleDestruct();
 		}
 		
-		// handle user messages:
-		
-		/* if(count($this->_userMessages)){
-			array_shift($this->_userMessages);
-		} */
-		
-		// SmartestPersistentObject::set('user:messages:nextRequest', $this->_userMessages);
-		
 	}
 	
 	///// String Stuff //////
-  
+    
+    /////////////// THIS SHIT IS DEPRECATED. SmartestStringHelper OR SmartestString SHOULD BE USED FOR STRING MANIPULATION //////////////////
+    
 	protected function getRandomString($size=32){ // creates a "random" string, $size chars in length
 	
 		return SmartestStringHelper::random($size);
@@ -176,22 +170,10 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 	}
 	
 	/* 
-	protected function requireAuthenticatedUser(){
+	protected function requireAuthenticatedUser($authservicename){
 		if(!$this->_auth->getUserIsLoggedIn()){
 			$this->redirect($this->domain."smartest/login");
 		}
-	}
-	
-	protected function getUser(){
-	    
-	    return SmartestPersistentObject::get('user');
-	    
-	}
-	
-	protected function getSite(){
-	    
-	    return SmartestPersistentObject::get('current_open_project');
-	    
 	}
 	
 	protected function requireToken($token){
@@ -238,19 +220,10 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     final protected function send($data, $name=""){
         
         if(strlen($name) > 0){
-    		// if(!isset($this->getPresentationLayer()->_tpl_vars[$name])){
-    			$this->getPresentationLayer()->assign($name, $data);
-    			
-    		/* }else{
-    			$this->_error("A value called \"".$name."\" is already in use within the presentation layer.");
-    		} */
+    		$this->getPresentationLayer()->assign($name, $data);
     	}else{
-    		//if(!isset($this->getPresentationLayer()->_tpl_vars["content"][$this->_resultIndex])){
-    			$this->getPresentationLayer()->_tpl_vars["content"][$this->_resultIndex] = $data;
-    			$this->_resultIndex++;
-    		// }else{
-    		//	$this->_error("A value called \"".$name."\" is already in use within the presentation layer.");
-    		// }
+    		$this->getPresentationLayer()->_tpl_vars["content"][$this->_resultIndex] = $data;
+    		$this->_resultIndex++;
     	}
     }
     
@@ -288,14 +261,55 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     
     ///// Check for Libraries /////
     
-    function isInstalled($library){
-    	return SmartestLibHelper::isInstalled($library);
+    protected function loadApplicationClass($class){
+        
+        $dir = SM_CONTROLLER_MODULE_DIR.'Library/';
+        
+        if(substr($class, -4) != '.php'){
+            $class = $class.'.class.php';
+        }
+        
+        if(is_file($dir.$class)){
+            if(!in_array($class, $this->_user_loaded_classes)){
+                $this->_user_loaded_classes[] = $class;
+                require $dir.$class;
+            }
+        }else{
+            $this->log("SmartestBaseApplication::loadClass() tried to load a class that does not exist in $dir", 'system');
+            throw new SmartestException("SmartestBaseApplication::loadClass() tried to load a class that does not exist in $dir");
+        }
+        
+    }
+    
+    protected function helperIsInstalled($helper){
+        
+        if(substr($helper, -6) == 'Helper'){
+            $full_helper = $helper;
+            $helper = substr($full_helper, 0, -6);
+        }else{
+            $full_helper = $helper.'Helper';
+        }
+        
+        if(substr($helper, 0, 8) == 'Smartest'){
+            // we are checking for a System helper, so only look in System/Helpers/
+            if(is_dir(SM_ROOT_DIR.'System/Helpers/'.$helper.'.helper') && class_exists($full_helper)){
+                return true;
+            }
+        }else{
+            // We could either be referring to a user-created library or to a system library (but without using the 'Smartest' prefix, ie 'ManyToMany' for SmartestManyToManyHelper)
+            if(is_dir(SM_ROOT_DIR.'Library/Helpers/'.$helper.'.helper') && class_exists($full_helper)){
+                return true;
+            }else if(is_dir(SM_ROOT_DIR.'System/Helpers/Smartest'.$helper.'.helper') && class_exists('Smartest'.$full_helper)){
+                return true;
+            }
+        }
+        
     }
     
     ///// Errors and Logging /////
     
-    public function log($message, $type=''){
-    	
+    public function log($message, $log, $type=''){
+    	return SmartestLog::getinstance($log)->log($message, $type);
     }
     
     function _error($message, $type=''){
