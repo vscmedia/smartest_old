@@ -53,7 +53,7 @@ class SmartestFilter{
         
             if(function_exists($function_name)){
             
-                $html = call_user_func($function_name, $html, &$this);
+                $html = call_user_func($function_name, $html, $this);
                 return $html;
             
             }else{

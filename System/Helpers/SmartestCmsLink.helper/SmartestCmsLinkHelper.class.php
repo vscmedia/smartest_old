@@ -41,13 +41,13 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         $link_parts = explode(':', $link);
         $type = $link_parts[0];
         
-        $l = new SmartestCmsLink;
+        // $l = new SmartestCmsLink;
         
         switch($type){
             
             case "page":
             $this->_type = 'page';
-            $l->setType(SM_LINKTYPE_PAGE);
+            // $l->setType(SM_LINKTYPE_PAGE);
             // print_r($link_parts);
             if($link_parts[1]){
                 
@@ -87,7 +87,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             case "metapage":
             $this->_type = 'metapage';
-            $l->setType(constant('SM_LINKTYPE_METAPAGE'));
+            // $l->setType(constant('SM_LINKTYPE_METAPAGE'));
             
             if($link_parts[1] && $link_parts[2]){
                 
@@ -153,7 +153,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             case "image":
             $this->_type = 'image';
-            $l->setType(constant('SM_LINKTYPE_IMAGE'));
+            // $l->setType(constant('SM_LINKTYPE_IMAGE'));
             
             if($link_parts[1]){
                 // $image_file = $link_parts[1];
@@ -168,7 +168,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             case "tag":
             $this->_type = 'tag_page';
-            $l->setType(constant('SM_LINKTYPE_TAG'));
+            // $l->setType(constant('SM_LINKTYPE_TAG'));
             
             if($link_parts[1]){
                 $this->_tag_name = $link_parts[1];
@@ -182,7 +182,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             case "download":
             $this->_type = 'download';
-            $l->setType(constant('SM_LINKTYPE_DOWNLOAD'));
+            // $l->setType(constant('SM_LINKTYPE_DOWNLOAD'));
             
             $asset_identifier = $link_parts[1];
             
@@ -221,7 +221,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             } */
             
             $this->_type = 'external';
-            $l->setType(constant('SM_LINKTYPE_EXTERNAL'));
+            // $l->setType(constant('SM_LINKTYPE_EXTERNAL'));
             $this->_external_destination = $link;
             break;
             
