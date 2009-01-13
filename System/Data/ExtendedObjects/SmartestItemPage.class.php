@@ -23,10 +23,6 @@ class SmartestItemPage extends SmartestPage{
         return $this->_dataset;
     }
     
-    /* public function setItemId($id){
-        
-    }*/
-    
     public function getSimpleItem(){
         return $this->_simple_item;
     }
@@ -40,7 +36,6 @@ class SmartestItemPage extends SmartestPage{
     }
     
     public function setPrincipalItem($item){
-        // print_r($item);
         $this->_principal_item = $item;
         $this->_simple_item = $item->getItem();
         $this->_identifying_field_name = 'id';
@@ -112,6 +107,12 @@ class SmartestItemPage extends SmartestPage{
             }else{
                 
                 $sql = "SELECT * FROM Items WHERE item_".$this->_identifying_field_name."='".$this->_identifying_field_value."'";
+                
+                if($this->getType() == 'ITEMCLASS'){
+                    $sql .= " AND item_itemclass_id='".$this->getDataSetId()."'";
+                }
+                
+                $sql .= " AND (item_shared = '1' OR item_site_id = '".$this->getSiteId()."')";
                 
                 if(!$this->getDraftMode()){
                     $sql .= " AND item_public='TRUE'";

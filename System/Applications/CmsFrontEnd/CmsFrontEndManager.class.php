@@ -142,17 +142,13 @@ class CmsFrontEndManager{
 				        // $template_url_parts = explode("/", $page_record["pageurl_url"]);
 				        $template_url_parts = preg_split("/[\.\/]/", $page_record["pageurl_url"]);
 				        
-				        // print_r($template_url_parts);
-				        
-    					$actual_url_parts = $matches;
+				        $actual_url_parts = $matches;
     					
     					array_shift($actual_url_parts);
     					
     					$i = 0;
 
     					foreach($template_url_parts as $key => $url_placeholder){
-    					    
-    					    // print_r($url_placeholder.'<br />');
     					    
     					    // if($i = count($template_url_parts) - 1){
     					    //     $regex = '/^(\$|:)([\w_]+)(\.\w+)?/';
@@ -161,7 +157,6 @@ class CmsFrontEndManager{
     					    // }
     					    
     						if(preg_match($regex, $url_placeholder, $url_var_matches)){
-    							// unset($template_url_parts[$key]);
     							
     							if($url_placeholder == ":id"){
     							    $page->setIdentifyingFieldName("id");
@@ -174,8 +169,6 @@ class CmsFrontEndManager{
         							$page->setIdentifyingFieldValue($actual_url_parts[$i]);
         						}
         						
-        						// echo 
-        						
         						$page->setUrlNameValuePair($url_var_matches[2], $actual_url_parts[$i]);
 
         						$i++;
@@ -184,20 +177,14 @@ class CmsFrontEndManager{
     						
     					}
     					
-    					// print_r($page);
-    					
     					if($page->isAcceptableItem()){
     					    // the item id was ok. get the item
-    					    // print_r($page);
     					    $page->assignPrincipalItem();
     					    return $page;
     					}else{
-    					    // print_r($page);
     					    // the item was not in the set, so I guess it's a 404
     					    return false;
     					}
-    					
-    					
     					
     					if(!$page->getIdentifyingFieldName()){
     					    // error 404
