@@ -12,8 +12,7 @@
 
 // phpinfo();
 
-require_once 'XML/Serializer.php'; 
-require_once 'Text/Highlighter.php';
+require_once 'XML/Serializer.php';
 
 class Assets extends SmartestSystemApplication{
 	
