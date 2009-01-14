@@ -102,20 +102,25 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	        $template = SM_ROOT_DIR."Presentation/Masters/".$page->getLiveTemplate();
 	    }
 	    
-	    if(!file_exists($template)){
-	        $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
-	    }
-	    
 	    if(!defined('SM_CMS_PAGE_ID')){
 		    define('SM_CMS_PAGE_ID', $this->page->getId());
 		}
 	    
-	    ob_start();
-	    $this->run($template, array());
-	    $content = ob_get_contents();
-	    ob_end_clean();
+	    if(!file_exists($template)){
+	        
+	        $this->assign('required_template', $template);
+	        $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
+	        $this->run($template, array());
+	        
+	    }else{
 	    
-	    return $content;
+	        ob_start();
+	        $this->run($template, array());
+	        $content = ob_get_contents();
+	        ob_end_clean();
+	    
+	        return $content;
+        }
 	}
     
     public function renderContainer($container_name, $params, $parent){

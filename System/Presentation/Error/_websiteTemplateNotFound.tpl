@@ -5,6 +5,6 @@
 	<title>Error: Master Template Not Found</title>
 </head>
 <body>
-The template specified as the master template for this page has not been found.
+The template specified as the master template, '<?sm:$required_template:?>' for this page has not been found.
 </body>
 </html>
