@@ -137,7 +137,7 @@ class Pages extends SmartestSystemApplication{
 	                
                 }else{
                     //  the page is being edited by another user
-                    $this->addUserMessageToNextRequest("You can't release this page because another user is editing it.", SmartestUserMessage::WARNING);
+                    $this->addUserMessageToNextRequest("You can't release this page because another user is editing it.", SmartestUserMessage::INFO);
                 }
             }else{
                 $this->addUserMessageToNextRequest("The page has been released.", SmartestUserMessage::SUCCESS);

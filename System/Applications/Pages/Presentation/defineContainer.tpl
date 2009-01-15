@@ -38,3 +38,5 @@
   </ul>
   
 </div>
+
+{if $selected_template_id > 0}<script language="javascript">setSelectedItem('{$selected_template_id}');</script>{/if}

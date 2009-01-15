@@ -48,8 +48,6 @@ function setSelectedItem(id, name, category){
 
 	category = category ? category : 'default';
 
-	// alert(category);
-
 	selectedPage = id;
 	selectedItemCategory = category;
 
@@ -65,24 +63,15 @@ function setSelectedItem(id, name, category){
 	if(document.getElementById(actionsDiv)){
 		
 		if(lastItemCategory != selectedItemCategory && document.getElementById(lastActionsDiv)){
-			//if(!getUIEffectsAreOk()){
-			//	document.getElementById(lastActionsDiv).style.display = 'none';
-			//}else{
-				// alert('fading down '+lastActionsDiv);
-				
-				setTimeout('new Effect.BlindUp("'+lastActionsDiv+'", { duration: 0.2 })', 1);
-				// document.getElementById(lastActionsDiv).style.display = 'none';
-			//}
+			
+			setTimeout('new Effect.BlindUp("'+lastActionsDiv+'", { duration: 0.2 })', 1);
+			
 		}
 		
 		if(lastItemCategory != selectedItemCategory && document.getElementById(actionsDiv)){
-		    //if(!getUIEffectsAreOk()){
-			//    document.getElementById(actionsDiv).style.display = 'block';
-		    //}else{
-			    // alert('fading up '+actionsDiv);
-			    setTimeout('new Effect.BlindDown("'+actionsDiv+'", { duration: 0.2 })', 250);
-			    // document.getElementById(actionsDiv).style.display = 'block';
-		    //}
+		    
+		    setTimeout('new Effect.BlindDown("'+actionsDiv+'", { duration: 0.2 })', 250);
+			
 	    }
 		
 	}
@@ -101,7 +90,7 @@ function setSelectedItem(id, name, category){
 	if(document.getElementById("item_id_input")){
 		document.getElementById("item_id_input").value = id;
 	}else{
-		// alert('input not found');
+		// input not found
 	}
 }
 
@@ -123,19 +112,11 @@ function getWebContent(url){
 
 function workWithItem(pageAction){
 	
-	// alert(sm_domain+sm_section+"/"+pageAction);
 	var editForm = document.getElementById('pageViewForm');	
 	
 	if(selectedPage && editForm){
 	    
-	    // alert(pageAction.split("/").length());
-	    
-	    //if(pageAction.split("/").length() > 1){
-	    //    editForm.action = sm_domain+pageAction;
-	    //}else{
-		    editForm.action = sm_domain+sm_section+"/"+pageAction;
-	    //}
-	    
+	    editForm.action = sm_domain+sm_section+"/"+pageAction;
 	    editForm.submit();
 	}
 }
@@ -152,19 +133,13 @@ function toggleMenuVisibility(menu_id){
     var menu = $(menu_id);
     if(menu.style.display='none'){
         new Effect.BlindDown(menu_id, { duration: 0.3 });
-        // menu.style.display='block';
     }else if(menu.style.display='block'){
         new Effect.BlindUp(menu_id, { duration: 0.3 });
-        // menu.style.display='none';
     }
 }
 
 function hideUserMessage(message_id){
-	// if(!getUIEffectsAreOk()){
-	//	document.getElementById(message_id).style.display = 'none';
-	// }else{
-		new Effect.Fade(message_id, { duration: 0.5 });
-	// }
+	new Effect.Fade(message_id, { duration: 0.5 });
 }
 
 function getCaretPosition(textarea_id){
