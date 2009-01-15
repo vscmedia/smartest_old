@@ -82,7 +82,11 @@ class SmartestStringHelper extends SmartestHelper{
         return $string;
 
     }
-
+    
+    static function stripNewLines($s){
+        return preg_replace("/[\n\r]/m", "", $s);
+    }
+    
 	static function toSlug($normal_string, $clean_non_ascii=false){
 	
 		$page_name = strtolower($normal_string);
@@ -321,9 +325,9 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	static function toSummary($string, $char_length=300){
 	    // find the end of first paragraph and cut there
-	    preg_match_all('/<p[^>]*>(.+?)<\/p>/', $string, $paragraphs);
-
-	    if(count($paragraphs[0])){
+	    preg_match_all('/<p[^>]*>(.+?)<\/p>/mi', self::stripNewLines($string), $paragraphs);
+      
+        if(count($paragraphs[0])){
 	        $first_paragraph = $paragraphs[1][0];
 	    }else{
 	        $first_paragraph = $string;
@@ -337,7 +341,7 @@ class SmartestStringHelper extends SmartestHelper{
 	        $final_string = substr($final_string, 0, ($char_length - 3)).'...';
 	    }
 	    
-	    return $final_string;
+	    return trim($final_string);
 	    
 	}
 	
