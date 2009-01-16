@@ -48,7 +48,7 @@ class SmartestItemSpaceDefinition extends SmartestAssetIdentifier{
         
         if(!$this->_simple_item){
             if($this->_item){
-                $this->_simple_item = $this->_item->getSimpleItem();
+                $this->_simple_item = $this->_item->getItem();
             }else{
                 $item = new SmartestItem;
                 

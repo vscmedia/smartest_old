@@ -73,7 +73,7 @@ class SmartestAssetIdentifier extends SmartestBaseAssetIdentifier{
             
             if(!$this->_simple_item){
                 if($this->_item){
-                    return $this->_item->getSimpleItem();
+                    return $this->_item->getItem();
                 }else{
                     $item = new SmartestItem;
 
