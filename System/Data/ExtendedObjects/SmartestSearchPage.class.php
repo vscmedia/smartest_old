@@ -38,10 +38,23 @@ class SmartestSearchPage extends SmartestPage{
     public function fetchRenderingData(){
         
         $data = parent::fetchRenderingData();
-        $data['search_results'] = $this->getResultsAsArrays();
-        $data['num_search_results'] = count($data['search_results']);
+        // $data['search_results'] = $this->getResultsAsArrays();
+        // $data['num_search_results'] = count($data['search_results']);
         // print_r($data);
+        $data->setParameter('search_results', $this->getResultsAsArrays());
+        $data->setParameter('num_search_results', count($data->getParameter('search_results')));
         return $data;
+        
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "query":
+            return $this->_query;
+        }
+        
+        return parent::offsetGet($offset);
         
     }
     
