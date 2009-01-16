@@ -177,7 +177,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
             $p->setSearchQuery($get['q']);
             
             $this->_page = $p;
-            $this->send($this->_page, '_page');
+            // $this->send($this->_page, '_page');
+            $this->renderPage();
             
             return Quince::NODISPLAY;
             
