@@ -49,7 +49,14 @@ class SmartestWebPagePreparationHelper{
     public function build($draft_mode=''){
         
         $b = $this->createBuilder();
+        
         $b->assign('domain', SM_CONTROLLER_DOMAIN);
+        $b->assign('method', SM_CONTROLLER_METHOD);
+        $b->assign('section', SM_CONTROLLER_MODULE);
+        
+        if($ua = SmartestPersistentObject::get('userAgent')){
+            $b->assign('sm_user_agent_json', $ua->toJson());
+        }
         
         if($draft_mode === true || $draft_mode === false){
             $b->setDraftMode($draft_mode);
