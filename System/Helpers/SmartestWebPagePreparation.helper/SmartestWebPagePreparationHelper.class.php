@@ -55,7 +55,8 @@ class SmartestWebPagePreparationHelper{
         $b->assign('section', SM_CONTROLLER_MODULE);
         
         if($ua = SmartestPersistentObject::get('userAgent')){
-            $b->assign('sm_user_agent_json', $ua->toJson());
+            $b->assign('sm_user_agent_json', $ua->getSimpleClientSideObjectAsJson());
+            $b->assign('sm_user_agent', $ua->__toArray());
         }
         
         if($draft_mode === true || $draft_mode === false){
