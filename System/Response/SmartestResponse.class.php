@@ -877,9 +877,7 @@ class SmartestResponse{
 		    $this->content = new stdClass;
 		}
 		
-		// print_r($this->getConstants());
-		
-		switch($this->controller->getNamespace()){
+		/* switch($this->controller->getNamespace()){
 		    case 'ui':
 		        echo $this->fetch(true);
 		        break;
@@ -891,14 +889,12 @@ class SmartestResponse{
 		        // echo $this->fullTimeTaken.'<br />';
 		        // 
 		        break;
-	    }
+	    } */
+	    
+	    echo $this->fetch();
 		
 		// Last chance to display any errors before trying to render the page
 		$this->errorStack->display();
-		
-		// echo '<pre>';
-		// print_r($this->database->getDebugInfo());
-		// echo '</pre>';
 		
 		exit;
 	}

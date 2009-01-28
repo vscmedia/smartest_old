@@ -20,9 +20,6 @@
   * Quince(TM) PHP Controller
   * Based on the original PHP-Controller API, but rewritten from the ground up, and about 10ms faster!
   *
-  * Typical runtime about 12-13ms on a good server
-  * We are always looking to make this faster
-  *
   * @category   Controller
   * @package    Quince
   * @license    Lesser GNU Public License
@@ -96,19 +93,11 @@ class Quince{
 	var $prepareTimeTaken;
 	var $postActionTimeTaken;
 	
-	var $namespace = "";
-	var $namespaceArray = array();
-	var $initialNamespace = "";
-	var $namespaces;
-	var $defaultNamespace;
-	
-	var $log;
+	var $log = array();
 	var $errors;
 	var $halt = false;
 	var $result = null;
 	var $cache_dir = './';
-	
-	var $num_forwards = 0;
 	
 	const FAIL = '__QUINCE_FAILED_ACTION';
 	const NODISPLAY = '__QUINCE_NO_UI_FEEDBACK';
@@ -116,13 +105,6 @@ class Quince{
 	const E_ALL = 100;
 	const E_NOTICE = 101;
 	const E_ERROR = 102;
-	
-	const NS_NONE     = 0;
-	const NS_DOMAIN   = 1;
-	const NS_METHOD   = 2;
-	const NS_CLASS    = 4;
-	const NS_TEMPLATE = 8;
-	const NS_ALL      = 15;
 	
 	const CLASS_CHECK_ALWAYS = 2;
 	const CLASS_CHECK_NON_ALIAS = 1;
@@ -138,94 +120,27 @@ class Quince{
 
 	function Quince($filename = "controller.xml", $automatic=true, $use_cache=true){
 		
-		$this->_log('Instantiating the controller...');
-		$this->_log('User has IP '.$_SERVER['REMOTE_ADDR'].'; Time is '.date("l jS F Y h:i:s a"));
+		if($automatic == true){
+			$this->_log("Dispatch is going to begin automatically.");
+			$this->dispatch();
+		}
 		
 		if(is_array($filename)){
-			// If the first argument is an array, it is an array containing all the configuration info
+			// If the first argument is an array, it is an array containing all the configuration info. This is for comptibility.
 			$this->options = $filename;
-			if(isset($this->options['filename'])){$filename = $this->options['filename'];}else{$filename = "controller.xml";}
-			if(isset($this->options['auto'])){$automatic = $this->options['auto'];}
+			
+			if(!isset($this->options['filename'])){
+			    $this->options['filename'] = "controller.xml";
+			}
+			
+			if(!isset($this->options['auto'])){
+			    $this->options['auto'] = true;
+			}
+			
 		}else{
 			$this->options = array();
 			$this->options['filename'] = $filename;
 			$this->options['auto'] = $automatic;
-		}
-		
-		$this->checkClassForMethod = self::CLASS_CHECK_ALWAYS;
-		
-		$this->startTime = microtime(true);
-		
-		// Firstly, check that the data originally from the XML file is present, either in the disk cache or the session:
-		
-		if($hash = $this->getXmlDataHash() && $xmldata = $this->getXmlDataArray()){ // If the xml controller file is already cached in the session
-			
-			// var_dump($hash);
-			
-			// if the file hasn't changed and the hashes are the same
-			if($hash == md5_file($filename)){
-			
-				// LOG: Loaded XML Data From Session
-				$this->_log('Quince XML file unchanged. Loaded controller data from cache.');
-				$this->xmlDataArray = $xmldata;
-				
-			}else{ // the file has changed, so the hashes are different
-				
-				// get the data from the XML
-				if($data = $this->loadXmlControllerFile($filename)){
-					
-					$this->_log('Quince XML file has been modified.');
-					$this->_log('Loaded XML data From file: '.$filename);
-					
-					$this->setXmlDataHash(md5_file($filename));
-					$this->setXmlDataArray($data);
-					
-					// $_SESSION["xmlDataHash"] = md5_file($filename);
-					$this->xmlDataArray = $data;
-					
-				}else{
-					// file not loaded
-					// ERROR
-					
-					$this->_error('Quince XML file was not found or could not be loaded: '.$filename, true);
-				}
-			}
-			
-		}else{ // try and load the xml controller file, since it wasn't cached at all
-		
-			// LOG: XML Data Not Cached
-			$this->_log('Quince XML data not found in session cache');
-			
-			if($data = $this->loadXmlControllerFile($filename)){
-				$this->_log('Loaded XML data From file: '.$filename);
-				
-				// file successfully loaded
-				$hash = md5_file($filename);
-				
-				$this->setXmlDataHash($hash);
-				$this->setXmlDataArray($data);
-				
-				$this->xmlDataArray = $data;
-				
-			}else{
-				// file not loaded
-				// ERROR
-				$this->_error('Controller data needed, but Quince XML file could not be loaded', true);
-			}
-		}
-		
-		// echo $_SESSION["xmlDataHash"];
-		
-		$this->activeRequestArray = count($_POST) ? $_POST : $_GET;
-		$this->activeRequestArrayName = count($_POST) ? "POST" : "GET";
-		
-		if($use_cache == false){
-			$this->_purge();
-		}
-		
-		if($automatic == true){
-			$this->_log("Dispatch is going to begin automatically.");
-			$this->dispatch();
 		}
 		
 	}
@@ -233,7 +148,7 @@ class Quince{
 	function getXmlDataHash(){
 		// looks in the cache file on disk. if it's not there, it looks in the session. if not there either it returns false.
 		if($data = $this->loadFromDiskCache('quincexmlhash')){
-			return $data;
+		    return $data;
 		}else if(array_key_exists('xmlDataHash', $_SESSION) && is_array($_SESSION["xmlDataHash"])){
 			return $_SESSION["xmlDataHash"];
 		}else{
@@ -273,10 +188,77 @@ class Quince{
 	}
 	
 	function dispatch(){
+	    
 		// The order these functions are called in is very important
 		$this->_log("Beginning dispatch...");
+		
+		$this->_log('Instantiating the controller...');
+		$this->_log('User has IP '.$_SERVER['REMOTE_ADDR'].'; Time is '.date("l jS F Y h:i:s a"));
+		
+		$this->checkClassForMethod = self::CLASS_CHECK_ALWAYS;
+		
+		$this->startTime = microtime(true);
+		
+		// Firstly, check that the data originally from the XML file is present, either in the disk cache or the session:
+		if(($hash = $this->getXmlDataHash()) && ($xmldata = $this->getXmlDataArray())){ // If the xml controller file is already cached in the session
+			
+			// if the file hasn't changed and the hashes are the same
+			if($hash == md5_file($this->options['filename'])){
+			
+				// LOG: Loaded XML Data From Session
+				$this->_log('Quince XML file unchanged. Loaded controller data from cache.');
+				$this->xmlDataArray = $xmldata;
+				
+			}else{ // the file has changed, so the hashes are different
+				
+				// get the data from the XML
+				if($data = $this->loadXmlControllerFile($this->options['filename'])){
+					
+					$this->_log('Quince XML file has been modified.');
+					$this->_log('Loaded XML data From file: '.$this->options['filename']);
+					
+					$this->setXmlDataHash(md5_file($this->options['filename']));
+					$this->setXmlDataArray($data);
+					
+					$this->xmlDataArray = $data;
+					
+				}else{
+					// file not loaded
+					$this->_error('Quince XML file was not found or could not be loaded: '.$this->options['filename'], true);
+				}
+			}
+			
+		}else{ // try and load the xml controller file, since it wasn't cached at all
+		
+			// LOG: XML Data Not Cached
+			$this->_log('Quince XML data not found in session cache');
+			
+			if($data = $this->loadXmlControllerFile($this->options['filename'])){
+				$this->_log('Loaded XML data From file: '.$this->options['filename']);
+				
+				// file successfully loaded
+				$hash = md5_file($this->options['filename']);
+				
+				$this->setXmlDataHash($hash);
+				$this->setXmlDataArray($data);
+				
+				$this->xmlDataArray = $data;
+				
+			}else{
+				// file not loaded
+				// ERROR
+				$this->_error('Controller data needed, but Quince XML file could not be loaded', true);
+			}
+		}
+		
+		$this->activeRequestArray = count($_POST) ? $_POST : $_GET;
+		$this->activeRequestArrayName = count($_POST) ? "POST" : "GET";
+		
+		if($use_cache == false){
+			$this->_purge();
+		}
+		
 		$this->request = $this->getControllerUrlRequest();
-		$this->namespaces = $this->setNamespaces();
 		$this->setDomain();
 		$this->moduleDirectories = $this->getModuleDirectories();
 		$this->modules = $this->setModules();
@@ -293,13 +275,13 @@ class Quince{
 		
 		// load xml controller
 		// LOG: Loading Controller XML file
-		$this->_log("Attempting to load principal Quince XML file: $filename");
+		$this->_log("Attempting to load principal Quince XML file: {$this->options['filename']}");
 		
 		if(class_exists("XML_Unserializer")){
     		
     		$option = array('complexType' => 'array', 'parseAttributes' => TRUE);
     		$unserialized = new XML_Unserializer($option);
-    		$result = $unserialized->unserialize($filename, true);
+    		$result = $unserialized->unserialize($this->options['filename'], true);
     
     		if (PEAR::isError($result)) {
 				// ERROR: XML file could not be parsed: PEAR said "$result->getMessage()"
@@ -310,6 +292,7 @@ class Quince{
     			$data = $unserialized->getUnserializedData();
     			return $data;
     		}
+    		
     	}else{
     		$this->_error("XML file could not be parsed because the PEAR XML_Unserializer library could not be found.", true);
     	}
@@ -331,35 +314,24 @@ class Quince{
 			$path_key = "domain-path";
 		}
 		
-		if(@strlen($this->xmlDataArray[$path_key]) > 1){
+		if(strlen($this->xmlDataArray[$path_key]) > 1){
 			
-			$domain_path = $this->xmlDataArray[$path_key];
-			$last_char = strlen($domain_path) - 1;
+			$this->domainPath = $this->xmlDataArray[$path_key];
 			
-			if($domain_path{$last_char} != "/"){
-				$domain_path .= "/";
-				$this->domainPath = $domain_path;
-			}else{
-				$this->domainPath = $domain_path;
+			if(substr($this->domainPath, -1) != "/"){
+				$this->domainPath .='/';
 			}
 			
-			if(strpos($url, $domain_path) === 0){
-				// $domain path
-				$request = str_replace($domain_path, '', $url);
+			if(strtolower(substr($url, 0, strlen($this->domainPath))) == strtolower($this->domainPath)){
+			    $request = substr($url, strlen($this->domainPath));
 			}else{
-				$request = $url;
+			    $this->_error("Value for ".$path_key." in controller.xml is not in the url.");
 			}
+			
 		}else{
 			
 			$request = $url;
 			
-		}
-		
-		// check for namespace
-		if(preg_match('/^(([^:]+):)[^:]+$/', reset(explode("/", $request)), $matches)){
-			$this->initialNamespace = $matches[2];
-			$this->_log("The namespace \"{$this->initialNamespace}\" was detected in the URL request, and will be checked.");
-			$request = substr($request, strlen($matches[1]));
 		}
 		
 		if($request){
@@ -412,150 +384,7 @@ class Quince{
 			return array();
 		}
 	}
-	
-	function setNamespaces(){
-		$this->_log("Checking namespace options...");
 		
-		// $this->initialNamespace;
-		
-		if(isset($this->xmlDataArray['namespace']) && is_array($this->xmlDataArray['namespace'])){
-			
-			if(isset($this->xmlDataArray['namespace']['name'])){
-				$namespaces = array();
-				$namespaces[0] = $this->xmlDataArray['namespace'];
-			}else{
-				$namespaces = $this->xmlDataArray['namespace'];
-			}
-		
-			foreach($namespaces as $key=>$namespace){
-			
-				if(!isset($namespace['name'])){
-					$this->_log("A &lt;namespace&gt; tag was found without the required &lt;name&gt; tag.");
-					continue;
-				}
-			
-				if(isset($namespace['default-namespace']) && ($namespace['default-namespace'] != false && strtolower($namespace['default-namespace']) != "false")){
-					$this->defaultNamespace = $namespace;
-				}
-				
-				if($this->initialNamespace && isset($namespace['name']) && $namespace['name'] == $this->initialNamespace){
-					$this->namespace = $namespace['name'];
-					$this->namespaceArray = $namespace;
-					$this->_log("The namespace specified in the URL was matched to one in the XML file. The namespace was set as '{$this->namespace}'.");
-				}
-				
-			}
-			
-			if(!$this->namespace){
-				if($this->defaultNamespace){
-					$this->namespace = $this->defaultNamespace['name'];
-					$this->namespaceArray = $this->defaultNamespace;
-					
-					if($this->initialNamespace){
-						$this->_log("The namespace specified in the URL '{$this->initialNamespace}' didn't match any of those in the XML file, so the default namespace, '{$this->namespace}' was assumed.");
-					}else{
-						$this->_log("No namespace was specified in the URL - not a problem - so the default namespace, '{$this->namespace}' was assumed.");
-					}
-					
-				}else{
-					$this->_log("No namespace was specified in the URL and no default was specified in the URL file, so namespaces are disabled for this request.");
-				}
-			}
-			
-		}else{
-			if($this->initialNamespace){
-				$this->_log("The namespace {$this->initialNamespace} was requested, but no namespaces were set in the Quince XML file...");
-				$this->namespace = "";
-			}else{
-				$this->namespace = "";
-			}
-		}
-		
-		// print_r($this->namespaceArray);
-		
-		if(isset($this->namespaceArray['mode'])){
-						
-			$this->namespaceArray['_affect_domain'] = false;
-			$this->namespaceArray['_affect_method'] = false;
-			$this->namespaceArray['_affect_class'] = false;
-			$this->namespaceArray['_affect_templates'] = false;
-			
-			// echo $namespace['mode']."<br />";
-			
-			if(preg_match('/^(NS_(NONE|DOMAIN|METHOD|CLASS|TEMPLATE|ALL))\s?\^\s?(NS_(NONE|DOMAIN|METHOD|CLASS|TEMPLATE|ALL))$/', $this->namespaceArray['mode'], $modes)){
-				
-				// echo "subtract<br />";
-				$level = constant("self::".$modes['1']) - constant("self::".$modes['3']);
-				// print_r($modes);
-				// echo $level;
-				
-			}else if(preg_match('/^(NS_(NONE|DOMAIN|METHOD|CLASS|TEMPLATE|ALL)\|?)+$/', $this->namespaceArray['mode'], $modes)){
-				
-				$level = 0;
-				
-				// echo "add<br />";
-				foreach(explode("|", $this->namespaceArray['mode']) as $constant_name){
-					$level += constant("self::".$constant_name);
-					// echo "adding ".constant("self::".$constant_name)."<br />";
-				}
-				
-				// echo $level;
-			}else{
-				$level = 0;
-			}
-			
-			// echo $level;
-			
-			switch($level){
-				case 1:
-				case 9:
-					$this->namespaceArray['_affect_domain'] = true;
-					break;
-				case 2:
-				case 10:
-					$this->namespaceArray['_affect_method'] = true;
-					break;
-				case 3:
-				case 11:
-					$this->namespaceArray['_affect_domain'] = true;
-					$this->namespaceArray['_affect_method'] = true;
-					break;
-				case 4:
-				case 14:
-					$this->namespaceArray['_affect_class'] = true;
-					break;
-				case 5:
-				case 13:
-					$this->namespaceArray['_affect_domain'] = true;
-					$this->namespaceArray['_affect_class'] = true;
-					break;
-				case 6:
-				case 14:
-					$this->namespaceArray['_affect_method'] = true;
-					$this->namespaceArray['_affect_class'] = true;
-					break;
-				case 7:
-				case 15:
-					$this->namespaceArray['_affect_domain'] = true;
-					$this->namespaceArray['_affect_method'] = true;
-					$this->namespaceArray['_affect_class'] = true;
-					break;
-			}
-			
-			if($level > 7){
-				$this->namespaceArray['_affect_templates'] = true;
-			}else{
-				$this->namespaceArray['_affect_templates'] = false;
-			}
-			
-			// print_r($this->namespaceArray);
-			
-		}else{
-			$this->_log("The current namespace doesn't have the required &lt;mode&gt; tag, and so won't have any effect.");
-		}
-		
-	}
-	
 	function setModules(){
 		
 		$this->_log("Retrieving modules...");
@@ -588,10 +417,8 @@ class Quince{
 				$this->moduleIndicesMap[$key] = $module['name'];
 				
 				foreach($this->moduleDirectories as $directory){
-					// echo $directory;
+					
 					if($modules[$key]['class_file_found'] != true){ // if the file hasn't already been found...
-						
-						// echo $modules[$key]['class']."<br />";
 						
 						// try one of the other module directories
 						if(is_file($directory.$module['class'].$this->suffix)){
@@ -726,7 +553,6 @@ class Quince{
 				
 			}
 			
-			// print_r($modules);
 			return $modules;
 			
 		}else{
@@ -797,13 +623,9 @@ class Quince{
 	
 	function setModule(){
 		
-		/// echo 'hello';
-		
 		if(strlen($this->request) > 0){
 		    
-		    // echo 'hello';
-		    
-			// check aliases first
+		    // check aliases first
 			foreach($this->aliases as $alias){
 			
 				if(preg_match($this->getUrlRegExp($alias['match']), $this->request)){
@@ -814,11 +636,8 @@ class Quince{
 						$this->aliasMatch = $alias['match'];
 						$this->aliasDestination = $alias['_content'];
 						$this->requestIsUsingAlias = true;
-						// echo "hello";
-						// return;
 					}else{
 						// the actual file containing the class was not found
-					    // echo 'hello';
 						$this->moduleName = $this->defaultModule;
 						$this->sectionName =& $this->moduleName; // deprecated - for backwards compatibility
 						$this->moduleIndex = $this->defaultModuleIndex;
@@ -826,7 +645,6 @@ class Quince{
 						$this->aliasDestination = $alias['_content'];
 						$this->requestIsUsingAlias = true;
 						$this->_log("Request matched alias to existing module, but file {$this->modules[$alias['module_key']]['class_file']} was not found. Loading default module.");
-						// return;
 					}
 				}
 			}
@@ -1020,7 +838,7 @@ class Quince{
 							}
 						}
 					}else{
-						$this->_error("The class does not exist.", true);
+						$this->_error("The class {$this->modules[$this->moduleIndex]['class']} does not exist.", true);
 					}
 				}else{
 					// ERROR: could not load class file: $this->modules[$this->moduleIndex]['class_file']
@@ -1071,7 +889,6 @@ class Quince{
 			    if(count($this->object_stack)){
 			    	foreach($this->object_stack as $name => $value){
 			    		$this->user_object->$name = $value;
-						// echo '$this->'.$name.' = '.print_r($value, true).'<br />';
 			    	}
 			    }
 			        
@@ -1079,7 +896,6 @@ class Quince{
 					
 				// LOG: Calling $this->className::$this->methodName();
 				$this->_log('Calling user action: '.$this->className.'::'.$this->methodName.'()');
-				// var_dump($this->methodName);
 				$this->result = call_user_func_array(array(&$this->user_object, $this->methodName), $args);
 					
 				$this->postActionTime = microtime(true);
@@ -1102,7 +918,7 @@ class Quince{
 				//}
 			}else{
 				// ERROR: could not load class file: $this->modules[$this->moduleIndex]['class_file'];
-				$this->_error("Could not load class file: {$this->modules[$this->moduleIndex]['class_file']}");
+				$this->_error("Could not load class file: {$this->modules[$this->moduleIndex]['class_file']}", true);
 			}
 		}else{
 			if($this->options['auto']){
@@ -1114,7 +930,6 @@ class Quince{
 	}
 	
 	function requestIsForward(){
-		// print_r($this->formForwards);
 		
 		foreach($this->formForwards as $formForward){
 			
@@ -1136,17 +951,11 @@ class Quince{
 	
 	function getFormForwardDestination($destination){
 		
-		// print_r($this->activeRequestArray);
-		
 		foreach($this->activeRequestArray as $key => $value){
 			if(!is_array($value)){
 				$destination = str_replace('$'.$key, $value, $destination);
 			}
 		}
-		
-		// var_dump($destination);
-		// var_dump($value);
-		// var_dump($key);
 		
 		// delete undefined variables
 		$destination = preg_replace('/\$[\w_]+/i', '', $destination);
@@ -1424,7 +1233,7 @@ class Quince{
 			if(is_array($this->errors)){
 				$all_events = array_merge($this->errors, $this->log);
 			}else{
-				$all_events = $this->log;
+			    $all_events = $this->log;
 			}
 			break;
 			
@@ -1492,7 +1301,6 @@ class Quince{
 	}
 	
 	function _debug($type = 100){
-		// print_r($this->getDebugContent());
 		foreach($this->getDebugContent($type) as $event){
 			echo '<div style="float:left;width:100%;background-color:#fff;color:#111;border-bottom:1px solid #ddd">'.$event['time']." - ".$event['message']."</div>";
 		}
@@ -1507,10 +1315,12 @@ class Quince{
 	function _error($message, $halt = false){
 		$time = number_format(microtime(true)*100000, 0, ".", "");
 		$this->errors[$time] = $message;
-		// echo $message."<br />";
+		
 		if($halt == true){
-			$this->_log("Fatal error reported. Unable to continue. Tell my wife I...");
-			$this->halt = true;
+			trigger_error($message, E_USER_ERROR);
+		}else{
+		    trigger_error($message, E_USER_WARNING);
+		    $this->_log("Fatal error reported. Unable to continue. Tell my wife I...");
 		}
 	}
 	
@@ -1552,7 +1362,6 @@ class Quince{
 		}
 	}
 	
-	// in PHP5 this would be a private function
 	function loadFromDiskCache($data_name){
 		if(file_exists($this->cache_dir.$data_name.'.tmp')){
 			if($contents = $this->fileGetContents($this->cache_dir.$data_name.'.tmp')){
@@ -1565,7 +1374,6 @@ class Quince{
 		}
 	}
 	
-	// so would this
 	function saveToDiskCache($data_name, $data){
 		if(strlen($data_name)){
 			if($this->filePutContents($this->cache_dir.$data_name.'.tmp', serialize($data))){
@@ -1576,7 +1384,6 @@ class Quince{
 		}
 	}
 	
-	// this would be public
 	function setCacheDirectory($new_directory){
 		if(strlen($new_directory)){
 			$this->cache_dir = $new_directory;
@@ -1599,5 +1406,3 @@ class Quince{
 		exit;
 	}
 }
-
-?>

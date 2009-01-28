@@ -45,6 +45,10 @@ class SmartestFile implements ArrayAccess{
         return $this->_original_file_path;
     }
     
+    public function isImage(){
+        return ($this instanceof SmartestImage);
+    }
+    
     public function isPublic(){
         
         $path_start = SM_ROOT_DIR.'Public';
@@ -67,7 +71,7 @@ class SmartestFile implements ArrayAccess{
     }
     
     public function getWebUrl(){
-        if($this->isPublic()){
+        if($this->isPublic() || $this->isImage()){
             return SM_CONTROLLER_DOMAIN.$this->getPublicPath();
         }
     }
