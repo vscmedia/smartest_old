@@ -1010,7 +1010,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 
-	function updateAsset($get, $post){
+	public function updateAsset($get, $post){
         
         $asset_id = $post['asset_id'];
 
@@ -1023,11 +1023,9 @@ class Assets extends SmartestSystemApplication{
 		        $param_values = serialize($post['params']);
     		    $asset->setParameterDefaults($param_values);
 
-    		    if($asset->usesTextFragment()){
-    		        $content = $post['asset_content'];
-    		        $content = SmartestStringHelper::unProtectSmartestTags($content);
-    		        $asset->setContent($content);
-    	        }
+    		    $content = $post['asset_content'];
+    		    $content = SmartestStringHelper::unProtectSmartestTags($content);
+    		    $asset->setContent($content);
     	        
     	        $asset->setModified(time());
                 $asset->save();

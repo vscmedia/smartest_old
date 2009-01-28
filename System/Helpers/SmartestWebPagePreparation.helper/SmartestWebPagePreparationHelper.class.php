@@ -26,16 +26,10 @@ class SmartestWebPagePreparationHelper{
     
     public function fetch($draft_mode=false){
         
-        // var_dump($draft_mode);
-        
         if($this->cachedPagesAllowed()){	
-			// echo "retrieving from cache...";
 			return SmartestFileSystemHelper::load(SM_ROOT_DIR.'System/Cache/Pages/'.$this->_page->getCacheFileName(), true);
-			
 		}else{
-			// echo "building...";
 			return $this->build($draft_mode);
-			
 		}
         
     }

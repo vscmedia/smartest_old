@@ -278,8 +278,8 @@ class SmartestAsset extends SmartestBaseAsset{
 	        SmartestFileSystemHelper::save($this->getFullPathOnDisk(), $content, true);
 	    }else{
 	        // what happens here?
-	        // probably nothing as it's just not the right type of asset
-	        // log: SmartestAsset::setContent() called on a non-editable asset (asset_id)
+	        // probably nothing as it's just not the right type of asset. Just log and move on
+	        SmartestLog::getInstance('system')->log('SmartestAsset::setContent() called on a non-editable asset ('.$this->getId().')');
 	    }
 	    
 	}
