@@ -917,7 +917,7 @@ class Assets extends SmartestSystemApplication{
 		        $this->send(false, 'show_attachments');
 		    }
 		    
-		    if($this->getUser()->hasToken('approve_assets') && $asset->getApproved() == 0){
+		    if($this->getUser()->hasToken('approve_assets') && $asset->getIsApproved() == 0){
 		        $this->send(true, 'allow_approve');
 		    }else{
 		        $this->send(false, 'allow_approve');

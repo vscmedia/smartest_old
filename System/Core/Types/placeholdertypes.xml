@@ -50,6 +50,11 @@
     <accept>SM_ASSETTYPE_WMV</accept>
   </type>
   
+  <type id="SM_ASSETCLASS_SOUND">
+    <label>MP3 audio</label>
+    <accept>SM_ASSETTYPE_MP3</accept>
+  </type>
+  
   <type id="SM_ASSETCLASS_DOWNLOAD">
     <label>A file that must be downloaded</label>
     <accept>SM_ASSETTYPE_PDF</accept>

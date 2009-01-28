@@ -163,7 +163,7 @@ class Templates extends SmartestSystemApplication{
 		    
 		    // Add the template asset to the database
 		    $new_template = new SmartestAsset;
-    		$new_template->setAssetTypeId(4);
+    		
     		$new_template->setType('SM_ASSETTYPE_CONTAINER_TEMPLATE');
     		$new_template->setStringid($stringid);
     		$new_template->setWebid(SmartestStringHelper::random(32));
