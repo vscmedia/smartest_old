@@ -299,7 +299,11 @@ class SmartestAsset extends SmartestBaseAsset{
 	    $info = $this->getTypeInfo();
 	    
 	    if($this->usesLocalFile()){
-	        return SM_ROOT_DIR.$info['storage']['location'].$this->getUrl();
+	        if($this->getDeleted()){
+	            return SM_ROOT_DIR.'Documents/Deleted/'.$this->getUrl();
+	        }else{
+	            return SM_ROOT_DIR.$info['storage']['location'].$this->getUrl();
+            }
 	    }else{
 	        return null;
 	    }
@@ -555,7 +559,7 @@ class SmartestAsset extends SmartestBaseAsset{
 	        // move the file to 
 	        $deleted_path = SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.'Documents/Deleted/'.$this->getUrl());
 	        $deleted_filename = basename($deleted_path);
-	        $this->setDeletedFilename($deleted_filename);
+	        $this->setUrl($deleted_filename);
 	        SmartestFileSystemHelper::move($this->getFullPathOnDisk(), $deleted_path);
 	    }
 	    
