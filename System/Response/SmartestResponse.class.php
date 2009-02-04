@@ -115,7 +115,7 @@ class SmartestResponse{
 		// These files can't be included using the include optimisation because it depends on their already having been included
 		require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
         require SM_ROOT_DIR.'System/Helpers/SmartestHelper.class.php';
-        require SM_ROOT_DIR.'System/Base/SmartestException.class.php';
+        require SM_ROOT_DIR.'System/Base/Exceptions/SmartestException.class.php';
         require SM_ROOT_DIR.'System/Base/SmartestError.class.php';
         require SM_ROOT_DIR.'System/Base/SmartestErrorStack.class.php';
         require SM_ROOT_DIR.'System/Data/SmartestDatabase.class.php';
@@ -133,7 +133,7 @@ class SmartestResponse{
             $this->error($e->getMessage());
             $this->errorStack->display();
         }
-
+        
         /// This neds more compatibility work as it breaks on newer servers
         
         /* try{
@@ -164,13 +164,21 @@ class SmartestResponse{
         	'System/Data/SmartestCacheDb.class.php',
         	'System/Data/SmartestCmsItem.class.php',
         	'System/Data/SmartestFile.class.php',
-        	'System/Base/SmartestWebPageBuilderException.class.php',
-        	'System/Base/SmartestInterfaceBuilderException.class.php',
+        	'System/Base/Exceptions/SmartestWebPageBuilderException.class.php',
+        	'System/Base/Exceptions/SmartestInterfaceBuilderException.class.php',
         	'System/Base/SmartestUpdater.class.php'
 
         );
         
         SmartestDataUtility::loadTypeObjects();
+        
+        try{
+		    SmartestInstallationStatusHelper::checkStatus();
+	    }catch(SmartestNotInstalledException $e){
+	        require SM_ROOT_DIR.'System/Install/SmartestInstaller.class.php';
+	    }
+	    
+	    // var_dump(SmartestCache::load('installation_status', true));
         
         /* try{
             SmartestUpdater::run();
@@ -242,14 +250,14 @@ class SmartestResponse{
 		
 		@session_start();
 		
-		$this->_log("Session started");
+		// $this->_log("Session started");
 		
 		SmartestPersistentObject::set('errors:stack', $this->errorStack);
 		SmartestPersistentObject::set('centralDataHolder', new SmartestResponseDataHolder);
 		
 		$this->checkRequiredExtensionsLoaded();
-		$this->checkRequiredFilesExist();
 		$this->checkWritablePermissions();
+		$this->checkRequiredFilesExist();
 		
 		// load up settings
 		$this->configuration = new SmartestConfigurationHelper();

@@ -46,9 +46,7 @@ class SmartestCache{
 		
 		$file_path = SM_ROOT_DIR.'System/Cache/Data/'.$file_name;
 	    
-	    // echo $token.' '.$file_path.'<br />';
-	    
-		if(file_exists($file_path)){
+	    if(file_exists($file_path)){
 			return true;
 		}else{
 			return false;

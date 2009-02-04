@@ -159,7 +159,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	        $intended_dir = constant('SM_ROOT_DIR');
 	    }
 	    
-	    $attempted_dir_path = dirname(realpath($file_path)); // for example, /etc/ for ../../../../../../../etc/passwd
+	    $attempted_dir_path = dirname(realpath($file_path)); // for example, /etc for ../../../../../../../etc/passwd
 	    $intended_dir_path = dirname(realpath($intended_dir));
 	    
 	    if(mb_strlen($intended_dir_path) >= mb_strlen($attempted_dir_path)){

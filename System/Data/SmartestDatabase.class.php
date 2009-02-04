@@ -11,7 +11,7 @@ class SmartestDatabase{
             $object = new $class($config);
             return $object;
         }else{
-            throw new SmartestException("Database connection '".$connection_name."' does not have a valid class, e.g. SmartestMysql");
+            throw new SmartestException("Database connection '".$connection_name."' does not have a valid class, e.g. SmartestMysql", SM_ERROR_CONFIG);
         }
         
     }
@@ -28,11 +28,13 @@ class SmartestDatabase{
 		        $ph->setParameter($key, $value);
 		    }
 		    
+		    $ph->setParameter('short_name', $connection_name);
+		    
 		    return $ph;
 		
 	    }else{
 	        
-	        throw new SmartestException("Unknown database connection name: ".$connection_name);
+	        throw new SmartestDatabaseException("Unknown database connection name: ".$connection_name, SmartestDatabaseException::INVALID_CONNECTION_NAME);
 	        
 	    }
     }

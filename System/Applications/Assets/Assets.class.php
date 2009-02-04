@@ -280,8 +280,6 @@ class Assets extends SmartestSystemApplication{
 		
 		$types_array = SmartestDataUtility::getAssetTypes();
 		
-		// print_r($types_array[$code]);
-		
 		if(in_array($asset_type, array_keys($types_array))){
 		    
 		    $type = $types_array[$asset_type];

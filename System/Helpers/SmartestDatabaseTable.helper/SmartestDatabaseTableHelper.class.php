@@ -20,11 +20,13 @@ class SmartestDatabaseTableHelper{
     
     public function getTables(){
         
-        if(SmartestCache::hasData('smartest_tables', true)){
-			$tables = SmartestCache::load('smartest_tables', true);
+        $cache_name = strtolower($this->database->getConnectionName()).'_tables';
+        
+        if(SmartestCache::hasData($cache_name, true)){
+			$tables = SmartestCache::load($cache_name, true);
 		}else{
 			$tables = $this->database->getTables();
-			SmartestCache::save('smartest_tables', $tables, -1, true);
+			SmartestCache::save($cache_name, $tables, -1, true);
 		}
 		
 		return $tables;
@@ -55,20 +57,22 @@ class SmartestDatabaseTableHelper{
     
     public function getColumnNames($table){
         
+        $cache_name = strtolower($this->database->getConnectionName()).'_'.$table.'_columns';
+        
         if($this->tableExists($table)){
         
-            if(SmartestCache::hasData($table.'_columns', true)){
-			    $columns = SmartestCache::load($table.'_columns', true);
+            if(SmartestCache::hasData($cache_name, true)){
+			    $columns = SmartestCache::load($cache_name, true);
 		    }else{
 			    $columns = $this->database->getColumnNames($table);
-			    SmartestCache::save($table.'_columns', $columns, -1, true);
+			    SmartestCache::save($cache_name, $columns, -1, true);
 		    }
 		    
 		    return $columns;
 		
 	    }else{
 	        
-	        throw new SmartestException('The table \''.$table.'\' does not exist.');
+	        throw new SmartestException('Tried to get column names on a table, \''.$table.'\', that does not exist.');
 	        
 	    }
         
@@ -76,11 +80,15 @@ class SmartestDatabaseTableHelper{
     
     public function flushCache(){
         
+        $cn = strtolower($this->database->getConnectionName());
+        $cache_name = $cn.'_tables';
+        
         $tables = $this->getTables();
-        SmartestCache::clear('smartest_tables', true);
+        SmartestCache::clear($cache_name, true);
         
         foreach($tables as $t){
-            SmartestCache::clear($t.'_columns', true);
+            $cache_name = $cn.'_'.$t.'_columns';
+            SmartestCache::clear($cache_name, true);
         }
     }
     

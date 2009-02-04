@@ -4,21 +4,21 @@ class SmartestException extends Exception{
 	
 	protected $_redirectUrl = null;
 	
-	function __construct($message, $code=100, $verboseType="Unknown or Miscellaneous"){
+	public function __construct($message, $code=100){
 		parent::__construct();
 		$this->code = $code;
 		$this->message = $message;
 	}
 	
-	function setMessage($message){
+	public function setMessage($message){
 	    $this->message = $message;
 	}
 	
-	function setRedirectUrl($url){
+	public function setRedirectUrl($url){
 	    $this->_redirectUrl = $url;
 	}
 	
-	function getRedirectUrl(){
+	public function getRedirectUrl(){
 	    return $this->_redirectUrl;
 	}
 
