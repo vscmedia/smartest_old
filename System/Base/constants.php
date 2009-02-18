@@ -11,7 +11,10 @@ define("SM_ERROR_PHP", 105);
 define("SM_ERROR_USER", 106);
 define("SM_ERROR_MODEL", 107);
 define("SM_ERROR_SMARTEST_INTERNAL", 108);
-define("SM_ERROR_CONFIG", 109);
+define("SM_ERROR_LINK_TARGET", 109);
+define("SM_ERROR_LINK_TARGET_ITEM", 110);
+define("SM_ERROR_LINK_INVALID_FORMAT", 111);
+define("SM_ERROR_CONFIG", 112);
 
 define('SM_QUERY_ALL_DRAFT', 0);
 define('SM_QUERY_ALL_DRAFT_ARCHIVED', 1);
@@ -57,13 +60,13 @@ define('SM_QUERY_NOT_TAGGED_WITH', 9);
 
 define('SM_STATUS_ALL', 0);
 
-define('SM_STATUS_HIDDEN', 1);
+define('SM_STATUS_HIDDEN', 1); // the default for draft pages/previews
 define('SM_STATUS_HIDDEN_CHANGED', 2);
 define('SM_STATUS_HIDDEN_APPROVED', 3);
 
 define('SM_STATUS_LIVE', 4);
 define('SM_STATUS_LIVE_CHANGED', 5);
-define('SM_STATUS_LIVE_APPROVED', 6);
+define('SM_STATUS_LIVE_APPROVED', 6); // the default for published pages
 
 define('SM_STATUS_CURRENT', 7);
 define('SM_STATUS_ARCHIVED', 8);
@@ -102,9 +105,15 @@ define('SM_LOG_ACCESS_DENIED', 8);
 define('SM_LOG_ACCESSDENIED', 8);
 define('SM_LOG_USER_ACTION', 16);
 
-define('SM_LINKTYPE_PAGE', 1);
-define('SM_LINKTYPE_METAPAGE', 2);
-define('SM_LINKTYPE_IMAGE', 4);
-define('SM_LINKTYPE_DOWNLOAD', 8);
-define('SM_LINKTYPE_TAG', 16);
-define('SM_LINKTYPE_EXTERNAL', 256);
+define('SM_LINK_TYPE_PAGE', 1);
+define('SM_LINK_TYPE_METAPAGE', 2);
+define('SM_LINK_TYPE_IMAGE', 4);
+define('SM_LINK_TYPE_DOWNLOAD', 8);
+define('SM_LINK_TYPE_TAG', 16);
+define('SM_LINK_TYPE_EXTERNAL', 256);
+
+define('SM_LINK_SCOPE_NONE', 0);
+define('SM_LINK_SCOPE_INTERNAL', 1);
+define('SM_LINK_SCOPE_EXTERNAL', 2);
+
+define('SM_LINK_GET_TARGET_TITLE', 'SM_LINK_GET_TARGET_TITLE');
