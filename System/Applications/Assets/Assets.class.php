@@ -16,28 +16,21 @@ require_once 'XML/Serializer.php';
 
 class Assets extends SmartestSystemApplication{
 	
-	function __moduleConstruct(){
-		
-	}
-
-	function getAssetClasses($get){
+	public function getAssetClasses($get){
 		
 	}
 	
-	function getAssetTypes(){
+	public function getAssetTypes(){
 	
 		$this->setTitle("Asset Types");
-		$this->setFormReturnUri();//set the url of the page to be return to
+		$this->setFormReturnUri(); // set the url of the page to be return to
 		$assetTypes = $this->manager->getAssetTypes();
-		// print_r($assetTypes);
+		$this->send($assetTypes, "assetTypeCats");
 		
-		return array("assetTypeCats"=>$assetTypes);
 	}
 	
-	function addPlaceholder($get){
+	public function addPlaceholder($get){
 		
-		// $asset_class_types = $this->manager->getAssetTypes();
-		// print_r($asset_class_types);
 		$asset_class_types = SmartestDataUtility::getAssetClassTypes();
 		
 		$placeholder_name = SmartestStringHelper::toVarName($get['name']);
@@ -45,26 +38,18 @@ class Assets extends SmartestSystemApplication{
 		$this->send($placeholder_name, 'name');
 		$this->send($asset_class_types, 'types');
 		
-		// return array("types"=>$assetClassTypes, "name"=>$assetClassName);
 	}
 	
-	function addContainer($get){
-		
-		/* templateType = $this->manager->getTemplateAssetTypeId();
-		
-		$container = new SmartestContainer;
-		
-		$assetClassName = $get['name'];
-		
-		return array("type"=>$templateType, "name"=>$assetClassName); */
+	public function addContainer($get){
 		
 		$container_name = SmartestStringHelper::toVarName($get['name']);
 		
 		$this->send($container_name, 'name');
 		$this->send($asset_class_types, 'types');
+		
 	}
 	
-	function insertPlaceholder($get, $post){
+	public function insertPlaceholder($get, $post){
 		
 		$placeholder = new SmartestPlaceholder;
 		
@@ -85,13 +70,10 @@ class Assets extends SmartestSystemApplication{
 		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
 		}
 		
-		// print_r($placeholder);
-		// $id = $this->database->query("INSERT INTO AssetClasses (assetclass_name, assetclass_label, assetclass_assettype_id) VALUES ('".$get['assetclass_name']."', '".$get['assetclass_label']."', '".$get['assetclass_assettype_id']."')");
-		
 		$this->formForward();
 	}
 	
-	function insertContainer($get, $post){
+	public function insertContainer($get, $post){
 		
 		if($post['container_name']){
 		    $name = SmartestStringHelper::toVarName($post['container_name']);
@@ -112,13 +94,10 @@ class Assets extends SmartestSystemApplication{
 		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
 	    }
 		
-		// print_r($container);
-		// $id = $this->database->query("INSERT INTO AssetClasses (assetclass_name, assetclass_label, assetclass_assettype_id) VALUES ('".$get['assetclass_name']."', '".$get['assetclass_label']."', '".$get['assetclass_assettype_id']."')");
-		
 		$this->formForward();
 	}
 	
-	function getAssetTypeMembers($get){
+	public function getAssetTypeMembers($get){
 		
 		$code = strtoupper($get["asset_type"]);
 		
@@ -218,7 +197,7 @@ class Assets extends SmartestSystemApplication{
         
 	}
 	
-	function enterNewFileData($get, $post){
+	public function enterNewFileData($get, $post){
 	    
 	    $h = new SmartestAssetsLibraryHelper;
 	    $location_types = $h->getTypeCodesByStorageLocation();
@@ -248,7 +227,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 	
-	function createAssetsFromNewUploads($get, $post){
+	public function createAssetsFromNewUploads($get, $post){
 	    
 	    if(isset($post['new_files']) && is_array($post['new_files'])){
 	        $new_files = $post['new_files'];
@@ -274,7 +253,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 	
-	function addAsset($get){
+	public function addAsset($get){
 		
 		$asset_type = $get['asset_type'];
 		
@@ -338,7 +317,7 @@ class Assets extends SmartestSystemApplication{
 	}
 	
 	
-	function saveNewAsset($get, $post){
+	public function saveNewAsset($get, $post){
 	    
 	    if($this->getUser()->hasToken('create_assets')){
 	    
@@ -354,7 +333,6 @@ class Assets extends SmartestSystemApplication{
 		    
     		    $asset = new SmartestAsset;
     		    $asset->setType($asset_type);
-    		    // echo $post['input_mode'];
     		    $asset->setSiteId($this->getSite()->getId());
     		    $shared = $post['asset_shared'] ? 1 : 0;
     		    $asset->setShared($shared);
@@ -368,8 +346,6 @@ class Assets extends SmartestSystemApplication{
     		            $suffixes[] = $s['_content'];
     		        }
     		    }
-		    
-    		    // print_r($post);
 		    
     		    if($post['input_mode'] == 'direct'){
 		        
@@ -406,8 +382,6 @@ class Assets extends SmartestSystemApplication{
     		            SmartestLog::getInstance('site')->log('Neither a file name nor a string_id were provided when adding a new file.', SmartestLog::WARNING);
     		            $everything_ok = false;
     		        }
-		        
-    		        // $this->addUserMessage("\$filename: $filename; \$string_id: $string_id");
 		        
     		        $asset->setStringid($string_id);
 		        
@@ -457,11 +431,8 @@ class Assets extends SmartestSystemApplication{
     		        $raw_filename = $upload->getFileName();
     		        $filename = SmartestStringHelper::toSensibleFileName($raw_filename);
 		        
-    		        // print_r($_FILES);
-		        
     		        // give it hashed name for now and save it to disk
     		        $upload->setFileName(md5(microtime(true)).'.tmp');
-    		        // var_dump ($upload->save());
     		        $upload->save();
 		        
     		        $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.$upload->getFileName();
@@ -504,8 +475,6 @@ class Assets extends SmartestSystemApplication{
     		        $asset->setParameterDefaults($param_values);
     	        }
 		    
-    		    // print_r($asset);
-		    
     		    if($everything_ok){
     		        $asset->setCreated(time());
     		        $asset->save();
@@ -545,8 +514,8 @@ class Assets extends SmartestSystemApplication{
 
 		if($asset->hydrate($asset_id)){
 		    
-		    // echo 'hydrated';
-		    $data = $asset->__toArray(false, true); // don't include object, do include owner info
+		    // $data = $asset->__toArray(false, true); // don't include object, do include owner info
+		    $data = $asset;
 		    
 		    if(isset($data['type_info']['source-editable']) && SmartestStringHelper::toRealBool($data['type_info']['source-editable'])){
 		        $this->send(true, 'allow_source_edit');

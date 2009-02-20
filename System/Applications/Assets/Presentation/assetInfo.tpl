@@ -17,13 +17,13 @@
     {if $asset.created > 0}
     <tr>
       <td style="background-color:#fff" valign="top">Created:</td>
-      <td style="background-color:#fff" valign="top">{$asset.created}</span></td>
+      <td style="background-color:#fff" valign="top">{$asset.created|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
     </tr>
     {/if}
     {if $asset.modified > 0}
     <tr>
       <td style="background-color:#fff" valign="top">Modified:</td>
-      <td style="background-color:#fff" valign="top">{$asset.modified}</span></td>
+      <td style="background-color:#fff" valign="top">{$asset.modified|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
     </tr>
     {/if}
     <tr>

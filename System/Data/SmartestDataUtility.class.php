@@ -236,6 +236,31 @@ class SmartestDataUtility{
 	    }
 	}
 	
+	static function isValidPropertyName($string, $model=''){
+	    
+	    if((strlen($string) < 2) || is_numeric($string{0})){
+	        return false;
+	    }else{
+	        return true;
+	    }
+	    
+	    /*$get_function = 'get'.SmartestStringHelper::toCamelCase($string);
+	    
+	    if($model instanceof SmartestModel){
+	        $methods = get_class_methods(get_class($model));
+	    }else if(is_string($model && class_exists($model))){
+	        $methods = get_class_methods($model);
+	    } */
+	    
+	    // var_dump($check_against_model);
+	    
+	    /*if(in_array(SmartestStringHelper::toCamelCase($string), $class_names) || in_array(SmartestStringHelper::toConstantName($string), $constant_names)){
+	        return false;
+	    }else{
+	        return true;
+	    } */
+	}
+	
 	static function getDataTypesXmlData(){
 	    
 	    $file_path = SM_ROOT_DIR.'System/Core/Types/datatypes.xml';

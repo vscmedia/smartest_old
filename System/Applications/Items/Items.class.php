@@ -1717,30 +1717,41 @@ class Items extends SmartestSystemApplication{
 		$model = new SmartestModel;
 		$model->hydrate($model_id);
 		
-		$property = new SmartestItemProperty;
+		if(SmartestDataUtility::isValidPropertyName($new_property_name)){
 		
-		$property->setName($post['itemproperty_name']);
-		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
-		$property->setDatatype($post['itemproperty_datatype']);
-		$property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
+		    $property = new SmartestItemProperty;
 		
-		if(isset($post['foreign_key_filter'])){
-		    $property->setForeignKeyFilter($post['foreign_key_filter']);
-		}
+    		$property->setName($post['itemproperty_name']);
+    		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
+    		$property->setDatatype($post['itemproperty_datatype']);
+    		$property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
 		
-		$property->setItemClassId($model->getId());
-		$property->save();
+    		if(isset($post['foreign_key_filter'])){
+    		    $property->setForeignKeyFilter($post['foreign_key_filter']);
+    		}
+		
+    		$property->setItemClassId($model->getId());
+    		$property->save();
 	    
-	    SmartestCache::clear('model_properties_'.$model->getId(), true);
-	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
+    	    SmartestCache::clear('model_properties_'.$model->getId(), true);
+    	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
+    	    
+    	    SmartestLog::getInstance('site')->log("{$this->getUser()} added a property called $new_property_name to model {$model->getName()}.", SmartestLog::USER_ACTION);
 	    
-	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
+    	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
 	    
-	    if($post['continue'] == 'NEW_PROPERTY'){
-	        $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId().'&continue=NEW_PROPERTY');
-	    }else{
-	        $this->redirect('/datamanager/getItemClassProperties?class_id='.$model->getId());
-	    }
+	        if($post['continue'] == 'NEW_PROPERTY'){
+	            $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId().'&continue=NEW_PROPERTY');
+	        }else{
+	            $this->redirect('/datamanager/getItemClassProperties?class_id='.$model->getId());
+	        }
+	    
+        }else{
+            $this->addUserMessageToNextRequest("You must enter a valid property name.", SmartestUserMessage::WARNING);
+            SmartestLog::getInstance('site')->log("{$this->getUser()} tried to add a property called '$new_property_name' to model {$model->getName()}.", SmartestLog::WARNING);
+            SmartestLog::getInstance('system')->log("{$this->getUser()} tried to add a property called '$new_property_name' to model {$model->getName()}.", SmartestLog::ERROR);
+            $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId());
+        }
 
 	}
 	
@@ -1834,7 +1845,7 @@ class Items extends SmartestSystemApplication{
 		}
 	}
 	
-	public function getXmlTest($get){
+	/* public function getXmlTest($get){
 		$this->schemasManager = new SchemasManager();
 		$search_string = $get['search'];
 		$items = $this->manager->getItemsInClass($get["class_id"]);
@@ -1908,15 +1919,15 @@ class Items extends SmartestSystemApplication{
   
 		header('Content-type: text/plain'); 
 		die( $serializer->getSerializedData());		
-	}
+	} */
 	
-	public function importData($get){
+	/* public function importData($get){
 	    $class_id=$get["class_id"];
 	    $itemClass = $this->manager->getItemClass($get["class_id"]);
 	    return(array("itemClass"=>$itemClass));
-	}
+	} */
 
-	public function importDataAction($get,$post){
+	/* public function importDataAction($get,$post){
 	    
 	    $class_id=$post["class_id"];
 	    $indicator=$post["indicator"];
@@ -1941,15 +1952,15 @@ class Items extends SmartestSystemApplication{
 		}
 // print_r($fcontents[0]);
  	    return(array("properties_csv"=>$properties_csv,"properties"=>$formValues,"itemClass"=>$itemClass,"check"=>$indicator,"file"=>$file_name));
-	}
+	} */
 	
-	public function insertImportData($get,$post){
+	/* public function insertImportData($get,$post){
 	    
 	    $checkbox_true = array("TRUE","true","ON","On","on","1");
     	$class_id=$post['class_id'];
     	$check=$post['check_on_off'];
     	$file_name=$post['file_name'];
-    	$item_idex=$post['item_name'];/*print_r($post);*/
+    	$item_idex=$post['item_name'];//print_r($post);
     	$formValues=null;
     	$fcontents = file('System/Temporary/'.$file_name);
     	$p=sizeof($fcontents);
@@ -1994,9 +2005,10 @@ class Items extends SmartestSystemApplication{
 		}
 		
 	    @unlink('System/Temporary/'.$file_name);
-	}
+	} */
 	
 	public function duplicateItem($get){
+		
 		$id = mysql_real_escape_string($get['item_id']);
 		$class_id = mysql_real_escape_string($get['class_id']);
 		$item_details= $this->manager->getItemValues($id);
@@ -2011,14 +2023,14 @@ class Items extends SmartestSystemApplication{
 		$item_id = $this->manager->setItemname($this->_string->random(32),$item_slung,$class_id,$item_name,$item_public);
 
 		foreach($itemspropertyvalues as $p){
-		$property_id=mysql_real_escape_string($p['itemproperty_id']);	
-		$content =mysql_real_escape_string($p['itempropertyvalue_content']);	
-		$this->manager->setItemPropertyValues($item_id,$property_id,$content);
+		    $property_id=mysql_real_escape_string($p['itemproperty_id']);	
+		    $content =mysql_real_escape_string($p['itempropertyvalue_content']);	
+		    $this->manager->setItemPropertyValues($item_id,$property_id,$content);
 		}
 
 	}
 	
-	public function exportData($get){
+	/* public function exportData($get){
 	    $class_id=$get["class_id"];
     	$schema_id=$get["schema_id"];
     	$itemClass = $this->manager->getItemClass($class_id);
@@ -2085,7 +2097,7 @@ class Items extends SmartestSystemApplication{
 		
 		header('Content-type: text/xml'); 
 		die( $serializer->getSerializedData());	
-	}
+	} */
 	
 	public function addSet($get){
 		$this->redirect("/sets/addSet?model_id=".$get['class_id']);
