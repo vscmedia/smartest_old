@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <controller xmlns="http://users.visudo.com/eddie/PHP-Controller" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://users.visudo.com/eddie/PHP-Controller controller.xsd">
+  
   <modules>Applications/:System/Applications/</modules>
   <catch-all>false</catch-all>
-	<domain-path></domain-path>
-  
-  <!--<authentication>
-    <name>authentication</name> 
-    <class>Authentication</class>
-    <template>Authentication</template>
-    <login-forward method-name="login">pages</login-forward>
-    <logout-forward method-name="logout">authentication</logout-forward>    
-  </authentication>-->
-	
-<!-- /////////////////////////// ADD CUSTOM MODULES HERE //////////////////////////// -->
+	<domain-path>%DOMAIN%</domain-path>
 
   <namespace>
     <name>html</name>

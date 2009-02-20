@@ -11,6 +11,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
         // transfer messages left over from the last request.
 		
 		if(SmartestSession::get('user:isAuthenticated')){
+		    
 		    if(SmartestCache::hasData('user:messages:nextRequest:'.$this->getUser()->getId(), true) && is_array(SmartestCache::load('user:messages:nextRequest:'.$this->getUser()->getId(), true))){
 		        $this->_userMessages = SmartestCache::load('user:messages:nextRequest:'.$this->getUser()->getId(), true);
 		    }

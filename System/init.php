@@ -2,7 +2,7 @@
 
 // set up required paths and environmental constants
 
-define('SM_INFO_REVISION_NUMBER', 171);
+define('SM_INFO_REVISION_NUMBER', 173);
 define('SM_INFO_VERSION_NUMBER', '0.3.5');
 
 class SmartestInit{

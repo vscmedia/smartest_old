@@ -78,23 +78,19 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		
 		/////////////// MANAGERS CODE WILL BE DEPRECATED SOON - FUNCTIONALITIES IN MANAGERS ARE BEING MOVED TO HELPERS ////////////////
 		// Detect to see if manager classes exist and initiate them, if configured to do so
-		$managerClassFile = SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php";
+		$managerClassFile = SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php";
 		$managerClass = SM_CONTROLLER_CLASS."Manager";
 		
 		define("SM_MANAGER_CLASS", $managerClass);
 		
-		if(@is_file(SM_ROOT_DIR.SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php")){
+		if(@is_file(SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php")){
 		
-			define("SM_MANAGER_CLASS_FILE", SM_SYSTEM_MANAGERS_DIR.SM_CONTROLLER_CLASS."Manager.class.php");
+			define("SM_MANAGER_CLASS_FILE", SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php");
 			include_once(SM_MANAGER_CLASS_FILE);
 		
 			if(class_exists(SM_MANAGER_CLASS)){
 				
-				if(SM_OPTIONS_MANAGERS_GET_AUTO_DB){
-					$this->manager = new $managerClass($this->database);
-				}else{
-					$this->manager = new $managerClass();
-				}
+				$this->manager = new $managerClass($this->database);
 				
 			}
 			
@@ -107,11 +103,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 				
 				if(class_exists(SM_MANAGER_CLASS)){
 				
-					if(SM_OPTIONS_MANAGERS_GET_AUTO_DB){
-						$this->manager = new $managerClass($this->database);
-					}else{
-						$this->manager = new $managerClass();
-					}
+					$this->manager = new $managerClass($this->database);
 				
 				}
 			

@@ -110,7 +110,7 @@ class SmartestResponse{
 	
 	var $userInterfaceTemplate;
 	
-	function __construct(){
+	public function __construct(){
 		
 		// These files can't be included using the include optimisation because it depends on their already having been included
 		require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
@@ -136,21 +136,6 @@ class SmartestResponse{
         
         /// This neds more compatibility work as it breaks on newer servers
         
-        /* try{
-            
-            // gather SVN data
-            $in_svn_working_directory = file_exists(SM_ROOT_DIR . ".svn");
-    	    define('SM_SVN_IN_REPOSITORY', $in_svn_working_directory);
-    	    $svn_data = SmartestXmlHelper::loadFile(SM_ROOT_DIR . ".svn/entries");
-    	    define('SM_SVN_REVISION_NUMBER', $raw_data['entry'][0]['revision']);
-    	    $last_updated = filemtime(SM_ROOT_DIR . ".svn/entries");
-            define('SM_SVN_LAST_UPDATED', $last_updated);
-            
-        }catch(SmartestException $e){
-            $this->error($e->getMessage());
-            $this->errorStack->display();
-        } */
-
         SmartestFileSystemHelper::include_group(
 
         	'System/Response/SmartestUserMessage.class.php',
@@ -165,34 +150,29 @@ class SmartestResponse{
         	'System/Data/SmartestCmsItem.class.php',
         	'System/Data/SmartestFile.class.php',
         	'System/Base/Exceptions/SmartestWebPageBuilderException.class.php',
-        	'System/Base/Exceptions/SmartestInterfaceBuilderException.class.php',
-        	'System/Base/SmartestUpdater.class.php'
+        	'System/Base/Exceptions/SmartestInterfaceBuilderException.class.php'
 
         );
         
         SmartestDataUtility::loadTypeObjects();
         
+        SmartestFileSystemHelper::include_group(
+            'System/Response/SmartestLog.class.php',
+        	'System/Response/SmartestLogType.class.php'
+        );
+        
         try{
-		    SmartestInstallationStatusHelper::checkStatus();
+            SmartestInstallationStatusHelper::checkStatus();
 	    }catch(SmartestNotInstalledException $e){
-	        require SM_ROOT_DIR.'System/Install/SmartestInstaller.class.php';
+	        if(!class_exists('SmartestInstaller')){
+	            require SM_ROOT_DIR.'System/Install/SmartestInstaller.class.php';
+            }
+	        require SM_ROOT_DIR.'System/Install/Screens/index.php';
+	        exit;
 	    }
 	    
-	    // var_dump(SmartestCache::load('installation_status', true));
-        
-        /* try{
-            SmartestUpdater::run();
-        }catch(SmartestException $e){
-            $this->error($e->getMessage());
-            $this->errorStack->display();
-        } */
+	    SmartestFileSystemHelper::include_group(
 
-        // include SM_ROOT_DIR.'Libraries/Plugins/SmartestXml/SmartestXmlSerializer.class.php';
-
-        SmartestFileSystemHelper::include_group(
-
-        	'System/Response/SmartestLog.class.php',
-        	'System/Response/SmartestLogType.class.php',
         	'System/Data/DataQuery.class.php',
         	'System/Data/SmartestQuery.class.php',
         	'System/Data/SmartestQueryResultSet.class.php',
@@ -246,13 +226,11 @@ class SmartestResponse{
 		
 	}
 	
-	function init(){
+	public function init(){
 		
-		@session_start();
+		session_start();
 		
-		// $this->_log("Session started");
-		
-		SmartestPersistentObject::set('errors:stack', $this->errorStack);
+	    SmartestPersistentObject::set('errors:stack', $this->errorStack);
 		SmartestPersistentObject::set('centralDataHolder', new SmartestResponseDataHolder);
 		
 		$this->checkRequiredExtensionsLoaded();
@@ -268,26 +246,26 @@ class SmartestResponse{
 		}
 		
 		// load user-defined options
-		try{
+		/*try{
 			$this->userOptions = $this->configuration->getUserOptions();
 		} catch(SmartestException $e){
 			$this->errorFromException($e);
-		}
+		}*/
 		
 		// load system-essential settings
 		// this will probably be moved to sqlite
-		try{
+		/*try{
 			$this->systemOptions = $this->configuration->getSystemOptions();
 		} catch(SmartestException $e){
 			$this->errorFromException($e);
-		}
+		}*/
 		
 		// load measuring units
-		try{
+		/*try{
 			$this->measuringUnits = $this->configuration->getMeasuringUnits();
 		} catch(SmartestException $e){
 			$this->errorFromException($e);
-		}
+		}*/
 		
 		$this->_log("System settings and options loaded.");
 		
@@ -342,12 +320,12 @@ class SmartestResponse{
 		
 	}
 	
-	function error($message="", $type=100){
+	private function error($message="", $type=100){
 	    $e = new SmartestException($message, $type);
     	$this->errorStack->recordError($e, false);
     }
     
-    function errorFromException($e){
+    private function errorFromException($e){
         $this->errorStack->recordError($e, false);
     }
     
@@ -355,9 +333,9 @@ class SmartestResponse{
 	
 	function isSystemClass(){
 		
-		// var_dump(constant("SM_SYSTEM_RESERVED_CLASSES"));
+		$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
 		
-		$reservedClassNames = explode(",", constant("SM_SYSTEM_RESERVED_CLASSES"));
+		$reservedClassNames = $sd['system']['reserved_classes'];
 		
 		if(in_array($this->controller->getClassName(), $reservedClassNames)){
 			if(!defined("SM_SYSTEM_IS_BACKEND_MODULE")){
@@ -374,9 +352,7 @@ class SmartestResponse{
 		}
 	}
 	
-	function build(){
-		
-		// require_once(SM_ROOT_DIR.'System/Templating/SmartyManager.class.php');
+	public function build(){
 		
 		$this->_log("Starting presentation layer...");
 		
@@ -385,8 +361,6 @@ class SmartestResponse{
 		}else{
 		    $templateLayerContext = 'Normal';
 		}
-		
-		// echo $templateLayerContext;
 		
 		$smarty_manager = new SmartyManager($templateLayerContext);
 		
@@ -495,10 +469,6 @@ class SmartestResponse{
 	    
 	    if($this->isSystemClass() && !in_array($this->controller->getMethodName(), $this->publicMethodNames)){
 		    
-		    // echo 'restricted';
-		    // print_r(SmartestPersistentObject::get('user'));
-			// var_dump($this->authentication->getUserIsLoggedIn());
-		    
 		    if(!$this->authentication->getUserIsLoggedIn()){
 				if(SM_CONTROLLER_URL != "smartest/login"){
 					$new_url = $this->controller->getDomain()."smartest/login?from=/".SM_CONTROLLER_URL;
@@ -506,8 +476,6 @@ class SmartestResponse{
 					if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING'])){
 						$new_url .= '&'.$_SERVER['QUERY_STRING'];
 					}
-					
-					// echo $new_url;
 					
 					$e = new SmartestException('The user must be logged in to see this page.');
 					$e->setRedirectUrl($new_url);
@@ -518,9 +486,11 @@ class SmartestResponse{
 		}
 	}
 	
-	function initializeTemplates(){
+	protected function initializeTemplates(){
 		
 		define('SM_CONTROLLER_MODULE_PRES_DIR', SM_CONTROLLER_MODULE_DIR.'Presentation/');
+		$sc = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+		define('SM_SYSTEM_SYS_TEMPLATES_DIR', $sc['system']['places']['templates_dir']);
 		
 		$user_interface = (strlen($this->method)) ? SM_CONTROLLER_MODULE_DIR.'Presentation/'.SM_CONTROLLER_METHOD.".tpl" : null;
 			
@@ -582,9 +552,6 @@ class SmartestResponse{
 		
 		$needed_files = array(
 			"Main Controller XML" => SM_ROOT_DIR."Configuration/controller.xml",
-			"System Configuration File" => SM_ROOT_DIR."Configuration/system.ini",
-			"Options Configuration File" => SM_ROOT_DIR."Configuration/options.ini",
-			"Smarty Configuration File" => SM_ROOT_DIR."Configuration/smarty.ini",
 			"Database Configuration File" => SM_ROOT_DIR."Configuration/database.ini"
 		);
 		

@@ -61,6 +61,10 @@ class SmartestParameterHolder implements ArrayAccess{
         }
     }
     
+    public function hasData(){
+        return (bool) count($this->_data);
+    }
+    
     public function getSimpleObject(){
         $o = new stdClass;
         foreach($this->_data as $n => $v){

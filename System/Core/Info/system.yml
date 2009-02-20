@@ -1,0 +1,24 @@
+system:
+  reserved_classes:
+    - Assets
+    - CmsFrontEnd
+    - Dropdowns
+    - Desktop
+    - Items
+    - Login
+    - MetaData
+    - Pages
+    - Sets
+    - Templates
+    - Vocabulary
+    - Feed
+    - Schemas
+    - Settings
+    - XmlData
+  smarty_config:
+    default_templates_dir: Presentation/
+    templates_cache: System/Cache/Smarty/
+    cache: System/Cache/Smarty/
+    config: Configuration/
+  places:
+    templates_dir: System/Presentation/

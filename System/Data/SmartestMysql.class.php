@@ -31,25 +31,32 @@ class SmartestMysql{
 	protected $retrievalQueryTypes = array('SELECT', 'SHOW');
 	protected $log = array();
 	
-	// protected $remember_password;
-  
 	public function __construct(SmartestParameterHolder $dbconfig){
 	    
 	    $this->connection_config = $dbconfig;
 	    
-	    if($this->dblink = @mysql_connect($this->connection_config['server'], $this->connection_config['username'], $this->connection_config['password'])){
+	    if($this->dblink = @mysql_connect($this->connection_config['host'], $this->connection_config['username'], $this->connection_config['password'])){
 			
 			$this->queryHistory = array();
 			$this->rawQuery("SET NAMES 'utf8'");
 			
 			if(!mysql_select_db($this->connection_config['database'], $this->dblink)){
-			    throw new SmartestDatabaseException("Could not select DB: ".$database.". ".mysql_error($this->dblink), SmartestDatabaseException::SPEC_DB_ACCESS_DENIED);
+			    echo 'Access Denied to DB '.$this->connection_config['database'];
+			    $e = new SmartestDatabaseException("Could not select DB: ".$database.". ".mysql_error($this->dblink), SmartestDatabaseException::SPEC_DB_ACCESS_DENIED);
+			    $e->setUsername($this->connection_config['username']);
+			    $e->setHost($this->connection_config['host']);
+			    $e->setDatabase($this->connection_config['database']);
+			    throw $e;
 			}
 			
 			$this->lastQuery = "No queries made yet.";
 			
 		}else{
-			throw new SmartestDatabaseException("Could not connect to MySQL.", SmartestDatabaseException::CONNECTION_IMPOSSIBLE);
+		    $e = new SmartestDatabaseException("Could not connect to MySQL.", SmartestDatabaseException::CONNECTION_IMPOSSIBLE);
+			$e->setUsername($this->connection_config['username']);
+		    $e->setHost($this->connection_config['host']);
+		    $e->setDatabase($this->connection_config['database']);
+			throw $e;
 		}
 	}
 	
@@ -58,12 +65,16 @@ class SmartestMysql{
 	}
 	
 	protected function reconnect(){
-        if($this->dblink = @mysql_connect($this->connection_config['server'], $this->connection_config['username'], $this->connection_config['password'])){
+        if($this->dblink = @mysql_connect($this->connection_config['host'], $this->connection_config['username'], $this->connection_config['password'])){
 			$this->rawQuery("SET NAMES 'utf8'");
 			if(mysql_select_db($this->connection_config['database'], $this->dblink)){
 			    return true;
 			}else{
-			    throw new SmartestDatabaseException("Could not select DB: ".$database.". ".mysql_error($this->dblink), SmartestDatabaseException::SPEC_DB_ACCESS_DENIED);
+			    $e = new SmartestDatabaseException("Could not select DB: ".$database." while trying to reconnect.".mysql_error($this->dblink), SmartestDatabaseException::SPEC_DB_ACCESS_DENIED);
+			    $e->setUsername($this->connection_config['username']);
+    		    $e->setHost($this->connection_config['host']);
+    		    $e->setDatabase($this->connection_config['database']);
+			    throw $e;
 			}
 		}else{
 			return false;
@@ -74,12 +85,10 @@ class SmartestMysql{
 	    return $this->connection_config['short_name'];
 	}
 	
-	public function getTables(){
+	public function getTables($refresh=false){
 		
 		$sql = "SHOW TABLES FROM ".$this->connection_config['database'];
-		
-		$tables = $this->queryToArray($sql);
-		
+		$tables = $this->queryToArray($sql, $refresh);
 		$table_names = array();
 		
 		foreach($tables as $tr){
@@ -90,22 +99,18 @@ class SmartestMysql{
 		
 	}
 	
-	public function getColumns($table){
+	public function getColumns($table, $refresh=false){
 		
 		$sql = "SHOW COLUMNS FROM `".$table.'`';
-		
-		$columns = $this->queryToArray($sql);
-		
+		$columns = $this->queryToArray($sql, $refresh);
 		return $columns;
 		
 	}
 	
-	public function getColumnNames($table){
+	public function getColumnNames($table, $refresh=false){
 		
 		$sql = "SHOW COLUMNS FROM `".$table."`";
-
-		$columns = $this->queryToArray($sql);
-		
+        $columns = $this->queryToArray($sql, $refresh);
 		$names = array();
 		
 		foreach($columns as $column){
@@ -120,8 +125,8 @@ class SmartestMysql{
 	    if(!$this->dblink && !$this->reconnect()){
 	        throw new SmartestDatabaseException("Lost connection to to MySQL database and could not reconnect", SmartestDatabaseException::LOST_CONNECTION);
         }else{
+	        
 	        $result = mysql_query($querystring, $this->dblink);
-    	    // var_dump($result);
     	    $this->recordLiveQuery($querystring);
     	    
     		if($result){
@@ -224,7 +229,6 @@ class SmartestMysql{
 	protected function loadQueryDataFromCache($query){
 	    
 	    $hash = $this->getHashFromQuery($query);
-	    
 	    $cache_name = 'smartest_mysql_cached_result'.$hash;
 	    
 	    if(SmartestCache::hasData($cache_name, true)){
@@ -267,8 +271,8 @@ class SmartestMysql{
 		}
 	    
 		$query = "SELECT $wantedField, $qualifyingField FROM $table WHERE $qualifyingField='$qualifyingValue' LIMIT 1";
+		
 		if($result = $this->rawQuery($query)){
-			// $this->recordQuery($query);
 			$value = @mysql_result($result, 0, $wantedField);
 			return $value;
 		}
@@ -322,7 +326,10 @@ class SmartestMysql{
 	
 	protected function recordLiveQuery($querystring){
 		
-		if(strlen(@mysql_error($this->dblink)) > 0){
+		if(strlen(mysql_error($this->dblink)) > 0){
+			
+			$errno = mysql_errno($this->dblink);
+			$error = mysql_error($this->dblink);
 			
 			$error = "MySQL ERROR ".@mysql_errno($this->dblink) . ": " . @mysql_error($this->dblink);
 			
@@ -333,6 +340,9 @@ class SmartestMysql{
 			    foreach($e->getTrace() as $event){
 			        if($event['function'] == 'queryToArray' || $event['function'] == 'rawQuery'){
 			            $e->setMessage($e->getMessage().'. Query: <code>'.$querystring.'</code> in '.$event['file'].' on line '.$event['line'].'.');
+			            $e->setQuery($querystring);
+			            $e->setClientErrorMessage($error);
+			            $e->setClientErrorId($errno);
 			            break;
 			        }
 			    
@@ -380,8 +390,16 @@ class SmartestMysql{
 	public function executeSqlFile($full_file_path){ 
 	    if(SmartestFileSystemHelper::isSafeFileName($full_file_path, SM_ROOT_DIR.'System/Install/SqlScripts/')){
 	        
+	        $sql = str_replace("\n", '', file_get_contents($full_file_path));
+	        preg_match_all('/(CREATE|SHOW|DROP|DELETE|SELECT|INSERT|UPDATE|ALTER|GRANT)\s.+?;/i', $sql, $matches, PREG_PATTERN_ORDER);
+	        $queries = $matches[0];
+	        
+	        foreach($queries as $q){
+	            $this->rawQuery($q);
+	        }
+	        
 	    }else{
-	        throw new SmartestDatabaseException("The file ".$full_file_path." is outside the permitted storage area for SQL files: ".SM_ROOT_DIR.'System/Install/SqlScripts/', INVALID_SQL_FILE_STORAGE_DIR);
+	        throw new SmartestDatabaseException("The file ".$full_file_path." is outside the permitted storage area for SQL files: ".SM_ROOT_DIR.'System/Install/SqlScripts/', SmartestDatabaseException::INVALID_SQL_FILE_STORAGE_DIR);
 	    }
 	}
 	

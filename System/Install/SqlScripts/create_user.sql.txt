@@ -1,0 +1,4 @@
+TRUNCATE TABLE Users;
+INSERT INTO Users (user_id, username, password, user_firstname, user_lastname, user_email) VALUES (1, '%USERNAME%', '%PASSWORD%', '%FIRSTNAME%', '%LASTNAME%', '%EMAIL%');
+INSERT INTO Users (user_id, username, password, user_firstname) VALUES (0, 'Smartest', 'x', 'Smartest');
+UPDATE `Users` SET `user_id` = '0' WHERE `username`='smartest' LIMIT 1;

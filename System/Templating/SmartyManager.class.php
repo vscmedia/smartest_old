@@ -31,12 +31,13 @@ class SmartyManager{
 	private $smartyObj;
 	
 	public function __construct($context=null){
-		if($this->options = parse_ini_file(SM_ROOT_DIR.'Configuration/smarty.ini')){
+		if($options = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml")){
+		    $this->options = $options['system']['smarty_config'];
 			if($context){
 			    $this->context = $context;
 			}
 		}else{
-			throw new SmartestException("Config file ".SM_ROOT_DIR.'Configuration/smarty.ini'." could not be parsed.", 104);
+			throw new SmartestException("Config file ".SM_ROOT_DIR.'System/Core/Info/system.yml'." could not be parsed.", 104);
 		}
 	}
 

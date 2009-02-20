@@ -6,7 +6,7 @@ class SmartestHelper{
 	
 		// echo 'Registering Helper: '.$helper_name.'<br />';
 	
-		if(SmartestCache::hasData('smartest_registered_helpers', true)){
+		/* if(SmartestCache::hasData('smartest_registered_helpers', true)){
 			$registered_helpers = SmartestCache::load('smartest_registered_helpers', true);
 		}else{
 			$registered_helpers = array();
@@ -16,15 +16,15 @@ class SmartestHelper{
 			$registered_helpers[] = $helper_name;
 			sort($registered_helpers);
 			SmartestCache::save('smartest_registered_helpers', $registered_helpers, -1, true);
-		}
+		} */
 	}
 	
 	static function getRegisteredHelpers(){
-		if(SmartestCache::hasData('smartest_registered_helpers', true)){
-			return SmartestCache::load('smartest_registered_helpers', true);
-		}else{
+		// if(SmartestCache::hasData('smartest_registered_helpers', true)){
+		//	return SmartestCache::load('smartest_registered_helpers', true);
+		//}else{
 			return array();
-		}
+		//}
 	}
 	
 	static function isLoaded($helper_name){
@@ -150,7 +150,9 @@ class SmartestHelper{
 		    
 			file_put_contents(SM_ROOT_DIR.'System/Cache/Includes/SmartestSystemHelpers.cache.php', $singlefile);
 			
-			SmartestCache::save('smartest_system_helpers_hash', $system_helper_cache_hash, -1, true);
+			if(is_writable(SM_ROOT_DIR.'System/Cache/Data/' || defined('SM_INSTALLATION_STATUS_CHECKED'))){
+			    SmartestCache::save('smartest_system_helpers_hash', $system_helper_cache_hash, -1, true);
+		    }
 			
 		}
 		

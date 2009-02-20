@@ -23,4 +23,11 @@
     <format>%TIMESTAMP%: (%LEVEL%) %MESSAGE%</format>
   </log>
   
+  <log id="SM_LOG_INSTALL">
+    <name>installer</name>
+    <description>Default log, used in cases of ambiguity</description>
+    <file>System/Logs/install.log</file>
+    <format>%TIMESTAMP%: (%LEVEL%) %MESSAGE%</format>
+  </log>
+  
 </logs>

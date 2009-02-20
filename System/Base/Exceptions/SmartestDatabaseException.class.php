@@ -11,6 +11,12 @@ class SmartestDatabaseException extends SmartestException{
     const INVALID_CONNECTION_NAME = 32;
     
     protected $_db_error_type;
+    protected $_username;
+    protected $_database;
+    protected $_host;
+    protected $_query;
+    protected $_client_error_message;
+    protected $_client_error_id;
     
     public function __construct($message, $mysql_message=0){
         parent::__construct($message, SM_ERROR_DATABASE);
@@ -19,6 +25,54 @@ class SmartestDatabaseException extends SmartestException{
     
     public function getDbErrorType(){
         return $this->_db_error_type;
+    }
+    
+    public function getUsername(){
+        return $this->_username;
+    }
+    
+    public function setUsername($u){
+        $this->_username = $u;
+    }
+    
+    public function getDatabase(){
+        return $this->_database;
+    }
+    
+    public function setDatabase($d){
+        $this->_database = $d;
+    }
+    
+    public function getHost(){
+        return $this->_host;
+    }
+    
+    public function setHost($h){
+        $this->_host = $h;
+    }
+    
+    public function setQuery($q){
+        $this->_query = $q;
+    }
+    
+    public function getQuery(){
+        return $this->_query;
+    }
+    
+    public function setClientErrorMessage($m){
+        $this->_client_error_message = $m;
+    }
+    
+    public function getClientErrorMessage(){
+        return $this->_client_error_message;
+    }
+    
+    public function setClientErrorId($id){
+        $this->_client_error_id = $id;
+    }
+    
+    public function getClientErrorId(){
+        return $this->_client_error_id;
     }
     
 }
