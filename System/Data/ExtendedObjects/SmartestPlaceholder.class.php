@@ -88,8 +88,6 @@ class SmartestPlaceholder extends SmartestAssetClass{
             
             $sql = "SELECT * FROM Assets WHERE asset_type IN (";
             
-            // var_dump($types);
-            
             foreach($types as $key => $t){
                 
                 if($key > 0){
@@ -100,7 +98,7 @@ class SmartestPlaceholder extends SmartestAssetClass{
                 
             }
             
-            $sql .= ')';
+            $sql .= ') AND asset_deleted = 0';
             
             if(is_numeric($site_id)){
                 $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared='1')";
@@ -108,13 +106,9 @@ class SmartestPlaceholder extends SmartestAssetClass{
             
             $sql .= ' ORDER BY asset_stringid';
             
-            // echo $sql;
-            
             $result = $this->database->queryToArray($sql);
             $official_types = SmartestDataUtility::getAssetTypes();
             $assets = array();
-            
-            // echo $sql;
             
             foreach($result as $raw_asset){
                 

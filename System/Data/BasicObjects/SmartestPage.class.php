@@ -379,6 +379,8 @@ class SmartestPage extends SmartestBasePage{
 	    
 	    $children = $this->getPageChildren();
 	    
+	    // print_r(count($children));
+	    
 	    if(count($children)){
 	        
 	        $order_index = 0;
@@ -386,7 +388,9 @@ class SmartestPage extends SmartestBasePage{
 	        foreach($children as $p){
 	            
 	            if(!SmartestStringHelper::toRealBool($p->getDeleted())){
-	            
+	                
+	                // echo $order_index;
+	                
 	                $p->setOrderIndex($order_index);
 	                $p->save();
 	                

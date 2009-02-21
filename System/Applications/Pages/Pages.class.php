@@ -499,8 +499,10 @@ class Pages extends SmartestSystemApplication{
 	}
 	
 	public function movePageUp($get){
+	    
 	    $page_webid = $get['page_id'];
 	    $page = new SmartestPage();
+	    $page->setDraftMode(true);
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        $page->moveUp();
@@ -514,8 +516,10 @@ class Pages extends SmartestSystemApplication{
 	}
 	
 	public function movePageDown($get){
+	    
 	    $page_webid = $get['page_id'];
 	    $page = new SmartestPage();
+	    $page->setDraftMode(true);
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        $page->moveDown();
@@ -1879,9 +1883,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $this->setTitle('Define Placeholder');
 	    
-	    // print_r($types_array);
-        
-        $page = new SmartestPage;
+	    $page = new SmartestPage;
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        
@@ -1923,8 +1925,6 @@ class Pages extends SmartestSystemApplication{
 	                $existing_render_data = array();
 	            }
 	            
-	            // print_r($definition);
-	            
 	            $this->send($is_defined, 'is_defined');
                 
                 $asset = new SmartestAsset;
@@ -1946,7 +1946,7 @@ class Pages extends SmartestSystemApplication{
         	    
         	    if($chosen_asset_exists){
         	        
-        	        $this->send($asset->__toArray(), 'asset');
+        	        $this->send($asset, 'asset');
         	        
         	        $type = $types_array[$asset->getType()];
         	        
@@ -2004,7 +2004,7 @@ class Pages extends SmartestSystemApplication{
 	            $assets = $placeholder->getPossibleAssetsAsArrays();
 	            
 	            $this->send($assets, 'assets');
-	            $this->send($page->__toArray(), 'page');
+	            $this->send($page, 'page');
 	            $this->send($placeholder->__toArray(), 'placeholder');
 	            
 	        }
