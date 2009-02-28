@@ -142,6 +142,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
 		$page_webid = $get['page_id'];
 		
+		$this->lookupSiteDomain();
+		
 		// if(is_object($this->_site)){
 		    
 		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){
