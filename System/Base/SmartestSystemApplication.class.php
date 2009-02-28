@@ -72,7 +72,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	
 	protected function requireToken($token){
 	    if(!$this->getUser()->hasToken($token)){
-	        $this->addUserMessageToNextRequest('You do not have sufficient access privileges for that action.');
+	        $this->addUserMessageToNextRequest('You do not have sufficient access privileges for that action.', SM_USER_MESSAGE_ACCESS_DENIED);
 	        $this->redirect('/smartest');
 	    }
 	}
@@ -179,7 +179,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
     	}
     	
     	if(!$type){
-    		$type = 106;
+    		$type = SM_ERROR_USER;
     	}
     	
     	$this->_errorStack->recordError($message, $type, true);

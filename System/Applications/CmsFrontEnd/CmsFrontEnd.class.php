@@ -7,15 +7,25 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	protected $_site;
 	protected $_page;
 	
-	function __moduleConstruct(){
+	protected function __moduleConstruct(){
 		
-		// look up site by domain
-		$this->_site = $this->manager->getSiteByDomain($_SERVER['HTTP_HOST']);
 		
-		if(is_object($this->_site)){
-		    define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
-		}
 		
+	}
+	
+	protected function lookupSiteDomain(){
+	    
+	    // look up site by domain
+		if($this->_site = $this->manager->getSiteByDomain($_SERVER['HTTP_HOST'])){
+		
+		    if(is_object($this->_site)){
+		        define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+		    }
+		    
+		    return true;
+		
+	    }
+	    
 	}
 	
 	public function getPage(){
@@ -24,8 +34,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function renderPageFromUrl(){
 		
-		if(is_object($this->_site)){
-		    
+		if($this->lookupSiteDomain()){
+		
 		    if(!strlen($this->url)){
 		        
 		        // this is the home page
@@ -66,7 +76,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function renderPageFromId($get){
 		
-		if(is_object($this->_site)){
+		if($this->lookupSiteDomain()){
 		    
 		    if(isset($get['tag_name'])){
 		        
@@ -96,13 +106,13 @@ class CmsFrontEnd extends SmartestSystemApplication{
     		    
     		    $page_webid = $get['page_id'];
     		    
-    		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, $this->_site->getId())){
+    		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, false, $this->_site()->getDomain())){
 		        
 		            // we are viewing a static page
 		            // $this->send($this->_page, '_page');
 		            $this->renderPage();
 		        
-		        }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], $this->_site->getId())){
+		        }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], false, $this->_site->getDomain())){
 		        
 		            // we are viewing a meta-page (based on an item from a data set)
 		            // $this->send($this->_page, '_page');
@@ -132,15 +142,15 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
 		$page_webid = $get['page_id'];
 		
-		if(is_object($this->_site)){
+		// if(is_object($this->_site)){
 		    
-		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, $this->_site->getId(), true)){
+		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){
 		        
 		        // $this->send($this->_page, '_page');
 		        $this->_page->setDraftMode(true);
 		        $this->renderPage(true);
 		        
-		    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], $this->_site->getId(), true)){
+		    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], true)){
 		        
 		        // we are viewing a meta-page (based on an item from a data set)
 		        // $this->send($this->_page, '_page');
@@ -156,12 +166,12 @@ class CmsFrontEnd extends SmartestSystemApplication{
         	
         	return Quince::NODISPLAY;
 		    
-	    }else{
+	    /* }else{
         	    
         	include SM_ROOT_DIR."System/Response/ErrorPages/nosuchdomain.php";
         	exit;
         	    
-        }
+        } */
 		
 	}
 	

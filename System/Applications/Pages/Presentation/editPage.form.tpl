@@ -109,7 +109,7 @@
       
   	  {if !empty($pageurls)}
   	  {foreach from=$pageurls item=pageurl}
-  	  {capture name="pageUrl" assign="pageUrl"}http://{$site.domain}/{$pageurl.url}{/capture}
+  	  {capture name="pageUrl" assign="pageUrl"}http://{$site.domain}{$domain}{$pageurl.url}{/capture}
   	  <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
   	    <td>
   		    <div style="display:inline" id="siteDomainField_{$pageurl.id}">
@@ -120,7 +120,7 @@
   		    {if $count > 1 || $ishomepage == "true"}<input type="button" name="delete" value="Delete" onclick="if(confirm('Are you sure you want to delete this URL?')) window.location='{$domain}{$section}/deletePageUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage};'"/>{/if}</td></tr> 
       {/foreach}
 	    {else}
-      {capture name="defaultUrl" assign="defaultUrl"}http://{$site.domain}/website/renderPageFromId?page_id={$pageInfo.webid}{/capture}
+      {capture name="defaultUrl" assign="defaultUrl"}http://{$site.domain}{$domain}website/renderPageFromId?page_id={$pageInfo.webid}{/capture}
       <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
         <td>
           <div style="display:inline" id="siteDomainField">

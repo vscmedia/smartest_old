@@ -408,8 +408,9 @@ class SmartestResponse{
 		
 		$this->template = $this->controller->getTemplateName();
 		
-		$this->url = $this->getUrl();
-		$this->controller->addProperty('url', $this->url);
+		// $this->url = $this->getUrl();
+		// echo $this->controller->getControllerUrlRequest();
+		$this->controller->addProperty('url', $this->controller->getControllerUrlRequest());
 		
 		$this->isSystemClass();
 		
@@ -654,7 +655,7 @@ class SmartestResponse{
 		}
 	}
 	
-	function getUrl(){
+/*	function getUrl(){
 		
 		$actual = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
 		
@@ -662,14 +663,14 @@ class SmartestResponse{
 		
 		$remaining = "/".substr($actual, strlen($controller_url));
 		
-		$getUrl = preg_match("/^\/([^\?]+)\??.*/i", $remaining, $matches);
+		$getUrl = preg_match("/^\/([^\?]+)\??.*"."/i", $remaining, $matches);
 		
 		if(isset($matches[1])){
 			return $matches[1];
 		}else{
 			return null;
 		}
-	}
+	} */
 	
 	function prepareContent(){
 		

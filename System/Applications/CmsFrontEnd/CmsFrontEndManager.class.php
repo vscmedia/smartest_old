@@ -6,11 +6,11 @@ class CmsFrontEndManager{
 
 	private $database;
 	
-	function __construct(){
+	public function __construct(){
 		$this->database = SmartestPersistentObject::get('db:main');
 	}
 	
-	function getSiteByDomain($domain){
+	public function getSiteByDomain($domain){
 	    
 	    $sql = "SELECT * FROM Sites WHERE site_domain='".$domain."'";
 	    $result = $this->database->queryToArray($sql);
@@ -25,7 +25,7 @@ class CmsFrontEndManager{
 	    
 	}
 	
-	function getNormalPageByUrl($url, $site_id){
+	public function getNormalPageByUrl($url, $site_id){
 		
 		$sql = "SELECT Pages.* FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		$page = $this->database->queryToArray($sql);
@@ -41,15 +41,25 @@ class CmsFrontEndManager{
 		
 	}
 	
-	function getNormalPageByWebId($web_id, $site_id, $draft_mode=false){
+	public function getNormalPageByWebId($web_id, $draft_mode=false, $site_domain=null){
 	    
-	    $sql = "SELECT * FROM Pages WHERE page_webid='".$web_id."' AND page_type='NORMAL'";
+	    $sql = "SELECT * FROM Pages";
+	    
+	    if(strlen($site_domain)){
+	        $sql .= ", Sites";
+	    }
+	    
+	    $sql .= " WHERE page_webid='".$web_id."' AND page_type='NORMAL'";
 	    
 	    if(!$draft_mode){
 	        $sql .= " AND page_is_published='TRUE'";
         }
 	    
 	    $sql .= " AND page_deleted !='TRUE'";
+	    
+	    if(strlen($site_domain)){
+	        $sql .= " AND Pages.page_site_id=Sites.site_id AND Sites.site_domain='".$site_domain."'";
+	    }
 	    
 	    $page = $this->database->queryToArray($sql);
 	    
@@ -68,15 +78,25 @@ class CmsFrontEndManager{
 	    
 	}
 	
-	function getItemClassPageByWebId($web_id, $item_id, $site_id, $draft_mode=false){
+	public function getItemClassPageByWebId($web_id, $item_id, $draft_mode=false, $site_domain=''){
 	    
-	    $sql = "SELECT * FROM Pages WHERE page_webid='".$web_id."' AND page_type='ITEMCLASS'";
+	    $sql = "SELECT * FROM Pages";
+	    
+	    if(strlen($site_domain)){
+	        $sql .= ", Sites";
+	    }
+	    
+	    $sql .= " WHERE page_webid='".$web_id."' AND page_type='ITEMCLASS'";
 	    
 	    if(!$draft_mode){
 	        $sql .= " AND page_is_published='TRUE'";
         }
 	    
 	    $sql .= " AND page_deleted !='TRUE'";
+	    
+	    if(strlen($site_domain)){
+	        $sql .= " AND Pages.page_site_id=Sites.site_id AND Sites.site_domain='".$site_domain."'";
+	    }
 	    
 	    $result = $this->database->queryToArray($sql);
 	    
@@ -103,7 +123,7 @@ class CmsFrontEndManager{
 			    return $page;
 			    
 			}else{
-			    // the item was not in the set, so I guess it's a 404
+			    // the item was not the right type, so I guess it's a 404
 			    SmartestLog::getInstance('system')->log("Unacceptable item ID: $item_id requested while trying to build Page ID: ".$page->getId());
 			}
 		    
@@ -113,7 +133,7 @@ class CmsFrontEndManager{
 	    
 	}
 	
-	function getItemClassPageByUrl($url, $site_id){
+	public function getItemClassPageByUrl($url, $site_id){
 		
 		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url FROM Pages, PageUrls WHERE Pages.page_type='ITEMCLASS' AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		
@@ -207,14 +227,14 @@ class CmsFrontEndManager{
 		}
 	}
 	
-	function getSiteId(){
+	/* public function getSiteId(){
 		$sql = "SELECT site_id FROM Sites ORDER BY site_id ASC LIMIT 1";
 		$site = $this->database->queryToArray($sql);
 		$site_id = $site[0]["site_id"];
 		return $site_id;
 	}
 	
-	function getHomePage(){
+	public function getHomePage(){
 		
 		$site_id = $this->getSiteId();
 		$sql = "SELECT site_top_page_id FROM Sites WHERE site_id='$site_id' ORDER BY site_id ASC LIMIT 1";
@@ -228,7 +248,7 @@ class CmsFrontEndManager{
 		
 	}
 	
-	protected function convertPageUrlToRegExp($url){
+	public protected function convertPageUrlToRegExp($url){
 		
 		$url = str_replace("/", "\/", $url);
 		// $url = preg_replace('/(\$[\w_-]+)/', "([^\/\s]+)", $url);
@@ -251,7 +271,7 @@ class CmsFrontEndManager{
 		return $url;
 	}
 	
-	function getPageFields($page_id, $version="live"){
+	public function getPageFields($page_id, $version="live"){
 		$sql = "SELECT DISTINCT PagePropertyValues.*, Pages.page_id, PageProperties.pageproperty_id, PageProperties.pageproperty_name FROM Pages, PageProperties, PagePropertyValues, Sites
 WHERE page_id='$page_id' 
 AND pageproperty_site_id = page_site_id 
@@ -273,7 +293,7 @@ AND pagepropertyvalue_page_id = page_id";
 		
 	}
 	
-	function getPageById($page_id){
+	public function getPageById($page_id){
 		
 		if(is_numeric($page_id) && strlen($page_id) < 11){
 			$field = "page_id";
@@ -295,7 +315,7 @@ AND pagepropertyvalue_page_id = page_id";
 		return $page;
 	}
 	
-	function getPageUrl($page_id){
+	public function getPageUrl($page_id){
 	
 		if(is_numeric($page_id) && strlen($page_id) < 11){
 			$field = "page_id";
@@ -320,7 +340,7 @@ AND pagepropertyvalue_page_id = page_id";
 		return $site[0];
 	}
 	
-	function getNavigationStructure($page_id){
+	public function getNavigationStructure($page_id){
 		
 		$site_id = $this->getSiteId();
 		$sql = "SELECT site_top_page_id FROM Sites WHERE site_id='$site_id'";
@@ -339,7 +359,7 @@ AND pagepropertyvalue_page_id = page_id";
 		);
 	}
 	
-	function getChildLevelPages($page_id, $selection=""){
+	public function getChildLevelPages($page_id, $selection=""){
 		
 		$sql = "SELECT Pages.page_id FROM Pages WHERE Pages.page_parent='$page_id' AND Pages.page_is_published = 'TRUE'";
 		$result = $this->database->queryToArray($sql);
@@ -362,7 +382,7 @@ AND pagepropertyvalue_page_id = page_id";
 		return $pages;
 	}
 	
-	function getPageBreadCrumbs($page_id){
+	public function getPageBreadCrumbs($page_id){
 		
 		$site_id = $this->getSiteId();
 		$sql = "SELECT site_top_page_id FROM Sites WHERE site_id='$site_id'";
@@ -388,14 +408,14 @@ AND pagepropertyvalue_page_id = page_id";
 		
 	}
 	
-	function getPageTitle($page, $site){
+	public function getPageTitle($page, $site){
 		$format = $site["site_title_format"];
 		$half_way = str_replace('$page', $page["page_title"], $format);
 		$title = str_replace('$site', $site["site_name"], $half_way);
 		return $title;
 	}
 	
-	function defineCurrentPage($page){
+	public function defineCurrentPage($page){
 		if(@$page['page_name'] && !defined("SM_PAGE_NAME")){
 			define('SM_PAGE_NAME', $page['page_name']);
 			define('SM_PAGE_ID', $page['page_id']);
@@ -437,6 +457,6 @@ AND pagepropertyvalue_page_id = page_id";
 			
 			define('SM_PAGE_CACHE_NAME', $page_cache_name);
 		}
-	}
+	} */
 
 }

@@ -43,7 +43,7 @@
   <ul><li>{if $show_approve_button}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/approvePageChanges?page_id={$page.webid}'">{else}<span>{/if}Approve Changes{if $show_approve_button}</a>{else}</span>{/if}</li><li>{if $show_publish_button}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishPageConfirm?page_id={$page.webid}'">{else}<span>{/if}Publish This Page{if $show_publish_button}</a>{else}</span>{/if}</li>{if $show_edit_item_option}{if $show_publish_item_option}<li><a href="{dud_link}" onclick="window.location='{$domain}datamanager/publishItem?item_id={$item.id}'">Publish This {$item._model.name}</a></li>{/if}<li><a href="{dud_link}" onclick="window.location='{$domain}datamanager/editItem?item_id={$item.id}&amp;page_id={$page.webid}&amp;from=pagePreview'">Edit This {$item._model.name}</a></li>{/if}<li><a href="{dud_link}" onclick="window.location='{$domain}{$section}/releasePage?page_id={$page.webid}'">Release This Page</a></li></ul></div>
 
 <div id="preview">
-  <iframe class="building" id="preview-iframe" src="{$site_domain}website/renderEditableDraftPage?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}" style="height:0px"></iframe>
+  <iframe class="building" id="preview-iframe" src="{$domain}website/renderEditableDraftPage?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}" style="height:0px"></iframe>
 </div>
 
 <div id="preview-loading" style="padding-top:50px;text-align:center">
@@ -57,7 +57,7 @@
 </div>
 
 <div id="preview-failed" style="padding-top:50px;text-align:center;display:none">
-    <p>Still no luck. Something stopped the page from building. <br />Try having a look at <a href="javascript:window.open('{$site_domain}website/renderEditableDraftPage?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}');">the page by itself</a>.</p>
+    <p>Still no luck. Something stopped the page from building. <br />Try having a look at <a href="javascript:window.open('{$domain}website/renderEditableDraftPage?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}');">the page by itself</a>.</p>
 </div>
 
 {elseif $show_item_list}

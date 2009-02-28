@@ -52,7 +52,7 @@ class Quince{
 	var $domain;
 	var $domainPath;
 	
-	var $request;
+	var $request = false;
 	var $templateName;
 	
 	var $getVariables = null;
@@ -298,55 +298,62 @@ class Quince{
     	}
 	}
 	
-	function getControllerUrlRequest(){
+	public function getControllerUrlRequest(){
 	
 		// determine the url:
 		
-		$url = reset(explode("?", $_SERVER["REQUEST_URI"]));
+		if($this->request === false){
 		
-		if($url{0} == "/"){
-			$url = substr($url, 1);
-		}
+		    $url = reset(explode("?", $_SERVER["REQUEST_URI"]));
 		
-		if($this->useOldTerms == true){
-			$path_key = "application-path";
-		}else{
-			$path_key = "domain-path";
-		}
+    		if($url{0} == "/"){
+    			$url = substr($url, 1);
+    		}
 		
-		if(strlen($this->xmlDataArray[$path_key]) > 1){
-			
-			$this->domainPath = $this->xmlDataArray[$path_key];
-			
-			if(substr($this->domainPath, -1) != "/"){
-				$this->domainPath .='/';
-			}
-			
-			if(strtolower(substr($url, 0, strlen($this->domainPath))) == strtolower($this->domainPath)){
-			    $request = substr($url, strlen($this->domainPath));
-			}else{
-			    $this->_error("Value for ".$path_key." in controller.xml is not in the url.");
-			}
-			
-		}else{
-			
-			$request = $url;
-			
-		}
+    		if($this->useOldTerms == true){
+    			$path_key = "application-path";
+    		}else{
+    			$path_key = "domain-path";
+    		}
 		
-		if($request){
-			$this->_log("The URL request was detected as \"$request\".");
-		}else{
-			$this->_log("The URL request is empty. This is the top level of the site or application.");
-		}
+    		if(strlen($this->xmlDataArray[$path_key]) > 1){
+			
+    			$this->domainPath = $this->xmlDataArray[$path_key];
+			
+    			if(substr($this->domainPath, -1) != "/"){
+    				$this->domainPath .='/';
+    			}
+			
+    			if(strtolower(substr($url, 0, strlen($this->domainPath))) == strtolower($this->domainPath)){
+    			    $request = substr($url, strlen($this->domainPath));
+    			}else{
+    			    $this->_error("Value for ".$path_key." in controller.xml is not in the url.");
+    			}
+			
+    		}else{
+			
+    			$request = $url;
+			
+    		}
 		
-		return $request;
+    		if($request){
+    			$this->_log("The URL request was detected as \"$request\".");
+    		}else{
+    			$this->_log("The URL request is empty. This is the top level of the site or application.");
+    		}
+    		
+    		$this->request = $request;
+		
+	    }
+		
+		return $this->request;
 		
 	}
 	
-	function setDomain(){
+	public function setDomain(){
 		$protocol = isset($_SERVER['HTTPS']) ? "https://" : "http://";
-		$this->domain = $protocol.$_SERVER["HTTP_HOST"]."/".$this->domainPath;
+		// $this->domain = $protocol.$_SERVER["HTTP_HOST"]."/".$this->domainPath;
+		$this->domain = "/".$this->domainPath;
 	}
 	
 	function getModuleDirectories(){
