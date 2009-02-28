@@ -142,13 +142,14 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
 		$page_webid = $get['page_id'];
 		
-		$this->lookupSiteDomain();
+		// $this->lookupSiteDomain();
 		
 		// if(is_object($this->_site)){
 		    
 		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){
 		        
 		        // $this->send($this->_page, '_page');
+		        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
 		        $this->_page->setDraftMode(true);
 		        $this->renderPage(true);
 		        
@@ -156,12 +157,14 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        
 		        // we are viewing a meta-page (based on an item from a data set)
 		        // $this->send($this->_page, '_page');
+		        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
 		        $this->_page->setDraftMode(true);
 		        $this->renderPage(true);
 		        
 		    }else{
         		
         		// $this->send($this->renderNotFoundPage(), '_page');
+        		define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
         		$this->renderNotFoundPage();
         		
         	}
