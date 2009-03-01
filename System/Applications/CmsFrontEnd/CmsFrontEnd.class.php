@@ -106,7 +106,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
     		    
     		    $page_webid = $get['page_id'];
     		    
-    		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, false, $this->_site()->getDomain())){
+    		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, false, $this->_site->getDomain())){
 		        
 		            // we are viewing a static page
 		            // $this->send($this->_page, '_page');
@@ -182,7 +182,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function searchDomain($get){
 	    
-	    if(is_object($this->_site)){
+	    if($this->lookupSiteDomain()){
             
             // search pages and stuff
             $search_page_id = $this->_site->getSearchPageId();
@@ -225,7 +225,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function renderSiteTagSimpleRssFeed($get){
 	    
-	    if(is_object($this->_site)){
+	    if($this->lookupSiteDomain()){
 	    
 	        $tag_identifier = SmartestStringHelper::toSlug($get['tag_name']);
     	    $tag = new SmartestTag;
@@ -255,7 +255,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function downloadAsset($get){
 	    
-	    if(is_object($this->_site)){
+	    if($this->lookupSiteDomain()){
 	        
 	        $database = SmartestPersistentObject::get('db:main');
 	        
@@ -319,7 +319,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	private function renderNotFoundPage(){
 	    
-	    if(is_object($this->_site)){
+	    if($this->lookupSiteDomain()){
 	        
 	        $error_page_id = $this->_site->getErrorPageId();
 	        $this->_page = new SmartestPage;
