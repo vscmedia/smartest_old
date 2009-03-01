@@ -86,7 +86,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	    $this->page->loadItemSpaceDefinitions();
 	    $this->setPageRenderingData($this->page->fetchRenderingData());
 	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
-        
+	    
     }
     
     public function renderPage($page, $draft_mode=false){
@@ -106,7 +106,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
 		    define('SM_CMS_PAGE_ID', $this->page->getId());
 		}
 	    
-	    if(!file_exists($template)){
+	    if(!is_file($template)){
 	        
 	        $this->assign('required_template', $template);
 	        $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
@@ -282,7 +282,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 	            }
             	            }
         	            }
-                    
+                        
                         $this->_renderAssetObject($asset, $params, $render_data);
                     
                     }
@@ -426,12 +426,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         $this->_comment("asset tag exists, but isn't defined.");
                     }
                 }else{
-                    echo $this->raiseError('Attachment \''.$name.'\' does not exist.');
+                    $this->raiseError('Attachment \''.$name.'\' does not exist.');
                 }
             
             }else{
                 
-                echo $this->raiseError('Attachment tags can only be used in text files.');
+                $this->raiseError('Attachment tags can only be used in text files.');
                 
             }
 	        

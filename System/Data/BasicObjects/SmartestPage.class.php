@@ -1573,10 +1573,6 @@ class SmartestPage extends SmartestBasePage{
         
         $result = $this->database->queryToArray($sql);
         
-        // echo $sql;
-        
-        // print_r($result);
-        
         foreach($result as $def_array){
             if($def_array['assetclass_type'] == 'SM_ASSETCLASS_CONTAINER'){
                 $def = new SmartestContainerDefinition;
