@@ -227,7 +227,7 @@ class CmsFrontEndManager{
 		}
 	}
 	
-	public protected function convertPageUrlToRegExp($url){
+	protected function convertPageUrlToRegExp($url){
 		
 		$url = str_replace("/", "\/", $url);
 		$url = str_replace(".", "\.", $url);
