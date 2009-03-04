@@ -37,8 +37,8 @@
 				
 			<div class="edit-form-row">
 				<div class="buttons-bar">
-				  <input type="button" value="Cancel" />
-					<input type="submit" value="Continue" />
+				  <input type="button" value="Cancel" onclick="cancelForm();" />
+				  <input type="submit" value="Continue" />
 				</div>
 			</div>
 		

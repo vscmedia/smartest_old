@@ -56,7 +56,7 @@
         </tr>
         <tr>
           <td>
-            <img src="<?php echo defined("SM_CONTROLLER_DOMAIN") ? SM_CONTROLLER_DOMAIN : "/"; ?>Resources/Icons/exclamation.png" alt="" style="display:block;float:left" />
+            <img src="<?php echo defined('QUINCE_URL_DOMAIN') ? QUINCE_URL_DOMAIN : '/'; ?>Resources/Icons/exclamation.png" alt="" style="display:block;float:left" />
             <div class="error-text"><?php echo $error->getMessage() ?></div>
             <?php if(count($error->getBackTrace()) > 2): ?>
                 <br clear="all" />

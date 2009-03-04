@@ -342,6 +342,7 @@ class Quince{
     			$this->_log("The URL request is empty. This is the top level of the site or application.");
     		}
     		
+    		define('QUINCE_URL_REQUEST', $request);
     		$this->request = $request;
 		
 	    }
@@ -353,6 +354,7 @@ class Quince{
 	public function setDomain(){
 		$protocol = isset($_SERVER['HTTPS']) ? "https://" : "http://";
 		// $this->domain = $protocol.$_SERVER["HTTP_HOST"]."/".$this->domainPath;
+		define('QUINCE_URL_DOMAIN', "/".$this->domainPath);
 		$this->domain = "/".$this->domainPath;
 	}
 	

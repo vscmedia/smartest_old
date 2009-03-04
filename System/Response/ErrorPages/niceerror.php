@@ -32,7 +32,7 @@
   </head>
   <body>
     <div class="container">
-      <br /><br /><img src="/Resources/System/Images/smartest.jpg" title="Smartest" alt="Smartest" />
+      <br /><br /><img src="<?php echo defined('QUINCE_URL_DOMAIN') ? QUINCE_URL_DOMAIN : '/'; ?>Resources/System/Images/smartest.jpg" title="Smartest" alt="Smartest" />
       <p>Sorry, but this site is currently offline. Please try again later.</p>
     </div>
   </body>

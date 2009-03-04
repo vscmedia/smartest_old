@@ -16,13 +16,6 @@
   <suffix>.class.php</suffix>
 </library>
 
-<library name="tlog">
-  <location>Libraries/Tlog/</location>
-  <label>TLog</label>
-  <author>Matt Robinson</author>
-  <suffix>.class.php</suffix>
-</library>
-
 <library name="smartest">
   <location>Libraries/Plugins/Smartest/</location>
   <label>Smartest Libraries</label>
