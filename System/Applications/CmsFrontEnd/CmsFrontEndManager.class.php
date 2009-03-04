@@ -227,6 +227,27 @@ class CmsFrontEndManager{
 		}
 	}
 	
+	public protected function convertPageUrlToRegExp($url){
+		
+		$url = str_replace("/", "\/", $url);
+		$url = str_replace(".", "\.", $url);
+		// $url = preg_replace('/(\$[\w_-]+)/', "([^\/\s]+)", $url);
+		$url = str_replace(':id', "(\d+)", $url);
+		// $url = str_replace(':item_id', "(\d+)", $url);
+		// $url = str_replace(':itemid', "(\d+)", $url);
+		$url = str_replace(':long_id', "(\w{32})", $url);
+		// $url = str_replace(':item_webid', "(\w{32})", $url);
+		// $url = str_replace(':item_web_id', "(\w{32})", $url);
+		// $url = str_replace(':webid', "(\w{32})", $url);
+		// $url = str_replace(':web_id', "(\w{32})", $url);
+		$url = str_replace(':name', "([^\/\s]+)", $url);
+		// $url = preg_replace('/(:[\w_-]+)/', "([^\/\s]+)", $url);
+		// $url .= '(\.[\w]+)?';
+		$url = "/^".$url."\/?$/i";
+		
+		return $url;
+	}
+	
 	/* public function getSiteId(){
 		$sql = "SELECT site_id FROM Sites ORDER BY site_id ASC LIMIT 1";
 		$site = $this->database->queryToArray($sql);
@@ -248,28 +269,7 @@ class CmsFrontEndManager{
 		
 	}
 	
-	public protected function convertPageUrlToRegExp($url){
-		
-		$url = str_replace("/", "\/", $url);
-		// $url = preg_replace('/(\$[\w_-]+)/', "([^\/\s]+)", $url);
-		$url = str_replace(':id', "(\d+)", $url);
-		// $url = str_replace(':item_id', "(\d+)", $url);
-		// $url = str_replace(':itemid', "(\d+)", $url);
-		$url = str_replace(':long_id', "(\w{32})", $url);
-		// $url = str_replace(':item_webid', "(\w{32})", $url);
-		// $url = str_replace(':item_web_id', "(\w{32})", $url);
-		// $url = str_replace(':webid', "(\w{32})", $url);
-		// $url = str_replace(':web_id', "(\w{32})", $url);
-		$url = str_replace(':name', "([^\/\s]+)", $url);
-		// $url = preg_replace('/(:[\w_-]+)/', "([^\/\s]+)", $url);
-		
-		// $url .= '(\.[\w]+)?';
-		$url = "/^".$url."\/?$/i";
-		
-		// print_r($url);
-		
-		return $url;
-	}
+	
 	
 	public function getPageFields($page_id, $version="live"){
 		$sql = "SELECT DISTINCT PagePropertyValues.*, Pages.page_id, PageProperties.pageproperty_id, PageProperties.pageproperty_name FROM Pages, PageProperties, PagePropertyValues, Sites
