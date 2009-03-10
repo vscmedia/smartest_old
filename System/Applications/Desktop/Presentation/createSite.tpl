@@ -31,56 +31,24 @@ var section = '{$section}';
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Page Title Format</div>
-  <input type="text" style="width:200px" name="site_title_format" value="$site | $page" />
-</div>
-
-<div class="edit-form-row">
-  <div class="form-section-label">Hostname</div>
+  <div class="form-section-label">Host name</div>
   <input type="text" style="width:200px" name="site_domain" value="" />
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Root Directory</div>
-  <input type="text" style="width:200px" name="site_root" value="{$sm_root_dir}" />
-</div>
-
-<div class="edit-form-row">
-  <div class="form-section-label">Admin Email</div>
+  <div class="form-section-label">Admin email</div>
   <input type="text" style="width:200px" name="site_admin_email" value="{$user.email}" />
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Home Page Title</div>
-  <input type="text" style="width:200px" name="site_home_page_title" value="Home" />
-</div>
-
-<div class="edit-form-row">
-  <div class="form-section-label">Home Page Template</div>
-  <select name="site_home_page_template">
+  <div class="form-section-label">Master template</div>
+  <select name="site_master_template">
+    <option value="_DEFAULT">None for now, I will create one later</option>
+    <option value="_BLANK"{if !$allow_create_master_tpl} disabled="disabled"{/if}>Create a new, blank template</option>
     {foreach from=$templates item="template"}
-    <option value="{$template}">{$template}</option>
+    <option value="{$template}">Use {$template}</option>
     {/foreach}
   </select>
-</div>
-
-<div class="edit-form-row">
-  <div class="form-section-label">Error Page Title</div>
-  <input type="text" style="width:200px" name="site_error_page_title" value="Page Not Found" />
-</div>
-
-<div class="edit-form-row">
-  <div class="form-section-label">Error Page Template</div>
-  <select name="site_home_page_template">
-    {foreach from=$templates item="template"}
-    <option value="{$template}">{$template}</option>
-    {/foreach}
-  </select>
-</div>
-
-<div class="edit-form-row">
-  <div class="form-section-label">Logo (optional)</div>
-  <input type="file" style="width:200px" name="site_logo" />
 </div>
 
 <div class="buttons-bar">

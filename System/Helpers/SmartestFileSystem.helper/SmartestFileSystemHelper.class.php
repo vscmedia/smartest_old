@@ -94,8 +94,10 @@ class SmartestFileSystemHelper extends SmartestHelper{
 		
 	}
 	
-	static function getFileName($path){
-		
+	static function getFileName($path, $s='/'){ // sysnonym for PHP's basename(), but works on non-existent files
+	    $separator = in_array($s, array('/', '\\', ':')) ? $s : '/';
+		$fp = explode($separator, $path);
+		return end($fp);
 	}
 	
 	static function getDirectoryName($file){

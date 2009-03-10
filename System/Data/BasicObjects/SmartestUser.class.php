@@ -157,8 +157,9 @@ class SmartestUser extends SmartestBaseUser{
 	    return $sites;
 	}
 	
-	public function getAllowedSiteIds(){
-	    if(!count($this->_site_ids)){
+	public function getAllowedSiteIds($refresh=false){
+	    
+	    if(!count($this->_site_ids) || $refresh){
 	        $this->getAllowedSites();
 	    }
 	    
@@ -241,7 +242,7 @@ class SmartestUser extends SmartestBaseUser{
 	    
 	}
 	
-	function addToken($token_code, $site_id){
+	public function addToken($token_code, $site_id){
 	    
 	    $token = new SmartestUserToken;
 	    
@@ -262,6 +263,8 @@ class SmartestUser extends SmartestBaseUser{
 		    
 		    $utl->save();
 		    
+		}else{
+		    SmartestLog::getInstance('system')->log("Tried to hydrate a non-existent user token.", SM_LOG_WARNING);
 		}
 		
 		$this->reloadTokens();

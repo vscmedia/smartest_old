@@ -2,11 +2,11 @@
 
 class Desktop extends SmartestSystemApplication{
     
-    function __moduleConstruct(){
+    protected function __moduleConstruct(){
         
     }
     
-    function startPage(){
+    public function startPage(){
         
         if($this->getSite() instanceof SmartestSite){
             
@@ -14,10 +14,6 @@ class Desktop extends SmartestSystemApplication{
             $this->setTitle('Start Page');
             $this->send('desktop', 'display');
             $this->send($this->getSite()->__toArray(), 'site');
-            
-            // for($i=0;$i<10;$i++){
-            //    $this->addUserMessage("Message", SmartestUserMessage::WARNING);
-            // }
             
         }else{
             
@@ -43,7 +39,7 @@ class Desktop extends SmartestSystemApplication{
         
     }
     
-    function editSite($get){
+    public function editSite($get){
 	    
 	    if($this->getSite() instanceof SmartestSite){
 		    
@@ -67,7 +63,7 @@ class Desktop extends SmartestSystemApplication{
 		
 	}
 	
-	function updateSiteDetails($get, $post){
+	public function updateSiteDetails($get, $post){
 	    
 	    if($this->getSite() instanceof SmartestSite){
 	        
@@ -83,7 +79,6 @@ class Desktop extends SmartestSystemApplication{
 	        $site->setAdminEmail($post['site_admin_email']);
 	        $site->save();
 	        
-		    // $site_id = $post['site_id'];
 		    $this->formForward();
 	    }
 	}
@@ -92,17 +87,18 @@ class Desktop extends SmartestSystemApplication{
 		
 		if(@$get['site_id']){
 		    
-		    if(in_array($get['site_id'], $this->getUser()->getAllowedSiteIds())){
+		    if(in_array($get['site_id'], $this->getUser()->getAllowedSiteIds(true))){
 		    
 		        $site = new SmartestSite;
 		    
 		        if($site->hydrate($get['site_id'])){
+			        
 			        SmartestSession::set('current_open_project', $site);
 			        $this->getUser()->reloadTokens();
 			        
 			        if(!$site->getDirectoryName()){
 			        
-			            $site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64).'/';
+			            /* $site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64).'/';
 
                 	    if(is_dir($site_dir)){
                 	        $old_site_dir = 
@@ -122,7 +118,9 @@ class Desktop extends SmartestSystemApplication{
                 	    if(!is_file($site_dir.'Library/Actions/SiteActions.class.php')){file_put_contents($site_dir.'Library/Actions/SiteActions.class.php', $class_file_contents);}
                 	    chmod($site_dir.'Library/Actions/SiteActions.class.php', 0666);
                 	    $site->setDirectoryName(substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64));
-                	    $site->save();
+                	    $site->save(); */
+                	    
+                	    SmartestSiteCreationHelper::createSiteDirectory($site);
             		
         		    }
             		
@@ -140,11 +138,9 @@ class Desktop extends SmartestSystemApplication{
 	}
 	
 	public function closeCurrentSite($get){
-		// if(@$get['site_id']){
-			SmartestSession::clear('current_open_project');
-			$this->getUser()->reloadTokens();
-			$this->redirect('/smartest');
-		// }
+		SmartestSession::clear('current_open_project');
+		$this->getUser()->reloadTokens();
+		$this->redirect('/smartest');
 	}
 	
 	public function createSite(){
@@ -153,6 +149,7 @@ class Desktop extends SmartestSystemApplication{
 	        $this->send($this->getUser()->__toArray(), "user");
 	        $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/Masters/');
 	        $this->send($templates, 'templates');
+	        $this->send(is_writable(SM_ROOT_DIR.'Presentation/Masters/'), 'allow_create_master_tpl');
 	    }else{
 	        $this->addUserMessageToNextRequest('You don\'t have permission to create new sites. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
             $this->redirect('/smartest');
@@ -161,107 +158,22 @@ class Desktop extends SmartestSystemApplication{
 	
 	public function buildSite($get, $post){
 	    
-	    $site = new SmartestSite;
-        // site->setDraftTemplate($post['site_draft_template']);
-	    $site->setName($post['site_name']);
-        $site->setTitleFormat($post['site_title_format']);
-        $site->setDomain($post['site_domain']);
-        $site->setRoot($post['site_root']);
-        $site->setAdminEmail($post['site_admin_email']);
-        $site->setAutomaticUrls('OFF');
-	    $site->save();
-	    // $this->addUserMessage($site->getLastQuery());
+	    $p = new SmartestParameterHolder('New site parameters');
+	    $p->setParameter('site_name', $post['site_name']);
+	    $p->setParameter('site_domain', $post['site_domain']);
+	    $p->setParameter('site_admin', $post['site_admin_email']);
+	    $p->setParameter('site_master_template', $post['site_master_template']);
 	    
-	    $home_page = new SmartestPage;
-	    $home_page->setTitle($post['site_home_page_title']);
-	    $home_page->setName(SmartestStringHelper::toSlug($post['site_home_page_title']));
-	    $home_page->setDraftTemplate($post['site_home_page_template']);
-	    $home_page->setWebid(SmartestStringHelper::random(32));
-	    $home_page->setSiteId($site->getId());
-	    $home_page->setCreatedbyUserid($this->getUser()->getId());
-	    $home_page->setOrderIndex(0);
-	    $home_page->save();
-	    $site->setTopPageId($home_page->getId());
+	    $sch = new SmartestSiteCreationHelper;
 	    
-	    $error_page = new SmartestPage;
-	    $error_page->setTitle($post['site_error_page_title']);
-	    $error_page->setName('404-error');
-	    $error_page->setSiteId($site->getId());
-	    $error_page->setDraftTemplate($post['site_error_page_template']);
-	    $error_page->setLiveTemplate($post['site_error_page_template']);
-	    $error_page->setParent($home_page->getId());
-	    $error_page->setWebid(SmartestStringHelper::random(32));
-	    $error_page->setCreatedbyUserid($this->getUser()->getId());
-	    $error_page->setOrderIndex(1024);
-	    $error_page->setIsPublished('TRUE');
-	    $error_page->save();
-	    $site->setErrorPageId($error_page->getId());
-	    
-	    $tag_page = new SmartestPage;
-	    $tag_page->setTitle('Tagged Content');
-	    $tag_page->setName('tag');
-	    $tag_page->setSiteId($site->getId());
-	    $tag_page->setParent($home_page->getId());
-	    $tag_page->setWebid(SmartestStringHelper::random(32));
-	    $tag_page->setCreatedbyUserid($this->getUser()->getId());
-	    $tag_page->setOrderIndex(1023);
-	    $tag_page->save();
-	    $site->setTagPageId($tag_page->getId());
-	    
-	    $search_page = new SmartestPage;
-	    $search_page->setTitle('Search Results');
-	    $search_page->setName('search');
-	    $search_page->setSiteId($site->getId());
-	    $search_page->setParent($home_page->getId());
-	    $search_page->setWebid(SmartestStringHelper::random(32));
-	    $search_page->setCreatedbyUserid($this->getUser()->getId());
-	    $search_page->setOrderIndex(1022);
-	    $search_page->save();
-	    $site->setSearchPageId($search_page->getId());
-	    
-	    $logo_upload = new SmartestUploadHelper('site_logo');
-	    $logo_upload->setUploadDirectory(SM_ROOT_DIR.'Public/Resources/Images/SiteLogos/');
-	    
-	    if($logo_upload->hasDotSuffix('gif', 'png', 'jpg', 'jpeg')){
-			$logo_upload->save();
-			$site->setLogoImageFile($logo_upload->getFileName());
-		}else{
-		    $site->setLogoImageFile('default_site.jpg');
-		}
-		
-		$site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64).'/';
-	    
-	    if(is_dir($site_dir)){
-	        $old_site_dir = 
-	        $folder = $site->getName().microtime();
-	        $site_dir = SM_ROOT_DIR.'Sites/'.sha1($folder).'/';
+	    try{
+	        $site = $sch->createNewSite($p);
+	    }catch(SmartestException $e){
+	        
 	    }
 	    
-	    mkdir($site_dir);
-	    if(!is_dir($site_dir.'Presentation')){mkdir($site_dir.'Presentation');}
-	    if(!is_dir($site_dir.'Configuration')){mkdir($site_dir.'Configuration');}
-	    if(!is_file($site_dir.'Configuration/site.yml')){file_put_contents($site_dir.'Configuration/site.yml', '');}
-	    if(!is_dir($site_dir.'Library')){mkdir($site_dir.'Library');}
-	    if(!is_dir($site_dir.'Library/Actions')){mkdir($site_dir.'Library/Actions');}
-	    $actions_class_name = SmartestStringHelper::toCamelCase($site->getName()).'Actions';
-	    $class_file_contents = file_get_contents(SM_ROOT_DIR.'System/Base/ClassTemplates/SiteActions.class.php.txt');
-	    $class_file_contents = str_replace('__TIMESTAMP__', time('Y-m-d h:i:s'), $class_file_contents);
-	    if(!is_file($site_dir.'Library/Actions/SiteActions.class.php')){file_put_contents($site_dir.'Library/Actions/SiteActions.class.php', $class_file_contents);}
-	    chmod($site_dir.'Library/Actions/SiteActions.class.php', 0666);
-	    $site->setDirectoryName(substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64));
-		
-		$site->save();
-		
-		
-		if(!$this->getUser()->hasGlobalPermission('site_access')){
-		    $this->getUser()->addToken('site_access', $site->getId());
-		}
-		
-		if(!$this->getUser()->hasGlobalPermission('modify_user_permissions')){
-		    $this->getUser()->addToken('modify_user_permissions', $site->getId());
-		}
-		
-		$this->openSite(array('site_id'=>$site->getId()));
+	    $this->openSite(array('site_id'=>$site->getId()));
+	    $this->getUser()->reloadTokens();
 		$this->addUserMessageToNextRequest("The site has successfully been created. You must now log out and back in again to start editing.", SmartestUserMessage::SUCCESS);
 		$this->redirect("/smartest");
 	    

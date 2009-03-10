@@ -35,9 +35,9 @@ class SmartestPage extends SmartestBasePage{
 	const HIERARCHY_DEPTH_LIMIT = 32;
 	
 	protected function __objectConstruct(){
-		$this->_table_prefix = 'page_';
+		/* $this->_table_prefix = 'page_';
 		$this->_table_name = 'Pages';
-		$this->addPropertyAlias('WebId', 'webid');
+		$this->addPropertyAlias('WebId', 'webid'); */
 	}
 	
 	public function hydrate($id){

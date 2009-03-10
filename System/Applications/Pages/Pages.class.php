@@ -1399,6 +1399,7 @@ class Pages extends SmartestSystemApplication{
 	public function relatedContent($get){
 	    
 	    $page = new SmartestPage;
+	    $page->setDraftMode(true);
 	    $page_webid = $get['page_id'];
 	    
 	    if($page->hydrate($page_webid)){

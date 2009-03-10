@@ -59,7 +59,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        
 		    }else{
 		        
-        		$this->send($this->renderNotFoundPage(), '_page');
+        		// $this->send($this->renderNotFoundPage(), '_page');
+        		$this->renderNotFoundPage();
         		
         	}
         	
