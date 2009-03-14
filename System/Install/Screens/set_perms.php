@@ -1,6 +1,6 @@
 <?php
-
-$writable_files = array(
+$writable_files = array_merge($system_data->g('system')->g('writable_locations')->g('always')->toArray(), $system_data->g('system')->g('writable_locations')->g('installation')->toArray());
+/* $writable_files = array(
     SM_ROOT_DIR."Public/",
     SM_ROOT_DIR."Sites/",
     SM_ROOT_DIR."Configuration/",
@@ -22,7 +22,7 @@ $writable_files = array(
 	SM_ROOT_DIR."System/Cache/TextFragments/Live/",
 	SM_ROOT_DIR."Logs/",
 	SM_ROOT_DIR."System/Logs/"
-); ?>
+); */ ?>
 
 <p>Step 1 of 4: Permissions</p>
 
@@ -36,7 +36,7 @@ $errors = array();
 
 foreach($writable_files as $file){
 	if(!is_writable($file)){
-		$errors[] = $file;
+		$errors[] = SM_ROOT_DIR.$file;
 	}
 }
 

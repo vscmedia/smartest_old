@@ -10,7 +10,7 @@ class SmartestInstallationStatusHelper{
             
             session_start();
             
-            $writable_files = array(
+            /* $writable_files = array(
             	SM_ROOT_DIR."Public/",
             	SM_ROOT_DIR."Sites/",
             	SM_ROOT_DIR."Configuration/",
@@ -32,13 +32,16 @@ class SmartestInstallationStatusHelper{
             	SM_ROOT_DIR."System/Cache/TextFragments/Live/",
             	SM_ROOT_DIR."Logs/",
             	SM_ROOT_DIR."System/Logs/"
-            );
+            ); */
+            
+            $system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml', false);
+            $writable_files = array_merge($system_data->g('system')->g('writable_locations')->g('always')->toArray(), $system_data->g('system')->g('writable_locations')->g('installation')->toArray());
             
             $errors = array();
             
             foreach($writable_files as $file){
-    			if(!is_writable($file)){
-    				$errors[] = $file;
+    			if(!is_writable(SM_ROOT_DIR.$file)){
+    				$errors[] = SM_ROOT_DIR.$file;
     			}
     		}
     		

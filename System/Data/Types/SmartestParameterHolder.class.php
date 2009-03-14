@@ -52,6 +52,7 @@ class SmartestParameterHolder implements ArrayAccess{
                 $a[$k] = $v;
             }
         }
+        return $a;
     }
     
     public function hasParameter($n){

@@ -22,3 +22,27 @@ system:
     config: Configuration/
   places:
     templates_dir: System/Presentation/
+  writable_locations:
+    always:
+      - Sites/
+      - System/Cache/SmartestEngine/
+      - System/Cache/Smarty/
+      - System/Cache/Pages/
+      - System/Cache/Data/
+      - System/Cache/Includes/
+      - System/Cache/ObjectModel/Models/
+      - System/Cache/ObjectModel/DataObjects/
+      - System/Cache/Settings/
+      - System/Cache/Controller/
+      - Library/ObjectModel/
+      - Documents/
+      - Documents/Deleted/
+      - System/Temporary/
+      - System/Cache/TextFragments/Previews/
+      - System/Cache/TextFragments/Live/
+      - Logs/
+      - System/Logs/
+    installation:
+      - Public/
+      - System/Core/Info/
+      - Configuration/

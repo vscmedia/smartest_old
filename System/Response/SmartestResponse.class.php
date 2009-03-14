@@ -574,7 +574,7 @@ class SmartestResponse{
 	
 	function checkWritablePermissions(){
 		
-		$writable_files = array(
+		/* $writable_files = array(
 			"System Core Info Directory" => SM_ROOT_DIR."System/Core/Info/",
 			"Smartest Engine Cache"      => SM_ROOT_DIR."System/Cache/SmartestEngine/",
 			"Smarty Cache"               => SM_ROOT_DIR."System/Cache/Smarty/",
@@ -590,13 +590,17 @@ class SmartestResponse{
 			"System Temp Folder"         => SM_ROOT_DIR."System/Temporary/",
 			"Text previews cache"        => SM_ROOT_DIR."System/Cache/TextFragments/Previews/",
 			"Live text cache"            => SM_ROOT_DIR."System/Cache/TextFragments/Live/"
-		);
+		); */
+		
+		$system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml');
+		$writable_files = $system_data->g('system')->g('writable_locations')->g('always')->getParameters();
 		
 		$errors = array();
 		
 		foreach($writable_files as $label=>$file){
 			if(!is_writable($file)){
-				$errors[] = array("label"=>$label, "file"=>$file);
+				// $errors[] = array("label"=>$label, "file"=>$file);
+				$errors[] = SM_ROOT_DIR.$file;
 			}
 		}
 		
@@ -604,10 +608,10 @@ class SmartestResponse{
 			$this->unwritableFiles = $errors;
 			
 			foreach($this->unwritableFiles as $unwritable_file){
-				if(is_file($unwritable_file['file'])){
-					$this->error("The file \"".$unwritable_file['file']."\" needs to be writable.", SM_ERROR_PERMISSIONS);
+				if(is_file($unwritable_file)){
+					$this->error("The file \"".$unwritable_file."\" needs to be writable.", SM_ERROR_PERMISSIONS);
 				}else{
-					$this->error("The directory \"".$unwritable_file['file']."\" needs to be writable.", SM_ERROR_PERMISSIONS);
+					$this->error("The directory \"".$unwritable_file."\" needs to be writable.", SM_ERROR_PERMISSIONS);
 				}
 				
 			}
