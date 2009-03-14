@@ -39,6 +39,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		$this->module = SM_CONTROLLER_MODULE;
 		$this->_resultIndex = 0;
 		$this->userTokenHelper = new SmartestUsersHelper();
+		$this->settings = new SmartestParameterHolder("Application settings");
 		
 		SmartestSession::set('user:currentApp', SM_CONTROLLER_MODULE);
 		SmartestSession::set('user:currentAction', SM_CONTROLLER_METHOD);
@@ -50,11 +51,13 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		
 		// load user-defined application-wide settings
 		// TODO: add caching here
-		/* if(is_file(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml")){
+		if(is_file(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml")){
 			
-			$appSettingsFileData = SmartestYamlHelper::load(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml");
+			$this->settings->setParameter('application', SmartestYamlHelper::toParameterHolder(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml", SM_DEVELOPER_MODE));
 			
-			if(is_array($appSettingsFileData)){
+			// print_r($this->settings->getParameter('application')->getParameter('messages')->getParameter('summaries'));
+			
+			/* if(is_array($appSettingsFileData)){
 			    
 			    // $this->settings['application'] = new SmartestParameterHolder('Application Settings Holder', true);
 			    // $this->settings['application']->loadArray($appSettingsFileData, true);
@@ -62,12 +65,12 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 			    
 			}else{
 				throw new SmartestException("Error parsing config file: ".SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml");
-			}
+			} */
 		}
 		
 		// load user-defined system-wide settings
 		// TODO: add caching here
-		if(is_file(SM_ROOT_DIR."Configuration/user.ini")){
+		/* if(is_file(SM_ROOT_DIR."Configuration/user.ini")){
 			if($this->_settings['global'] = @parse_ini_file(SM_ROOT_DIR."Configuration/user.ini")){
 				
 			}else{

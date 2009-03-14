@@ -44,6 +44,12 @@ div.user-message{
 	font-size:0.8em;
 }
 
+.form-hint{
+    font-size:10px;
+    color:#666;
+    padding-left:6px;
+}
+
 div#user-info{
 	color:#eee;
 	font-size:0.8em;

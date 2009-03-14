@@ -198,15 +198,12 @@ class SmartestResponse{
 
         );
         
-        // load database connection settings
-        $this->dbconfig = SmartestDatabase::readConfiguration('SMARTEST');
-			
-		// SmartestCache::save('dbconfig', $this->dbconfig, -1, true);
-		$this->_log("Database settings loaded from ".SM_ROOT_DIR."Configuration/database.ini.");
-        
         try{
 	        
-	        $d = new SmartestDataObjectHelper($this->dbconfig);
+	        // load database connection settings
+            $c = SmartestDatabase::readConfiguration('SMARTEST');
+	        
+	        $d = new SmartestDataObjectHelper($c);
 	        $d->loadBasicObjects();
             $d->loadExtendedObjects();
             
@@ -271,7 +268,7 @@ class SmartestResponse{
 		
 		// instantiate database object
 		try{
-			$mysql = new SmartestMysql($this->dbconfig);
+			$mysql = SmartestDatabase::getInstance('SMARTEST');
 			SmartestPersistentObject::set('db:main', $mysql);
 		} catch(SmartestException $e){
 			$this->errorFromException($e);

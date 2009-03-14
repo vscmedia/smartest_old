@@ -938,12 +938,13 @@ class Items extends SmartestSystemApplication{
 		
 	        // print_r($item);
 	    
-		if(is_object($item)){
+	    if(is_object($item)){
 		    
 		    $item_array = $item->__toArray(true, true, true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
 		    $this->send($item->getModel()->getMetaPagesAsArrays(), 'metapages');
 		    $this->setTitle('Edit '.$item->getModel()->getName().' | '.$item->getName());
 		    $this->send($item_array, 'item');
+		    $this->send(true, 'allow_edit_item_name');
 		    
 		    $page = new SmartestPage;
 		    
@@ -966,10 +967,16 @@ class Items extends SmartestSystemApplication{
     		$item = SmartestCmsItem::retrieveByPk($item_id);
 		
     		if(is_object($item)){
-		
+		        
+		        $allow_edit_item_slug = true;
+		        
     		    // update name
     		    if (strlen($post['item_name'])){
 			        $item->getItem()->setName(SmartestStringHelper::sanitize($post['item_name']));
+		        }
+		        
+		        if (strlen($post['item_slug']) && $allow_edit_item_slug){
+			        $item->getItem()->setSlug(SmartestStringHelper::toSlug($post['item_slug']));
 		        }
 		        
 		        $item->getItem()->setSearchField(SmartestStringHelper::sanitize($post['item_search_field']));

@@ -6,7 +6,7 @@ class SmartestInstallationStatusHelper{
     
     public static function checkStatus($purge=false){
         
-        if((SmartestCache::load('installation_status', true) !== SM_INSTALLSTATUS_COMPLETE) || $purge){
+        if($purge || (!is_file(SM_ROOT_DIR.'Public/.htaccess') || !is_file(SM_ROOT_DIR.'Configuration/controller.xml') || !is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
             
             session_start();
             

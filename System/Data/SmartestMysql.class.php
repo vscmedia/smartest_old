@@ -41,7 +41,7 @@ class SmartestMysql{
 			$this->rawQuery("SET NAMES 'utf8'");
 			
 			if(!mysql_select_db($this->connection_config['database'], $this->dblink)){
-			    echo 'Access Denied to DB '.$this->connection_config['database'];
+			    if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);
 			    $e = new SmartestDatabaseException("Could not select DB: ".$database.". ".mysql_error($this->dblink), SmartestDatabaseException::SPEC_DB_ACCESS_DENIED);
 			    $e->setUsername($this->connection_config['username']);
 			    $e->setHost($this->connection_config['host']);
@@ -52,6 +52,7 @@ class SmartestMysql{
 			$this->lastQuery = "No queries made yet.";
 			
 		}else{
+		    if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);
 		    $e = new SmartestDatabaseException("Could not connect to MySQL.", SmartestDatabaseException::CONNECTION_IMPOSSIBLE);
 			$e->setUsername($this->connection_config['username']);
 		    $e->setHost($this->connection_config['host']);
@@ -70,6 +71,7 @@ class SmartestMysql{
 			if(mysql_select_db($this->connection_config['database'], $this->dblink)){
 			    return true;
 			}else{
+			    if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);
 			    $e = new SmartestDatabaseException("Could not select DB: ".$database." while trying to reconnect.".mysql_error($this->dblink), SmartestDatabaseException::SPEC_DB_ACCESS_DENIED);
 			    $e->setUsername($this->connection_config['username']);
     		    $e->setHost($this->connection_config['host']);
@@ -123,6 +125,7 @@ class SmartestMysql{
 	
 	public function rawQuery($querystring){
 	    if(!$this->dblink && !$this->reconnect()){
+	        if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);
 	        throw new SmartestDatabaseException("Lost connection to to MySQL database and could not reconnect", SmartestDatabaseException::LOST_CONNECTION);
         }else{
 	        
@@ -145,7 +148,8 @@ class SmartestMysql{
 	public function howMany($querystring, $file='', $line=''){
 	    
 	    if(!$this->dblink && !$this->reconnect()){
-	    
+	        
+	        if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);
 	        throw new SmartestDatabaseException("Lost connection to to MySQL database and could not reconnect", SmartestDatabaseException::LOST_CONNECTION);
         
         }else{
@@ -175,7 +179,8 @@ class SmartestMysql{
 	public function queryToArray($querystring, $refresh=false){
 	    
 		if(!$this->dblink && !$this->reconnect()){
-	    
+	        
+	        if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);
 	        throw new SmartestDatabaseException("Lost connection to to MySQL database and could not reconnect", SmartestDatabaseException::LOST_CONNECTION);
         
         }else{

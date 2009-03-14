@@ -10,11 +10,13 @@ class SmartestYamlHelper extends SmartestHelper{
     
     public static function load($file_name){
         if(is_file($file_name)){
-            $array = Spyc::YAMLLoad($file_name);
+            $spyc = new Spyc;
+            $array = $spyc->load($file_name);
+            // $array = Spyc::YAMLLoad($file_name);
             return $array;
         }else{
             // error
-            SmartestLog::getInstance('system')->log("SmartestYamlHelper tries to load non-existent file: ".$file_name, SM_LOG_WARNING);
+            SmartestLog::getInstance('system')->log("SmartestYamlHelper tried to load non-existent file: ".$file_name, SM_LOG_WARNING);
         }
     }
     
@@ -29,11 +31,41 @@ class SmartestYamlHelper extends SmartestHelper{
                 return $content;
             }
         }else{
-            SmartestLog::getInstance('system')->log("SmartestYamlHelper tries to load non-existent file: ".$file_name, SM_LOG_WARNING);
+            SmartestLog::getInstance('system')->log("SmartestYamlHelper tried to load non-existent file: ".$file_name, SM_LOG_WARNING);
         }
     }
     
-    public static function create($data_array){
+    public static function create($data_array, $file_name=false){
+        
+        $spyc = new Spyc;
+        $yaml = $spyc->dump($data_array, false, false);
+        
+        if(is_file($file_name) && is_writable($file_name)){
+            return file_put_contents($file_name, $yaml);
+        }else{
+            return $yaml;
+        }
+    }
+    
+    public static function fromParameterHolder(SmartestParameterHolder $ph, $file_name=false){
+        $data = $ph->toArray();
+        return self::create($data, $file_name);
+    }
+    
+    public static function toParameterHolder($file_name, $fast=true){
+        
+        if($fast){
+            $data = self::fastLoad($file_name);
+        }else{
+            $data = self::load($file_name);
+        }
+        
+        $name = 'Data from '.$file_name;
+        
+        $ph = new SmartestParameterHolder($name);
+        $ph->loadArray($data);
+        
+        return $ph;
         
     }
     

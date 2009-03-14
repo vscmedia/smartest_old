@@ -47,8 +47,8 @@
   {/if}
   
   <div class="edit-form-row">
-    <div class="form-section-label">Name</div>
-    {$pageInfo.name}
+    <div class="form-section-label">Short Name</div>
+    {if $allow_edit_page_name}<input type="text" name="page_name" value="{$pageInfo.name}" /><span class="form-hint">Numbers, lowercase letters and hyphens only, please</span>{else}{$pageInfo.name}{/if}
   </div>
   
   <div class="edit-form-row">

@@ -306,6 +306,7 @@ class Pages extends SmartestSystemApplication{
             		}
         		
             		$this->send($allow_release, 'allow_release');
+            		$this->send(true, 'allow_edit_page_name');
 		
             		$pageUrls = $page->getUrlsAsArrays();
 		        
@@ -1133,13 +1134,16 @@ class Pages extends SmartestSystemApplication{
 		
 	}
 	
-	function updatePage($get, $post){    
+	public function updatePage($get, $post){    
         
         $page = new SmartestPage;
         
         if($page->hydrate($post['page_id'])){
             
             $page->setTitle($post['page_title']);
+            if(isset($post['page_name']) && strlen($post['page_name'])){
+                $page->setName(SmartestStringHelper::toSlug($post['page_name']));
+            }
             $page->setParent($post['page_parent']);
             $page->setForceStaticTitle((isset($post['page_force_static_title']) && ($post['page_force_static_title'] == 'true')) ? 1 : 0);
             $page->setIsSection((isset($post['page_is_section']) && ($post['page_is_section'] == 'true')) ? 1 : 0);

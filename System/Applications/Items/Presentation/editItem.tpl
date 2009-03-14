@@ -15,8 +15,13 @@
 />{/if}
 
 <div class="edit-form-row">
-  <div class="form-section-label">{$item._model.name} Name</div>
+  <div class="form-section-label">{$item._model.name} name</div>
   <input type="text" name="item_name" value="{$item.name}" style="width:250px" />
+</div>
+
+<div class="edit-form-row">
+  <div class="form-section-label">{$item._model.name} short name (Used in URLS)</div>
+  <input type="text" name="item_slug" value="{$item.slug}" style="width:250px" />
 </div>
 
 <div class="edit-form-row">
