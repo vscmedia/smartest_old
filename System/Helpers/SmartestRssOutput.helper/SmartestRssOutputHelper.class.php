@@ -111,7 +111,7 @@ class SmartestRssOutputHelper{
 	        $pubDate->appendChild($pubDate_text);
 	        
 	        $link = $this->_domObject->createElement("link");
-	        $link_text = $this->_domObject->createTextNode($object->getUrl());
+	        $link_text = $this->_domObject->createTextNode(QUINCE_URL_PROTOCOL.$_SERVER['HTTP_HOST'].$object->getUrl());
 	        $link->appendChild($link_text);
 	        
 	        $item->appendChild($title);

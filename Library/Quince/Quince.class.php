@@ -353,6 +353,7 @@ class Quince{
 	
 	public function setDomain(){
 		$protocol = isset($_SERVER['HTTPS']) ? "https://" : "http://";
+		define('QUINCE_URL_PROTOCOL', $protocol);
 		// $this->domain = $protocol.$_SERVER["HTTP_HOST"]."/".$this->domainPath;
 		define('QUINCE_URL_DOMAIN', "/".$this->domainPath);
 		$this->domain = "/".$this->domainPath;
