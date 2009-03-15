@@ -376,9 +376,9 @@ class SmartestResponse{
 		
 		try{
 		    $this->checkAuthenicationStatus();
-		}catch (SmartestException $e){
+		}catch (SmartestRedirectException $e){
 		    // $this->redirect($e->getRedirectUrl());
-		    $this->redirect($this->controller->getDomainName().'smartest/login');
+		    $e->redirect();
 		}
 		
 		// Assign a bunch of important values for use throughout Smartest
@@ -468,13 +468,16 @@ class SmartestResponse{
 		    
 		    if(!$this->authentication->getUserIsLoggedIn()){
 				if(SM_CONTROLLER_URL != "smartest/login"){
-					$new_url = $this->controller->getDomain()."smartest/login?from=/".SM_CONTROLLER_URL;
 					
-					if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING'])){
-						$new_url .= '&'.$_SERVER['QUERY_STRING'];
-					}
+					// $new_url = $this->controller->getDomain()."smartest/login?from=/".SM_CONTROLLER_URL;
 					
-					$e = new SmartestException('The user must be logged in to see this page.');
+					//if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING'])){
+					//	$new_url .= '&'.$_SERVER['QUERY_STRING'];
+					//}
+					
+					$new_url = 'smartest/login';
+					
+					$e = new SmartestRedirectException();
 					$e->setRedirectUrl($new_url);
 					throw $e;
 					
