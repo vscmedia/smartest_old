@@ -1,7 +1,5 @@
 <?php
 
-//////////////// REQUIRED FOR CMS OPERATION - DO NOT EDIT //////////////////
-
 class CmsFrontEndManager{
 
 	private $database;
@@ -33,9 +31,26 @@ class CmsFrontEndManager{
 		$p = new SmartestPage;
 		
 		if(count($page) > 0){
+			
 			$p->hydrate($page[0]);
 			return $p;
+			
 		}else{
+		    
+		    if(substr($url, -1) == '/'){
+		        $new_url = substr($url, 0, -1);
+		    }else{
+		        $new_url = $url.='/';
+		    }
+		    
+		    $sql = "SELECT Pages.* FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$new_url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
+    		$page = $this->database->queryToArray($sql);
+    		
+    		if(count($page) > 0){
+    			$p->hydrate($page[0]);
+    			throw new SmartestRedirectException(SM_CONTROLLER_DOMAIN.$new_url);
+    		}
+    		
 			return null;
 		}
 		

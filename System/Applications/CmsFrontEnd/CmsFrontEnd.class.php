@@ -36,7 +36,36 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
 		if($this->lookupSiteDomain()){
 		
-		    if(!strlen($this->url)){
+		    if(strlen($this->url)){
+		        
+		        try{
+		        
+		            if($this->_page = $this->manager->getNormalPageByUrl($this->url, $this->_site->getId())){
+
+        		        // we are viewing a static page
+        		        // $this->send($this->_page, '_page');
+        		        $this->renderPage();
+
+        		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->url, $this->_site->getId())){
+
+        		        // we are viewing a meta-page (based on an item from a data set)
+        		        // $this->send($this->_page, '_page');
+        		        $this->renderPage();
+
+        		    }else{
+
+            		    // $this->send($this->renderNotFoundPage(), '_page');
+            		    $this->renderNotFoundPage();
+
+            	    }
+            	
+        	    }catch(SmartestRedirectException $e){
+        	        
+        	        $e->redirect();
+        	        
+        	    }
+		        
+		    }else{
 		        
 		        // this is the home page
 		        $this->_page = new SmartestPage;
@@ -45,24 +74,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        // $this->send($this->_page, '_page');
 		        $this->renderPage();
 		        
-		    }else if($this->_page = $this->manager->getNormalPageByUrl($this->url, $this->_site->getId())){
-		        
-		        // we are viewing a static page
-		        // $this->send($this->_page, '_page');
-		        $this->renderPage();
-		        
-		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->url, $this->_site->getId())){
-		        
-		        // we are viewing a meta-page (based on an item from a data set)
-		        // $this->send($this->_page, '_page');
-		        $this->renderPage();
-		        
-		    }else{
-		        
-        		// $this->send($this->renderNotFoundPage(), '_page');
-        		$this->renderNotFoundPage();
-        		
-        	}
+		    }
         	
         	return Quince::NODISPLAY;
 		    
