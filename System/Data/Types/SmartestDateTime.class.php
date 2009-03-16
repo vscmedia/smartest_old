@@ -4,6 +4,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess{
     
     protected $_value;
     protected $_use_time = true;
+    protected $_format = "l jS F, Y";
     
     public function setValue($v){
         
@@ -53,7 +54,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess{
         }
     }
     
-    public function getValue($format=''){
+    public function getValue($format="l jS F, Y"){
         if(strlen($format)){
             return date($format, $this->_value);
         }else{
@@ -62,7 +63,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess{
     }
     
     public function __toString(){
-        return date(SM_OPTIONS_DATE_FORMAT, $this->_value);
+        return date($this->_format, $this->_value);
     }
     
     public function offsetExists($offset){
