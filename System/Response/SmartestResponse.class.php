@@ -475,7 +475,7 @@ class SmartestResponse{
 					//	$new_url .= '&'.$_SERVER['QUERY_STRING'];
 					//}
 					
-					$new_url = 'smartest/login';
+					$new_url = $this->controller->getDomain().'smartest/login';
 					
 					$e = new SmartestRedirectException();
 					$e->setRedirectUrl($new_url);
