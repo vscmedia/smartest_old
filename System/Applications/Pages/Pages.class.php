@@ -2801,15 +2801,21 @@ class Pages extends SmartestSystemApplication{
 		$url = new SmartestPageUrl;
 		
 		if($url->existsOnSite($post['page_url'], $this->getSite()->getId())){
-		    $this->addUserMessageToNextRequest("That URL already exists.", SmartestUserMessage::WARNING);
+		    $this->addUserMessageToNextRequest("That URL already exists for another page.", SmartestUserMessage::WARNING);
 		}else{
 		    
 		    $page = new SmartestPage;
 		    
 		    if($page->hydrate($post['page_id'])){
-		        $page->setDraftMode(true);
-		        $page->addUrl($post['page_url']);
-		        $page->save();
+		        // $page->setDraftMode(true);
+		        // $page->addUrl($post['page_url']);
+		        // $page->save();
+		        $url = new SmartestPageUrl;
+		        $url->setUrl(SmartestStringHelper::sanitize($post['page_url']));
+		        $url->setPageId($page->getId());
+		        $url->setType(isset($post['forward_to_default']) ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
+		        $url->setIsDefault(0);
+		        $url->save();
 		        SmartestLog::getInstance('site')->log("{$this->getUser()} added URL '{$post['page_url']}' to page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        $this->addUserMessageToNextRequest("The new URL was successully added.", SmartestUserMessage::SUCCESS);
 		    }else{
@@ -2899,12 +2905,15 @@ class Pages extends SmartestSystemApplication{
 	public function deletePageUrl($get){
 		
 		$url = new SmartestPageUrl;
+		$p = new SmartestPage;
 		
 		if($url->hydrate($get['url'])){
 		    
+		    $p->hydrate($url->getPageId());
+		    
 		    $u = $url->getUrl();
 		    $url->delete();
-		    SmartestLog::getInstance('site')->log("{$this->getUser()} deleted URL '$u' from page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
+		    SmartestLog::getInstance('site')->log("{$this->getUser()} deleted URL '$u' from page: {$p->getTitle()}.", SmartestLog::USER_ACTION);
 		    $this->addUserMessageToNextRequest("The URL has been successfully deleted. It's recommended that you now clear the pages cache to avoid dead links.", SmartestUserMessage::SUCCESS);
 		
 	    }else{

@@ -165,7 +165,7 @@ class SmartestPage extends SmartestBasePage{
 	    $this->_draft_mode = (bool) $mode;
 	}
 	
-	public function addUrl($url_string){
+	public function addUrl($url_string, $is_forward=false){
 	    if(!in_array($url_string, $this->_new_urls)){
 	        $this->_new_urls[] = $url_string;
 	    }
@@ -182,6 +182,7 @@ class SmartestPage extends SmartestBasePage{
 	        $u = new SmartestPageUrl;
 	        if($u->hydrate($url)){
 	            $u->setIsDefault(1);
+	            $u->setType('SM_PAGEURL_NORMAL');
 	            $this->clearDefaultUrl();
                 $u->save();
                 return true;

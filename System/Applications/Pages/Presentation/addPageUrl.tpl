@@ -32,21 +32,22 @@ return true;
 <input type="hidden" name="page_id" value="{$pageInfo.id}">
 <input type="hidden" name="page_webid" value="{$pageInfo.webid}">
 
-<table id="edit-form-layout" border="0" cellpadding="0" cellspacing="2">
+<div id="edit-form-layout">
 
-  <tr>
-    <td class="text" style="width:100px" >URL: </td>
-      <td><div style="display:inline" id="siteDomainField">http://{$pageInfo.site.domain}/</div><input type="text" name="page_url"></td>
-  </tr>
+  <div class="edit-form-row">
+    <div class="form-section-label">New Url:</div>
+    http://{$pageInfo.site.domain}{$domain}<input type="text" name="page_url" value="" style="width:200px" />
+    <input type="checkbox" name="forward_to_default" id="forward_to_default" value="1" /><label for="forward_to_default">Forward to default URL</label>
+  </div>
 
-</table>
-  
   <div class="edit-form-row">
     <div class="buttons-bar">
     	<input type="button" value="Cancel" onclick="cancelForm();" />
-    	<input type="submit" name="action" onclick="return check();" value="Add" />
+    	<input type="submit" name="action" onclick="return check();" value="Save" />
     </div>
   </div>
+
+</div>
 
 </form>
 
