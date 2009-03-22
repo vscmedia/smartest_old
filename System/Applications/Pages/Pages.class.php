@@ -2871,6 +2871,20 @@ class Pages extends SmartestSystemApplication{
 		
 		$url = new SmartestPageUrl;
 		$url->hydrate($url_id);
+		
+		if(isset($post['forward_to_default']) && $post['forward_to_default'] == 1){
+		    
+		    if($url->getIsDefault()){
+		        $url->setType('SM_PAGEURL_NORMAL');
+		        $this->addUserMessageToNextRequest("The default URL cannot also be an internal forward");
+		    }else{
+		        $url->setType('SM_PAGEURL_INTERNAL_FORWARD');
+		    }
+		    
+		}else{
+		    $url->setType('SM_PAGEURL_NORMAL');
+		}
+		
 		$url->setUrl($page_url);
 		$url->save();
 		

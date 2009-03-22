@@ -25,7 +25,7 @@ class CmsFrontEndManager{
 	
 	public function getNormalPageByUrl($url, $site_id){
 		
-		$sql = "SELECT Pages.* FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
+		$sql = "SELECT Pages.*, PageUrls.pageurl_id, PageUrls.pageurl_type, PageUrls.pageurl_url FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		$page = $this->database->queryToArray($sql);
 		
 		$p = new SmartestPage;
@@ -33,7 +33,21 @@ class CmsFrontEndManager{
 		if(count($page) > 0){
 			
 			$p->hydrate($page[0]);
-			return $p;
+			
+			if($page[0]['pageurl_type'] == 'SM_PAGEURL_INTERNAL_FORWARD'){
+			    
+			    if($page[0]['pageurl_url'] == $p->getDefaultUrl()){
+			        SmartestLog::getInstance('system')->log("PageUrl ID ".$page[0]['pageurl_id']." cannot simultaneously be a forward and a default URL.");
+			        return $p;
+			    }else{
+			        throw new SmartestRedirectException(SM_CONTROLLER_DOMAIN.$p->getDefaultUrl());
+		        }
+			    
+			}else{
+			
+			    return $p;
+			
+		    }
 			
 		}else{
 		    
@@ -47,7 +61,6 @@ class CmsFrontEndManager{
     		$page = $this->database->queryToArray($sql);
     		
     		if(count($page) > 0){
-    			$p->hydrate($page[0]);
     			throw new SmartestRedirectException(SM_CONTROLLER_DOMAIN.$new_url);
     		}
     		

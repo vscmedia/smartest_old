@@ -27,7 +27,8 @@ function check(){
 
   <div class="edit-form-row">
     <div class="form-section-label">Address:</div>
-      http://{$site.domain}/<input type="text" name="page_url" value="{$url.url}" style="width:200px" />
+      http://{$site.domain}{$domain}<input type="text" name="page_url" value="{$url.url}" style="width:200px" />
+      {if !$url.is_default}<input type="checkbox" name="forward_to_default" id="forward_to_default" value="1"{if $url.type == "SM_PAGEURL_INTERNAL_FORWARD"} checked="checked"{/if} /><label for="forward_to_default">Forward to default URL</label>{/if}
   </div>
 
   <div class="buttons-bar">
