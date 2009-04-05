@@ -12,7 +12,6 @@ ALTER TABLE `ItemClasses` ADD `itemclass_rating_max_score` SMALLINT( 3 ) DEFAULT
 ALTER TABLE `Assets` ADD `asset_language` VARCHAR( 8 ) DEFAULT 'eng' NOT NULL AFTER `asset_type` ;
 ALTER TABLE `DropDowns` ADD `dropdown_language` VARCHAR( 8 ) DEFAULT 'eng' NOT NULL ;
 ALTER TABLE `AssetIdentifiers` ADD `assetidentifier_language` VARCHAR( 8 ) DEFAULT 'eng' NOT NULL ;
-ALTER TABLE `AssetIdentifiers` CHANGE `assetidentifier_item_id` `assetidentifier_item_id` MEDIUMINT( 9 ) UNSIGNED NOT NULL DEFAULT '0';
 
 CREATE TABLE `Comments` (
 `comment_id` MEDIUMINT( 11 ) NOT NULL AUTO_INCREMENT ,
