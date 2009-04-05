@@ -2860,7 +2860,7 @@ class Pages extends SmartestSystemApplication{
 	        }
         }
         
-        // $this->formForward();
+        $this->formForward();
 	}
 	
 	public function unPublishPage($get){
