@@ -3,10 +3,41 @@
   <h3>Define Container</h3>
   <div class="instruction">Please choose a template to use in this container.</div>
   
-  <form id="pageViewForm" method="get" action="">
+  <form id="pageViewForm" method="post" action="">
     <input type="hidden" name="page_id" value="{$page.id}" />
+    {if $show_item_options}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
     <input type="hidden" name="container_id" value="{$container.id}" />
     <input type="hidden" name="asset_id" id="item_id_input" value="" />
+  
+  
+  {if $show_item_options}
+    <div class="edit-form-row">
+      <div class="form-section-label">Meta Page:</div>
+      {$page.static_title}
+    </div>
+    
+    <div class="edit-form-row">
+      <div class="form-section-label">{$item.model.name}:</div>
+      {$item.name}
+    </div>
+    
+    <div class="edit-form-row">
+      <div class="form-section-label">Define container on this meta-page for:</div>
+      <select name="definition_scope">
+        
+        <option value="THIS">This {$item.model.name|strtolower} only</option>
+        {if $item_uses_default}<option value="DEFAULT">All {$item.model.plural_name|strtolower} currently using the default definition</option>{/if}
+        <option value="ALL">All {$item.model.plural_name|strtolower}{if $selected_template_id > 0} (removes all other per-item definitions){/if}</option>
+        
+      </select>
+    </div>
+    {else}
+    <div class="edit-form-row">
+      <div class="form-section-label">Page:</div>
+      {$page.title}
+    </div>
+    {/if}
+  
   </form>
   
   <div id="options-view-chooser">

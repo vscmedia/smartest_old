@@ -64,7 +64,7 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
   {foreach from=$items key="key" item="item"}
 	
     <li ondblclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}'">
-      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="setSelectedItem('{$item.id}', '{$item.name|escape:html}');">
+      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="setSelectedItem('{$item.id}', '{$item.name|escape:quotes}');">
         
         <img src="{$domain}Resources/Icons/item.png" border="0" />{$item.name}</a>{* if $item.public=='FALSE'}&nbsp;(hidden){/if *}</li>
 

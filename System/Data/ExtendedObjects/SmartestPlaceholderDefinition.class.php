@@ -14,7 +14,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
 		
 	}
 	
-	public function load($name, $page, $draft=false){
+	public function load($name, $page, $draft=false, $item_id=''){
         
         if(strlen($name) && is_object($page)){
             
@@ -26,12 +26,18 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
             $result = $this->database->queryToArray($sql);
             
             if(count($result)){
-            // if($placeholder->hydrateBy('name', $name)){
-                
+            
                 $placeholder->hydrate($result[0]);
                 
                 $this->_asset_class = $placeholder;
                 $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
+                
+                if(is_numeric($item_id)){
+                    $sql .= " AND assetidentifier_item_id='".$item_id."'";
+                }else{
+                    $sql .= " AND assetidentifier_item_id IS NULL";
+                }
+                
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
@@ -50,41 +56,13 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
                     $asset = new SmartestAsset;
                     $asset->hydrate($asset_id);
                     
-                    // print_r($asset_types);
-                    
-                    // if(array_key_exists($placeholder->getType(), $asset_types) && isset($asset_types[$placeholder->getType()]['class'])){
-                        // $class_name = $asset_types[$placeholder->getType()]['class'];
-                        // echo $class_name;
-                        // $asset = new $class_name;
-                        // $asset = new SmartestAsset;
-                    // }else{
-                        // $asset = new SmartestAsset;
-                    // }
-                    
                     if(in_array($placeholder->getType(), array('SM_ASSETTYPE_IMAGE', 'SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_SL_TEXT'))){
                         $this->_is_linkable = true;
                     }else{
                         $this->_is_linkable = false;
                     }
                     
-                    
-                    
                     return $asset_id;
-                    
-                    /* if($asset->hydrate($asset_id)){
-                        
-                        $this->_asset = $asset;
-                        $this->_asset->setIsDraft($draft);
-                        // print_r($asset->getType());
-                        // print_r($this->database->getDebugInfo());
-                        $this->_loaded = true;
-                        return true;
-                        
-                    }else{
-                        // Asset doesn't exist
-                        $this->_loaded = false;
-                        return false;
-                    } */
                     
                 }else{
                     // Placeholder not defined
@@ -100,7 +78,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         }
     }
     
-    public function loadForUpdate($name, $page, $draft=false){
+    public function loadForUpdate($name, $page, $draft=false, $item_id=''){
         
         if(strlen($name) && is_object($page)){
             
@@ -110,13 +88,16 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
             
             if($placeholder->hydrateBy('name', $name)){
                 
-                // echo 'loaded';
-                
                 $this->_asset_class = $placeholder;
                 $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
-                $result = $this->database->queryToArray($sql);
                 
-                // var_dump($result);
+                if(is_numeric($item_id)){
+                    $sql .= " AND assetidentifier_item_id='".$item_id."'";
+                }else{
+                    $sql .= " AND assetidentifier_item_id IS NULL";
+                }
+                
+                $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
                     
@@ -182,7 +163,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         $asset = $this->getAsset($draft);
         
         if(is_object($asset)){
-            return @unserialize($asset->getParameterDefaults());
+            return unserialize($asset->getParameterDefaults());
         }
         
     }

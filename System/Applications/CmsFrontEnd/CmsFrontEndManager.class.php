@@ -64,7 +64,6 @@ class CmsFrontEndManager{
     			throw new SmartestRedirectException(SM_CONTROLLER_DOMAIN.$new_url);
     		}
     		
-			return null;
 		}
 		
 	}
@@ -126,6 +125,8 @@ class CmsFrontEndManager{
 	        $sql .= " AND Pages.page_site_id=Sites.site_id AND Sites.site_domain='".$site_domain."'";
 	    }
 	    
+	    // echo $sql;
+	    
 	    $result = $this->database->queryToArray($sql);
 	    
 	    if(count($result) > 0){
@@ -145,11 +146,10 @@ class CmsFrontEndManager{
 		    
 			$page->setIdentifyingFieldValue($item_id);
 			
-			if($page->isAcceptableItem($draft_mode)){
+			if($page->isAcceptableItem()){
 			    // the item id was ok. get the item
 			    $page->assignPrincipalItem();
 			    return $page;
-			    
 			}else{
 			    // the item was not the right type, so I guess it's a 404
 			    SmartestLog::getInstance('system')->log("Unacceptable item ID: $item_id requested while trying to build Page ID: ".$page->getId());
@@ -164,8 +164,6 @@ class CmsFrontEndManager{
 	public function getItemClassPageByUrl($url, $site_id){
 		
 		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url FROM Pages, PageUrls WHERE Pages.page_type='ITEMCLASS' AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
-		
-		// echo $sql;
 		
 		$dataset_pages = $this->database->queryToArray($sql);
 		

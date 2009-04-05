@@ -37,6 +37,7 @@ return true;
 <form id="createLayoutPreset" action="{$domain}{$section}/createLayoutPreset" method="post" style="margin:0px">
   
 <input type="hidden" name="page_id" value="{$page.id}" />
+{if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
 
 <div class="instruction">Enter a name for this preset: <input type="text" name="preset_name" value="Untitled Preset" /></div>
 

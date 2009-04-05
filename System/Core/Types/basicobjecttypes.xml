@@ -16,6 +16,11 @@
     <prefix>asset_</prefix>
     <class>Asset</class>
   </table>
+  
+  <!--<table name="Comments">
+    <prefix>comment_</prefix>
+    <class>Comment</class>
+  </table>-->
 
   <table name="DataExports">
     <prefix>dataexport_</prefix>
@@ -135,7 +140,7 @@
 
   <table name="Sets">
     <prefix>set_</prefix>
-    <class>CmsItemSet</class>
+    <class>Set</class>
   </table>
 
   <table name="SetsItemsLookup">

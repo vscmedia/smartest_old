@@ -2,6 +2,26 @@
   
   <h3>Define Placeholder</h3>
   
+  {if $require_choose_item}
+  
+  <div class="instruction">As this is a meta-page, you must choose an item to continue</div>
+  
+  <form id="item_chooser" method="get" action="{$domain}{$section}/definePlaceholder">
+    
+    <input type="hidden" name="assetclass_id" value="{$placeholder.name}" />
+    <input type="hidden" name="page_id" value="{$page.webid}" />
+    
+    <select name="item_id" onchange="$('item_chooser').submit()" style="width:300px">
+      {foreach from=$items item="possible_item"}
+        <option value="{$possible_item.id}">{$possible_item.name}</option>
+      {/foreach}
+    </select>
+    <input type="submit" value="Continue" />
+    
+  </form>
+  
+  {else}
+  
   <form id="file_chooser" method="get" action="{$domain}{$section}/definePlaceholder">
     
     <div class="edit-form-row">
@@ -17,6 +37,7 @@
     
     <input type="hidden" name="assetclass_id" value="{$placeholder.name}" />
     <input type="hidden" name="page_id" value="{$page.webid}" />
+    {if $show_item_options}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
     
     </form>
     
@@ -24,6 +45,7 @@
     
       <input type="hidden" name="page_id" value="{$page.id}" />
       <input type="hidden" name="placeholder_id" value="{$placeholder.id}" />
+      {if $show_item_options}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
     
     {if $valid_definition}
     
@@ -33,6 +55,34 @@
         <div class="form-section-label">Chosen File:</div>
         <b>{$asset.stringid}</b> ({if $asset_type.storage.type == 'file'}{$asset_type.storage.location}{/if}{$asset.url}) - {$asset_type.label}
       </div>
+      
+      {if $show_item_options}
+      <div class="edit-form-row">
+        <div class="form-section-label">Meta Page:</div>
+        {$page.static_title}
+      </div>
+      
+      <div class="edit-form-row">
+        <div class="form-section-label">{$item.model.name}:</div>
+        {$item.name}
+      </div>
+      
+      <div class="edit-form-row">
+        <div class="form-section-label">Define placeholder on this meta-page for:</div>
+        <select name="definition_scope">
+          
+          <option value="THIS">This {$item.model.name|strtolower} only</option>
+          {if $item_uses_default}<option value="DEFAULT">All {$item.model.plural_name|strtolower} currently using the default definition</option>{/if}
+          <option value="ALL">All {$item.model.plural_name|strtolower}{if $is_defined} (removes all other per-item definitions){/if}</option>
+          
+        </select>
+      </div>
+      {else}
+      <div class="edit-form-row">
+        <div class="form-section-label">Page:</div>
+        {$page.title}
+      </div>
+      {/if}
     
     {foreach from=$params key="parameter_name" item="parameter"}
       <div class="edit-form-row">
@@ -51,6 +101,8 @@
   </div>
   
   </form>
+  
+  {/if}
   
 </div>
 

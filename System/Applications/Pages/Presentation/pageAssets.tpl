@@ -18,12 +18,11 @@ function viewDraftPage(){
 
 function viewLivePage(){
 
-	var pageURL = sm_domain+'website/renderPageFromId?page_id='+pageWebId;
+	var pageURL = sm_domain+'website/renderPageFromId?page_id='+pageWebId{/literal}{if $item}+'&item_id={$item.id}'{/if};
 	window.open(pageURL);
 
-}
+{literal}}{/literal}
 
-{/literal}
 </script>
 
 <div id="work-area">
@@ -109,12 +108,10 @@ function viewLivePage(){
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Page Options</b></li>
   {if $template.filename}<li class="permanent-action"><a href="{$domain}templates/editTemplate?type=SM_PAGE_MASTER_TEMPLATE&amp;template_name={$templateMenuField}" value="Edit"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Edit Page Template</a></li>{/if}
-  {if $version == "draft"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishPageConfirm?page_id={$page.webid}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_lightning.png" border="0" alt=""> Publish this page</a></li>{/if}
-  {* <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishPageContainersConfirm?page_id={$page.webid}';" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Publish Containers</a></li> *}
-  {* {if $version == "draft"}<li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('publishPagePlaceholdersConfirm');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Publish Placeholders Only</a></li>{/if} *}
+  {if $version == "draft"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishPageConfirm?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_lightning.png" border="0" alt=""> Publish this page</a></li>{/if}
   <li class="permanent-action"><a href="#" onclick="viewLivePage();" class="right-nav-link"><img src="{$domain}Resources/Icons/page_go.png" border="0" alt=""> Go to this page</a></li>
 
-  <li class="permanent-action"><a href="{$domain}{$section}/layoutPresetForm?page_id={$page.webid}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Create preset from this page</a></li>
+  <li class="permanent-action"><a href="{$domain}{$section}/layoutPresetForm?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Create preset from this page</a></li>
 
   {if $draftAsset.asset_id && $draftAsset.asset_id != $liveAsset.asset_id}<li class="permanent-action"><a href="#" onclick="{literal}if(confirm('Are you sure you want to publish your changes right now?')){workWithItem('setLiveAsset');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt=""> Publish This Asset Class</a>{/if}
   <li class="permanent-action"><a href="{$domain}smartest/assets/types" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Browse Assets Library</a></li>

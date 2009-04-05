@@ -1363,8 +1363,6 @@ class Items extends SmartestSystemApplication{
     	                
     	                $itemspace_defs = $item->getItemSpaceDefinitions(true);
     	                
-    	                // print_r($itemspace_defs);
-    	                
     	                foreach($itemspace_defs as $def){
     	                    
     	                    $def->publish();

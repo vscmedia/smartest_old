@@ -223,22 +223,35 @@ class SmartestPage extends SmartestBasePage{
 	    }
 	}
 	
-	public function getAssetIdentifiers(){
+	public function getAssetIdentifiers($item_id=false){
 	    
-	    $sql = "SELECT * FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_page_id='".$this->_properties['id']."' AND assetidentifier_assetclass_id=assetclass_id";
+	    $sql = "SELECT * FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_page_id='".$this->_properties['id']."' AND assetidentifier_assetclass_id=assetclass_id AND assetidentifier_item_id IS NULL";
 	    $result = $this->database->queryToArray($sql);
+	    
 	    $ais = array();
 	    
 	    foreach($result as $r){
 	        
 	        $ai = new SmartestAssetIdentifier;
 	        $ai->hydrateFromGiantArray($r);
-	        // print_r($ai->__toArray());
-	        $ais[] = $ai;
+	        $ais[$r['assetclass_id']] = $ai;
 	        
 	    }
 	    
-	    // print_r($ais);
+	    if($item_id !== false){
+	        
+	        $sql = "SELECT * FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_page_id='".$this->_properties['id']."' AND assetidentifier_assetclass_id=assetclass_id AND assetidentifier_item_id='".$item_id."'";
+            $result = $this->database->queryToArray($sql);
+    	    
+    	    foreach($result as $r){
+
+    	        $ai = new SmartestAssetIdentifier;
+    	        $ai->hydrateFromGiantArray($r);
+    	        $ais[$r['assetclass_id']] = $ai;
+
+    	    }
+    	    
+	    }
 	    
 	    return $ais;
 	    
@@ -263,20 +276,16 @@ class SmartestPage extends SmartestBasePage{
 	    
 	}
 	
-	public function publish(){
+	public function publish($item_id=false){
 	    
 	    // update database defs
 		$sql = "UPDATE Lists SET list_live_set_id=list_draft_set_id, list_live_template_file=list_draft_template_file, list_live_header_template=list_draft_header_template, list_live_footer_template=list_draft_footer_template WHERE list_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);
 		
-		// $sql = "UPDATE AssetIdentifiers INNER JOIN AssetClasses USING (assetidentifier_assetclass_id,assetclass_id) SET assetidentifier_live_asset_id=assetidentifier_draft_asset_id, assetidentifier_live_render_data=assetidentifier_draft_render_data WHERE assetidentifier_page_id='".$this->_properties['id']."' AND AssetClasses.assetclass_update_on_page_publish='1'";
-		// echo $sql;
-		// $this->database->rawQuery($sql);
-		
 		// delete files in page cache
 		$this->clearCachedCopies();
 		
-		$asset_identifiers = $this->getAssetIdentifiers();
+		$asset_identifiers = $this->getAssetIdentifiers($item_id);
 		
 		// new way of publishing asset identifiers that takes account of items and itemspaces
 		foreach($asset_identifiers as $ai){
@@ -292,13 +301,10 @@ class SmartestPage extends SmartestBasePage{
 		        }
 	        }
 		    
-		    // var_dump($ai->getAssetClass()->getUpdateOnPagePublish());
 		    if($ai->getAssetClass()->getUpdateOnPagePublish() == 1 || $item_published){
-		        $ai->publish();
+		        $ai->publish(true);
 		    }
 		}
-		
-		// print_r($this->database->getDebugInfo());
 		
 		$sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);
@@ -314,8 +320,15 @@ class SmartestPage extends SmartestBasePage{
 		}
 		
 		// finally, request the page to force the system to build and cache the new copy
-		// unfortunately this function is stil in need of errors, and still causes some preg_match errors
-		// SmartestHttpRequestHelper::getContent(SM_CONTROLLER_DOMAIN.$this->getDefaultUrl());
+		if(!defined('SM_CMS_PAGE_SITE_ID')){define('SM_CMS_PAGE_SITE_ID', $this->getSiteId());}
+		$ph = new SmartestWebPagePreparationHelper($this);
+	    
+	    $overhead_finish_time = microtime(true);
+		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
+		
+		define("SM_OVERHEAD_TIME", $overhead_time_taken);
+	    
+	    $html = $ph->fetch();
 		
 	}
 	
@@ -341,12 +354,19 @@ class SmartestPage extends SmartestBasePage{
 		return $objects;
 	}
 	
-	public function getParsableTextFragments(){
+	public function getParsableTextFragments($item_id=false){
 	    
 	    $helper = new SmartestAssetsLibraryHelper;
 		$codes = $helper->getParsableAssetTypeCodes();
 		
 		$sql = "SELECT TextFragments.* FROM Pages, Assets, AssetIdentifiers, TextFragments WHERE Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND Assets.asset_id=AssetIdentifiers.assetidentifier_live_asset_id AND TextFragments.textfragment_id=Assets.asset_fragment_id AND Pages.page_id='".$this->_properties['id']."' AND Assets.asset_type IN ('".implode("', '", $codes)."')";
+		
+		if(is_numeric($item_id)){
+            $sql .= " AND assetidentifier_item_id='".$item_id."'";
+        }else{
+            $sql .= " AND assetidentifier_item_id IS NULL";
+        }
+		
 		$result = $this->database->queryToArray($sql);
 		$objects = array();
 		
@@ -1567,9 +1587,9 @@ class SmartestPage extends SmartestBasePage{
 	public function loadAssetClassDefinitions(){
 	    
 	    if($this->getDraftMode()){
-	        $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id";
+	        $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_item_id IS NULL AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id";
         }else{
-            $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
+            $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_item_id IS NULL AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
         }
         
         $result = $this->database->queryToArray($sql);
@@ -1601,7 +1621,6 @@ class SmartestPage extends SmartestBasePage{
 	    foreach($result as $def_array){
             $def = new SmartestItemSpaceDefinition;
             $def->hydrateFromGiantArray($def_array);
-            // print_r($def);
             $this->_itemspaces[$def_array['assetclass_name']] = $def;
         }
 	    

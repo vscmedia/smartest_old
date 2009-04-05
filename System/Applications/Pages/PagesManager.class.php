@@ -64,8 +64,6 @@ class PagesManager{
             
             $sql = "SELECT * FROM Assets WHERE asset_type IN (";
             
-            // var_dump($types);
-            
             foreach($types as $key => $t){
                 
                 if($key > 0){
@@ -77,8 +75,6 @@ class PagesManager{
             }
             
             $sql .= ') ORDER BY asset_stringid';
-            
-            // echo $sql;
             
             $result = $this->database->queryToArray($sql);
             $official_types = SmartestDataUtility::getAssetTypes();
@@ -393,15 +389,15 @@ class PagesManager{
 	////////////////////////////////////// NEW CODE //////////////////////////////////////////////
 	
 	
-	public function getPageTemplateAssetClasses($page_id, $version="draft"){
+	public function getPageTemplateAssetClasses($page_id, $version="draft", $item_id=false){
 		// echo $page_id;
 		$page_id = $this->getPageIdFromPageWebId($page_id);
-		$tree = $this->getPageAssetClassTree($page_id, $version);
+		$tree = $this->getPageAssetClassTree($page_id, $version, $item_id);
 		// $list = $this->getSerialisedAssetClassTree($tree);
 		return array("tree"=>$tree, "list"=>array());
 	}
 	
-	public function getPageAssetClassTree($page_id, $version){
+	public function getPageAssetClassTree($page_id, $version, $item_id=false){
 	
 		// $field = ($version == "live") ? "page_live_template" : "page_draft_template";
 		
@@ -419,8 +415,10 @@ class PagesManager{
     		$draft = ($version == "live") ? false : true;
     		
     		$template_file = SM_ROOT_DIR."Presentation/Masters/".$template;
-
-    		$assetClasses = $this->getTemplateAssetClasses($template_file, $page, 0, $version);
+            
+            // var_dump($item_id);
+            
+    		$assetClasses = $this->getTemplateAssetClasses($template_file, $page, 0, $version, $item_id);
 
     		return $assetClasses;
 		
@@ -483,7 +481,7 @@ class PagesManager{
 		
 	}
 		
-    public function getTemplateAssetClasses($template_file_path, SmartestPage $page, $level=0, $version="draft"){
+    public function getTemplateAssetClasses($template_file_path, SmartestPage $page, $level=0, $version="draft", $item_id=false){
 		
 		$i = 0;
 		$info = array();
@@ -538,31 +536,26 @@ class PagesManager{
 				$info[$i]['info']['type'] = "placeholder";
 				
 				if($version == "live"){
-					// $asset = $this->getAssetClassLiveDefinition($info[$i]['info']['assetclass_name'], $this->getPageIdFromPageWebId($page_webid));
-					$asset = $this->getAssetClassLiveDefinition($info[$i]['info']['assetclass_name'], $page->getId());
+					$asset = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), false, $item_id);
 				}else{
-					// $asset = $this->getAssetClassDraftDefinition($info[$i]['info']['assetclass_name'], $this->getPageIdFromPageWebId($page_webid));
-					$asset = $this->getAssetClassDraftDefinition($info[$i]['info']['assetclass_name'], $page->getId());
+					$asset = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), true, $item_id);
 				}
 				
 				$info[$i]['info']['asset_id'] = $asset;
 				$assetObj = new SmartestAsset();
 				
-				// var_dump($asset);
-				
 				if($assetObj->hydrate($asset)){
 				    
-				    // $child = array();
-				    
 				    $child = $assetObj->getArrayForElementsTree($level);
-				    // print_r($assetObj->__toArray());
 				    
 				    if($assetObj->isParsable()){
+				        
 				        $child['children'] = $assetObj->getTextFragment()->getAttachmentsForElementsTree($level+2, $version);
+				        
 				        foreach($child['children'] as $key => $attachment){
 				            $child['children'][$key]['info']['assetclass_id'] = $assetObj->getStringid().'_'.$attachment['info']['assetclass_name'];
 				            $child['children'][$key]['info']['assetclass_name'] = $assetObj->getStringid().'_'.$attachment['info']['assetclass_name'];
-				            // print_r($child['children'][$key]);
+				            
 				            if(isset($child['children'][$key]['asset_object']) && is_object($child['children'][$key]['asset_object'])){
 				                $child_asset = $child['children'][$key]['asset_object'];
 				                $child_asset_array = $child_asset->getArrayForElementsTree($level+2);
@@ -583,8 +576,6 @@ class PagesManager{
 		
 		$itemspace_names = $this->getTemplateItemSpaceNames($template_file_path);
 		
-		// print_r($itemspace_names);
-		
 		if(is_array($itemspace_names)){
 			
 			foreach($itemspace_names as $itemspace_name){
@@ -595,8 +586,6 @@ class PagesManager{
                 $info[$i]['info']['assetclass_name'] = $itemspace_name;
                 
                 if($item_space->exists($itemspace_name, $site_id)){
-                    
-                    // print_r($item_space);
                     
                     $info[$i]['info']['exists'] = 'true';
                     $info[$i]['info']['assetclass_id'] = $item_space->getId();
@@ -627,8 +616,6 @@ class PagesManager{
 			
 		if(is_array($listNames)){
 			
-			// print_r($listNames);
-			
 			foreach($listNames as $listName){
                 
 				/* $info[$i]['info']['exists'] = 'true';
@@ -649,8 +636,6 @@ class PagesManager{
     				$info[$i]['info']['type'] = "list";
     				$info[$i]['info']['level'] = $level;
 				}
-				
-				// print_r($info[$i]['info']);
 				
 				$i++;
 				
@@ -690,8 +675,6 @@ class PagesManager{
 
 		$containerNames = $this->getTemplateContainerNames($template_file_path);
 		
-		// print_r($containerNames);
-		
 		if(is_array($containerNames)){
 		
 			foreach($containerNames as $containerName){
@@ -701,9 +684,8 @@ class PagesManager{
 			    if($container->hydrateBy('name', $containerName)){
 			    
 				    $info[$i]['info'] = $this->getAssetClassInfo($containerName);
-				    // $info[$i]['info']['exists'] = $this->getContainerExists($containerName);
 				    $info[$i]['info']['exists'] = 'true';
-				    $info[$i]['info']['defined'] = $this->getAssetClassDefinedOnPage($containerName, $page->getId());
+				    $info[$i]['info']['defined'] = $this->getAssetClassDefinedOnPage($containerName, $page->getId(), $item_id);
 				
 			    }else{
 			        $info[$i]['info']['exists'] = 'false';
@@ -714,17 +696,14 @@ class PagesManager{
 				$info[$i]['info']['assetclass_name'] = $containerName;
 				$info[$i]['info']['assetclass_id'] = 'container_'.$containerName;
 				$info[$i]['info']['type'] = "container";
-				
-				// print_r($info[$i]);
-				
 				$info[$i]['level'] = $level;
 				
 				if($info[$i]['info']['assetclass_type'] == 'SM_ASSETCLASS_CONTAINER'){
 					
 					if($version == "live"){
-						$asset = $this->getAssetClassLiveDefinition($info[$i]['info']['assetclass_name'], $page->getId());
+						$asset = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), false, $item_id);
 					}else{
-						$asset = $this->getAssetClassDraftDefinition($info[$i]['info']['assetclass_name'], $page->getId());
+						$asset = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), true, $item_id);
 					}
 					
 					$assetObj = new SmartestContainerTemplateAsset();
@@ -732,21 +711,16 @@ class PagesManager{
 					if($assetObj->hydrate($asset)){
 					
 					    $info[$i]['info']['asset_id'] = $asset;
-					    // $info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
 					    $info[$i]['info']['asset_webid'] = $assetObj->getWebid();
 					    
-					    // $child_template_file = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
 					    $child_template_file = SM_ROOT_DIR."Presentation/Layouts/".$assetObj->getUrl();
 					    $info[$i]['info']['filename'] = '';
 					    
-					    // $info[$i]['info']['filename'] = $this->database->specificQuery("asset_url", "asset_id", $asset, "Assets");
-	                    $child = $assetObj->getArrayForElementsTree($level+1);
-	                    $child['children'] = $this->getTemplateAssetClasses($child_template_file, $page, $level+2, $version);
+					    $child = $assetObj->getArrayForElementsTree($level+1);
+	                    $child['children'] = $this->getTemplateAssetClasses($child_template_file, $page, $level+2, $version, $item_id);
 	                    $info[$i]['children'] = array($child);
 					
 				    }
-				    
-				    
 				
 				}
 			    
@@ -756,7 +730,6 @@ class PagesManager{
 		
 		}
 		
-		// print_r($info);
 		return $info;
 	}
 	
@@ -822,11 +795,13 @@ class PagesManager{
 		$this->clearCacheForPlaceholders($page_id);
 	}
 	
-	public function getUndefinedElements($page_webid, $version='draft'){
+	public function getUndefinedElements($page_webid, $version='draft', $item_id=false){
 		
-		$assetClasses = $this->getPageTemplateAssetClasses($page_webid, $version);
+		$assetClasses = $this->getPageTemplateAssetClasses($page_webid, $version, $item_id);
 		$assetClasseslist = $this->getSerialisedAssetClassTree($assetClasses['tree']);
-
+        
+        // print_r($assetClasseslist);
+        
 		$i = 0;
 
 		foreach($assetClasseslist as $assetClass){
@@ -1059,14 +1034,30 @@ class PagesManager{
 		}
 	}
 	
-	public function getAssetClassDefinedOnPage($assetclass_name, $page_id){
+	public function getAssetClassDefinedOnPage($assetclass_name, $page_id, $item_id=false){
 
 		$sql = "SELECT assetidentifier_draft_asset_id, assetidentifier_live_asset_id FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_assetclass_id=assetclass_id AND assetidentifier_page_id='$page_id' AND assetclass_name='$assetclass_name'";
+		
+		if($item_id != false){
+		    
+		    $item_sql = $sql." AND assetidentifier_item_id='".$item_id."'";
+		    $result = $this->database->queryToArray($item_sql);
+		    
+		    if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && $result[0]["assetidentifier_live_asset_id"] > 0 && $result[0]["assetidentifier_draft_asset_id"] == $result[0]["assetidentifier_live_asset_id"] && $result[0]["assetidentifier_draft_render_data"] == $result[0]["assetidentifier_live_render_data"]){
+    			$status = "PUBLISHED";
+    			return $status;
+    		}else if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && ($result[0]["assetidentifier_live_asset_id"] != $result[0]["assetidentifier_draft_asset_id"] || $result[0]["assetidentifier_draft_render_data"] != $result[0]["assetidentifier_live_render_data"])){
+                $status = "DRAFT";
+                return $status;
+    		}
+		}
+		
+		$sql .= " AND assetidentifier_item_id IS NULL";
 		$result = $this->database->queryToArray($sql);
 		
-		if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && $result[0]["assetidentifier_live_asset_id"] > 0 && $result[0]["assetidentifier_draft_asset_id"] == $result[0]["assetidentifier_live_asset_id"]){
+		if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && $result[0]["assetidentifier_live_asset_id"] > 0 && $result[0]["assetidentifier_draft_asset_id"] == $result[0]["assetidentifier_live_asset_id"] && $result[0]["assetidentifier_draft_render_data"] == $result[0]["assetidentifier_live_render_data"]){
 			$status = "PUBLISHED";
-		}else if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && ($result[0]["assetidentifier_live_asset_id"] != $result[0]["assetidentifier_draft_asset_id"])){
+		}else if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && ($result[0]["assetidentifier_live_asset_id"] != $result[0]["assetidentifier_draft_asset_id"] || $result[0]["assetidentifier_draft_render_data"] != $result[0]["assetidentifier_live_render_data"])){
 
 			$status = "DRAFT";
 		}else{
@@ -1076,21 +1067,27 @@ class PagesManager{
 		return $status;
 	}
 	
-	public function getAssetClassDraftDefinition($assetclass_name, $page_id){
-		$sql = "SELECT assetidentifier_draft_asset_id FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_assetclass_id=assetclass_id AND assetidentifier_page_id='$page_id' AND assetclass_name='$assetclass_name'";
-		$result = $this->database->queryToArray($sql);
-		if(!empty($result[0])){
-			return $result[0]["assetidentifier_draft_asset_id"];
-		}else{
-			return false;
+	public function getAssetClassDefinition($assetclass_name, $page_id, $draft=false, $item_id=false){
+		
+		$field = $draft ? 'assetidentifier_draft_asset_id' : 'assetidentifier_live_asset_id';
+		
+		$sql = "SELECT $field, assetidentifier_id FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_assetclass_id=assetclass_id AND assetidentifier_page_id='$page_id' AND assetclass_name='$assetclass_name'";
+		
+		if($item_id != false){
+		    
+		    $item_sql = $sql." AND assetidentifier_item_id='".$item_id."'";
+		    $result = $this->database->queryToArray($item_sql);
+		    
+		    if(!empty($result[0])){
+    			return $result[0][$field];
+    		}
 		}
-	}
-	
-	public function getAssetClassLiveDefinition($assetclass_name, $page_id){
-		$sql = "SELECT assetidentifier_live_asset_id FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_assetclass_id=assetclass_id AND assetidentifier_page_id='$page_id' AND assetclass_name='$assetclass_name'";
+		
+		$sql .= " AND assetidentifier_item_id IS NULL";
 		$result = $this->database->queryToArray($sql);
+		
 		if(!empty($result[0])){
-			return $result[0]["assetidentifier_live_asset_id"];
+		    return $result[0][$field];
 		}else{
 			return false;
 		}

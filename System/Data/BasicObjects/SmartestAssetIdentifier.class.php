@@ -181,14 +181,10 @@ class SmartestAssetIdentifier extends SmartestBaseAssetIdentifier{
 	    
 	    $this->setField('live_render_data', $this->_properties['draft_render_data']);
 		$this->setField('live_asset_id', $this->_properties['draft_asset_id']);
-		
-		// print_r($this->_properties['draft_asset_id']);
-		
-		// print_r($this->_modified_properties);
-		
-		if($do_save){
-		    $this->save();
-	    }
+	
+	    if($do_save){
+	        $this->save();
+        }
 	    
 	}
 	

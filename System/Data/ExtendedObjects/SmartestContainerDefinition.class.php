@@ -14,7 +14,7 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
 		
 	}
 	
-    public function load($name, $page, $draft=false){
+    public function load($name, $page, $draft=false, $item_id=false){
         
         if(strlen($name) && is_object($page)){
             
@@ -32,6 +32,13 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
                 
                 $this->_asset_class = $container;
                 $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
+                
+                if(is_numeric($item_id)){
+                    $sql .= " AND assetidentifier_item_id='".$item_id."'";
+                }else{
+                    $sql .= " AND assetidentifier_item_id IS NULL";
+                }
+
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
@@ -45,8 +52,6 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
                     }
                     
                     $template = new SmartestContainerTemplateAsset;
-                    
-                    // print_r($this);
                     
                     if($draft){
                         $template_id = $this->getDraftAssetId();
@@ -84,7 +89,7 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
         }
     }
     
-    public function loadForUpdate($name, $page, $draft=false){
+    public function loadForUpdate($name, $page, $draft=false, $item_id=false){
         
         if(strlen($name) && is_object($page)){
             
@@ -97,10 +102,15 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
                 // echo 'loaded';
                 
                 $this->_asset_class = $container;
-                $sql = "SELECT * FROM AssetIdentifiers WHERE assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
-                $result = $this->database->queryToArray($sql);
+                $sql = "SELECT * FROM AssetIdentifiers, AssetClasses WHERE assetclass_type = 'SM_ASSETCLASS_CONTAINER' AND assetidentifier_assetclass_id=assetclass_id AND assetidentifier_assetclass_id='".$this->_asset_class->getId()."' AND assetidentifier_page_id='".$this->_page->getId()."'";
                 
-                // var_dump($result);
+                if(is_numeric($item_id)){
+                    $sql .= " AND assetidentifier_item_id='".$item_id."'";
+                }else{
+                    $sql .= " AND assetidentifier_item_id IS NULL";
+                }
+                
+                $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
                     

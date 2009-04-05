@@ -268,7 +268,6 @@ class Pages extends SmartestSystemApplication{
     	            if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
     	                $page->setPrincipalItem($item);
     	            }
-    	            // print_r($item);
 	            }
     	        
     	        $this->send(false, 'require_item_select');
@@ -1224,6 +1223,7 @@ class Pages extends SmartestSystemApplication{
 	                if($page->getType() == 'ITEMCLASS'){
         	            if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
         	                $page->setPrincipalItem($item);
+        	                $this->send($item, 'item');
         	            }
     	            }
 	                
@@ -1698,16 +1698,37 @@ class Pages extends SmartestSystemApplication{
 		
 		$page_webid = $get['page_id'];
 		
-		$page = new SmartestPage;
+		$helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+
+		if(isset($type_index[$page_webid])){
+		    if($type_index[$page_webid] == 'ITEMCLASS' && isset($get['item_id']) && is_numeric($get['item_id'])){
+		        $page = new SmartestItemPage;
+		    }else{
+		        $page = new SmartestPage;
+		    }
+		}else{
+		    $page = new SmartestPage;
+		}
 		
 		if($page->hydrate($page_webid)){
+		    
+		    if($page->getType() == 'ITEMCLASS'){
+	            if(isset($get['item_id']) && $item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+	                $page->setPrincipalItem($item);
+	                $this->send($item, 'item');
+	                $item_id = $get['item_id'];
+	            }else{
+	                $item_id = false;
+	            }
+            }
 		    
 		    $page->setDraftMode(true);
 		    
 		    $this->setTitle('Create Preset');
 		    
 		    $page_id = $this->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
-		    $assetClasses = $this->manager->getPageTemplateAssetClasses($page_webid, "draft");
+		    $assetClasses = $this->manager->getPageTemplateAssetClasses($page_webid, "draft", $item_id);
 		    $assetClasseslist = $this->manager->getSerialisedAssetClassTree($assetClasses['tree']);
  		    
  		    $this->send($assetClasseslist, 'elements');
@@ -1784,11 +1805,63 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $this->setTitle('Define Container');
 	    
-	    $page = new SmartestPage;
+	    $helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+	    
+	    if(isset($type_index[$page_webid])){
+		    
+		    if($type_index[$page_webid] == 'ITEMCLASS'){
+		        
+		        if(isset($get['item_id']) && is_numeric($get['item_id'])){
+		            
+		            $item_id = (int) $get['item_id'];
+		            
+    		        $page = new SmartestItemPage;
+		        
+    		        if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+    	                $page->setPrincipalItem($item);
+    	                $this->send($item, 'item');
+    	                $this->send(true, 'show_item_options');
+    	                $this->send(false, 'require_choose_item');
+    	            }else{
+    	                $this->send(true, 'require_choose_item');
+    	                $require_item = true;
+    	            }
+    	            
+	            
+                }else{
+                    // this is a meta page, but the item id is problematic
+                    $page = new SmartestItemPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
+                    $this->send(true, 'require_choose_item');
+                    $require_item = true;
+                }
+		        
+		    }else{
+		        // this is just a normal static page
+		        $item_id = '';
+		        $page = new SmartestPage;
+		        $this->send(false, 'require_choose_item');
+		    }
+		}else{
+		    $page = new SmartestPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
+		}
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        
 	        $page->setDraftMode(true);
+	        
+	        if(isset($require_item) && $require_item){
+                
+                $model = new SmartestModel;
+                
+                if($model->hydrate($page->getDatasetId())){
+                    $items = $model->getSimpleItems($this->getSite()->getId());
+                    $this->send($items, 'items');
+                    $this->send($model, 'model');
+                    $this->send($page, 'page');
+                }
+                
+            }
 	        
 	        $container = new SmartestContainer;
 	        
@@ -1796,41 +1869,79 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $this->setTitle('Define Container | '.$container_name);
 	            
-	            $definition = new SmartestContainerDefinition;
+	            $page_definition = new SmartestContainerDefinition;
 	            
-	            if($definition->load($container_name, $page)){
-	                // container has live definition
-	                $this->send($definition->getLiveAssetId(), 'selected_template_id');
-	                $this->send(true, 'is_defined');
+	            if($page_definition->load($container_name, $page, true)){
+	                
+	                if($type_index[$page_webid] == 'ITEMCLASS'){
+	                    
+	                    $item_definition = new SmartestContainerDefinition;
+	                    
+	                    if($item_definition->load($container_name, $page, true, $item_id)){
+	                        
+	                        if($page_definition->getDraftAssetId() == $item_definition->getDraftAssetId()){
+	                            $item_uses_default = true;
+	                        }else{
+	                            $item_uses_default = false;
+	                        }
+	                        
+	                        $this->send($item_definition->getDraftAssetId(), 'selected_template_id');
+	                        
+	                    }else{
+	                        
+	                        $this->send($page_definition->getDraftAssetId(), 'selected_template_id');
+	                        $item_uses_default = true;
+	                        
+	                    }
+	                    
+	                    $this->send($item_uses_default, 'item_uses_default');
+	                    
+	                }else{
+	                
+	                    // container has live definition
+    	                $this->send($page_definition->getDraftAssetId(), 'selected_template_id');
+    	                $this->send(true, 'is_defined');
+	                
+                    }
+	                
 	            }else{
 	                // container has no live definition
 	                $this->send(0, 'selected_template_id');
 	                $this->send(false, 'is_defined');
 	            }
 	            
-	            $assets = $container->getPossibleAssetsAsArrays();
+	            $assets = $container->getPossibleAssets();
 	            
 	            $this->send($assets, 'templates');
-	            $this->send($page->__toArray(), 'page');
-	            $this->send($container->__toArray(), 'container');
+	            $this->send($page, 'page');
+	            $this->send($container, 'container');
 	            
 	        }
 	    
         }else{
-            // print_r($page);
+            // page not found
         }
 	    
 	}
 	
-	public function updateContainerDefinition($get){
+	public function updateContainerDefinition($get, $post){
 	    
-	    $container_id = $get['container_id'];
-	    $page_id = $get['page_id'];
-	    $asset_id = $get['asset_id'];
+	    $container_id = $post['container_id'];
+	    $page_id = $post['page_id'];
+	    $asset_id = $post['asset_id'];
 	    
-	    $this->setTitle('Define Container');
-	    
-	    $page = new SmartestPage;
+	    $helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+		
+	    if(isset($type_index[$page_id])){
+		    if($type_index[$page_id] == 'ITEMCLASS' && isset($post['item_id']) && is_numeric($post['item_id'])){
+		        $page = new SmartestItemPage;
+		    }else{
+		        $page = new SmartestPage;
+		    }
+		}else{
+		    $page = new SmartestPage;
+		}
 	    
 	    if($page->hydrate($page_id)){
 	        
@@ -1842,7 +1953,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $definition = new SmartestContainerDefinition;
 	            
-	            if($definition->loadForUpdate($container->getName(), $page)){
+	            /* if($definition->loadForUpdate($container->getName(), $page)){
 	                
 	                // update container
 	                $definition->setDraftAssetId($asset_id);
@@ -1860,8 +1971,108 @@ class Pages extends SmartestSystemApplication{
 	            }
 	            
 	            $page->setChangesApproved(0);
+                $page->setModified(time()); */
+                
+                if($type_index[$page_id] == 'NORMAL' || (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] != 'THIS')){
+	                
+	                if($definition->loadForUpdate($container->getName(), $page, true)){
+	                    
+	                    // update container
+	                    $definition->setDraftAssetId($asset_id);
+	                    $log_message = $this->getUser()->__toString()." updated container '".$container->getName()."' on page '".$page->getTitle(true)."' to use asset ID ".$asset_id.".";
+	                
+	                }else{
+	                    
+	                    // wasn't already defined
+	                    $definition->setDraftAssetId($asset_id);
+	                    $definition->setAssetclassId($container_id);
+	                    $definition->setInstanceName('default');
+	                    $definition->setPageId($page->getId());
+	                    $log_message = $this->getUser()->__toString()." defined container '".$container->getName()."' on page '".$page->getTitle(true)."' with asset ID ".$asset_id.".";
+	                
+	                }
+	            
+	                if($post['definition_scope'] == 'ALL'){
+	                    
+	                    // DELETE ALL PER-ITEM DEFINITIONS
+	                    
+	                }
+	                
+	                $definition->save();
+	            
+                }else if($type_index[$page_id] == 'ITEMCLASS' && (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] == 'THIS')){
+                    
+                    if($definition->loadForUpdate($container->getName(), $page, true)){ // looks for all-items definition
+	                    
+	                    $item_def = new SmartestContainerDefinition;
+	                    
+	                    // item chosen is same as all-items definition
+	                    if($definition->getDraftAssetId() == $asset_id){ 
+	                        
+	                        // if there is already a per-item definitions for this item
+	                        if($item_def->loadForUpdate($container->getName(), $page, false, $post['item_id'])){
+	                            
+	                            $item_def->delete();
+                                
+	                        }
+	                        
+	                        $log_message = $this->getUser()->__toString()." set container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." (which is the same as the all-items definition) when displaying item ID ".$post['item_id'].".";
+	                    
+	                    }else{
+	                        
+	                        if($item_def->loadForUpdate($container->getName(), $page, true, $post['item_id'])){
+	                            // just update container
+	                            $item_def->setDraftAssetId($asset_id);
+	                            $log_message = $this->getUser()->__toString()." updated container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                        }else{
+	                            $item_def->setDraftAssetId($asset_id);
+        	                    $item_def->setAssetclassId($container_id);
+        	                    $item_def->setItemId($post['item_id']);
+        	                    $item_def->setInstanceName('default');
+        	                    $item_def->setPageId($page->getId());
+	                            $log_message = $this->getUser()->__toString()." defined container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                        }
+	                        
+	                        $item_def->save();
+	                        
+	                    }
+	                
+	                }else if($definition->loadForUpdate($container->getName(), $page, true, $post['item_id']) && $post['definition_scope'] == 'THIS'){
+	                    
+	                    // all-items definition doesn't exist but per-item for this item does
+	                    $definition->setDraftAssetId($asset_id);
+	                    
+	                    if(is_array($post['params'])){
+    	                    $definition->setDraftRenderData(serialize($post['params']));
+    	                }
+    	                
+    	                $definition->save();
+    	                $log_message = $this->getUser()->__toString()." updated container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                    
+	                }else{
+	                    
+	                    // wasn't already defined for any items at all. Define for this item
+	                    $definition->setDraftAssetId($asset_id);
+	                    $definition->setAssetclassId($container_id);
+	                    if($post['definition_scope'] == 'THIS'){$definition->setItemId($post['item_id']);}
+	                    $definition->setInstanceName('default');
+	                    $definition->setPageId($page->getId());
+	                    
+	                    if(is_array($post['params'])){
+    	                    $definition->setDraftRenderData(serialize($post['params']));
+    	                }
+    	                
+    	                $definition->save();
+    	                $log_message = $this->getUser()->__toString()." defined container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                    
+	                }
+	                
+                }
+	            
+	            $page->setChangesApproved(0);
                 $page->setModified(time());
                 $page->save();
+                SmartestLog::getInstance('site')->log($log_message, SM_LOG_USER_ACTION);
 	            
 	            $this->addUserMessageToNextRequest('The container was updated.', SmartestUserMessage::SUCCESS);
 	            
@@ -1888,11 +2099,62 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $this->setTitle('Define Placeholder');
 	    
-	    $page = new SmartestPage;
+	    $helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
 	    
-	    if($page->hydrateBy('webid', $page_webid)){
+	    if(isset($type_index[$page_webid])){
+		    
+		    if($type_index[$page_webid] == 'ITEMCLASS'){
+		        
+		        if(isset($get['item_id']) && is_numeric($get['item_id'])){
+		            
+		            $item_id = (int) $get['item_id'];
+		            
+    		        $page = new SmartestItemPage;
+		        
+    		        if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+    	                $page->setPrincipalItem($item);
+    	                $this->send($item, 'item');
+    	                $this->send(true, 'show_item_options');
+    	                $this->send(false, 'require_choose_item');
+    	            }else{
+    	                $this->send(true, 'require_choose_item');
+    	                $require_item = true;
+    	            }
+	            
+                }else{
+                    // this is a meta page, but the item id is problematic
+                    $page = new SmartestItemPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
+                    $this->send(true, 'require_choose_item');
+                    $require_item = true;
+                }
+		        
+		    }else{
+		        // this is just a normal static page
+		        $item_id = '';
+		        $page = new SmartestPage;
+		        $this->send(false, 'require_choose_item');
+		    }
+		}else{
+		    $page = new SmartestPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
+		}
+		
+		if($page->hydrateBy('webid', $page_webid)){
 	        
 	        $page->setDraftMode(true);
+	        
+	        if(isset($require_item) && $require_item){
+                
+                $model = new SmartestModel;
+                
+                if($model->hydrate($page->getDatasetId())){
+                    $items = $model->getSimpleItems($this->getSite()->getId());
+                    $this->send($items, 'items');
+                    $this->send($model, 'model');
+                    $this->send($page, 'page');
+                }
+                
+            }
 	        
 	        $placeholder = new SmartestPlaceholder;
 	        
@@ -1902,16 +2164,28 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $types_array = SmartestDataUtility::getAssetTypes();
                 
-                $definition = new SmartestPlaceholderDefinition;
+                $page_definition = new SmartestPlaceholderDefinition;
                 
-                if($definition->load($placeholder_name, $page, true)){
+                if($page_definition->load($placeholder_name, $page, true)){
 	                
 	                $is_defined = true;
 	                
-	                if($existing_render_data = unserialize($definition->getDraftRenderData())){
+	                if($type_index[$page_webid] == 'ITEMCLASS'){
+	                    
+	                    $item_definition = new SmartestPlaceholderDefinition;
+	                    if($item_definition->load($placeholder_name, $page, true, $item_id)){
+	                        if($page_definition->getDraftAssetId() == $item_definition->getDraftAssetId()){
+	                            $item_uses_default = true;
+	                        }else{
+	                            $item_uses_default = false;
+	                        }
+	                    }else{
+	                        $item_uses_default = true;
+	                    }
+	                }
+	                
+	                if($existing_render_data = unserialize($page_definition->getDraftRenderData())){
 	                    if(is_array($existing_render_data) && is_array($params)){
-	                        
-	                        // $render_data = @unserialize($render_data);
 	                        
 	                        foreach($params as $key => $value){
 	                            if(isset($existing_render_data[$key])){
@@ -1921,26 +2195,36 @@ class Pages extends SmartestSystemApplication{
                         }
                     }
 	                
-	                $this->send($definition->getDraftAssetId(), 'draft_asset_id');
-	                $this->send($definition->getLiveAssetId(), 'live_asset_id');
+	                $this->send($page_definition->getDraftAssetId(), 'draft_asset_id');
+	                $this->send($page_definition->getLiveAssetId(), 'live_asset_id');
 	                
 	            }else{
+	                $item_uses_default = false;
 	                $is_defined = false;
-	                $this->send($definition->getDraftAssetId(), 'draft_asset_id');
+	                $this->send($page_definition->getDraftAssetId(), 'draft_asset_id');
 	                $existing_render_data = array();
 	            }
 	            
+	            $this->send($item_uses_default, 'item_uses_default');
 	            $this->send($is_defined, 'is_defined');
                 
                 $asset = new SmartestAsset;
                 
                 if($get['chosen_asset_id']){
+                    
                     $chosen_asset_id = (int) $get['chosen_asset_id'];
                     $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
+                    
         	    }else{
         	        if($is_defined){
+        	            
         	            // if asset is chosen
-        	            $chosen_asset_id = $definition->getDraftAssetId();
+        	            if($type_index[$page_webid] == 'ITEMCLASS' && $item_definition->load($placeholder_name, $page, true, $item_id)){
+        	                $chosen_asset_id = $item_definition->getDraftAssetId();
+        	            }else{
+        	                $chosen_asset_id = $page_definition->getDraftAssetId();
+    	                }
+    	                
         	            $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
         	        }else{
         	            // No asset choasen. don't show params or 'continue' button
@@ -1954,6 +2238,8 @@ class Pages extends SmartestSystemApplication{
         	        $this->send($asset, 'asset');
         	        
         	        $type = $types_array[$asset->getType()];
+        	        
+        	        // Merge values for render data
         	        
         	        if(isset($type['param'])){
 
@@ -2006,17 +2292,19 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $this->send($params, 'params');
 	            
-	            $assets = $placeholder->getPossibleAssetsAsArrays();
+	            $assets = $placeholder->getPossibleAssets();
 	            
 	            $this->send($assets, 'assets');
 	            $this->send($page, 'page');
-	            $this->send($placeholder->__toArray(), 'placeholder');
+	            $this->send($placeholder, 'placeholder');
 	            
 	        }
 	    
         }else{
-            // print_r($page);
+            $this->addUserMessageToNextRequest("The page ID was not recognized", SM_USER_MESSAGE_WARNING);
+            $this->redirect('/smartest/pages');
         }
+        
 	}
 	
 	public function updatePlaceholderDefinition($get, $post){
@@ -2025,53 +2313,163 @@ class Pages extends SmartestSystemApplication{
 	    $page_id = $post['page_id'];
 	    $asset_id = $post['asset_id'];
 	    
-	    // print_r($post['params']);
-	    
-	    $this->setTitle('Define Placeholder');
-	    
-	    $page = new SmartestPage;
+	    $helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+		
+	    if(isset($type_index[$page_id])){
+		    if($type_index[$page_id] == 'ITEMCLASS' && isset($post['item_id']) && is_numeric($post['item_id'])){
+		        $page = new SmartestItemPage;
+		    }else{
+		        $page = new SmartestPage;
+		    }
+		}else{
+		    $page = new SmartestPage;
+		}
 	    
 	    if($page->hydrate($page_id)){
 	        
-	        // print_r($page);
-	        
 	        $page->setDraftMode(true);
-	        
 	        $placeholder = new SmartestPlaceholder;
 	        
 	        if($placeholder->hydrate($placeholder_id)){
 	            
 	            $definition = new SmartestPlaceholderDefinition;
 	            
-	            if($definition->loadForUpdate($placeholder->getName(), $page)){
+	            if($type_index[$page_id] == 'NORMAL' || (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] != 'THIS')){
 	                
-	                // update placeholder
-	                $definition->setDraftAssetId($asset_id);
+	                if($definition->loadForUpdate($placeholder->getName(), $page, false)){
 	                
-	            }else{
+	                    // update placeholder
+	                    $definition->setDraftAssetId($asset_id);
+	                    $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on page '".$page->getTitle(true)."' to use asset ID ".$asset_id.".";
 	                
-	                // wasn't already defined
-	                $definition->setDraftAssetId($asset_id);
-	                $definition->setAssetclassId($placeholder_id);
-	                $definition->setInstanceName('default');
-	                $definition->setPageId($page->getId());
+	                }else{
 	                
+	                    // wasn't already defined
+	                    $definition->setDraftAssetId($asset_id);
+	                    $definition->setAssetclassId($placeholder_id);
+	                    $definition->setInstanceName('default');
+	                    $definition->setPageId($page->getId());
+	                    $log_message = $this->getUser()->__toString()." defined placeholder '".$placeholder->getName()."' on page '".$page->getTitle(true)."' with asset ID ".$asset_id.".";
 	                
-	            }
+	                }
 	            
-	            if(is_array($post['params'])){
-	                $definition->setDraftRenderData(serialize($post['params']));
-	            }
+	                if(is_array($post['params'])){
+	                    $definition->setDraftRenderData(serialize($post['params']));
+	                }
+	                
+	                if($post['definition_scope'] == 'ALL'){
+	                    
+	                    // DELETE ALL PER-ITEM DEFINITIONS
+	                    
+	                }
 	            
-	            $definition->save();
-	            
-	            // print_r($definition);
+                }else if($type_index[$page_id] == 'ITEMCLASS' && (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] == 'THIS')){
+                    
+                    if($definition->loadForUpdate($placeholder->getName(), $page, false)){ // looks for all-items definition
+	                    
+	                    $item_def = new SmartestPlaceholderDefinition;
+	                    
+	                    // item chosen is same as all-items definition
+	                    if($definition->getDraftAssetId() == $asset_id){ 
+	                        
+	                        if(is_array($post['params'])){
+	                            $now_prms = $post['params']; // copy needs to be made here because ksort() does not return
+	                            $ex_prms = $definition->getRenderData(true);
+	                            $default_def_params_hash = md5(serialize($ex_prms));
+	                            $this_item_params_hash = md5(serialize($now_prms));
+	                            $has_params = true;
+                            }else{
+                                $has_params = false;
+                            }
+	                        
+	                        // if there is already a per-item definitions for this item
+	                        if($item_def->loadForUpdate($placeholder->getName(), $page, false, $post['item_id'])){
+	                            
+	                            if($has_params && ($default_def_params_hash != $this_item_params_hash)){
+	                                // don't delete, because display params are different to default.
+	                                $item_def->setDraftRenderData(serialize($post['params']));
+	                                $item_def->save();
+	                            }else{
+	                                $item_def->delete();
+                                }
+                                
+	                        }else{ // No per-item definition found for this one so create *IF* the params are different.
+	                            if($has_params && ($default_def_params_hash != $this_item_params_hash)){
+	                                $item_def->setDraftAssetId($asset_id);
+        	                        $item_def->setAssetclassId($placeholder_id);
+        	                        $item_def->setItemId($post['item_id']);
+        	                        $item_def->setInstanceName('default');
+        	                        $item_def->setPageId($page->getId());
+	                                $item_def->setDraftRenderData(serialize($post['params']));
+                                    $item_def->save();
+                                }
+                                
+	                        }
+	                        
+	                        $log_message = $this->getUser()->__toString()." set placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." (which is the same as the all-items definition) when displaying item ID ".$post['item_id'].".";
+	                    
+	                    }else{
+	                        
+	                        if($item_def->loadForUpdate($placeholder->getName(), $page, false, $post['item_id'])){
+	                            // just update placeholder
+	                            $item_def->setDraftAssetId($asset_id);
+	                            $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                        }else{
+	                            $item_def->setDraftAssetId($asset_id);
+        	                    $item_def->setAssetclassId($placeholder_id);
+        	                    $item_def->setItemId($post['item_id']);
+        	                    $item_def->setInstanceName('default');
+        	                    $item_def->setPageId($page->getId());
+	                            $log_message = $this->getUser()->__toString()." defined placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                        }
+	                        
+	                        if(is_array($post['params'])){
+        	                    $item_def->setDraftRenderData(serialize($post['params']));
+        	                }
+        	                
+        	                $item_def->save();
+	                        
+	                    }
+	                
+	                }else if($definition->loadForUpdate($placeholder->getName(), $page, false, $post['item_id'])){
+	                    
+	                    // all-items definition doesn't exist but per-item for this item does
+	                    $definition->setDraftAssetId($asset_id);
+	                    
+	                    if(is_array($post['params'])){
+    	                    $definition->setDraftRenderData(serialize($post['params']));
+    	                }
+    	                
+    	                $definition->save();
+    	                $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                    
+	                }else{
+	                    
+	                    // wasn't already defined for any items at all. Define for this item
+	                    $definition->setDraftAssetId($asset_id);
+	                    $definition->setAssetclassId($placeholder_id);
+	                    $definition->setItemId($post['item_id']);
+	                    $definition->setInstanceName('default');
+	                    $definition->setPageId($page->getId());
+	                    
+	                    if(is_array($post['params'])){
+    	                    $definition->setDraftRenderData(serialize($post['params']));
+    	                }
+    	                
+    	                $definition->save();
+    	                $log_message = $this->getUser()->__toString()." defined placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                    
+	                }
+	                
+                }
 	            
 	            $page->setChangesApproved(0);
                 $page->setModified(time());
                 $page->save();
 	            
 	            $this->addUserMessageToNextRequest('The placeholder was updated.', SmartestUserMessage::SUCCESS);
+	            SmartestLog::getInstance('site')->log($log_message, SM_LOG_USER_ACTION);
 	            
 	        }else{
 	            
@@ -2094,8 +2492,6 @@ class Pages extends SmartestSystemApplication{
 	    $placeholder_id = $get['assetclass_id'];
 	    $page_id = $get['page_id'];
 	    
-	    // print_r($get);
-	    
 	    $this->setTitle('Un-Define Placeholder');
 	    
 	    $page = new SmartestPage;
@@ -2103,8 +2499,6 @@ class Pages extends SmartestSystemApplication{
 	    if($page->hydrate($page_id)){
 	        
 	        $page->setDraftMode(true);
-	        
-	        // print_r($page);
 	        
 	        $placeholder = new SmartestPlaceholder;
 	        
@@ -2115,7 +2509,6 @@ class Pages extends SmartestSystemApplication{
 	            if($definition->loadForUpdate($placeholder->getName(), $page)){
 	                
 	                // update placeholder
-	                // $definition->delete();
 	                $definition->setDraftAssetId('');
 	                $definition->save();
 	                $this->addUserMessageToNextRequest('The placeholder definition was removed.', SmartestUserMessage::SUCCESS);
@@ -2354,17 +2747,44 @@ class Pages extends SmartestSystemApplication{
 		// so that the user is warned before publishing undefined placeholders or containers that may cause the page to display incorrectly
 		// the user should be able to publish either way - the notice will be just a warning.
 		
-		$page = new SmartestPage;
+		$helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
 		$page_webid = $get['page_id'];
+		
+	    if(isset($type_index[$page_webid])){
+		    if($type_index[$page_webid] == 'ITEMCLASS' && isset($get['item_id']) && is_numeric($get['item_id'])){
+		        $page = new SmartestItemPage;
+		    }else{
+		        $page = new SmartestPage;
+		    }
+		}else{
+		    $page = new SmartestPage;
+		}
 		
 		if($page->hydrate($page_webid)){
 		    
-		    $page->setDraftMode(true);
+		    if($page->getType() == 'ITEMCLASS'){
+                if(isset($get['item_id']) && $item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+                    
+                    $page->setPrincipalItem($item);
+                    $this->send($item, 'item');
+                    $item_id = $get['item_id'];
+                    
+                    $user_can_publish_item = ($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items');
+                    
+                    $this->send($user_can_publish_item, 'user_can_publish_item');
+                    
+                }else{
+                    $item_id = false;
+                }
+            }
+            
+            $page->setDraftMode(true);
 		    
 		    if(( (boolean) $page->getChangesApproved() && $this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
-		    
+		        
 		        $version = "draft";
-		        $undefinedAssetsClasses = $this->manager->getUndefinedElements($page_webid);
+		        $undefinedAssetsClasses = $this->manager->getUndefinedElements($page_webid, 'draft', $item_id);
 		        
 		        $count = count($undefinedAssetsClasses);
 		        $this->send(true, 'allow_publish');
@@ -2393,10 +2813,11 @@ class Pages extends SmartestSystemApplication{
 			
 	}
 	
-	function publishPage($get){
+	public function publishPage($get, $post){
 	    
 	    $page = new SmartestPage;
-	    $page_webid = $get['page_id'];
+	    $page_webid = $post['page_id'];
+	    if(isset($post['item_id'])){$item_id = $post['item_id'];}else{$item_id = false;}
 	    
 	    if($page->hydrate($page_webid)){
 	        
@@ -2404,9 +2825,29 @@ class Pages extends SmartestSystemApplication{
 	        
 	        if(((boolean) $page->getChangesApproved() || $this->getUser()->hasToken('approve_page_changes')) && ($this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
 		        
-		        $page->publish();
+		        $page->publish($item_id);
 		        SmartestLog::getInstance('site')->log("{$this->getUser()} published page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
-		        $this->addUserMessageToNextRequest('The page has been successfully published.', SmartestUserMessage::SUCCESS);
+		        
+		        if(isset($post['item_id']) && $item = SmartestCmsItem::retrieveByPk($post['item_id'])){
+                    
+                    $user_can_publish_item = ($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items');
+                    
+                    if($user_can_publish_item){
+                        if($post['publish_item'] == 'PUBLISH'){
+                            $item->publish();
+                            $this->addUserMessageToNextRequest('The page and the item '.$item->getName().' have both been successfully published.', SmartestUserMessage::SUCCESS);
+                        }else{
+                            $this->addUserMessageToNextRequest('The page has been successfully published.', SmartestUserMessage::SUCCESS);
+                        }
+                    }else{
+                        $this->addUserMessageToNextRequest('The page has been successfully published, but the item could not be published.', SmartestUserMessage::INFO);
+                    }
+                    
+                }else{
+                    
+                    $this->addUserMessageToNextRequest('The page has been successfully published.', SmartestUserMessage::SUCCESS);
+                    
+                }
 		        
 	        }else{
 	            
@@ -2419,7 +2860,7 @@ class Pages extends SmartestSystemApplication{
 	        }
         }
         
-        $this->formForward();
+        // $this->formForward();
 	}
 	
 	public function unPublishPage($get){
@@ -2430,12 +2871,11 @@ class Pages extends SmartestSystemApplication{
 		if($page->hydrate($page_webid)){
 		    
 		    $page->setDraftMode(true);
-		    
 		    $page->unpublish();
+		    
 		}
 		
 		$this->addUserMessageToNextRequest('The page has been un-published. No other changes have been made.', SmartestUserMessage::SUCCESS);
-		
 		$this->formForward();
 		
 	}
@@ -2964,6 +3404,29 @@ class Pages extends SmartestSystemApplication{
 	public function undefinePageProperty($get){
 		// This is a hack. Sorry.
 		$this->redirect(SM_CONTROLLER_DOMAIN.'metadata/undefinePageProperty?page_id='.$get['page_id'].'&assetclass_id='.$get['assetclass_id']);
+	}
+	
+	public function pageGroups(){
+	    
+	    $pgh = new SmartestPageGroupsHelper;
+	    $groups = $pgh->getSiteGroups($this->getSite()->getId());
+	    
+	}
+	
+	public function addPageGroup(){
+	    
+	}
+	
+	public function insertPageGroup(){
+	    
+	}
+	
+	public function editPageGroup(){
+	    
+	}
+	
+	public function updatePageGroup(){
+	    
 	}
 
 }

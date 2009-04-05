@@ -200,12 +200,16 @@ class SmartestCmsItem implements ArrayAccess{
             	
 	            break;
 	            
+	            case 'is_published':
+	            return $this->isPublished();
+	            break;
+	            
 	            case '_model':
-	            $this->getModel();
+	            return $this->getModel();
 	            break;
 	            
 	            case '_properties':
-	            $this->getProperties();
+	            return $this->getProperties();
 	            break;
 	            
 	        }
@@ -503,6 +507,10 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function getIsPublic(){
 		return ($this->getItem()->getPublic() == 'TRUE') ? 'TRUE' : 'FALSE';
+	}
+	
+	public function isPublished(){
+	  return ($this->getItem()->getPublic() == 'TRUE') ? true : false;
 	}
 	
 	public function getItem(){

@@ -92,7 +92,7 @@ class SmartestItemPage extends SmartestPage{
         $this->_url_variables[$name] = $value;
     }
     
-    public function isAcceptableItem($draft_mode=false){
+    public function isAcceptableItem(){
         
         if($this->_identifying_field_name && $this->_identifying_field_value){
             
@@ -119,11 +119,11 @@ class SmartestItemPage extends SmartestPage{
                 }
             
                 $sql .= " AND item_deleted !='1' LIMIT 1";
-            
+                
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
-                
+                    
                     $i = new SmartestItem;
                     $i->hydrate($result[0]);
                     
@@ -147,8 +147,8 @@ class SmartestItemPage extends SmartestPage{
         }
     }
     
-    public function getTitle(){
-        if($this->_properties['force_static_title']){
+    public function getTitle($force_static=false){
+        if($this->_properties['force_static_title'] || $force_static){
             return $this->_properties['title'];
         }else{
             return $this->_simple_item->getName();
@@ -181,6 +181,32 @@ class SmartestItemPage extends SmartestPage{
         // return $content;
         return $data;
         
+	}
+	
+	public function loadAssetClassDefinitions(){
+	    
+	    parent::loadAssetClassDefinitions();
+	    
+	    if($this->getDraftMode()){
+	        $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_item_id='".$this->_simple_item->getId()."' AND AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id";
+        }else{
+            $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_item_id='".$this->_simple_item->getId()."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
+        }
+        
+        $result = $this->database->queryToArray($sql);
+        
+        foreach($result as $def_array){
+            if($def_array['assetclass_type'] == 'SM_ASSETCLASS_CONTAINER'){
+                $def = new SmartestContainerDefinition;
+                $def->hydrateFromGiantArray($def_array);
+                $this->_containers[$def_array['assetclass_name']] = $def;
+            }else{
+                $def = new SmartestPlaceholderDefinition;
+                $def->hydrateFromGiantArray($def_array);
+                $this->_placeholders[$def_array['assetclass_name']] = $def;
+            }
+        }
+	    
 	}
 	
 	public function getAuthors(){

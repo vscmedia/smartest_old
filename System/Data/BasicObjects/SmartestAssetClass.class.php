@@ -6,13 +6,6 @@ class SmartestAssetClass extends SmartestBaseAssetClass{
     
     protected $_type_info;
     
-	protected function __objectConstruct(){
-		
-		$this->_table_prefix = 'assetclass_';
-		$this->_table_name = 'AssetClasses';
-		
-	}
-	
 	public function exists($name, $site_id){
 	    
 	    $sql = "SELECT * FROM AssetClasses WHERE assetclass_name='".$name."' AND assetclass_site_id='".$site_id."'";
@@ -32,8 +25,6 @@ class SmartestAssetClass extends SmartestBaseAssetClass{
 	        $types = SmartestDataUtility::getAssetClassTypes();
 	        $this->_type_info = $types[$this->getType()];
         }
-        
-        // var_dump($this->getType());
         
         return $this->_type_info;
         
@@ -55,11 +46,8 @@ class SmartestAssetClass extends SmartestBaseAssetClass{
 	public function setInfoField($field_name, $data){
 	    
 	    $field_name = SmartestStringHelper::toVarName($field_name);
-	    
 	    $existing_data = $this->getInfo();
-	    
 	    $existing_data[$field_name] = $data;
-	    
 	    $this->setInfo($existing_data);
 	    
 	}

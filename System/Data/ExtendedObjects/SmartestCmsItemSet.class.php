@@ -1,7 +1,7 @@
 <?php
 
-class SmartestCmsItemSet extends SmartestBaseCmsItemSet{
-    
+class SmartestCmsItemSet extends SmartestSet{
+
     protected $_set_members = array();
     protected $_set_members_simple = array();
     protected $_set_member_ids = array();
