@@ -323,12 +323,12 @@ class SmartestPage extends SmartestBasePage{
 		if(!defined('SM_CMS_PAGE_SITE_ID')){define('SM_CMS_PAGE_SITE_ID', $this->getSiteId());}
 		$ph = new SmartestWebPagePreparationHelper($this);
 	    
-	    $overhead_finish_time = microtime(true);
+	    /* $overhead_finish_time = microtime(true);
 		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
 		
 		define("SM_OVERHEAD_TIME", $overhead_time_taken);
 	    
-	    $html = $ph->fetch();
+	    $html = $ph->fetch(); */
 		
 	}
 	
