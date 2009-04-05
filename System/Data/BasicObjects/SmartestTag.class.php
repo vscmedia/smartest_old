@@ -198,7 +198,7 @@ class SmartestTag extends SmartestBaseTag{
     public function hasItem($item_id){
         
         // make sure pages have been retrieved
-        $this->getSimpleItems();
+        $this->getSimpleItems(false, true, false);
         
         if(in_array($item_id, $this->_item_ids)){
             return true;

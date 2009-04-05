@@ -28,10 +28,12 @@ class SmartestPageManagementHelper extends SmartestHelper{
 		
 		if($parent_page->hydrate(SmartestStringHelper::sanitize($parent_page_id))){
 		    
+		    $parent_page->setDraftMode($draft_mode);
+		    
 		    if($for_web){
-		        return $parent_page->getPageChildrenForWebAsArrays($draft_mode);
+		        return $parent_page->getPageChildrenForWebAsArrays();
 		    }else{
-		        return $parent_page->getPageChildrenAsArrays($draft_mode);
+		        return $parent_page->getPageChildrenAsArrays();
 	        }
 		
 		    /* $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$parent_page_id."' AND page_site_id='$site_id' AND page_deleted != 'TRUE'";
@@ -185,7 +187,7 @@ class SmartestPageManagementHelper extends SmartestHelper{
 		
 		if(SmartestCache::hasData('site_pages_tree_'.$site_id, true)){
 			
-		 	$pageTree = SmartestCache::load('site_pages_tree_'.$site_id, true);
+			$pageTree = SmartestCache::load('site_pages_tree_'.$site_id, true);
 			
 		}else{
 		
@@ -211,8 +213,6 @@ class SmartestPageManagementHelper extends SmartestHelper{
 		$index = 0;
 		
 		$_children = $this->getPageChildren($startPageId, $site_id, $level);
-		
-		// print_r($_children);
 		
 		foreach($_children as $child){
 			
@@ -256,6 +256,8 @@ class SmartestPageManagementHelper extends SmartestHelper{
 	        $p['tree_level'] = $page_array['treeLevel'];
 	        $list[] = $p;
 	    }
+	    
+	    // print_r($tree);
 	    
 	    return $list;
 	    
