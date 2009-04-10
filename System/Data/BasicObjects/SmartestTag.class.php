@@ -151,7 +151,7 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getItems(){
+    public function getItems($site_id=''){
         
         if(!$site_id || !is_numeric($site_id)){
             $site_id = 'all';
@@ -286,14 +286,27 @@ class SmartestTag extends SmartestBaseTag{
             return $this->getObjectsOnSite($this->getCurrentSiteId(), true);
             
             case "url":
-            return '/tags/'.$this->getName().'.html';
+            return SM_CONTROLLER_DOMAIN.'tags/'.$this->getName().'.html';
             
             case "feed_url":
             return SM_CONTROLLER_DOMAIN.'tags/'.$this->getName().'/feed';
             
+            default:
+            
+            $du = new SmartestDataUtillity;
+            $models = $du->getModelPluralNamesLowercase();
+            
+            if(isset($models[$offset])){
+                
+            }else{
+                return parent::offsetGet($offset);
+            }
+            
+            break;
+            
         }
         
-        return parent::offsetGet($offset);
+        
         
     }
     

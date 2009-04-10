@@ -185,6 +185,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             // $l->setType(constant('SM_LINKTYPE_DOWNLOAD'));
             
             $asset_identifier = $link_parts[1];
+            // echo $asset_identifier;
             
             if($asset_lookup = $this->parseLinkIdentifier($asset_identifier)){
                 

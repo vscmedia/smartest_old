@@ -369,6 +369,8 @@ class SmartestItem extends SmartestBaseItem{
 	        $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
 	    }
 	    
+	    // var_dump($draft_mode);
+	    
 	    if(!$draft_mode){
 	        $q->addForeignTableConstraint('Items.item_public', 'TRUE');
 	    }
@@ -381,7 +383,7 @@ class SmartestItem extends SmartestBaseItem{
 	
 	public function getRelatedForeignItems($draft_mode=false, $model_id=''){
 	    
-	    $ids_array = $this->getRelatedForeignItemIds($model_id);
+	    $ids_array = $this->getRelatedForeignItemIds($draft_mode, $model_id);
 	    
 	    $model = new SmartestModel;
 	    

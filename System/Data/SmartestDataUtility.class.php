@@ -52,6 +52,32 @@ class SmartestDataUtility{
 		}
 	}
 	
+	public function getModelPluralNamesLowercase(){
+	    
+	    $models = $this->getModels();
+	    $names = array();
+	    
+	    foreach($models as $m){
+	        $names[SmartestStringHelper::toVarName($m->getPluralName())] = $m->getId();
+	    }
+	    
+	    return $names;
+	    
+	}
+	
+	public function getModelNamesLowercase(){
+	    
+	    $models = $this->getModels();
+	    $names = array();
+	    
+	    foreach($models as $m){
+	        $names[SmartestStringHelper::toVarName($m->getName())] = $m->getId();
+	    }
+	    
+	    return $names;
+	    
+	}
+	
 	public function getModelsAsArrays($simple=false, $site_id=''){
 	    
 	    $models = $this->getModels($simple, $site_id);
@@ -305,6 +331,20 @@ class SmartestDataUtility{
 	    $usage_filter = strlen($usage_filter) ? $usage_filter : null;
 	    
 	    foreach($raw_types as $raw_type){
+	        
+	        if(isset($raw_type['filter'])){
+	            
+	            // regularize conditions
+	            if(isset($raw_type['filter']['condition'])){
+	                if(isset($raw_type['filter']['condition']['field'])){
+	                    $raw_type['filter']['condition'] = array($raw_type['filter']['condition']);
+	                }
+	            }else{
+	                $raw_type['filter']['condition'] = array();
+	            }
+	            
+	        }
+	        
 	        if($usage_filter){
 	            $usages = explode(',', $raw_type['usage']);
 	            if(in_array($usage_filter, $usages)){

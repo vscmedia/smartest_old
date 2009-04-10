@@ -7,8 +7,9 @@
  */
 
 function smarty_function_container($params, &$smartest_engine){
-	if(@$params['name']){
-		return $smartest_engine->renderContainer($params['name'], $params, $smartest_engine->getPage());
+    // print_r($params);
+	if(isset($params['name'])){
+	    return $smartest_engine->renderContainer($params['name'], $params, $smartest_engine->getPage());
 	}else{
 		return null;
 	}

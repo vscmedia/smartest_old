@@ -78,7 +78,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         }
     }
     
-    public function loadForUpdate($name, $page, $draft=false, $item_id=''){
+    public function loadForUpdate($name, $page, $item_id=false){
         
         if(strlen($name) && is_object($page)){
             

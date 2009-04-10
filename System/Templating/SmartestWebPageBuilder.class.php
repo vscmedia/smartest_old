@@ -127,16 +127,30 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         if($this->_context == SM_CONTEXT_CONTENT_PAGE){
             
-            if($this->getPage()->hasContainerDefinition($container_name, $this->getDraftMode())){
+            // echo $container_name;
+            
+            // print_r($this->getPage()->getContainerDefinitionNames());
+            
+            if($container_name == 'additional_scripts'){
+                // print_r($this->getPage()->getContainerDefinitionNames());
+            }
+            
+            if($this->getPage()->hasContainerDefinition($container_name)){
                 
-                $container = $this->getPage()->getContainerDefinition($container_name, $this->getDraftMode());
-                $this->run($container->getTemplateFilePath(), array());
+                $container_def = $this->getPage()->getContainerDefinition($container_name, $this->getDraftMode());
+                
+                if(!$this->getDraftMode()){
+                    // print($container_def->getContainer()->getName());
+                    // echo $container_def->getTemplateFilePath();
+                }
+                
+                $this->run($container_def->getTemplateFilePath(), array());
                 
                 if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
 		    
     			    $edit_link = '';
 		    
-    			    if(is_object($container->getTemplate())){
+    			    if(is_object($container_def->getTemplate())){
     			        // TODO: Make it an admin-controlled setting as to whether containers are changeable in the preview screen
     			        // $edit_link .= "<a title=\"Click to edit template: ".$container->getTemplate()->getUrl()."\" href=\"".SM_CONTROLLER_DOMAIN."templates/editTemplate?template_id=".$container->getTemplate()->getId()."&amp;type=SM_CONTAINER_TEMPLATE&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this template--></a>";
     			    }

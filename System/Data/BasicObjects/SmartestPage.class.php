@@ -1171,6 +1171,9 @@ class SmartestPage extends SmartestBasePage{
 	        case "tags":
 	        return $this->getTags();
 	        
+	        case "tag_names":
+	        return $this->getTagNames();
+	        
 	        case "tags_list":
 	        return implode(', ', $this->getTags());
 	        
@@ -1309,6 +1312,19 @@ class SmartestPage extends SmartestBasePage{
 	    
 	}
 	
+	public function getTagNames(){
+	    
+	    $tags = $this->getTags();
+	    $names = array();
+	    
+	    foreach($tags as $t){
+	        $names[] = $t->getName();
+	    }
+	    
+	    return $names;
+	    
+	}
+	
 	public function getTagsAsArrays(){
 	    
 	    $arrays = array();
@@ -1392,6 +1408,7 @@ class SmartestPage extends SmartestBasePage{
 	    $q->addSortField('Pages.page_title');
 	    
 	    $q->addForeignTableConstraint('Pages.page_type', 'NORMAL');
+	    $q->addForeignTableConstraint('Pages.page_deleted', 'FALSE');
 	    
 	    if(!$this->getDraftMode()){
 	        $q->addForeignTableConstraint('Pages.page_is_published', 'TRUE');
@@ -1592,6 +1609,8 @@ class SmartestPage extends SmartestBasePage{
             $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_item_id IS NULL AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
         }
         
+        // echo $sql;
+        
         $result = $this->database->queryToArray($sql);
         
         foreach($result as $def_array){
@@ -1605,6 +1624,8 @@ class SmartestPage extends SmartestBasePage{
                 $this->_placeholders[$def_array['assetclass_name']] = $def;
             }
         }
+        
+        // print_r(array_keys($this->_containers));
 	    
 	}
 	
@@ -1735,6 +1756,10 @@ class SmartestPage extends SmartestBasePage{
 	
 	public function getContainerDefinitionNames(){
 	    return array_keys($this->_containers);
+	}
+	
+	public function getContainerDefinitions(){
+	    return $this->_containers;
 	}
 	
 	public function getPlaceholderDefinition($placeholder_name){

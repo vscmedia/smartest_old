@@ -91,14 +91,20 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
     	                    if($site_id && $info['filter']['entitysource']['sitefield'] && $info['filter']['entitysource']['sharedfield']){
     	                        $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
     	                    }
+    	                    
+    	                    if(isset($info['filter']['condition'])){
+	                            
+	                            foreach($info['filter']['condition'] as $condition){
+	                                $sql .= ' AND '.$this->convertFieldCondition($condition);
+	                            }
+	                            
+                            }
 	                    
     	                    if(isset($info['filter']['entitysource']['sortfield'])){
     	                        $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
     	                    }
-	                    
-    	                    // echo $sql;
-	                    
-    	                    $result = $this->database->queryToArray($sql);
+                            
+                            $result = $this->database->queryToArray($sql);
     	                    $options = array();
 	                    
     	                    foreach($result as $raw_array){
@@ -149,6 +155,37 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    }
 	    
 	    return $arrays;
+	    
+	}
+	
+	public function convertFieldCondition($condition){
+	    
+	    $sql = $condition['field'];
+	    
+	    if(!isset($condition['operator'])){$condition['operator'] = 'EQUAL';}
+	    
+	    switch($condition['operator']){
+	        case "NOT_EQUAL":
+	        $sql .= ' != ';
+	        break;
+	        
+	        case "NOT_LIKE":
+	        $sql .= ' NOT LIKE ';
+	        break;
+	        
+	        case "LIKE":
+	        $sql .= ' LIKE ';
+	        break;
+	        
+	        default:
+	        $sql .= ' = ';
+	        break;
+	        
+	    }
+	    
+	    $sql .= "'".$condition['value']."'";
+	    
+	    return $sql;
 	    
 	}
 	

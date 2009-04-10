@@ -320,6 +320,8 @@ class Pages extends SmartestSystemApplication{
                         if($model->hydrate($page->getDatasetId())){
                             $editorContent['model_name'] = $model->getName();
                             
+                            // print_r($editorContent);
+                            
                             // $type_index[$page_webid]
                             
                             if($page->getParent() && $type_index[$page->getParent()] == 'ITEMCLASS'){
@@ -578,7 +580,7 @@ class Pages extends SmartestSystemApplication{
     		            $item = SmartestCmsItem::retrieveByPk($item_id);
 		            
     		            if(is_object($item)){
-    		                $this->send($item->__toArray(), 'item');
+    		                $this->send($item, 'item');
     		                $this->send(true, 'show_iframe');
     		                $this->send($domain, 'site_domain');
     		                $this->setTitle('Meta-Page Preview | '.$item->getName());
@@ -628,8 +630,8 @@ class Pages extends SmartestSystemApplication{
         	                if($model->hydrate($page->getDatasetId())){
 	                            $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
 	                            $this->send($items, 'items');
-	                            $this->send($model->__toArray(), 'model');
-	                            $this->send($page->__toArray(), 'page');
+	                            $this->send($model, 'model');
+	                            $this->send($page, 'page');
 	                        }else{
 	                            $this->send(array(), 'items');
 	                        }
@@ -648,7 +650,7 @@ class Pages extends SmartestSystemApplication{
     	                if($model->hydrate($page->getDatasetId())){
     	                    $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
     	                    $this->send($items, 'items');
-    	                    $this->send($model->__toArray(), 'model');
+    	                    $this->send($model, 'model');
     	                    $this->send('Please choose an item to preview on this page.', 'chooser_message');
                             $this->send('websitemanager/preview', 'continue_action');
     	                }else{
@@ -1430,7 +1432,7 @@ class Pages extends SmartestSystemApplication{
 	        }else{
 	        
 	            $this->setTitle($page->getTitle()." | Related Content");
-    	        $related_pages = $page->getRelatedPagesAsArrays();
+    	        $related_pages = $page->getRelatedPages();
 	        
     	        $du = new SmartestDataUtility;
     	        $models = $du->getModelsAsArrays();
@@ -1439,7 +1441,7 @@ class Pages extends SmartestSystemApplication{
     	            $m['related_items'] = $page->getRelatedItemsAsArrays($m['id']);
     	        }
 	        
-    	        $this->send($page->__toArray(), 'page');
+    	        $this->send($page, 'page');
     	        $this->send($related_pages, 'related_pages');
         	    $this->send($models, 'models');
         	    $this->send(false, 'require_item_select');
@@ -1995,6 +1997,8 @@ class Pages extends SmartestSystemApplication{
 	                if($post['definition_scope'] == 'ALL'){
 	                    
 	                    // DELETE ALL PER-ITEM DEFINITIONS
+	                    $pmh = new SmartestPageManagementHelper;
+	                    $pmh->removePerItemDefinitions($page->getId(), $container_id);
 	                    
 	                }
 	                
@@ -2337,7 +2341,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	            if($type_index[$page_id] == 'NORMAL' || (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] != 'THIS')){
 	                
-	                if($definition->loadForUpdate($placeholder->getName(), $page, false)){
+	                if($definition->loadForUpdate($placeholder->getName(), $page)){
 	                
 	                    // update placeholder
 	                    $definition->setDraftAssetId($asset_id);
@@ -2361,12 +2365,16 @@ class Pages extends SmartestSystemApplication{
 	                if($post['definition_scope'] == 'ALL'){
 	                    
 	                    // DELETE ALL PER-ITEM DEFINITIONS
+	                    $pmh = new SmartestPageManagementHelper;
+	                    $pmh->removePerItemDefinitions($page->getId(), $placeholder->getId());
 	                    
 	                }
+	                
+	                $definition->save();
 	            
                 }else if($type_index[$page_id] == 'ITEMCLASS' && (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] == 'THIS')){
                     
-                    if($definition->loadForUpdate($placeholder->getName(), $page, false)){ // looks for all-items definition
+                    if($definition->loadForUpdate($placeholder->getName(), $page)){ // looks for all-items definition
 	                    
 	                    $item_def = new SmartestPlaceholderDefinition;
 	                    
@@ -2384,7 +2392,7 @@ class Pages extends SmartestSystemApplication{
                             }
 	                        
 	                        // if there is already a per-item definitions for this item
-	                        if($item_def->loadForUpdate($placeholder->getName(), $page, false, $post['item_id'])){
+	                        if($item_def->loadForUpdate($placeholder->getName(), $page, $post['item_id'])){
 	                            
 	                            if($has_params && ($default_def_params_hash != $this_item_params_hash)){
 	                                // don't delete, because display params are different to default.
@@ -2411,7 +2419,7 @@ class Pages extends SmartestSystemApplication{
 	                    
 	                    }else{
 	                        
-	                        if($item_def->loadForUpdate($placeholder->getName(), $page, false, $post['item_id'])){
+	                        if($item_def->loadForUpdate($placeholder->getName(), $page, $post['item_id'])){
 	                            // just update placeholder
 	                            $item_def->setDraftAssetId($asset_id);
 	                            $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
@@ -2432,7 +2440,7 @@ class Pages extends SmartestSystemApplication{
 	                        
 	                    }
 	                
-	                }else if($definition->loadForUpdate($placeholder->getName(), $page, false, $post['item_id'])){
+	                }else if($definition->loadForUpdate($placeholder->getName(), $page, $post['item_id'])){
 	                    
 	                    // all-items definition doesn't exist but per-item for this item does
 	                    $definition->setDraftAssetId($asset_id);
@@ -2491,6 +2499,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $placeholder_id = $get['assetclass_id'];
 	    $page_id = $get['page_id'];
+	    $item_id = isset($get['item_id']) ? $get['item_id'] : false;
 	    
 	    $this->setTitle('Un-Define Placeholder');
 	    
@@ -2506,7 +2515,13 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $definition = new SmartestPlaceholderDefinition;
 	            
-	            if($definition->loadForUpdate($placeholder->getName(), $page)){
+	            if($definition->loadForUpdate($placeholder->getName(), $page, $item_id)){
+	                
+	                // update placeholder
+	                $definition->delete();
+	                $this->addUserMessageToNextRequest('The placeholder definition was removed for this item.', SmartestUserMessage::SUCCESS);
+	            
+	            }else if($definition->loadForUpdate($placeholder->getName(), $page)){
 	                
 	                // update placeholder
 	                $definition->setDraftAssetId('');
@@ -2541,14 +2556,13 @@ class Pages extends SmartestSystemApplication{
 	    
 	}
 	
-	public function undefineContainer($get, $post){
+	public function undefinePlaceholderOnItemPage($get, $post){
 	    
-	    $container_id = $get['assetclass_id'];
+	    $placeholder_id = $get['assetclass_id'];
 	    $page_id = $get['page_id'];
+	    $item_id = $get['item_id'];
 	    
-	    // print_r($get);
-	    
-	    // $this->setTitle('Un-Define Container');
+	    $this->setTitle('Un-Define Placeholder');
 	    
 	    $page = new SmartestPage;
 	    
@@ -2556,7 +2570,56 @@ class Pages extends SmartestSystemApplication{
 	        
 	        $page->setDraftMode(true);
 	        
-	        // print_r($page);
+	        $placeholder = new SmartestPlaceholder;
+	        
+	        if($placeholder->hydrateBy('name', $placeholder_id)){
+	            
+	            $definition = new SmartestPlaceholderDefinition;
+	            
+	            if($definition->loadForUpdate($placeholder->getName(), $page, $item_id)){
+	                
+	                // update placeholder
+	                $definition->delete();
+	                $this->addUserMessageToNextRequest('The placeholder definition was removed for this item.', SmartestUserMessage::SUCCESS);
+	                
+	            }else{
+	                
+	                // wasn't already defined
+	                $this->addUserMessageToNextRequest('The placeholder wasn\'t defined to start with.', SmartestUserMessage::INFO);
+	                
+	                
+	            }
+	            
+	            $page->setChangesApproved(0);
+                $page->setModified(time());
+                $page->save();
+	            
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest('The specified placeholder doesn\'t exist', SmartestUserMessage::ERROR);
+	            
+	        }
+	    
+        }else{
+            
+            $this->addUserMessageToNextRequest('The specified page doesn\'t exist', SmartestUserMessage::ERROR);
+            
+        }
+        
+        $this->formForward();
+	    
+	}
+	
+	public function undefineContainer($get, $post){
+	    
+	    $container_id = $get['assetclass_id'];
+	    $page_id = $get['page_id'];
+	    
+	    $page = new SmartestPage;
+	    
+	    if($page->hydrate($page_id)){
+	        
+	        $page->setDraftMode(true);
 	        
 	        $container = new SmartestContainer;
 	        
@@ -2564,7 +2627,12 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $definition = new SmartestContainerDefinition;
 	            
-	            if($definition->loadForUpdate($container->getName(), $page, true)){
+	            if(isset($get['item_id']) && $definition->loadForUpdate($container->getName(), $page, true, $get['item_id'])){
+	            
+	                $definition->delete();
+	                $this->addUserMessageToNextRequest('The container definition was removed.', SmartestUserMessage::SUCCESS);
+	            
+	            }else if($definition->loadForUpdate($container->getName(), $page, true)){
 	                
 	                // update placeholder
 	                // $definition->delete();
@@ -2572,6 +2640,56 @@ class Pages extends SmartestSystemApplication{
 	                $definition->save();
 	                $this->addUserMessageToNextRequest('The container definition was removed.', SmartestUserMessage::SUCCESS);
 	                
+	            }else{
+	                
+	                // wasn't already defined
+	                $this->addUserMessageToNextRequest('The container wasn\'t defined to start with.', SmartestUserMessage::INFO);
+	                
+	                
+	            }
+	            
+	            $page->setChangesApproved(0);
+                $page->setModified(time());
+                $page->save();
+	            
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest('The specified container doesn\'t exist', SmartestUserMessage::ERROR);
+	            
+	        }
+	    
+        }else{
+            
+            $this->addUserMessageToNextRequest('The specified page doesn\'t exist', SmartestUserMessage::ERROR);
+            
+        }
+        
+        $this->formForward();
+	    
+	}
+	
+	public function undefineContainerOnItemPage($get, $post){
+	    
+	    $container_id = $get['assetclass_id'];
+	    $page_id = $get['page_id'];
+	    
+	    $page = new SmartestPage;
+	    
+	    if($page->hydrate($page_id)){
+	        
+	        $page->setDraftMode(true);
+	        
+	        $container = new SmartestContainer;
+	        
+	        if($container->hydrateBy('name', $container_id)){
+	            
+	            $definition = new SmartestContainerDefinition;
+	            
+	            if(isset($get['item_id']) && $definition->loadForUpdate($container->getName(), $page, true, $get['item_id'])){
+	            
+	                $definition->delete();
+	                $this->addUserMessageToNextRequest('The container definition was removed.', SmartestUserMessage::SUCCESS);
+	            
 	            }else{
 	                
 	                // wasn't already defined

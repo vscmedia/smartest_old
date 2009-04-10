@@ -1416,4 +1416,11 @@ AND PageProperties.pageproperty_id = PagePropertyValues.pagepropertyvalue_pagepr
 		return $results;
 		
 	}
+	
+	public function removePerItemDefinitions($page_id, $assetclass_id){
+	    
+	    $sql = "DELETE FROM AssetIdentifiers WHERE assetidentifier_page_id='".$page_id."' AND assetidentifier_assetclass_id='".$assetclass_id."' AND assetidentifier_item_id IS NOT NULL";
+        $this->database->rawQuery($sql);
+	    
+	}
 }

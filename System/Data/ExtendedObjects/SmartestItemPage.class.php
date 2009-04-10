@@ -195,6 +195,8 @@ class SmartestItemPage extends SmartestPage{
         
         $result = $this->database->queryToArray($sql);
         
+        // print_r($sql);
+        
         foreach($result as $def_array){
             if($def_array['assetclass_type'] == 'SM_ASSETCLASS_CONTAINER'){
                 $def = new SmartestContainerDefinition;
@@ -206,6 +208,10 @@ class SmartestItemPage extends SmartestPage{
                 $this->_placeholders[$def_array['assetclass_name']] = $def;
             }
         }
+        
+        // print_r($this->_containers['stage_right']->getTemplateFilePath());
+        
+        // print_r(array_keys($this->_containers));
 	    
 	}
 	

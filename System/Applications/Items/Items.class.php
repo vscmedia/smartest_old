@@ -711,14 +711,11 @@ class Items extends SmartestSystemApplication{
         	            }
         	        }
     	        
-                }else{
-	                
-                    $item->removeAllRelatedPages();
-	                
-    	        }
+                }
     	        
             }else{
-                $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
+                $item->removeAllRelatedPages();
+                // $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
             }
         }else{
             $this->addUserMessageToNextRequest('The item ID was not recognized', SmartestUserMessage::ERROR);

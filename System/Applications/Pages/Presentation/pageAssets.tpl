@@ -54,14 +54,24 @@ function viewLivePage(){
 
 <ul class="invisible-actions-list" id="placeholder-specific-actions" style="display:none">
   <li><b>Placeholder Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="workWithItem('definePlaceholder');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define Placeholder</a></li>
-  <li class="permanent-action"><a href="#" onclick="workWithItem('undefinePlaceholder');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Clear Placeholder</a></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('definePlaceholder');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define this placeholder</a></li>
+  {if $item}
+  <li class="permanent-action"><a href="#" onclick="workWithItem('undefinePlaceholder');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear this placeholder</a></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('undefinePlaceholderOnItemPage');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear or this {$item.model.name|strtolower} only</a></li>
+  {else}
+  <li class="permanent-action"><a href="#" onclick="workWithItem('undefinePlaceholder');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear this placeholder</a></li>
+  {/if}
 </ul>
 
 <ul class="invisible-actions-list" id="container-specific-actions" style="display:none">
   <li><b>Container Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="workWithItem('defineContainer');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define Container</a></li>
-  <li class="permanent-action"><a href="#" onclick="workWithItem('undefineContainer');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Un-Define Container</a></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('defineContainer');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define this container</a></li>
+  {if $item}
+  <li class="permanent-action"><a href="#" onclick="workWithItem('undefineContainer');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear container definition</a></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('undefineContainerOnItemPage');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear for this {$item.model.name|strtolower} only</a></li>
+  {else}
+  <li class="permanent-action"><a href="#" onclick="workWithItem('undefineContainer');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear container definition</a></li>
+  {/if}
 </ul>
 
 <ul class="invisible-actions-list" id="list-specific-actions" style="display:none">
