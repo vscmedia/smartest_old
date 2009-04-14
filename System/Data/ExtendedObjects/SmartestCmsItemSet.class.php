@@ -538,6 +538,19 @@ class SmartestCmsItemSet extends SmartestSet{
 	    return $this->__toArray();
 	}
 	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        
+	        case "model":
+	        return $this->getModel();
+	        
+	    }
+	    
+	    return parent::offsetGet($offset);
+	    
+	}
+	
 	/* public function hasPropertyOfId($id){
 	    
 	}*/

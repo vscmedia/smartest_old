@@ -27,7 +27,7 @@
         
         <option value="THIS">This {$item.model.name|strtolower} only</option>
         {if $item_uses_default}<option value="DEFAULT">All {$item.model.plural_name|strtolower} currently using the default definition</option>{/if}
-        <option value="ALL">All {$item.model.plural_name|strtolower}{if $selected_template_id > 0} (removes all other per-item definitions){/if}</option>
+        {if $selected_template_id > 0}<option value="ALL">All {$item.model.plural_name|strtolower} (removes all other per-item definitions)</option>{else}<option value="DEFAULT">All {$item.model.plural_name|strtolower} without per-item definitions</option><option value="ALL">All {$item.model.plural_name|strtolower} (removes all other per-item definitions)</option>{/if}
         
       </select>
     </div>
@@ -60,7 +60,7 @@
   
   <ul class="actions-list" id="item-specific-actions" style="display:none">
     <li><b>Selected Asset</b></li>
-    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('updateContainerDefinition');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Use This Asset</a></li>
+    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('updateContainerDefinition');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Use This Template</a></li>
   </ul>
 
   <ul class="actions-list" id="non-specific-actions">

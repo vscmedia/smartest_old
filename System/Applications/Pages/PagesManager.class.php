@@ -1038,30 +1038,29 @@ class PagesManager{
 
 		$sql = "SELECT assetidentifier_draft_asset_id, assetidentifier_live_asset_id FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_assetclass_id=assetclass_id AND assetidentifier_page_id='$page_id' AND assetclass_name='$assetclass_name'";
 		
+		// $sql .= ;
+		$result = $this->database->queryToArray($sql." AND assetidentifier_item_id IS NULL");
+		
+		if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && $result[0]["assetidentifier_live_asset_id"] > 0 && $result[0]["assetidentifier_draft_asset_id"] == $result[0]["assetidentifier_live_asset_id"] && $result[0]["assetidentifier_draft_render_data"] == $result[0]["assetidentifier_live_render_data"]){
+			$status = "PUBLISHED";
+		}else if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && ($result[0]["assetidentifier_live_asset_id"] != $result[0]["assetidentifier_draft_asset_id"] || $result[0]["assetidentifier_draft_render_data"] != $result[0]["assetidentifier_live_render_data"])){
+            $status = "DRAFT";
+		}else{
+			$status = "UNDEFINED";
+		}
+		
 		if($item_id != false){
+		    
+		    $result = $this->database->queryToArray($sql." AND assetidentifier_item_id='".$item_id."'");
 		    
 		    $item_sql = $sql." AND assetidentifier_item_id='".$item_id."'";
 		    $result = $this->database->queryToArray($item_sql);
 		    
 		    if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && $result[0]["assetidentifier_live_asset_id"] > 0 && $result[0]["assetidentifier_draft_asset_id"] == $result[0]["assetidentifier_live_asset_id"] && $result[0]["assetidentifier_draft_render_data"] == $result[0]["assetidentifier_live_render_data"]){
     			$status = "PUBLISHED";
-    			return $status;
     		}else if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && ($result[0]["assetidentifier_live_asset_id"] != $result[0]["assetidentifier_draft_asset_id"] || $result[0]["assetidentifier_draft_render_data"] != $result[0]["assetidentifier_live_render_data"])){
                 $status = "DRAFT";
-                return $status;
     		}
-		}
-		
-		$sql .= " AND assetidentifier_item_id IS NULL";
-		$result = $this->database->queryToArray($sql);
-		
-		if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && $result[0]["assetidentifier_live_asset_id"] > 0 && $result[0]["assetidentifier_draft_asset_id"] == $result[0]["assetidentifier_live_asset_id"] && $result[0]["assetidentifier_draft_render_data"] == $result[0]["assetidentifier_live_render_data"]){
-			$status = "PUBLISHED";
-		}else if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && ($result[0]["assetidentifier_live_asset_id"] != $result[0]["assetidentifier_draft_asset_id"] || $result[0]["assetidentifier_draft_render_data"] != $result[0]["assetidentifier_live_render_data"])){
-
-			$status = "DRAFT";
-		}else{
-			$status = "UNDEFINED";
 		}
 
 		return $status;
