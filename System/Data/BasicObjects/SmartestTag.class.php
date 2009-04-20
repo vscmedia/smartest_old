@@ -293,7 +293,7 @@ class SmartestTag extends SmartestBaseTag{
             
             default:
             
-            $du = new SmartestDataUtillity;
+            $du = new SmartestDataUtility;
             $models = $du->getModelPluralNamesLowercase();
             
             if(isset($models[$offset])){
