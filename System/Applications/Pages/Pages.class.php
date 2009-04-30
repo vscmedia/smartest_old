@@ -3195,7 +3195,7 @@ class Pages extends SmartestSystemApplication{
 	        
 	        // get sets
 	        $du = new SmartestDataUtility;
-	        $sets = $du->getDataSetsAsArrays(false, $this->getSite()->getId());
+	        $sets = $du->getDataSets(false, $this->getSite()->getId());
 	        $this->send($sets, 'sets');
 	        
 	        $this->send($new_name, 'name');
@@ -3256,11 +3256,13 @@ class Pages extends SmartestSystemApplication{
 	        $name = SmartestStringHelper::toVarName($get['assetclass_id']);
 	    
     	    $item_space = new SmartestItemSpace;
-        
+            
             if($item_space->exists($name, $this->getSite()->getId())){
             
                 $definition = new SmartestItemSpaceDefinition;
             
+                // echo 'got this far';
+
                 if($definition->load($name, $page, true)){
                     // $definition_id = $definition->getSimpleItem()->getId();
                     $definition_id = $definition->getItemId(true);
@@ -3268,8 +3270,12 @@ class Pages extends SmartestSystemApplication{
                     $definition_id = 0;
                 }
                 
+                $options = $item_space->getOptionsAsArrays();
+                
+                // print_r($options);
+                
                 $this->send($definition_id, 'definition_id');
-                $this->send($item_space->getOptionsAsArrays(), 'options');
+                $this->send($options, 'options');
                 $this->send($item_space->__toArray(), 'itemspace');
                 $this->send($page->__toArray(), 'page');
                 

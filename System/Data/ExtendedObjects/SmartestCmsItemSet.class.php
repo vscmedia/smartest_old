@@ -122,7 +122,7 @@ class SmartestCmsItemSet extends SmartestSet{
     	        
     	        $sql .= " ORDER BY SetsItemsLookup.setlookup_order ASC";
     	        
-    	        // echo $sql;
+    	        echo $sql;
     	        
     	        $results = $this->database->queryToArray($sql);
 	            

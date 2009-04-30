@@ -150,6 +150,7 @@
         <storage type="file" location="Public/Resources/Assets/" />
         <render template="System/Presentation/WebPageBuilder/display.mpeg.tpl" />
         <suffix mime="video/mpeg">mpg</suffix>
+        <suffix mime="video/mpeg">mp4</suffix>
         <param name="width" type="SM_DATATYPE_NUMERIC" required="true" />
         <param name="height" type="SM_DATATYPE_NUMERIC" required="true" />
         <param name="auto_start" type="SM_DATATYPE_BOOLEAN" default="true" required="false" />

@@ -100,7 +100,7 @@ class SmartestDataUtility{
 		}
 		
 		if(is_numeric($site_id)){
-		    $sql .= " WHERE (set_site_id='".$site_id."' OR set_shared='1')";
+		    $sql .= " WHERE (set_site_id='".$site_id."' OR set_shared='1') AND (set_data_source_site_id='".$site_id."' OR set_data_source_site_id='CURRENT' OR set_data_source_site_id='ALL')";
 		}
 		
 		$result = $this->database->queryToArray($sql);
