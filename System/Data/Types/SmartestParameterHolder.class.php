@@ -56,6 +56,10 @@ class SmartestParameterHolder implements ArrayAccess{
     }
     
     public function hasParameter($n){
+        return $this->h($n);
+    }
+    
+    public function h($n){
         return isset($this->_data[$n]);
     }
     

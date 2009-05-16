@@ -215,6 +215,18 @@ class SmartestItemPage extends SmartestPage{
 	    
 	}
 	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        case "item":
+	        case "principal_item":
+	        return $this->_principal_item;
+	    }
+	    
+	    return parent::offsetGet($offset);
+	    
+	}
+	
 	public function getAuthors(){
 	    return $this->_simple_item->getAuthors();
 	}

@@ -1471,13 +1471,13 @@ class Items extends SmartestSystemApplication{
 	    $item = new SmartestItem;
 	    
 	    if($item->hydrate($item_id)){
-	        if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items')){
+	        // if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items')){
 	            $item->setPublic('FALSE');
 	            $item->save();
 	            $this->addUserMessageToNextRequest('The item is no longer visible on the site.', SmartestUserMessage::SUCCESS);
-	        }else{
+	        /* }else{
 	            $this->addUserMessageToNextRequest('You don\'t have permission to unpublish items.', SmartestUserMessage::ACCESS_DENIED);
-	        }
+	        } */
         }else{
             $this->addUserMessageToNextRequest('The Item ID was not recognised.', SmartestUserMessage::ERROR);
         }

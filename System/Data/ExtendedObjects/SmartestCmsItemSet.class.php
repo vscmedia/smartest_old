@@ -54,6 +54,10 @@ class SmartestCmsItemSet extends SmartestSet{
 	            $this->database->rawQuery($sql);
             }
         
+        }else{
+            
+            SmartestLog::getInstance('system')->log("SmartestCmsItemSet::addItem() was called on a non-static data set: '{$this->getName()}'.");
+            
         }
 	    
 	}
@@ -81,6 +85,10 @@ class SmartestCmsItemSet extends SmartestSet{
 	            $this->database->rawQuery($sql);
             }
         
+        }else{
+
+            SmartestLog::getInstance('system')->log("SmartestCmsItemSet::removeItem() was called on a non-static data set: '{$this->getName()}'.");
+
         }
 	    
 	}
@@ -93,8 +101,6 @@ class SmartestCmsItemSet extends SmartestSet{
 	    }
 	    
 	    $draft = $mode < 6;
-	    
-	    // print_r($query_data);
 	    
 	    if($refresh || !$this->_fetch_attempted){
 	    

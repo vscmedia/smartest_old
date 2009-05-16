@@ -24,7 +24,7 @@
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Site Options</b></li>
     
-    <li class="permanent-action"><a href="{$domain}{$section}/publishPageConfirm?page_id={$pageInfo.webid}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_lightning.png" border="0" alt=""> Publish this page</a></li>
+    <li class="permanent-action"><a href="{$domain}{$section}/publishPageConfirm?page_id={$pageInfo.webid}{if $pageInfo.type == "ITEMCLASS"}&amp;item_id={$pageInfo.item.id}{/if}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_lightning.png" border="0" alt=""> Publish this page</a></li>
     <li class="permanent-action"><a href="{$domain}desktop/editSite?site_id={$pageInfo.site_id}" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit Site Parameters</a></li>
     {if $allow_release}<li class="permanent-action"><a href="{$domain}{$section}/releasePage?page_id={$pageInfo.webid}" class="right-nav-link"><img src="{$domain}Resources/Icons/lock_open.png" border="0" alt=""> Release this page</a></li>{/if}
     {if $allow_edit}<li class="permanent-action"><a href="{$domain}{$section}/closeCurrentPage" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Finish working with this page</a></li>{/if}

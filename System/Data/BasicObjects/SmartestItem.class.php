@@ -22,6 +22,14 @@ class SmartestItem extends SmartestBaseItem{
 	    return $this->getIsPublic();
 	}
 	
+	public function getIsApproved(){
+	    return (bool) $this->getChangesApproved();
+	}
+	
+	public function isApproved(){
+	    return $this->getIsApproved();
+	}
+	
 	public function getModel(){
 	    
 	    if(!is_object($this_model)){

@@ -22,6 +22,18 @@ class SmartestWebPageBuilder extends SmartestEngine{
 		if(!defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS')){
 		    define('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS', true);
 		}
+		
+		if(!SmartestPersistentObject::get('template_layer_data:sets')){
+		    
+		    SmartestPersistentObject::set('template_layer_data:sets', new SmartestParameterHolder("Template Layer Datasets"));
+		    
+		}
+		
+		if(!SmartestPersistentObject::get('template_layer_data:items')){
+		    
+		    SmartestPersistentObject::set('template_layer_data:items', new SmartestParameterHolder("Template Layer Items"));
+		    
+		}
 	    
 	}
 	
@@ -51,6 +63,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
             $this->page->setDraftMode($mode);
         }
         
+    }
+    
+    public function getDataSetsHolder(){
+        return SmartestPersistentObject::get('template_layer_data:sets');
+    }
+    
+    public function getItemsHolder(){
+        return SmartestPersistentObject::get('template_layer_data:items');
     }
     
     public function startChildProcess($pid, $type=''){
@@ -110,7 +130,13 @@ class SmartestWebPageBuilder extends SmartestEngine{
 	        
 	        $this->assign('required_template', $template);
 	        $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
+	        
+	        ob_start();
 	        $this->run($template, array());
+	        $content = ob_get_contents();
+	        ob_end_clean();
+	    
+	        return $content;
 	        
 	    }else{
 	    
@@ -127,21 +153,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         if($this->_context == SM_CONTEXT_CONTENT_PAGE){
             
-            // echo $container_name;
-            
-            // print_r($this->getPage()->getContainerDefinitionNames());
-            
-            if($container_name == 'additional_scripts'){
-                // print_r($this->getPage()->getContainerDefinitionNames());
-            }
-            
             if($this->getPage()->hasContainerDefinition($container_name)){
                 
                 $container_def = $this->getPage()->getContainerDefinition($container_name, $this->getDraftMode());
                 
-                if(!$this->getDraftMode()){
-                    // print($container_def->getContainer()->getName());
-                    // echo $container_def->getTemplateFilePath();
+                if($this->getDraftMode()){
+                    
                 }
                 
                 $this->run($container_def->getTemplateFilePath(), array());
@@ -775,16 +792,26 @@ class SmartestWebPageBuilder extends SmartestEngine{
                     $limit = null;
                 }
 
-        		if($set->hydrateBy('name', $name)){
+        		if($set->hydrateBy('name', $name) || $this->getDataSetsHolder()->h($name)){
         		    
         		    $dah = new SmartestDataAppearanceHelper;
                     $dah->setDataSetAppearsOnPage($set->getId(), $this->getPage()->getId());
                     
-        		    $set_mode = $this->getDraftMode() ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT ;
+                    $set_mode = $this->getDraftMode() ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT ;
         		    $items = $set->getMembers($set_mode, false, $limit, $query_vars);
         		    
         		}else{
         		    $items = array();
+        		}
+        		
+        		if($this->getDraftMode()){
+        		    // print_r(array_keys($items));
+        		}
+        		
+        		if(isset($params['start'])){
+        		    $start = (int) $params['start'];
+        		    $key = $start-1;
+        		    $items = array_slice($items, $key);
         		}
 
          		return $items;
