@@ -146,6 +146,17 @@ class SmartestEngine extends Smarty{
 	    return "<!-- SmartestEngine Message: ".$message." -->\n";
 	}
 	
+	public function raiseError($error_msg='Unknown Template Error'){
+	    
+	    $this->_log($error_msg);
+	    
+	    if($this->getDraftMode()){
+	        $this->assign('_error_text', $error_msg);
+	        $error_markup = $this->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/markup_error.tpl");
+	        return $error_markup;
+        }
+	}
+	
 	public function evaluate($string, $compile_name=null){
 	    
 	    // create resource name

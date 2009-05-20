@@ -194,6 +194,7 @@ class SmartestResponse{
         	'System/Data/SmartestDataObjectHelper.class.php',
         	'System/Base/SmartestSiteActions.class.php',
         	'System/Templating/SmartestWebPageBuilder.class.php',
+        	'System/Templating/SmartestAssetRenderer.class.php',
         	'System/Response/SmartestFilterChain.class.php',
         	'System/Response/SmartestFilter.class.php'
 

@@ -41,7 +41,7 @@ class SmartyManager{
 		}
 	}
 
-	public function &initialize() {
+	public function &initialize($pid='_main') {
 		
 		//detect if the proper directories exist
 		if(!is_dir($this->options['default_templates_dir']) ){
@@ -76,7 +76,9 @@ class SmartyManager{
 		    $smartyObj = new SmartestInterfaceBuilder('_main');
 		}else if($this->context == 'WebPageBuilder'){
 		    $smartyObj = new SmartestWebPageBuilder('_main');
-		}else{
+		}else if($this->context == 'AssetRenderer'){
+    	    $smartyObj = new SmartestAssetRenderer($pid);
+    	}else{
 		    $smartyObj = new SmartestEngine('_main');
 		}
 		
@@ -86,5 +88,6 @@ class SmartyManager{
 		$smartyObj->config_dir = SM_ROOT_DIR.$this->options['config'];
     
 		return $smartyObj;
+		
 	}
 }

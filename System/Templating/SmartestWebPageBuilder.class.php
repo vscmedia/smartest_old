@@ -89,18 +89,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
         }
 	}
 	
-	public function raiseError($error_msg='Unknown Template Error'){
-	    
-	    $this->_log($error_msg);
-	    
-	    if($this->getDraftMode()){
-	        $this->assign('_error_text', $error_msg);
-	        $error_markup = $this->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/markup_error.tpl");
-	        echo $error_markup;
-        }
-	}
-    
-    public function prepareForRender(){
+	public function prepareForRender(){
         
         $this->page->loadAssetClassDefinitions();
 	    $this->page->loadItemSpaceDefinitions();
@@ -314,7 +303,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             	            }
         	            }
                         
-                        $this->_renderAssetObject($asset, $params, $render_data);
+                        $html = $this->_renderAssetObject($asset, $params, $render_data);
                     
                     }
                     
@@ -356,7 +345,14 @@ class SmartestWebPageBuilder extends SmartestEngine{
                 }else{
                 
                     if($ph->hydrateBy('name', $placeholder_name)){
-                        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
+                        
+                        if($this->getPage() instanceOf SmartestItemPage){
+                            $edit_url = SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid().'&amp;item_id='.$this->getPage()->getSimpleItem()->getId();
+                        }else{
+                            $edit_url = SM_CONTROLLER_DOMAIN."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid();
+                        }
+                        
+                        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
                         return $edit_link;
                     }
                 
@@ -398,7 +394,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             	        return $content;
             	        
                     }else{
-                        $this->raiseError("Problem rendering itemspace with template ID ".$template_id.": template not found.");
+                        return $this->raiseError("Problem rendering itemspace with template ID ".$template_id.": template not found.");
                     }
                 
                 }else{
@@ -417,13 +413,13 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         }else{
             
-            $this->raiseError("ItemSpace '".$itemspace_name."' used outside page context.");
+            return $this->raiseError("ItemSpace '".$itemspace_name."' used outside page context.");
             
         }
         
     }
     
-    public function renderAttachment($name){
+    /* public function renderAttachment($name){
         
         if(isset($name) && strlen($name)){
             
@@ -462,18 +458,18 @@ class SmartestWebPageBuilder extends SmartestEngine{
                         $this->_comment("asset tag exists, but isn't defined.");
                     }
                 }else{
-                    $this->raiseError('Attachment \''.$name.'\' does not exist.');
+                    return $this->raiseError('Attachment \''.$name.'\' does not exist.');
                 }
             
             }else{
                 
-                $this->raiseError('Attachment tags can only be used in text files.');
+                return $this->raiseError('Attachment tags can only be used in text files.');
                 
             }
 	        
         }
         
-    }
+    } */
     
     public function renderField($field_name, $params){
         
@@ -703,7 +699,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
             
         }else{
             
-            $this->raiseError('Link could not be built. "to" field not properly defined.');
+            return $this->raiseError('Link could not be built. "to" field not properly defined.');
             
         }
         
@@ -891,104 +887,12 @@ class SmartestWebPageBuilder extends SmartestEngine{
     
     public function _renderAssetObject($asset, $params, $render_data='', $path='none'){
         
-        $asset_type_info = $asset->getTypeInfo();
-        $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
-        
-        if(!is_array($render_data)){
-            $render_data = array();
-        }
-        
-        if(isset($path)){
-            $path = (!in_array($path, array('file', 'full'))) ? 'none' : $path;
-        }else{
-            $path = 'none';
-        }
-        
-        if(file_exists($render_template)){
-            
-            if($asset->isImage()){
-		        
-		        if(!$render_data['width']){
-                    $render_data['width'] = $asset->getWidth();
-                }
-                
-                if(!$render_data['height']){
-                    $render_data['height'] = $asset->getHeight();
-                }
-            }
-            
-            if(isset($params['style']) && strlen($params['style'])){
-                $render_data['style'] = $params['style'];
-            }
-            
-            if($path == 'file'){
-                echo $asset->getUrl();
-            }else if($path == 'full'){
-                echo $asset->getFullWebPath();
-            }else{
-                if($asset->usesTextFragment() && $asset->isParsable()){
-                    
-                    $render_process_id = SmartestStringHelper::toVarName('textfragment_'.$asset->getStringid().'_'.substr(microtime(true), -6));
-                    
-                    $attachments = $asset->getTextFragment()->getAttachments();
-                    
-                    // If draft, check that a temporary preview copy has been created, and creat it if not
-                    if($this->getDraftMode()){
-                        if($asset->getTextFragment()->ensurePreviewFileExists()){
-                            
-                            $child = $this->startChildProcess($render_process_id);
-                	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
-                	        $child->setProperty('asset', $asset);
-                	        $child->setProperty('attachments', $attachments);
-                	        
-                	        $content = $child->fetch($asset->getTextFragment()->getParsableFilePath(true));
-                	        
-                	        $this->killChildProcess($child->getProcessId());
-                	        
-                	        echo $content;
-                        }else{
-                            $this->raiseError('TextFragment render preview could not be created.');
-                        }
-                    }else{
-                    // otherwise parse local disk copy.
-                        if($asset->getTextFragment()->isPublished()){
-                	        $child = $this->startChildProcess($render_process_id);
-                	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
-                	        $child->setProperty('asset', $asset);
-                	        $child->setProperty('attachments', $attachments);
-                	        
-                	        $content = $child->fetch($asset->getTextFragment()->getParsableFilePath());
-                	        
-                	        $this->killChildProcess($child->getProcessId());
-                	        
-                	        echo $content;
-                        }else{
-                            echo $this->_comment("Asset '".$asset->getStringid()."' is not published");
-                        }
-                    }
-                    
-                }else{
-                    
-                    $this->run($render_template, array('asset_info'=>$asset, 'render_data'=>$render_data));
-                    
-                }
-            }
-            
-            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage" && $path == 'none'){
-			    
-			    if(isset($asset_type_info['editable']) && $asset_type_info['editable'] && $asset_type_info['editable'] != 'false'){
-			        $edit_link .= "<a title=\"Click to edit file: ".$asset->getUrl()." (".$asset->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."assets/editAsset?asset_id=".$asset->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
-			    }else{
-			        $edit_link = "<!--edit link-->";
-		        }
-		    
-	        }
-		    
-		    echo $edit_link;
-            
-        }else{
-            echo $this->raiseError("Render template '".$render_template."' not found.");
-        }
+        $sm = new SmartyManager('AssetRenderer');
+        $r = $sm->initialize($asset->getStringId());
+        $r->assignAsset($asset);
+        $r->setDraftMode($this->getDraftMode());
+        // $content = $r->render($params, $render_data, $path);
+        return $r->render($params, $render_data, $path);
         
     }
     
@@ -1045,7 +949,8 @@ class SmartestWebPageBuilder extends SmartestEngine{
                                 }
                                 
                                 if(SmartestStringHelper::toRealBool($value)){
-                                    return $this->_renderAssetObject($value, $params, $params, $path);
+                                    // return $this->_renderAssetObject($value, $params, $params, $path);
+                                    
                                 }else{
                                     return $this->_comment('No asset selected for property: '.$property->getVarname().' on item ID '.$this->page->getPrincipalItem()->getId());
                                 }
@@ -1326,7 +1231,7 @@ class SmartestWebPageBuilder extends SmartestEngine{
         
         }else{
             
-            $this->raiseError("Could not build iframe. The required 'url' parameter was not specified.");
+            return $this->raiseError("Could not build iframe. The required 'url' parameter was not specified.");
             
         }
         

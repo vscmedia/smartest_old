@@ -105,11 +105,13 @@ class SmartestAsset extends SmartestBaseAsset{
     }
 	
 	public function __toString(){
+	    
 	    if($this->_properties['id']){
 	        return $this->_properties['stringid'].' ('.$this->_properties['url'].')';
         }else{
             return '';
         }
+        
 	}
 	
 	public function getSite(){
