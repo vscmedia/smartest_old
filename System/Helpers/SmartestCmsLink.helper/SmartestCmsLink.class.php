@@ -242,8 +242,12 @@ class SmartestCmsLink extends SmartestHelper{
             
             }else if($this->_destination_properties->getParameter('format') == SM_LINK_FORMAT_USER){
                 
+                $du = new SmartestDataUtility;
+                $model_names = $du->getModelNamesLowercase();
+                $model_id = $model_names[$this->_destination_properties->getParameter('namespace')];
+                
                 // user-formatted wikipedia style links. start with the item, figure out the metapage, and go from there
-                $sql = "SELECT Items.*, ItemClasses.itemclass_varname, ItemClasses.itemclass_name, ItemClasses.itemclass_id FROM Items, ItemClasses WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND ItemClasses.itemclass_varname='".$this->_destination_properties->getParameter('namespace')."' AND Items.item_itemclass_id=ItemClasses.itemclass_id AND item_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND item_deleted != '1'";
+                $sql = "SELECT Items.*, ItemClasses.itemclass_varname, ItemClasses.itemclass_name, ItemClasses.itemclass_id FROM Items, ItemClasses WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND ItemClasses.itemclass_id='".$model_id."' AND Items.item_itemclass_id=ItemClasses.itemclass_id AND item_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND item_deleted != '1'";
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
@@ -489,24 +493,6 @@ class SmartestCmsLink extends SmartestHelper{
         }
         
     }
-    
-    /* protected function parseLinkIdentifier($page_identifier){
-        
-        if(preg_match('/((name|id|webid)=)?([\w-]+)/i', $page_identifier, $matches)){
-            
-            if(strlen($matches[2]) && in_array($matches[2], array('name', 'id', 'webid'))){
-                $index_key = $matches[2];
-            }else{
-                $index_key = 'name';
-            }
-            
-            $index_value = $matches[3];
-            return array('key'=>$index_key, 'value'=>$index_value);
-            
-        }else{
-            return false;
-        }
-    } */
     
     public function render($draft_mode=false, $ama=''){
         
