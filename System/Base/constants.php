@@ -78,6 +78,7 @@ define('SM_CONTEXT_DYNAMIC_TEXTFRAGMENT', 103);
 define('SM_CONTEXT_COMPLEX_ELEMENT', 104); // For rendering templates without containers
 define('SM_CONTEXT_ITEMSPACE_TEMPLATE', 105);
 define('SM_CONTEXT_INLINE_ASSET', 106);
+define('SM_CONTEXT_HYPERLINK', 107);
 
 define('SM_USER_MESSAGE_INFO', 1);
 define('SM_USER_MESSAGE_SUCCESS', 2);
@@ -109,6 +110,7 @@ define('SM_LOG_ACCESS_DENIED', 8);
 define('SM_LOG_ACCESSDENIED', 8);
 define('SM_LOG_USER_ACTION', 16);
 
+define('SM_LINK_TYPE_DUD', 0);
 define('SM_LINK_TYPE_PAGE', 1);
 define('SM_LINK_TYPE_METAPAGE', 2);
 define('SM_LINK_TYPE_IMAGE', 4);
@@ -119,5 +121,9 @@ define('SM_LINK_TYPE_EXTERNAL', 256);
 define('SM_LINK_SCOPE_NONE', 0);
 define('SM_LINK_SCOPE_INTERNAL', 1);
 define('SM_LINK_SCOPE_EXTERNAL', 2);
+
+define('SM_LINK_FORMAT_AUTO', 1);
+define('SM_LINK_FORMAT_USER', 2);
+define('SM_LINK_FORMAT_URL', 4);
 
 define('SM_LINK_GET_TARGET_TITLE', 'SM_LINK_GET_TARGET_TITLE');

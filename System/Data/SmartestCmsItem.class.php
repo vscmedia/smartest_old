@@ -527,10 +527,16 @@ class SmartestCmsItem implements ArrayAccess{
 	        return null;
 	    }
 	    
-	    $lh = new SmartestCmsLinkHelper;
-	    $lh->parse('metapage:id='.$page_id.':id='.$this->getId());
+	    $link = SmartestCmsLinkHelper::createLink('metapage:id='.$page_id.':id='.$this->getId(), 'Raw Link Params: '.'metapage:id='.$page_id.':id='.$this->getId());
 	    
-	    return $lh->getUrl();
+	    // $lh = new SmartestCmsLinkHelper;
+	    // $lh->parse('metapage:id='.$page_id.':id='.$this->getId());
+	    
+	    if($link->hasError()){
+	        return '#';
+	    }else{
+	        return $link->getUrl();
+        }
 	    
 	}
 	
@@ -681,8 +687,6 @@ class SmartestCmsItem implements ArrayAccess{
 	        $result[$key] = $this->_properties[$id]->__toArray();
 	        $result[$key]['_type_info'] = $this->_properties[$id]->getTypeInfo();
             
-            /// var_dump($get_all_fk_property_options);
-            
             if($this->_properties[$id]->isForeignKey() && $get_all_fk_property_options){
                 $result[$key]['_options'] = $this->_properties[$id]->getPossibleValuesAsArrays();
             }
@@ -753,9 +757,6 @@ class SmartestCmsItem implements ArrayAccess{
 	            $this->_properties[$key]->getData()->setPropertyId($key);
 	        }
 	        
-	        // print_r($this->_properties[$key]);
-	        // print_r($value);
-	        
 	        return $this->_properties[$key]->getData()->setContent($value);
 	        
 	    }else{
@@ -767,14 +768,6 @@ class SmartestCmsItem implements ArrayAccess{
 		// return item's built-in name
 		return $this->getItem()->getName();
 	}
-	
-	/* public function __sleep(){
-		$this->database = null;
-	}
-	
-	public function __wakeUp(){
-		$this->database =& SmartestPersistentObject::get('db:main');
-	} */
 	
 	public function getWorkflowStatus(){
 	    if($this->getItem()->getModified() > $this->getItem()->getLastPublished()){
@@ -831,18 +824,6 @@ class SmartestCmsItem implements ArrayAccess{
 	        }
 	    }
 
-        /* if($this->_came_from_database){
-            
-            // this is an update
-            foreach($this->_properties as $id => $value){
-                
-            }
-            
-        }else{
-            // we are inserting properties - item has just been created
-            
-        } */
-        
         if(count($this->_save_errors)){
             return false;
         }else{
@@ -916,14 +897,6 @@ class SmartestCmsItem implements ArrayAccess{
     
     // builds a fully populated object of the correct type from just the primary key or webid
     public static function retrieveByPk($item_id, $dont_bother_with_class=false){
-        
-        /*  SELECT *
-        FROM `ItemClasses` , `Items` , `ItemPropertyValues` , `ItemProperties`
-        WHERE item_itemclass_id = itemclass_id
-        AND itemproperty_itemclass_id = itemclass_id
-        AND itempropertyvalue_item_id = item_id
-        AND itempropertyvalue_property_id = itemproperty_id
-        AND item_id =6166 */
         
         if(__CLASS__ == 'SmartestCmsItem'){
         

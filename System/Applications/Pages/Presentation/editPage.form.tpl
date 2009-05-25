@@ -28,7 +28,7 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">Object Model</div>
-    &quot;{$pageInfo.model_name}&quot;
+    &quot;{$pageInfo.model.plural_name}&quot;
   </div>
   {/if}
   
@@ -42,7 +42,7 @@
   <div class="edit-form-row">
     <div class="form-section-label">Always use page name</div>
     <input type="checkbox" name="page_force_static_title" id="page_force_static_title" value="true"{if $pageInfo.force_static_title=='1'} checked="checked"{/if} />
-    <label for="page_force_static_title">{if $pageInfo.force_static_title=='1'}Un-tick this box to make this meta-page have the title of the {$pageInfo.model_name} that is being displayed.{else}Tick this box to make sure this meta-page keeps the title above, instead of the {$pageInfo.model_name} that is being displayed.{/if}</label>
+    <label for="page_force_static_title">{if $pageInfo.force_static_title=='1'}Un-tick this box to make this meta-page have the title of the {$pageInfo.model.name} that is being displayed.{else}Tick this box to make sure this meta-page keeps the title above, instead of the {$pageInfo.model.name} that is being displayed.{/if}</label>
   </div>
   {/if}
   
@@ -156,7 +156,6 @@
   </div>
   
     {if $show_parent_meta_page_property_control}
-  
   <div class="edit-form-row">
     <div class="form-section-label">Parent Meta-Page Item Source</div>
     {if $parent_mpp_control_type == 'dropdown'}

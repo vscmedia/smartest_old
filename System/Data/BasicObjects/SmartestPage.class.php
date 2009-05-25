@@ -1002,11 +1002,38 @@ class SmartestPage extends SmartestBasePage{
 	}
 	
 	public function getParentMetaPageReferringPropertyId(){
-	    return SmartestSystemSettingHelper::load('metapage_'.$this->_properties['id'].'_parent_item_property_id');
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PARENT_METAPAGE_RPID');
+	    $q->setTargetEntityByIndex(2);
+        $q->addQualifyingEntityByIndex(1, $this->getId());
+        $result = array_values($q->retrieve());
+        
+        if(count($result)){
+            return $result[0]->getPropertyId();
+        }else if($d = SmartestSystemSettingHelper::load('metapage_'.$this->_properties['id'].'_parent_item_property_id')){
+	        return $d;
+	    }
+	    
 	}
 	
 	public function setParentMetaPageReferringPropertyId($id){
-	    return SmartestSystemSettingHelper::save('metapage_'.$this->_properties['id'].'_parent_item_property_id', $id);
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_PARENT_METAPAGE_RPID');
+	    $q->setTargetEntityByIndex(2);
+        $q->addQualifyingEntityByIndex(1, $this->getId());
+        $result = array_values($q->retrieve());
+        
+        if(count($result)){
+            $ref = $result[0];
+        }else{
+            $ref = new SmartestParentMetaPagePropertyReference;
+            $ref->setPageId($this->getId());
+        }
+	    
+	    $ref->setPropertyId($id);
+	    $ref->save();
+	    
+	    return true;
 	}
 	
 	public function fetchRenderingData(){

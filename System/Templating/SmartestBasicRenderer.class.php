@@ -1,9 +1,9 @@
 <?php
 
-class SmartestAssetRenderer extends SmartestEngine{
+class SmartestBasicRenderer extends SmartestEngine{
     
-    protected $_asset;
-    protected $draft_mode;
+    protected $_asset; // used when rendering an Asset
+    protected $draft_mode = false;
     
     public function __construct($pid){
         
@@ -81,7 +81,7 @@ class SmartestAssetRenderer extends SmartestEngine{
         
     }
     
-    public function render($params, $render_data='', $path='none'){
+    public function renderAsset($params, $render_data='', $path='none'){
         
         $asset_type_info = $this->_asset->getTypeInfo();
         $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
@@ -96,7 +96,7 @@ class SmartestAssetRenderer extends SmartestEngine{
             $path = 'none';
         }
         
-        // if(file_exists($render_template)){
+        if(file_exists($render_template)){
             
             if($this->_asset->isImage()){
 		        
@@ -124,8 +124,6 @@ class SmartestAssetRenderer extends SmartestEngine{
                     
                     $attachments = $this->_asset->getTextFragment()->getAttachments();
                     
-                    // echo "Rendering Asset ID: ".$this->_asset->getId();
-                    
                     // If draft, check that a temporary preview copy has been created, and creat it if not
                     if($this->getDraftMode()){
                         if($this->_asset->getTextFragment()->ensurePreviewFileExists()){
@@ -134,6 +132,7 @@ class SmartestAssetRenderer extends SmartestEngine{
                 	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
                 	        $child->setProperty('asset', $this->_asset);
                 	        $child->setProperty('attachments', $attachments);
+                	        $child->setDraftMode($this->getDraftMode());
                 	        
                 	        $content = $child->fetch($this->_asset->getTextFragment()->getParsableFilePath(true));
                 	        
@@ -150,6 +149,7 @@ class SmartestAssetRenderer extends SmartestEngine{
                 	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
                 	        $child->setProperty('asset', $this->_asset);
                 	        $child->setProperty('attachments', $attachments);
+                	        $child->setDraftMode($this->getDraftMode());
                 	        
                 	        $content = $child->fetch($this->_asset->getTextFragment()->getParsableFilePath());
                 	        
@@ -157,6 +157,19 @@ class SmartestAssetRenderer extends SmartestEngine{
                 	        
                         }else{
                             $content = $this->raiseError("Asset '".$this->_asset->getStringid()."' is not published");
+                        }
+                    }
+                    
+                    $links = SmartestLinkParser::parseEasyLinks($content);
+                    
+                    foreach($links as $l){
+                        
+                        $link = new SmartestCmsLink($l, array());
+                        
+                        if($link->hasError()){
+                            $content = str_replace($l->getParameter('original'), $this->raiseError($link->getErrorMessage()), $content);
+                        }else{
+                            $content = str_replace($l->getParameter('original'), $link->render($this->getDraftMode()), $content);
                         }
                     }
                     
@@ -184,40 +197,33 @@ class SmartestAssetRenderer extends SmartestEngine{
             
             return $content;
             
-        /* }else{
+        }else{
             return $this->raiseError("Render template '".$render_template."' not found.");
-        } */
+        }
         
     }
     
-    public function _renderAssetObject($asset, $params, $render_data='', $path='none'){
+    public function renderLink(SmartestCmsLink $link){
         
-        $asset_type_info = $asset->getTypeInfo();
-        $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
+        $ph = new SmartestParameterHolder("Link Attibutes: ".$link->getDestinationProperties()->getParameter('destination'));
         
-        if(!is_array($render_data)){
-            $render_data = array();
+        if($link->hasError()){
+            return $this->raiseError($link->getErrorMessage());
         }
         
-        if(isset($path)){
-            $path = (!in_array($path, array('file', 'full'))) ? 'none' : $path;
-        }else{
-            $path = 'none';
-        }
+        $render_process_id = 'dynamic_link_'.substr(md5($link->getUrl($this->draft_mode)), 0, 8);
         
-        if(file_exists($render_template)){
-            
-            $sm = new SmartyManager('AssetRenderer');
-            $r = $sm->initialize($asset->getStringId());
-            $r->assignAsset($asset);
-            $r->setDraftMode($this->getDraftMode());
-            $content = $r->render($params, $render_data, $path);
-            
-        }else{
-            $content = $this->raiseError("Render template '".$render_template."' not found.");
-        }
+        $child = $this->startChildProcess($render_process_id);
+        $child->setContext(SM_CONTEXT_HYPERLINK);
+        $child->assign('_link_url', $link->getUrl($this->draft_mode));
+        $child->assign('_link_contents', $link->getContent($this->draft_mode));
+        $child->assign('_link_parameters', SmartestStringHelper::toAttributeString($link->getMarkupAttributes()->getParameters()));
+        $child->assign('_link_show_anchor', !$link->shouldOmitAnchorTag($this->draft_mode));
         
-        return $content;
+        $html = $child->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/basic_link.tpl");
+        $this->killChildProcess($child->getProcessId());
+        
+        return $html;
         
     }
     

@@ -3,11 +3,11 @@
 class SmartestItemPropertyValueAsset extends SmartestAsset{
     
     protected $_display_params;
+    protected $_draft_mode;
     
     public function __toString(){
 	    
-	    $r = new SmartestAssetRenderer($this, $this->getStringId());
-        return $r->render();
+	    return $this->render(array(), $this->_display_params, $this->_draft_mode);
         
 	}
     

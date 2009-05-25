@@ -4,49 +4,53 @@ SmartestHelper::register('CmsLink');
 
 class SmartestCmsLinkHelper extends SmartestHelper{
     
-    protected $_item;
-    protected $_page;
-    protected $_host_page;
-    protected $_params = array();
-    protected $_type;
-    protected $_error_message;
-    protected $_error = false;
-    protected $_draft_mode = false;
-    protected $_preview_mode = false;
-    protected $_image_file = null;
-    protected $_tag_name = null;
-    protected $_download = null;
-    protected $_page_not_found = false;
-    protected $_external_destination = null;
-    protected $database;
+    private static $database;
     
-    public function __construct($page='', $params='', $draft=false, $preview=false){
+    static function getDatabase(){
         
-        if(is_array($params)){
-            $this->_params = $params;
+        if(!self::$database){
+            
+            self::$database = SmartestDatabase::getInstance('SMARTEST');
+            
         }
-        
-        if(is_object($page)){
-            $this->_host_page = $page;
-        }
-        
-        $this->database = SmartestPersistentObject::get('db:main');
-        $this->_draft_mode = $draft;
-        $this->_preview_mode = $preview;
         
     }
     
-    public function parse($link){
+    public static function createLink($to, $markup_attributes){
+        
+        $properties = SmartestLinkParser::parseSingle($to);
+        $link = new SmartestCmsLink($properties, $markup_attributes);
+        
+        return $link;
+        
+    }
+    
+    public static function getPageAsLinkTarget(){
+        
+        $sql = "SELECT * FROM Pages WHERE page_".$key."='".$value."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_deleted != 'TRUE'";
+        $result = self::getDatabase()->queryToArray($sql);
+        
+        
+        $helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex(constant('SM_CMS_PAGE_SITE_ID'));
+        
+    }
+    
+    /* public static function parse($ds){
+        
+        // $params = SmartestLinkParser::parseSingle($ds);
+        
+        // print_r($params);
+        
+        // return $params;
         
         $link_parts = explode(':', $link);
         $type = $link_parts[0];
         
-        // $l = new SmartestCmsLink;
-        
         switch($type){
             
             case "page":
-            $this->_type = 'page';
+            $this->_destination_type = 'page';
             // $l->setType(SM_LINKTYPE_PAGE);
             // print_r($link_parts);
             if($link_parts[1]){
@@ -86,7 +90,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             break;
             
             case "metapage":
-            $this->_type = 'metapage';
+            $this->_destination_type = 'metapage';
             // $l->setType(constant('SM_LINKTYPE_METAPAGE'));
             
             if($link_parts[1] && $link_parts[2]){
@@ -152,7 +156,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             break;
             
             case "image":
-            $this->_type = 'image';
+            $this->_destination_type = 'image';
             // $l->setType(constant('SM_LINKTYPE_IMAGE'));
             
             if($link_parts[1]){
@@ -167,7 +171,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             break;
             
             case "tag":
-            $this->_type = 'tag_page';
+            $this->_destination_type = 'tag_page';
             // $l->setType(constant('SM_LINKTYPE_TAG'));
             
             if($link_parts[1]){
@@ -181,7 +185,7 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             break;
             
             case "download":
-            $this->_type = 'download';
+            $this->_destination_type = 'download';
             // $l->setType(constant('SM_LINKTYPE_DOWNLOAD'));
             
             $asset_identifier = $link_parts[1];
@@ -217,11 +221,11 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             
             default:
             // return
-            /* if(in_array($type, )){
+            // if(in_array($type, )){
                 
-            } */
+            // }
             
-            $this->_type = 'external';
+            $this->_destination_type = 'external';
             // $l->setType(constant('SM_LINKTYPE_EXTERNAL'));
             $this->_external_destination = $link;
             break;
@@ -230,247 +234,6 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         
         return true;
         
-    }
-    
-    public function parseContent($with){
-        if(substr($with, 0, 6) == 'image:'){
-            // if the content is supposed to be an image, create the tag
-            $with = '<img src="'.SM_CONTROLLER_DOMAIN.'Resources/Images/'.substr($with, 6).'"';
-            if(isset($this->_params['alt'])){
-                $with .= ' alt="'.$this->_params['alt'].'" />';
-            }else{
-                $with .= ' alt="'.$this->getContent(true).'" />';
-            }
-            return $with;
-        }else{
-            // otherwise just return whatever was in with=""
-            return $with;
-        }
-    }
-    
-    public function getContent($ignore_with=false){
-        
-        // if the with="" attribute is specified
-        if($this->_params['with'] && !$ignore_with){
-            return $this->parseContent($this->_params['with']);
-        }else{
-            // otherwise guess
-            switch($this->_type){
+    }  */
 
-                case "page":
-                return $this->_page->getTitle();
-                break;
-
-                case "metapage":
-                if($this->_page->getForceStaticTitle() == 1){
-                    return $this->_page->getTitle();
-                }else{
-                    return $this->_item->getName();
-                }
-                break;
-
-                case "image":
-                return $this->_image_file;
-                break;
-                
-                case "tag_page":
-                return $this->_tag_name;
-                break;
-                
-                case "download":
-                return $this->_download->getUrl();
-                break;
-
-                case "external":
-                return $this->_external_destination;
-                break;
-            }
-            
-        }
-        
-    }
-    
-    public function getUrl(){
-        
-        switch($this->_type){
-            
-            case "page":
-            
-            if($this->_preview_mode){
-                if($this->_page_not_found){
-                    return '#';
-                }else{
-                    return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid();
-                }
-            }else{
-                if($this->_page){
-                    if($this->_page->getIsPublished() == 'TRUE'){
-                        if($this->_page_not_found){
-                            return '#';
-                        }else{
-                            if($this->shouldUseId()){
-                                return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid();
-                            }else{
-                                return SM_CONTROLLER_DOMAIN.$this->_page->getDefaultUrl();
-                            }
-                        }
-                    }else{
-                        return '#';
-                    }
-                }else{
-                    return '#';
-                }
-            }
-            
-            break;
-            
-            case "metapage":
-            
-            // print_r($this->_page);
-            
-            if($this->_preview_mode){
-                if(is_object($this->_page)){
-                    if(is_object($this->_item)){
-                        return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getId();
-                    }else{
-                        return '#';
-                    }
-                }else{
-                    return '#';
-                }
-            }else if($this->shouldUseId()){
-                if(is_object($this->_page)){
-                    if(is_object($this->_item)){
-                        return SM_CONTROLLER_DOMAIN.'website/renderPageFromId?page_id='.$this->_page->getWebid().'&amp;item_id='.$this->_item->getWebid();
-                    }else{
-                        return '#';
-                    }
-                }else{
-                    return '#';
-                }
-            }else{
-                if(is_object($this->_page) && is_object($this->_item)){
-                    $template_url = SM_CONTROLLER_DOMAIN.$this->_page->getDefaultUrl();
-                    $url = str_replace(':id', $this->_item->getId(), $template_url);
-                    $url = str_replace(':long_id', $this->_item->getWebid(), $url);
-                    $url = str_replace(':name', $this->_item->getSlug(), $url);
-                    return $url;
-                }else{
-                    return '#';
-                }
-            }
-            
-            break;
-            
-            case "image":
-            return SM_CONTROLLER_DOMAIN.'Resources/Images/'.$this->_image_file;
-            break;
-            
-            case "tag_page":
-            case "tag":
-            return SM_CONTROLLER_DOMAIN.'tags/'.$this->_tag_name.'.html';
-            break;
-            
-            case "download":
-            return SM_CONTROLLER_DOMAIN.'download/'.$this->_download->getUrl().'?key='.$this->_download->getWebid();
-            break;
-            
-            case "external":
-            return $this->_external_destination;
-            break;
-            
-        }
-        
-    }
-    
-    protected function parseLinkIdentifier($page_identifier){
-        
-        if(preg_match('/((name|id|webid)=)?([\w-]+)/i', $page_identifier, $matches)){
-            
-            // print_r($matches);
-            if(strlen($matches[2]) && in_array($matches[2], array('name', 'id', 'webid'))){
-                $index_key = $matches[2];
-            }else{
-                $index_key = 'name';
-            }
-            
-            $index_value = $matches[3];
-            return array('key'=>$index_key, 'value'=>$index_value);
-            
-        }else{
-            return false;
-        }
-    }
-    
-    public function getType(){
-        return $this->_type;
-    }
-    
-    public function getMarkup(){
-        
-        /* if($this->_error && !$this->_page_not_found){
-            if($this->_draft_mode){
-                return '<strong>'.$this->_error_message.'</strong>';
-            }else{
-                return '<!--link failed: '.$this->_error_message.'-->';
-            }
-        }else{
-            
-            // put html together
-            if($this->shouldOmitAnchorTag()){
-                
-                $markup = '<!--cold link: would have been linked to:'.$this->getUrl().'-->'.$this->getContent();
-                
-            }else{
-                
-                // which of the params should be converted to html attributes
-                // Note the target and href attributes are dealt with separately below
-                $allowed_attributes = array('title', 'id', 'name', 'style', 'onclick', 'ondblclick', 'onmouseover', 'onmouseout', 'class');
-                
-                $markup = '<a href="'.$this->getUrl().'"';
-                
-                foreach($this->_params as $attribute=>$value){
-                    if(in_array($attribute, $allowed_attributes)){
-                        $markup .=' '.$attribute.'="'.$value.'"';
-                    }
-                }
-                
-                if($this->_preview_mode && in_array($this->_type, array('page', 'metapage')) && SmartestStringHelper::toRealBool($this->_page->getIsPublished())){
-                    $markup .=' target="_top"';
-                }else{
-                    if(isset($this->_params['target'])){
-                        $markup .=' target="'.$this->_params['target'].'"';
-                    }
-                }
-                
-                $markup .='>'.$this->getContent().'</a>';
-                
-            }
-            
-        }
-        
-        return $markup; */
-        
-    }
-    
-    public function shouldOmitAnchorTag(){
-        return !$this->_preview_mode && ($this->isInternalPage() && $this->shouldGoCold() && is_object($this->_host_page) && $this->_page->getId() == $this->_host_page->getId());
-    }
-    
-    public function shouldGoCold(){
-        return (isset($this->_params['goCold']) && $this->_params['goCold'] && $this->_params['goCold'] != 'false');
-    }
-    
-    public function shouldUseId(){
-        return (isset($this->_params['byId']) && $this->_params['byId'] && $this->_params['byId'] != 'false');
-    }
-    
-    public function isInternalPage(){
-        return in_array($this->_type, array('page', 'metapage'));
-    }
-    
-    public function getErrorMessage(){
-        return $this->_error_message;
-    }
-    
 }

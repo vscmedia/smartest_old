@@ -218,9 +218,20 @@ class SmartestItemPage extends SmartestPage{
 	public function offsetGet($offset){
 	    
 	    switch($offset){
+	        
 	        case "item":
 	        case "principal_item":
 	        return $this->_principal_item;
+	        
+	        /* case "model_name":
+	        return $this->_simple_item->getModel()->getName();
+	        
+	        case "model_plural_name":
+	        return $this->_simple_item->getModel()->getPluralName(); */
+	        
+	        case "model":
+	        return $this->_simple_item->getModel();
+	        
 	    }
 	    
 	    return parent::offsetGet($offset);

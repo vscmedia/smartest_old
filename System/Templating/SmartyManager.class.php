@@ -13,10 +13,9 @@
   *
   * @category   Presentation
   * @package    SmartyManager
-  * @author     Eddie Tejeda <eddie@visudo.com>
   * @author     Marcus Gilroy-Ware <marcus@visudo.com>
-  * @copyright  2005 Visudo LLC
-  * @version    0.2
+  * @copyright  2009 VSC Creative Ltd.
+  * @version    0.3.7
   */
   
 if(!class_exists('SmartestEngine')){
@@ -76,8 +75,8 @@ class SmartyManager{
 		    $smartyObj = new SmartestInterfaceBuilder('_main');
 		}else if($this->context == 'WebPageBuilder'){
 		    $smartyObj = new SmartestWebPageBuilder('_main');
-		}else if($this->context == 'AssetRenderer'){
-    	    $smartyObj = new SmartestAssetRenderer($pid);
+		}else if($this->context == 'BasicRenderer'){
+    	    $smartyObj = new SmartestBasicRenderer($pid);
     	}else{
 		    $smartyObj = new SmartestEngine('_main');
 		}

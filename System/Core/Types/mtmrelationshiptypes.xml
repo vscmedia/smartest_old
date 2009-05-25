@@ -66,4 +66,10 @@
     <entity table="Items" class="SmartestItem" foreignkey="item_id" index="2" required="true" />
   </type>
   
+  <type id="SM_MTMLOOKUP_PARENT_METAPAGE_RPID" return="class:SmartestParentMetaPagePropertyReference" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Maps meta-pages that are the children of other meta-pages to a specific property of the principal item that governs which item populates the parent meta-page.</label>
+    <entity table="Pages" class="SmartestPage" foreignkey="page_id" index="1" required="true" />
+    <entity table="ItemProperties" class="SmartestItemProperty" foreignkey="itemproperty_id" index="2" required="true" />
+  </type>
+  
 </relationshiptypes>

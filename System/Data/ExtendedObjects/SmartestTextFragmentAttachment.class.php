@@ -271,7 +271,7 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
         return $this->_textFragment;
     }
     
-    public function save(){// The only team in North London.
+    public function save(){
         
         if(!$this->getType()){
             $this->setType('SM_MTMLOOKUP_TEXTFRAGMENT_ATTACHMENTS');

@@ -98,6 +98,9 @@ class SmartestAsset extends SmartestBaseAsset{
             case "height":
             return $this->isImage() ? $this->getHeight() : null;
             
+            case "html":
+            return $this->render();
+            
         }
         
         return parent::offsetGet($offset);
@@ -112,6 +115,17 @@ class SmartestAsset extends SmartestBaseAsset{
             return '';
         }
         
+	}
+	
+	public function render($markup_params, $render_data, $draft_mode=false){
+	    // var_dump($draft_mode);
+	    $sm = new SmartyManager('BasicRenderer');
+        $r = $sm->initialize($this->getStringId());
+        $r->assignAsset($this);
+        $r->setDraftMode($draft_mode);
+	    $content = $r->renderAsset($markup_params, $render_data);
+	    return $content;
+	    
 	}
 	
 	public function getSite(){
