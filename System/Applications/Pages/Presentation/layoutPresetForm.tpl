@@ -55,7 +55,7 @@ return true;
       <input type="checkbox" name="{$element.info.type}[]" value="{$element.info.assetclass_name}" id="element_{$key}" {if in_array($element.info.defined, array("PUBLISHED", "DRAFT")) }checked="checked"{else}disabled="disabled"{/if} />
     </td>
     
-    <td>{$element.info.type}
+    <td>
 {if $element.info.defined == "PUBLISHED"}
 		  <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/published_{$element.info.type|lower}.gif" />
 {elseif  $element.info.defined == "DRAFT"}

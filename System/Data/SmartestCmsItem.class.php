@@ -529,9 +529,6 @@ class SmartestCmsItem implements ArrayAccess{
 	    
 	    $link = SmartestCmsLinkHelper::createLink('metapage:id='.$page_id.':id='.$this->getId(), 'Raw Link Params: '.'metapage:id='.$page_id.':id='.$this->getId());
 	    
-	    // $lh = new SmartestCmsLinkHelper;
-	    // $lh->parse('metapage:id='.$page_id.':id='.$this->getId());
-	    
 	    if($link->hasError()){
 	        return '#';
 	    }else{
@@ -541,8 +538,6 @@ class SmartestCmsItem implements ArrayAccess{
 	}
 	
 	public function getModel(){
-	    
-	    // print_r($this->_item);
 	    
 	    if(!$this->_model && is_object($this->_item) && $this->_item->getItemclassId()){
 	        $model = new SmartestModel;

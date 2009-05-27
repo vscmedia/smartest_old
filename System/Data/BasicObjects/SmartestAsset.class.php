@@ -118,7 +118,10 @@ class SmartestAsset extends SmartestBaseAsset{
 	}
 	
 	public function render($markup_params, $render_data, $draft_mode=false){
+	    
 	    // var_dump($draft_mode);
+	    // print_r($render_data);
+	    
 	    $sm = new SmartyManager('BasicRenderer');
         $r = $sm->initialize($this->getStringId());
         $r->assignAsset($this);

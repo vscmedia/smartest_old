@@ -11,14 +11,10 @@ class SmartestCmsItemSet extends SmartestSet{
     protected $_fetch_attempted = false;
     protected $_model = null;
     
-	protected function __objectConstruct(){
-		
-		$this->addPropertyAlias('ModelId', 'itemclass_id');
-		$this->_table_prefix = 'set_';
-		$this->_table_name = 'Sets';
-		
-	}
-	
+    public function __objectConstruct(){
+        
+    }
+    
 	public function setType($type){
 	    if(!$this->_came_from_database){
 	        $this->_properties['type'] = $type;

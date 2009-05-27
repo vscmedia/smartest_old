@@ -60,7 +60,7 @@
         
         <render template="System/Applications/Items/Presentation/CMS/property.asset.tpl" />
         
-        <class>SmartestAsset</class>
+        <class>SmartestDataValueAsset</class>
         
     </type>
     

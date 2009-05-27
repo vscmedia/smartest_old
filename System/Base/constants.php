@@ -127,3 +127,5 @@ define('SM_LINK_FORMAT_USER', 2);
 define('SM_LINK_FORMAT_URL', 4);
 
 define('SM_LINK_GET_TARGET_TITLE', 'SM_LINK_GET_TARGET_TITLE');
+
+define('SM_MTM_SORT_GROUP_ORDER', 'ManyToManyLookups.mtmlookup_order_index');

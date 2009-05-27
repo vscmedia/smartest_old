@@ -8,13 +8,6 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     
     const OMISSION_ERROR = 100;
     
-    protected function __objectConstruct(){
-        
-        $this->_table_prefix = 'itempropertyvalue_';
-		$this->_table_name = 'ItemPropertyValues';
-		
-    }
-    
     function init($item_id, $property_id){
         
         /* $sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_item_id='".$item_id."' AND itempropertyvalue_property_id='".$property_id."'";
@@ -87,6 +80,11 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                 }
                 
                 $obj = new $class;
+                
+                if($class == 'SmartestDataValueAsset'){
+                    $obj->setDraftMode($draft);
+                    $obj->setContextInfo($this->getInfo);
+                }
                 
                 if($class == 'SmartestDropdownOption'){
                     $obj->hydrateByValueWithDropdownId($raw_data, $this->getProperty()->getForeignKeyFilter());

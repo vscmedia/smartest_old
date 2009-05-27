@@ -41,10 +41,22 @@
     <entity table="UserTokens" class="SmartestUserToken" foreignkey="token_id" index="2" required="true" />
   </type>
   
-  <type id="SM_MTMLOOKUP_ASSET_GROUPS" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+  <type id="SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
     <label>Maps files in the repository into groups.</label>
     <entity table="Assets" class="SmartestAsset" foreignkey="asset_id" index="1" required="true" />
-    <entity table="AssetGroups" class="SmartestAssetGroup" foreignkey="assetgroup_id" index="2" required="true" />
+    <entity table="Sets" class="SmartestAssetGroup" foreignkey="set_id" index="2" required="true" />
+  </type>
+  
+  <type id="SM_MTMLOOKUP_PAGE_GROUP_MEMBERSHIP" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Maps pages into groups.</label>
+    <entity table="Pages" class="SmartestPage" foreignkey="page_id" index="1" required="true" />
+    <entity table="Sets" class="SmartestPageGroup" foreignkey="set_id" index="2" required="true" />
+  </type>
+  
+  <type id="SM_MTMLOOKUP_USER_GROUP_MEMBERSHIP" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Maps system users into groups.</label>
+    <entity table="Users" class="SmartestUser" foreignkey="page_id" index="1" required="true" />
+    <entity table="Sets" class="SmartestUserGroup" foreignkey="set_id" index="2" required="true" />
   </type>
   
   <type id="SM_MTMLOOKUP_TEXTFRAGMENT_ATTACHMENTS" return="class:SmartestTextFragmentAttachment" method="SM_MTMLOOKUPMETHOD_MAP">

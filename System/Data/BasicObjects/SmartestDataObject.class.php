@@ -454,8 +454,9 @@ class SmartestDataObject implements ArrayAccess{
 	    }
 	    
 	    $this->_last_query = $sql;
+	    
 	    $result = $this->database->queryToArray($sql);
-
+	    
 	    if(count($result)){
 	
 		    foreach($result[0] as $name => $value){

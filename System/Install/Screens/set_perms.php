@@ -1,4 +1,5 @@
 <?php
+// var_dump($system_data);
 $writable_files = array_merge($system_data->g('system')->g('writable_locations')->g('always')->toArray(), $system_data->g('system')->g('writable_locations')->g('installation')->toArray());
 /* $writable_files = array(
     SM_ROOT_DIR."Public/",

@@ -383,6 +383,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     $template = new SmartestContainerTemplateAsset;
                     
                     if($template->hydrate($template_id)){
+                        
                         $template_path = SM_ROOT_DIR.'Presentation/Layouts/'.$template->getUrl();
                         $render_process_id = SmartestStringHelper::toVarName('itemspace_template_'.SmartestStringHelper::removeDotSuffix($template->getUrl()).'_'.substr(microtime(true), -6));
             	        
@@ -418,61 +419,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
     }
     
-    /* public function renderAttachment($name){
-        
-        if(isset($name) && strlen($name)){
-            
-            if($this->_context == SM_CONTEXT_DYNAMIC_TEXTFRAGMENT){
-            
-                
-                $attachments = $this->getProperty('attachments');
-                $asset = $this->getProperty('asset');
-                
-                $name = SmartestStringHelper::toVarName($name);
-                
-                if(isset($attachments[$name])){
-                    
-                    $attachment = $attachments[$name];
-                    
-                    if($attachment['status'] == 'DEFINED'){
-                        
-                        if($attachment['zoom']){
-                            $attachment['div_width'] = (int) $attachment['thumbnail']['width'] + 10;
-                            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/zoom_attachment.tpl';
-                        }else{
-                            $attachment['div_width'] = (int) $attachment['asset']['width'] + 10;
-                            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
-                        }
-                        
-                        if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-            			    $attachment['edit_link'] = "<a title=\"Click to edit definition for attachment: ".$name."\" href=\"".SM_CONTROLLER_DOMAIN."assets/defineAttachment?attachment=".$name."&amp;asset_id=".$asset->getId()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Attach a different file--></a>";
-            		    }else{
-            			    $attachment['edit_link'] = "<!--edit link-->";
-            		    }
-            		    
-                        $this->run($file, array('_textattachment'=>$attachment));
-                        
-                    }else{
-                        // asset tag exists, but isn't defined.
-                        $this->_comment("asset tag exists, but isn't defined.");
-                    }
-                }else{
-                    return $this->raiseError('Attachment \''.$name.'\' does not exist.');
-                }
-            
-            }else{
-                
-                return $this->raiseError('Attachment tags can only be used in text files.');
-                
-            }
-	        
-        }
-        
-    } */
-    
     public function renderField($field_name, $params){
-        
-        // print_r($this->_page_rendering_data['fields']);
         
         if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
     
@@ -731,7 +678,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 }else{
                     $limit = null;
                 }
-
+                // var_dump(SmartestPersistentObject::get('db:main'));
         		if($set->hydrateBy('name', $name) || $this->getDataSetsHolder()->h($name)){
         		    
         		    $dah = new SmartestDataAppearanceHelper;

@@ -1029,14 +1029,13 @@ class Items extends SmartestSystemApplication{
 	        if($property->hydrate($property_id)){
 	            
 	            $property->setContextualItemId($item_id);
-	            $asset_id = $property->getData()->getDraftContent();
+	            $asset = $property->getData()->getDraftContent();
 	            
 	            $existing_render_data = $property->getData()->getInfo(true);
-	            // print_r($existing_render_data);
 	            
-	            $asset = new SmartestAsset;
+	            // print_r($asset);
 	            
-	            if($asset->hydrate($asset_id)){
+	            if(is_object($asset)){
 	                
 	                $this->send($property->__toArray(), 'property');
 	                $this->send($item->__toArray(), 'item');
@@ -1117,16 +1116,13 @@ class Items extends SmartestSystemApplication{
 	            
 	            $property->setContextualItemId($item_id);
 	            $value_object = $property->getData();
-	            $asset_id = $value_object->getDraftContent();
-	            
-	            // print_r($value_object);
+	            $asset = $value_object->getDraftContent();
 	            
 	            $existing_render_data = $value_object->getInfo(true);
-	            // print_r($existing_render_data);
 	            
-	            $asset = new SmartestAsset;
+	            // $asset = new SmartestAsset;
 	            
-	            if($asset->hydrate($asset_id)){
+	            if(is_object($asset)){
 	                
 	                $type = $asset->getTypeInfo();
 	                
@@ -1155,7 +1151,7 @@ class Items extends SmartestSystemApplication{
             	    
             	    $asset_params = $asset->getDefaultParameterValues();
             	    
-            	    // print_r($params);
+            	    // print_r($values);
             	    
             	    foreach($params as $key=>$p){
             	        // default values from xml are set above.
@@ -1170,9 +1166,11 @@ class Items extends SmartestSystemApplication{
             	            $v = $existing_render_data[$key];
             	        }
             	        
-            	        if(isset($values[$key]) && strlen($values[$key])){
+            	        if(isset($values[$key])){
             	            $v = $values[$key];
             	        }
+            	        
+            	        // print_r($v);
             	        
             	        $value_object->setInfoField($key, $v);
             	        
@@ -1184,7 +1182,7 @@ class Items extends SmartestSystemApplication{
 	                
 	            }else{
 	                
-	                $this->addUserMessageToNextRequest("The asset ID wasn't recognized", SmartestUserMessage::ERROR);
+	                $this->addUserMessageToNextRequest("No asset is currently selected for this property", SmartestUserMessage::ERROR);
 	                
 	            }
 	            
@@ -1246,7 +1244,7 @@ class Items extends SmartestSystemApplication{
 	            
 	            // $user->assignTodo('SM_TODOITEMTYPE_EDIT_ITEM', $item_id, $this->getUser()->getId(), SmartestStringHelper::sanitize())
 	            
-		    $type_id = $post['todoitem_type'];
+		        $type_id = $post['todoitem_type'];
 	            $type = SmartestTodoListHelper::getType($type_id);
                 
                 $message = SmartestStringHelper::sanitize($post['todoitem_description']);

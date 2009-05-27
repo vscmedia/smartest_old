@@ -332,27 +332,36 @@ class SmartestManyToManyQuery{
         
     }
     
-    public function retrieve(){
+    public function retrieve($use_numeric_indices=false){
         
         $result = $this->database->queryToArray($this->buildQuery());
         $objects = array();
         $object_type = $this->getReturnClassName();
         
         foreach($result as $r){
+            
             $o = new $object_type;
             $o->hydrate($r);
             
-            if($this->_type->usesInstances()){
-                $key = $r['mtmlookup_instance_name'];
+            if($use_numeric_indices){
+                
+                $objects[] = $o;
+                
             }else{
-                if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
-                    $key = $r[$this->_type->getNetwork()->getForeignKeyField(false)];
-                }else{
-                    $key = $r[$this->getTargetEntity()->getEntity()->getForeignKeyField(false)];
-                }
-            }
             
-            $objects[$key] = $o;
+                if($this->_type->usesInstances()){
+                    $key = $r['mtmlookup_instance_name'];
+                }else{
+                    if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
+                        $key = $r[$this->_type->getNetwork()->getForeignKeyField(false)];
+                    }else{
+                        $key = $r[$this->getTargetEntity()->getEntity()->getForeignKeyField(false)];
+                    }
+                }
+            
+                $objects[$key] = $o;
+            
+            }
             
         }
         

@@ -102,6 +102,8 @@ class SmartestParameterHolder implements ArrayAccess{
             return reset($this->_data);
             case "_last":
             return end($this->_data);
+            case "_json":
+            return $this->toJson();
         }
         
         return $this->getParameter($offset);
