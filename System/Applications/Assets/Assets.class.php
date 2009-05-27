@@ -852,7 +852,7 @@ class Assets extends SmartestSystemApplication{
 	public function previewAsset($get){
 	    
 	    $this->setTitle("Preview File");
-	    $asset = new SmartestAsset;
+	    $asset = new SmartestRenderableAsset;
 	    $asset_id = (int) $get['asset_id'];
 	    
 	    if(!defined('SM_CMS_PAGE_SITE_ID')){
@@ -861,15 +861,15 @@ class Assets extends SmartestSystemApplication{
 	    
 	    if($asset->hydrate($asset_id)){
 	        
-	        $data = $asset->__toArray(false, true); // don't include object, do include owner info
+	        // $data = $asset->__toArray(false, true); // don't include object, do include owner info
 		    
-		    if(isset($data['type_info']['source-editable']) && SmartestStringHelper::toRealBool($data['type_info']['source-editable'])){
+		    if(isset($asset['type_info']['source-editable']) && SmartestStringHelper::toRealBool($asset['type_info']['source-editable'])){
 		        $this->send(true, 'allow_source_edit');
 		    }else{
 		        $this->send(false, 'allow_source_edit');
 		    }
 		    
-		    if(isset($data['type_info']['parsable']) && SmartestStringHelper::toRealBool($data['type_info']['parsable'])){
+		    if(isset($asset['type_info']['parsable']) && SmartestStringHelper::toRealBool($asset['type_info']['parsable'])){
 		        
 		        if($this->getUser()->hasToken('publish_assets')){
 		            $this->send(true, 'show_publish');
@@ -890,9 +890,9 @@ class Assets extends SmartestSystemApplication{
 		        $this->send(false, 'allow_approve');
 		    }
 		    
-		    $page = $this->getSite()->getHomePage();
+		    // $page = $this->getSite()->getHomePage();
     	    
-    	    $wpb = new SmartestWebPageBuilder('_preview');
+    	    /* $wpb = new SmartestWebPageBuilder('_preview');
     	    $wpb->assignPage($page);
     	    $wpb->setDraftMode(true);
     	    $wpb->prepareForRender();
@@ -909,10 +909,12 @@ class Assets extends SmartestSystemApplication{
     	    ob_end_clean();
     	    // echo $asset_html;
     	    $this->send($asset_html, 'preview_html');
-    	    $this->send($data, 'asset');
+    	    
     	    
     	    // for html reusability
-    	    $this->send($data['type_info'], 'asset_type');
+    	    $this->send($data['type_info'], 'asset_type'); */
+    	    
+    	    $this->send($asset, 'asset');
 	        
 	    }else{
 	        

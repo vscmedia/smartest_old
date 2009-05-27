@@ -277,9 +277,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                         }else{
                             $rd = $placeholder->getLiveRenderData();
                         }
-                    
-                        if($data = @unserialize($rd)){
+                        
+                        if($data = unserialize($rd)){
                             $external_render_data = $data;
+                            $asset->setAdditionalRenderData($data, true);
                         }else{
                             $external_render_data = array();
                         }
@@ -287,8 +288,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                         foreach($external_render_data as $key => $value){
                             $render_data[$key] = $value;
                         }
-        	        
-            	        foreach($params as $key => $value){
+                        
+                        foreach($params as $key => $value){
                             if($key != 'name'){
         	                    if(isset($params[$key])){
                 	                $render_data[$key] = $value;
@@ -299,10 +300,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 	            }
             	            }
         	            }
+        	            
+        	            $asset->setAdditionalRenderData($render_data, true);
+        	            
+        	            // print_r($asset->getRenderData());
                         
                         // var_dump($this->getDraftMode());
                         // $html = $this->_renderAssetObject($asset, $params, $render_data);
-                        $html = $asset->render($params, $render_data, $this->getDraftMode());
+                        $html = $asset->render($this->getDraftMode());
                     
                     }
                     
@@ -389,6 +394,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             	        
             	        $child = $this->startChildProcess($render_process_id);
             	        $child->setContext(SM_CONTEXT_ITEMSPACE_TEMPLATE);
+            	        $child->assign('item', $def->getItem(false, $this->getDraftMode()));
             	        $content = $child->fetch($template_path);
             	        $this->killChildProcess($child->getProcessId());
             	        return $content;
@@ -716,7 +722,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 $hydrateField = 'stringid';
             }
             
-            $asset = new SmartestAsset;
+            $asset = new SmartestRenderableAsset;
             
             if($asset->hydrateBy($hydrateField, $asset_id)){
                 
@@ -873,7 +879,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                                 
                                 if(SmartestStringHelper::toRealBool($value)){
                                     // return $this->_renderAssetObject($value, $params, $params, $path);
-                                    
+                                    $value->setAdditionalRenderData($params);
+                                    return $value->render($this->getDraftMode());
                                 }else{
                                     return $this->_comment('No asset selected for property: '.$property->getVarname().' on item ID '.$this->page->getPrincipalItem()->getId());
                                 }
@@ -931,12 +938,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 			                    
 			                    if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
                                     
-                                    foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
+                                     foreach($property->getData()->getInfo($this->getDraftMode()) as $key=>$param_value){
                                         $params[$key] = $param_value;
-                                    }
+                                     }
                                     
                                     if(SmartestStringHelper::toRealBool($value)){
-                                        return $this->_renderAssetObject($value, $params, $params, $path);
+                                        // return $this->_renderAssetObject($value, $params, $params, $path);
+                                        $value->setAdditionalRenderData($params);
+                                        $value->render($this->getDraftMode());
                                     }
                                     
                                 }else{
@@ -1009,7 +1018,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                             }
                             
                             if(SmartestStringHelper::toRealBool($value)){
-                                return $this->_renderAssetObject($value, $params, $params, $path);
+                                $value->setAdditionalRenderData($params);
+                                return $value->render($this->getDraftMode());
+                                // return $this->_renderAssetObject($value, $params, $params, $path);
                             }
                             
                         }else{
@@ -1034,10 +1045,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             }else{
                 
                 // $object is not an object
-                if($this->getDraftMode()){
-                    echo "Item is not an object.";
-                    print_r($object);
-                }
+                // if($this->getDraftMode()){
+                    /* echo "Item is not an object.";
+                    print_r($object); */
+                    return $this->raiseError("Item is not an object");
+                // }
                 
             }
 
@@ -1070,7 +1082,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                             }
                             
                             if(SmartestStringHelper::toRealBool($value)){
-                                return $this->_renderAssetObject($value, $params, $params, $path);
+                                $value->setAdditionalRenderData($params);
+                                return $value->render($this->getDraftMode());
+                                // return $this->_renderAssetObject($value, $params, $params, $path);
                             }
                             
                         }else{

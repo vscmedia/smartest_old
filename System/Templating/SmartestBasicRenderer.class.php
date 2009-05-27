@@ -81,12 +81,14 @@ class SmartestBasicRenderer extends SmartestEngine{
         
     }
     
-    public function renderAsset($params, $render_data='', $path='none'){
+    public function renderAsset($render_data='', $path='none'){
+        
+        // print_r($render_data);
         
         $asset_type_info = $this->_asset->getTypeInfo();
         $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
         
-        if(!is_array($render_data)){
+        if(!is_array($render_data) && !($render_data instanceof SmartestParameterHolder)){
             $render_data = array();
         }
         

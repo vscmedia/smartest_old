@@ -87,7 +87,7 @@
     {foreach from=$params key="parameter_name" item="parameter"}
       <div class="edit-form-row">
         <div class="form-section-label">{$parameter_name}</div>
-        <input type="text" name="params[{$parameter_name}]" style="width:250px" value="{$parameter.value}" />
+        <input type="text" name="params[{$parameter_name}]" style="width:250px" value="{$parameter.value}" id="render_parameter_{$parameter_name}" /> Default: {$asset_params[$parameter_name]}
       </div>
     {/foreach}
     

@@ -53,7 +53,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
                         $asset_id = $this->getLiveAssetId();
                     }
                     
-                    $asset = new SmartestAsset;
+                    $asset = new SmartestRenderableAsset;
                     $asset->hydrate($asset_id);
                     
                     if(in_array($placeholder->getType(), array('SM_ASSETTYPE_IMAGE', 'SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_SL_TEXT'))){
@@ -138,13 +138,14 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
     public function getAsset($draft=false){
         
         if(!$this->_asset){
+            
             if($draft){
                 $asset_id = $this->getDraftAssetId();
             }else{
                 $asset_id = $this->getLiveAssetId();
             }
             
-            $a = new SmartestAsset;
+            $a = new SmartestRenderableAsset;
             
             if($a->hydrate($asset_id)){
                 $this->_asset = $a;
@@ -191,7 +192,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         $placeholder->hydrate($array);
         $this->_asset_class = $placeholder;
         
-        $asset = new SmartestAsset;
+        $asset = new SmartestRenderableAsset;
         $asset->hydrate($array);
         $this->_asset = $asset;
         

@@ -81,9 +81,9 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                 
                 $obj = new $class;
                 
-                if($class == 'SmartestDataValueAsset'){
+                if($class == 'SmartestRenderableAsset'){
                     $obj->setDraftMode($draft);
-                    $obj->setContextInfo($this->getInfo);
+                    $obj->setAdditionalRenderData($this->getInfo);
                 }
                 
                 if($class == 'SmartestDropdownOption'){

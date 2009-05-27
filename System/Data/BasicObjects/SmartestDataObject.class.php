@@ -390,10 +390,14 @@ class SmartestDataObject implements ArrayAccess{
 			$this->_came_from_database = true;
 			
 			return true;
-			
+		
+		}else if(is_object($id) && (!method_exists($id, '__toString') || !is_numeric($id->__toString()))){
+		    
+		    throw new SmartestException("Tried to hydrate a ".__CLASS__." object with another object (of type ".get_class($id).")");
+		
 		}else{
 		    
-		    return $this->find($id);
+		    return $this->find($id, $site_id);
 	        
 		}
 		
@@ -431,6 +435,7 @@ class SmartestDataObject implements ArrayAccess{
 	    
         }else{
             
+            // A bit harsh:
             // throw new SmartestException("SmartestDataObject->find() must be called with a valid ID or data array.");
             
         }

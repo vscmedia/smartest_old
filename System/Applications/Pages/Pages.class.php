@@ -2271,13 +2271,15 @@ class Pages extends SmartestSystemApplication{
             	    
             	    $asset_params = $asset->getDefaultParameterValues();
             	    
+            	    $this->send($asset_params, 'asset_params');
+            	    
             	    foreach($params as $key=>$p){
             	        // default values from xml are set above.
             	        
             	        // next, set values from asset
             	        if(isset($asset_params[$key]) && strlen($asset_params[$key])){
-            	            $params[$key]['value'] = $asset_params[$key];
-            	            $params[$key]['asset_default'] = $asset_params[$key];
+            	            // $params[$key]['value'] = $asset_params[$key];
+            	            // $params[$key]['asset_default'] = $asset_params[$key];
             	        }
             	        
             	        // then, override any values that already exist
