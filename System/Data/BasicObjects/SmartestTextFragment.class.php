@@ -33,6 +33,7 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
         $results = $q->retrieve();
         
         foreach($attachment_names as $a){
+          
             if(array_key_exists($a, $results)){
                 $attachments[$a] = $results[$a];
             }else{

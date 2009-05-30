@@ -6,34 +6,9 @@ class SmartestInstallationStatusHelper{
     
     public static function checkStatus($purge=false){
         
-        if($purge || (!is_file(SM_ROOT_DIR.'Public/.htaccess') || !is_file(SM_ROOT_DIR.'Configuration/controller.xml') || !is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
+        if(SmartestCache::load('installation_status', true) !== SM_INSTALLSTATUS_COMPLETE || $purge || (!is_file(SM_ROOT_DIR.'Public/.htaccess') || !is_file(SM_ROOT_DIR.'Configuration/controller.xml') || !is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
             
             session_start();
-            
-            /* $writable_files = array(
-            	SM_ROOT_DIR."Public/",
-            	SM_ROOT_DIR."Sites/",
-            	SM_ROOT_DIR."Configuration/",
-            	SM_ROOT_DIR."System/Core/Info/",
-            	SM_ROOT_DIR."System/Cache/SmartestEngine/",
-            	SM_ROOT_DIR."System/Cache/Smarty/",
-            	SM_ROOT_DIR."System/Cache/Pages/",
-            	SM_ROOT_DIR."System/Cache/Data/",
-            	SM_ROOT_DIR."System/Cache/Includes/",
-            	SM_ROOT_DIR."System/Cache/ObjectModel/Models/",
-            	SM_ROOT_DIR."System/Cache/ObjectModel/DataObjects/",
-            	SM_ROOT_DIR."System/Cache/Settings/",
-            	SM_ROOT_DIR."System/Cache/Controller/",
-            	SM_ROOT_DIR."Library/ObjectModel/",
-            	SM_ROOT_DIR."Documents/",
-            	SM_ROOT_DIR."Documents/Deleted/",
-            	SM_ROOT_DIR."System/Temporary/",
-            	SM_ROOT_DIR."System/Cache/TextFragments/Previews/",
-            	SM_ROOT_DIR."System/Cache/TextFragments/Live/",
-            	SM_ROOT_DIR."Logs/",
-            	SM_ROOT_DIR."System/Logs/"
-            ); */
-            
             $system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml', false);
             $writable_files = array_merge($system_data->g('system')->g('writable_locations')->g('always')->toArray(), $system_data->g('system')->g('writable_locations')->g('installation')->toArray());
             

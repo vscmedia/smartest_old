@@ -217,8 +217,6 @@ class Sets extends SmartestSystemApplication{
 	        
 	    }
 	    
-	    // print_r($c);
-	    
 	    $this->formForward();
 	    
 	}
@@ -234,15 +232,102 @@ class Sets extends SmartestSystemApplication{
 			    // $this->manager->addItemToStaticSet($post['available_items'], $post['set_id']);
 			    $item_ids = (isset($post['available_items']) && is_array($post['available_items'])) ? $post['available_items'] : array();
 			    $set->addItems($item_ids);
+			    $set->fixOrderIndices();
 		    }else{
 			    // $this->manager->removeItemFromStaticSet($post['used_items'], $post['set_id']);
 			    $item_ids = (isset($post['used_items']) && is_array($post['used_items'])) ? $post['used_items'] : array();
 			    $set->removeItems($item_ids);
+			    $set->fixOrderIndices();
 		    }
 		
 	    }
 		
 		$this->formForward();
+	}
+	
+	public function editStaticSetOrder($get){
+	    
+	    $set = new SmartestCmsItemSet;
+	    
+	    if($set->find((int) $get['set_id'])){
+	        
+	        if($set->getType() == 'DYNAMIC'){
+	            $this->addUserMessageToNextRequest("The set you are trying to change the order of is a dynamic saved query. Try changing its conditions instead.", SM_USER_MESSAGE_WARNING);
+	            $this->redirect('/sets/editSet?set_id='.$set->getId());
+	        }
+	        
+	        $this->send($set, 'set');
+	        $this->send($set->getMembers(SM_QUERY_ALL_DRAFT), 'items');
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The set ID was not recognised.", SM_USER_MESSAGE_ERROR);
+	        $this->redirect('/smartest/sets');
+	    }
+	    
+	}
+	
+	public function moveItemInStaticSet($get){
+	    
+	    $set = new SmartestCmsItemSet;
+	    
+	    if($set->find((int) $get['set_id'])){
+	        
+	        if($set->getType() == 'DYNAMIC'){
+	            $this->addUserMessageToNextRequest("The set you are trying to change the order of is a dynamic saved query. Try changing its conditions instead.", SM_USER_MESSAGE_WARNING);
+	            $this->redirect('/sets/editSet?set_id='.$set->getId());
+	        }
+	        
+	        $set->fixOrderIndices();
+	        
+	        $last_order_index = max((count($set->getSimpleMembers(SM_QUERY_ALL_DRAFT)) - 1), 0);
+	        
+	        $lookup = new SmartestSetItemLookup;
+	        
+	        if($lookup->loadForOrderChange($set->getId(), $get['item_id'])){
+	            
+	            $current_position = $lookup->getOrder();
+	            
+	            if($get['direction'] == 'up'){
+	                
+	                if($current_position > 0){
+	                    
+	                    $previous_lookup = new SmartestSetItemLookup;
+	                    
+	                    if($previous_lookup->loadForOrderChangeByPosition($set->getId(), ($current_position - 1))){
+	                        $lookup->setOrder($previous_lookup->getOrder());
+	                        $lookup->save();
+	                        $previous_lookup->setOrder($current_position);
+	                        $previous_lookup->save();
+	                    }
+	                }
+	                
+	            }else if($get['direction'] == 'down'){
+	                
+	                if($current_position < $last_order_index){
+	                    
+	                    $next_lookup = new SmartestSetItemLookup;
+	                    
+	                    if($next_lookup->loadForOrderChangeByPosition($set->getId(), ($current_position + 1))){
+	                        $lookup->setOrder($next_lookup->getOrder());
+	                        $lookup->save();
+	                        $next_lookup->setOrder($current_position);
+	                        $next_lookup->save();
+	                    }
+	                    
+	                }
+	                
+	            }
+	            
+	        }
+	        
+	        // print_r(SmartestPersistentObject::get('db:main')->getDebugInfo());
+	        $this->redirect('/sets/editStaticSetOrder?set_id='.$set->getId());
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The set ID was not recognised.", SM_USER_MESSAGE_ERROR);
+	        $this->redirect('/smartest/sets');
+	    }
+	    
 	}
 	
 	function previewSet($get){     

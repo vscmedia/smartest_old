@@ -720,7 +720,7 @@ class SmartestCmsItem implements ArrayAccess{
 	    }
 	}
 	
-	public function getPropertyValueByNumericKey($key, $draft=false){
+	public function getPropertyValueByNumericKey($key){
 	    if(array_key_exists($key, $this->_properties)){
 	        if($this->getDraftMode()){
 	            return $this->_properties[$key]->getData()->getDraftContent();
@@ -732,7 +732,7 @@ class SmartestCmsItem implements ArrayAccess{
 	    }
 	}
 	
-	public function getPropertyValueByVarName($varname, $draft=false){
+	public function getPropertyValueByVarName($varname){
 	    if(array_key_exists($varname, $this->_varnames_lookup)){
 	        if($this->getDraftMode()){
 	            return $this->_properties[$this->_varnames_lookup[$varname]]->getData()->getDraftContent();

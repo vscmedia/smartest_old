@@ -2,7 +2,7 @@
  <h3>Preview File {$asset.stringid}</h3>
  <div class="instruction">The file will look something like this:</div>
  <div id="html-preview">
-  {$asset.html}
+  {$html}
  </div>
 </div>
 

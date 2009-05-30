@@ -30,7 +30,7 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
         parent::hydrate($id);
         
         if(is_array($id) && isset($id['asset_id'])){
-            $a = new SmartestAsset;
+            $a = new SmartestRenderableAsset;
             $a->hydrate($id);
             $this->_asset = $a;
         }

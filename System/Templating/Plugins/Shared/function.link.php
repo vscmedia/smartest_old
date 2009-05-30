@@ -19,6 +19,10 @@ function smarty_function_link($params, &$smartest_engine){
 		    $link->setHostPage($GLOBALS['CURRENT_PAGE']);
 		}
 		
+		if($link->hasError()){
+		    return $smartest_engine->raiseError($link->getErrorMessage());
+		}
+		
 		return $link->render($smartest_engine->getDraftMode());
 		
 	}else{

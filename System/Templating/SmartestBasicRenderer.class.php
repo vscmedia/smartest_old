@@ -39,6 +39,8 @@ class SmartestBasicRenderer extends SmartestEngine{
                 $attachments = $this->getProperty('attachments');
                 $asset = $this->getProperty('asset');
                 
+                // print_r($asset);
+                
                 $name = SmartestStringHelper::toVarName($name);
                 
                 if(isset($attachments[$name])){
@@ -84,6 +86,8 @@ class SmartestBasicRenderer extends SmartestEngine{
     public function renderAsset($render_data='', $path='none'){
         
         // print_r($render_data);
+        
+        // print_r($this->_asset);
         
         $asset_type_info = $this->_asset->getTypeInfo();
         $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
@@ -217,6 +221,7 @@ class SmartestBasicRenderer extends SmartestEngine{
         
         $child = $this->startChildProcess($render_process_id);
         $child->setContext(SM_CONTEXT_HYPERLINK);
+        // var_dump($this->draft_mode);
         $child->assign('_link_url', $link->getUrl($this->draft_mode));
         $child->assign('_link_contents', $link->getContent($this->draft_mode));
         $child->assign('_link_parameters', SmartestStringHelper::toAttributeString($link->getMarkupAttributes()->getParameters()));

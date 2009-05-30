@@ -112,10 +112,18 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		    define('SM_CMS_PAGE_ID', $this->page->getId());
 		}
 	    
-	    if(!is_file($template)){
+	    if(!file_exists($template)){
 	        
-	        $this->assign('required_template', $template);
-	        $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
+	        if(is_file($template)){
+	        
+	            $this->assign('required_template', $template);
+	            $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
+	        
+            }else{
+                
+                // no template is set at all. show "you need to create one" message.
+                
+            }
 	        
 	        ob_start();
 	        $this->run($template, array());
@@ -394,7 +402,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             	        
             	        $child = $this->startChildProcess($render_process_id);
             	        $child->setContext(SM_CONTEXT_ITEMSPACE_TEMPLATE);
-            	        $child->assign('item', $def->getItem(false, $this->getDraftMode()));
+            	        $item = $def->getItem(false, $this->getDraftMode());
+            	        $item->setDraftMode($this->getDraftMode());
+            	        $child->assign('item', $item);
             	        $content = $child->fetch($template_path);
             	        $this->killChildProcess($child->getProcessId());
             	        return $content;

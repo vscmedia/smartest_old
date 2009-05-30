@@ -67,11 +67,11 @@ class SmartestRenderableAsset extends SmartestAsset{
 	
 	public function render($draft_mode='unset'){
 	    
+	    if($draft_mode === 'unset'){
+	        $draft_mode = $this->_draft_mode;
+	    }
+	    
 	    if($this->getId()){
-	        
-	        if($draft_mode == 'unset'){
-    	        $draft_mode = $this->_draft_mode;
-    	    }
 	        
 	        $sm = new SmartyManager('BasicRenderer');
             $r = $sm->initialize($this->getStringId());
@@ -82,7 +82,7 @@ class SmartestRenderableAsset extends SmartestAsset{
     	    return $content;
 	    
 	    }else{
-            if($this->_draft_mode){
+            if($draft_mode){
                 return '<em>[No file selected for this value]</em>';
             }
         }

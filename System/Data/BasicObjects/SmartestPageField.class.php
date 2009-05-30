@@ -6,14 +6,6 @@ class SmartestPageField extends SmartestBasePageField{
 	protected $_contextual_page_id = null;
 	protected $_value = null;
 	
-	protected function __objectConstruct(){
-		
-		$this->_table_prefix = 'pageproperty_';
-		$this->_table_name = 'PageProperties';
-		// $this->addPropertyAlias('VarName', 'varname');
-		
-	}
-	
 	public function setContextualPageId($id){
 	    if(is_numeric($id)){
 	        $this->_contextual_page_id = $id;

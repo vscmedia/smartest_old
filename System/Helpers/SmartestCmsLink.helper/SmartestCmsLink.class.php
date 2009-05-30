@@ -496,7 +496,7 @@ class SmartestCmsLink extends SmartestHelper{
     
     public function render($draft_mode=false, $ama=''){
         
-        $url = $this->getUrl();
+        $url = $this->getUrl($draft_mode);
         $contents = $this->getContent();
         
         if($draft_mode && ($this->getType() == SM_LINK_TYPE_PAGE || $this->getType() == SM_LINK_TYPE_METAPAGE) && $url != '#'){

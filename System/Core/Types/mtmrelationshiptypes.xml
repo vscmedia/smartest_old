@@ -62,7 +62,7 @@
   <type id="SM_MTMLOOKUP_TEXTFRAGMENT_ATTACHMENTS" return="class:SmartestTextFragmentAttachment" method="SM_MTMLOOKUPMETHOD_MAP">
     <label>Maps files to textfragments where they are referenced.</label>
     <entity table="TextFragments" class="SmartestTextFragment" foreignkey="textfragment_id" index="1" required="true" />
-    <entity table="Assets" class="SmartestAsset" foreignkey="asset_id" index="2" required="true" />
+    <entity table="Assets" class="SmartestRenderableAsset" foreignkey="asset_id" index="2" required="true" />
     <instances>true</instances>
   </type>
   

@@ -89,6 +89,67 @@ class SmartestCmsItemSet extends SmartestSet{
 	    
 	}
 	
+	public function getLookups($mode){
+	    
+	    if($this->getType() == 'STATIC'){
+	        
+	        $sql = "SELECT SetsItemsLookup.* FROM Items, SetsItemsLookup WHERE SetsItemsLookup.setlookup_item_id=Items.item_id AND SetsItemsLookup.setlookup_set_id='".$this->getId()."'";
+	        
+	        if($mode > 5){
+	            $sql .= " AND Items.item_public='TRUE'";
+	        }
+	        
+	        if(in_array($mode, array(1,4,7,10))){
+		    
+		        $sql .= " AND Items.item_is_archived='1'";
+		    
+	        }else if(in_array($mode, array(2,5,8,11))){
+	            
+	            $sql .= " AND Items.item_is_archived='0'";
+	            
+	        }
+	        
+	        $sql .= " ORDER BY SetsItemsLookup.setlookup_order ASC";
+	        
+	        $results = $this->database->queryToArray($sql);
+            $lookups = array();
+            
+	        foreach($results as $result){
+                
+                $lookup = new SmartestSetItemLookup;
+	            $lookup->hydrate($result);
+	            // print_r($lookup);
+	            $lookups[] = $lookup;
+	            
+	        }
+	        
+	        return $lookups;
+	        
+	    }else{
+	        throw new SmartestException("SmartestCmsItemSet::getLookups() must be called on a static set", SM_ERROR_USER);
+	    }
+	    
+	}
+	
+	public function fixOrderIndices(){
+	    
+	    if($this->getType() == 'STATIC'){
+	    
+    	    $lookups = $this->getLookups(SM_QUERY_ALL_DRAFT);
+    	    $c = count($lookups);
+	    
+    	    for($i=0;$i<$c;$i++){
+    	        $l = $lookups[$i];
+    	        $l->setOrder($i);
+    	        $l->save();
+    	    }
+	    
+        }else{
+            throw new SmartestException("SmartestCmsItemSet::fixOrderIndices() must be called on a static set", SM_ERROR_USER);
+        }
+	    
+	}
+	
 	public function getMembers($mode=9, $refresh=false, $limit=null, $query_data=''){
 	    // calculate which items are in the set and assign to $_set_members.
 	    
@@ -136,6 +197,7 @@ class SmartestCmsItemSet extends SmartestSet{
 	                
     	                $item = new $class_name;
     	                $item->hydrate($lookup['setlookup_item_id'], $draft);
+    	                $item->setDraftMode($draft);
     	                
     	                // print_r($item->__toArray());
     	                
@@ -219,6 +281,7 @@ class SmartestCmsItemSet extends SmartestSet{
     	                $this->_set_member_ids[] = $item->getId();
     	                $this->_set_member_webids[] = $item->getWebid();
     	                $this->_set_member_slugs[] = $item->getSlug();
+    	                $item->setDraftMode($draft);
 	                
     	            }
 	            

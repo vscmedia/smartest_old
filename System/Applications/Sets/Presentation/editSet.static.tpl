@@ -26,7 +26,7 @@ function executeTransfer(){
 
 <div id="work-area">
 
-<h3>{$model.plural_name} in this Data Set ({$set.name})</h3>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/sets">Sets</a> &gt; {$set.label}</h3>
 
 <div class="instruction">Use the arrow buttons below to move {$model.plural_name|lower} in and out of this set.</div>
 
@@ -65,4 +65,17 @@ function executeTransfer(){
 </table>
 </form>
 
+</div>
+
+<div id="actions-area">
+		
+		<ul class="actions-list">
+		  <li><b>Options</b></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Preview Set</a></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/editStaticSetOrder?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Change the order of this set</a></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Browse Data Sets</a></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}datamanager/'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Data Manager</a></li>
+			{* <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/chooseSchemaForExport?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Export this Set as XML</a></li> *}
+		</ul>
+		
 </div>

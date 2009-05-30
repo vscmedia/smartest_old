@@ -914,6 +914,9 @@ class Assets extends SmartestSystemApplication{
     	    // for html reusability
     	    $this->send($data['type_info'], 'asset_type'); */
     	    
+    	    $html = $asset->render(true);
+    	    
+    	    $this->send($html, 'html');
     	    $this->send($asset, 'asset');
 	        
 	    }else{
