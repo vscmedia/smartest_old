@@ -311,11 +311,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         	            
         	            $asset->setAdditionalRenderData($render_data, true);
         	            
-        	            // print_r($asset->getRenderData());
-                        
-                        // var_dump($this->getDraftMode());
-                        // $html = $this->_renderAssetObject($asset, $params, $render_data);
-                        $html = $asset->render($this->getDraftMode());
+        	            $html = $asset->render($this->getDraftMode());
                     
                     }
                     
@@ -736,8 +732,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             
             if($asset->hydrateBy($hydrateField, $asset_id)){
                 
-                // print_r($asset);
-                
                 $render_data = array();
                 
                 if($asset->isImage()){
@@ -777,7 +771,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     $render_data[$key] = $value;
                 }*/
                 
-                return $this->_renderAssetObject($asset, $params, $render_data, $path);
+                // return $this->_renderAssetObject($asset, $params, $render_data, $path);
+                $asset->setAdditionalRenderData($render_data, true);
+                return $asset->render($this->getDraftMode());
                 
             }else{
                 
@@ -808,7 +804,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         $asset_type_info = $asset->getTypeInfo();
         $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
         
-        if(!is_array($render_data)){
+        if(!is_array($render_data) && !$render_data instanceof SmartestParameterHolder){
             $render_data = array();
         }
         
@@ -820,12 +816,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         if(file_exists($render_template)){
             
-            /* $sm = new SmartyManager('BasicRenderer');
-            $r = $sm->initialize($asset->getStringId());
-            $r->assignAsset($asset);
-            $r->setDraftMode($this->getDraftMode()); */
-            
-            $content = $asset->render($markup_params, $render_data, $this->getDraftMode());
+            $asset->setAdditionalRenderData($render_template);
+            $content = $asset->render($this->getDraftMode());
             
         }else{
             $content = $this->raiseError("Render template '".$render_template."' not found.");
@@ -845,7 +837,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         if(isset($params["name"]) && strlen($params["name"])){
             
-            // $requested_property_name = $params["name"];
             $property_name_parts = explode(':', $params["name"]);
             $requested_property_name = $property_name_parts[0];
             array_shift($property_name_parts);

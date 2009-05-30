@@ -106,9 +106,6 @@ class SmartestRenderableAsset extends SmartestAsset{
 	    if(is_array($info)){
 	        foreach($info as $key=>$value){
 	            if(!$not_empty_only || ($not_empty_only && strlen($value))){
-	                // echo $key.'='.$value."\n";
-	                // var_dump($not_empty_only);
-	                // var_dump(strlen($value));
 	                $this->_render_data->setParameter($key, $value);
                 }
 	        }
