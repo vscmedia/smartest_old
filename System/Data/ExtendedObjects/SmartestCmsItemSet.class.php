@@ -173,6 +173,8 @@ class SmartestCmsItemSet extends SmartestSet{
     	            $sql .= " AND Items.item_public='TRUE'";
     	        }
     	        
+    	        $sql .= " AND Items.item_deleted!='1'";
+    	        
     	        if(in_array($mode, array(1,4,7,10))){
 			    
 			        $sql .= " AND Items.item_is_archived='1'";
