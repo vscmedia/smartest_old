@@ -10,6 +10,7 @@ class SmartestAsset extends SmartestBaseAsset{
     protected $_image;
     
     public function __toArray($include_object=false, $include_owner=false){
+        
 	    $data = parent::__toArray();
 	    
 	    $data['text_content'] = $this->getContent();
@@ -81,6 +82,9 @@ class SmartestAsset extends SmartestBaseAsset{
             }else{
                 return array();
             }
+            
+            case "is_image":
+            return $this->isImage();
             
             case "image":
             return $this->isImage() ? $this->getImage() : null;
@@ -631,5 +635,34 @@ class SmartestAsset extends SmartestBaseAsset{
 	        return $this->getParameterDefaults();
 	    }
 	}
+	
+	public function getComments(){
+	    
+	    $sql = "SELECT * FROM Comments, Users WHERE comment_type='SM_COMMENTTYPE_ASSET_PRIVATE' AND comment_object_id='".$this->getId()."' AND comment_author_user_id=user_id ORDER BY comment_posted_at";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $comments = array();
+	    
+	    foreach($result as $r){
+	        $c = new SmartestAssetComment;
+	        $c->hydrate($r);
+	        $comments[] = $c;
+	    }
+	    
+	    return $comments;
+	    
+	}
+	
+    public function addComment($content, $user_id){
+        
+        $comment = new SmartestAssetComment;
+        $comment->setAuthorUserId($user_id);
+        $comment->setContent($content);
+        $comment->setAssetId($this->getId());
+        $comment->setPostedAt(time());
+        
+        $comment->save();
+        
+    }
 
 }

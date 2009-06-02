@@ -85,7 +85,7 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	        $repeating_template_file_name = $this->getLiveTemplateFile();
 	    }
 	    
-	    return ((strlen($repeating_template_file_name) > 4) && is_file(SM_ROOT_DIR.'Presentation/ListItems/'.$repeating_template_file_name)) ? true : false;
+	    return ((strlen($repeating_template_file_name) > 4) && (is_file(SM_ROOT_DIR.'Presentation/ListItems/'.$repeating_template_file_name) || is_file(SM_ROOT_DIR.'Presentation/Layouts/'.$repeating_template_file_name))) ? true : false;
 	}
 	
 	public function hasFooterTemplate($draft=false){
@@ -108,7 +108,11 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	        $repeating_template_file_name = $this->getLiveTemplateFile();
 	    }
 	    
-	    return SM_ROOT_DIR.'Presentation/ListItems/'.$repeating_template_file_name;
+	    if($this->getType() == 'SM_LIST_ARTICULATED'){
+	        return SM_ROOT_DIR.'Presentation/ListItems/'.$repeating_template_file_name;
+        }else{
+            return SM_ROOT_DIR.'Presentation/Layouts/'.$repeating_template_file_name;
+        }
         
 	}
 	
@@ -150,7 +154,19 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	        
 	        $mode = $draft ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT;
 	        
-    	    $this->_list_items = $this->_data_set->getMembers($mode);
+	        $has_limit = (bool) $this->getMaximumLength();
+	        $limit = $has_limit ? (int) $this->getMaximumLength() : null;
+	        
+	        // var_dump($limit);
+	        
+	        if($has_limit){
+	            $this->_list_items = array_slice($this->_data_set->getMembers($mode, false, $limit), 0, $limit);
+            }else{
+                $this->_list_items = $this->_data_set->getMembers($mode, false, $limit);
+            }
+	        
+	        // var_dump($this->_data_set->getLabel());
+    	    
     	    $this->_fetch_attempted = true;
 	    
 	    }

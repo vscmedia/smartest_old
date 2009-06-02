@@ -92,6 +92,10 @@ class SmartestItemSpaceDefinition extends SmartestAssetIdentifier{
         
     }
     
+    public function hasTemplate(){
+        return $this->getItemSpace()->getUsesTemplate();
+    }
+    
     public function getItemSpaceId($id){
         
         return $this->_properties['assetclass_id'];

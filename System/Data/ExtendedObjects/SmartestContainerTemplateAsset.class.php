@@ -25,6 +25,12 @@ class SmartestContainerTemplateAsset extends SmartestAsset{
         
     }
     
+    public function hydrateByFileName($filename){
+        
+        
+        
+    }
+    
     public function getArrayForElementsTree($level){
 	    
 	    $info = array();

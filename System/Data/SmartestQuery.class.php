@@ -175,7 +175,15 @@ class SmartestQuery{
 				
     				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_name ";
 				    
-				    }else if($condition['operator'] == self::TAGGED_WITH){
+				    }else if($condition['field'] == SmartestCmsItem::NUM_COMMENTS){
+
+        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_num_comments ";
+
+                    }else if($condition['field'] == SmartestCmsItem::NUM_HITS){
+
+            			$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_num_hits ";
+
+                    }else if($condition['operator'] == self::TAGGED_WITH){
 				        
 				        $tag_name = SmartestStringHelper::toSlug($condition['value']);
         				$tag = new SmartestTag;

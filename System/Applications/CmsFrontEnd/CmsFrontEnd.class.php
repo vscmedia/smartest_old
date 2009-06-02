@@ -236,7 +236,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
     	    if($tag->hydrateBy('name', $tag_identifier)){
     	        $objects = $tag->getObjectsOnSite($this->_site->getId(), true);
-    	        // print_r($objects);
+    	        
     	        $rss = new SmartestRssOutputHelper($objects);
     	        $rss->setTitle($this->_site->getName()." - Tagged Content: ".$tag->getLabel());
     	        $rss->send();
@@ -340,6 +340,35 @@ class CmsFrontEnd extends SmartestSystemApplication{
             
         }
 		
+	}
+	
+	public function addRating(){
+	    
+	}
+	
+	public function submitPageComment(){
+	    
+	}
+	
+	public function submitItemComment($get, $post){
+	    
+    	if($this->lookupSiteDomain()){
+	    
+    	    $item = new SmartestItem;
+	    
+    	    if($item->find((int) $post['item_id'])){
+	            
+	            $content = strip_tags($post['comment_content']);
+	            
+        	    $item->attachPublicComment($post['comment_author_name'], $post['comment_author_website'], $content);
+    	        $item->save(); // this is needed so that the change to item_num_comments is updated
+    	        
+        	    $this->redirect($item->getUrl());
+	    
+            }
+        
+        }
+	    
 	}
 	
 }

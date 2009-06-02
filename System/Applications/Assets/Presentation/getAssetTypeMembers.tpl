@@ -43,6 +43,7 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
 <ul class="actions-list" id="noneditableasset-specific-actions" style="display:none">
   <li><b>Selected File</b></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('assetInfo'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About This File...</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('comments'); }{/literal}"><img src="{$domain}Resources/Icons/comment.png" alt=""/> Comments on this file</a></li>
 	<li class="permanent-action"><a href="{dud_link}href="{dud_link}"" onclick="{literal}if(selectedPage){ workWithItem('addTodoItem'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt="" /> Add a new to-do</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('previewAsset'); }{/literal}"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Preview This File</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('deleteAssetConfirm'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete This File</a></li>
@@ -53,6 +54,7 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
 <ul class="actions-list" id="editableasset-specific-actions" style="display:none">
   <li><b>Selected File</b></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('assetInfo'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About This File...</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('comments'); }{/literal}"><img src="{$domain}Resources/Icons/comment.png" alt=""/> Comments on this file</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('editAsset'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This File</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('previewAsset'); }{/literal}"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Preview This File</a></li>
 	{if $allow_source_edit}<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('editTextFragmentSource'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit File Source</a></li>{/if}

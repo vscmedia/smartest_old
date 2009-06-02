@@ -476,61 +476,84 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         $list = new SmartestCmsItemList;
         
         if($list->load($list_name, $this->getPage(), $this->getDraftMode())){
-            /* if($list->getTemplateFilePath()){
-                $this->_smarty_include(array('smarty_include_tpl_file'=>$container->getTemplateFilePath(), 'smarty_include_vars'=>array()));
-            } */
-            
-            // 
-            
-            // echo 'list loaded<br />';
             
             if($list->hasRepeatingTemplate($this->getDraftMode())){
                 
-                // echo 'list has repeating template<br />';
-                
-                if($list->hasHeaderTemplate($this->getDraftMode())){
-                    // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getHeaderTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
-                    // echo $list->getHeaderTemplate($this->getDraftMode());
-                    $this->run($list->getHeaderTemplate($this->getDraftMode()), array());
-                }
-                
                 $data = $list->getItems($this->getDraftMode());
                 
-                foreach($data as $item){
-                    $this->_tpl_vars['item'] = $item;
-                    $this->assign("repeated_item", $item->__toArray());
-                    $this->assign("repeated_item_object", $item);
-                    // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getRepeatingTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
-                    $this->run($list->getRepeatingTemplate($this->getDraftMode()), array());
-                    // echo $list->getRepeatingTemplate($this->getDraftMode());
-                }
+                if($list->getType() == 'SM_LIST_ARTICULATED'){
                 
-                foreach($data as $item){
+                    if($list->hasHeaderTemplate($this->getDraftMode())){
+                        $this->run($list->getHeaderTemplate($this->getDraftMode()), array());
+                    }
+                
+                    foreach($data as $item){
+                        
+                        /* $this->_tpl_vars['item'] = $item;
+                        $this->assign("repeated_item", $item->__toArray());
+                        $this->assign("repeated_item_object", $item); */
+                        
+                        if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+        				    $edit_link = "<a title=\"Click to edit ".$item['_model']['name'].": ".$item['name']."\" href=\"".SM_CONTROLLER_DOMAIN."datamanager/editItem?item_id=".$item['id']."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this item--></a>";
+        			    }else{
+        				    $edit_link = "<!--edit link-->";
+        			    }
+                        
+                        $child = $this->startChildProcess(substr(md5($list->getName().$item->getId().microtime()), 0, 8));
+            	        $child->assign('repeated_item', $item);
+            	        $child->assign('repeated_item_object', $item); // legacy support
+            	        $child->assign('edit_link', $edit_link);
+            	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
+            	        $content .= $child->fetch($list->getRepeatingTemplate($this->getDraftMode()));
+            	        
+            	        $this->killChildProcess($child->getProcessId());
+        			    
+        			    // $content .= $this->fetch($list->getRepeatingTemplate($this->getDraftMode()), array());
+                    }
+                
+                    /* foreach($data as $item){
                     
-                    if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-    				    $edit_link = "<a title=\"Click to edit ".$item['_model']['name'].": ".$item['name']."\" href=\"".SM_CONTROLLER_DOMAIN."datamanager/editItem?item_id=".$item['id']."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this item--></a>";
-    			    }else{
-    				    $edit_link = "<!--edit link-->";
-    			    }
-    			    
-    			    // echo $edit_link;
-                }
+                        if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+        				    $edit_link = "<a title=\"Click to edit ".$item['_model']['name'].": ".$item['name']."\" href=\"".SM_CONTROLLER_DOMAIN."datamanager/editItem?item_id=".$item['id']."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this item--></a>";
+        			    }else{
+        				    $edit_link = "<!--edit link-->";
+        			    }
+        			    
+                    } */
             
-                if($list->hasFooterTemplate($this->getDraftMode())){
-                    // $this->_smarty_include(array('smarty_include_tpl_file'=>$list->getFooterTemplate($this->getDraftMode()), 'smarty_include_vars'=>array()));
-                    $this->run($list->getFooterTemplate($this->getDraftMode()), array());
-                    // echo $list->getFooterTemplate($this->getDraftMode());
-                }
+                    if($list->hasFooterTemplate($this->getDraftMode())){
+                        $this->run($list->getFooterTemplate($this->getDraftMode()), array());
+                    }
                 
-                if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-				    $edit_link = "<a title=\"Click to edit definitions for embedded list: ".$list->getLabel()."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineList?assetclass_id=".$list->getName()."&amp;page_id=".$this->getPage()->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this list--></a>";
-			    }else{
-				    $edit_link = "<!--edit link-->";
-			    }
+                }else{
+                    
+                    $child = $this->startChildProcess(substr(md5($list->getName().microtime()), 0, 8));
+        	        $child->assign('items', $data);
+        	        $child->assign('title', $list->getTitle());
+        	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
+        	        $child->setDraftMode($this->getDraftMode());
+        	        $content = $child->fetch($list->getRepeatingTemplate($this->getDraftMode()));
+        	        $this->killChildProcess($child->getProcessId());
+        	        // $content .= "Hello";
+        	        // echo "hello";
+                    
+                }
             
-                echo $edit_link;
+            } // end if: the list has repeating template
             
-            }
+            // var_dump($list->hasRepeatingTemplate($this->getDraftMode()));
+            
+            // echo 'hello';
+            
+            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+			    $edit_link = "<a title=\"Click to edit definitions for embedded list: ".$list->getName()."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineList?assetclass_id=".$list->getName()."&amp;page_id=".$this->getPage()->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this list--></a>";
+		    }else{
+			    $edit_link = "<!--edit link-->";
+		    }
+        
+            $content .= $edit_link;
+            
+            return $content;
             
         }else{
             

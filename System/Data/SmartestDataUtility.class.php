@@ -103,6 +103,8 @@ class SmartestDataUtility{
 		    $sql .= " WHERE (set_site_id='".$site_id."' OR set_shared='1') AND (set_data_source_site_id='".$site_id."' OR set_data_source_site_id='CURRENT' OR set_data_source_site_id='ALL')";
 		}
 		
+		$sql .= " ORDER BY set_name";
+		
 		$result = $this->database->queryToArray($sql);
 		
 		if($simple){

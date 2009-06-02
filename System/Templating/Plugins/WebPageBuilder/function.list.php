@@ -8,7 +8,7 @@
 
 function smarty_function_list($params, &$smartest_engine){
 
-	if(@$params['name']){
+	if(isset($params['name']) && strlen($params['name'])){
 		$result = $smartest_engine->renderList($params['name'], $params);
 		return $result;
 	}else{

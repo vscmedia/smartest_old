@@ -63,10 +63,12 @@ function updateSetConditionsFormFromOperator(condition, value){
           <select name="set_sort_field">
             <option value="_SMARTEST_ITEM_NAME" {if $set.sort_field == '_SMARTEST_ITEM_NAME'} selected="selected"{/if}>Name</option>
             <option value="_SMARTEST_ITEM_ID" {if $set.sort_field == '_SMARTEST_ITEM_ID'} selected="selected"{/if}>ID</option>
-				    {foreach from=$properties item="property"}
-				    <option value="{$property.id}" {if $property.id == $set.sort_field} selected="selected"{/if}>{$property.name}</option>
-            {/foreach}
-			    </select>
+{foreach from=$properties item="property"}
+			      <option value="{$property.id}" {if $property.id == $set.sort_field} selected="selected"{/if}>{$property.name}</option>
+{/foreach}
+            <option value="_SMARTEST_ITEM_NUM_HITS" {if $set.sort_field == '_SMARTEST_ITEM_NUM_HITS'} selected="selected"{/if}>Number of Hits</option>
+            <option value="_SMARTEST_ITEM_NUM_COMMENTS" {if $set.sort_field == '_SMARTEST_ITEM_NUM_COMMENTS'} selected="selected"{/if}>Number of Comments</option>
+		      </select>
 			  </td>
       </tr>
       
@@ -100,6 +102,8 @@ function updateSetConditionsFormFromOperator(condition, value){
   					    {foreach from=$properties item="property"}
   						  <option value="{$property.id}" {if $property.id == $rule.itemproperty_id} selected{/if}>{$property.name}</option>
                 {/foreach}
+  						  <option value="_SMARTEST_ITEM_NUM_HITS" {if $rule.itemproperty_id == "_SMARTEST_ITEM_NUM_HITS"} selected{/if}>Number of hits</option>
+  						  <option value="_SMARTEST_ITEM_NUM_COMMENTS" {if $rule.itemproperty_id == "_SMARTEST_ITEM_NUM_COMMENTS"} selected{/if}>Number of comments</option>
   					  </select>
 					  </td>
 					  <td>
@@ -132,6 +136,8 @@ function updateSetConditionsFormFromOperator(condition, value){
     				  <option value="_SMARTEST_ITEM_NAME" id="nc_name">{$model.name} Name</option>
     				  <option value="_SMARTEST_ITEM_ID" id="nc_id">{$model.name} ID</option>
               {foreach from=$properties item="property"}<option value="{$property.id}">{$property.name}</option>{/foreach}
+						  <option value="_SMARTEST_ITEM_NUM_HITS">Number of hits</option>
+						  <option value="_SMARTEST_ITEM_NUM_COMMENTS">Number of comments</option>
     		    </select></td>
   			<td>
   			  <select name="new_condition_operator" onchange="updateSetConditionsFormFromOperator('new', this.value);">

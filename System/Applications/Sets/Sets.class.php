@@ -16,7 +16,7 @@ class Sets extends SmartestSystemApplication{
 		// $sets = $this->manager->getSets($this->getSite()->getId());   
 		
 		$du = new SmartestDataUtility;
-		$sets = $du->getDataSetsAsArrays(false, $this->getSite()->getId());
+		$sets = $du->getDataSets(false, $this->getSite()->getId());
 		$this->setTitle("Data Sets");
 		$this->send($sets, 'sets');
 		

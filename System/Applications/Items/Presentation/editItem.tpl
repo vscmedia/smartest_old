@@ -14,6 +14,8 @@
 {if $smarty.get.from}<input type="hidden" name="from" value="{$smarty.get.from}"
 />{/if}
 
+{if $item.deleted}<div class="warning">Warning: This {$item._model.name|strtolower} is currently in the trash.</div>{/if}
+
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} name</div>
   <input type="text" name="item_name" value="{$item.name}" style="width:250px" />

@@ -228,8 +228,13 @@ class Items extends SmartestSystemApplication{
 	            
 	            if(is_object($item)){
 	                $model_name = $item->getModel()->getName();
-	                $item->delete();
-	                $this->addUserMessageToNextRequest('The '.$model_name.' was moved to the trash.', SmartestUserMessage::SUCCESS);
+	                
+	                if($item->delete()){
+	                    $this->addUserMessageToNextRequest('The '.$model_name.' was moved to the trash.', SmartestUserMessage::SUCCESS);
+                    }else{
+                        $this->addUserMessageToNextRequest('The '.$model_name.' could not be deleted because it is in use on one or more pages. See today\'s log for more details.', SmartestUserMessage::WARNING);
+                    }
+                    
 	            }else{
 	                $this->addUserMessageToNextRequest('The item ID was not recognised.', SmartestUserMessage::ERROR);
 	            }
@@ -802,6 +807,77 @@ class Items extends SmartestSystemApplication{
         }
 	    
 	    $this->formForward();
+	    
+	}
+	
+	public function comments($get){
+	    
+	    $item_id = (int) $get['item_id'];
+	    $item = new SmartestItem;
+	    
+	    if($item->find($item_id)){
+	        
+	        $this->send($item, 'item');
+	        $show = (isset($get['show']) && in_array($get['show'], array('SM_COMMENTSTATUS_APPROVED', 'SM_COMMENTSTATUS_PENDING', 'SM_COMMENTSTATUS_REJECTED'))) ? $get['show'] : 'SM_COMMENTSTATUS_APPROVED';
+	        $this->send($show, 'show');
+	        
+	        $comments = $item->getPublicComments($show);
+	        $this->send($comments, 'comments');
+	        $this->send(count($comments), 'num_comments');
+	        
+	    }
+	    
+	}
+	
+	public function moderateComment($get){
+	    
+	    $item_id = (int) $get['item_id'];
+	    $item = new SmartestItem;
+	    
+	    if($item->find($item_id)){
+	        
+	        $comment_id = (int) $get['comment_id'];
+    	    $comment = new SmartestItemPublicComment;
+    	    
+    	    if($comment->find($comment_id)){
+	        
+	            $action = (isset($get['action']) && in_array($get['action'], array('APPROVE', 'MAKEPENDING', 'REJECT'))) ? $get['action'] : 'REJECT';
+	            
+	            switch($action){
+	                
+	                case "APPROVE":
+	                $comment->approve();
+	                $message = "The comment has been approved";
+	                break;
+	                
+	                case "MAKEPENDING":
+	                $comment->makePending();
+	                $message = "The comment status has been set to 'pending'";
+	                break;
+	                
+	                case "REJECT":
+	                $comment->reject();
+	                $message = "The comment has been rejected";
+	                break;
+	                
+	            }
+	            
+	            $this->addUserMessageToNextRequest($message, SmartestUserMessage::SUCCESS);
+	            $this->redirect('/datamanager/comments?item_id='.$item_id);
+	        
+            }else{
+                
+                $this->addUserMessageToNextRequest("The comment ID was not recognized", SmartestUserMessage::ERROR);
+                $this->redirect('/datamanager/comments?item_id='.$item_id);
+                
+            }
+	    
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The item ID was not recognized", SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/models');
+	        
+	    }
 	    
 	}
 	

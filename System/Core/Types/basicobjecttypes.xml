@@ -17,10 +17,10 @@
     <class>Asset</class>
   </table>
   
-  <!--<table name="Comments">
+  <table name="Comments">
     <prefix>comment_</prefix>
     <class>Comment</class>
-  </table>-->
+  </table>
 
   <table name="DataExports">
     <prefix>dataexport_</prefix>

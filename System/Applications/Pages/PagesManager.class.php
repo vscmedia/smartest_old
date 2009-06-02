@@ -596,10 +596,17 @@ class PagesManager{
                         
                         $info[$i]['info']['defined'] = $definition->hasChanged() ? 'DRAFT' : 'PUBLISHED';
                         $item = $definition->getSimpleItem($draft);
-                        $info[$i]['children'] = array($item->getInfoForPageTree($draft));
+                        $info[$i]['children'][] = $item->getInfoForPageTree($draft);
                         
                     }else{
                         $info[$i]['info']['defined'] = 'UNDEFINED';
+                    }
+                    
+                    if($item_space->getUsesTemplate()){
+                        $template = new SmartestContainerTemplateAsset;
+                        if($template->find($item_space->getTemplateAssetId())){
+                            $info[$i]['children'][] = $template->getArrayForElementsTree($level+1);
+                        }
                     }
                     
                 }else{

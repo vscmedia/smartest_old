@@ -87,6 +87,9 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	const NAME = '_SMARTEST_ITEM_NAME';
 	const ID = '_SMARTEST_ITEM_ID';
+	const NUM_COMMENTS = '_SMARTEST_ITEM_NUM_COMMENTS';
+	const NUM_HITS = '_SMARTEST_ITEM_NUM_HITS';
+	const AVERAGE_RATING = '_SMARTEST_ITEM_AVG_RATING';
 	
 	const NOT_CHANGED = 100;
 	const AWAITING_APPROVAL = 101;
@@ -200,6 +203,14 @@ class SmartestCmsItem implements ArrayAccess{
             	
 	            break;
 	            
+	            case 'comments':
+	            return $this->getItem()->getPublicComments();
+	            break;
+	            
+	            case 'num_comments':
+	            return $this->getItem()->getNumComments();
+	            break;
+	            
 	            case 'is_published':
 	            return $this->isPublished();
 	            break;
@@ -228,17 +239,7 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function getCacheFiles(){
 	    
-	    $ending = '__id'.$this->getId().'.html';
-	    $start = 0 - strlen($ending);
-	    $files = array();
-	    
-	    foreach(SmartestFileSystemHelper::load(constant('SM_ROOT_DIR').'System/Cache/Pages/') as $file){
-	        if(substr($file, $start) == $ending){
-	            $files[] = constant('SM_ROOT_DIR').'System/Cache/Pages/'.$file;
-	        }
-	    }
-	    
-	    return $files;
+	    return $this->getItem()->getCacheFiles();
 	    
 	}
 	
@@ -527,7 +528,8 @@ class SmartestCmsItem implements ArrayAccess{
 	        return null;
 	    }
 	    
-	    $link = SmartestCmsLinkHelper::createLink('metapage:id='.$page_id.':id='.$this->getId(), 'Raw Link Params: '.'metapage:id='.$page_id.':id='.$this->getId());
+	    // $link = SmartestCmsLinkHelper::createLink('metapage:id='.$page_id.':id='.$this->getId(), 'Raw Link Params: '.'metapage:id='.$page_id.':id='.$this->getId());
+	    SmartestCmsLinkHelper::createLink('metapage:id='.$page_id.':id='.$this->getId(), array());
 	    
 	    if($link->hasError()){
 	        return '#';
@@ -830,8 +832,19 @@ class SmartestCmsItem implements ArrayAccess{
 	public function delete(){
 		// mark as deleted
 		if($this->_item instanceof SmartestItem && $this->_item->isHydrated()){
+		    
+		    $sql = "SELECT AssetIdentifiers.assetidentifier_live_asset_id, AssetIdentifiers.assetidentifier_assetclass_id, AssetClasses.assetclass_id, AssetClasses.assetclass_name, Pages.page_title, Pages.page_id FROM AssetIdentifiers, AssetClasses, Pages WHERE AssetIdentifiers.assetidentifier_live_asset_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id=Pages.page_id";
+		    $result = $this->database->queryToArray($sql);
+		    
+		    if(count($result)){
+		        SmartestLog::getInstance('system')->log("Item '{$this->getName()}' could not be deleted because it is currently the live, published item for the itemspace '{$result[0]['assetclass_name']}' on page '{$result[0]['page_title']}'");
+		        return false;
+		    }
+		    
 		    $this->_item->setDeleted(1);
 		    $this->_item->save();
+		    
+		    return true;
 		}
 	}
 	

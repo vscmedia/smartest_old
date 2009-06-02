@@ -13,7 +13,7 @@
 				
 			<div class="edit-form-row">
 				<div class="form-section-label">With items from model:</div>
-				<select name="set_model_id" id="model_select" {* onchange="window.location='{$domain}{$section}/addSet?set_name='+document.getElementById('set_name').value+'&model_id=' + document.getElementById('model_select').value+'&type='+document.getElementById('set_type').value" *}>
+				<select name="set_model_id" id="model_select">
 			    <option value="">Please Choose...</option>
 			    {foreach from=$models key=key item="model"}
 				  <option {if $model.itemclass_id == $content.model_id} selected{/if} value="{$model.itemclass_id}">{$model.itemclass_plural_name}</option>
@@ -23,8 +23,7 @@
 				
 			<div class="edit-form-row">
 				<div class="form-section-label">Set Type</div>
-				<select  name="set_type" id="set_type" {* onchange="window.location='{$domain}{$section}/addSet?set_name='+document.getElementById('set_name').value+'&type='+document.getElementById('set_type').value" *}>
-					  <option value="">Please Choose...</option>
+				<select  name="set_type" id="set_type" >
 					  <option value="STATIC" {if $content.type == 'STATIC'} selected{/if}>Static (Folder)</option>
 					  <option value="DYNAMIC" {if $content.type == 'DYNAMIC' } selected{/if} >Smart (Dynamic Saved Query)</option>
 				</select>

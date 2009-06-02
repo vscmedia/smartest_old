@@ -3041,14 +3041,20 @@ class Pages extends SmartestSystemApplication{
             $this->send($list->getDraftFooterTemplate(), 'footer_template');
             $this->send($list->getDraftTemplateFile(), 'main_template');
             $this->send($list->getDraftSetId(), 'set_id');
-            $this->send($list->__toArray(), 'list');
+            $this->send($list, 'list');
             $this->send($list_name, 'list_name');
+            
+            $alh = new SmartestAssetsLibraryHelper;
+            // $c->setSiteId($this->getSite()->getId());
+            // print_r($alh->getAssetsByTypeCode('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId()));
+            // print_r(SmartestPersistentObject::get('db:main')->getDebugInfo());
+            $this->send($alh->getAssetsByTypeCode('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId()), 'container_templates');
             
             $datautil = new SmartestDataUtility;
             
             $sets = $datautil->getDataSetsAsArrays(false, $this->getSite()->getId());
             $this->send($sets, 'sets');
-            $this->send($page->__toArray(), 'page');
+            $this->send($page, 'page');
             $this->send($templates, 'templates');
             
         }else{
@@ -3104,22 +3110,40 @@ class Pages extends SmartestSystemApplication{
                 $this->addUserMessageToNextRequest("The list \"".$list_name."\" was defined successfully.", SmartestUserMessage::SUCCESS);
             }
             
-            $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/ListItems/');
+            $list_type = in_array($post['list_type'], array('SM_LIST_ARTICULATED', 'SM_LIST_SIMPLE')) ? $post['list_type'] : 'SM_LIST_SIMPLE';
             
-            if(is_numeric($post['dataset_id'])){
-                $list->setDraftSetId($post['dataset_id']);
-            }
+            $list->setType($list_type);
+            $list->setMaximumLength((int) $post['list_maximum_length']);
+            $list->setTItle($post['list_title']);
             
-            if(in_array($post['header_template'], $templates)){
-                $list->setDraftHeaderTemplate($post['header_template']);
-            }
+            if($list_type == 'SM_LIST_ARTICULATED'){
             
-            if(in_array($post['footer_template'], $templates)){
-                $list->setDraftFooterTemplate($post['footer_template']);
-            }
+                $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/ListItems/');
             
-            if(in_array($post['main_template'], $templates)){
+                if(is_numeric($post['dataset_id'])){
+                    $list->setDraftSetId($post['dataset_id']);
+                }
+            
+                if(in_array($post['header_template'], $templates)){
+                    $list->setDraftHeaderTemplate($post['header_template']);
+                }
+            
+                if(in_array($post['footer_template'], $templates)){
+                    $list->setDraftFooterTemplate($post['footer_template']);
+                }
+            
+                if(in_array($post['main_template'], $templates)){
+                    $list->setDraftTemplateFile($post['main_template']);
+                }
+            
+            }else{
+                
+                if(is_numeric($post['dataset_id'])){
+                    $list->setDraftSetId((int) $post['dataset_id']);
+                }
+                
                 $list->setDraftTemplateFile($post['main_template']);
+                
             }
             
             $list->save();
@@ -3333,6 +3357,20 @@ class Pages extends SmartestSystemApplication{
         }
         
         $this->formForward();
+	    
+	}
+	
+	public function openItem($get){
+	    
+	    $item = new SmartestItem;
+	    
+	    if($item->findBy('slug', $get['assetclass_id'], $this->getSite()->getId())){
+	        
+	        $this->redirect('/datamanager/openItem?item_id='.$item->getId());
+	        
+	    }
+	    
+	    // print_r(SmartestPersistentObject::get('db:main')->getDebugInfo());
 	    
 	}
 	

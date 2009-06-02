@@ -145,7 +145,8 @@ class SmartestItem extends SmartestBaseItem{
 	    $data['asset_webid'] = $this->getWebid();
 	    // $data['asset_type'] = $this->getType();
 	    $data['asset_type'] = 'item';
-	    $data['assetclass_name'] = SmartestStringHelper::toVarName($this->getName());
+	    // $data['assetclass_name'] = SmartestStringHelper::toVarName($this->getName());
+	    $data['assetclass_name'] = $this->getSlug();
 	    $data['assetclass_id'] = 'item_'.$this->getId();
 	    $data['defined'] = 'PUBLISHED';
 	    $data['exists'] = 'true';
@@ -715,13 +716,49 @@ class SmartestItem extends SmartestBaseItem{
 	    }
 	}
 	
+	public function getCacheFiles(){
+	    
+	    $ending = '__id'.$this->getId().'.html';
+	    $start = 0 - strlen($ending);
+	    $files = array();
+	    
+	    foreach(SmartestFileSystemHelper::load(constant('SM_ROOT_DIR').'System/Cache/Pages/') as $file){
+	        if(substr($file, $start) == $ending){
+	            $files[] = constant('SM_ROOT_DIR').'System/Cache/Pages/'.$file;
+	        }
+	    }
+	    
+	    return $files;
+	}
+	
+	public function refreshCache(){
+	    
+	    foreach($this->getCacheFiles() as $file){
+	        
+	        unlink($file);
+	        
+	    }
+	    
+	}
+	
 	public function getUrl(){
 	    
 	    if($lc = $this->getCmsLinkContents()){
 	        
-	        $lh = new SmartestCmsLinkHelper;
-    	    $lh->parse($lc);
-            return $lh->getUrl();
+	        /* $lh = new SmartestCmsLinkHelper;
+    	    $lh->parse($lc); */
+    	    
+    	    // $link = new SmartestCmsLink($lc, array());
+    	    // return $link->getUrl();
+    	    
+    	    $link = SmartestCmsLinkHelper::createLink($this->getCmsLinkContents(), array());
+    	    
+    	    if($link->hasError()){
+    	        return '#';
+    	    }else{
+    	        return $link->getUrl();
+            }
+    	    
 	    }else{
 	        return null;
 	    }
@@ -802,6 +839,54 @@ class SmartestItem extends SmartestBaseItem{
 	    }
 	    
 	    return $defs;
+	    
+	}
+	
+	public function attachPublicComment($author_name, $author_website, $content){
+	    
+	    $c = new SmartestItemPublicComment;
+	    $c->setAuthorName($author_name);
+	    $c->setAuthorWebsite($author_website);
+	    $c->setContent($content);
+	    $c->setItemId($this->getId());
+	    $c->setPostedAt(time());
+	    $c->save();
+	    
+	    // $this->setNumComments(((int) $this->getNumComments()) + 1);
+	    
+	}
+	
+	public function getPublicComments($status='SM_COMMENTSTATUS_APPROVED'){
+	    
+	    $sql = "SELECT * FROM Comments WHERE comment_type='SM_COMMENTTYPE_ITEM_PUBLIC' AND comment_object_id='".$this->getId()."' AND comment_status='".$status."'";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    $comments = array();
+	    
+	    foreach($result as $r){
+	        $c = new SmartestItemPublicComment;
+	        $c->hydrate($r);
+	        $comments[] = $c;
+	    }
+	    
+	    return $comments;
+	    
+	}
+	
+	public function getPrivateComments(){
+	    
+	    $sql = "SELECT * FROM Comments WHERE comment_type='SM_COMMENTTYPE_ITEM_PRIVATE' AND comment_object_id='".$this->getId()."'";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    $comments = array();
+	    
+	    foreach($result as $r){
+	        $c = new SmartestComment;
+	        $c->hydrate($r);
+	        $comments[] = $c;
+	    }
+	    
+	    return $comments;
 	    
 	}
 	

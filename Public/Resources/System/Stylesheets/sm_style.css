@@ -293,6 +293,14 @@ div.instruction{
 	font-size:12px;
 }
 
+div.warning{
+    font-size:12px;
+    border:1px solid #d00;
+    background-color:#fdd;
+    padding:5px;
+    margin:10px 0 10px 0;
+}
+
 div.form-section-label{
 	font-size:1.1em;
 	background-color:#ddd;

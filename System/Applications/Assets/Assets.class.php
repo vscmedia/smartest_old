@@ -1287,5 +1287,71 @@ class Assets extends SmartestSystemApplication{
 	    $assets = $q->retrieve();
 	    
 	} */
+	
+	public function comments($get){
+	    
+	    $asset_id = $get['asset_id'];
+
+		// echo $asset_id;
+		$asset = new SmartestAsset;
+
+		if($asset->hydrate($asset_id)){
+
+		    $comments = $asset->getComments();
+		    $this->send($comments, 'comments');
+		    $this->send($asset, 'asset');
+		    
+		    if(isset($asset['type_info']['source-editable']) && SmartestStringHelper::toRealBool($asset['type_info']['source-editable'])){
+		        $this->send(true, 'allow_source_edit');
+		    }else{
+		        $this->send(false, 'allow_source_edit');
+		    }
+		    
+		    if(isset($asset['type_info']['parsable']) && SmartestStringHelper::toRealBool($asset['type_info']['parsable'])){
+		        
+		        if($this->getUser()->hasToken('publish_assets')){
+		            $this->send(true, 'show_publish');
+	            }else{
+	                $this->send(false, 'show_publish');
+	            }
+	            
+		        $this->send(true, 'show_attachments');
+		        
+		    }else{
+		        $this->send(false, 'show_publish');
+		        $this->send(false, 'show_attachments');
+		    }
+		    
+		    if($this->getUser()->hasToken('approve_assets') && $asset->getIsApproved() == 0){
+		        $this->send(true, 'allow_approve');
+		    }else{
+		        $this->send(false, 'allow_approve');
+		    }
+
+		}else{
+		    $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);
+		    $this->redirect('/smartest/assets');
+		}
+	    
+	}
+	
+	public function attachCommentToAsset($get, $post){
+	    
+	    $asset_id = $post['asset_id'];
+
+		// echo $asset_id;
+		$asset = new SmartestAsset;
+
+		if($asset->hydrate($asset_id)){
+
+		    $asset->addComment($post['comment_content'], $this->getUser()->getId());
+		    $this->redirect('/assets/comments?asset_id='.$asset->getId());
+
+		}else{
+		    $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);
+		    $this->redirect('/smartest/assets');
+		}
+	    
+	}
 		
 }

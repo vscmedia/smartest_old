@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<commenttypes>
+  
+  <type id="SM_COMMENTTYPE_PAGE_PUBLIC">
+    <label>Comments left by site visitors on static pages</label>
+    <class>SmartestPagePublicComment</class>
+    <moderated>true</moderated>
+  </type>
+  
+  <type id="SM_COMMENTTYPE_ITEM_PUBLIC">
+    <label>Comments left by site visitors on static pages</label>
+    <class>SmartestItemPublicComment</class>
+    <moderated>true</moderated>
+  </type>
+  
+  <type id="SM_COMMENTTYPE_ASSET_PRIVATE">
+    <label>Comments left by site visitors on static pages</label>
+    <class>SmartestAssetComment</class>
+    <moderated>true</moderated>
+  </type>
+  
+</commenttypes>
