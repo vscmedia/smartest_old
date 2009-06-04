@@ -3171,9 +3171,38 @@ class Pages extends SmartestSystemApplication{
 	    
 	}
 	
-	/* function addList(){
+	public function clearList($get){
 	    
-	} */
+	    $list_name = $get['assetclass_id'];
+        
+        $page_id = $get['page_id'];
+        
+        $page = new SmartestPage;
+        
+        if($page->hydrate($page_id)){
+            
+            $page->setDraftMode(true);
+            
+            $list = new SmartestCmsItemList;
+            
+            if($list->load($list_name, $page, true)){
+                // this list was already defined
+                $list->delete();
+                $this->addUserMessageToNextRequest("The list \"".$list_name."\" was updated successfully.", SmartestUserMessage::SUCCESS);
+            }else{
+                $this->addUserMessageToNextRequest("The list \"".$list_name."\" was not defined.", SmartestUserMessage::INFO);
+            }
+            
+            $this->formForward();
+            
+        }else{
+            
+            $this->addUserMessageToNextRequest("The page ID was not recognizsed.", SmartestUserMessage::ERROR);
+            $this->formForward();
+            
+        }
+	    
+	}
 	
 	/* function insertList($get){
 		

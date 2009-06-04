@@ -143,6 +143,7 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    switch($offset){
 	        case "class":
+	        case "php_class":
 	        return get_class($this);
 	    }
 	    

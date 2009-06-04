@@ -95,6 +95,9 @@ class SmartestAsset extends SmartestBaseAsset{
             case "height":
             return $this->isImage() ? $this->getHeight() : null;
             
+            case "credit":
+            return $this->isImage() ? $data['default_parameters']['credit'] : null;
+            
         }
         
         return parent::offsetGet($offset);

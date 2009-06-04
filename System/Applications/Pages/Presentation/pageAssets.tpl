@@ -77,6 +77,7 @@ function viewLivePage(){
 <ul class="invisible-actions-list" id="list-specific-actions" style="display:none">
   <li><b>List Options</b></li>
   <li class="permanent-action"><a href="#" onclick="workWithItem('defineList');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define List Parameters</a></li>
+  <li class="permanent-action"><a href="#" onclick="workWithItem('clearList');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear List Parameters</a></li>
 </ul>
 
 <ul class="invisible-actions-list" id="attachment-specific-actions" style="display:none">

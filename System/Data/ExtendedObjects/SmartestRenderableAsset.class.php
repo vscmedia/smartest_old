@@ -118,16 +118,20 @@ class SmartestRenderableAsset extends SmartestAsset{
 	}
 	
 	public function offsetGet($offset){
+	  
+	    switch($offset){
         
-        switch($offset){
-            
             case "html":
             return $this->render();
-            
+        
             case "render_data":
             return $this->_render_data;
-            
+        
         }
+        
+        if(strlen($this->_render_data->getParameter($offset))){
+	        return $this->_render_data->getParameter($offset);
+	    }
         
         return parent::offsetGet($offset);
         

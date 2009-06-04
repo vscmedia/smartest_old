@@ -393,6 +393,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     
                     if($template->hydrate($template_id)){
                         
+                        // echo $template->getUrl();
+                        
                         $template_path = SM_ROOT_DIR.'Presentation/Layouts/'.$template->getUrl();
                         $render_process_id = SmartestStringHelper::toVarName('itemspace_template_'.SmartestStringHelper::removeDotSuffix($template->getUrl()).'_'.substr(microtime(true), -6));
             	        
@@ -425,6 +427,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         }else{
             
+            echo $this->_context;
             return $this->raiseError("ItemSpace '".$itemspace_name."' used outside page context.");
             
         }
