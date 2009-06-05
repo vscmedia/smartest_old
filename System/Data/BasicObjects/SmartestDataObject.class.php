@@ -19,8 +19,6 @@ class SmartestDataObject implements ArrayAccess{
 	
 	public function __construct(){
 		
-		// print_r(SmartestPersistentObject::getRegisteredNames());
-		
 		$this->database = SmartestPersistentObject::get('db:main');
 		
 		if(method_exists($this, '__objectConstruct')){
@@ -85,6 +83,12 @@ class SmartestDataObject implements ArrayAccess{
 		} */
 		
 	}
+
+    public function copy(){
+        $classname = get_class($this);
+        $obj = new $class;
+        $obj->hydrate($this->getOriginalDbRecord());
+    }
 	
 	protected function calculateFieldsHash($array){
 	    if(is_array($array)){
@@ -201,7 +205,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	public function __toArray(){
 		$data = $this->_properties;
-		SmartestLog::getInstance('system')->log('Deprecated API function used: SmartestDataObject::__toArray()');
+		SmartestLog::getInstance('system')->log('Deprecated API function used: '.__CLASS__.'::__toArray()');
 		return $data;
 	}
 	
@@ -283,11 +287,17 @@ class SmartestDataObject implements ArrayAccess{
 	
 	public function __call($name, $args){
 		
-		/* if (strtolower(substr($name, 0, 3)) == 'get') {
-			return $this->getField(substr($name, 3));
+	    // FS#189 in progress here:
+	    
+		if (strtolower(substr($name, 1, 2)) == 'et') {
+		    
+		    // return $this->getField(substr($name, 3));
+			// SmartestCache::clear('SMARTEST_'.$this->_table_name.'_columns');
+			// unlink(SM_ROOT_DIR.'System/Cache/ObjectModel/DataObjects/SmartestBase');
+			
 		}
     
-		if ((strtolower(substr($name, 0, 3)) == 'set') && count($args)) {
+		/* if ((strtolower(substr($name, 0, 3)) == 'set') && count($args)) {
 			return $this->setField(substr($name, 3), $args[0]);
 		} */
 		

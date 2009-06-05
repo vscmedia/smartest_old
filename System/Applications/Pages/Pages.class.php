@@ -233,7 +233,7 @@ class Pages extends SmartestSystemApplication{
 		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
 		
 		if(isset($type_index[$page_webid])){
-		    if($type_index[$page_webid] == 'ITEMCLASS' && isset($get['item_id']) && is_numeric($get['item_id'])){
+		    if(($type_index[$page_webid] == 'ITEMCLASS' || $type_index[$page_webid] == 'SM_PAGETYPE_ITEMCLASS' || $type_index[$page_webid] == 'SM_PAGETYPE_DATASET') && isset($get['item_id']) && is_numeric($get['item_id'])){
 		        $page = new SmartestItemPage;
 		    }else{
 		        $page = new SmartestPage;
@@ -246,7 +246,7 @@ class Pages extends SmartestSystemApplication{
     	    
     	    $page->setDraftMode(true);
     	    
-    	    if($page->getType() == 'ITEMCLASS' && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
+    	    if(($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET') && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
             
                 $this->send(true, 'allow_edit');
             
@@ -264,7 +264,7 @@ class Pages extends SmartestSystemApplication{
             
             }else{
     	        
-    	        if($page->getType() == 'ITEMCLASS'){
+    	        if($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET'){
     	            if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
     	                $page->setPrincipalItem($item);
     	            }
@@ -313,7 +313,7 @@ class Pages extends SmartestSystemApplication{
     		        
     		        $this->send($available_icons, 'available_icons');
 		        
-            		if($page->getType() == "ITEMCLASS"){
+            		if($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET'){
                 
                         $model = new SmartestModel;
                         
@@ -324,7 +324,7 @@ class Pages extends SmartestSystemApplication{
                             
                             // $type_index[$page_webid]
                             
-                            if($page->getParent() && $type_index[$page->getParent()] == 'ITEMCLASS'){
+                            if($page->getParent() && ($type_index[$page->getParent()] == 'ITEMCLASS' || $type_index[$page->getParent()] == 'SM_PAGETYPE_ITEMCLASS' || $type_index[$page->getParent()] == 'SM_PAGETYPE_DATASET')){
                                 
                                 $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage(false)->getDatasetId(), (int) $get['item_id']);
                             
@@ -571,7 +571,7 @@ class Pages extends SmartestSystemApplication{
     		        $this->send(false, 'show_edit_item_option');
                     $this->send(false, 'show_publish_item_option');
 		        
-    		    }else if($page->getType() == 'ITEMCLASS'){
+    		    }else if($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET'){
 		        
     		        if($get['item_id'] && is_numeric($get['item_id'])){
 		            
@@ -841,7 +841,7 @@ class Pages extends SmartestSystemApplication{
 			case "2":
 			
 			// $type = strtolower(($post['page_type'] == 'ITEMCLASS') ? 'ITEMCLASS' : 'NORMAL');
-			$type = in_array($post['page_type'], array('NORMAL', 'ITEMCLASS', 'TAG')) ? $post['page_type'] : 'NORMAL';
+			$type = in_array($post['page_type'], array('NORMAL', 'ITEMCLASS', 'LIST', 'TAG')) ? $post['page_type'] : 'NORMAL';
 			$this->send($post['page_parent'], 'page_parent');
 			
 			$page_presets = $helper->getPagePresets($this->getSite()->getId());
@@ -862,7 +862,9 @@ class Pages extends SmartestSystemApplication{
 			    SmartestPersistentObject::get('__newPage')->setCacheAsHtml('TRUE');
 			}
 			
-			if(SmartestPersistentObject::get('__newPage')->getType() == 'ITEMCLASS'){
+			$page_type = SmartestPersistentObject::get('__newPage')->getType();
+			
+			if($page_type == 'ITEMCLASS'){
 				
 				// get a lst of the models
 				$du = new SmartestDataUtility;
@@ -874,9 +876,7 @@ class Pages extends SmartestSystemApplication{
 				$models = array();
 				
 				foreach($model_objects as $model){
-				    // $setObj = new SmartestCmsItemSet;
-				    // $setObj->hydrate($set);
-				    $models[] = $model->__toArray(false);
+				    $models[] = $model;
 				}
 				
 				// print_r($models);

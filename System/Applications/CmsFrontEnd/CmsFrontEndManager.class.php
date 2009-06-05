@@ -113,7 +113,7 @@ class CmsFrontEndManager{
 	        $sql .= ", Sites";
 	    }
 	    
-	    $sql .= " WHERE page_webid='".$web_id."' AND page_type='ITEMCLASS'";
+	    $sql .= " WHERE page_webid='".$web_id."' AND (page_type='ITEMCLASS' OR page_type='SM_PAGETYPE_ITEMCLASS' OR page_type='SM_PAGETYPE_DATASET')";
 	    
 	    if(!$draft_mode){
 	        $sql .= " AND page_is_published='TRUE'";
@@ -163,7 +163,7 @@ class CmsFrontEndManager{
 	
 	public function getItemClassPageByUrl($url, $site_id){
 		
-		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url FROM Pages, PageUrls WHERE Pages.page_type='ITEMCLASS' AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
+		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url FROM Pages, PageUrls WHERE (Pages.page_type='ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_DATASET') AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		
 		$dataset_pages = $this->database->queryToArray($sql);
 		

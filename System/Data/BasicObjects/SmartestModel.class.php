@@ -96,6 +96,20 @@ class SmartestModel extends SmartestBaseModel{
         SmartestObjectModelHelper::buildAutoClassFile($this->_properties['id'], SmartestStringHelper::toCamelCase($this->getName()));
 	}
 	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        case "sets":
+	        case "datasets":
+	        return $this->getDataSets();
+	        break;
+	        case "default_metapage_id":
+	        return $this->getDefaultMetaPageId($this->getCurrentSiteId());
+	        break;
+	    }
+	    
+	}
+	
 	public function __toArray(){
 	    $data = parent::__toArray();
 	    $data['default_metapage_id'] = $this->getDefaultMetaPageId($this->getCurrentSiteId());
@@ -110,10 +124,6 @@ class SmartestModel extends SmartestBaseModel{
 	    
 	    foreach($this->_model_properties as $p){
 	        
-	        if($p->getDatatype() == "SM_DATATYPE_ASSET"){
-	            // print_r($p);
-            }
-	        
 	        if(is_object($p)){
 	            $array['_properties'][$p->getId()] = $p->__toArray();
 	            $array['_properties'][$p->getId()]['_options'] = $p->getPossibleValuesAsArrays();
@@ -126,11 +136,25 @@ class SmartestModel extends SmartestBaseModel{
 	    
 	}
 	
+	public function getDataSets(){
+	    
+	    $sql = "SELECT * FROM Sets WHERE set_itemclass_id='".$this->getId()."' ORDER BY set_label";
+	    $result = $this->database->queryToArray($sql);
+	    $sets = array();
+	    
+	    foreach($result as $r){
+	        $s = new SmartestCmsItemSet;
+	        $s->hydrate($r);
+	        $sets[] = $s;
+	    }
+	    
+	    return $sets;
+	    
+	}
+	
 	public function getPropertiesAsArrays(){
 		
 		$propertyarrays = array();
-		
-		// echo 'called';
 		
 		foreach($this->getProperties() as $property){
 		    $propertyarrays[] = $property->__toArray();
@@ -236,13 +260,9 @@ class SmartestModel extends SmartestBaseModel{
         $items = $this->getSimpleItems($site_id, $mode);
         $arrays = array();
         
-        // $time_1 = debug_time();
-        
         foreach($items as $item){
             $arrays[] = $item->__toArray();
         }
-        
-        // echo debug_time() - $time_1.'<br />';
         
         return $arrays;
         

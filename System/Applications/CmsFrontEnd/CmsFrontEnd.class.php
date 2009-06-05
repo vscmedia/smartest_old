@@ -307,6 +307,10 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    $overhead_finish_time = microtime(true);
 		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
 		
+		if($this->_page instanceof SmartestItemPage){
+		    $this->_page->addHit();
+		}
+		
 		define("SM_OVERHEAD_TIME", $overhead_time_taken);
 	    
 	    $html = $ph->fetch($draft_mode);

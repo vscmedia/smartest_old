@@ -43,17 +43,21 @@ class SmartestItemPage extends SmartestPage{
     }
     
     public function assignPrincipalItem(){
-        // print_r($this->getDataSet()->getMembers());
-        // $items = $this->getDataSet()->getMembers()
-        // echo 'assigned';
-        // if($item = $this->getDataSet()->getItem($this->getIdentifyingFieldName(), $this->getIdentifyingFieldValue())){
+        
         if($item = SmartestCmsItem::retrieveByPk($this->_simple_item->getId())){
             $this->_principal_item = $item;
             $this->_principal_item->setDraftMode($this->getDraftMode());
-            // print_r($this->_principal_item);
         }else{
             return false;
         }
+    }
+    
+    public function addHit(){
+        $num_hits = $this->_simple_item->getNumHits();
+        $new_item = $this->_simple_item->copy();
+        $new_item->setNumHits($num_hits + 1);
+        $new_item->save();
+        unset($new_item);
     }
     
     public function getTags(){
@@ -106,36 +110,42 @@ class SmartestItemPage extends SmartestPage{
                 
             }else{
                 
-                $sql = "SELECT * FROM Items WHERE item_".$this->_identifying_field_name."='".$this->_identifying_field_value."'";
+                if($this->getType() == 'ITEMCLASS' || $this->getType() == 'SM_PAGETYPE_ITEMCLASS'){
                 
-                if($this->getType() == 'ITEMCLASS'){
-                    $sql .= " AND item_itemclass_id='".$this->getDataSetId()."'";
-                }
-                
-                $sql .= " AND (item_shared = '1' OR item_site_id = '".$this->getSiteId()."')";
-                
-                if(!$this->getDraftMode()){
-                    $sql .= " AND item_public='TRUE'";
-                }
+                    $sql = "SELECT * FROM Items WHERE item_".$this->_identifying_field_name."='".$this->_identifying_field_value."'";
             
-                $sql .= " AND item_deleted !='1' LIMIT 1";
+                    // if($this->getType() == 'ITEMCLASS'){
+                        $sql .= " AND item_itemclass_id='".$this->getDataSetId()."'";
+                    // }
+            
+                    $sql .= " AND (item_shared = '1' OR item_site_id = '".$this->getSiteId()."')";
+            
+                    if(!$this->getDraftMode()){
+                        $sql .= " AND item_public='TRUE'";
+                    }
+        
+                    $sql .= " AND item_deleted !='1' LIMIT 1";
+            
+                    $result = $this->database->queryToArray($sql);
+            
+                    if(count($result)){
                 
-                $result = $this->database->queryToArray($sql);
+                        $i = new SmartestItem;
+                        $i->hydrate($result[0]);
                 
-                if(count($result)){
-                    
-                    $i = new SmartestItem;
-                    $i->hydrate($result[0]);
-                    
-                    if($this->getDatasetId() == $result[0]['item_itemclass_id']){
-                        $this->_simple_item = $i;
-                        return true;
+                        if($this->getDatasetId() == $result[0]['item_itemclass_id']){
+                            $this->_simple_item = $i;
+                            return true;
+                        }else{
+                            return false;
+                        }
+            
                     }else{
                         return false;
                     }
                 
-                }else{
-                    return false;
+                }else if($this->getType() == 'SM_PAGETYPE_DATASET'){
+                    
                 }
             
             }
