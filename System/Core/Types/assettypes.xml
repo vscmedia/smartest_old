@@ -27,6 +27,20 @@
         <suffix mime="text/plain">txt</suffix>
     </type>
     
+    <type id="SM_ASSETTYPE_HTML_FRAGMENT" category="user_text">
+        <label>HTML Fragment</label>
+        <description>A piece of HTML for whatever you like.</description>
+        <class>SmartestAsset</class>
+        <source-editable>true</source-editable>
+        <editable>true</editable>
+        <parsable>true</parsable>
+        <icon>text.gif</icon>
+        <render template="System/Presentation/WebPageBuilder/display.rich_text.tpl" />
+        <storage type="database" />
+        <suffix mime="text/html">html</suffix>
+        <suffix mime="text/html">htm</suffix>
+    </type>
+    
     <type id="SM_ASSETTYPE_SL_TEXT" category="user_text">
         <label>Single-line Text</label>
         <description>Short piece of text such as first or last name. Maximum 255 characters.</description>
