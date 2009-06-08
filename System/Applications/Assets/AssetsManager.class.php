@@ -144,10 +144,10 @@ class AssetsManager{
 	    
 	}
 	
-	public function getAssetsByTypeCode($code, $site_id=''){
+	public function getAssetsByTypeCode($code, $site_id='', $mode=1){
 		
 		$helper = new SmartestAssetsLibraryHelper;
-	    return $helper->getAssetsByTypeCode($code, $site_id);
+	    return $helper->getAssetsByTypeCode($code, $site_id, $mode);
 		
 		/* $sql = "SELECT * FROM Assets WHERE asset_type='$code' AND asset_deleted != 1";
 		

@@ -2298,7 +2298,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $this->send($params, 'params');
 	            
-	            $assets = $placeholder->getPossibleAssets();
+	            $assets = $placeholder->getPossibleAssets($this->getSite()->getId());
 	            
 	            $this->send($assets, 'assets');
 	            $this->send($page, 'page');

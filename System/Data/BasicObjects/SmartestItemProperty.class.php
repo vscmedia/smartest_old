@@ -73,6 +73,10 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	                
 	                if($this->getDatatype() == 'SM_DATATYPE_ASSET' && substr($filter, 0, 13) == 'SM_ASSETCLASS'){
 	                    
+	                    if(is_object($this->getSite())){
+    	                    $site_id = $this->getSite()->getId();
+    	                }
+	                    
 	                    $p = new SmartestPlaceholder;
 	                    $p->setType($filter);
 	                    $this->_possible_values = $p->getPossibleAssets();

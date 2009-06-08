@@ -169,15 +169,21 @@ class SmartestAssetsLibraryHelper{
 	    
 	}
 	
-	public function getAssetsByTypeCode($code, $site_id=''){
+	public function getAssetsByTypeCode($code, $site_id='', $mode=1){
 		
 		if(is_array($code)){
 		    $sql = "SELECT * FROM Assets WHERE asset_type IN ('".implode("', '", $code)."') AND asset_deleted != 1";
 	    }else{
 		    $sql = "SELECT * FROM Assets WHERE asset_type='".$code."' AND asset_deleted != 1";
 	    }
-		
-		if(is_numeric($site_id)){
+	    
+	    if($mode == 1){
+	        $sql .= " AND asset_is_archived=0";
+	    }else if($mode == 2){
+	        $sql .= " AND asset_is_archived=1";
+	    }
+	    
+	    if(is_numeric($site_id)){
 		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_stringid";
 		}
 		

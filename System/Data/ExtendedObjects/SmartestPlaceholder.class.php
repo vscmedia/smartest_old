@@ -24,13 +24,17 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	    
 	}
 	
-	public function getPossibleAssets(){
+	public function getPossibleAssets($site_id=''){
 	    
 	    // print_r($this->getSite());
 	    
+	    if(!is_numeric($site_id)){
+	        $site_id = $this->getSite()->getId();
+	    }
+	    
 	    $type = $this->getTypeInfo();
 	    
-	    // print_r($type);
+	    // print_r($type['accept']);
 	    
 	    /*if($this->getType() == 'SM_ASSETTYPE_IMAGE'){
             $types = array('SM_ASSETTYPE_IMAGE', 'SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE');
@@ -38,7 +42,12 @@ class SmartestPlaceholder extends SmartestAssetClass{
             $types = array($this->getType());
         } */
         
-        return $this->getAssetsByType($type['accept']);
+        $helper = new SmartestAssetsLibraryHelper;
+        $assets = $helper->getAssetsByTypeCode($type['accept'], $site_id, 1);
+        
+        return $assets;
+        
+        // return $this->getAssetsByType($type['accept'], $site_id, 1);
         
 	}
 	
@@ -64,7 +73,9 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	
 	public function getAssetsByType(){
 	    
-	    $site_id = $this->getSite()->getId();
+	    /* if(!is_numeric($site_id)){
+	        $site_id = $this->getSite()->getId();
+	    } */
 	    
 	    $args = func_get_args();
 	    
@@ -84,7 +95,10 @@ class SmartestPlaceholder extends SmartestAssetClass{
             $types = array();
         }
         
-        if(count($types)){
+        $helper = new SmartestAssetsLibraryHelper;
+        $assets = $helper->getAssetsByTypeCode($types, $site_id, 1);
+        
+        /* if(count($types)){
             
             $sql = "SELECT * FROM Assets WHERE asset_type IN (";
             
@@ -130,7 +144,7 @@ class SmartestPlaceholder extends SmartestAssetClass{
                 $asset->hydrate($raw_asset);
                 $assets[] = $asset;
                 
-            }
+            } 
             
             return $assets;
             
@@ -138,8 +152,9 @@ class SmartestPlaceholder extends SmartestAssetClass{
             
             return array();
             
-        }
+        }*/
         
+        return $assets;
 	}
 	
 	public function getAssetsByTypeAsArrays(){

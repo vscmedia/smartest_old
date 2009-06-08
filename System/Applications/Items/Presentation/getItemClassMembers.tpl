@@ -85,7 +85,7 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('publishItem');">Publish</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('unpublishItem');">Un-Publish</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/accept.png"> <a href="{dud_link}" onclick="workWithItem('addTodoItem');">Add new to-do</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('archiveItem');">Move to Archive</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('toggleItemArchived');">Archive/Un-archive</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> <a href="{dud_link}" onclick="if(selectedPage && confirm('Are you sure you want to delete this {$model.name|lower} ?')) {ldelim}workWithItem('deleteItem');{rdelim}">Delete</a></li>
 {* <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="if(selectedPage) {ldelim}workWithItem('duplicateItem');{rdelim}">Duplicate</a></li> *}
 

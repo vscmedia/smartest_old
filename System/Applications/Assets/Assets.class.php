@@ -100,11 +100,14 @@ class Assets extends SmartestSystemApplication{
 	public function getAssetTypeMembers($get){
 		
 		$code = strtoupper($get["asset_type"]);
+		$mode = isset($get["mode"]) ? (int) $get["mode"] : 1;
+		
+		$this->send($mode, 'mode');
 		
 		$this->setFormReturnUri();
 		
 		if($this->manager->getIsValidAssetTypeCode($code)){
-			$assets = $this->manager->getAssetsByTypeCode($code, $this->getSite()->getId());	
+			$assets = $this->manager->getAssetsByTypeCode($code, $this->getSite()->getId(), $mode);	
 		}
 		
 		$types_array = SmartestDataUtility::getAssetTypes();
@@ -135,6 +138,25 @@ class Assets extends SmartestSystemApplication{
 		}else {
 			return array("error"=>"No members of this type");
 		}
+	}
+	
+	public function toggleAssetArchived($get){
+	    
+	    $a = new SmartestAsset;
+	    
+	    if($a->hydrate((int) $get['asset_id'])){
+	        
+	        if($a->getIsArchived() == 1){
+	            $a->setIsArchived(0);
+	        }else if($a->getIsArchived() == 0){
+	            $a->setIsArchived(1);
+	        }
+	        
+	        $a->save();
+	    }
+	    
+	    $this->formForward();
+	    
 	}
 	
 	public function detectNewUploads(){
