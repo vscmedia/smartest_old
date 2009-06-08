@@ -985,14 +985,23 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
-	public function archiveItem($get){
+	public function toggleItemArchived($get){
 	    
 	    $item_id = (int) $get['item_id'];
 	    $item = new SmartestItem;
 	    
 	    if($item->hydrate($item_id)){
-	        $item->setIsArchived(1);
-	        $item->save();
+	        if($item->getIsArchived() === '0'){
+	            $item->setIsArchived(1);
+	            $item->save();
+	            $this->addUserMessageToNextRequest('The item has been archived.', SmartestUserMessage::SUCCESS);
+            }else if($item->getIsArchived() === '1'){
+                $item->setIsArchived(0);
+	            $item->save();
+	            $this->addUserMessageToNextRequest('The item has been removed from the archive and made current.', SmartestUserMessage::SUCCESS);
+            }
+	    }else{
+	        $this->addUserMessageToNextRequest("The item ID was not recognized.", SmartestUserMessage::ERROR);
 	    }
 	    
 	    $this->formForward();
