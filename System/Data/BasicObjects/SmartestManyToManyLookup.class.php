@@ -17,11 +17,13 @@ class SmartestManyToManyLookup extends SmartestBaseManyToManyLookup{
 	    }
 	}
 	
+	//// URL Encoding is being used to work around a bug in PHP's serialize/unserialize. No actual URLS are necessarily in use here
+	
 	public function setContextDataField($field, $new_data){
 	    
 	    $field = SmartestStringHelper::toVarName($field);
 	    $data = $this->getContextData();
-	    $data[$field] = utf8_decode($new_data);
+	    $data[$field] = rawurlencode(utf8_decode($new_data));
 	    
 	    $this->setContextData($data);
 	    
@@ -34,7 +36,7 @@ class SmartestManyToManyLookup extends SmartestBaseManyToManyLookup{
 	    $field = SmartestStringHelper::toVarName($field);
 	    
 	    if(isset($data[$field])){
-	        return utf8_encode($data[$field]);
+	        return utf8_encode(stripslashes(rawurldecode($data[$field])));
 	    }else{
 	        return null;
 	    }

@@ -107,6 +107,17 @@ class Items extends SmartestSystemApplication{
         
         $this->redirect('/datamanager/getItemClassMembers?class_id='.$get['class_id']);
     }
+    
+    public function getItemClassComments($get){
+        
+        $model = new SmartestModel;
+        $model_id = (int) $get['class_id'];
+        
+        /* if($model->find($mo)){
+            
+        } */
+        
+    }
 
 	// public function getItemXml($get, $post){
 	
