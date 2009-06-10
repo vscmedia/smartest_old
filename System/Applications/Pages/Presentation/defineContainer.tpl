@@ -17,7 +17,7 @@
     </div>
     
     <div class="edit-form-row">
-      <div class="form-section-label">{$item.model.name}:</div>
+      <div class="form-section-label">{$item._model.name}:</div>
       {$item.name}
     </div>
     
@@ -25,9 +25,9 @@
       <div class="form-section-label">Define container on this meta-page for:</div>
       <select name="definition_scope">
         
-        <option value="THIS">This {$item.model.name|strtolower} only</option>
-        {if $item_uses_default}<option value="DEFAULT">All {$item.model.plural_name|strtolower} currently using the default definition</option>{/if}
-        {if $selected_template_id > 0}<option value="ALL">All {$item.model.plural_name|strtolower} (removes all other per-item definitions)</option>{else}<option value="DEFAULT">All {$item.model.plural_name|strtolower} without per-item definitions</option><option value="ALL">All {$item.model.plural_name|strtolower} (removes all other per-item definitions)</option>{/if}
+        <option value="THIS">This {$item._model.name|strtolower} only</option>
+        {if $item_uses_default}<option value="DEFAULT">All {$item._model.plural_name|strtolower} currently using the default definition</option>{/if}
+        {if $selected_template_id > 0}<option value="ALL">All {$item._model.plural_name|strtolower} (removes all other per-item definitions)</option>{else}<option value="DEFAULT">All {$item.model.plural_name|strtolower} without per-item definitions</option><option value="ALL">All {$item.model.plural_name|strtolower} (removes all other per-item definitions)</option>{/if}
         
       </select>
     </div>

@@ -29,6 +29,8 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
             $q->addAllowedInstanceName($a);
         }
         
+        // print_r($attachment_names);
+        
         $q->addForeignTableConstraint('Assets.asset_deleted', 1, SmartestQuery::NOT_EQUAL);
         $results = $q->retrieve();
         
@@ -38,6 +40,7 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
                 $attachments[$a] = $results[$a];
             }else{
                 $attachments[$a] = new SmartestTextFragmentAttachment;
+                $attachments[$a]->setInstanceName($a);
             }
         }
         

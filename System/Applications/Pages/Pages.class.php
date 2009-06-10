@@ -1823,6 +1823,7 @@ class Pages extends SmartestSystemApplication{
     		        if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
     	                $page->setPrincipalItem($item);
     	                $this->send($item, 'item');
+    	                // rint_r($item['_model']);
     	                $this->send(true, 'show_item_options');
     	                $this->send(false, 'require_choose_item');
     	            }else{

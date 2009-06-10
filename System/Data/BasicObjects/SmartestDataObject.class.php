@@ -86,8 +86,9 @@ class SmartestDataObject implements ArrayAccess{
 
     public function copy(){
         $classname = get_class($this);
-        $obj = new $class;
+        $obj = new $classname;
         $obj->hydrate($this->getOriginalDbRecord());
+        return $obj;
     }
 	
 	protected function calculateFieldsHash($array){

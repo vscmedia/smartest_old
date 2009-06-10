@@ -278,6 +278,8 @@ class SmartestCmsLink extends SmartestHelper{
             
             case SM_LINK_TYPE_IMAGE:
             $d = new SmartestAsset;
+            $d->hydrateBy('url', substr($this->_destination_properties->getParameter('destination'), 6));
+            // print_r($d);
             $this->_destination = $d;
             break;
             
@@ -378,11 +380,21 @@ class SmartestCmsLink extends SmartestHelper{
         return $this->_error_message;
     }
     
-    public function getContent(){
+    public function getContent($draft_mode=false){
         
         if($this->_render_data->getParameter('with')){
             // if the with="" attribute is specified
-            return $this->_render_data->getParameter('with');
+            // echo substr($this->_render_data->getParameter('with'), 0, 6);
+            // $imgtest = substr($this->_render_data->getParameter('with'), 0, 6);
+            if(substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
+                // return $this->_destination->__toString();
+                $a = new SmartestRenderableAsset;
+                $a->hydrateBy('url', substr($this->_render_data->getParameter('with'), 6));
+                // print_r($a);
+                return $a->render($draft_mode);
+            }else{
+                return $this->_render_data->getParameter('with');
+            }
         }else if($this->_destination_properties->getParameter('text') && ($this->_destination_properties->getParameter('text') != SmartestLinkParser::LINK_TARGET_TITLE)){
             // if the text is given in the link via a pipe (|)
             return $this->_destination_properties->getParameter('text');

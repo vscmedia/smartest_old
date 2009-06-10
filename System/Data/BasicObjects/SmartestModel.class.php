@@ -99,14 +99,17 @@ class SmartestModel extends SmartestBaseModel{
 	public function offsetGet($offset){
 	    
 	    switch($offset){
+	        
 	        case "sets":
 	        case "datasets":
 	        return $this->getDataSets();
-	        break;
+	        
 	        case "default_metapage_id":
 	        return $this->getDefaultMetaPageId($this->getCurrentSiteId());
-	        break;
+	        
 	    }
+	    
+	    return parent::offsetGet($offset);
 	    
 	}
 	

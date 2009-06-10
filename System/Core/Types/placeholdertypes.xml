@@ -40,6 +40,7 @@
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
+    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
   </type>
   
   <type id="SM_ASSETCLASS_MOVIE">
@@ -53,6 +54,11 @@
   <type id="SM_ASSETCLASS_SOUND">
     <label>MP3 audio</label>
     <accept>SM_ASSETTYPE_MP3</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_MARKUP">
+    <label>Markup fragment</label>
+    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
   </type>
   
   <type id="SM_ASSETCLASS_DOWNLOAD">

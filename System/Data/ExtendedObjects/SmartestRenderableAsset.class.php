@@ -62,7 +62,13 @@ class SmartestRenderableAsset extends SmartestAsset{
 	}
 	
 	public function __toString(){
-	    return $this->render();
+	    // This function has to return a string:
+	    $output = $this->render();
+	    if(strlen($output)){
+	        return $output;
+	    }else{
+	        return '';
+	    }
 	}
 	
 	public function render($draft_mode='unset'){

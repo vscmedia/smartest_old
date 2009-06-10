@@ -4,11 +4,11 @@
   
   {foreach from=$attachments item="attachment"}
   <div style="padding:5px;background-color:#{cycle values="ddd,fff"}">
-  <b>Name:</b>&nbsp;{$attachment._name}<br />
+  <b>Name:</b>&nbsp;{$attachment.name}<br />
   <b>Attached File:</b>&nbsp;{$attachment.asset.url}<br />
   <b>Caption:</b>&nbsp;{$attachment.caption}<br />
   <b>Align:</b>&nbsp;{$attachment.alignment}<br />
-  <input type="button" value="Edit..." onclick="window.location='{$domain}{$section}/defineAttachment?attachment={$attachment._name}&amp;asset_id={$asset.id}'" />
+  <input type="button" value="Edit..." onclick="window.location='{$domain}{$section}/defineAttachment?attachment={$attachment.name}&amp;asset_id={$asset.id}'" />
   </div>
   {/foreach}
   

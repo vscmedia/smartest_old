@@ -586,6 +586,7 @@ class Assets extends SmartestSystemApplication{
     			    if($asset_type['storage']['type'] == 'database'){
     			        if($asset->usesTextFragment()){
     			            // $content = utf8_encode(htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8'));
+    			            // print_r($asset->getTextFragment());
     			            $content = htmlspecialchars($asset->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
     			        }
 			        }else{
@@ -733,7 +734,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $asset_id = $get['asset_id'];
         
-        if($this->getUser()->hasToken('publish_text_assets') || $this->getUser()->hasToken('publish_all_assets')){
+        // if($this->getUser()->hasToken('publish_text_assets') || $this->getUser()->hasToken('publish_all_assets')){
         
 		    $asset = new SmartestAsset;
 
@@ -747,15 +748,15 @@ class Assets extends SmartestSystemApplication{
     		        $asset_type = $types_data[$assettype_code];
 		        
     		        if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
-    		            if($asset->isApproved() || $this->getUser()->hasToken('publish_unapproved_text_assets') || $this->getUser()->hasToken('publish_unapproved_assets')){
+    		            // if($asset->getisApproved() || $this->getUser()->hasToken('publish_unapproved_text_assets') || $this->getUser()->hasToken('publish_unapproved_assets')){
     	                    if($asset->getTextFragment()->publish()){
     	                        $this->addUserMessageToNextRequest('The file has been successfully published.', SmartestUserMessage::SUCCESS);
                             }else{
                                 $this->addUserMessageToNextRequest('There was an error publishing file. Please check file permissions.', SmartestUserMessage::ERROR);
                             }
-                        }else{
+                        /* }else{
                             $this->addUserMessageToNextRequest('The file could not be published because it requires approval first.', SmartestUserMessage::ACCESS_DENIED);
-                        }
+                        } */
     	            }else{
 	                
     	            }
@@ -770,11 +771,11 @@ class Assets extends SmartestSystemApplication{
     		    $this->addUserMessageToNextRequest('The asset ID was not recognized.', SmartestUserMessage::ERROR);
         	}
     	
-	    }else{
+	    /* }else{
 	        
 	        $this->addUserMessageToNextRequest('You don\'t have permission to publish text files', SmartestUserMessage::ACCESS_DENIED);
 	        
-	    }
+	    } */
     	
     	$this->formForward();
 		
@@ -972,7 +973,8 @@ class Assets extends SmartestSystemApplication{
 
     			if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
 
-    			    $attachments = $asset->getTextFragment()->getAttachmentsAsArrays();
+    			    $attachments = $asset->getTextFragment()->getAttachments();
+    			    // print_r($attachments);
 			        $this->send($attachments, 'attachments');
 			        
 			        if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
