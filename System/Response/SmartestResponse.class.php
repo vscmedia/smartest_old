@@ -81,9 +81,6 @@ class SmartestResponse{
 	// Settings manager object
 	var $configuration;
 	
-	// Methods that don't require authentication
-	private $publicMethodNames = array("renderPageFromUrl", "renderPageFromId", "doAuth", "doLogOut", "searchDomain", "renderSiteTagSimpleRssFeed", "downloadAsset");
-	
 	// Filter Chain
 	private $filters = array();
 	
@@ -351,6 +348,18 @@ class SmartestResponse{
 		}
 	}
 	
+	public function isPublicMethod(){
+	    
+	    $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+		
+		$publicMethodNames = $sd['system']['public_methods'];
+		
+		$method = $this->controller->getModuleName().'/'.$this->controller->getMethodName();
+		
+		return in_array($method, $publicMethodNames);
+	    
+	}
+	
 	public function build(){
 		
 		$this->_log("Starting presentation layer...");
@@ -407,8 +416,6 @@ class SmartestResponse{
 		
 		$this->template = $this->controller->getTemplateName();
 		
-		// $this->url = $this->getUrl();
-		// echo $this->controller->getControllerUrlRequest();
 		$this->controller->addProperty('url', $this->controller->getControllerUrlRequest());
 		
 		$this->isSystemClass();
@@ -465,23 +472,17 @@ class SmartestResponse{
 	
 	function checkAuthenicationStatus(){
 	    
-	    if($this->isSystemClass() && !in_array($this->controller->getMethodName(), $this->publicMethodNames)){
+	    if($this->isSystemClass() && !$this->isPublicMethod()){
 		    
 		    if(!$this->authentication->getUserIsLoggedIn()){
 				if(SM_CONTROLLER_URL != "smartest/login"){
-					
-					// $new_url = $this->controller->getDomain()."smartest/login?from=/".SM_CONTROLLER_URL;
-					
-					//if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING'])){
-					//	$new_url .= '&'.$_SERVER['QUERY_STRING'];
-					//}
 					
 					$new_url = $this->controller->getDomain().'smartest/login';
 					
 					$e = new SmartestRedirectException();
 					$e->setRedirectUrl($new_url);
-					throw $e;
 					
+					throw $e;
 				}
 			}
 		}

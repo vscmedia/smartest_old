@@ -15,6 +15,18 @@ system:
     - Schemas
     - Settings
     - XmlData
+  public_methods:
+    - website/renderPageFromUrl
+    - website/renderPageFromId
+    - loginscreen/loginScreen
+    - loginscreen/doAuth
+    - loginscreen/doLogOut
+    - website/searchDomain
+    - website/renderSiteTagSimpleRssFeed
+    - website/downloadAsset
+    - website/submitItemComment
+    - website/submitPageComment
+    - website/addRating
   smarty_config:
     default_templates_dir: Presentation/
     templates_cache: System/Cache/Smarty/

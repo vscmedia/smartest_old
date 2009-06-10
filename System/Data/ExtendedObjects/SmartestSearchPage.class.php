@@ -41,7 +41,7 @@ class SmartestSearchPage extends SmartestPage{
         // $data['search_results'] = $this->getResultsAsArrays();
         // $data['num_search_results'] = count($data['search_results']);
         // print_r($data);
-        $data->setParameter('search_results', $this->getResultsAsArrays());
+        $data->setParameter('search_results', $this->getResults());
         $data->setParameter('num_search_results', count($data->getParameter('search_results')));
         return $data;
         
