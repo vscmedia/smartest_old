@@ -1,5 +1,5 @@
-ALTER TABLE  `Lists` ADD  `list_type` VARCHAR( 32 ) NOT NULL AFTER  `list_label`;
-ALTER TABLE  `Lists` CHANGE  `list_maximum_length`  `list_maximum_length` INT( 2 ) NOT NULL DEFAULT '0';
+ALTER TABLE  `Lists` ADD  `list_type` VARCHAR( 32 ) NOT NULL DEFAULT 'SM_LIST_ARTCULATED' AFTER  `list_label`;
+ALTER TABLE  `Lists` CHANGE  `list_minimum_length`  `list_maximum_length` INT( 2 ) NOT NULL DEFAULT '0';
 ALTER TABLE  `Comments` ADD  `comment_object_id` MEDIUMINT( 11 ) NOT NULL AFTER  `comment_id`;
 ALTER TABLE  `Lists` CHANGE  `list_label`  `list_title` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT  '';
 ALTER TABLE  `Lists` CHANGE  `list_draft_template_file`  `list_draft_template_file` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  'default_list.tpl';
