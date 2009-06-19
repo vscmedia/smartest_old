@@ -5,6 +5,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	protected $_type_info;
 	protected $_possible_values = array();
 	protected $_possible_values_retrieval_attempted = false;
+	protected $_option_set;
 	
 	protected function __objectConstruct(){
 		
@@ -77,50 +78,120 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
     	                    $site_id = $this->getSite()->getId();
     	                }
 	                    
-	                    $p = new SmartestPlaceholder;
-	                    $p->setType($filter);
-	                    $this->_possible_values = $p->getPossibleAssets();
-	                    // print_r($this->_possible_values);
+	                    if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
+	                        
+	                        $alh = new SmartestAssetsLibraryHelper;
+	                        $assets = $alh->getAssetClassOptions($filter, $this->getSiteId(), 1);
+	                        $this->_possible_values = $assets;
+	                        
+	                    }else if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_ASSETGROUP'){
+	                        
+	                        $group = new SmartestAssetGroup;
+	                        
+	                        if($group->find($this->getOptionSetId())){
+	                            
+	                            $assets = $group->getMembers();
+	                            $this->_possible_values = $assets;
+	                            $this->_option_set = $group;
+	                            
+	                        }else{
+	                            
+	                            // the nominated set no longer exists, so get rid of the reference to it and just load all files
+	                            
+	                            SmartestLog::getInstance('system')->log("The file group of ID ".$this->getFilterValue()." that is used as a filter for item property {$this->getName()} can no longer be found. This property has been set back to allow all files of the appropriate type.");
+                                $prop = $this->copy();
+
+                                $this->_properties['option_set_id'] = '';
+                                $this->_properties['option_set_type'] = 'SM_PROPERTY_FILTERTYPE_NONE';
+
+                                $prop->seOptionSetId('');
+                                $prop->seOptionSetType('SM_PROPERTY_FILTERTYPE_NONE');
+                                $prop->save();
+	                            
+	                            $alh = new SmartestAssetsLibraryHelper;
+    	                        $assets = $alh->getAssetClassOptions($filter, $this->getSiteId(), 1);
+    	                        $this->_possible_values = $assets;
+    	                        
+	                        }
+	                        
+	                    }
 	                    
 	                }else{
 	                
     	                if(is_object($this->getSite())){
     	                    $site_id = $this->getSite()->getId();
     	                }
-	                
-    	                if(isset($info['filter']['entitysource']['class']) && class_exists($info['filter']['entitysource']['class'])){
-	                
-    	                    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";
 	                    
-    	                    if($site_id && $info['filter']['entitysource']['sitefield'] && $info['filter']['entitysource']['sharedfield']){
-    	                        $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
-    	                    }
+	                    // build in $info['filter']['optionsettype'] as SmartestAssetGroup, SmartestCmsItemSet or whatever
+	                    
+	                    if(isset($info['filter']['entitysource']['class']) && class_exists($info['filter']['entitysource']['class'])){
+	                        
+	                        if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE' || !isset($info['filter']['optionsettype'][$this->getOptionSetType()])){
+	                
+        	                    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";
+	                    
+        	                    if($site_id && $info['filter']['entitysource']['sitefield'] && $info['filter']['entitysource']['sharedfield']){
+        	                        $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
+        	                    }
     	                    
-    	                    if(isset($info['filter']['condition'])){
+        	                    if(isset($info['filter']['condition'])){
 	                            
-	                            foreach($info['filter']['condition'] as $condition){
-	                                $sql .= ' AND '.$this->convertFieldCondition($condition);
+    	                            foreach($info['filter']['condition'] as $condition){
+    	                                $sql .= ' AND '.$this->convertFieldCondition($condition);
+    	                            }
+	                            
+                                }
+	                    
+        	                    if(isset($info['filter']['entitysource']['sortfield'])){
+        	                        $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
+        	                    }
+                            
+                                $result = $this->database->queryToArray($sql);
+        	                    $options = array();
+	                    
+        	                    foreach($result as $raw_array){
+	                        
+        	                        $class = $info['filter']['entitysource']['class'];
+        	                        $option = new $class;
+        	                        $option->hydrate($raw_array);
+        	                        $options[] = $option;
+                        
+        	                    }
+	                    
+        	                    $this->_possible_values = $options;
+    	                    
+	                        }else{
+	                            
+	                            $ost = $info['filter']['optionsettype'][$this->getOptionSetType()];
+	                            
+	                            if(class_exists($ost['class'])){
+	                                
+	                                $set = new $ost['class'];
+	                                
+	                                if($set->find($this->getOptionSetId())){
+	                                    
+	                                    $this->_possible_values = $set->getMembers();
+	                                    $this->_option_set = $set;
+	                                    
+	                                }else{
+	                                    
+	                                    SmartestLog::getInstance('system')->log("The option set with ID ".$this->getFilterValue()." that is used as a filter for item property {$this->getName()} can no longer be found. This property has been set back to allow all options of the appropriate type.");
+                                        $prop = $this->copy();
+
+                                        $this->_properties['option_set_id'] = '';
+                                        $this->_properties['option_set_type'] = 'SM_PROPERTY_FILTERTYPE_NONE';
+
+                                        $prop->seOptionSetId('');
+                                        $prop->seOptionSetType('SM_PROPERTY_FILTERTYPE_NONE');
+                                        $prop->save();
+
+	                                }
+	                                
+	                            }else{
+	                                throw new SmartestException("Item property option set type data object class '".$ost['class']."' not defined or doesn't exist for property datatype '".$this->getDatatype()."', option set type '".$ost['id']."'.");
 	                            }
 	                            
-                            }
-	                    
-    	                    if(isset($info['filter']['entitysource']['sortfield'])){
-    	                        $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
-    	                    }
-                            
-                            $result = $this->database->queryToArray($sql);
-    	                    $options = array();
-	                    
-    	                    foreach($result as $raw_array){
-	                        
-    	                        $class = $info['filter']['entitysource']['class'];
-    	                        $option = new $class;
-    	                        $option->hydrate($raw_array);
-    	                        $options[] = $option;
-                        
-    	                    }
-	                    
-    	                    $this->_possible_values = $options;
+	                        }
 	                
     	                }else{
 	                        
@@ -159,6 +230,29 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    }
 	    
 	    return $arrays;
+	    
+	}
+	
+	public function getPossibleFileGroups($site_id){
+	    
+	    $groups = array();
+	    
+	    if($this->isForeignKey()){
+            
+            $info = $this->getTypeInfo();
+            $filter = $this->getForeignKeyFilter();
+            
+            if(substr($filter, 0, 13) == 'SM_ASSETCLASS'){
+                $alh = new SmartestAssetsLibraryHelper;
+                $groups = $alh->getPlaceholderAssetGroupsByType($filter, $site_id);
+            }else{
+                $alh = new SmartestAssetsLibraryHelper;
+                $groups = $alh->getTypeSpecificAssetGroupsByType($filter, $site_id);
+            }
+            
+        }
+	    
+	    return $groups;
 	    
 	}
 	

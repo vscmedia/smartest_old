@@ -1,10 +1,6 @@
 {* The file type you are trying to edit can only be edited externally. Please click <a href="{$domain}{$section}/downloadAsset?assettype_code={$assettype_code}&amp;asset_id={$asset_id}">here</a> to download it.<br />
 <a href="javascript:history.back();">Back</a> *}
 
-<h3>Edit File Parameters</h3>
-
-<div class="instruction">You are editing {$asset.type_info.label}: ({$asset.url})</div>
-
 <form action="{$domain}{$section}/updateAsset" method="post" enctype="multipart/form-data">
   
   <input type="hidden" name="asset_id" value="{$asset.id}" />

@@ -131,7 +131,7 @@
     </type>
     
     <type id="SM_ASSETTYPE_STYLESHEET" category="browser_instructions">
-        <label>Cascading Stylesheet</label>
+        <label>Stylesheet (CSS)</label>
         <description>A CSS file.</description>
         <editable>true</editable>
         <class>SmartestAsset</class>

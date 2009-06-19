@@ -9,7 +9,7 @@
 </form>
 
 
-<ul class="{if $content.itemClassMemberCount > 10}options-list{else}options-grid{/if}" id="{if $content.itemClassMemberCount > 10}options_list{else}options_grid{/if}">
+<ul class="{if count($sets) > 10}options-list{else}options-grid{/if}" id="{if count($sets) > 10}options_list{else}options_grid{/if}">
 {foreach from=$sets key="key" item="set"}
   <li style="list-style:none;" 
 			ondblclick="window.location='{$domain}{$section}/editSet?set_id={$set.id}'">

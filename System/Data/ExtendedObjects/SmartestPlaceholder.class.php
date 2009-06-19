@@ -26,13 +26,9 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	
 	public function getPossibleAssets($site_id=''){
 	    
-	    // print_r($this->getSite());
-	    
 	    if(!is_numeric($site_id)){
 	        $site_id = $this->getSite()->getId();
 	    }
-	    
-	    $type = $this->getTypeInfo();
 	    
 	    // print_r($type['accept']);
 	    
@@ -42,12 +38,43 @@ class SmartestPlaceholder extends SmartestAssetClass{
             $types = array($this->getType());
         } */
         
-        $helper = new SmartestAssetsLibraryHelper;
-        $assets = $helper->getAssetsByTypeCode($type['accept'], $site_id, 1);
+        $assets = array();
+        
+        if($this->getFilterType() == 'SM_ASSETCLASS_FILTERTYPE_NONE'){
+            
+            $type = $this->getTypeInfo();
+            $helper = new SmartestAssetsLibraryHelper;
+            $assets = $helper->getAssetsByTypeCode($type['accept'], $site_id, 1);
+        
+        }else if($this->getFilterType() == 'SM_ASSETCLASS_FILTERTYPE_ASSETGROUP'){
+            
+            $group = new SmartestAssetGroup;
+            
+            if($group->find($this->getFilterValue())){
+                
+                $assets = $group->getMembers();
+                
+            }else{
+                
+                SmartestLog::getInstance('system')->log("The file group of ID ".$this->getFilterValue()." that is used as a filter for placeholder {$this->getName()} can no longer be found. This placeholder has been set back to allow all files.");
+                $ph = $this->copy();
+                
+                $this->_properties['filter_type'] = 'SM_ASSETCLASS_FILTERTYPE_NONE';
+                $this->_properties['filter_value'] = '';
+                
+                $ph->setFilterType('SM_ASSETCLASS_FILTERTYPE_NONE');
+                $ph->setFilterValue('');
+                $ph->save();
+                
+                $type = $this->getTypeInfo();
+                $helper = new SmartestAssetsLibraryHelper;
+                $assets = $helper->getAssetsByTypeCode($type['accept'], $site_id, 1);
+                
+            }
+            
+        }
         
         return $assets;
-        
-        // return $this->getAssetsByType($type['accept'], $site_id, 1);
         
 	}
 	
@@ -61,6 +88,15 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	    }
 	    
 	    return $arrays;
+	    
+	}
+	
+	public function getPossibleFileGroups(){
+	    
+	    $helper = new SmartestAssetsLibraryHelper;
+	    $groups = $helper->getPlaceholderAssetGroupsByType($this->getType());
+	    
+	    return $groups;
 	    
 	}
 	

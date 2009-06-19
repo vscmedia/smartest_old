@@ -45,7 +45,7 @@
     
     <type id="SM_DATATYPE_ASSET" valuetype="foreignkey">
         
-        <label>File</label>
+        <label>File from the repository</label>
         <description>Behaves exactly as a placeholder on a static page.</description>
         <usage>itemproperty</usage>
         <long>false</long>
@@ -53,11 +53,15 @@
         <filter>
           <typesource type="smartest:assettypes" label="File Type" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.assettypes.tpl" />
           <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" label="File" />
+          <optionsettype id="SM_PROPERTY_FILTERTYPE_ASSETGROUP" class="SmartestAssetGroup" table="Sets" sitefield="set_site_id">
+            <condition field="set_type" value="SM_SET_ASSETGROUP" operator="EQUAL" />
+          </optionsettype>
+          <!--Conditions only apply to filtering when no group is in use-->
           <condition field="asset_deleted" value="1" operator="NOT_EQUAL" />
           <condition field="asset_is_archived" value="1" operator="NOT_EQUAL" />
         </filter>
         
-        <menu value="id" display="stringid" />
+        <menu value="id" display="url" />
         
         <render template="System/Applications/Items/Presentation/CMS/property.asset.tpl" />
         
@@ -75,26 +79,21 @@
         <filter>
           <typesource type="smartest:assettypes" label="File Type" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.assettypes.tpl" />
           <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" label="File" />
+          <optionsettype id="SM_PROPERTY_FILTERTYPE_ASSETGROUP" class="SmartestAssetGroup" table="Sets" sitefield="set_site_id">
+            <condition field="set_type" value="SM_SET_ASSETGROUP" operator="EQUAL" />
+          </optionsettype>
+          <!--Conditions only apply to filtering when no group is in use-->
           <condition field="asset_deleted" value="1" operator="NOT_EQUAL" />
           <condition field="asset_is_archived" value="1" operator="NOT_EQUAL" />
         </filter>
         
-        <menu value="id" display="stringid" />
+        <menu value="id" display="url" />
         
         <render template="System/Applications/Items/Presentation/CMS/property.download.tpl" />
         
         <class>SmartestAsset</class>
         
     </type>
-    
-    <!--<type id="SM_DATATYPE_CONTAINER" valuetype="foreignkey">
-        <label>CMS Container</label>
-        <description>Behaves exactly as a container on a static page.</description>
-        <usage>itemproperty</usage>
-        <filter>xml:assettypes.xml;id(=SM_ASSETTYPE_CONTAINER_TEMPLATE)/db:Assets.asset_type</filter>
-        <entitytype>Assets:id,stringid</entitytype>
-        <class>SmartestContainer</class>
-    </type>-->
     
     <type id="SM_DATATYPE_CMS_ITEM" valuetype="foreignkey">
         
@@ -106,6 +105,8 @@
         <filter>
           <typesource type="db" table="ItemClasses" matchfield="id" label="Model" class="SmartestModel" orderfield="itemclass_plural_name" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.models.tpl" />
           <entitysource type="db" table="Items" matchfield="item_itemclass_id" sitefield="item_site_id" sharedfield="item_shared" class="SmartestItem" />
+          <optionsettype id="SM_PROPERTY_FILTERTYPE_DATASET" class="SmartestCmsItemSet" table="Sets" sitefield="set_site_id" />
+          <!--Conditions only apply to filtering when no group is in use-->
           <condition field="item_is_archived" value="1" operator="NOT_EQUAL" />
         </filter>
         

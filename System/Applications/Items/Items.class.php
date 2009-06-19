@@ -75,16 +75,17 @@ class Items extends SmartestSystemApplication{
   	    
   	    $model_id = $get['class_id'];
   	    
+  	    $query = isset($get['q']) ? $get['q'] : '';
+  	    
   	    if($model->hydrate($model_id)){
   	        
-  	        // echo $this->getSite()->getId();
-  	        
-  	        $items = $model->getSimpleItemsAsArrays($this->getSite()->getId(), $mode);
+  	        $items = $model->getSimpleItems($this->getSite()->getId(), $mode, $query);
   	        $this->setTitle($model->getPluralName());
   	        $this->send($items, 'items');
   	        $this->send($mode, 'mode');
   	        $this->send(count($items), 'num_items');
-  	        $this->send($model->__toArray(), 'model');
+  	        $this->send($model, 'model');
+  	        $this->send($query, 'query');
   	        
   	    }else{
   	        $this->addUserMessageToNextRequest('The model ID was not recognized.', SmartestUserMessage::ERROR);
@@ -272,7 +273,7 @@ class Items extends SmartestSystemApplication{
 	
 	//// EDIT (pre-action interface/options) and UPDATE (the actual action)
 	
-/*    public function editItemProperty($get, $post){
+    public function editItemProperty($get, $post){
 		
 		$property_id = $get['itemproperty_id']; //print_r($property_id);
 		
@@ -342,7 +343,7 @@ class Items extends SmartestSystemApplication{
 	    }
 
 		// return (array("details"=>$property[0], "itemclass"=>$itemClass, "Types"=>$propertyTypes,"models"=>$models,"dropdownMenu"=>$dropdownMenu,"dropdownValues"=>$dropdownValues,"name"=>$name,"type"=>$type,"sel_id"=>$sel_id,"model_id"=>$model_id,"sel_items"=>$items,"month"=>$date[0],"day"=>$date[1]));
-	} */
+	}
 	
 	public function openItem($get){
 	    
@@ -1612,29 +1613,33 @@ class Items extends SmartestSystemApplication{
 	
     public function updateItemClassProperty($get, $post){
 		
-		$itemproperty_id = $post['itemproperty_id'];
+		$itemproperty_id = (int) $post['itemproperty_id'];
 		$property = new SmartestItemProperty;
-		$property->hydrate($itemproperty_id);
 		
-		$old_name = $property->getName();
-		
-		$property->setName($post['itemproperty_name']);
-		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
-		$property->setDatatype($post['itemproperty_datatype']);
-		$property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
-		
-		if($property->getId()){
+		if($property->find($itemproperty_id)){
+		    
+		    $property->setRequired($post['itemproperty_required'] ? 'TRUE' : 'FALSE');
+		    
+		    if($post['itemproperty_filter'] == 'NONE'){
+		        
+		        $property->setOptionSetType('SM_PROPERTY_FILTERTYPE_NONE');
+		        $property->setOptionSetId(0);
+		        
+		    }else if(isset($post['itemproperty_filter_type']) && $post['itemproperty_filter_type'] == 'ASSET_GROUP'){
+		        
+		        $property->setOptionSetType('SM_PROPERTY_FILTERTYPE_ASSETGROUP');
+		        $property->setOptionSetId((int) $post['itemproperty_filter']);
+		        
+		    }
 		    
 		    $property->save();
-		    
-		    if($old_name == $property->getName()){
-    		    $this->addUserMessageToNextRequest('The property was updated.', SmartestUserMessage::SUCCESS);
-    		}else{
-    		    $this->addUserMessageToNextRequest('The property was updated and permanently renamed to "'.$property->getName().'".', SmartestUserMessage::SUCCESS);
-    		}
-	    }else{
-	        $this->addUserMessageToNextRequest('There was an error updating the property.', SmartestUserMessage::ERROR);
-	    }
+		    $this->addUserMessageToNextRequest('The property was updated.', SmartestUserMessage::SUCCESS);
+	    
+        }else{
+            
+            $this->addUserMessageToNextRequest('The property ID was not recognized.', SmartestUserMessage::ERROR);
+            
+        }
 		
 		$this->formForward();
 		
@@ -1922,6 +1927,37 @@ class Items extends SmartestSystemApplication{
 	        
 	    }
 		
+	}
+	
+	public function editItemClassProperty($get){
+	    
+	    $property_id = $get['itemproperty_id'];
+	    
+	    $property = new SmartestItemProperty;
+		
+		if($property->find($property_id)){
+		    
+		    $model_id = $property->getItemclassId();
+		    $model = new SmartestModel;
+		    $model->find($model_id);
+		    
+		    $this->setTitle($model->getPluralName().' | Edit Property');
+		    
+		    $data_types = SmartestDataUtility::getDataTypes();
+		    
+		    if($property->getDataType() == 'SM_DATATYPE_ASSET' || $property->getDataType() == 'SM_DATATYPE_ASSET_DOWNLOAD'){
+		        
+		        $possible_groups = $property->getPossibleFileGroups($this->getSite()->getId());
+		        $this->send($possible_groups, 'possible_groups');
+		        
+		    }
+		    
+		    $this->send($data_types, 'data_types');
+		    $this->send($model->compile(), 'model');
+		    $this->send($property->compile(), 'property');
+		    
+		}
+	    
 	}
 	
 	public function addNewItemClassAction($get, $post){

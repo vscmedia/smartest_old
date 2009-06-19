@@ -293,6 +293,14 @@ div.instruction{
 	font-size:12px;
 }
 
+div.special-box{
+    font-size:12px;
+    border:1px solid #ccc;
+    background-color:#eee;
+    padding:5px;
+    margin:10px 0 10px 0;
+}
+
 div.warning{
     font-size:12px;
     border:1px solid #d00;

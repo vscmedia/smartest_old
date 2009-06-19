@@ -203,11 +203,9 @@ class SmartestModel extends SmartestBaseModel{
 	    return SmartestStringHelper::toCamelCase($this->getName());
     }
     
-    public function getSimpleItems($site_id='', $mode=0){
+    public function getSimpleItems($site_id='', $mode=0, $query=''){
         
         $mode = (int) $mode;
-        
-        // echo $mode;
         
         $sql = "SELECT * FROM Items WHERE item_itemclass_id='".$this->_properties['id']."' AND item_deleted != 1";
         
@@ -241,13 +239,27 @@ class SmartestModel extends SmartestBaseModel{
             
         }
         
+        if(strlen($query)){
+            
+            $words = explode(' ', $query);
+            
+            $sql .= ' AND (';
+            $conditions = array();
+            
+            foreach($words as $w){
+                $conditions[] = "(item_name LIKE '%".$w."%' OR item_search_field LIKE '%".$w."%')";
+            }
+            
+            $sql .= implode(' AND ', $conditions).')';
+            
+        }
+        
         $sql .= " ORDER BY item_name";
         
         // echo $sql;
         
         $result = $this->database->queryToArray($sql);
         $items = array();
-        
         
         foreach($result as $db_array){
             $item = new SmartestItem;
@@ -258,9 +270,9 @@ class SmartestModel extends SmartestBaseModel{
         return $items;
     }
     
-    public function getSimpleItemsAsArrays($site_id='', $mode=0){
+    public function getSimpleItemsAsArrays($site_id='', $mode=0, $query=''){
         
-        $items = $this->getSimpleItems($site_id, $mode);
+        $items = $this->getSimpleItems($site_id, $mode, $query);
         $arrays = array();
         
         foreach($items as $item){
@@ -363,10 +375,12 @@ class SmartestModel extends SmartestBaseModel{
     }
     
     public function getDefaultMetaPageId($site_id){
+        // TODO: this functionality should be stored in the database
         return SmartestSystemSettingHelper::load('model_'.$this->_properties['id'].'_default_metapage_site_'.$site_id);
     }
     
     public function setDefaultMetaPageId($site_id, $id){
+        // TODO: this functionality should be stored in the database
         return SmartestSystemSettingHelper::save('model_'.$this->_properties['id'].'_default_metapage_site_'.$site_id, $id);
     }
     

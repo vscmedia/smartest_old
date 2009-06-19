@@ -1,5 +1,3 @@
-<h3>Edit CSS Asset</h3>
-
 <form action="{$domain}{$section}/updateAsset" method="post" name="newCss" enctype="multipart/form-data">
   
   <input type="hidden" name="asset_type" value="{$asset.type}" />

@@ -103,6 +103,8 @@ class SmartestDataUtility{
 		    $sql .= " WHERE (set_site_id='".$site_id."' OR set_shared='1') AND (set_data_source_site_id='".$site_id."' OR set_data_source_site_id='CURRENT' OR set_data_source_site_id='ALL')";
 		}
 		
+		$sql .= " AND set_type IN ('DYNAMIC', 'STATIC', 'SM_SET_ITEMS_DYNAMIC', 'SM_SET_ITEMS_STATIC')";
+		
 		$sql .= " ORDER BY set_name";
 		
 		$result = $this->database->queryToArray($sql);
@@ -345,6 +347,39 @@ class SmartestDataUtility{
 	                $raw_type['filter']['condition'] = array();
 	            }
 	            
+	            // regularize option set types
+	            if(isset($raw_type['filter']['optionsettype'])){
+	                
+	                if(isset($raw_type['filter']['optionsettype']['id'])){
+	                    $raw_type['filter']['optionsettype'] = array($raw_type['filter']['optionsettype']['id'] => $raw_type['filter']['optionsettype']);
+	                }else{
+	                    $osts = array();
+	                    
+	                    foreach($raw_type['filter']['optionsettype'] as $ost){
+	                        $osts[$ost['id']] = $ost;
+	                    }
+	                    
+	                    $raw_type['filter']['optionsettype'] = $osts;
+	                }
+	                
+	                foreach($raw_type['filter']['optionsettype'] as &$ost){
+	                    
+	                    if(isset($ost['condition'])){
+    	                    
+    	                    if(isset($ost['condition']['field'])){
+        	                    $ost['condition'] = array($ost['condition']); // $raw_type['filter']['optionsettype'] = array($raw_type['filter']['optionsettype']);
+        	                }
+        	                
+    	                }else{
+    	                    $ost['condition'] = array();
+    	                }
+	                    
+	                }
+	                
+	            }else{
+	                $raw_type['filter']['optionsettype'] = array();
+	            }
+	            
 	        }
 	        
 	        if($usage_filter){
@@ -377,8 +412,6 @@ class SmartestDataUtility{
             }else{
                 $data = SmartestCache::load('assettypes_xml_file_data', true);
             }
-            
-            // return $data;
             
         }else{
             $new_hash = md5_file($file_path);
@@ -464,7 +497,7 @@ class SmartestDataUtility{
         
 	}
 	
-	static function getAssetClassTypes(){
+	static function getAssetClassTypes($ignore_hide=false){
 	    
 	    $data = self::getAssetClassTypesXmlData();
 	    
@@ -473,16 +506,20 @@ class SmartestDataUtility{
 	    
 	    foreach($raw_types as $raw_type){
 	        
-	        $types[$raw_type['id']] = $raw_type;
+	        if(!$ignore_hide || (!isset($raw_type['hide']) || !SmartestStringHelper::toRealBool($raw_type['hide']))){
 	        
-	        if(!defined($raw_type['id'])){
-	            define($raw_type['id'], $raw_type['id']);
-	        }
+	            $types[$raw_type['id']] = $raw_type;
 	        
-	        if(!is_array($types[$raw_type['id']]['accept'])){
+    	        if(!defined($raw_type['id'])){
+    	            define($raw_type['id'], $raw_type['id']);
+    	        }
+	        
+    	        if(!is_array($types[$raw_type['id']]['accept'])){
 	            
-	            $types[$raw_type['id']]['accept'] = array($types[$raw_type['id']]['accept']);
+    	            $types[$raw_type['id']]['accept'] = array($types[$raw_type['id']]['accept']);
 	        
+                }
+            
             }
             
 	    }

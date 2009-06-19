@@ -485,18 +485,71 @@ class Pages extends SmartestSystemApplication{
 	        }
 	        
 	    }else{
-	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.", SmartestUserMessage::ERROR);
+	        $this->addUserMessageToNextRequest("The page ID wasn't recognized.", SmartestUserMessage::ERROR);
 	    }
 	    
 	    $this->formForward();
 	    
 	}
 	
-	function pageObjects($get){
+	public function placeholders(){
 	    
-	    $page = new SmartestPage;
-	    $page->hydrate($get['page_id']);
-	    $page->getAssociatedObjects();
+	    $this->setFormReturnUri();
+	    
+	    $placeholders = $this->getSite()->getPlaceholders();
+	    $this->send($placeholders, 'placeholders');
+	    
+	}
+	
+	public function editPlaceholder($get){
+	    
+	    $placeholder_id = (int) $get['placeholder_id'];
+	    $placeholder = new SmartestPlaceholder;
+	    
+	    if($placeholder->find($placeholder_id)){
+	        
+	        $this->send($placeholder, 'placeholder');
+	        $this->send($placeholder->getPossibleFileGroups(), 'possible_groups');
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The placeholder ID wasn't recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	        
+	    }
+	    
+	}
+	
+	public function updatePlaceholder($get, $post){
+	    
+	    $placeholder_id = (int) $post['placeholder_id'];
+	    $placeholder = new SmartestPlaceholder;
+	    
+	    if($placeholder->find($placeholder_id)){
+	        
+	        $placeholder->setLabel($post['placeholder_label']);
+	        
+	        if(isset($post['placeholder_filter'])){
+	            if($post['placeholder_filter'] == 'NONE'){
+	                $placeholder->setFilterType('SM_ASSETCLASS_FILTERTYPE_NONE');
+	                $placeholder->setFilterValue('');
+	            }else{
+	                $placeholder->setFilterType('SM_ASSETCLASS_FILTERTYPE_ASSETGROUP');
+	                $placeholder->setFilterValue($post['placeholder_filter']);
+	            }
+	        }
+	        
+	        $placeholder->save();
+	        $this->addUserMessageToNextRequest("The placeholder was updated.", SmartestUserMessage::SUCCESS);
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The placeholder ID wasn't recognized.", SmartestUserMessage::ERROR);
+	        
+	        
+	    }
+	    
+	    $this->formForward();
 	    
 	}
 	

@@ -1,5 +1,3 @@
-<h3>Edit Short-Text Asset</h3>
-
 <form action="{$domain}{$section}/updateAsset" method="post" name="newHtml" enctype="multipart/form-data">
 
   <input type="hidden" name="asset_id" value="{$asset.id}" />

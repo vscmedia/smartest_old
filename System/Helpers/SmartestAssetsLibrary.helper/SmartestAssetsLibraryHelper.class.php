@@ -38,7 +38,6 @@ class SmartestAssetsLibraryHelper{
     public function getTypeCodesByStorageLocation(){
         
         $asset_types = SmartestDataUtility::getAssetTypes();
-        // print_r($asset_types);
         $locations = array();
         $location_types = array();
         
@@ -169,7 +168,41 @@ class SmartestAssetsLibraryHelper{
 	    
 	}
 	
-	public function getAssetsByTypeCode($code, $site_id='', $mode=1){
+	public function getAssets($site_id='', $mode=1, $avoid_ids='', $ignore_templates=false){
+		
+		$sql = "SELECT * FROM Assets WHERE asset_deleted != 1";
+		
+		if($mode == 1){
+	        $sql .= " AND asset_is_archived=0";
+	    }else if($mode == 2){
+	        $sql .= " AND asset_is_archived=1";
+	    }
+	    
+	    if(is_array($avoid_ids)){
+	        $sql .= " AND asset_id NOT IN ('".implode("', '", $avoid_ids)."')";
+	    }
+	    
+	    if($ignore_templates){
+	        $sql .= " AND asset_type != 'SM_ASSETTYPE_CONTAINER_TEMPLATE'";
+	    }
+	    
+	    if(is_numeric($site_id)){
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_stringid";
+		}
+		
+		$result = $this->database->queryToArray($sql);
+		$assets = array();
+		
+		foreach($result as $r){
+		    $a = new SmartestAsset;
+		    $a->hydrate($r);
+		    $assets[] = $a;
+		}
+		
+		return $assets;
+	}
+	
+	public function getAssetsByTypeCode($code, $site_id='', $mode=1, $avoid_ids=''){
 		
 		if(is_array($code)){
 		    $sql = "SELECT * FROM Assets WHERE asset_type IN ('".implode("', '", $code)."') AND asset_deleted != 1";
@@ -181,6 +214,10 @@ class SmartestAssetsLibraryHelper{
 	        $sql .= " AND asset_is_archived=0";
 	    }else if($mode == 2){
 	        $sql .= " AND asset_is_archived=1";
+	    }
+	    
+	    if(is_array($avoid_ids)){
+	        $sql .= " AND asset_id NOT IN ('".implode("', '", $avoid_ids)."')";
 	    }
 	    
 	    if(is_numeric($site_id)){
@@ -209,6 +246,236 @@ class SmartestAssetsLibraryHelper{
 	    }
 	    
 	    return $arrays;
+	    
+	}
+	
+	public function getAssetClassOptions($code, $site_id='', $mode=1, $avoid_ids=''){
+	    
+	    $asset_classes = SmartestDataUtility::getAssetClassTypes();
+	    
+	    if(isset($asset_classes[$code])){
+	        
+	        $asset_types = $asset_classes[$code]['accept'];
+	        return $this->getAssetsByTypeCode($asset_types, $site_id, $mode, $avoid_ids);
+	        
+	    }
+	    
+	}
+	
+	public function getAssetGroups($site_id=''){
+	    
+	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND set_site_id='".$site_id."'";
+	    }
+	    
+	    $sql .= " ORDER BY set_name";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $groups = array();
+	    
+	    foreach($result as $r){
+	        $g = new SmartestAssetGroup;
+	        $g->hydrate($r);
+	        $groups[] = $g;
+	    }
+	    
+	    return $groups;
+	    
+	}
+	
+	public function getAssetClassesThatAcceptType(){
+	    
+	    $types = func_get_args();
+	    
+	    if(count($types)){
+	        
+	        if(is_array($types[0])){
+	            $types = $types[0];
+	        }
+	        
+	        $codes = $this->getAssetClassCodesThatAcceptType($types);
+	        
+	        $ok_asset_classes = array();
+	        
+	        $asset_classes = SmartestDataUtility::getAssetClassTypes();
+	        
+	        foreach($asset_classes as $ac){
+	            if(in_array($ac['id'], $codes)){
+	                $ok_asset_classes[] = $ac;
+	            }
+	        }
+	        
+	        return $ok_asset_classes;
+	        
+        }
+	    
+	}
+	
+	public function getAssetClassCodesThatAcceptType(){
+	    
+	    $types = func_get_args();
+	    
+	    if(count($types)){
+	        
+	        if(is_array($types[0])){
+	            $types = $types[0];
+	        }
+	        
+	        $asset_classes = SmartestDataUtility::getAssetClassTypes();
+	        $ok_asset_class_codes = array();
+	        
+	        $i = 0;
+	        
+	        foreach($types as $t){
+	            
+	            $ok_asset_class_codes_this_assettype = array();
+	            
+	            foreach($asset_classes as $ac){
+	            
+	                if(in_array($t, $ac['accept'])){
+	                    $ok_asset_class_codes_this_assettype[] = $ac['id'];
+	                }
+	            
+	            }
+	            
+	            if($i == 0){
+	                $ok_asset_class_codes = $ok_asset_class_codes_this_assettype;
+	            }else{
+	                $ok_asset_class_codes = array_intersect($ok_asset_class_codes, $ok_asset_class_codes_this_assettype);
+	            }
+	            
+	            $i++;
+	        
+            }
+	        
+	        return $ok_asset_class_codes;
+	        
+        }
+	    
+	}
+	
+	public function getAssetGroupsThatAcceptType($types, $site_id=''){
+	    
+	    if(!is_array($types)){
+	        $types = array($types);
+	    }
+	    
+	    if(count($types)){
+	        
+	        $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	        
+	        if(is_numeric($site_id)){
+    	        $sql .= " AND set_site_id='".$site_id."'";
+    	    }
+    	    
+    	    if(count($types) > 1){
+	            
+	            // more than one type is being supplied
+	            // find only groups that accept ALL of the given types
+	            $ok_assetclass_types = $this->getAssetClassCodesThatAcceptType($types);
+	            $sql .=  " AND (set_filter_type='SM_SET_FILTERTYPE_NONE' OR set_filter_value IN ('".implode($ok_assetclass_types, "', '")."'))";
+	            
+	        }else{
+	            
+	            // just one type
+	            $ok_assetclass_types = $this->getAssetClassCodesThatAcceptType($types);
+	            $sql .=  " AND (set_filter_type='SM_SET_FILTERTYPE_NONE' OR (set_filter_type='SM_SET_FILTERTYPE_ASSETTYPE' AND set_filter_value='".$types[0]."') OR set_filter_value IN ('".implode($ok_assetclass_types, "', '")."'))";
+	            
+	        }
+	        
+	        $result = $this->database->queryToArray($sql);
+	        $groups = array();
+	        
+	        foreach($result as $r){
+	            $g = new SmartestAssetGroup;
+	            $g->hydrate($r);
+	            $groups[] = $g;
+	        }
+	        
+	        return $groups;
+	        
+        }
+	    
+	}
+	
+	public function getTypeSpecificAssetGroupsByType($asset_type, $site_id=''){
+	    
+	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND set_site_id='".$site_id."'";
+	    }
+	    
+	    $sql .= " AND set_filter_type='SM_SET_FILTERTYPE_ASSETTYPE' AND set_filter_value='".$asset_type."'";
+	    
+	    $sql .= " ORDER BY set_name";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $groups = array();
+	    
+	    foreach($result as $r){
+	        $g = new SmartestAssetGroup;
+	        $g->hydrate($r);
+	        $groups[] = $g;
+	    }
+	    
+	    return $groups;
+	    
+	}
+	
+	public function getPlaceholderAssetGroups($site_id=''){
+	    
+	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND set_site_id='".$site_id."'";
+	    }
+	    
+	    $sql .= " AND set_filter_type='SM_SET_FILTERTYPE_ASSETCLASS'";
+	    
+	    $sql .= " ORDER BY set_name";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $groups = array();
+	    
+	    foreach($result as $r){
+	        $g = new SmartestAssetGroup;
+	        $g->hydrate($r);
+	        $groups[] = $g;
+	    }
+	    
+	    return $groups;
+	    
+	}
+	
+	public function getPlaceholderAssetGroupsByType($placeholder_type, $site_id=''){
+	    
+	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND set_site_id='".$site_id."'";
+	    }
+	    
+	    $sql .= " AND set_filter_type='SM_SET_FILTERTYPE_ASSETCLASS' AND set_filter_value='".$placeholder_type."'";
+	    
+	    $sql .= " ORDER BY set_name";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $groups = array();
+	    
+	    foreach($result as $r){
+	        $g = new SmartestAssetGroup;
+	        $g->hydrate($r);
+	        $groups[] = $g;
+	    }
+	    
+	    return $groups;
 	    
 	}
     

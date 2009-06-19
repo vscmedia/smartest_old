@@ -98,6 +98,9 @@ class SmartestAsset extends SmartestBaseAsset{
             case "credit":
             return $this->isImage() ? $data['default_parameters']['credit'] : null;
             
+            case "groups":
+            return $this->getGroups();
+            
         }
         
         return parent::offsetGet($offset);
@@ -637,6 +640,63 @@ class SmartestAsset extends SmartestBaseAsset{
 	    }else{
 	        return $this->getParameterDefaults();
 	    }
+	}
+	
+	public function getGroupMemberships($refresh=false, $mode=1, $approved_only=false){
+        
+        $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP');
+        $q->setTargetEntityByIndex(2);
+        $q->addQualifyingEntityByIndex(1, $this->getId());
+	    
+	    $q->addSortField(SM_MTM_SORT_GROUP_ORDER);
+	    
+	    $result = $q->retrieve(true);
+        
+        return $result;
+        
+    }
+    
+    public function getGroupIds(){
+        
+        $memberships = $this->getGroupMemberships();
+        $gids = array();
+        
+        foreach($memberships as $m){
+	        $gids[] = $m->getGroupId();
+	    }
+        
+        return $gids;
+        
+    }
+	
+	public function getGroups(){
+	    
+	    $memberships = $this->getGroupMemberships();
+	    $groups = array();
+	    
+	    foreach($memberships as $m){
+	        $groups[] = $m->getGroup();
+	    }
+	    
+	    return $groups;
+	    
+	}
+	
+	public function getPossibleGroups(){
+	    
+	    $alh = new SmartestAssetsLibraryHelper;
+	    $groups = $alh->getAssetGroupsThatAcceptType($this->getType());
+	    
+	    $existing_group_ids = $this->getGroupIds();
+	    
+	    foreach($groups as $k => $g){
+	        if(in_array($g->getId(), $existing_group_ids)){
+	            unset($groups[$k]);
+	        }
+	    }
+	    
+	    return $groups;
+	    
 	}
 	
 	public function getComments(){

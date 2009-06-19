@@ -8,7 +8,8 @@ var treeNodes = new Array();
 var domain = '{$domain}';
 
 {literal}
-function setSelectedItem(item_id,pageName, rowColor){
+
+/* function setSelectedItem(item_id,pageName, rowColor){
 	
 	var row='item_'+item_id;
 	var editForm = document.getElementById('pageViewForm');
@@ -28,7 +29,8 @@ function setSelectedItem(item_id,pageName, rowColor){
 	lastRow = row;
 	lastRowColor = rowColor;
 	editForm.itemproperty_id.value = item_id;
-}
+} */
+
 function workWithItem(pageAction){
 	
 	var editForm = document.getElementById('pageViewForm');
@@ -59,14 +61,14 @@ function viewPage(){
 
 <form id="pageViewForm" method="get" action="">
 <input type="hidden" name="class_id" value="{$itemclass.id}" />
-<input type="hidden" name="itemproperty_id" value="" />
+<input type="hidden" name="itemproperty_id" value="" id="item_id_input" />
 </form>
 
 <ul class="tree-parent-node-open" id="tree-root">
   {defun name="menurecursion" list=$definition}
        {foreach from=$list item="element"}
     <li>
-       <a id="item_{$element.id}" class="option" href="javascript:nothing()" onclick="setSelectedItem('{$element.id}','{$element.varname}', 'fff');" ondblclick="window.location='{$domain}{$section}/editItemProperty?class_id={$itemclass.id}&amp;itemproperty_id={$element.id}'">		 
+       <a id="item_{$element.id}" class="option" href="javascript:nothing()" onclick="setSelectedItem('{$element.id}');" ondblclick="window.location='{$domain}{$section}/editItemProperty?class_id={$itemclass.id}&amp;itemproperty_id={$element.id}'">		 
         <img border="0" src="{$domain}Resources/Icons/page_code.png" />
         {$element.varname}
       </a>
@@ -81,13 +83,13 @@ function viewPage(){
 <div id="actions-area">
 
 <ul class="actions-list" id="item-specific-actions" style="display:none">
-	<li class="permanent-action"><b>Node Options</b></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('editItemProperty'); }{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt="">Edit</a></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="">Delete</a></li>
+	<li><b>Selected item property</b></li>
+	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('editItemClassProperty'); }{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt="">Edit this property</a></li>
+	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="">Delete this property</a></li>
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
-    <li class="disabled-action"><i>Please Select a Node</i></li>
+    <li><i>Please select a property</i></li>
     <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addPropertyToClass?class_id={$itemclass.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_add.png" border="0" alt="">Add Property</a></li>
 </ul>
 

@@ -528,16 +528,186 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 	
+	public function assetGroups(){
+	    
+	    $alh = new SmartestAssetsLibraryHelper;
+	    $groups = $alh->getAssetGroups($this->getSite()->getId());
+	    
+	    $poss_groups = $alh->getAssetGroupsThatAcceptType('SM_ASSETTYPE_RICH_TEXT');
+	    
+	    $this->send($groups, 'groups');
+	    
+	}
+	
+	public function newAssetGroup($get){
+	    
+	    $asset_types = SmartestDataUtility::getAssetTypes();
+	    $placeholder_types = SmartestDataUtility::getAssetClassTypes(true);
+	    
+	    if($get['filter_type']){
+	        $this->send($get['filter_type'], 'filter_type');
+	    }
+	    
+	    $this->send($asset_types, 'asset_types');
+	    $this->send($placeholder_types, 'placeholder_types');
+	    
+	}
+	
+	public function createAssetGroup($get, $post){
+	    
+	    $set = new SmartestAssetGroup;
+	    $set->setLabel($post['asset_group_label']);
+	    $set->setName(SmartestStringHelper::toVarName($post['asset_group_label']));
+	    
+	    if($post['asset_group_type'] == 'ALL'){
+	        $set->setFilterType('SM_SET_FILTERTYPE_NONE');
+	    }else{
+	        switch(substr($post['asset_group_type'], 0, 1)){
+	            case 'A':
+	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETTYPE');
+	            break;
+	            case 'P':
+	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
+	            break;
+	        }
+	    }
+	    
+	    $set->setFilterValue(($post['asset_group_type'] == 'ALL') ? null : substr($post['asset_group_type'], 2));
+	    $set->setSiteId($this->getSite()->getId());
+	    $set->setShared(0);
+	    $set->save();
+	    
+	    $this->formForward();
+	    
+	}
+	
+	public function browseAssetGroup($get){
+	    
+	    $group_id = $get['group_id'];
+	    $mode = isset($get["mode"]) ? (int) $get["mode"] : 1;
+	    $this->setFormReturnUri();
+	    
+	    $group = new SmartestAssetGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        $this->send($group->getMembers(false, $mode), 'assets');
+	        $this->send($group, 'group');
+	        $this->send($mode, 'mode');
+	        $this->send(count($group->getMembers(false, $mode)), 'num_assets');
+	        
+	    }
+	    
+	}
+	
+	public function editAssetGroupContents($get){
+	    
+	    $group_id = $get['group_id'];
+	    
+	    $this->setFormReturnUri();
+	    
+	    $group = new SmartestAssetGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        $this->send($group->getOptions(), 'non_members');
+	        $this->send($group->getMembers(), 'members');
+	        $this->send($group, 'group');
+	        
+	    }
+	    
+	}
+	
+	public function transferSingleAsset($get, $post){
+	    
+	    if($post['group_id']){
+	        $request = $post;
+	    }else{
+	        $request = $get;
+	    }
+	    
+	    $group_id = $request['group_id'];
+	    
+	    $group = new SmartestAssetGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        $asset_id = (int) $request['asset_id'];
+	        $asset = new SmartestAsset;
+	        
+	        if($asset->find($asset_id)){
+	            // TODO: Check that the asset is the right type for this group
+	            if($request['transferAction'] == 'add'){
+	                $group->addAssetById($asset_id);
+                }else{
+                    $group->removeAssetById($asset_id);
+                }
+	        }
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
+	public function transferAssets($get, $post){
+	    
+	    $group_id = $post['group_id'];
+	    
+	    $group = new SmartestAssetGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        if($post['transferAction'] == 'add'){
+	            
+	            $asset_ids = (isset($post['available_assets']) && is_array($post['available_assets'])) ? $post['available_assets'] : array();
+	            
+	            foreach($asset_ids as $aid){
+	            
+	                $group->addAssetById($aid);
+	            
+	            }
+	            
+	        }else{
+	            
+	            $asset_ids = (isset($post['used_assets']) && is_array($post['used_assets'])) ? $post['used_assets'] : array();
+	            
+	            foreach($asset_ids as $aid){
+	            
+	                $group->removeAssetById($aid);
+	            
+	            }
+	            
+	        }
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
 	public function assetInfo($get){
 	    
 	    $asset_id = $get['asset_id'];
 	    
 	    $asset = new SmartestAsset;
 
-		if($asset->hydrate($asset_id)){
+		if($asset->find($asset_id)){
 		    
-		    // $data = $asset->__toArray(false, true); // don't include object, do include owner info
+		    $this->setFormReturnUri();
+		    
 		    $data = $asset;
+		    
+		    $comments = $asset->getComments();
+		    $this->send($comments, 'comments');
+		    $this->send($asset->getGroups(), 'groups');
+		    $this->send($asset->getPossibleGroups(), 'possible_groups');
 		    
 		    if(isset($data['type_info']['source-editable']) && SmartestStringHelper::toRealBool($data['type_info']['source-editable'])){
 		        $this->send(true, 'allow_source_edit');
@@ -621,6 +791,9 @@ class Assets extends SmartestSystemApplication{
     			$this->setTitle('Edit File | '.$asset_type['label']);
     			$this->send($asset_type, 'asset_type');
     			$this->send($asset->__toArray(), 'asset');
+    			
+    			$this->send($asset->getGroups(), 'groups');
+    		    $this->send($asset->getPossibleGroups(), 'possible_groups');
 
 
 		    }else{
@@ -931,11 +1104,11 @@ class Assets extends SmartestSystemApplication{
     	    $asset_html = ob_get_contents();
     	    ob_end_clean();
     	    // echo $asset_html;
-    	    $this->send($asset_html, 'preview_html');
+    	    $this->send($asset_html, 'preview_html'); */
     	    
     	    
     	    // for html reusability
-    	    $this->send($data['type_info'], 'asset_type'); */
+    	    $this->send($asset['type_info'], 'asset_type');
     	    
     	    $html = $asset->render(true);
     	    
@@ -1369,7 +1542,8 @@ class Assets extends SmartestSystemApplication{
 		if($asset->hydrate($asset_id)){
 
 		    $asset->addComment($post['comment_content'], $this->getUser()->getId());
-		    $this->redirect('/assets/comments?asset_id='.$asset->getId());
+		    $this->formForward();
+		    // $this->redirect('/assets/comments?asset_id='.$asset->getId());
 
 		}else{
 		    $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);

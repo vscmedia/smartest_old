@@ -3,12 +3,12 @@
 <placeholdertypes>
   
   <type id="SM_ASSETCLASS_RICH_TEXT">
-    <label>Formatted Text</label>
+    <label>Formatted text files</label>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
   </type>
   
   <type id="SM_ASSETCLASS_TEXT">
-    <label>Any Text, Formatted or Unformatted</label>
+    <label>Any text, formatted or unformatted</label>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
     <accept>SM_ASSETTYPE_PLAIN_TEXT</accept>
     <accept>SM_ASSETTYPE_SL_TEXT</accept>
@@ -21,7 +21,7 @@
   </type>
   
   <type id="SM_ASSETCLASS_STATIC_IMAGE">
-    <label>A static image of any format</label>
+    <label>Images in any format</label>
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
@@ -44,7 +44,7 @@
   </type>
   
   <type id="SM_ASSETCLASS_MOVIE">
-    <label>A movie in any format</label>
+    <label>Movies in any format</label>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
     <accept>SM_ASSETTYPE_MPEG_MOVIE</accept>
     <accept>SM_ASSETTYPE_FLASH_VIDEO</accept>
@@ -52,17 +52,17 @@
   </type>
   
   <type id="SM_ASSETCLASS_SOUND">
-    <label>MP3 audio</label>
+    <label>Audio files</label>
     <accept>SM_ASSETTYPE_MP3</accept>
   </type>
   
   <type id="SM_ASSETCLASS_MARKUP">
-    <label>Markup fragment</label>
+    <label>Markup fragments</label>
     <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
   </type>
   
   <type id="SM_ASSETCLASS_DOWNLOAD">
-    <label>A file that must be downloaded</label>
+    <label>Files that usually neet to be downloaded</label>
     <accept>SM_ASSETTYPE_PDF</accept>
     <accept>SM_ASSETTYPE_MS_WORD</accept>
     <accept>SM_ASSETTYPE_MS_EXCEL</accept>

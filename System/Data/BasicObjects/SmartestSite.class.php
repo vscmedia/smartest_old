@@ -278,17 +278,35 @@ class SmartestSite extends SmartestBaseSite{
 	
 	public function getContainers(){
 	    
-	}
-	
-	public function getContainersAsArrays(){
+	    $sql = "SELECT * FROM AssetClasses WHERE assetclass_site_id='".$this->getId()."' AND assetclass_type='SM_ASSETCLASS_CONTAINER'";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $containers = array();
+	    
+	    foreach($result as $r){
+	        $c = new SmartestContainer;
+	        $c->hydrate($r);
+	        $containers[] = $c;
+	    }
+	    
+	    return $containers;
 	    
 	}
 	
 	public function getPlaceholders(){
 	    
-	}
-	
-	public function getPlaceholdersAsArrays(){
+	    $sql = "SELECT * FROM AssetClasses WHERE assetclass_site_id='".$this->getId()."' AND assetclass_type NOT IN ('SM_ASSETCLASS_CONTAINER', 'SM_ASSETCLASS_ITEMSPACE')";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $placeholders = array();
+	    
+	    foreach($result as $r){
+	        $p = new SmartestPlaceholder;
+	        $p->hydrate($r);
+	        $placeholders[] = $p;
+	    }
+	    
+	    return $placeholders;
 	    
 	}
 	

@@ -1,6 +1,6 @@
-<h3>Edit Javascript Asset</h3>
+
     
-  <form action="{$domain}{$section}/updateAsset" method="post" name="newJscr" enctype="multipart/form-data">
+<form action="{$domain}{$section}/updateAsset" method="post" name="newJscr" enctype="multipart/form-data">
     
     <input type="hidden" name="asset_id" value="{$asset.id}" />
     <input type="hidden" name="asset_type" value="{$asset.type}" />
