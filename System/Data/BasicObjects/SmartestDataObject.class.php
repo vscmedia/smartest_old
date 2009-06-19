@@ -206,7 +206,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	public function __toArray(){
 		$data = $this->_properties;
-		SmartestLog::getInstance('system')->log('Deprecated API function used: '.__CLASS__.'::__toArray()');
+		SmartestLog::getInstance('system')->log('Deprecated API function used: '.get_class($this).'->__toArray()');
 		return $data;
 	}
 	

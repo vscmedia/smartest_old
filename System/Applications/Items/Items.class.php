@@ -26,6 +26,12 @@ class Items extends SmartestSystemApplication{
 		$this->send($models, 'models');
 		
 	}
+	
+	public function getItemClassSets($get){
+	    
+	    $this->redirect('/sets/getItemClassSets?class_id='.$get['class_id']);
+	    
+	}
 
 	public function getItemClassProperties($get){
 		

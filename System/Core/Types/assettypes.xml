@@ -32,6 +32,7 @@
         <description>A piece of HTML for whatever you like.</description>
         <class>SmartestAsset</class>
         <source-editable>true</source-editable>
+        <attachable>true</attachable>
         <editable>true</editable>
         <parsable>true</parsable>
         <icon>text.gif</icon>

@@ -28,8 +28,8 @@
         $('preview-failed').style.display = 'block';
     }
     
-    t1 = setTimeout('previewSlow()', 4000);
-    t2 = setTimeout('previewTimedOut()', 15000);
+    t1 = setTimeout('previewSlow()', 8000);
+    t2 = setTimeout('previewTimedOut()', 20000);
     
 </script>
 {/literal}

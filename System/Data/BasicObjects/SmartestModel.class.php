@@ -139,9 +139,16 @@ class SmartestModel extends SmartestBaseModel{
 	    
 	}
 	
-	public function getDataSets(){
+	public function getDataSets($site_id=''){
 	    
-	    $sql = "SELECT * FROM Sets WHERE set_itemclass_id='".$this->getId()."' ORDER BY set_label";
+	    $sql = "SELECT * FROM Sets WHERE set_itemclass_id='".$this->getId()."'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared='1')";
+	    }
+	    
+	    $sql .= " ORDER BY set_label";
+	    
 	    $result = $this->database->queryToArray($sql);
 	    $sets = array();
 	    

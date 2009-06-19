@@ -68,6 +68,7 @@ View: <a href="{dud_link}" onclick="setView('list', 'options_grid')">List</a> /
   <li><b>Selected Model</b></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('getItemClassMembers');"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Browse items</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('addItem');"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Add a new member item</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('getItemClassSets');"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View data sets for this model</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('addSet');"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Build a new set</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('editModel');"><img border="0" src="{$domain}Resources/Icons/page_edit.png"> Edit Model</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('getItemClassProperties');"><img border="0" src="{$domain}Resources/Icons/page_edit.png"> Edit Model Properties</a></li>
@@ -79,7 +80,7 @@ View: <a href="{dud_link}" onclick="setView('list', 'options_grid')">List</a> /
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Model Options</b></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItemClass'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Build a New Model</a></li>
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View Sets From Your Data</a></li>
+  {* <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View Sets From Your Data</a></li> *}
   <li class="permanent-action"><a href="{$domain}sets/getDataExports"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View XML Feeds</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/schemas'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View XML Schemas</a></li>
 

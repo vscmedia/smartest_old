@@ -222,12 +222,20 @@ class SmartestCmsLink extends SmartestHelper{
             
                 $sql = "SELECT * FROM Pages WHERE page_".$this->_destination_properties->getParameter('page_ref_field_name')."='".$this->_destination_properties->getParameter('page_ref_field_value')."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_type='ITEMCLASS' AND page_deleted != 'TRUE'";
                 $result = $this->database->queryToArray($sql);
+                
+                // echo $sql;
             
                 if(count($result)){
                     $d->hydrate($result[0]);
-                
+                    
+                    if($this->_destination_properties->getParameter('item_ref_field_name') == 'name'){
+                        $this->_destination_properties->setParameter('item_ref_field_name', 'slug');
+                    }
+                    
                     $sql = "SELECT * FROM Items WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND item_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND item_itemclass_id='{$d->getDatasetId()}' AND item_deleted != '1'";
                     $result = $this->database->queryToArray($sql);
+                    
+                    // echo $sql;
                 
                     if(count($result)){
                         $d->setPrincipalItem(SmartestCmsItem::retrieveByPk($result[0]['item_id']));

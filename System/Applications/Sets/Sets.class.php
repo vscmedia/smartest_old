@@ -23,6 +23,24 @@ class Sets extends SmartestSystemApplication{
 		// return array("sets"=> $sets);
 	}
 	
+	public function getItemClassSets($get){
+	    
+	    if(isset($get['class_id']) && is_numeric($get['class_id'])){
+	        
+	        $model_id = $get['class_id'];
+	        
+	        $model = new SmartestModel;
+	        $model->find($model_id);
+	        
+	        $sets = $model->getDataSets();
+	        
+	        $this->setTitle("Data Sets");
+    		$this->send($sets, 'sets');
+	        
+	    }
+	    
+	}
+	
 	function deleteSet($get){
 		$set_id = mysql_real_escape_string($get['set_id']);
 		return $this->manager->deleteSet($set_id);		
