@@ -904,7 +904,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                                     $params[$key] = $param_value;
                                 }
                                 
-                                if(SmartestStringHelper::toRealBool($value)){
+                                if(is_object($value)){
                                     // return $this->_renderAssetObject($value, $params, $params, $path);
                                     $value->setAdditionalRenderData($params);
                                     return $value->render($this->getDraftMode());
@@ -969,11 +969,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                                         $params[$key] = $param_value;
                                      }
                                     
-                                    if(SmartestStringHelper::toRealBool($value)){
+                                    if(is_object($value)){
                                         // return $this->_renderAssetObject($value, $params, $params, $path);
                                         $value->setAdditionalRenderData($params);
                                         $value->render($this->getDraftMode());
+                                    }else{
+                                        return $this->_comment('No asset selected for property: '.$property->getVarname().' on item ID '.$object->getId());
                                     }
+                                    
                                     
                                 }else{
                                     $this->run($render_template, array('raw_value'=>$value, 'render_data'=>$params));
@@ -1044,10 +1047,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                                 $params[$key] = $param_value;
                             }
                             
-                            if(SmartestStringHelper::toRealBool($value)){
+                            if(is_object($value)){
                                 $value->setAdditionalRenderData($params);
                                 return $value->render($this->getDraftMode());
-                                // return $this->_renderAssetObject($value, $params, $params, $path);
+                            }else{
+                                return $this->_comment('No asset selected for property: '.$property->getVarname().' on item ID '.$object->getId());
                             }
                             
                         }else{
@@ -1108,10 +1112,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                                 $params[$key] = $param_value;
                             }
                             
-                            if(SmartestStringHelper::toRealBool($value)){
+                            if(is_object($value)){
                                 $value->setAdditionalRenderData($params);
                                 return $value->render($this->getDraftMode());
-                                // return $this->_renderAssetObject($value, $params, $params, $path);
+                            }else{
+                                return $this->_comment('No asset selected for property: '.$property->getVarname().' on item ID '.$object->getId());
                             }
                             
                         }else{
