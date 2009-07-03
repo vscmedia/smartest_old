@@ -1241,6 +1241,12 @@ class SmartestPage extends SmartestBasePage{
             return self::NOT_PUBLISHED;
         }
 	}
+	
+	public function getIsPublishedAsBoolean(){
+	    
+	    return ($this->getIsPublished() == 'TRUE') ? true : false;
+	    
+	}
 
 	public function getOkParentPages(){
 		

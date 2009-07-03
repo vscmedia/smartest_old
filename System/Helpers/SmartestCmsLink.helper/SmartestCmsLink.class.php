@@ -467,7 +467,7 @@ class SmartestCmsLink extends SmartestHelper{
             if($draft_mode){
                 return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_destination->getWebId();
             }else{
-                if($this->_destination->getIsPublished()){
+                if($this->_destination->getIsPublishedAsBoolean()){
                     return SM_CONTROLLER_DOMAIN.$this->_destination->getDefaultUrl();
                 }else{
                     return '#';
@@ -481,7 +481,7 @@ class SmartestCmsLink extends SmartestHelper{
             if($draft_mode){
                 return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
             }else{
-                if($this->_destination->getIsPublished() && $this->_destination->getPrincipalItem()->isPublished()){
+                if($this->_destination->getIsPublishedAsBoolean() && $this->_destination->getPrincipalItem()->isPublished()){
                     $template_url = SM_CONTROLLER_DOMAIN.$this->_destination->getDefaultUrl();
                     $url = str_replace(':id', $this->_destination->getPrincipalItem()->getId(), $template_url);
                     $url = str_replace(':long_id', $this->_destination->getPrincipalItem()->getWebid(), $url);

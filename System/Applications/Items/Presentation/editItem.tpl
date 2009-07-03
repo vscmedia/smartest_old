@@ -21,10 +21,12 @@
   <input type="text" name="item_name" value="{$item.name}" style="width:250px" />
 </div>
 
+{if count($metapages)}
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} short name (Used in URLS)</div>
   <input type="text" name="item_slug" value="{$item.slug}" style="width:250px" />
 </div>
+{/if}
 
 <div class="edit-form-row">
   <div class="form-section-label">Status</div>
@@ -35,6 +37,13 @@
   {/if}
 </div>
 
+{foreach from=$item._properties key="pid" item="property"}
+<div class="edit-form-row">
+  {item_field property=$property value=$item[$pid]}
+</div>
+{/foreach}
+
+{if count($metapages)}
 <div class="edit-form-row">
   <div class="form-section-label">Meta-Page</div>
   <select name="item_metapage_id">
@@ -44,19 +53,12 @@
     {/foreach}
   </select>
 </div>
+{/if}
 
 <div class="edit-form-row">
   <div class="form-section-label">Search Terms</div>
   <textarea name="item_search_field" rows="3" cols="20" style="width:350px;height:60px">{$item.search_field}</textarea>
 </div>
-
-{foreach from=$item._properties key="pid" item="property"}
-
-<div class="edit-form-row">
-  {item_field property=$property value=$item[$pid]}
-</div>
-
-{/foreach}
 
 <div class="edit-form-row">
   <div class="buttons-bar">

@@ -130,7 +130,7 @@ class Settings extends SmartestSystemApplication{
     function listUsers(){
 		
 		$this->setFormReturnUri();
-		$users = $this->database->queryToArray("SELECT * FROM Users");
+		$users = $this->database->queryToArray("SELECT * FROM Users WHERE user_id > 0");
 		return (array("users"=>$users, "count"=>count($users)));
 		
 	}
