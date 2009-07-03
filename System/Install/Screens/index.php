@@ -33,7 +33,6 @@ $message = $stage->getParameter('message');
             <p class="message"><?php echo $message; ?></p>
         <?php endif; ?>
         <?php include SM_ROOT_DIR.'System/Install/Screens/'.$screen; ?>
-        <?php /* echo $e->getInstallationStatus(); */ ?>
       </div>
 
     </div>

@@ -2,7 +2,6 @@
 /**
  * Implements the installer file
  *
- * PHP versions 4/5
  *
  * @category   System
  * @package    Smartest
@@ -28,16 +27,19 @@ class SmartestInstaller{
         
             case SM_INSTALLSTATUS_NO_FILE_PERMS: // 1
             $ph->setParameter('screen', 'set_perms.php');
+            $ph->setParameter('perms', $this->createPermissionsScript());
             break;
 
             case SM_INSTALLSTATUS_NO_CONFIG: // 2
             $ph->setParameter('screen', 'create_config.php');
             $ph->setParameter('message', "Currently, no valid configuration files can be found. Please fill in the details below so that Smartest can connect to the database.");
+            $this->removePermissionsScript();
             break;
             
             case SM_INSTALLSTATUS_NO_DB_CONFIG: // 4
             $ph->setParameter('screen', 'create_config.php');
             $ph->setParameter('message', "Currently, no valid database configuration files can be found. Please fill in the details below so that Smartest can connect to the database.");
+            $this->removePermissionsScript();
             break;
 
             case SM_INSTALLSTATUS_DB_NO_CONN: // 8:
@@ -125,6 +127,62 @@ class SmartestInstaller{
                 return true;
             }
         }
+        
+    }
+    
+    public function removePermissionsScript(){
+        
+        $hash = substr(sha1(SM_ROOT_DIR), 0, 8);
+        $script_name = '/tmp/smartest_install_'.$hash.'.tmp.sh';
+        
+        if(is_file($script_name) && is_writable($script_name) && is_writable('/tmp')){
+            unlink($script_name);
+        }
+        
+    }
+    
+    public function createPermissionsScript(){
+        
+        $ph = new SmartestParameterHolder('Permissions information');
+        
+        $system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml', false);
+        $writable_files = array_merge($system_data->g('system')->g('writable_locations')->g('always')->toArray(), $system_data->g('system')->g('writable_locations')->g('installation')->toArray());
+        $errors = array();
+        
+        $ph->setParameter('writable_files', $writable_files);
+        
+        foreach($writable_files as $file){
+			if(!is_writable(SM_ROOT_DIR.$file)){
+				$errors[] = SM_ROOT_DIR.$file;
+			}
+		}
+		
+		$ph->setParameter('writable_files', $writable_files);
+		$ph->setParameter('errors', $errors);
+        
+        if(is_dir('/tmp') && is_writable('/tmp')){
+            
+            $ph->setParameter('script_created', true);
+            $hash = substr(sha1(SM_ROOT_DIR), 0, 8);
+            $script_name = '/tmp/smartest_install_'.$hash.'.tmp.sh';
+            $ph->setParameter('script_name', $script_name);
+            
+            // TODO: Make this windows compatible
+            
+            $contents = '#! /usr/bin/env bash'."\n\n";
+            
+            foreach($errors as $file){
+    			$contents .= 'chmod 777 '.$file."\n";
+    		}
+            
+            file_put_contents($script_name, $contents);
+            chmod($script_name, 0777);
+            
+        }else{
+            $ph->setParameter('script_created', false);
+        }
+        
+        return $ph;
         
     }
 }

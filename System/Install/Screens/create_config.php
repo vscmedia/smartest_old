@@ -33,6 +33,8 @@ if($stage->getParameter('db_connection_parameters')){
 
 <div class="form-section-label">Database</div>
 
+<p>Please enter connection details for an empty database that you have created specifically for your new Smartest installation. If you haven't created one yet, do that first, then come back and do this.</p>
+
 <div class="form-row">
     <div class="form-row-label">Username</div>
     <input type="text" name="db_username" value="<?php echo $db_username; ?>" />

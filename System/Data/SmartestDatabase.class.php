@@ -4,7 +4,7 @@ class SmartestDatabase{
     
     private static $dbc;
     
-    public static function getInstance($connection_name){
+    public static function getInstance($connection_name, $throw_db_exception=false){
         
         if(!isset($dbc[$connection_name])){
         
@@ -17,7 +17,11 @@ class SmartestDatabase{
                     $object = new $class($config);
                 }catch(SmartestDatabaseException $e){
                     SmartestCache::clear('dbc_'.$connection_name, true);
-                    throw new SmartestException($e->getMessage(), SM_ERROR_DB);
+                    if($throw_db_exception){
+                        throw $e;
+                    }else{
+                        throw new SmartestException($e->getMessage(), SM_ERROR_DB);
+                    }
                 }
                 
                 $dbc[$connection_name] = $object;

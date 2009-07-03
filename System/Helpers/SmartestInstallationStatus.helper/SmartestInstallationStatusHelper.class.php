@@ -211,7 +211,7 @@ class SmartestInstallationStatusHelper{
             if(file_exists(SM_ROOT_DIR.'Configuration/database.ini')){
                 // Config files are in place, so try connecting to the database
                 try{
-                    $db = SmartestDatabase::getInstance('SMARTEST');
+                    $db = SmartestDatabase::getInstance('SMARTEST', true);
                 }catch(SmartestDatabaseException $e){
                     
                     switch($e->getDbErrorType()){
