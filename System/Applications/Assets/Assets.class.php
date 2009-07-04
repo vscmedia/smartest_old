@@ -240,6 +240,8 @@ class Assets extends SmartestSystemApplication{
 	        $files_array[$i]['filename'] = basename($f);
 	        $files_array[$i]['type_code'] = $type['id'];
 	        $files_array[$i]['type_label'] = $type['label'];
+	        $alh = new SmartestAssetsLibraryHelper;
+	        $files_array[$i]['possible_groups'] = $alh->getAssetGroupsThatAcceptType($type['id']);
 	        $files_array[$i]['size'] = SmartestFileSystemHelper::getFileSizeFormatted(SM_ROOT_DIR.$f);
 	        $files_array[$i]['correct_directory'] = $type['storage']['location'];
 	        $i++;
@@ -258,6 +260,7 @@ class Assets extends SmartestSystemApplication{
 	    }
 	    
 	    foreach($new_files as $nf){
+	        
 	        $a = new SmartestAsset;
 	        $a->setType($nf['type']);
 	        $a->setSiteId($this->getSite()->getId());
@@ -267,6 +270,11 @@ class Assets extends SmartestSystemApplication{
 	        $a->setUrl(basename($nf['filename']));
 	        $a->setUserId($this->getUser()->getId());
 	        $a->save();
+	        
+	        if(isset($nf['group']) && is_numeric($nf['group'])){
+	            $a->addToGroupById($nf['group'], true);
+	        }
+	        
 	    }
 	    
 	    $this->addUserMessageToNextRequest(count($new_files)." file".((count($new_files) == 1) ? " was " : "s were ")."successfully added to the repository.", SmartestUserMessage::SUCCESS);

@@ -699,6 +699,19 @@ class SmartestAsset extends SmartestBaseAsset{
 	    
 	}
 	
+	public function addToGroupById($gid, $force=false){
+        
+        if($force || !in_array($gid, $this->getGroupIds())){
+            
+            $m = new SmartestAssetGroupMembership;
+            $m->setGroupId($gid);
+            $m->setAssetId($this->getId());
+            $m->save();
+            
+        }
+        
+    }
+	
 	public function getComments(){
 	    
 	    $sql = "SELECT * FROM Comments, Users WHERE comment_type='SM_COMMENTTYPE_ASSET_PRIVATE' AND comment_object_id='".$this->getId()."' AND comment_author_user_id=user_id ORDER BY comment_posted_at";
