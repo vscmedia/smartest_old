@@ -18,7 +18,7 @@
 
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} name</div>
-  <input type="text" name="item_name" value="{$item.name}" style="width:250px" />
+  <input type="text" name="item_name" value="{$item.name|escape_double_quotes}" style="width:250px" />
 </div>
 
 {if count($metapages)}
