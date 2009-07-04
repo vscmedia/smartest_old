@@ -215,6 +215,10 @@ class SmartestCmsItem implements ArrayAccess{
 	            return $this->isPublished();
 	            break;
 	            
+	            case 'byline':
+	            return SmartestStringHelper::toCommaSeparatedList($this->getItem()->getAuthors());
+	            break;
+	            
 	            case '_model':
 	            return $this->getModel();
 	            break;
@@ -353,7 +357,7 @@ class SmartestCmsItem implements ArrayAccess{
             // }
             
             $this->_item->setItemclassId($this->_model_id);
-            $this->_item->setSlug(SmartestStringHelper::toSlug($this->_item->getName()));
+            $this->_item->setSlug(SmartestStringHelper::toSlug($this->_item->getName(), true));
             $this->_item->setWebid(SmartestStringHelper::random(32));
             $this->_item->setCreated(time());
             $this->_item->setModified(time()+2); // this is to make it show up on the approval todo list

@@ -8,6 +8,9 @@ function smarty_modifier_twitter_process($string){
     // parse out @usernames
     $string = preg_replace('/@([\w_]+)/i', "@<a href=\"http://twitter.com/$1\">$1</a>", $string);
     
+    // parse out #hashtags
+    $string = preg_replace('/#([\w_-]+)/i', "<a href=\"http://search.twitter.com/search?q=%23$1\">#$1</a>", $string);
+    
     // make initial usernames bold
     $string = preg_replace('/^([\w_]+):/i', "<strong>$1</strong>:", $string);
     

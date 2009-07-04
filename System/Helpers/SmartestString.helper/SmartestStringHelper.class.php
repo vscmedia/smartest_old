@@ -468,5 +468,37 @@ class SmartestStringHelper extends SmartestHelper{
 		    return $regexp;
 		}
 	}
+	
+	static function toCommaSeparatedList($array){
+	    
+	    if(is_array($array)){
+	        
+	        $num_words = count($array);
+	        $last_index = $num_words - 1;
+	        $string = "";
+	        
+	        foreach(array_values($array) as $key => $word){
+	            
+	            if($key > 0){
+	                if($key == $last_index){
+	                    $string .= ' and ';
+	                }else{
+	                    $string .= ', ';
+	                }
+	            }
+	            
+	            $string .= $word;
+	            
+	        }
+	        
+	        return $string;
+	        
+	    }else{
+	        
+	        return $array;
+	        
+	    }
+	    
+	}
 
 }
