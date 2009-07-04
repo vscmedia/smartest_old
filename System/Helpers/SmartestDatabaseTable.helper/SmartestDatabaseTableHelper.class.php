@@ -57,10 +57,10 @@ class SmartestDatabaseTableHelper{
     
     public function getColumnNames($table){
         
-        $cache_name = strtolower($this->database->getConnectionName()).'_'.$table.'_columns';
-        
         if($this->tableExists($table)){
-        
+            
+            $cache_name = strtolower($this->database->getConnectionName()).'_'.$table.'_columns';
+            
             if(SmartestCache::hasData($cache_name, true)){
 			    $columns = SmartestCache::load($cache_name, true);
 		    }else{

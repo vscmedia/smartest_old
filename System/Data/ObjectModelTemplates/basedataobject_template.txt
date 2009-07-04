@@ -9,6 +9,7 @@ class __CLASSNAME__ extends SmartestDataObject{
 	protected $_table_name = '__TABLE_NAME__';
 	protected $_no_prefix = array(__NO_PREFIX_FIELDS__);
 	protected $_original_fields = array(__ORIGINAL_FIELDS__);
+	protected $_base_class = '__BASE_CLASS__';
 __PROPERTIES_ARRAY__
 
 __FUNCTIONS__

@@ -184,16 +184,16 @@ class SmartestDataObject implements ArrayAccess{
 	    return SmartestPersistentObject::get('centralDataHolder');
 	}
 	
-	protected function setTablePrefix($prefix){
+	/* protected function setTablePrefix($prefix){
 		$this->_table_prefix = $prefix;
-	}
+	} 
 	
 	protected function setTableName($name){
 		// $this->_table_name = $name;
-	}
+	} */
 	
 	public function getTablePrefix(){
-		// return $this->_table_prefix;
+		return $this->_table_prefix;
 	}
 	
 	public function getTableName($name){
@@ -218,7 +218,7 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    $obj = new stdClass;
 	    
-	    foreach($this->__toArray() as $property => $value){
+	    foreach($this->_properties as $property => $value){
 	        $obj->$property = $value;
 	    }
 	    
@@ -278,37 +278,38 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	}
 	
-	/* public function __sleep(){
-		$this->database = null;
-	}
-	
-	public function __wakeUp(){
-		$this->database =& $_SESSION['database'];
-	} */
-	
 	public function __call($name, $args){
 		
-	    // FS#189 in progress here:
-	    
-		if (strtolower(substr($name, 1, 2)) == 'et') {
-		    
-		    // return $this->getField(substr($name, 3));
-			// SmartestCache::clear('SMARTEST_'.$this->_table_name.'_columns');
-			// unlink(SM_ROOT_DIR.'System/Cache/ObjectModel/DataObjects/SmartestBase');
-			
-		}
-    
-		/* if ((strtolower(substr($name, 0, 3)) == 'set') && count($args)) {
-			return $this->setField(substr($name, 3), $args[0]);
-		} */
+		$f3 = strtolower(substr($name, 0, 3));
 		
-		throw new SmartestException('Call to undefined function: '.get_class($this).'->'.$name.'()', SM_ERROR_USER);
+		// Has the database structure changed?
+	    if ($f3 == 'get' || $f3 == 'set') {
+		    
+		    SmartestCache::clear('smartest_'.$this->_table_name.'_columns', true);
+			$class_file = SM_ROOT_DIR.'System/Cache/ObjectModel/DataObjects/SmartestBase'.$this->_base_class.'.class.php';
+			
+			if(is_file($class_file)){
+			    
+			    // refresh cache of columns and delete so that it can regenerate
+			    SmartestLog::getInstance('system')->log('Call to undefined get/set function: '.get_class($this).'->'.$name.'(). Auto-generated class SmartestBase'.$this->_base_class.' ('.$class_file.') has been deleted to allow for re-caching.', SmartestLog::NOTICE);
+			    unlink($class_file);
+			    
+			    /* $data = SmartestDataObjectHelper::getBasicObjectSchemaInfo();
+			    $table_info = $data[$this->_table_name];
+			    SmartestDataObjectHelper::buildBaseDataObjectFile($table_info, true); */
+			    
+		    }else{
+		        SmartestLog::getInstance('system')->log('Call to undefined get/set function: '.get_class($this).'->'.$name.'(). Auto-generated class SmartestBase'.$this->_base_class.' could not be found for deletion.', SmartestLog::NOTICE);
+		    }
+			
+		}else{
+		    throw new SmartestException('Call to undefined function: '.get_class($this).'->'.$name.'()', SM_ERROR_USER);
+		}
 		
 	}
 	
 	protected function getField($field_name){
 		if(isset($this->_properties[$field_name])){
-			// return $this->_properties[$this->_properties_lookup[$field_name]];
 			return $this->_properties[$field_name];
 		}else if(array_key_exists($field_name.'_id', $this->_properties)){
 			// retrieve foreign key object, getSite(), getModel(), etc...
@@ -447,6 +448,7 @@ class SmartestDataObject implements ArrayAccess{
 	    
         }else{
             
+            SmartestLog::getInstance('system')->log(get_class($this)."->find() called without a valid ID.", SmartestLog::WARNING);
             // A bit harsh:
             // throw new SmartestException("SmartestDataObject->find() must be called with a valid ID or data array.");
             

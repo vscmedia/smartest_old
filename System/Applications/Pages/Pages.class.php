@@ -3370,18 +3370,13 @@ class Pages extends SmartestSystemApplication{
             
                 $definition = new SmartestItemSpaceDefinition;
             
-                // echo 'got this far';
-
                 if($definition->load($name, $page, true)){
-                    // $definition_id = $definition->getSimpleItem()->getId();
                     $definition_id = $definition->getItemId(true);
                 }else{
                     $definition_id = 0;
                 }
                 
-                $options = $item_space->getOptionsAsArrays();
-                
-                // print_r($options);
+                $options = $item_space->getOptions();
                 
                 $this->send($definition_id, 'definition_id');
                 $this->send($options, 'options');
@@ -3453,8 +3448,6 @@ class Pages extends SmartestSystemApplication{
 	        
 	    }
 	    
-	    // print_r(SmartestPersistentObject::get('db:main')->getDebugInfo());
-	    
 	}
 	
 	public function addPageUrl($get){
@@ -3467,11 +3460,8 @@ class Pages extends SmartestSystemApplication{
 		    
 		    $page->setDraftMode(true);
 		    
-		    // $message = $get['msg'];
 		    $ishomepage = $get['ishomepage'];
-		    // $page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
 		    $page_id = $page->getId();
-		    // $editorContent = $this->manager->getPage($page_id);
 		    $page_info = $page->__toArray();
 		    $page_info['site'] = $page->getSite()->__toArray();
 		    
