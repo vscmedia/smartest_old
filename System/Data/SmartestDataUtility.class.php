@@ -52,6 +52,19 @@ class SmartestDataUtility{
 		}
 	}
 	
+	public function getModelIds(){
+	    
+	    $result = $this->getModels(true);
+	    $ids = array();
+	    
+	    foreach($result as $r){
+	        $ids[] = $r['itemclass_id'];
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
 	public function getModelPluralNamesLowercase(){
 	    
 	    $models = $this->getModels();

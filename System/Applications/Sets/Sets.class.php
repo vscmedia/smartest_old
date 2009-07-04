@@ -48,17 +48,41 @@ class Sets extends SmartestSystemApplication{
 	
 	function addSet($get){		
 
-		$models = $this->itemsManager->getItemClasses(); 		
+        $du = new SmartestDataUtility;
+        
+        
+		// $models = $this->itemsManager->getItemClasses(); 
+		// print_r($models);		
 		$set_name = $get['set_name'];
-		$properties = null;		
+		// $properties = null;
+		
+		
+		
+		if(isset($get['class_id']) && is_numeric($get['class_id'])){
+		    $model_ids = $du->getModelIds();
+		    if(in_array($get['class_id'], $model_ids)){
+		        $this->send(false, 'allow_choose_model');
+		        $model = new SmartestModel;
+		        $model->find($get['class_id']);
+		        $this->send($model, 'model');
+	        }else{
+	            $models = $du->getModels();
+    		    $this->send($models, 'models');
+    		    $this->send(true, 'allow_choose_model');
+	        }
+		}else{
+		    $models = $du->getModels();
+		    $this->send($models, 'models');
+		    $this->send(true, 'allow_choose_model');
+		}
 		
 		$this->setTitle('Create a new item set');
 		
-		if(is_numeric($get['model_id'])){
+		/* if(is_numeric($get['model_id'])){
 			$properties = $this->itemsManager->getItemClassProperties($get['model_id']); 		
-		}
+		} */
 		
-		return array("type"=>$get['type'] ,"model_id"=>$get['model_id'] ,"set_name"=>$set_name ,"models"=> $models, "properties"=>$properties);		
+		// return array("type"=>$get['type'] ,"model_id"=>$get['model_id'] ,"set_name"=>$set_name ,"models"=> $models, "properties"=>$properties);		
 	}
 	
 	function insertSet($get, $post){

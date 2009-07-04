@@ -13,12 +13,17 @@
 				
 			<div class="edit-form-row">
 				<div class="form-section-label">With items from model:</div>
+				{if $allow_choose_model}
 				<select name="set_model_id" id="model_select">
 			    <option value="">Please Choose...</option>
-			    {foreach from=$models key=key item="model"}
-				  <option {if $model.itemclass_id == $content.model_id} selected{/if} value="{$model.itemclass_id}">{$model.itemclass_plural_name}</option>
+			    {foreach from=$models key="key" item="model"}
+				  <option {if $model.id == $content.model_id} selected{/if} value="{$model.id}">{$model.plural_name}</option>
 				  {/foreach}
 				</select>
+				{else}
+				<input type="hidden" name="set_model_id" value="{$model.id}" />
+				{$model.plural_name}
+				{/if}
 			</div>
 				
 			<div class="edit-form-row">

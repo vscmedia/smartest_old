@@ -2238,6 +2238,6 @@ class Items extends SmartestSystemApplication{
 	} */
 	
 	public function addSet($get){
-		$this->redirect("/sets/addSet?model_id=".$get['class_id']);
+		$this->redirect("/sets/addSet?class_id=".$get['class_id']);
 	}
 }
