@@ -36,7 +36,7 @@ class Templates extends SmartestSystemApplication{
 		$path = SM_ROOT_DIR.'Presentation/ListItems/'; 
 		
 		$this->setFormReturnUri();
-		$templates = $this->manager->getTemplateNames($path);
+		$templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
 		
 		if(count($templates) > 0){
 		    $this->send($templates, "templateList");
@@ -52,7 +52,7 @@ class Templates extends SmartestSystemApplication{
 		$path = SM_ROOT_DIR.'Presentation/Masters/';
 		
 		$this->setFormReturnUri();
-		$templates = $this->manager->getTemplateNames($path);
+		$templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
 		
 		if(count($templates)>0){
 		    $this->send($templates, "templateList");
@@ -85,18 +85,10 @@ class Templates extends SmartestSystemApplication{
 		
 		// Allow the user to make the addition.
 
-		// $formTemplateInclude = "addTemplate.".strtolower($newTemplateType).".tpl";
 		$formTemplateInclude = "addTemplate.tpl";
 				
-		/* $results = array(
-			"newTemplateType"=>$newTemplateType,
-			"formTemplateInclude"=>$formTemplateInclude
-		); */
-		
 		$this->send($title, 'interface_title');
 		$this->send($type, 'template_type');
-		
-		return $results;
 	}
 	
  	function saveNewTemplate($get, $post){
@@ -149,7 +141,6 @@ class Templates extends SmartestSystemApplication{
 			$upload = new SmartestUploadHelper('template_upload');
 			$upload->setUploadDirectory($path);
 			
-			// if(!preg_match('/\.(tpl|html|php|thtml)$/i', $file)){
 			if(!$upload->hasDotSuffix('tpl', 'html')){
     			$upload->setFileName(SmartestStringHelper::toVarName($upload->getFileName()).".tpl");
     		}
@@ -182,19 +173,19 @@ class Templates extends SmartestSystemApplication{
 			
 			if(SmartestFileSystemHelper::save($full_filename, stripslashes($post['template_content']), true)){
 				$this->setFormReturnVar('savedNewTemplate', 'true');
-				$this->addUserMessageToNextRequest('The file was saved successfully');
+				$this->addUserMessageToNextRequest('The file was saved successfully', SmartestUserMessage::SUCCESS);
 			}else{
 				$this->setFormReturnVar('savedNewTemplate', 'failed');
-				$this->addUserMessageToNextRequest('There was a problem creating the file');
+				$this->addUserMessageToNextRequest('There was a problem creating the file', SmartestUserMessage::WARNING);
 			}
 			
 		}else if($post['add_type'] == "UPLOAD"){
 		
 		    if($upload->save()) { // Move the file over
 			    $this->setFormReturnVar('savedNewTemplate', 'true');
-			    $this->addUserMessageToNextRequest('The file was saved successfully');
+			    $this->addUserMessageToNextRequest('The file was saved successfully', SmartestUserMessage::SUCCESS);
 		    }else{ // Couldn't save the file
-		        $this->addUserMessageToNextRequest('There was a problem creating the file');
+		        $this->addUserMessageToNextRequest('There was a problem creating the file', SmartestUserMessage::WARNING);
 			    // $this->setFormReturnVar('savedNewTemplate', 'failed');
 		    }
 		
@@ -242,7 +233,7 @@ class Templates extends SmartestSystemApplication{
     		$this->send($template->getId(), "template_id");
     		
     	}else{
-    	    $this->addUserMessage('The template type is invalid.');
+    	    $this->addUserMessage('The template type is invalid.', SmartestUserMessage::ERROR);
     	}
 		
 		$file = $path.$template_name;
@@ -252,7 +243,7 @@ class Templates extends SmartestSystemApplication{
 		    $contents = htmlentities(SmartestFileSystemHelper::load($file, true), ENT_COMPAT, 'UTF-8');
 	    }else{
 	        $show_form = false;
-	        $this->addUserMessage('The template file '.$template_name.' does not exist, or is out of the editing scope.');
+	        $this->addUserMessage('The template file '.$template_name.' does not exist, or is out of the editing scope.', SmartestUserMessage::ERROR);
 	    }
 		
 		$formTemplateInclude = "editTemplate.tpl";
@@ -302,7 +293,6 @@ class Templates extends SmartestSystemApplication{
 		$template_content = stripslashes($content);
 		
 		$file = $path.$template_name;
-		// $handle = fopen($file, 'w+');
 		
 		if(SmartestFileSystemHelper::save($file, $template_content, true)){
 			$this->setFormReturnVar('success', 'true');
@@ -312,7 +302,6 @@ class Templates extends SmartestSystemApplication{
 			$this->addUserMessageToNextRequest('Couldn\'t save changes. Check file permissions.');
 		}
   		
-  		// fclose($handle);
   		$this->formForward();
 	}
 
@@ -439,15 +428,13 @@ class Templates extends SmartestSystemApplication{
 			$template_name = $asset->getUrl();
 			
 			$new_asset = new SmartestAsset;
-			$new_asset->setTypeId(4);
+			// $new_asset->setTypeId(4);
 			$new_asset->setType('SM_ASSETTYPE_CONTAINER_TEMPLATE');
 			
 		}
 		
 		$file = $path.$template_name;
 		$new_file = SmartestFileSystemHelper::getUniqueFileName($file);
-		
-		
 		
 		// $oldtemplate_name = $get['template_name'];
 		
