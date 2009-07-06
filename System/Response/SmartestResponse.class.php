@@ -676,8 +676,8 @@ class SmartestResponse{
 		
 		$this->errorStack->display();
 		
-		// if(!SmartestSystemSettingsHelper::hasData('successful_install')){
-		    SmartestSystemSettingsHelper::save('successful_install', true);
+		// if(!SmartestSystemSettingHelper::hasData('successful_install')){
+		    SmartestSystemSettingHelper::save('successful_install', true);
 		// }
 			
 		// retrieve the result
