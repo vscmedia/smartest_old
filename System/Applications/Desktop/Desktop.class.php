@@ -359,7 +359,7 @@ class Desktop extends SmartestSystemApplication{
         }else{
             
             // Attempt to figure out when the system was set up by looking at the oldest page
-            $sql = "SELECT page_created FROM Pages ORDER BY page_created ASC LIMIT 1";
+            $sql = "SELECT page_created FROM Pages ORDER BY page_id ASC LIMIT 1";
             $db = SmartestPersistentObject::get('db:main');
             $r = $db->queryToArray($sql);
             $system_installed_timestamp = $r[0]['page_created'];
