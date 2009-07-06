@@ -345,4 +345,24 @@ class Desktop extends SmartestSystemApplication{
         
     }
     
+    public function aboutSmartest(){
+        
+        $this->send($_SERVER['SERVER_SOFTWARE'], 'platform');
+        $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+        $this->send($sys['system']['info']['revision'], 'revision');
+        $this->send($sys['system']['info']['version'], 'version');
+        
+        if(SmartestSystemSettingHelper::hasData('_system_installed_timestamp')){
+            $system_installed_timestamp = SmartestSystemSettingHelper::load('_system_installed_timestamp');
+        }else{
+            $sql = "SELECT page_created FROM Pages ORDER BY page_created ASC LIMIT 1";
+            $db = SmartestPersistentObject::get('db:main');
+            $r = $db->queryToArray($sql);
+            $system_installed_timestamp = $r[0]['page_created'];
+        }
+        
+        $this->send($system_installed_timestamp, 'system_installed_timestamp');
+        
+    }
+    
 }
