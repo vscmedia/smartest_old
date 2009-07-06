@@ -352,16 +352,53 @@ class Desktop extends SmartestSystemApplication{
         $this->send($sys['system']['info']['revision'], 'revision');
         $this->send($sys['system']['info']['version'], 'version');
         
+        $this->send(SmartestSystemSettingHelper::load('_server_speed_index'), 'speed_score');
+        
         if(SmartestSystemSettingHelper::hasData('_system_installed_timestamp')){
             $system_installed_timestamp = SmartestSystemSettingHelper::load('_system_installed_timestamp');
         }else{
+            
+            // Attempt to figure out when the system was set up by looking at the oldest page
             $sql = "SELECT page_created FROM Pages ORDER BY page_created ASC LIMIT 1";
             $db = SmartestPersistentObject::get('db:main');
             $r = $db->queryToArray($sql);
             $system_installed_timestamp = $r[0]['page_created'];
+            
+            if($system_installed_timestamp > 0){
+                SmartestSystemSettingHelper::save('_system_installed_timestamp', $system_installed_timestamp);
+            }
         }
         
         $this->send($system_installed_timestamp, 'system_installed_timestamp');
+        
+    }
+    
+    public function testServerSpeed(){
+        
+        $sql = "SELECT page_id FROM Pages WHERE page_deleted != 'TRUE' ORDER BY page_id DESC LIMIT 1";
+        $db = SmartestPersistentObject::get('db:main');
+        $r = $db->queryToArray($sql);
+        $id = $r[0]['page_id'];
+        
+        $test_start_time = microtime(true);
+        
+        for($i=0;$i<2000;$i++){
+            
+            // look it up and hydrate it by ID
+            $p = new SmartestPage;
+            $p->find($id);
+            
+            // access it via ArrayAccess
+            $d = $p['title'];
+            
+        }
+        
+        $test_finish_time = microtime(true);
+        $test_time_taken = number_format(($test_finish_time - $test_start_time)*1000, 2, ".", "");
+        
+        SmartestSystemSettingHelper::save('_server_speed_index', $test_time_taken);
+        
+        $this->redirect('/desktop/aboutSmartest');
         
     }
     

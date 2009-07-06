@@ -318,6 +318,9 @@ class SmartestInstallationStatusHelper{
                 
                 if(is_writable(SM_ROOT_DIR."System/Cache/Data/")){
                     SmartestCache::save('installation_status', SM_INSTALLSTATUS_COMPLETE, -1, true);
+                    if(!SmartestSystemSettingHelper::hasData('_system_installed_timestamp')){
+                        SmartestSystemSettingHelper::save('_system_installed_timestamp', time());
+                    }
                 }
                 
             }else{
