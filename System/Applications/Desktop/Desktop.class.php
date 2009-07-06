@@ -351,6 +351,8 @@ class Desktop extends SmartestSystemApplication{
         $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
         $this->send($sys['system']['info']['revision'], 'revision');
         $this->send($sys['system']['info']['version'], 'version');
+        $this->send(str_replace('M', 'MB', ini_get('memory_limit')), 'memory_limit');
+        $this->send(phpversion(), 'php_version');
         
         $this->send(SmartestSystemSettingHelper::load('_server_speed_index'), 'speed_score');
         
