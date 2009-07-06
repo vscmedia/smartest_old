@@ -584,24 +584,6 @@ class SmartestResponse{
 	
 	function checkWritablePermissions(){
 		
-		/* $writable_files = array(
-			"System Core Info Directory" => SM_ROOT_DIR."System/Core/Info/",
-			"Smartest Engine Cache"      => SM_ROOT_DIR."System/Cache/SmartestEngine/",
-			"Smarty Cache"               => SM_ROOT_DIR."System/Cache/Smarty/",
-			"CMS Pages Cache"            => SM_ROOT_DIR."System/Cache/Pages/",
-			"Data Cache"                 => SM_ROOT_DIR."System/Cache/Data/",
-			"Logic Cache"                => SM_ROOT_DIR."System/Cache/Includes/",
-			"Auto-generated Objects"     => SM_ROOT_DIR."System/Cache/ObjectModel/Models/",
-			"System Data-Objects"        => SM_ROOT_DIR."System/Cache/ObjectModel/DataObjects/",
-			"System-saved settings"      => SM_ROOT_DIR."System/Cache/Settings/",
-			"User-editable objects"      => SM_ROOT_DIR."Library/ObjectModel/",
-			"Documents Folder"           => SM_ROOT_DIR."Documents/",
-			"Deleted Files Folder"       => SM_ROOT_DIR."Documents/Deleted/",
-			"System Temp Folder"         => SM_ROOT_DIR."System/Temporary/",
-			"Text previews cache"        => SM_ROOT_DIR."System/Cache/TextFragments/Previews/",
-			"Live text cache"            => SM_ROOT_DIR."System/Cache/TextFragments/Live/"
-		); */
-		
 		$system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml');
 		$writable_files = $system_data->g('system')->g('writable_locations')->g('always')->getParameters();
 		
@@ -666,24 +648,7 @@ class SmartestResponse{
 		}
 	}
 	
-/*	function getUrl(){
-		
-		$actual = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-		
-		$controller_url = $this->domain;
-		
-		$remaining = "/".substr($actual, strlen($controller_url));
-		
-		$getUrl = preg_match("/^\/([^\?]+)\??.*"."/i", $remaining, $matches);
-		
-		if(isset($matches[1])){
-			return $matches[1];
-		}else{
-			return null;
-		}
-	} */
-	
-	function prepareContent(){
+    function prepareContent(){
 		
 		try{
 			SmartestQuery::init(true);
@@ -710,6 +675,10 @@ class SmartestResponse{
 	    }
 		
 		$this->errorStack->display();
+		
+		// if(!SmartestSystemSettingsHelper::hasData('successful_install')){
+		    SmartestSystemSettingsHelper::save('successful_install', true);
+		// }
 			
 		// retrieve the result
 		$this->content =  $this->controller->getContent();
@@ -839,9 +808,7 @@ class SmartestResponse{
 		$this->timeTaken = number_format(($this->endTime - $this->startTime)*1000, 2, ".", "");
 		
 		$this->controllerPrepareTimeTaken = number_format(($this->controller->prepareTime - $this->startTime)*1000, 2, ".", "");
-		$this->controllerActionTimeTaken  = number_format(($this->controller->postActionTime - $this->startTime)*1000, 2, ".", "");
-		
-		$this->smarty->assign("sm_execTime", $this->timeTaken); */
+		$this->controllerActionTimeTaken  = number_format(($this->controller->postActionTime - $this->startTime)*1000, 2, ".", "");*/
 		
 		// Last chance to display any errors before trying to render the page
 		$this->errorStack->display();

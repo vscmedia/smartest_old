@@ -2,11 +2,9 @@
 
 class SmartestSystemSettingHelper extends SmartestHelper{
 
-	static function load($token){
+	public static function load($token){
 		
 		$file_name = md5($token).'.setting';
-		
-		// echo $file_name;
 		
 		$file_path = SM_ROOT_DIR.'System/Cache/Settings/'.$file_name;
 	
@@ -17,11 +15,9 @@ class SmartestSystemSettingHelper extends SmartestHelper{
 		}
 	}
 	
-	static function save($token, $data){
+	public static function save($token, $data){
 		
 		$file_name = md5($token).'.setting';
-		
-		// echo $file_name;
 		
 		$file_path = SM_ROOT_DIR.'System/Cache/Settings/'.$file_name;
 	    
@@ -32,22 +28,20 @@ class SmartestSystemSettingHelper extends SmartestHelper{
 		}
 	}
 	
-	static function hasData($token){
+	public static function hasData($token){
 		
 		$file_name = md5($token).'.setting';
 		
 		$file_path = SM_ROOT_DIR.'System/Cache/Settings/'.$file_name;
 	    
-	    // echo $token.' '.$file_path.'<br />';
-	    
-		if(file_exists($file_path)){
+	    if(file_exists($file_path)){
 			return true;
 		}else{
 			return false;
 		}
 	}
 	
-	static function clear($token=""){
+	public static function clear($token=""){
 		
 		// clear just one thing
 		if(strlen($token)){
@@ -71,7 +65,7 @@ class SmartestSystemSettingHelper extends SmartestHelper{
 		}
 	}
 	
-	static function getFileName($token=""){
+	public static function getFileName($token=""){
 	    if(strlen($token)){
 			
 			$file_name = md5($token).'.setting';

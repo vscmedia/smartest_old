@@ -16,7 +16,7 @@ class SmartestFile implements ArrayAccess{
         
     }
     
-    public function loadFile($file_path, $parse_image=true){
+    public function loadFile($file_path){
         
         if(is_file($file_path)){
             
@@ -25,6 +25,7 @@ class SmartestFile implements ArrayAccess{
             
         }else{
             // throw new SmartestException($file_path.' does not exist or is not a valid file.');
+            SmartestLog::getInstance('system')->log('SmartestFile->loadFile(): '.$file_path.' does not exist or is not a valid file.');
             return false;
         }
     }
@@ -93,6 +94,20 @@ class SmartestFile implements ArrayAccess{
         // use xml file to get mime type from dot suffix
     }
     
+    public function getContent(){
+        
+        return SmartestFileSystemHelper::load($this->_current_file_path);
+        
+    }
+    
+    public function getSize($formatted=true){
+        if($formatted){
+            return SmartestFileSystemHelper::getFileSizeFormatted($this->_current_file_path);
+        }else{
+            return SmartestFileSystemHelper::getFileSize($this->_current_file_path);
+        }
+    }
+    
     public function offsetGet($offset){
         
         switch($offset){
@@ -107,6 +122,14 @@ class SmartestFile implements ArrayAccess{
 	        
 	        case "public_file_path":
 	        return $this->getPublicPath();
+	        break;
+	        
+	        case "size":
+	        return $this->getSize();
+	        break;
+	        
+	        case "raw_size":
+	        return $this->getSize(false);
 	        break;
 	        
 	    }

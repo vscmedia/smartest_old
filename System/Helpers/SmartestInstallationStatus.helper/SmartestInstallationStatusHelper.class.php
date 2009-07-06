@@ -6,7 +6,11 @@ class SmartestInstallationStatusHelper{
     
     public static function checkStatus($purge=false){
         
-        if(SmartestCache::load('installation_status', true) !== SM_INSTALLSTATUS_COMPLETE || $purge || (!is_file(SM_ROOT_DIR.'Public/.htaccess') || !is_file(SM_ROOT_DIR.'Configuration/controller.xml') || !is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
+        // Add this in a few installlations time SmartestSystemSettingsHelper::load('successful_install') === true
+        if(SmartestCache::load('installation_status', true) === SM_INSTALLSTATUS_COMPLETE && !$purge && (is_file(SM_ROOT_DIR.'Public/.htaccess') && is_file(SM_ROOT_DIR.'Configuration/controller.xml') && is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
+            return SmartestCache::load('installation_status', true);
+        }else{
+        // if(SmartestCache::load('installation_status', true) !== SM_INSTALLSTATUS_COMPLETE || $purge || (!is_file(SM_ROOT_DIR.'Public/.htaccess') || !is_file(SM_ROOT_DIR.'Configuration/controller.xml') || !is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
             
             session_start();
             $system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml', false);
@@ -95,7 +99,8 @@ class SmartestInstallationStatusHelper{
                         $firstname = str_replace("'", '', $firstname);
                         $lastname = SmartestStringHelper::sanitize($_POST['smartest_lastname']);
                         $lastname = str_replace("'", '', $lastname);
-                        $email = $_POST['smartest_email'];
+                        $email = SmartestStringHelper::isEmailAddress($_POST['smartest_email']) ? $_POST['smartest_email'] : '';
+                        
                         $sql = file_get_contents(SM_ROOT_DIR.'System/Install/SqlScripts/create_user.sql.txt');
                         $sql = str_replace('%USERNAME%', $username, $sql);
                         $sql = str_replace('%PASSWORD%', $password, $sql);
@@ -117,8 +122,8 @@ class SmartestInstallationStatusHelper{
                             }
                         }
                         
-                        SmartestLog::getInstance('installer')->log('Created user '.$username.' with a uid of 1', SM_LOG_DEBUG);
                         SmartestLog::getInstance('installer')->log('Created system user \'Smartest\' with a uid of 0', SM_LOG_DEBUG);
+                        SmartestLog::getInstance('installer')->log('Created user '.$username.' with a uid of 1', SM_LOG_DEBUG);
                         
                     }
                     
@@ -326,8 +331,6 @@ class SmartestInstallationStatusHelper{
                 
                 throw new SmartestNotInstalledException(SM_INSTALLSTATUS_NO_CONFIG);
             }
-        }else{
-            return SmartestCache::load('installation_status', true);
         }
         
     }
