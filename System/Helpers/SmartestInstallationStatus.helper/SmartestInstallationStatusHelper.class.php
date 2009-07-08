@@ -52,15 +52,17 @@ class SmartestInstallationStatusHelper{
                     
                     $installer = new SmartestInstaller;
                     $installer->createNewDatabaseConfig($ph);
-                    $installer->createHtAccessFile();
                     
-                    $controller_domain = $_POST['controller_domain'];
-                    
-                    if(isset($_POST['controller_domain']) && substr($controller_domain, -1, 1) != '/'){
-                        $controller_domain .= '/';
+                    if(isset($_POST['controller_domain']){
+                        $controller_domain = $_POST['controller_domain'];
+                        if(substr($controller_domain, -1, 1) != '/'){
+                            $controller_domain .= '/';
+                        }
+                    }else{
+                        $controller_domain = '';
                     }
                     
-                    $installer->createQuinceControllerFile($controller_domain);
+                    $installer->createQuinceControllerFile('/'.$controller_domain);
                     
                     break;
                     

@@ -106,12 +106,20 @@ class SmartestInstaller{
         
     }
     
-    public function createHtAccessFile($force = false){
+    public function createHtAccessFile($rewritebase, $force = false){
         
         if($force || !file_exists(SM_ROOT_DIR.'Public/.htaccess')){
-            if (copy(SM_ROOT_DIR.'System/Install/Samples/htaccess-sample.txt', SM_ROOT_DIR.'Public/.htaccess')){
+            
+            $fc = file_get_contents(SM_ROOT_DIR.'System/Install/Samples/htaccess-sample.txt');
+            $fc = str_replace('%REWRITE_BASE%', $rewritebase, $fc);
+            $fc = str_replace('%DATE_CREATED%', date('M jS, Y \a\t h:i a'), $fc);
+            
+            if (file_put_contents(SM_ROOT_DIR.'Public/.htaccess', $fc)){
                 SmartestLog::getInstance('installer')->log('Created file ./Public/.htaccess', SM_LOG_DEBUG);
+                SmartestSystemSettingHelper::save('htaccess_rewrite_base', $domain);
                 return true;
+            }else{
+                SmartestLog::getInstance('installer')->log('Couldn\'t create file ./Public/.htaccess. Permissions should have been sorted by this stage, but check them anyway.', SM_LOG_WARNING);
             }
         }
         
@@ -120,12 +128,17 @@ class SmartestInstaller{
     public function createQuinceControllerFile($domain, $force = false){
         
         if($force || !file_exists(SM_ROOT_DIR.'Configuration/controller.xml')){
+            
             $fc = file_get_contents(SM_ROOT_DIR.'System/Install/Samples/controller-sample.xml');
             $fc = str_replace('%DOMAIN%', $domain, $fc);
+            $fc = str_replace('%DATE_CREATED%', date('M jS, Y \a\t h:i a'), $fc);
+            
             if (file_put_contents(SM_ROOT_DIR.'Configuration/controller.xml', $fc)){
                 SmartestLog::getInstance('installer')->log('Created file ./Configuration/controller.xml', SM_LOG_DEBUG);
                 SmartestSystemSettingHelper::save('controller_domain', $domain);
                 return true;
+            }else{
+                SmartestLog::getInstance('installer')->log('Couldn\'t create file ./Configuration/controller.xml. Permissions should have been sorted by this stage, but check them anyway.', SM_LOG_WARNING);
             }
         }
         
