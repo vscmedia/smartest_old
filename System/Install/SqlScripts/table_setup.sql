@@ -18,6 +18,8 @@ CREATE TABLE `AssetClasses` (
   `assetclass_type` varchar(64) NOT NULL default '',
   `assetclass_info` text NOT NULL,
   `assetclass_update_on_page_publish` tinyint(1) NOT NULL default '1',
+  `assetclass_filter_type` varchar(64) character set ascii NOT NULL default 'SM_ASSETCLASS_FILTERTYPE_NONE',
+  `assetclass_filter_value` varchar(64) NOT NULL,
   PRIMARY KEY  (`assetclass_id`),
   UNIQUE KEY `assetclass_name` (`assetclass_name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
@@ -38,6 +40,7 @@ CREATE TABLE `AssetIdentifiers` (
   `assetidentifier_item_id` mediumint(9) unsigned default NULL,
   `assetidentifier_draft_render_data` text collate utf8_unicode_ci NOT NULL,
   `assetidentifier_live_render_data` text collate utf8_unicode_ci NOT NULL,
+  `assetidentifier_language` varchar(8) collate utf8_unicode_ci NOT NULL default 'eng',
   PRIMARY KEY  (`assetidentifier_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -50,9 +53,10 @@ CREATE TABLE `AssetIdentifiers` (
 CREATE TABLE `Assets` (
   `asset_id` int(9) unsigned NOT NULL auto_increment,
   `asset_webid` varchar(32) NOT NULL default '',
-  `asset_stringid` varchar(32) NOT NULL default '',
+  `asset_stringid` varchar(64) NOT NULL,
   `asset_url` varchar(255) NOT NULL default '',
   `asset_type` varchar(64) NOT NULL default '',
+  `asset_language` varchar(8) NOT NULL default 'eng',
   `asset_site_id` mediumint(9) NOT NULL default '1',
   `asset_user_id` int(9) unsigned NOT NULL default '1',
   `asset_created` int(11) NOT NULL default '0',
@@ -68,6 +72,26 @@ CREATE TABLE `Assets` (
   PRIMARY KEY  (`asset_id`),
   UNIQUE KEY `Asset_webid` (`asset_webid`,`asset_stringid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Comments`
+--
+
+CREATE TABLE `Comments` (
+  `comment_id` mediumint(11) NOT NULL auto_increment,
+  `comment_object_id` mediumint(11) NOT NULL,
+  `comment_type` varchar(32) NOT NULL,
+  `comment_status` varchar(32) NOT NULL,
+  `comment_author_user_id` mediumint(11) NOT NULL,
+  `comment_author_name` varchar(128) NOT NULL,
+  `comment_author_website` varchar(128) NOT NULL,
+  `comment_content` text NOT NULL,
+  `comment_language` varchar(8) NOT NULL default 'eng',
+  `comment_posted_at` int(10) NOT NULL,
+  PRIMARY KEY  (`comment_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -120,6 +144,7 @@ CREATE TABLE `DropDownValues` (
 
 CREATE TABLE `ItemClasses` (
   `itemclass_id` int(9) unsigned NOT NULL auto_increment,
+  `itemclass_type` varchar(32) NOT NULL default 'SM_ITEMCLASS_MODEL',
   `itemclass_webid` varchar(16) NOT NULL default '',
   `itemclass_parent_id` int(9) NOT NULL default '0',
   `itemclass_name` varchar(40) NOT NULL default '',
@@ -128,6 +153,7 @@ CREATE TABLE `ItemClasses` (
   `itemclass_varname` varchar(64) NOT NULL default '',
   `itemclass_default_description_property_id` int(11) unsigned NOT NULL default '0',
   `itemclass_userid` int(11) NOT NULL default '0',
+  `itemclass_rating_max_score` smallint(3) NOT NULL default '5',
   PRIMARY KEY  (`itemclass_id`),
   UNIQUE KEY `itemclass_name` (`itemclass_name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
@@ -150,8 +176,8 @@ CREATE TABLE `ItemProperties` (
   `itemproperty_setting` char(1) collate utf8_unicode_ci NOT NULL default '',
   `itemproperty_setting_value` varchar(100) collate utf8_unicode_ci NOT NULL default '',
   `itemproperty_defaultvalue` varchar(100) collate utf8_unicode_ci NOT NULL default '',
+  `itemproperty_option_set_type` varchar(64) character set ascii NOT NULL default 'SM_PROPERTY_FILTERTYPE_NONE',
   `itemproperty_option_set_id` int(11) NOT NULL default '0',
-  `itemproperty_model_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`itemproperty_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -161,7 +187,7 @@ CREATE TABLE `ItemProperties` (
 -- Table structure for table `ItemPropertyValues`
 --
 
-CREATE TABLE `ItemPropertyValues` (
+CREATE TABLE IF NOT EXISTS `ItemPropertyValues` (
   `itempropertyvalue_id` int(9) NOT NULL auto_increment,
   `itempropertyvalue_item_id` int(9) NOT NULL default '0',
   `itempropertyvalue_property_id` int(9) NOT NULL default '0',
@@ -170,6 +196,7 @@ CREATE TABLE `ItemPropertyValues` (
   `itempropertyvalue_binary` longblob NOT NULL,
   `itempropertyvalue_draft_info` text NOT NULL,
   `itempropertyvalue_live_info` text NOT NULL,
+  `itempropertyvalue_language` varchar(8) NOT NULL default 'eng',
   PRIMARY KEY  (`itempropertyvalue_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -184,7 +211,7 @@ CREATE TABLE `Items` (
   `item_webid` varchar(32) character set utf8 NOT NULL default '',
   `item_itemclass_id` int(9) unsigned NOT NULL default '0',
   `item_shared` tinyint(1) unsigned NOT NULL default '0',
-  `item_name` varchar(64) character set utf8 NOT NULL default '',
+  `item_name` varchar(128) character set utf8 NOT NULL,
   `item_slug` varchar(127) character set utf8 NOT NULL default '',
   `item_public` enum('FALSE','TRUE') character set utf8 NOT NULL default 'FALSE',
   `item_search_field` text character set utf8 NOT NULL,
@@ -199,6 +226,10 @@ CREATE TABLE `Items` (
   `item_site_id` int(11) unsigned NOT NULL default '0',
   `item_metapage_id` int(11) unsigned NOT NULL default '0',
   `item_is_archived` tinyint(1) NOT NULL default '0',
+  `item_language` varchar(8) collate utf8_unicode_ci NOT NULL,
+  `item_num_hits` bigint(20) NOT NULL,
+  `item_num_ratings` int(11) NOT NULL,
+  `item_average_rating` float NOT NULL,
   PRIMARY KEY  (`item_id`),
   KEY `item_itemclass_id` (`item_itemclass_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -212,16 +243,17 @@ CREATE TABLE `Items` (
 CREATE TABLE `Lists` (
   `list_id` int(9) NOT NULL auto_increment,
   `list_name` varchar(32) NOT NULL default '',
-  `list_label` varchar(40) NOT NULL default '3',
+  `list_title` varchar(64) default '',
+  `list_type` varchar(32) NOT NULL default 'SM_LIST_ARTCULATED',
   `list_draft_set_id` int(9) unsigned NOT NULL default '0',
   `list_live_set_id` int(9) unsigned NOT NULL default '0',
-  `list_draft_template_file` varchar(32) NOT NULL default 'default_list.tpl',
-  `list_live_template_file` varchar(32) NOT NULL default 'default_list.tpl',
-  `list_draft_header_template` varchar(32) NOT NULL default '',
-  `list_draft_footer_template` varchar(32) NOT NULL default '',
-  `list_live_header_template` varchar(32) NOT NULL default '',
-  `list_live_footer_template` varchar(32) NOT NULL default '',
-  `list_minimum_length` smallint(1) default NULL,
+  `list_draft_template_file` varchar(64) NOT NULL default 'default_list.tpl',
+  `list_live_template_file` varchar(64) NOT NULL default 'default_list.tpl',
+  `list_draft_header_template` varchar(64) NOT NULL,
+  `list_draft_footer_template` varchar(64) NOT NULL,
+  `list_live_header_template` varchar(64) NOT NULL,
+  `list_live_footer_template` varchar(64) NOT NULL,
+  `list_maximum_length` int(2) NOT NULL default '0',
   `list_page_id` mediumint(9) NOT NULL default '0',
   `list_global` enum('1','0') NOT NULL default '1',
   PRIMARY KEY  (`list_id`)
@@ -238,6 +270,7 @@ CREATE TABLE `ManyToManyLookups` (
   `mtmlookup_type` varchar(64) NOT NULL default '',
   `mtmlookup_instance_name` varchar(64) NOT NULL default '',
   `mtmlookup_context_data` text NOT NULL,
+  `mtmlookup_order_index` mediumint(11) default NULL,
   `mtmlookup_entity_1_foreignkey` mediumint(11) NOT NULL default '0',
   `mtmlookup_entity_2_foreignkey` mediumint(11) NOT NULL default '0',
   `mtmlookup_entity_3_foreignkey` mediumint(11) NOT NULL default '0',
@@ -497,12 +530,15 @@ CREATE TABLE `Sets` (
   `set_label` varchar(64) NOT NULL default '',
   `set_itemclass_id` int(11) NOT NULL default '0',
   `set_data_source_site_id` varchar(16) NOT NULL default 'ALL',
-  `set_type` enum('DYNAMIC','STATIC') NOT NULL default 'DYNAMIC',
+  `set_type` varchar(32) NOT NULL default 'DYNAMIC',
   `set_sort_field` varchar(32) NOT NULL default '',
   `set_sort_direction` varchar(4) NOT NULL default 'ASC',
   `set_varname` varchar(64) NOT NULL default '',
   `set_site_id` int(11) unsigned NOT NULL default '0',
   `set_shared` int(11) unsigned NOT NULL default '0',
+  `set_lookup_source` varchar(32) NOT NULL,
+  `set_filter_type` varchar(32) NOT NULL,
+  `set_filter_value` varchar(32) NOT NULL,
   PRIMARY KEY  (`set_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
