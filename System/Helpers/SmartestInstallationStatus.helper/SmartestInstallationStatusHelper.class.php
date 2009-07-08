@@ -62,7 +62,8 @@ class SmartestInstallationStatusHelper{
                         $controller_domain = '';
                     }
                     
-                    $installer->createQuinceControllerFile('/'.$controller_domain);
+                    $installer->createQuinceControllerFile($controller_domain);
+                    $installer->createHtAccessFile('/'.$controller_domain);
                     
                     break;
                     
