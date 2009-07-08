@@ -61,7 +61,7 @@ if($stage->getParameter('db_connection_parameters')){
 
 <div class="form-row">
     <div class="form-row-label">URL Path</div>
-    http://<?php echo $_SERVER['HTTP_HOST']; ?>/<input type="text" name="controller_domain" style="width:75px" />/smartest
+    http://<?php echo $_SERVER['HTTP_HOST']; ?>/<input type="text" name="controller_domain" style="width:150px" value="<?php echo substr($_SERVER['REQUEST_URI'], 1, -1); ?>" />/smartest
     <div class="hint">You only need to put something in here if you are not running Smartest with its own host name, for example http://<?php echo $_SERVER['HTTP_HOST']; ?><strong>/running/in/a/folder/</strong>smartest</div>
 </div>
 

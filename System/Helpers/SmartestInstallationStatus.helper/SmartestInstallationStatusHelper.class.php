@@ -43,15 +43,24 @@ class SmartestInstallationStatusHelper{
                 switch($action){
 
                     case 'createConfigs':
+                    
                     $ph = new SmartestParameterHolder("New database connection parameters");
                     $ph->setParameter('username', $_POST['db_username']);
                     $ph->setParameter('password', $_POST['db_password']);
                     $ph->setParameter('database', $_POST['db_database']);
                     $ph->setParameter('host', $_POST['db_host']);
+                    
                     $installer = new SmartestInstaller;
                     $installer->createNewDatabaseConfig($ph);
                     $installer->createHtAccessFile();
-                    $installer->createQuinceControllerFile($_POST['controller_domain']);
+                    
+                    $controller_domain = $_POST['controller_domain'];
+                    
+                    if(isset($_POST['controller_domain']) && substr($controller_domain, -1, 1) != '/'){
+                        $controller_domain .= '/';
+                    }
+                    
+                    $installer->createQuinceControllerFile($controller_domain);
                     
                     break;
                     
@@ -175,7 +184,7 @@ class SmartestInstallationStatusHelper{
                         // Attempt to create site dir
                         $site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($sitename), 0, 64).'/';
 
-                	    mkdir($site_dir);
+                	    if(!is_dir($site_dir)){mkdir($site_dir);}
                 	    if(!is_dir($site_dir.'Presentation')){mkdir($site_dir.'Presentation');}
                 	    if(!is_dir($site_dir.'Configuration')){mkdir($site_dir.'Configuration');}
                 	    if(!is_file($site_dir.'Configuration/site.yml')){file_put_contents($site_dir.'Configuration/site.yml', '');}
@@ -201,7 +210,15 @@ class SmartestInstallationStatusHelper{
                             }
                         }
                         
-                        header("Location: /smartest/login");
+                        $cd = SmartestSystemSettingHelper::load('controller_domain');
+                        
+                        if(strlen($cd) && $cd != '/'){
+                            $location = '/'.$cd.'smartest/login';
+                        }else{
+                            $location = '/smartest/login';
+                        }
+                        
+                        header("Location: ".$location);
                         
                     }
                     
