@@ -1,4 +1,4 @@
-<?php
+◊<?php
 /**
  * Implements the installer file
  *
