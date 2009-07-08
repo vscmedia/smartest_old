@@ -1,7 +1,7 @@
 system:
   info:
     version: 0.3.7
-    revision: 250
+    revision: 251
   reserved_classes:
     - Assets
     - CmsFrontEnd
