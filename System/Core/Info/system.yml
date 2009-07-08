@@ -1,7 +1,7 @@
 system:
   info:
     version: 0.3.7
-    revision: 245
+    revision: 246
   reserved_classes:
     - Assets
     - CmsFrontEnd
@@ -52,6 +52,10 @@ system:
       - Library/ObjectModel/
       - Documents/
       - Documents/Deleted/
+      - Public/Resources/Images/
+      - Public/Resources/Assets/
+      - Public/Resources/Stylesheets/
+      - Public/Resources/Javascript/
       - System/Temporary/
       - System/Cache/TextFragments/Previews/
       - System/Cache/TextFragments/Live/
