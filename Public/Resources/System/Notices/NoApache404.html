@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  
+  <head>
+    <title>Apache Configuration for Smartest</title>
+  </head>
+  
+  <body>
+    <p>Hi - you're nearly there, but Smartest is (for now) dependent on the Apache web server, and in particular a directive that should read:</p>
+    
+    <p>
+      <code>
+        <pre>
+&lt;Directory "/path/to/your/smartest"&gt;
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+&lt;/Directory&gt;
+        </pre>
+      </code>
+    </p>
+    
+  </body>
+  
+</html>
