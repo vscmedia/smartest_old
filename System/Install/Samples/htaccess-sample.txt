@@ -30,6 +30,6 @@ Options +FollowSymLinks +ExecCGI
   RewriteCond %{REQUEST_URI} ^/Resources/
   RewriteRule ^(.*)$ index.php [QSA,L]
   
-  ErrorDocument 404 %REWRITE_BASE%Reseources/System/Notices/NoApache404.html
+  ErrorDocument 404 %REWRITE_BASE%Resources/System/Notices/NoApache404.html
   
 </IfModule>
