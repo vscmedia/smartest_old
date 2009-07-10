@@ -1,5 +1,7 @@
-Installing Smartest should be very simple.
+Installing Smartest is very simple.
 
-1) create an empty database, and a user that has permission to create tables there.
-2) chdir to the main Smartest dir and run: sudo bash System/Install/Scripts/install.sh
-3) there's no step three
+1) Create an empty database, and a user that has permission to create tables there.
+2) ./Public/index.php will handle the rest. Either just go to it, or better still give the ./Public/ dir its own hostname.
+3) There's no step three
+
+Note: Smartest is still currently dependent on Apache's mod_rewrite functionality, or equivalent; all requests to Smartest must go through a single entry point - ./Public/index.php, regardless of the URL.
