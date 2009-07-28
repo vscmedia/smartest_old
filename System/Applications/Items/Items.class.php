@@ -637,57 +637,53 @@ class Items extends SmartestSystemApplication{
     	    
     	    if($model->hydrate($model_id)){
 	        
-	            if(isset($post['items']) && is_array($post['items'])){
+	            if(isset($post['items'])){
 	            
-    	            $new_related_ids = array_keys($post['items']);
+	                if(is_array($post['items'])){
 	            
-    	            if(count($new_related_ids)){
+        	            $new_related_ids = array_keys($post['items']);
+	            
+        	            if(count($new_related_ids)){
 	                    
-	                    $items = $model->getSimpleItems();
+    	                    $items = $model->getSimpleItems();
 	                    
-	                    if($model->getId() == $item->getModelId()){
-    	                    $old_related_ids = $item->getRelatedItemIds(true);
-    	                    $same_model = true;
-	                    }else{
-	                        $old_related_ids = $item->getRelatedForeignItemIds(true, $model->getId());
-	                        $same_model = false;
-	                    }
+    	                    if($model->getId() == $item->getModelId()){
+        	                    $old_related_ids = $item->getRelatedItemIds(true);
+        	                    $same_model = true;
+    	                    }else{
+    	                        $old_related_ids = $item->getRelatedForeignItemIds(true, $model->getId());
+    	                        $same_model = false;
+    	                    }
 	                    
-	                    // print_r($old_related_ids);
-	                    // print_r($new_related_ids);
-	                    
-            	        foreach($items as $i){
+    	                    foreach($items as $i){
     	            
-            	            if(in_array($i->getId(), $new_related_ids) && !in_array($i->getId(), $old_related_ids)){
-            	                // add connection
-            	                // echo 'Add item '.$i->getName().'<br />';
-            	                if($same_model){
-            	                    $item->addRelatedItem($i->getId());
-            	                }else{
-            	                    $item->addRelatedForeignItem($i->getId());
-            	                }
-            	            }
+                	            if(in_array($i->getId(), $new_related_ids) && !in_array($i->getId(), $old_related_ids)){
+                	                // add connection
+                	                if($same_model){
+                	                    $item->addRelatedItem($i->getId());
+                	                }else{
+                	                    $item->addRelatedForeignItem($i->getId());
+                	                }
+                	            }
     	            
-            	            if(in_array($i->getId(), $old_related_ids) && !in_array($i->getId(), $new_related_ids)){
-            	                // remove connection
-            	                // echo 'Remove item '.$i->getName().'<br />';
-            	                if($same_model){
-            	                    $item->removeRelatedItem($i->getId());
-            	                }else{
-            	                    $item->removeRelatedForeignItem($i->getId());
-            	                }
-            	            }
-            	        }
+                	            if(in_array($i->getId(), $old_related_ids) && !in_array($i->getId(), $new_related_ids)){
+                	                // remove connection
+                	                if($same_model){
+                	                    $item->removeRelatedItem($i->getId());
+                	                }else{
+                	                    $item->removeRelatedForeignItem($i->getId());
+                	                }
+                	            }
+                	        }
     	        
-    	            }else{
-	                
-    	                $item->removeAllRelatedItems($model->getId());
-	                
-    	            }
-	            
+        	            }
     	        
+                    }else{
+                        $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of items', SmartestUserMessage::ERROR);
+                    }
+                    
                 }else{
-                    $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of items', SmartestUserMessage::ERROR);
+                    $item->removeAllRelatedItems($model->getId());
                 }
             
             }else{
