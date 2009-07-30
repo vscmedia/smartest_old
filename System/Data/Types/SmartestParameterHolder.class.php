@@ -27,6 +27,10 @@ class SmartestParameterHolder implements ArrayAccess{
         }
     }
     
+    public function absorb(SmartestParameterHolder $d){
+        $this->loadArray($d->getParameters());
+    }
+    
     public function __toString(){
         return 'SmartestParameterHolder: '.$this->_name;
     }

@@ -12,7 +12,7 @@ class SmartestLinkParser{
     
     public static function parseEasyLinks($string){
         
-        $pattern = '/\[(\[(([\w_-]+):)?([^\]\|]+)(\|([^\]]+))?\]|(https?:\/\/[^\s\]]+)(\s+([^\]]+))?)\]/i';
+        $pattern = '/\[(\[(([\w_-]+):)?([^\]\|]+)(\|([^\]]+))?\]|(\+)?(https?:\/\/[^\s\]]+)(\s+([^\]]+))?)\]/i';
         preg_match_all($pattern, $string, $matches, PREG_SET_ORDER);
         
         $links = array();
@@ -21,19 +21,23 @@ class SmartestLinkParser{
             
             foreach($matches as $m){
                 
-                if(isset($m[7])){ // this means link started with 'http', so it is external
+                if(isset($m[8])){ // this means link started with 'http', so it is external
                     
                     $l = new SmartestParameterHolder("Parsed Link Destination Properties: ".$m[7]);
                     
                     $l->setParameter('original', $m[0]);
                     
                     $l->setParameter('scope', SM_LINK_SCOPE_EXTERNAL);
-                    $l->setParameter('destination', $m[7]);
+                    $l->setParameter('destination', $m[8]);
+                    
+                    if(strlen($m[7])){
+                        $l->setParameter('newwin', true);
+                    }
                 
-                    if($m[9]){
-                        $l->setParameter('text', $m[9]);
+                    if($m[10]){
+                        $l->setParameter('text', $m[10]);
                     }else{
-                        $l->setParameter('text', $m[7]);
+                        $l->setParameter('text', $m[8]);
                     }
                     
                     $l->setParameter('format', SM_LINK_FORMAT_URL);
@@ -43,8 +47,15 @@ class SmartestLinkParser{
                     $l = new SmartestParameterHolder("Parsed Link Destination Properties: ".$m[2].SmartestStringHelper::toSlug($m[4]));
                     
                     $l->setParameter('scope', SM_LINK_SCOPE_INTERNAL);
-                    $l->setParameter('destination', $m[2].SmartestStringHelper::toSlug($m[4]));
                     $l->setParameter('namespace', $m[3]);
+                    
+                    if(in_array($m[3], array('image', 'asset', 'download'))){
+                        $l->setParameter('destination', $m[2].$m[4]);
+                        $l->setParameter('filename', $m[4]);
+                    }else{
+                        $l->setParameter('destination', $m[2].SmartestStringHelper::toSlug($m[4]));
+                    }
+                    
                     $l->setParameter('original', $m[0]);
                     
                     if(strpos($l->getParameter('destination'), '=')){

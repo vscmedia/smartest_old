@@ -84,6 +84,22 @@ function validateUploadSuffix(){
     <input type="hidden" name="MAX_FILE_SIZE" value="8000000" />
     <input type="hidden" name="input_mode" id="input_mode" value="{$starting_mode}" />
     
+    {if count($possible_groups)}
+      <div id="groups" class="special-box">
+    
+            <div>
+              Add this file to group:
+                <select name="initial_group_id">
+                  <option value="">None (for now)</option>
+    {foreach from=$possible_groups item="possible_group"}
+                  <option value="{$possible_group.id}">{$possible_group.label}</option>
+    {/foreach}
+                </select>
+            </div>
+    
+      </div>
+    {/if}
+    
     {load_interface file=$form_include}
     
     {if !empty($params)}<a id="params-holder-toggle-link" href="javascript:toggleParamsHolder()">Show Parameters</a>{/if}

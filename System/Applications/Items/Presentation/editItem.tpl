@@ -21,12 +21,10 @@
   <input type="text" name="item_name" value="{$item.name|escape_double_quotes}" style="width:250px" />
 </div>
 
-{if count($metapages)}
 <div class="edit-form-row">
-  <div class="form-section-label">{$item._model.name} short name (Used in URLS)</div>
+  <div class="form-section-label">{$item._model.name} short name (Used in links and URLS)</div>
   <input type="text" name="item_slug" value="{$item.slug}" style="width:250px" />
 </div>
-{/if}
 
 <div class="edit-form-row">
   <div class="form-section-label">Status</div>

@@ -39,6 +39,10 @@ class SmartestCmsLink extends SmartestHelper{
         $this->_markup_attributes = $this->getSeparatedAttributes($markup_attributes)->getParameter('html');
         $this->_render_data = $this->getSeparatedAttributes($markup_attributes)->getParameter('other');
         
+        // Give any HTML attributes passed by SmartestCmsLinkHelper a chance to be included
+        $extra_markup_attributes = $this->getSeparatedAttributes($this->_destination_properties)->getParameter('html');
+        $this->_markup_attributes->absorb($extra_markup_attributes);
+        
         $this->setTypeFromNameSpace($this->_destination_properties->getParameter('namespace'));
         
         $this->_loadDestination();
@@ -223,8 +227,6 @@ class SmartestCmsLink extends SmartestHelper{
                 $sql = "SELECT * FROM Pages WHERE page_".$this->_destination_properties->getParameter('page_ref_field_name')."='".$this->_destination_properties->getParameter('page_ref_field_value')."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_type='ITEMCLASS' AND page_deleted != 'TRUE'";
                 $result = $this->database->queryToArray($sql);
                 
-                // echo $sql;
-            
                 if(count($result)){
                     $d->hydrate($result[0]);
                     
@@ -235,8 +237,6 @@ class SmartestCmsLink extends SmartestHelper{
                     $sql = "SELECT * FROM Items WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND item_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND item_itemclass_id='{$d->getDatasetId()}' AND item_deleted != '1'";
                     $result = $this->database->queryToArray($sql);
                     
-                    // echo $sql;
-                
                     if(count($result)){
                         $d->setPrincipalItem(SmartestCmsItem::retrieveByPk($result[0]['item_id']));
                         $this->_destination = $d;
@@ -286,13 +286,14 @@ class SmartestCmsLink extends SmartestHelper{
             
             case SM_LINK_TYPE_IMAGE:
             $d = new SmartestAsset;
-            $d->hydrateBy('url', substr($this->_destination_properties->getParameter('destination'), 6));
+            $d->hydrateBy('url', $this->_destination_properties->getParameter('filename'));
             // print_r($d);
             $this->_destination = $d;
             break;
             
             case SM_LINK_TYPE_DOWNLOAD:
             $d = new SmartestAsset;
+            $d->hydrateBy('url', $this->_destination_properties->getParameter('filename'));
             $this->_destination = $d;
             break;
             
@@ -503,11 +504,17 @@ class SmartestCmsLink extends SmartestHelper{
             break;
     
             case SM_LINK_TYPE_DOWNLOAD:
-            return SM_CONTROLLER_DOMAIN.'download/'.$this->_destination->getUrl().'?key='.$this->_download->getWebid();
+            return SM_CONTROLLER_DOMAIN.'download/'.$this->_destination->getUrl().'?key='.$this->_destination->getWebid();
             break;
             
             case SM_LINK_TYPE_EXTERNAL:
-            return $this->_destination_properties->getParameter('destination');
+            
+            if($this->_destination_properties->getParameter('newwin')){
+                return "javascript:window.open('".$this->_destination_properties->getParameter('destination')."');";
+            }else{
+                return $this->_destination_properties->getParameter('destination');
+            }
+            
             break;
             
         }
@@ -516,16 +523,24 @@ class SmartestCmsLink extends SmartestHelper{
     
     public function render($draft_mode=false, $ama=''){
         
+        if($this->getType() == SM_LINK_TYPE_EXTERNAL){
+            
+            if($draft_mode && !$this->_destination_properties->getParameter('newwin')){
+                $this->_markup_attributes->setParameter('target', '_top');
+                $this->_markup_attributes->setParameter('onclick', "return confirm('You will be taken to an external page. Continue?')");
+            }else{
+                if($this->_markup_attributes->getParameter('target') == '_blank' || $this->_markup_attributes->getParameter('target') == '_new'){
+                    $this->_destination_properties->setParameter('newwin', true);
+                    $this->_markup_attributes->clearParameter('target');
+                }
+            }
+        }
+        
         $url = $this->getUrl($draft_mode);
         $contents = $this->getContent();
         
         if($draft_mode && ($this->getType() == SM_LINK_TYPE_PAGE || $this->getType() == SM_LINK_TYPE_METAPAGE) && $url != '#'){
             $this->_markup_attributes->setParameter('target', '_top');
-        }
-        
-        if($draft_mode && ($this->getType() == SM_LINK_TYPE_EXTERNAL)){
-            $this->_markup_attributes->setParameter('target', '_top');
-            $this->_markup_attributes->setParameter('onclick', "return confirm('You will be taken to an external page. Continue?')");
         }
         
         $sm = new SmartyManager('BasicRenderer');

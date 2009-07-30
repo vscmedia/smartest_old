@@ -263,9 +263,9 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        
 	        $database = SmartestPersistentObject::get('db:main');
 	        
-	        $asset_url = $get['url'].'.'.$get['suffix'];
+	        $asset_url = urldecode($get['url'].'.'.$get['suffix']);
 	        $asset_webid = $get['key'];
-	    
+	        
 	        $sql = "SELECT * FROM Assets WHERE asset_site_id='".$this->_site->getId()."' AND asset_url='".$asset_url."' AND asset_webid='".$asset_webid."'";
 	        $result = $database->queryToArray($sql);
 	        

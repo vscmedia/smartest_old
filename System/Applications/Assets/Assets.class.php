@@ -296,6 +296,10 @@ class Assets extends SmartestSystemApplication{
 		    $this->send($type['id'], 'type_code');
 		    $this->send($type, 'new_asset_type_info');
 		    
+		    $alh = new SmartestAssetsLibraryHelper;
+		    $possible_groups = $alh->getAssetGroupsThatAcceptType($asset_type);
+		    $this->send($possible_groups, 'possible_groups');
+		    
 		    if(isset($type['param'])){
 
     	        $raw_xml_params = $type['param'];
@@ -364,7 +368,7 @@ class Assets extends SmartestSystemApplication{
     		    $asset = new SmartestAsset;
     		    $asset->setType($asset_type);
     		    $asset->setSiteId($this->getSite()->getId());
-    		    $shared = $post['asset_shared'] ? 1 : 0;
+    		    $shared = isset($post['asset_shared']) ? 1 : 0;
     		    $asset->setShared($shared);
     		    $asset->setUserId($this->getUser()->getId());
     		    $asset->setCreated(time());
@@ -508,8 +512,25 @@ class Assets extends SmartestSystemApplication{
     		    if($everything_ok){
     		        $asset->setCreated(time());
     		        $asset->save();
-    		        $message = sprintf("The file was successfully saved as: %s", $asset->getUrl());
-    		        $this->addUserMessageToNextRequest($message, SmartestUserMessage::SUCCESS);
+    		        
+    		        if(strlen($post['initial_group_id']) && is_numeric($post['initial_group_id'])){
+    		            $group = new SmartestAssetGroup;
+    		            
+    		            if($group->find($post['initial_group_id'])){
+    		                $asset->addToGroupById($post['initial_group_id'], true);
+    		                $message = sprintf("The file was successfully saved as '%s' and added to group '%s'.", $asset->getUrl(), $group->getLabel());
+    		                $status = SmartestUserMessage::SUCCESS;
+    		            }else{
+    		                $message = sprintf("The file was successfully saved as '%s', but the selected group ID was not recognized.", $asset->getUrl());
+    		                $status = SmartestUserMessage::INFO;
+    		            }
+    		            
+    		        }else{
+    		            $message = sprintf("The file was successfully saved as '%s'", $asset->getUrl());
+    		            $status = SmartestUserMessage::SUCCESS;
+    		        }
+    		        
+    		        $this->addUserMessageToNextRequest($message, $status);
     		        SmartestLog::getInstance('site')->log($this->getUser().' created file: '.$asset->getUrl(), SmartestLog::USER_ACTION);
     		    }else{
     		        $this->addUserMessageToNextRequest("There was an error creating the new file.", SmartestUserMessage::ERROR);
