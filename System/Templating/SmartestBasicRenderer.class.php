@@ -214,7 +214,17 @@ class SmartestBasicRenderer extends SmartestEngine{
         $ph = new SmartestParameterHolder("Link Attibutes: ".$link->getDestinationProperties()->getParameter('destination'));
         
         if($link->hasError()){
-            return $this->raiseError($link->getErrorMessage());
+            
+            // eo = Error Output
+            $eo = '';
+            
+            if($link->getDestinationProperties()->getParameter('text') && ($link->getDestinationProperties()->getParameter('text') != SmartestLinkParser::LINK_TARGET_TITLE)){
+                $eo .= $link->getDestinationProperties()->getParameter('text');
+            }
+            
+            $eo .= $this->raiseError($link->getErrorMessage());
+            
+            return $eo;
         }
         
         $render_process_id = 'dynamic_link_'.substr(md5($link->getUrl($this->draft_mode)), 0, 8);

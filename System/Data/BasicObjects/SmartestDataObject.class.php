@@ -395,6 +395,7 @@ class SmartestDataObject implements ArrayAccess{
 	                if(isset($this->_no_prefix[$fn])){
 	                    $this->_properties[$fn] = $id[$fn];
 	                }else{
+	                    // this needs to be made faster
 	                    $this->_properties[substr($fn, $offset)] = $id[$fn];
 	                }
 	            }
@@ -406,7 +407,7 @@ class SmartestDataObject implements ArrayAccess{
 		
 		}else if(is_object($id) && (!method_exists($id, '__toString') || !is_numeric($id->__toString()))){
 		    
-		    throw new SmartestException("Tried to hydrate a ".__CLASS__." object with another object (of type ".get_class($id).")");
+		    throw new SmartestException("Tried to hydrate a ".get_class($this)." object with another object (of type ".get_class($id).")");
 		
 		}else{
 		    
@@ -450,7 +451,7 @@ class SmartestDataObject implements ArrayAccess{
             
             SmartestLog::getInstance('system')->log(get_class($this)."->find() called without a valid ID.", SmartestLog::WARNING);
             // A bit harsh:
-            // throw new SmartestException("SmartestDataObject->find() must be called with a valid ID or data array.");
+            // throw new SmartestException("SmartestDataObject->find() must be called with a valid ID.");
             
         }
 	    

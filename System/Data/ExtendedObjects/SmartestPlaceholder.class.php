@@ -107,6 +107,13 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	    
 	}
 	
+	public function acceptsImages(){
+	    
+	    $type = $this->getTypeInfo();
+        $type_codes = $type['accept'];
+	    
+	}
+	
 	public function getAssetsByType(){
 	    
 	    /* if(!is_numeric($site_id)){

@@ -271,21 +271,35 @@ class SmartestFileSystemHelper extends SmartestHelper{
     	    // the fastest way of getting the filename without the directory
     	    $actual_file = end($path_parts);
     	    
-    	    // the reason we do it like this is because dirname() and basename() throw errors if the files don't exist - this way we can control that.
+    	    // the reason we do it like this is because dirname() and basename() issue errors if the files don't exist - this way we can control that.
     	    $negative_start = (mb_strlen($actual_file) * -1);
     	    $directory = mb_substr($full_path, 0, $negative_start);
     	    
-    	    $file_without_suffix = SmartestStringHelper::removeDotSuffix($actual_file);
-    	    $file_suffix = SmartestStringHelper::getDotSuffix($actual_file);
+    	    $use_suffix = self::hasDotSuffix($full_path);
+    	    
+    	    if($use_suffix){
+    	    
+    	        $file_without_suffix = SmartestStringHelper::removeDotSuffix($actual_file);
+    	        $file_suffix = SmartestStringHelper::getDotSuffix($actual_file);
+    	    
+	        }else{
+	            
+	            $file_without_suffix = $actual_file;
+	            
+	        }
     	    
     	    if(preg_match('/(.+)-(\d+)$/', $file_without_suffix, $matches)){
     	        $number = $matches[2];
     	        $file_name_trunk = $matches[1];
     	        $try_file = $actual_file;
     	    }else{
-    	        $try_file = $file_without_suffix.'-1.'.$file_suffix;
-    	        $file_name_trunk = $file_without_suffix;
-    	        // return $directory.$new_file_name;
+    	        if($use_suffix){
+    	            $try_file = $file_without_suffix.'-1.'.$file_suffix;
+    	            $file_name_trunk = $file_without_suffix;
+	            }else{
+	                $try_file = $file_without_suffix.'-1';
+    	            $file_name_trunk = $file_without_suffix;
+	            }
     	    }
 	        
 	        if(is_dir($directory)){
@@ -297,7 +311,11 @@ class SmartestFileSystemHelper extends SmartestHelper{
                 
                 while($counter < $max_tries && in_array($try_file, $contents)){
                     $counter++;
-                    $try_file = $file_name_trunk.'-'.$counter.'.'.$file_suffix;
+                    if($use_suffix){
+                        $try_file = $file_name_trunk.'-'.$counter.'.'.$file_suffix;
+                    }else{
+                        $try_file = $file_name_trunk.'-'.$counter;
+                    }
                 }
                 
                 return $directory.$try_file;
@@ -310,8 +328,12 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    
 	}
 	
-	static function getFileSuffix($file){
+	static function getDotSuffix($file){
 		return SmartestStringHelper::getDotSuffix($file);
+	}
+	
+	static function hasDotSuffix($file){
+	    return (bool) strlen(SmartestStringHelper::getDotSuffix($file));
 	}
 	
 	static function setSuffix(){

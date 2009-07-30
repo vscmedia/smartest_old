@@ -98,29 +98,7 @@ class Desktop extends SmartestSystemApplication{
 			        
 			        if(!$site->getDirectoryName()){
 			        
-			            /* $site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64).'/';
-
-                	    if(is_dir($site_dir)){
-                	        $old_site_dir = 
-                	        $folder = $site->getName().microtime();
-                	        $site_dir = SM_ROOT_DIR.'Sites/'.sha1($folder).'/';
-                	    }
-
-                	    mkdir($site_dir);
-                	    if(!is_dir($site_dir.'Presentation')){mkdir($site_dir.'Presentation');}
-                	    if(!is_dir($site_dir.'Configuration')){mkdir($site_dir.'Configuration');}
-                	    if(!is_file($site_dir.'Configuration/site.yml')){file_put_contents($site_dir.'Configuration/site.yml', '');}
-                	    if(!is_dir($site_dir.'Library')){mkdir($site_dir.'Library');}
-                	    if(!is_dir($site_dir.'Library/Actions')){mkdir($site_dir.'Library/Actions');}
-                	    $actions_class_name = SmartestStringHelper::toCamelCase($site->getName()).'Actions';
-                	    $class_file_contents = file_get_contents(SM_ROOT_DIR.'System/Base/ClassTemplates/SiteActions.class.php.txt');
-                	    $class_file_contents = str_replace('__TIMESTAMP__', time('Y-m-d h:i:s'), $class_file_contents);
-                	    if(!is_file($site_dir.'Library/Actions/SiteActions.class.php')){file_put_contents($site_dir.'Library/Actions/SiteActions.class.php', $class_file_contents);}
-                	    chmod($site_dir.'Library/Actions/SiteActions.class.php', 0666);
-                	    $site->setDirectoryName(substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64));
-                	    $site->save(); */
-                	    
-                	    SmartestSiteCreationHelper::createSiteDirectory($site);
+			            SmartestSiteCreationHelper::createSiteDirectory($site);
             		
         		    }
             		

@@ -445,6 +445,7 @@ class Assets extends SmartestSystemApplication{
         		            $message = sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name));
         		            $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
         		            SmartestLog::getInstance('site')->log($message, SmartestLog::ERROR);
+        		            SmartestLog::getInstance('site')->log("File that failed to move to final location is still stored at: ".$new_temp_file, SmartestLog::NOTICE);
         		        }else{
         		            $asset->setUrl(basename($final_file_name));
         		            $asset->setWebid(SmartestStringHelper::random(32));

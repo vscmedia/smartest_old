@@ -53,7 +53,7 @@ class SmartestMysql{
 			
 		}else{
 		    if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);
-		    $e = new SmartestDatabaseException("Could not connect to MySQL.", SmartestDatabaseException::CONNECTION_IMPOSSIBLE);
+		    $e = new SmartestDatabaseException("Could not connect to MySQL. MySQL says: ".mysql_error().".", SmartestDatabaseException::CONNECTION_IMPOSSIBLE);
 			$e->setUsername($this->connection_config['username']);
 		    $e->setHost($this->connection_config['host']);
 		    $e->setDatabase($this->connection_config['database']);

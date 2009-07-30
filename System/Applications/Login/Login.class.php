@@ -6,7 +6,7 @@ class Login extends SmartestSystemApplication{
 		$this->setTitle("Start Page");
 	}
 	
-	function preferences(){
+	/* function preferences(){
 	
 		$sql = "SELECT * FROM User, UserGroup WHERE User.user_group = UserGroup.usergroup_id";    
 		$users = $this->manager->database->rawQuery($sql);
@@ -18,10 +18,14 @@ class Login extends SmartestSystemApplication{
 		}else{
 			return false;
 		}    
-	}
+	} */
 	
 	function loginScreen($get){
-		// TODO: if user is already logged in, forward to desktop
+		
+		if($this->getUser() && $this->getUser()->isAuthenticated()){
+		    $this->redirect('/smartest');
+		}
+		
 		if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING']) && isset($get['from'])){
 		    
 		    // echo 'query_string';

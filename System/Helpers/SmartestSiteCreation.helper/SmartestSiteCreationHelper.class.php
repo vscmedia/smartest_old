@@ -132,9 +132,10 @@ class SmartestSiteCreationHelper{
         $site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64).'/';
 	    
 	    if(is_dir($site_dir)){
-	        $old_site_dir = 
-	        $folder = $site->getName().microtime();
-	        $site_dir = SM_ROOT_DIR.'Sites/'.sha1($folder).'/';
+	        // $old_site_dir = 
+	        // $folder = $site->getName().microtime();
+	        // $site_dir = SM_ROOT_DIR.'Sites/'.sha1($folder).'/';
+	        $site_dir = SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($site->getName()), 0, 64).'/');
 	    }
 	    
 	    mkdir($site_dir);

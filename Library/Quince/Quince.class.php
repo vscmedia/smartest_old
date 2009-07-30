@@ -317,8 +317,10 @@ class Quince{
     		}
 		
     		if(strlen($this->xmlDataArray[$path_key]) > 1){
-			
-    			$this->domainPath = $this->xmlDataArray[$path_key];
+			    
+			    $url = preg_replace('/\/{2,}/', '/', $url);
+			    
+			    $this->domainPath = $this->xmlDataArray[$path_key];
 			
     			if(substr($this->domainPath, -1) != "/"){
     				$this->domainPath .='/';

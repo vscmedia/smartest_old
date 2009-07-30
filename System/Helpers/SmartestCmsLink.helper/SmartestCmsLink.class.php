@@ -241,11 +241,11 @@ class SmartestCmsLink extends SmartestHelper{
                         $d->setPrincipalItem(SmartestCmsItem::retrieveByPk($result[0]['item_id']));
                         $this->_destination = $d;
                     }else{
-                        return $this->error("The requested item was not found.");
+                        return $this->error("The requested item was not found. (Link destination: ".$this->_destination_properties->getParameter('destination').')');
                     }
                 
                 }else{
-                    return $this->error("The requested page was not found.");
+                    return $this->error("The requested page was not found. (Link destination: ".$this->_destination_properties->getParameter('destination').')');
                 }
             
             }else if($this->_destination_properties->getParameter('format') == SM_LINK_FORMAT_USER){
@@ -255,7 +255,7 @@ class SmartestCmsLink extends SmartestHelper{
                 $model_id = $model_names[$this->_destination_properties->getParameter('namespace')];
                 
                 // user-formatted wikipedia style links. start with the item, figure out the metapage, and go from there
-                $sql = "SELECT Items.*, ItemClasses.itemclass_varname, ItemClasses.itemclass_name, ItemClasses.itemclass_id FROM Items, ItemClasses WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND ItemClasses.itemclass_id='".$model_id."' AND Items.item_itemclass_id=ItemClasses.itemclass_id AND item_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND item_deleted != '1'";
+                $sql = "SELECT Items.item_id, Items.item_slug, Items.item_webid, Items.item_itemclass_id, Items.item_site_id, Items.item_deleted, ItemClasses.itemclass_varname, ItemClasses.itemclass_name, ItemClasses.itemclass_id FROM Items, ItemClasses WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND ItemClasses.itemclass_id='".$model_id."' AND Items.item_itemclass_id=ItemClasses.itemclass_id AND item_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND item_deleted != '1'";
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
@@ -273,11 +273,11 @@ class SmartestCmsLink extends SmartestHelper{
                         $this->_destination = $d;
                     
                     }else{
-                        return $this->error("The requested page was not found.");
+                        return $this->error("The requested page was not found. (Link destination: ".$this->_destination_properties->getParameter('destination').')');
                     }
                     
                 }else{
-                    return $this->error("The requested item was not found.");
+                    return $this->error("The requested item was not found. (Link destination: ".$this->_destination_properties->getParameter('destination').')');
                 }
                 
             }

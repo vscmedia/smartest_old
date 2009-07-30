@@ -270,7 +270,7 @@ class SmartestUser extends SmartestBaseUser{
 		$this->reloadTokens();
 	}
 	
-	public function isAuthenicated(){
+	public function isAuthenticated(){
 		
 		// only works for the current logged in user
 		if(SmartestSession::get('user:isAuthenticated')){
