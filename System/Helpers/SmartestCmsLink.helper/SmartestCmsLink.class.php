@@ -412,7 +412,7 @@ class SmartestCmsLink extends SmartestHelper{
             
             if($this->getType() == SM_LINK_TYPE_EXTERNAL){
                 
-                return $this->getUrl();
+                return $this->_destination_properties->getParameter('destination');
                 
             }else{
                 
