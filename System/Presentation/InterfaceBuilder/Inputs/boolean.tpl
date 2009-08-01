@@ -1,0 +1,3 @@
+<div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
+True&nbsp;<input type="radio" name="item[{$property.id}]" value="TRUE"{if $value.value == true} checked="checked"{/if} />
+False&nbsp;<input type="radio" name="item[{$property.id}]" value="FALSE"{if $value.value == false} checked="checked"{/if} />

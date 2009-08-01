@@ -39,5 +39,12 @@
   	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/assetGroups'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" border="0" alt="" style="width:16px;height:16px" /> View file groups</a></li>
   	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Create a new file group</a></li>
   </ul>
+  
+  <ul class="actions-list" id="non-specific-actions">
+    <li><span style="color:#999">Recently edited files</span></li>
+    {foreach from=$recent_assets item="recent_asset"}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_asset.action_url}'"><img border="0" src="{$recent_asset.small_icon}" /> {$recent_asset.label}</a></li>
+    {/foreach}
+  </ul>
 
 </div>

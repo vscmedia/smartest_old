@@ -23,7 +23,6 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 
 	function newLogin($username, $password, $service='smartest'){
 		if($user = $this->checkLoginDetails($username, $password, $service)){
-			// $this->
 			return $user;
 		}else{
 			return false;
@@ -37,27 +36,18 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		
 		if(count($user) > 0){
 			
-			// SmartestSession::set('user:array', $user[0]);
-			
-			$userObj = new SmartestUser;
+			if($service == 'smartest'){
+			    $userObj = new SmartestSystemUser;
+			}else{
+			    $userObj = new SmartestUser;
+		    }
+		    
 			$userObj->hydrate($user[0]);
-			
 			$userObj->getTokens();
-			
-			// print_r($userObj);
-			
-			// SmartestPersistentObject::set('user', $userObj);
-			
-			// delete these eventually
-			// $_SESSION["user"] = $user[0];
-			// $this->user =& $_SESSION["user"];
-			// $_SESSION["userLoggedIn"] = "TRUE";
 			
 			SmartestSession::set('user:isAuthenticated', true);
 			
-			// 
 			$this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
-			$this->getUserPermissionTokens();
 			
 			return $userObj;
 		}else{
@@ -74,7 +64,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		}
 	}
 	
-	function getUserPermissionTokens(){
+	/* function getUserPermissionTokens(){
 		
 		$sql = "SELECT UserTokens.token_code FROM UsersTokensLookup,UserTokens WHERE UsersTokensLookup.utlookup_user_id='".$_SESSION["user"]["user_id"]."' AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id";
 		
@@ -86,13 +76,12 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		
 		// $_SESSION["user"]["tokens"] = $tokens;
 		
-		return $_SESSION["user"]["tokens"];
+		// return $_SESSION["user"]["tokens"];
 		
-	}
+	} */
 	
 	function logout(){
 		$this->userLoggedIn = false;
-		// SmartestPersistentObject::set('user:isAuthenticated', false);
 		SmartestSession::clearAll();
 		$this->user = array();
 	}

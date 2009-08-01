@@ -25,6 +25,9 @@ class Items extends SmartestSystemApplication{
 		$models = $du->getModelsAsArrays();
 		$this->send($models, 'models');
 		
+		$recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId());
+        $this->send($recent, 'recent_items');
+		
 	}
 	
 	public function getItemClassSets($get){
@@ -92,6 +95,9 @@ class Items extends SmartestSystemApplication{
   	        $this->send(count($items), 'num_items');
   	        $this->send($model, 'model');
   	        $this->send($query, 'query');
+  	        
+  	        $recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $model_id);
+  	        $this->send($recent, 'recent_items');
   	        
   	    }else{
   	        $this->addUserMessageToNextRequest('The model ID was not recognized.', SmartestUserMessage::ERROR);
@@ -354,42 +360,51 @@ class Items extends SmartestSystemApplication{
 	public function openItem($get){
 	    
 	    $item = new SmartestItem;
-	    $item->hydrate($get['item_id']);
 	    
-	    if($item->getIsHeld() && $item->getHeldBy() != $this->getUser()->getId()){
-	        // item is being edited by somebody else
-	        $u = new SmartestUser;
-	        $u->hydrate($item->getHeldBy());
-	        $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
-		if($get['from']=='todoList'){
-		    $this->redirect('/smartest/todo');
-		}else{
-	            $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
-		}
-	    }else{
-	        if($this->getUser()->hasToken('modify_items')){
+	    if($item->find($get['item_id'])){
+	    
+	        if($item->getIsHeld() && $item->getHeldBy() != $this->getUser()->getId()){
+    	        
+    	        // item is being edited by somebody else
+    	        $u = new SmartestUser;
+    	        $u->hydrate($item->getHeldBy());
+    	        $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
+    		    
+    		    if($get['from']=='todoList'){
+        		    $this->redirect('/smartest/todo');
+        		}else{
+        	        $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
+        		}
+    		
+    	    }else{
+    	        
+    	        if($this->getUser()->hasToken('modify_items')){
+                    
+                    $item->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
+                    
+                    $item->setIsHeld(1);
+                    $item->setHeldBy($this->getUser()->getId());
+                    $item->save();
                 
-                $item->setIsHeld(1);
-                $item->setHeldBy($this->getUser()->getId());
-                $item->save();
+                    if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId())){
+    	                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId(), 0);
+                    }
                 
-                if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId())){
-	                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId(), 0);
-                }
-                
-		$destination = '/'.SM_CONTROLLER_MODULE.'/editItem?item_id='.$item->getId();
+    		        $destination = '/'.SM_CONTROLLER_MODULE.'/editItem?item_id='.$item->getId();
 		
-		if(isset($get['from'])){
-		    $destination .= '&from='.$get['from'];
-		}
+    	    	    if(isset($get['from'])){
+            		    $destination .= '&from='.$get['from'];
+            		}
 		    
-                $this->redirect($destination);
+                    $this->redirect($destination);
                 
-            }else{
-                $this->addUserMessageToNextRequest('You don\'t have permssion to edit items', SmartestUserMessage::ACCESS_DENIED);
-                $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
-            }
-	    }
+                }else{
+                    $this->addUserMessageToNextRequest('You don\'t have permssion to edit items', SmartestUserMessage::ACCESS_DENIED);
+                    $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
+                }
+    	    }
+        }
+	    
 	}
 	
 	public function releaseItem($get){
@@ -921,22 +936,34 @@ class Items extends SmartestSystemApplication{
 	    
 	    $model = new SmartestModel;
 	    
+	    $error = false;
+	    
 	    if($model->hydrate($model_id)){
 	        
-	        if(isset($post['itemclass_default_metapage_id']) && is_numeric($post['itemclass_default_metapage_id'])){
-	            $model->setDefaultMetaPageId($this->getSite()->getId(), (int) $post['itemclass_default_metapage_id']);
+	        if(isset($post['itemclass_default_metapage_id'])){
+	            if(is_numeric($post['itemclass_default_metapage_id'])){
+	                $model->setDefaultMetaPageId($this->getSite()->getId(), (int) $post['itemclass_default_metapage_id']);
+                }else if($post['itemclass_default_metapage_id'] == 'NONE'){
+                    $model->clearDefaultMetaPageId($this->getSite()->getId());
+                }
             }
             
             if(isset($post['itemclass_plural_name']) && strlen($post['itemclass_plural_name'])){
                 $model->setPluralName($post['itemclass_plural_name']);
             }else{
                 $this->addUserMessageToNextRequest("The plural name you entered was invalid.");
+                $error = true;
             }
             
             if(isset($post['itemclass_default_description_property_id']) && is_numeric($post['itemclass_default_description_property_id'])){
                 $model->setDefaultDescriptionPropertyId($post['itemclass_default_description_property_id']);
             }else{
                 $this->addUserMessageToNextRequest("The plural name you entered was invalid.", SmartestUserMessage::WARNING);
+                $error = true;
+            }
+            
+            if(!$error){
+                $this->addUserMessageToNextRequest("The model has been successfully updated.", SmartestUserMessage::SUCCESS);
             }
             
             $model->save();
@@ -955,6 +982,8 @@ class Items extends SmartestSystemApplication{
 	    $item = SmartestCmsItem::retrieveByPk($item_id);
 	    
 	    if(is_object($item)){
+	        
+	        $this->setFormReturnUri();
 	        
 	        $item_array = $item->__toArray(true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
 		    $this->send($item->getModel()->getMetaPagesAsArrays(), 'metapages');
@@ -984,8 +1013,14 @@ class Items extends SmartestSystemApplication{
 		    
 		    if($page = $item->getMetaPage()){
 		        $this->send(true, 'has_page');
-		        $this->send($page->__toArray(), 'page');
+		        $this->send($page, 'page');
 		    }
+		    
+		    $sets = $item->getItem()->getCurrentStaticSets();
+		    $this->send($sets, 'sets');
+		    
+		    $possible_sets = $item->getItem()->getPossibleSets();
+		    $this->send($possible_sets, 'possible_sets');
 		    
 		    $this->setTitle($item->getModel()->getName().' Information | '.$item->getName());
 		    $this->send($item_array, 'item');
@@ -1032,15 +1067,29 @@ class Items extends SmartestSystemApplication{
 		
 		$item = SmartestCmsItem::retrieveByPk($item_id);
 		
-	        // print_r($item);
+	    // print_r($item);
 	    
 	    if(is_object($item)){
+	        
+	        if($item->getItem()->getIsHeld() && $item->getItem()->getHeldBy() != $this->getUser()->getId()){
+	            $this->addUserMessageToNextRequest('The item is already being edited.', SmartestUserMessage::ACCESS_DENIED);
+	            SmartestLog::getInstance('site')->log('Suspicious activity: '.$this->getUser()->__toString().' tried to edit '.strtolower($item->getModel()->getName()).' \''.$item->getName().'\' via direct URL entry.');
+    		    $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItem()->getItemclassId());
+	        }
 		    
 		    $item_array = $item->__toArray(true, true, true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
 		    $this->send($item->getModel()->getMetaPagesAsArrays(), 'metapages');
 		    $this->setTitle('Edit '.$item->getModel()->getName().' | '.$item->getName());
 		    $this->send($item_array, 'item');
 		    $this->send(true, 'allow_edit_item_name');
+		    
+		    $sets = $item->getItem()->getCurrentStaticSets();
+		    $this->send($sets, 'sets');
+		    
+		    $possible_sets = $item->getItem()->getPossibleSets();
+		    $this->send($possible_sets, 'possible_sets');
+		    
+		    $this->getUser()->addRecentlyEditedItemById($item_id, $this->getSite()->getId());
 		    
 		    $page = new SmartestPage;
 		    
@@ -1636,6 +1685,7 @@ class Items extends SmartestSystemApplication{
 		    
 		    $property->save();
 		    $this->addUserMessageToNextRequest('The property was updated.', SmartestUserMessage::SUCCESS);
+		    SmartestCache::clear('model_properties_'.$property->getItemclassId(), true);
 	    
         }else{
             
@@ -2236,4 +2286,5 @@ class Items extends SmartestSystemApplication{
 	public function addSet($get){
 		$this->redirect("/sets/addSet?class_id=".$get['class_id']);
 	}
+	
 }

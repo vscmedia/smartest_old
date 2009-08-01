@@ -29,7 +29,7 @@ function updateSetConditionsFormFromOperator(condition, value){
 
 <div id="work-area">
 
-<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/sets">Sets</a> &gt; {$set.label}</h3>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; {if $model.id}<a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}sets/getItemClassSets?class_id={$model.id}">Sets</a>{else}<a href="{$domain}smartest/sets">Sets</a>{/if} &gt; {$set.label}</h3>
 
 <div class="instruction">Create conditions to filter your data into a pre-saved set that can be used anywhere.</div>
 

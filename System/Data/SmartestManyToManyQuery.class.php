@@ -10,7 +10,9 @@ class SmartestManyToManyQuery{
     protected $_qualifyingEntities = array();
     protected $_allowedInstanceNames = array();
     protected $_foreignTableConstraints = array();
-    protected $_sortField = null;
+    protected $_sortFields = array();
+    protected $_sortDirection = 'ASC';
+    protected $_resultLimit = 0;
     protected $_helper;
     protected $_central_node_id; // only used in networks
     protected $_query = null;
@@ -62,19 +64,29 @@ class SmartestManyToManyQuery{
             }
         }
         
-        // print_r($this->getTargetEntity());
+    }
+    
+    public function getSortFields(){
+        
+        return $this->_sortFields;
         
     }
     
-    public function getSortField(){
+    public function getSortFieldsForQuery(){
         
-        if(!$this->_sortField){
-            if($this->_type->getMethod() != 'SM_MTMLOOKUPMETHOD_NETWORK' && !$this->_type->usesInstances() && !$this->_sortField){
-                $this->_sortField = $this->getTargetEntity()->getEntity()->getForeignKeyField();
+        if(empty($this->_sortFields)){
+            if($this->_type->getMethod() != 'SM_MTMLOOKUPMETHOD_NETWORK'){
+                // $this->_sortField = $this->getTargetEntity()->getEntity()->getForeignKeyField();
+                if($this->_type->usesInstances()){
+                    return 'ManyToManyLookups.mtmlookup_instance_name';
+                }else{
+                    return $this->getTargetEntity()->getEntity()->getForeignKeyField();
+                }
             }
+        }else{
+            return implode(', ', $this->_sortFields);
         }
         
-        return $this->_sortField;
     }
     
     public function createNetworkLinkBetween($id_1, $id_2){
@@ -157,7 +169,23 @@ class SmartestManyToManyQuery{
     }
     
     public function addSortField($full_field){
-        $this->_sortField = $full_field;
+        if(!in_array($full_field, $this->_sortFields)){
+            $this->_sortFields[] = $full_field;
+        }
+    }
+    
+    public function setSortDirection($direction){
+        
+        if($direction != 'ASC' && $direction != 'DESC'){
+            $direction = 'DESC';
+            SmartestLog::getInstance('system')->log('SmartestManyToManyQuery->setSortDirection() only accepts ASC and DESC as values. '.$direction.' given.');
+        }
+        
+        $this->_sortDirection = $direction;
+    }
+    
+    public function setLimit($limit){
+        $this->_resultLimit = (int) $limit;
     }
     
     public function addAllowedInstanceName($instance){
@@ -279,7 +307,13 @@ class SmartestManyToManyQuery{
         
         }
         
-        $query .= ' ORDER BY '.$this->getSortField();
+        $query .= ' ORDER BY '.$this->getSortFieldsForQuery();
+        $query .= ' '.$this->_sortDirection;
+        
+        if($this->_resultLimit > 0){
+            $query .= ' LIMIT '.$this->_resultLimit;
+        }
+        
         $this->_query = $query;
         
         return $query;

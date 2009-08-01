@@ -51,12 +51,6 @@ class SmartestResponse{
 	// The database/data-access object
 	var $database_sqllite;
 	
-	// The settings from Configuration/options.ini
-	var $userOptions;
-	
-	// The settings from Configuration/system.ini
-	var $systemOptions;
-	
 	// The settings from Configuration/database.ini
 	var $dbconfig;
 	
@@ -177,6 +171,7 @@ class SmartestResponse{
         	'System/Data/SmartestManyToManyQuery.class.php',
         	'System/Data/SmartestObjectModelHelper.class.php',
         	'System/Data/SmartestGenericListedObject.class.php',
+        	'System/Data/SmartestSystemUiObject.interface.php',
         	'Library/Quince/Quince.class.php',
         	'Library/Quince/QuinceException.class.php',
         	'Library/Quince/QuinceBase.interface.php',
@@ -244,30 +239,6 @@ class SmartestResponse{
 		if(defined('SM_DEVELOPER_MODE') && constant('SM_DEVELOPER_MODE')){
 			$this->configuration->flushAll();
 		}
-		
-		// load user-defined options
-		/*try{
-			$this->userOptions = $this->configuration->getUserOptions();
-		} catch(SmartestException $e){
-			$this->errorFromException($e);
-		}*/
-		
-		// load system-essential settings
-		// this will probably be moved to sqlite
-		/*try{
-			$this->systemOptions = $this->configuration->getSystemOptions();
-		} catch(SmartestException $e){
-			$this->errorFromException($e);
-		}*/
-		
-		// load measuring units
-		/*try{
-			$this->measuringUnits = $this->configuration->getMeasuringUnits();
-		} catch(SmartestException $e){
-			$this->errorFromException($e);
-		}*/
-		
-		$this->_log("System settings and options loaded.");
 		
 		// instantiate database object
 		try{

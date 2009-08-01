@@ -56,7 +56,7 @@ function viewPage(){
 <div id="work-area">
 
 <h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$itemclass.id}">{$itemclass.plural_name}</a> &gt; Properties</h3>
-<a name="top"></a>
+
 <div class="text" style="margin-bottom:10px">Click a property once and choose from the options on the right.</div>
 
 <form id="pageViewForm" method="get" action="">
@@ -64,13 +64,12 @@ function viewPage(){
 <input type="hidden" name="itemproperty_id" value="" id="item_id_input" />
 </form>
 
-<ul class="tree-parent-node-open" id="tree-root">
+<ul class="options-list" id="tree-root">
   {defun name="menurecursion" list=$definition}
        {foreach from=$list item="element"}
     <li>
        <a id="item_{$element.id}" class="option" href="javascript:nothing()" onclick="setSelectedItem('{$element.id}');" ondblclick="window.location='{$domain}{$section}/editItemProperty?class_id={$itemclass.id}&amp;itemproperty_id={$element.id}'">		 
-        <img border="0" src="{$domain}Resources/Icons/page_code.png" />
-        {$element.varname}
+        <img border="0" src="{$domain}Resources/Icons/page_code.png" />{$element.name}
       </a>
      
     </li>
@@ -84,13 +83,14 @@ function viewPage(){
 
 <ul class="actions-list" id="item-specific-actions" style="display:none">
 	<li><b>Selected item property</b></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('editItemClassProperty'); }{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt="">Edit this property</a></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="">Delete this property</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('editItemClassProperty'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this property</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/package_delete.png" border="0" alt="" /> Delete this property</a></li>
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
-    <li><i>Please select a property</i></li>
-    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addPropertyToClass?class_id={$itemclass.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_add.png" border="0" alt="">Add Property</a></li>
+    <li><b>Options</b></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addPropertyToClass?class_id={$itemclass.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a property to this model</a></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addItem?class_id={$itemclass.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/package_add.png" border="0" alt="" /> Add a new {$itemclass.name|strtolower}</a></li>
 </ul>
 
 </div>

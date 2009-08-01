@@ -1,6 +1,6 @@
 <?php
 
-class SmartestAsset extends SmartestBaseAsset{
+class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
     
     protected $_allowed_types = array();
     protected $_draft_mode = false;
@@ -100,6 +100,18 @@ class SmartestAsset extends SmartestBaseAsset{
             
             case "groups":
             return $this->getGroups();
+            
+            case "small_icon":
+            return $this->getSmallIcon();
+            
+            case "large_icon":
+            return $this->getLargeIcon();
+            
+            case "label":
+            return $this->getLabel();
+            
+            case "action_url":
+            return $this->getActionUrl();
             
         }
         
@@ -740,5 +752,54 @@ class SmartestAsset extends SmartestBaseAsset{
         $comment->save();
         
     }
+    
+    public function clearRecentlyEditedInstances($site_id, $user_id=''){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RECENTLY_EDITED_ASSETS');
+	    
+	    $q->setTargetEntityByIndex(1);
+	    
+        $q->addQualifyingEntityByIndex(1, $this->getId());
+        $q->addQualifyingEntityByIndex(3, (int) $site_id);
+        
+        if(is_numeric($user_id)){
+            $q->addQualifyingEntityByIndex(2, $user_id);
+        }
+        
+        $q->delete();
+	    
+	}
+	
+	// System UI calls
+	
+	public function getSmallIcon(){
+	    
+	    $info = $this->getTypeInfo();
+	    
+	    if(isset($info['icon']) && is_file(SM_ROOT_DIR.'Public/Resources/Icons/'.$info['icon'])){
+	        return SM_CONTROLLER_DOMAIN.'Resources/Icons/'.$info['icon'];
+	    }else{
+	        return SM_CONTROLLER_DOMAIN.'Resources/Icons/page_white.png';
+	    }
+	    
+	}
+	
+	public function getLargeIcon(){
+	    
+	    
+	    
+	}
+	
+	public function getLabel(){
+	    
+	    return $this->getUrl();
+	    
+	}
+	
+	public function getActionUrl(){
+	    
+	    return SM_CONTROLLER_DOMAIN.'assets/editAsset?asset_id='.$this->getId();
+	    
+	}
 
 }

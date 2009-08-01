@@ -75,6 +75,9 @@ class Pages extends SmartestSystemApplication{
 			            $page->setIsHeld(1);
 			            $page->setHeldBy($this->getUser()->getId());
 			            $page->save();
+			            
+			            $page->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
+        			    $this->getUser()->addRecentlyEditedPageById($page->getId(), $this->getSite()->getId());
 		            
 			            $this->redirect('/'.SM_CONTROLLER_MODULE.'/editPage?page_id='.$page->getWebid());
     			        
@@ -785,42 +788,28 @@ class Pages extends SmartestSystemApplication{
 		
 		if($this->getSite() instanceof SmartestSite){
 		    
-		    // $site_id = $get['site_id'];
-		    // $site = new SmartestSite;
-		    
-		    // if($site->hydrate($site_id)){
-		    
-		        $this->setFormReturnUri();
+	        $this->setFormReturnUri();
 
-		        $site_id = $this->getSite()->getId();
-		        
-		        $pagesTree = $this->getSite()->getPagesTree(true);
-		        
-		        if($get['refresh'] == 1){
-		            SmartestCache::clear('site_pages_tree_'.$site_id, true);
-	            }
-		        
-		        // print_r($this->getSite());
-		        
-		        // $pagesTree = $this->manager->getPagesTree($site_id);
-		        $this->setTitle($this->getSite()->getName()." | Site Map");
-		        
-		        $this->send($pagesTree, "tree");
-		        $this->send($site_id, "site_id");
-		        $this->send(true, "site_recognised");
-		        
-		        // return array("tree"=>$pagesTree, "site_id" => $site_id);
-		    // }else{
-		        
-		    //     $this->send(false, "site_recognised");
-		    //     $this->addUserMessage("The site ID was not recognised.");
-		        
-		    // }
+	        $site_id = $this->getSite()->getId();
+	        
+	        $pagesTree = $this->getSite()->getPagesTree(true);
+	        
+	        if($get['refresh'] == 1){
+	            SmartestCache::clear('site_pages_tree_'.$site_id, true);
+            }
+	        
+	        $this->setTitle($this->getSite()->getName()." | Site Map");
+	        
+	        $this->send($pagesTree, "tree");
+	        $this->send($site_id, "site_id");
+	        $this->send(true, "site_recognised");
+	        
+	        $recent = $this->getUser()->getRecentlyEditedPages($this->getSite()->getId());
+  	        $this->send($recent, 'recent_pages');
 		    
 		}else{
 		    
-		    // $this->send(false, "site_recognised");
-	        $this->addUserMessageToNextRequest("You must choose a site first.", SmartestUserMessage::INFO);
+		    $this->addUserMessageToNextRequest("You must choose a site first.", SmartestUserMessage::INFO);
 	        $this->redirect('/smartest');
 		    
 		}

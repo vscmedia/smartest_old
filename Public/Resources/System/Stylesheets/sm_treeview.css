@@ -4,7 +4,7 @@ ul.tree-parent-node-open{
 	padding:0px;
 	/*padding-left:15px;*/
 	margin-left:16px;
-	background-image:url(/Resources/System/Images/top.gif);
+	background-image:url(../Images/top.gif);
 	background-repeat:no-repeat;
 	/*border:1px solid #000;*/
 }
@@ -15,13 +15,13 @@ ul.tree-parent-node-closed{
 	padding:0px;
 	/*padding-left:15px;*/
 	margin-left:16px;
-	background-image:url(/Resources/System/Images/top.gif);
+	background-image:url(../Images/top.gif);
 	background-repeat:no-repeat;
 	display:none;
 }
 
 ul.tree-parent-node-open li.first, ul.tree-parent-node-closed li.first{
-	background-image:url(/Resources/System/Images/first.gif);
+	background-image:url(../Images/first.gif);
 	background-repeat:no-repeat;
 	margin:0px;
 	/*border:1px solid #0f0;*/
@@ -29,7 +29,7 @@ ul.tree-parent-node-open li.first, ul.tree-parent-node-closed li.first{
 }
 
 ul.tree-parent-node-open li.middle, ul.tree-parent-node-closed li.middle{
-	background-image:url(/Resources/System/Images/middle.gif);
+	background-image:url(../Images/middle.gif);
 	background-repeat:repeat-y;
 	margin:0px;
 	/*border:1px solid #f90;*/
@@ -37,7 +37,7 @@ ul.tree-parent-node-open li.middle, ul.tree-parent-node-closed li.middle{
 }
 
 ul.tree-parent-node-open li.last, ul.tree-parent-node-closed li.last{
-	background-image:url(/Resources/System/Images/last.gif);
+	background-image:url(../Images/last.gif);
 	background-repeat:no-repeat;
 	margin:0px;
 	/*border:1px solid #f00;*/

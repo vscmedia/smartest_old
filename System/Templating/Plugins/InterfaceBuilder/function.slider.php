@@ -61,7 +61,7 @@ function smarty_function_slider($params, &$smartest_engine){
             }
             
             $smartest_engine->assign('_slider_input_data', $slider);
-            $smartest_engine->run(SM_ROOT_DIR.'System/Presentation/InterfaceBuilder/slider_input.tpl', array());
+            $smartest_engine->run(SM_ROOT_DIR.'System/Presentation/InterfaceBuilder/Inputs/slider.tpl', array());
         
         }
         

@@ -68,6 +68,7 @@
 
         <input type="hidden" name="from" value="{$from}" />
         <input type="hidden" name="refer" value="{$refer}" />
+        <input type="hidden" name="service" value="smartest" />
 
         <p class="submit">
             <a href="javascript:loginSubmit()"><img src="{$domain}Resources/System/Images/login_button.png" alt="Log In" /></a>

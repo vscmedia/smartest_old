@@ -70,5 +70,9 @@ function executeTransfer(){
 </div>
 
 <div id="actions-area">
-  
+  <ul class="actions-list" id="non-specific-actions">
+    <li><b>Repository options</b></li>
+  	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}assets/assetGroups'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all file groups</a></li>
+  	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/assets'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all files by type</a></li>
+  </ul>
 </div>

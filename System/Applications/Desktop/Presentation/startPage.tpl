@@ -14,15 +14,14 @@
 <div class="instruction">What would you like to do?</div>
 
 <ul class="options-grid-no-scroll">
-  <li><a href="{$domain}smartest/pages" class="option" id="option_1"><img border="0" src="{$domain}Resources/Icons/package.png" />Edit &amp; publish pages</a></li>
-  <li><a href="{$domain}smartest/data" class="option" id="option_2"><img border="0" src="{$domain}Resources/Icons/package.png" />Manage data objects</a></li>
+  <li><a href="{$domain}smartest/pages" class="option" id="option_1"><img border="0" src="{$domain}Resources/Icons/package.png" />Create and edit pages</a></li>
+  <li><a href="{$domain}smartest/models" class="option" id="option_2"><img border="0" src="{$domain}Resources/Icons/package.png" />Create and edit items</a></li>
   <li><a href="{$domain}smartest/assets" class="option" id="option_3"><img border="0" src="{$domain}Resources/Icons/package.png" />Browse and upload files</a></li>
-  <li><a href="{$domain}smartest/metadata" class="option" id="option_2"><img border="0" src="{$domain}Resources/Icons/package.png" />Manage meta data</a></li>
+  <li><a href="{$domain}smartest/metadata" class="option" id="option_2"><img border="0" src="{$domain}Resources/Icons/package.png" />Meta data</a></li>
   <li><a href="{$domain}smartest/templates" class="option" id="option_5"><img border="0" src="{$domain}Resources/Icons/package.png" />Browse &amp; Add Templates</a></li>
   <li><a href="{$domain}smartest/todo" class="option" id="option_4"><img border="0" src="{$domain}Resources/Icons/package.png" />Go to Your Todo List</a></li>
   <li><a href="{$domain}smartest/users" class="option" id="option_6"><img border="0" src="{$domain}Resources/Icons/package.png" />Administer Users</a></li>
   <li><a href="{$domain}smartest/settings" class="option" id="option_7"><img border="0" src="{$domain}Resources/Icons/package.png" />Modify Settings</a></li>
-  {* <li><a href="{$domain}smartest/help/guide" class="option" id="option_8"><img border="0" src="{$domain}Resources/Icons/package.png" />Learn More About Using Smartest</a></li> *}
 </ul>
 
 {elseif $display == 'sites'}
@@ -41,13 +40,21 @@
 {/foreach}
 </ul>
 
+{if $show_create_button}<a href="{$domain}{$section}/createSite">Create a new site</a>{/if}
+
 {else}
 
-<div class="instruction" style="margin-bottom:10px">You haven't yet been granted access to any sites.</div>
+{if $show_create_button}
+
+<a href="{$domain}{$section}/createSite">Create a new site</a>
+
+{else}
+
+<div class="instruction" style="margin-bottom:10px">You haven't yet been granted access to any sites yet. Talk to your system administrator about which sites you should be given access to.</div>
 
 {/if}
 
-{if $show_create_button}<a href="{$domain}{$section}/createSite">Create a new site</a>{/if}
+{/if}
 
 {/if}
 

@@ -1,6 +1,6 @@
 <div id="work-area">
 
-<h3><a href="{$domain}smartest/data">Items</a> &gt; Sets</h3>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; <a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Sets</h3>
 
 <div class="instruction">Use Data Sets to organize your data into smaller groups.</div>
 
@@ -33,8 +33,8 @@
 
 <ul class="actions-list">
   <li><b>Data Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addSet'"><img border="0" src="{$domain}Resources/Icons/folder_add.png"> Create A New Data Set</a></li>  
-  <li class="permanent-action"><a href="{$domain}smartest/models"><img border="0" src="{$domain}Resources/Icons/package.png" style="width:16px;height:18px"> Browse Data in Models</a></li>
+  <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addSet?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder_add.png"> Make a new set of {$model.plural_name}</a></li>  
+  <li class="permanent-action"><a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}"><img border="0" src="{$domain}Resources/Icons/package.png" style="width:16px;height:18px"> Browse all {$model.plural_name}</a></li>
   {* <li class="permanent-action"><a href="{$domain}sets/getDataExports"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View XML Feeds</a></li>
   <li class="permanent-action"><a href="{$domain}smartest/schemas"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View XML Schemas</a></li> *}
 </ul>

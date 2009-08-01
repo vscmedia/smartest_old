@@ -30,12 +30,21 @@ class Sets extends SmartestSystemApplication{
 	        $model_id = $get['class_id'];
 	        
 	        $model = new SmartestModel;
-	        $model->find($model_id);
 	        
-	        $sets = $model->getDataSets();
+	        if($model->find($model_id)){
 	        
-	        $this->setTitle("Data Sets");
-    		$this->send($sets, 'sets');
+	            $sets = $model->getDataSets();
+	        
+	            $this->setTitle("Data Sets");
+    		    $this->send($sets, 'sets');
+    		    $this->send($model, 'model');
+    		
+		    }else{
+		        
+		        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
+		        $this->redirect('smartest/models');
+		        
+		    }
 	        
 	    }
 	    
@@ -172,7 +181,7 @@ class Sets extends SmartestSystemApplication{
 	            
 	        }
 	        
-	        $this->send($set->getModel()->__toArray(), 'model');
+	        $this->send($set->getModel(), 'model');
 	        $this->send($formTemplateInclude, 'formTemplateInclude');
 	        
 	    }else{
@@ -287,6 +296,43 @@ class Sets extends SmartestSystemApplication{
 		$this->formForward();
 	}
 	
+	public function transferSingleItem($get, $post){
+	    
+	    if($post['set_id']){
+	        $request = $post;
+	    }else{
+	        $request = $get;
+	    }
+	    
+	    $set_id = $request['set_id'];
+	    
+	    $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($set_id)){
+	        
+	        $item_id = (int) $request['item_id'];
+	        $item = new SmartestItem;
+	        
+	        if($item->find($item_id)){
+	            // TODO: Check that the asset is the right type for this group
+	            if($request['transferAction'] == 'add'){
+	                $set->addItems(array($item_id));
+                }else{
+                    $set->removeItems(array($item_id));
+                }
+                
+                $set->fixOrderIndices();
+                
+	        }
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The set ID was not recognized.", SmartestUserMessage::ERROR);
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
 	public function editStaticSetOrder($get){
 	    
 	    $set = new SmartestCmsItemSet;
@@ -385,13 +431,27 @@ class Sets extends SmartestSystemApplication{
 	    
 	    $set_id = $get['set_id'];
 	    $set = new SmartestCmsItemSet;
-	    $set->hydrate($set_id);
 	    
-	    $items = $set->getMembers($mode);
+	    if($set->hydrate($set_id)){
 	    
-	    $this->send($items, 'items');
-	    $this->send(count($items), 'count');
-	    $this->send($set, 'set');
+	        $items = $set->getMembers($mode);
+	    
+    	    $this->send($items, 'items');
+    	    $this->send(count($items), 'count');
+    	    $this->send($set, 'set');
+    	    
+    	    $model = new SmartestModel;
+    	    
+    	    if($model->hydrate($set->getItemclassId())){
+    	        $this->send($model, 'model');
+    	    }
+	    
+        }else{
+            
+            $this->addUserMessageToNextRequest("The set ID was not recognized.", SM_USER_MESSAGE_ERROR);
+            $this->redirect('/smartest/sets');
+            
+        }
 	    
 	}
 	

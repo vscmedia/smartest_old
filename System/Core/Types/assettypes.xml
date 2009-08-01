@@ -9,7 +9,7 @@
         <source-editable>true</source-editable>
         <editable>true</editable>
         <parsable>true</parsable>
-        <icon>text.gif</icon>
+        <icon>style.png</icon>
         <render template="System/Presentation/WebPageBuilder/display.rich_text.tpl" />
         <storage type="database" />
         <suffix mime="text/html">html</suffix>
@@ -22,7 +22,7 @@
         <editable>true</editable>
         <class>SmartestTextAsset</class>
         <storage type="database" />
-        <icon>text.gif</icon>
+        <icon>page_white_text.png</icon>
         <render template="System/Presentation/WebPageBuilder/display.plain_text.tpl" />
         <suffix mime="text/plain">txt</suffix>
     </type>
@@ -35,7 +35,7 @@
         <attachable>true</attachable>
         <editable>true</editable>
         <parsable>true</parsable>
-        <icon>text.gif</icon>
+        <icon>layout.png</icon>
         <render template="System/Presentation/WebPageBuilder/display.rich_text.tpl" />
         <storage type="database" />
         <suffix mime="text/html">html</suffix>
@@ -48,7 +48,6 @@
         <class>SmartestTextAsset</class>
         <editable>true</editable>
         <storage type="database" />
-        <icon>text.gif</icon>
         <render template="System/Presentation/WebPageBuilder/display.sl_text.tpl" />
         <suffix mime="text/plain">txt</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" />
@@ -58,7 +57,7 @@
         <label>Dynamic HTML Template</label>
         <description>Dynamic HTML template that can be rendered by the Smartest presentation layer</description>
         <editable>true</editable>
-        <icon>text.gif</icon>
+        <icon>layout.png</icon>
         <storage type="file" location="Presentation/Layouts/" />
         <class>SmartestContainerTemplateAsset</class>
         <suffix mime="application/octet-stream">tpl</suffix>
@@ -68,7 +67,7 @@
         <label>JPEG Image</label>
         <description>An image in JPEG format.</description>
         <class>SmartestImageAsset</class>
-        <icon>image.gif</icon>
+        <icon>picture.png</icon>
         <attachable>true</attachable>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Images/" />
@@ -89,7 +88,7 @@
         <class>SmartestImageAsset</class>
         <attachable>true</attachable>
         <captionable>true</captionable>
-        <icon>image.gif</icon>
+        <icon>picture.png</icon>
         <storage type="file" location="Public/Resources/Images/" />
         <render template="System/Presentation/WebPageBuilder/display.image.tpl" />
         <suffix mime="image/png">png</suffix>
@@ -107,7 +106,7 @@
         <class>SmartestImageAsset</class>
         <attachable>true</attachable>
         <captionable>true</captionable>
-        <icon>image.gif</icon>
+        <icon>picture.png</icon>
         <storage type="file" location="Public/Resources/Images/" />
         <render template="System/Presentation/WebPageBuilder/display.image.tpl" />
         <suffix mime="image/gif">gif</suffix>
@@ -126,7 +125,7 @@
         <class>SmartestAsset</class>
         <storage type="file" location="Public/Resources/Javascript/" />
         <render template="System/Presentation/WebPageBuilder/display.javascript.tpl" />
-        <icon>generic.gif</icon>
+        <icon>script.png</icon>
         <suffix mime="text/javascript">js</suffix>
         <param name="inline" type="SM_DATATYPE_BOOLEAN" default="false" required="false" />
     </type>
@@ -138,7 +137,6 @@
         <class>SmartestAsset</class>
         <storage type="file" location="Public/Resources/Stylesheets/" />
         <render template="System/Presentation/WebPageBuilder/display.stylesheet.tpl" />
-        <icon>generic.gif</icon>
         <suffix mime="text/css">css</suffix>
         <param name="inline" type="SM_DATATYPE_BOOLEAN" default="false" required="false" />
     </type>
@@ -147,7 +145,6 @@
         <label>Quicktime Movie</label>
         <description>A movie saved in any of Apple's proprietary QuickTime formats</description>
         <class>SmartestAsset</class>
-        <icon>generic.gif</icon>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <render template="System/Presentation/WebPageBuilder/display.quicktime.tpl" />
@@ -163,7 +160,6 @@
         <label>MPEG Movie</label>
         <description>A movie saved in and MPEG format.</description>
         <class>SmartestAsset</class>
-        <icon>generic.gif</icon>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <render template="System/Presentation/WebPageBuilder/display.mpeg.tpl" />
@@ -179,7 +175,7 @@
       <label>MP3 Audio</label>
       <description>A MPEG Layer-3 File</description>
       <class>SmartestAsset</class>
-      <icon>generic.gif</icon>
+      <icon>music.png</icon>
       <storage type="file" location="Public/Resources/Assets/" />
       <suffix mime="audio/mpeg">mp3</suffix>
       <render template="System/Presentation/WebPageBuilder/display.mp3_audio.tpl" />
@@ -190,7 +186,7 @@
         <label>Shockwave Flash</label>
         <description>A published Adobe Flash file</description>
         <class>SmartestAsset</class>
-        <icon>generic.gif</icon>
+        <icon>page_white_flash.png</icon>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <suffix mime="application/x-shockwave-flash">swf</suffix>
@@ -206,7 +202,7 @@
         <label>Flash Video</label>
         <description>A file in Flash Video format</description>
         <class>SmartestAsset</class>
-        <icon>generic.gif</icon>
+        <icon>page_white_flash.png</icon>
         <storage type="file" location="Public/Resources/Assets/" />
         <suffix mime="video/x-flv">flv</suffix>
         <render template="System/Presentation/WebPageBuilder/display.flash_video.tpl" />
@@ -218,7 +214,6 @@
         <label>Windows Media Video (WMV)</label>
         <description>A movie saved in Microsoft's proprietary WMV format</description>
         <class>SmartestAsset</class>
-        <icon>generic.gif</icon>
         <captionable>true</captionable>
         <storage type="file" location="Public/Resources/Assets/" />
         <render template="System/Presentation/WebPageBuilder/display.wmv.tpl" />
@@ -236,7 +231,7 @@
       <label>Adobe PDF</label>
       <description>A document in PDF format</description>
       <class>SmartestAsset</class>
-      <icon>generic.gif</icon>
+      <icon>page_white_acrobat.png</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/pdf">pdf</suffix>
       <render template="System/Presentation/WebPageBuilder/display.default.tpl" />
@@ -246,7 +241,7 @@
       <label>Microsoft Word</label>
       <description>A document in Microsoft Word format</description>
       <class>SmartestAsset</class>
-      <icon>generic.gif</icon>
+      <icon>page_word.png</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/vnd.ms-word">doc</suffix>
       <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
@@ -256,7 +251,7 @@
       <label>Microsoft Excel Spreadsheet</label>
       <description>A document in XLS Spreadsheet format</description>
       <class>SmartestAsset</class>
-      <icon>generic.gif</icon>
+      <icon>page_excel.png</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/vnd.ms-excel">xls</suffix>
       <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
@@ -266,7 +261,7 @@
       <label>Microsoft Powerpoint</label>
       <description>A document in Microsoft Powerpoint format</description>
       <class>SmartestAsset</class>
-      <icon>generic.gif</icon>
+      <icon>page_white_powerpoint.png</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/vnd.ms-powerpoint">ppt</suffix>
       <render template="System/Presentation/WebPageBuilder/display.download.tpl" />

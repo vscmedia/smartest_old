@@ -1,6 +1,6 @@
 <div id="work-area">
 
-<h3><a href="{$domain}{$section}">Data Manager</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$item._model.id}">{$item._model.plural_name}</a> &gt; Add {$item._model.name}</h3>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$item._model.id}">{$item._model.plural_name}</a> &gt; Add a new {$item._model.name|strtolower}</h3>
 
 <div id="instruction">You are submitting the draft property values of the new {$item._model.name|lower}.</div>
 

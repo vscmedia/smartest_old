@@ -1,6 +1,6 @@
 <div id="work-area">
   
-<h3><a href="{$domain}datamanager">Data Manager</a> &gt; <a href="{$domain}smartest/sets">Sets</a> &gt; Create a new set</h3>
+<h3><a href="{$domain}smartest/data">Items</a>  &gt; <a href="{$domain}smartest/models">Models</a>{if !$allow_choose_model} &gt; <a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}{$section}/getItemClassSets?class_id={$model.id}">Sets</a>{else} &gt; <a href="{$domain}smartest/sets">Sets</a>{/if} &gt; Create a new set</h3>
   
   <form id="pageViewForm" method="post" action="{$domain}{$section}/insertSet">
   
@@ -29,8 +29,8 @@
 			<div class="edit-form-row">
 				<div class="form-section-label">Set Type</div>
 				<select  name="set_type" id="set_type" >
-					  <option value="STATIC" {if $content.type == 'STATIC'} selected{/if}>Static (Folder)</option>
-					  <option value="DYNAMIC" {if $content.type == 'DYNAMIC' } selected{/if} >Smart (Dynamic Saved Query)</option>
+					  <option value="STATIC" {if $content.type == 'STATIC'} selected{/if}>Normal</option>
+					  <option value="DYNAMIC" {if $content.type == 'DYNAMIC' } selected{/if} >Saved Query</option>
 				</select>
 			</div>
 			

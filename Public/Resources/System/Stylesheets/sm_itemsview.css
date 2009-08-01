@@ -42,7 +42,7 @@ ul.options-grid li a.option{
 
 ul.options-grid li a.option:hover{
 	background-color:#fff;
-	background-image:url(/Resources/System/Images/option_bg_on.gif);
+	background-image:url(../Images/option_bg_on.gif);
 	background-repeat:no-repeat;
 	text-decoration:none;
 	padding:0px;
@@ -56,7 +56,7 @@ ul.options-grid li a.selected-option{
 	height:110px;
 	text-align:center;
 	background-color:#fff;
-	background-image:url(/Resources/System/Images/selectedOption_bg_off.gif);
+	background-image:url(../Images/selectedOption_bg_off.gif);
 	background-repeat:no-repeat;
 	text-decoration:none;
 	text-align:center;
@@ -68,7 +68,7 @@ ul.options-grid li a.selected-option{
 
 ul.options-grid li a.selected-option:hover{
 	background-color:#fff;
-	background-image:url(/Resources/System/Images/selectedOption_bg_on.gif);
+	background-image:url(../Images/selectedOption_bg_on.gif);
 	background-repeat:no-repeat;
 	text-decoration:none;
 	border:1px solid #fff;
@@ -140,7 +140,7 @@ ul.options-grid-no-scroll li a.option{
 
 ul.options-grid-no-scroll li a.option:hover{
 	background-color:#fff;
-	background-image:url(/Resources/System/Images/option_bg_on.gif);
+	background-image:url(../Images/option_bg_on.gif);
 	background-repeat:no-repeat;
 	text-decoration:none;
 	padding:0px;
@@ -154,7 +154,7 @@ ul.options-grid-no-scroll li a.selected-option{
 	height:110px;
 	text-align:center;
 	background-color:#fff;
-	background-image:url(/Resources/System/Images/selectedOption_bg_off.gif);
+	background-image:url(../Images/selectedOption_bg_off.gif);
 	background-repeat:no-repeat;
 	text-decoration:none;
 	text-align:center;
@@ -166,7 +166,7 @@ ul.options-grid-no-scroll li a.selected-option{
 
 ul.options-grid-no-scroll li a.selected-option:hover{
 	background-color:#fff;
-	background-image:url(/Resources/System/Images/selectedOption_bg_on.gif);
+	background-image:url(../Images/selectedOption_bg_on.gif);
 	background-repeat:no-repeat;
 	border:1px solid #fff;
 	text-decoration:none;

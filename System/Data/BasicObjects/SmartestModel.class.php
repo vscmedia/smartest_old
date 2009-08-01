@@ -391,6 +391,11 @@ class SmartestModel extends SmartestBaseModel{
         return SmartestSystemSettingHelper::save('model_'.$this->_properties['id'].'_default_metapage_site_'.$site_id, $id);
     }
     
+    public function clearDefaultMetaPageId($site_id){
+        // TODO: this functionality should be stored in the database
+        return SmartestSystemSettingHelper::clear('model_'.$this->_properties['id'].'_default_metapage_site_'.$site_id);
+    }
+    
     public function getAvailableDescriptionPropertiesAsArrays(){
         
         $properties = $this->getAvailableDescriptionProperties();

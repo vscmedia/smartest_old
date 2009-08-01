@@ -7,24 +7,18 @@
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
   </type>
   
-  <type id="SM_ASSETCLASS_TEXT">
-    <label>Any text, formatted or unformatted</label>
-    <accept>SM_ASSETTYPE_RICH_TEXT</accept>
-    <accept>SM_ASSETTYPE_PLAIN_TEXT</accept>
-    <accept>SM_ASSETTYPE_SL_TEXT</accept>
-  </type>
-  
-  <type id="SM_ASSETCLASS_HEADLINE">
-    <label>Items that can be used as headlines.</label>
-    <accept>SM_ASSETTYPE_SL_TEXT</accept>
-    <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
-  </type>
-  
   <type id="SM_ASSETCLASS_STATIC_IMAGE">
     <label>Images in any format</label>
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_TEXT">
+    <label>Any text, formatted or unformatted</label>
+    <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+    <accept>SM_ASSETTYPE_PLAIN_TEXT</accept>
+    <accept>SM_ASSETTYPE_SL_TEXT</accept>
   </type>
   
   <type id="SM_ASSETCLASS_SHOCKWAVE_FLASH">
@@ -62,7 +56,7 @@
   </type>
   
   <type id="SM_ASSETCLASS_DOWNLOAD">
-    <label>Files that usually neet to be downloaded</label>
+    <label>Files that usually need to be downloaded</label>
     <accept>SM_ASSETTYPE_PDF</accept>
     <accept>SM_ASSETTYPE_MS_WORD</accept>
     <accept>SM_ASSETTYPE_MS_EXCEL</accept>

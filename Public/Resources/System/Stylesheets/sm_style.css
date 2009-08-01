@@ -303,6 +303,14 @@ div.special-box{
 
 div.warning{
     font-size:12px;
+    border:1px solid #FF9011;
+    background-color:#F3D17A;
+    padding:5px;
+    margin:10px 0 10px 0;
+}
+
+div.error{
+    font-size:12px;
     border:1px solid #d00;
     background-color:#fdd;
     padding:5px;

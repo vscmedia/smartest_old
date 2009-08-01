@@ -23,12 +23,12 @@ function toggleZoomImageOption(){
     </div>
     <div class="edit-form-row">
       <div class="form-section-label">Text File</div>
-      {$asset.stringid} ({$asset.url})<input type="hidden" name="textfragment_id" value="{$textfragment_id}" />
+      <img src="{$asset.small_icon}" alt="" /> {$asset}<input type="hidden" name="textfragment_id" value="{$textfragment_id}" />
     </div>
     <div class="edit-form-row">
       <div class="form-section-label">Attached File</div>
       <select name="attached_file_id">
-        <option value="">No File Attached</option>
+        <option value="">No file attached</option>
         {foreach from=$files item="file"}
         <option value="{$file.id}"{if $file.id == $attached_asset_id} selected="selected"{/if}>{$file.stringid} ({$file.url})</option>
         {/foreach}

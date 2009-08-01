@@ -27,6 +27,9 @@ class Assets extends SmartestSystemApplication{
 		$assetTypes = $this->manager->getAssetTypes();
 		$this->send($assetTypes, "assetTypeCats");
 		
+		$recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId());
+        $this->send($recent, 'recent_assets');
+		
 	}
 	
 	public function addPlaceholder($get){
@@ -122,6 +125,9 @@ class Assets extends SmartestSystemApplication{
 		    }else{
 		        $this->send(false, 'allow_source_edit');
 		    }
+		    
+		    $recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId(), $code);
+  	        $this->send($recent, 'recent_assets');
 		    
 		}else{
 		    $this->send('noneditableasset', 'sidebartype');
@@ -512,6 +518,7 @@ class Assets extends SmartestSystemApplication{
 		    
     		    if($everything_ok){
     		        $asset->setCreated(time());
+    		        $this->getUser()->addRecentlyEditedAssetById($asset->getId(), $this->getSite()->getId());
     		        $asset->save();
     		        
     		        if(strlen($post['initial_group_id']) && is_numeric($post['initial_group_id'])){
@@ -607,7 +614,8 @@ class Assets extends SmartestSystemApplication{
 	    $set->setShared(0);
 	    $set->save();
 	    
-	    $this->formForward();
+	    $this->redirect('/assets/editAssetGroupContents?group_id='.$set->getId());
+	    // $this->formForward();
 	    
 	}
 	
@@ -778,6 +786,9 @@ class Assets extends SmartestSystemApplication{
 			if(array_key_exists($assettype_code, $types_data)){
 
 			    $asset_type = $types_data[$assettype_code];
+			    
+			    $asset->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
+			    $this->getUser()->addRecentlyEditedAssetById($asset->getId(), $this->getSite()->getId());
 
     			if(isset($asset_type['editable']) && $asset_type['editable'] != 'false'){
 
@@ -1302,7 +1313,7 @@ class Assets extends SmartestSystemApplication{
         			$this->send($formTemplateInclude, "formTemplateInclude");
         			$this->setTitle('Define Attachment: '.$attachment_name);
         			$this->send($asset_type, 'asset_type');
-        			$this->send($asset->__toArray(), 'asset');
+        			$this->send($asset, 'asset');
 
     		    }else{
     		        // asset type is not supported
@@ -1579,6 +1590,12 @@ class Assets extends SmartestSystemApplication{
 		    $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);
 		    $this->redirect('/smartest/assets');
 		}
+	    
+	}
+	
+	public function useAsset(){
+	    
+	    
 	    
 	}
 		

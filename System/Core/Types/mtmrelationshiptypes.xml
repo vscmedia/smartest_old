@@ -84,4 +84,25 @@
     <entity table="ItemProperties" class="SmartestItemProperty" foreignkey="itemproperty_id" index="2" required="true" />
   </type>
   
+  <type id="SM_MTMLOOKUP_RECENTLY_EDITED_ITEMS" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Recently edited items.</label>
+    <entity table="Items" class="SmartestItem" foreignkey="item_id" index="1" required="true" />
+    <entity table="Users" class="SmartestUser" foreignkey="user_id" index="2" required="true" />
+    <entity table="Sites" class="SmartestSite" foreignkey="site_id" index="3" required="true" />
+  </type>
+  
+  <type id="SM_MTMLOOKUP_RECENTLY_EDITED_ASSETS" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Recently edited files.</label>
+    <entity table="Assets" class="SmartestAsset" foreignkey="asset_id" index="1" required="true" />
+    <entity table="Users" class="SmartestUser" foreignkey="user_id" index="2" required="true" />
+    <entity table="Sites" class="SmartestSite" foreignkey="site_id" index="3" required="true" />
+  </type>
+  
+  <type id="SM_MTMLOOKUP_RECENTLY_EDITED_PAGES" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Recently edited files.</label>
+    <entity table="Pages" class="SmartestPage" foreignkey="page_id" index="1" required="true" />
+    <entity table="Users" class="SmartestUser" foreignkey="user_id" index="2" required="true" />
+    <entity table="Sites" class="SmartestSite" foreignkey="site_id" index="3" required="true" />
+  </type>
+  
 </relationshiptypes>

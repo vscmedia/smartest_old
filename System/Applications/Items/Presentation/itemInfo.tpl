@@ -9,24 +9,48 @@
     {$item.slug}
   </div>
   <div class="edit-form-row">
-    <div class="form-section-label">Type</div>
+    <div class="form-section-label">Model</div>
     {$item._model.name}
   </div>
+  {if $has_page}
+  <div class="edit-form-row">
+    <div class="form-section-label">Link code</div>
+    <code>[[{$item._model.name|strtolower}:{$item.slug}]]</code> <em>OR</em> <code>&lt;?sm:link to="metapage:id={$page.id}:id={$item.id}":?&gt;</code>
+  </div>
+  {/if}
   <div class="edit-form-row">
     <div class="form-section-label">Author(s)</div>
     {$byline}
   </div>
   <div class="edit-form-row">
+      <div class="form-section-label">Tags</div>
+      
+    </div>
+  <div class="edit-form-row">
     <div class="form-section-label">Workflow Status</div>
     {$item._workflow_status}
   </div>
-  {if $has_page}
-  <div class="edit-form-row">
-    <div class="form-section-label">Link code</div>
-    &lt;?sm:link to="metapage:id={$page.id}:id={$item.id}"?&gt;
+  
+  <div id="sets" class="special-box">
+       Sets: {if count($sets)}{foreach from=$sets item="set"}<a href="{$domain}sets/previewSet?set_id={$set.id}">{$set.label}</a> (<a href="{$domain}sets/transferSingleItem?item_id={$item.id}&amp;set_id={$set.id}&amp;transferAction=remove">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
+   {if count($possible_sets)}
+           <div>
+             <form action="{$domain}sets/transferSingleItem" method="post">
+               <input type="hidden" name="item_id" value="{$item.id}" />
+               <input type="hidden" name="transferAction" value="add" />
+               Add this item to set:
+               <select name="set_id">
+   {foreach from=$possible_sets item="possible_set"}
+                 <option value="{$possible_set.id}">{$possible_set.label}</option>
+   {/foreach}
+               </select>
+               <input type="submit" value="Go" />
+             </form>
+           </div>
+   {/if}
+     </div>
+  
   </div>
-  {/if}
-</div>
 
 <div id="actions-area">
 
@@ -34,6 +58,7 @@
     <li><b>This {$item._model.name}</b></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" />&nbsp;Try to edit it</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addTodoItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" />&nbsp;Assign To-do</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/comments?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/comment.png" border="0" />&nbsp;View public comments</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">

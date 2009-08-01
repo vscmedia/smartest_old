@@ -26,7 +26,7 @@
       <div class="edit-form-row">
         <div class="form-section-label">Default Meta-Page</div>
         <select name="itemclass_default_metapage_id">
-          {if !$model.default_metapage_id}<option value="0"></option>{/if}
+          <option value="NONE">No default</option>
           {foreach from=$metapages item="page"}
           <option value="{$page.id}"{if $model.default_metapage_id==$page.id} selected="selected"{/if}>{$page.title}</option>
           {/foreach}

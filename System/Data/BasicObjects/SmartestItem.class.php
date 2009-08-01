@@ -1,11 +1,12 @@
 <?php
 
-class SmartestItem extends SmartestBaseItem{
+class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	
 	protected $_model;
 	protected $_model_properties = array();
 	protected $_meta_page_id;
 	protected $_meta_page;
+	protected $_current_sets = array();
 	
 	protected function __objectConstruct(){
 		
@@ -101,6 +102,18 @@ class SmartestItem extends SmartestBaseItem{
 	        case "authors":
 	        return $this->getAuthors();
 	        break;
+	        
+	        case "small_icon":
+            return $this->getSmallIcon();
+
+            case "large_icon":
+            return $this->getLargeIcon();
+
+            case "label":
+            return $this->getLabel();
+
+            case "action_url":
+            return $this->getActionUrl();
 	        
 	    }
 	    
@@ -887,6 +900,114 @@ class SmartestItem extends SmartestBaseItem{
 	    }
 	    
 	    return $comments;
+	    
+	}
+	
+	public function clearRecentlyEditedInstances($site_id, $user_id=''){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RECENTLY_EDITED_ITEMS');
+	    
+	    $q->setTargetEntityByIndex(1);
+	    
+        $q->addQualifyingEntityByIndex(1, $this->getId());
+        $q->addQualifyingEntityByIndex(3, (int) $site_id);
+        
+        if(is_numeric($user_id)){
+            $q->addQualifyingEntityByIndex(2, $user_id);
+        }
+        
+        $items = $q->delete();
+	    
+	}
+	
+	public function getCurrentStaticSets(){
+	    
+	    if(!count($this->_current_sets)){
+	    
+	        $model = new SmartestModel;
+            $model->hydrate($this->getModelId());
+            $class_name = $model->getClassName();
+
+            $sql = "SELECT Sets.*, SetsItemsLookup.setlookup_set_id FROM Sets, SetsItemsLookup WHERE SetsItemsLookup.setlookup_item_id='".$this->getId()."' AND SetsItemsLookup.setlookup_set_id=Sets.set_id";
+    
+            $sql .= " ORDER BY Sets.set_label ASC";
+    
+            $results = $this->database->queryToArray($sql);
+    
+            $sets = array();
+    
+            foreach($results as $array){
+        
+                $set = new SmartestCmsItemSet;
+                $set->hydrate($array);
+                $sets[] = $set;
+        
+            }
+            
+            $this->_current_sets = $sets;
+        
+        }
+        
+        return $this->_current_sets;
+	    
+	}
+	
+	public function getPossibleSets(){
+	    
+	    $c_sets = $this->getCurrentStaticSets();
+	    $ids = array();
+	    
+	    foreach($c_sets as $s){
+	        
+	        $ids[] = $s->getId();
+	        
+	    }
+	    
+	    $sql = "SELECT * FROM Sets WHERE Sets.set_itemclass_id='{$this->getItemclassId()}' AND Sets.set_type='STATIC' AND (Sets.set_site_id='{$this->getSiteId()}' OR Sets.set_shared=1)";
+	    
+	    if(count($ids)){
+	        $sql .= " AND Sets.set_id NOT IN ('".implode("', '", $ids)."')";
+	    }
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $sets = array();
+	    
+	    foreach($result as $array){
+	        $set = new SmartestCmsItemSet;
+	        $set->hydrate($array);
+	        $sets[] = $set;
+	    }
+	    
+	    return $sets;
+	    
+	}
+	
+	// System UI calls
+	
+	public function getSmallIcon(){
+	    
+	    $info = $this->getTypeInfo();
+	    
+	    return SM_CONTROLLER_DOMAIN.'Resources/Icons/package_small.png';
+	    
+	}
+	
+	public function getLargeIcon(){
+	    
+	    
+	    
+	}
+	
+	public function getLabel(){
+	    
+	    return $this->getName();
+	    
+	}
+	
+	public function getActionUrl(){
+	    
+	    return SM_CONTROLLER_DOMAIN.'datamanager/openItem?item_id='.$this->getId();
 	    
 	}
 	

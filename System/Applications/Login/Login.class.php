@@ -62,16 +62,13 @@ class Login extends SmartestSystemApplication{
 		if($user = $this->_auth->newLogin($post['user'], $post['passwd'], $service)){
 		    
 		    SmartestPersistentObject::set('user', $user);
-		    // SmartestPersistentObject::set('temp:testData', true);
 		    
-		    // print_r($user);
-		    
-			// $this->redirect("/smartest");
-			if(strlen($post['from']) && $post['from']{0} == '/'){
+		    if(strlen($post['from']) && $post['from']{0} == '/'){
 			    $this->redirect(SM_CONTROLLER_DOMAIN.substr($post['from'], 1).'?'.$post['refer']);
 			}else{
 			    $this->redirect("/smartest");
 			}
+			
 		}else{
 			$this->redirect("/smartest/login?reason=badauth");
 		}
@@ -79,7 +76,7 @@ class Login extends SmartestSystemApplication{
 	
 	function doLogOut(){
 		$this->_auth->logout();
-		$this->redirect(SM_CONTROLLER_DOMAIN."smartest/login?reason=logout");
+		$this->redirect("/smartest/login?reason=logout");
 	}
 	
 }

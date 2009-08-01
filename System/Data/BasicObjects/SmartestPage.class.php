@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPage extends SmartestBasePage{
+class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 
 	protected $_save_url = true;
 	protected $_fields_retrieval_attempted = false;
@@ -1213,6 +1213,18 @@ class SmartestPage extends SmartestBasePage{
 	        case "cache_file":
 	        return $this->getCacheFileName();
 	        
+	        case "small_icon":
+            return $this->getSmallIcon();
+
+            case "large_icon":
+            return $this->getLargeIcon();
+
+            case "label":
+            return $this->getLabel();
+
+            case "action_url":
+            return $this->getActionUrl();
+	        
 	    }
 	    
 	    return parent::offsetGet($offset);
@@ -2068,6 +2080,53 @@ class SmartestPage extends SmartestBasePage{
 	
 	public function hasSimpleItem(){
 	    return (($this instanceof SmartestItemPage) && is_object($this->_simple_item));
+	}
+	
+	public function clearRecentlyEditedInstances($site_id, $user_id=''){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RECENTLY_EDITED_PAGES');
+	    
+	    $q->setTargetEntityByIndex(1);
+	    
+        $q->addQualifyingEntityByIndex(1, $this->getId());
+        $q->addQualifyingEntityByIndex(3, (int) $site_id);
+        
+        if(is_numeric($user_id)){
+            $q->addQualifyingEntityByIndex(2, $user_id);
+        }
+        
+        $q->delete();
+	    
+	}
+	
+	// System UI calls
+	
+	public function getSmallIcon(){
+	    
+	    if($this->getType() == 'ITEMCLASS'){
+	        return SM_CONTROLLER_DOMAIN.'Resources/Icons/page_gear.png';
+        }else{
+            return SM_CONTROLLER_DOMAIN.'Resources/Icons/page.png';
+        }
+	    
+	}
+	
+	public function getLargeIcon(){
+	    
+	    
+	    
+	}
+	
+	public function getLabel(){
+	    
+	    return $this->getTitle();
+	    
+	}
+	
+	public function getActionUrl(){
+	    
+	    return SM_CONTROLLER_DOMAIN.'websitemanager/openPage?page_id='.$this->getId();
+	    
 	}
 
 }
