@@ -31,7 +31,7 @@
 <li>
     <a href="{dud_link}" class="option" id="item_{$asset.id}" onclick="setSelectedItem('{$asset.id}', 'Template', 'editableasset');" >
 
-{if in_array($type_code, array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'))}
+{if in_array($asset.type, array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'))}
     <img border="0" src="{$domain}Resources/Images/ImageAssetThumbnails/{$asset.url}" />{$asset.url}</a>
 {else}
     <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$asset.stringid}</a>

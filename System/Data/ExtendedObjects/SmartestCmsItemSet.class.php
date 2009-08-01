@@ -89,6 +89,32 @@ class SmartestCmsItemSet extends SmartestSet{
 	    
 	}
 	
+	public function delete(){
+	    
+	    if($this->getType() == 'STATIC'){
+	        
+	        $ls = $this->getLookups(SM_QUERY_ALL_DRAFT);
+	        
+	        foreach($ls as $l){
+	            $l->delete();
+	        }
+	        
+	        parent::delete();
+	        
+	    }else if($this->getType() == 'DYNAMIC'){
+	        
+	        $cs = $this->getConditions();
+	        
+	        foreach($cs as $c){
+	            $c->delete();
+	        }
+	        
+	        parent::delete();
+	        
+	    }
+	    
+	}
+	
 	public function getLookups($mode){
 	    
 	    if($this->getType() == 'STATIC'){
@@ -118,7 +144,6 @@ class SmartestCmsItemSet extends SmartestSet{
                 
                 $lookup = new SmartestSetItemLookup;
 	            $lookup->hydrate($result);
-	            // print_r($lookup);
 	            $lookups[] = $lookup;
 	            
 	        }
@@ -570,32 +595,22 @@ class SmartestCmsItemSet extends SmartestSet{
 	    // make sure the set is populated
 	    $this->getMembers();
 	    
-	    // print_r($this->_set_member_ids);
-	    
-	    // echo $field.' '.$value;
-	    
 	    if($field == "id"){
 	        $tmp_array = $this->_set_member_ids;
 	    }else if($field == "slug"){
             $tmp_array = $this->_set_member_slugs;
         }else if($field == 'webid'){
-            // echo $compare.' ';
-	        $tmp_array = $this->_set_member_webids;
+            $tmp_array = $this->_set_member_webids;
         }else{
     	    // create an empty array to avoid E_WARNING
     	    $tmp_array = array();
     	}
-    	
-    	// print_r($this->_set_member_webids);
     	
     	if(in_array($value, $tmp_array)){
     	    $has_it = true;
     	}else{
     	    $has_it = false;
     	}
-    	
-    	// print_r($tmp_array);
-    	// var_dump($has_it);
     	
     	return $has_it;
     	
@@ -612,14 +627,13 @@ class SmartestCmsItemSet extends SmartestSet{
 	        case "model":
 	        return $this->getModel();
 	        
+	        case "_members":
+	        return $this->getMembers();
+	        
 	    }
 	    
 	    return parent::offsetGet($offset);
 	    
 	}
-	
-	/* public function hasPropertyOfId($id){
-	    
-	}*/
 
 }

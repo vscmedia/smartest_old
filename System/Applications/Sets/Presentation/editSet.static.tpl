@@ -71,7 +71,12 @@ function executeTransfer(){
 		
 		<ul class="actions-list">
 		  <li><b>Options</b></li>
+<<<<<<< .mine
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> List set contents</a></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/deleteSetConfirm?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Delete this set</a></li>
+=======
 			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View set contents</a></li>
+>>>>>>> .r261
 			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/editStaticSetOrder?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Change the order of this set</a></li>
 			{if $model.id}<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Browse sets of {$model.plural_name|strtolower}</a></li>{/if}
 			

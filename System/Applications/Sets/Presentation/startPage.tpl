@@ -13,7 +13,7 @@
 {foreach from=$sets key="key" item="set"}
   <li style="list-style:none;" 
 			ondblclick="window.location='{$domain}{$section}/editSet?set_id={$set.id}'">
-			<a class="option" id="item_{$set.id}" onclick="setSelectedItem('{$set.id}', 'fff');" >
+			<a class="option" id="item_{$set.id}" onclick="setSelectedItem('{$set.id}');" >
 			  <img border="0" src="{$domain}Resources/Icons/folder.png">
 			  {$set.name} ({$set.type|lower})</a></li>
 {/foreach}
@@ -24,10 +24,10 @@
   
 <ul class="actions-list" id="item-specific-actions" style="display:none">
   <li><b>Selected Data Set</b></li>
-  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editSet');}{/literal}"><img border="0" src="{$domain}Resources/Icons/folder_edit.png"> Edit Contents</a></li>
-  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('previewSet');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_go.png"> View Contents</a></li>
+  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editSet');}{/literal}"><img border="0" src="{$domain}Resources/Icons/folder_edit.png"> Modify data set contents</a></li>
+  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('previewSet');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_go.png"> List data set contents</a></li>
 {* <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('copySet');}{/literal}"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Duplicate<!--structure, not template because it does not propigate back to template--></a></li> *}
-  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteSet');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_delete.png"> Delete</a></li>
+  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('deleteSetConfirm');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_delete.png"> Delete this data set</a></li>
 {* <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('chooseSchemaForExport');}{/literal}"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Export</a></li> *}
 </ul>
 

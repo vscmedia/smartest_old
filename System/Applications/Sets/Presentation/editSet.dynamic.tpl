@@ -172,9 +172,9 @@ function updateSetConditionsFormFromOperator(condition, value){
 		
 		<ul class="actions-list">
 		  <li><b>Options</b></li>
-			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Preview Set</a></li>
-			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/'">         <img border="0" src="{$domain}Resources/Icons/package_add.png"> Browse Data Sets</a></li>
-			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}datamanager/'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Data Manager</a></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> List set contents</a></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Back to data sets</a></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/models'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Data Manager</a></li>
 			{* <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/chooseSchemaForExport?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Export this Set as XML</a></li> *}
 		</ul>
 		

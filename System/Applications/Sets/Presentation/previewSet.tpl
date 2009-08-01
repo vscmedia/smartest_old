@@ -1,6 +1,10 @@
 <div id="work-area">
 
+<<<<<<< .mine
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/sets">Sets</a> &gt; <a href="{$domain}sets/editSet?set_id={$set.id}">{$set.label}</a> &gt; Preview</h3>
+=======
 <h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; {if $model.id}<a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}sets/getItemClassSets?class_id={$model.id}">Sets</a>{else}<a href="{$domain}smartest/sets">Sets</a>{/if} &gt; <a href="{$domain}sets/editSet?set_id={$set.id}">{$set.label}</a> &gt; Preview</h3>
+>>>>>>> .r261
 
 <div class="instruction">Items in this set:</div>
 
@@ -55,9 +59,17 @@ View as:
     
     <ul class="actions-list">
       <li><b>Sets Options</b></li>
+<<<<<<< .mine
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px"> Edit this set</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/deleteSetConfirm?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_delete.png" style="width:16px;height:18px"> Delete this set</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px"> Back to Data Sets</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}datamanager/getItemClassMembers?class_id={$set.model.id}'"><img border="0" src="{$domain}Resources/Icons/model.png" style="width:16px;height:18px"> Browse {$set.model.plural_name}</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/models'"><img border="0" src="{$domain}Resources/Icons/model.png" style="width:16px;height:18px"> Go to Models</a></li>	
+=======
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px"> Edit this set</a></li>
       {if $model.id}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px"> Back to sets</a></li>{else}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px"> Back to sets</a></li>{/if}
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}datamanager/getItemClassMembers?class_id={$set.model.id}'"><img border="0" src="{$domain}Resources/Icons/package_small.png"> Browse {$set.model.plural_name}</a></li>
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/models'"><img border="0" src="{$domain}Resources/Icons/model.png" style="width:16px;height:18px"> Browse all items</a></li>	
+>>>>>>> .r261
     </ul>    
 </div>
