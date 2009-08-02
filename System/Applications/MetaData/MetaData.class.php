@@ -451,7 +451,7 @@ class MetaData extends SmartestSystemApplication{
 	        $tag->setName($tag_name);
 	        $tag->setLabel($tag_label);
 	        $tag->save();
-	        // print_r($tag);
+	        
 	        $this->addUserMessageToNextRequest("Tag was successfully added.", SmartestUserMessage::SUCCESS);
 	        $this->formForward();
 	    }
@@ -463,9 +463,8 @@ class MetaData extends SmartestSystemApplication{
 	    $tag_identifier = SmartestStringHelper::toSlug($get['tag']);
 	    $tag = new SmartestTag;
 	    
-	    if($tag->hydrateBy('name', $tag_identifier)){
-	        $objects = $tag->getObjectsOnSiteAsArrays($this->getSite()->getId(), true);
-	        // print_r($objects);
+	    if($tag->findBy('name', $tag_identifier)){
+	        $objects = $tag->getObjectsOnSite($this->getSite()->getId(), true);
 	    }else{
 	        $objects = array();
 	        $this->addUserMessage("This tag does not exist.", SmartestUserMessage::WARNING);

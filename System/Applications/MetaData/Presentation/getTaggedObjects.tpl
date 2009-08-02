@@ -8,7 +8,7 @@
   <div class="instruction">{$objects|count} objects have ben tagged with "{$tag_name}".</div>
   <ul>
     {foreach from=$objects item="object"}
-    <li>{$object.type}: <a href="{$object.url}">{$object.title}</a> (<a href="{if $object.type == 'Page'}{$domain}websitemanager/editPage?page_id={$object.webid}{else}{$domain}datamanager/editItem?item_id={$object.id}{/if}">edit</a>) </li>
+    <li style="list-style-image:url('{$object.small_icon}')"> <a href="{$object.action_url}">{$object.title}</a></li>
     {/foreach}
   </ul>
   {/if}

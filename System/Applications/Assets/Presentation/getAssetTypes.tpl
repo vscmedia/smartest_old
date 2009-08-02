@@ -43,7 +43,7 @@
   <ul class="actions-list" id="non-specific-actions">
     <li><span style="color:#999">Recently edited files</span></li>
     {foreach from=$recent_assets item="recent_asset"}
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_asset.action_url}'"><img border="0" src="{$recent_asset.small_icon}" /> {$recent_asset.label}</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_asset.action_url}'"><img border="0" src="{$recent_asset.small_icon}" /> {$recent_asset.label|summary:"30"}</a></li>
     {/foreach}
   </ul>
 

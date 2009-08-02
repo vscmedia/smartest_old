@@ -244,7 +244,7 @@ class SmartestCmsLink extends SmartestHelper{
                         $this->_destination_properties->setParameter('item_ref_field_name', 'slug');
                     }
                     
-                    $sql = "SELECT * FROM Items WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND item_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND item_itemclass_id='{$d->getDatasetId()}' AND item_deleted != '1'";
+                    $sql = "SELECT * FROM Items WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND item_site_id='".$site_id."' AND item_itemclass_id='{$d->getDatasetId()}' AND item_deleted != '1'";
                     $result = $this->database->queryToArray($sql);
                     
                     if(count($result)){
