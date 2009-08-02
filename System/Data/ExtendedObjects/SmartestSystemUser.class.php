@@ -164,6 +164,17 @@ class SmartestSystemUser extends SmartestUser{
 	
 	// Held Pages
     
+    public function getHeldPages($site_id=''){
+	    
+	    $sql = "SELECT * FROM Pages WHERE page_is_held=1 AND page_held_by='".$this->getId()."'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND page_site_id = '".$site_id."'";
+	    }
+	    
+	    $result = $this->database->queryToArray($sql);
+	}
+    
     public function getNumHeldPages($site_id=''){
 	    
 	    $sql = "SELECT * FROM Pages WHERE page_is_held=1 AND page_held_by='".$this->getId()."'";
@@ -191,9 +202,38 @@ class SmartestSystemUser extends SmartestUser{
 	    
 	}
 	
-	public function getNumHeldItems($model_id, $site_id=''){
+	public function getHeldItems($model_id='', $site_id=''){
 	    
-	    $sql = "SELECT * FROM Items WHERE item_itemclass_id='".$model_id."' AND item_is_held=1 AND item_held_by='".$this->getId()."'";
+	    $sql = "SELECT * FROM Items WHERE item_is_held=1 AND item_held_by='".$this->getId()."'";
+	    
+	    if(is_numeric($model_id)){
+	        $sql .= " AND item_itemclass_id='".$model_id."'";
+	    }
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND item_site_id = '".$site_id."'";
+	    }
+	    
+	    $result = $this->database->queryToArray($sql);
+	    $items = array();
+	    
+	    foreach($result as $array){
+	        $item = new SmartestItem;
+	        $item->hydrate($array);
+	        $items[] = $item;
+	    }
+	    
+	    return $items;
+	    
+	}
+	
+	public function getNumHeldItems($model_id='', $site_id=''){
+	    
+	    $sql = "SELECT * FROM Items WHERE item_is_held=1 AND item_held_by='".$this->getId()."'";
+	    
+	    if(is_numeric($model_id)){
+	        $sql .= " AND item_itemclass_id='".$model_id."'";
+	    }
 	    
 	    if(is_numeric($site_id)){
 	        $sql .= " AND item_site_id = '".$site_id."'";
@@ -364,7 +404,7 @@ class SmartestSystemUser extends SmartestUser{
         
         $q->addSortField('ManyToManyLookups.mtmlookup_id');
         $q->setSortDirection('DESC');
-        $q->setLimit(10);
+        $q->setLimit(5);
         
         $items = $q->retrieve();
         
@@ -423,7 +463,7 @@ class SmartestSystemUser extends SmartestUser{
         
         $q->addSortField('ManyToManyLookups.mtmlookup_id');
         $q->setSortDirection('DESC');
-        $q->setLimit(10);
+        $q->setLimit(5);
         
         $assets = $q->retrieve();
         
@@ -480,7 +520,7 @@ class SmartestSystemUser extends SmartestUser{
         $q->addForeignTableConstraint('Pages.page_deleted', 'FALSE');
         $q->addSortField('ManyToManyLookups.mtmlookup_id');
         $q->setSortDirection('DESC');
-        $q->setLimit(10);
+        $q->setLimit(5);
         
         $pages = $q->retrieve();
         

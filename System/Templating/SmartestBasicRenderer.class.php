@@ -220,6 +220,8 @@ class SmartestBasicRenderer extends SmartestEngine{
             
             if($link->getDestinationProperties()->getParameter('text') && ($link->getDestinationProperties()->getParameter('text') != SmartestLinkParser::LINK_TARGET_TITLE)){
                 $eo .= $link->getDestinationProperties()->getParameter('text');
+            }else if($link->getRenderData()->getParameter('with') && ($link->getRenderData()->getParameter('with') != SmartestLinkParser::LINK_TARGET_TITLE)){
+                $eo .= $link->getRenderData()->getParameter('with');
             }
             
             $eo .= $this->raiseError($link->getErrorMessage());
@@ -231,7 +233,6 @@ class SmartestBasicRenderer extends SmartestEngine{
         
         $child = $this->startChildProcess($render_process_id);
         $child->setContext(SM_CONTEXT_HYPERLINK);
-        // var_dump($this->draft_mode);
         $child->assign('_link_url', $link->getUrl($this->draft_mode));
         $child->assign('_link_contents', $link->getContent($this->draft_mode));
         $child->assign('_link_parameters', SmartestStringHelper::toAttributeString($link->getMarkupAttributes()->getParameters()));

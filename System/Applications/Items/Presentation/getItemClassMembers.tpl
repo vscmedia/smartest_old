@@ -36,7 +36,7 @@ function openPage(pageAction){
   <input type="hidden" name="class_id" value="{$model.id}" />
 </form>
 
-<div>
+<div class="special-box">
   <form id="mode-form" method="get" action="">
     <input type="hidden" name="class_id" value="{$model.id}" />
     Show: <select name="mode" onchange="$('mode-form').submit();">

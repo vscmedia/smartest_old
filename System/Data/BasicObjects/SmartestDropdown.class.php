@@ -2,27 +2,28 @@
 
 class SmartestDropdown extends SmartestBaseDropdown{
     
-    protected function __objectConstruct(){
-        
-        $this->_table_prefix = 'dropdown_';
-		$this->_table_name = 'DropDowns';
-        
-    }
+    protected $_options = array();
     
     public function getOptions(){
         
-        $sql = "SELECT * FROM DropDownValues WHERE dropdownvalue_dropdown_id='".$this->getId()."' ORDER BY dropdownvalue_order";
-        $result = $this->database->queryToArray($sql);
+        if(!count($this->_options)){
         
-        $options = array();
+            $sql = "SELECT * FROM DropDownValues WHERE dropdownvalue_dropdown_id='".$this->getId()."' ORDER BY dropdownvalue_order, dropdownvalue_label ASC";
+            $result = $this->database->queryToArray($sql);
         
-        foreach($result as $opt){
-            $option = new SmartestDropdownOption;
-            $option->hydrate($opt);
-            $options[] = $option;
+            $options = array();
+        
+            foreach($result as $opt){
+                $option = new SmartestDropdownOption;
+                $option->hydrate($opt);
+                $options[] = $option;
+            }
+            
+            $this->_options = $options;
+        
         }
         
-        return $options;
+        return $this->_options;
         
     }
     
@@ -52,6 +53,39 @@ class SmartestDropdown extends SmartestBaseDropdown{
         }
         
         return $arrays;
+        
+    }
+    
+    public function getNextOptionOrderIndex(){
+        
+        $index = 0;
+        
+        $sql = "SELECT DISTINCT dropdownvalue_order FROM DropDownValues WHERE dropdownvalue_dropdown_id='".$this->getId()."' ORDER BY dropdownvalue_order DESC LIMIT 1";
+        $result = $this->database->queryToArray();
+        
+        if(count($result)){
+            $index = $result[0]['dropdownvalue_order']+1;
+        }
+        
+        return $index;
+        
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            
+            case "values":
+            case "options":
+            return $this->getOptions();
+            
+            case "num_values":
+            case "num_options":
+            return count($this->getOptions());
+            
+        }
+        
+        return parent::offsetGet($offset);
         
     }
     

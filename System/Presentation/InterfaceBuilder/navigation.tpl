@@ -4,15 +4,13 @@
     <li{if $section == "desktop"} class="on"{else} class="off"{/if}><a href='{$domain}smartest' >Site Desktop</a></li>
     <li{if $section == "websitemanager"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/pages' >Pages</a></li>
     <li{if $section == "datamanager" || $section == "sets"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/models'>Items</a></li>
-    <li{if $section == "metadata"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/metadata'>Meta-data</a></li>
+    <li{if $section == "metadata" || $section == "dropdowns"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/metadata'>Meta-data</a></li>
     <li{if $section == "assets"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/assets'>Files</a></li>
-	  <li{if $section == "templates"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/templates'>Templates</a></li>
-	  {* <li{if $section == "desktop" && $method == 'editSite'} class="on"{else} class="off"{/if}><a href='{$domain}smartest/settings'>Settings</a></li> *}
-	  {* <li{if $section == "settings"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/settings'>Control Panel</a></li> *}
-	  {else}
-	  <li{if $section == "desktop" && $method != 'editSite'} class="on"{else} class="off"{/if}><a href='{$domain}smartest' >Sites Menu</a></li>
-	  {/if}
-	  <li class="off"><a href='{$domain}smartest/logout'>Sign Out</a></li>
+  	<li{if $section == "templates"} class="on"{else} class="off"{/if}><a href='{$domain}smartest/templates'>Templates</a></li>
+    {else}
+    <li{if $section == "desktop" && $method != 'editSite'} class="on"{else} class="off"{/if}><a href='{$domain}smartest' >Sites Menu</a></li>
+    {/if}
+    <li class="off"><a href='{$domain}smartest/logout'>Sign Out</a></li>
   </ul>
 </div>
 

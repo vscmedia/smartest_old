@@ -2,12 +2,7 @@
 
 class SmartestDropdownOption extends SmartestBaseDropdownOption{
     
-    protected function __objectConstruct(){
-        
-        $this->_table_prefix = 'dropdownvalue_';
-		$this->_table_name = 'DropDownValues';
-        
-    }
+    protected $_dropdown = null;
     
     public function __toString(){
         
@@ -23,6 +18,38 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption{
         if(count($result)){
             $this->hydrate($result[0]);
         }
+    }
+    
+    public function getDropdown(){
+        
+        $dropdown = new SmartestDropdown;
+        
+        if(!$this->_dropdown){
+        
+            if($dropdown->find($this->getDropdownId())){
+                $this->_dropdown = $dropdown;
+            }
+        
+        }
+        
+        return $dropdown;
+        
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            
+            case "html":
+            return '<option value="'.$this->_properties['value'].'">'.$this->_properties['value'].'</option>';
+            
+            case "dropdown":
+            return $this->getDropdown();
+            
+        }
+        
+        return parent::offsetGet($offset);
+        
     }
     
 }

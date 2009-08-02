@@ -13,7 +13,9 @@
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_layout.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_itemsview.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_treeview.css" />
+    <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_dropdown_menu.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_columns.css" />
+    <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_buttons.css" />
     
     <script type="text/javascript" language="javascript">
 
@@ -31,11 +33,9 @@
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/treeview.js"></script>
     {* <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/server.js"></script> *}
     
-    <script type="text/javascript" language="javascript">
-      // var dd1 = new YAHOO.util.DD("actions-area");
-    </script>
-    
-    {load_interface file="style_images.tpl"}
+    <style type="text/css">
+      img{ldelim} behavior:url({$domain}Resources/System/Javascript/iepngfix/iepngfix.htc); {rdelim}
+    </style>
 		
   </head>
   <body>
@@ -47,5 +47,5 @@
     {*adminbutton type="url" object="smartest/logout" text="Log Out"}, <a href="{$domain}smartest/users">My Account</a>*}
     
     <div id="user-info">
-      Signed in as: <strong>{$_user.firstname} {$_user.lastname}</strong> | <a href="{$domain}smartest/logout">Sign Out</a>&nbsp;&nbsp;
+      Signed in as: <strong>{$_user.firstname} {$_user.lastname}</strong> | <a href="{$domain}smartest/logout" id="sm-signout-link">Sign Out</a>&nbsp;&nbsp;
     </div>

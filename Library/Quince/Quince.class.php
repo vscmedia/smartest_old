@@ -137,10 +137,17 @@ class Quince{
 			    $this->options['auto'] = true;
 			}
 			
+			if(isset($this->options['use_formforwards'])){
+			    $this->options['use_formforwards'] = (bool) $this->options['use_formforwards'];
+			}else{
+			    $this->options['use_formforwards'] = false;
+			}
+			
 		}else{
 			$this->options = array();
 			$this->options['filename'] = $filename;
 			$this->options['auto'] = $automatic;
+			$this->options['use_formforwards'] = false;
 		}
 		
 	}
@@ -912,21 +919,26 @@ class Quince{
 					
 				$this->postActionTime = microtime(true);
 				$this->postActionTimeTaken = number_format(($this->postActionTime - $this->startTime)*1000, 2, ".", ",");
-					
-				if($destination = $this->requestIsForward()){
-					// handle form forwards
-					if($this->result == Quince::FAIL){
-						// action failed
-						$destination = $this->getFormForwardDestination($destination);
-						header("location:".$this->domain.$destination);
-						exit;
-					}else{
-						// action succeeded
-						$destination = $this->getFormForwardDestination($destination);
-						header("location:".$this->domain.$destination);
-						exit;
-					}
-				}
+				
+				if($this->options['use_formforwards']){
+				
+				    if($destination = $this->requestIsForward()){
+    					// handle form forwards
+    					if($this->result == Quince::FAIL){
+    						// action failed
+    						$destination = $this->getFormForwardDestination($destination);
+    						header("location:".$this->domain.$destination);
+    						exit;
+    					}else{
+    						// action succeeded
+    						$destination = $this->getFormForwardDestination($destination);
+    						header("location:".$this->domain.$destination);
+    						exit;
+    					}
+    				}
+				
+			    }
+				
 				//}
 			}else{
 				// ERROR: could not load class file: $this->modules[$this->moduleIndex]['class_file'];

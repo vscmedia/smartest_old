@@ -172,6 +172,10 @@ class SmartestCmsLink extends SmartestHelper{
         return $this->_destination_properties->getParameter($property_name);
     }
     
+    public function getRenderData(){
+        return $this->_render_data;
+    }
+    
     public function getScope(){
         return $this->_destination_properties->getParameter('scope');
     }
@@ -202,12 +206,18 @@ class SmartestCmsLink extends SmartestHelper{
     
     protected function _loadDestination(){
         
+        if(defined('SM_CMS_PAGE_SITE_ID')){
+            $site_id = SM_CMS_PAGE_SITE_ID;
+        }else if(SmartestSession::hasData('current_open_project')){
+            $site_id = SmartestPersistentObject::get('current_open_project')->getId();
+        }
+        
         switch($this->getType()){
             
             case SM_LINK_TYPE_PAGE:
             $d = new SmartestPage;
             
-            $sql = "SELECT * FROM Pages WHERE page_".$this->_destination_properties->getParameter('page_ref_field_name')."='".$this->_destination_properties->getParameter('page_ref_field_value')."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_type='NORMAL' AND page_deleted != 'TRUE'";
+            $sql = "SELECT * FROM Pages WHERE page_".$this->_destination_properties->getParameter('page_ref_field_name')."='".$this->_destination_properties->getParameter('page_ref_field_value')."' AND page_site_id='".$site_id."' AND page_type='NORMAL' AND page_deleted != 'TRUE'";
             $result = $this->database->queryToArray($sql);
             
             if(count($result)){
@@ -223,8 +233,8 @@ class SmartestCmsLink extends SmartestHelper{
             $d = new SmartestItemPage;
             
             if($this->_destination_properties->getParameter('format') == SM_LINK_FORMAT_AUTO){
-            
-                $sql = "SELECT * FROM Pages WHERE page_".$this->_destination_properties->getParameter('page_ref_field_name')."='".$this->_destination_properties->getParameter('page_ref_field_value')."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_type='ITEMCLASS' AND page_deleted != 'TRUE'";
+                
+                $sql = "SELECT * FROM Pages WHERE page_".$this->_destination_properties->getParameter('page_ref_field_name')."='".$this->_destination_properties->getParameter('page_ref_field_value')."' AND page_site_id='".$site_id."' AND page_type='ITEMCLASS' AND page_deleted != 'TRUE'";
                 $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
@@ -393,8 +403,6 @@ class SmartestCmsLink extends SmartestHelper{
         
         if($this->_render_data->getParameter('with')){
             // if the with="" attribute is specified
-            // echo substr($this->_render_data->getParameter('with'), 0, 6);
-            // $imgtest = substr($this->_render_data->getParameter('with'), 0, 6);
             if(substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
                 // return $this->_destination->__toString();
                 $a = new SmartestRenderableAsset;

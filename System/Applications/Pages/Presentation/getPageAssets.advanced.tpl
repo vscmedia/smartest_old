@@ -1,46 +1,50 @@
 <h3>Elements used on page: {$page.static_title}{if $page.type == 'ITEMCLASS'} ({$page.title}){/if}</h3>
 
+{if $version == "draft"}
 <div class="instruction">Double click a placeholder to set its content, or choose from the options on the right.</div>
+{else}
+<div class="instruction">Page elements as they are being rendered on live pages:</div>
+{/if}
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="assetclass_id" id="item_id_input" value="" />
   <input type="hidden" name="page_id" value="{$page.webid}" />
   {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
 </form>
-    
-{* <div style="margin-top:10px;width:95%;padding-left:10px;border-bottom:1px solid #999;padding-bottom:7px;margin-bottom:10px;" id="options-nav">
-  <a href="{$domain}{$section}/getPageAssets?page_id={$page.webid}&amp;version=draft" class="prefpane-tab">Draft</a>
-  <a href="{$domain}{$section}/getPageAssets?page_id={$page.webid}&amp;version=live" class="prefpane-tab">Live</a>
-</div> *}
 
-<div id="options-view-chooser">
-<form id="templateSelect" action="{$domain}{$section}/setPageTemplate" method="get" style="margin:0px">
+<div class="special-box buttons-container">
+  <form id="templateSelect" action="{$domain}{$section}/setPageTemplate" method="get" style="margin:0px">
 
-Viewing mode:
+    <div class="buttom-accompanying-text">Viewing mode:
 {if $version == "draft"}
-<b>Edit</b> - <a href="{$domain}{$section}/pageAssets?page_id={$page.webid}&amp;version=live{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}">Switch to live mode</a>
+      <b>Draft</b>
+    </div>
+    {action_button text="Switch to live mode"}{$domain}websitemanager/pageAssets?page_id=jl02c1D042YTWF6w85TO9j808iW7wNjQ&amp;version=live{/action_button}
 {else}
-<b>Live</b> - <a href="{$domain}{$section}/pageAssets?page_id={$page.webid}&amp;version=draft{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}">Switch to draft mode</a>
+      <b>Live</b>
+    </div>      
+    {action_button text="Switch to draft mode"}{$domain}websitemanager/pageAssets?page_id=jl02c1D042YTWF6w85TO9j808iW7wNjQ&amp;version=draft{/action_button}
 {/if}
-  
-<input type="hidden" name="page_id" value="{$page.webid}" />
-<input type="hidden" name="site_id" value="{$site_id}" />
-<input type="hidden" name="version" value="{$version}" />
+    
+    <input type="hidden" name="page_id" value="{$page.webid}" />
+    <input type="hidden" name="site_id" value="{$site_id}" />
+    <input type="hidden" name="version" value="{$version}" />
   	  
 {if $version == "draft"}
+    <span class="buttom-accompanying-text">
       Master Template:
       <select name="template_name" onchange="document.getElementById('templateSelect').submit();">
         <option value="">Not Selected</option>
-        {foreach from=$templates item="template"}
-          <option value="{$template.filename}"{if $templateMenuField == $template.filename} selected{/if}>{$template.filename}</option>
-        {/foreach}
+{foreach from=$templates item="template"}
+        <option value="{$template.filename}"{if $templateMenuField == $template.filename} selected{/if}>{$template.filename}</option>
+{/foreach}
       </select>
-      {if $template.filename}{*<input type="button" onclick="window.location='{$domain}templates/editTemplate?template_code=Master&amp;template_name={$templateMenuField}'" value="Edit" />
-      <a href="{$domain}templates/editTemplate?template_code=Master&amp;template_name={$template.filename}">Edit</a>*}{/if}
+    </span>
 {else}
-	Master Template: <b title="Changing this value may affect which placeholders need to be defined on this page">{$templateMenuField}</b>
+    <span class="buttom-accompanying-text">Master template: <b title="Changing this value may affect which placeholders need to be defined on this page">{$templateMenuField}</b></span>
 {/if}
-    </form>
+
+  </form>
 </div>
 
 <div class="preference-pane" id="assets_draft" style="display:block">
