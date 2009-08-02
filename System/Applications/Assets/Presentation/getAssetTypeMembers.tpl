@@ -2,14 +2,15 @@
 
 <h3>{$type_label} Files</h3>
 
-
-
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="assettype_code" value="{$type_code}" />
   <input type="hidden" name="asset_id" id="item_id_input" value="" />
 </form>
 
-<div>
+{if $num_assets < 1 && $mode != 2}
+<div class="special-box">There are no {$type_label|strtolower} files yet. <a href="{$domain}{$section}/addAsset?asset_type={$type_code}">Click here</a> to add one.</div>
+{else}
+<div class="special-box">
   <form id="mode-form" method="get" action="">
     <input type="hidden" name="asset_type" value="{$type_code}" />
     Show: <select name="mode" onchange="$('mode-form').submit();">
@@ -42,7 +43,7 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
 
 {/foreach}
 </ul>
-{if $error}{$error}{/if}
+{/if}
 
 </div>
 
@@ -82,7 +83,7 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
 <ul class="actions-list" id="non-specific-actions">
   <li><span style="color:#999">Recent {$type_label|strtolower} files</span></li>
   {foreach from=$recent_assets item="recent_asset"}
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_asset.action_url}'"><img border="0" src="{$recent_asset.small_icon}" /> {$recent_asset.label}</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_asset.action_url}'"><img border="0" src="{$recent_asset.small_icon}" /> {$recent_asset.label|summary:"30"}</a></li>
   {/foreach}
 </ul>
 

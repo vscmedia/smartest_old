@@ -1,7 +1,7 @@
 <div id="work-area">
   
   <h3>Attachments</h3>
-  
+{if count($attachments)}  
   <div class="special-box">The following attachment tags were recognized in this text:</div>
   
   {foreach from=$attachments item="attachment"}
@@ -12,10 +12,11 @@
   <b>Align:</b>&nbsp;{$attachment.alignment}
   <div style="margin-top:10px"><input type="button" value="{if $attachment.asset.id}Edit...{else}Attach file...{/if}" onclick="window.location='{$domain}{$section}/defineAttachment?attachment={$attachment.name}&amp;asset_id={$asset.id}'" /></div>
   </div>
-  {foreachelse}
-  <div class="special-box">There are no attachment tags in this text yet. <a href="{$domain}{$section}/editTextFragmentSource?asset_id={$asset.id}">Click here</a> to add some.</div>
   {/foreach}
-  
+{else}
+    <div class="special-box">There are no attachment tags in this text yet. <a href="{$domain}{$section}/editTextFragmentSource?asset_id={$asset.id}">Click here</a> to add some.</div>
+{/if}
+
 </div>
 
 <div id="actions-area">

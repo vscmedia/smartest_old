@@ -1,4 +1,4 @@
-  <div style="display:none;margin-top:8px;margin-bottom:8px" id="uploader">
+  <div style="display:none;margin-top:8px;margin-bottom:8px" id="uploader" class="special-box">
     Upload file: <input type="file" name="new_file" /><br /><a href="javascript:hideUploader()">never mind</a>
   </div>
 
@@ -7,4 +7,4 @@
     <textarea name="content" id="tpl_textArea" wrap="virtual"></textarea>
   </div>
 
-  <div id="uploader_link">or, alternatively, <a href="javascript:showUploader();">upload a file</a>.</div>
+  <div id="uploader_link" class="special-box">or, alternatively, <a href="javascript:showUploader();">upload a file</a>.</div>
