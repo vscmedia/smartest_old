@@ -247,7 +247,11 @@ class Pages extends SmartestSystemApplication{
     	
     	if($page->hydrate($page_webid)){
     	    
-    	    $page->setDraftMode(true);
+    	    if($page->getDeleted() == 'TRUE'){
+                $this->send(true, 'show_deleted_warning');
+            }
+            
+            $page->setDraftMode(true);
     	    
     	    if(($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET') && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
             
@@ -1241,7 +1245,11 @@ class Pages extends SmartestSystemApplication{
     		}
     		
     		if($page->hydrate($page_webid)){
-	        
+	            
+	            if($page->getDeleted() == 'TRUE'){
+	                $this->send(true, 'show_deleted_warning');
+	            }
+	            
 	            if($page->getType() == 'ITEMCLASS' && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
 	            
     	            $model = new SmartestModel;
@@ -1249,7 +1257,7 @@ class Pages extends SmartestSystemApplication{
                     if($model->hydrate($page->getDatasetId())){
                         $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
                         $this->send($items, 'items');
-                        $this->send($model->__toArray(), 'model');
+                        $this->send($model, 'model');
                         $this->send('Please choose an item to edit the elements on this page.', 'chooser_message');
                         $this->send('websitemanager/pageAssets', 'continue_action');
                         $this->send(true, 'allow_edit');
@@ -1266,7 +1274,33 @@ class Pages extends SmartestSystemApplication{
 	                
 	                if($page->getType() == 'ITEMCLASS'){
         	            if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+        	                
         	                $page->setPrincipalItem($item);
+        	                $recent_items = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $item->getItem()->getItemclassId());
+        	                $model = $item->getItem()->getModel();
+        	                $metapages = $item->getItem()->getModel()->getMetaPages();
+        	                
+        	                $default_metapage_id = $item->getItem()->getMetapageId();
+        	                
+        	                if($default_metapage_id){
+        	                    if($default_metapage_id != $page->getId()){
+        	                        $page = new SmartestPage;
+            	                    $page->find($default_metapage_id);
+            	                    $default_metapage_webid = $page->getWebId();
+            	                    $this->send($default_metapage_webid, 'default_metapage_webid');
+        	                        $this->send(true, 'show_metapage_warning');
+        	                    }else{
+        	                        $this->send(false, 'show_metapage_warning');
+    	                        }
+        	                }else{
+        	                    $this->send(false, 'show_metapage_warning');
+        	                }
+        	                
+        	                $this->send((bool) count($metapages), 'show_metapages');
+        	                $this->send($metapages, 'metapages');
+        	                $this->send($recent_items, 'recent_items');
+        	                $this->send($model, 'model');
+        	                $this->send(true, 'show_recent_items');
         	                $this->send($item, 'item');
         	            }
     	            }

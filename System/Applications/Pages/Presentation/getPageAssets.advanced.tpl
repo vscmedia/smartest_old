@@ -1,9 +1,9 @@
 <h3>Elements used on page: {$page.static_title}{if $page.type == 'ITEMCLASS'} ({$page.title}){/if}</h3>
 
 {if $version == "draft"}
-<div class="instruction">Double click a placeholder to set its content, or choose from the options on the right.</div>
+<div class="instruction">Page elements as they are being rendered on the draft version of this page.</div>
 {else}
-<div class="instruction">Page elements as they are being rendered on live pages:</div>
+<div class="instruction">Page elements as they are being rendered on the live version of this page:</div>
 {/if}
 
 <form id="pageViewForm" method="get" action="">
@@ -12,26 +12,39 @@
   {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
 </form>
 
-<div class="special-box buttons-container">
+{if $show_deleted_warning}
+  <div class="warning">Warning: This page is currently in the trash.</div>
+{/if}
+
+{if $show_metapage_warning}
+  <div class="warning">Warning: the meta-page you are editing is not the default meta-page for this item. Most automatically generated links will not link to this page. <a href="{$domain}{$section}/pageAssets?page_id={$default_metapage_webid}&amp;item_id={$item.id}"></a></div>
+{/if}
+
+<div class="special-box">
+  <form id="viewSelect" action="{$domain}{$section}/pageAssets" method="get" style="margin:0px">
+    <input type="hidden" name="page_id" value="{$page.webid}" />
+    <input type="hidden" name="site_id" value="{$site_id}" />
+    <input type="hidden" name="version" value="{$version}" />
+    
+    Viewing mode:
+    <select name="version" onchange="document.getElementById('viewSelect').submit();">
+      <option value="draft"{if $version == "draft"} selected="selected"{/if}>Draft</option>
+      <option value="live"{if $version == "live"} selected="selected"{/if}>Live</option>
+    </select>
+    
+    {*action_button text="Switch to live mode"}{$domain}websitemanager/pageAssets?page_id=jl02c1D042YTWF6w85TO9j808iW7wNjQ&amp;version=live{/action_button*}
+    {*action_button text="Switch to draft mode"}{$domain}websitemanager/pageAssets?page_id=jl02c1D042YTWF6w85TO9j808iW7wNjQ&amp;version=draft{/action_button*}
+
+  </form>
+
   <form id="templateSelect" action="{$domain}{$section}/setPageTemplate" method="get" style="margin:0px">
 
-    <div class="buttom-accompanying-text">Viewing mode:
-{if $version == "draft"}
-      <b>Draft</b>
-    </div>
-    {action_button text="Switch to live mode"}{$domain}websitemanager/pageAssets?page_id=jl02c1D042YTWF6w85TO9j808iW7wNjQ&amp;version=live{/action_button}
-{else}
-      <b>Live</b>
-    </div>      
-    {action_button text="Switch to draft mode"}{$domain}websitemanager/pageAssets?page_id=jl02c1D042YTWF6w85TO9j808iW7wNjQ&amp;version=draft{/action_button}
-{/if}
-    
     <input type="hidden" name="page_id" value="{$page.webid}" />
     <input type="hidden" name="site_id" value="{$site_id}" />
     <input type="hidden" name="version" value="{$version}" />
   	  
 {if $version == "draft"}
-    <span class="buttom-accompanying-text">
+    <span>
       Master Template:
       <select name="template_name" onchange="document.getElementById('templateSelect').submit();">
         <option value="">Not Selected</option>
@@ -41,7 +54,7 @@
       </select>
     </span>
 {else}
-    <span class="buttom-accompanying-text">Master template: <b title="Changing this value may affect which placeholders need to be defined on this page">{$templateMenuField}</b></span>
+    <span>Master template: <b title="Changing this value may affect which placeholders need to be defined on this page">{$templateMenuField}</b></span>
 {/if}
 
   </form>

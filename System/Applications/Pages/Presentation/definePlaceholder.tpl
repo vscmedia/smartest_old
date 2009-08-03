@@ -1,3 +1,24 @@
+<script language="javascript">
+
+var show_params_holder = false;
+
+{literal}
+
+function toggleParamsHolder(){
+  if(show_params_holder){
+    new Effect.BlindUp('params-holder', {duration: 0.6});
+    show_params_holder = false;
+    $('params-holder-toggle-link').innerHTML = "show";
+  }else{
+    new Effect.BlindDown('params-holder', {duration: 0.6});
+    show_params_holder = true;
+    $('params-holder-toggle-link').innerHTML = "hide";
+  }
+}
+
+{/literal}
+</script>
+
 <div id="work-area">
   
   <h3>Define Placeholder</h3>
@@ -83,15 +104,26 @@
         {$page.title}
       </div>
       {/if}
+      
+{if !empty($params)}
+
+<div class="special-box">
     
+    <div class="heading">Instance parameters (<a id="params-holder-toggle-link" href="javascript:toggleParamsHolder()">show</a>)</div>
+    
+    <div id="params-holder" style="display:none">
     {foreach from=$params key="parameter_name" item="parameter"}
       <div class="edit-form-row">
         <div class="form-section-label">{$parameter_name}</div>
         <input type="text" name="params[{$parameter_name}]" style="width:250px" value="{$parameter.value}" id="render_parameter_{$parameter_name}" /> Default: {$asset_params[$parameter_name]}
       </div>
     {/foreach}
-    
-    {/if}
+    </div>
+
+</div>
+{/if}
+
+{/if}
   
   <div class="edit-form-row">
     <div class="buttons-bar">

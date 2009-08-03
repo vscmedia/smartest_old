@@ -5,6 +5,7 @@
 class SmartestSystemApplication extends SmartestBaseApplication{
     
     protected $_userMessages = array();
+    protected $_languages = array();
     
     public function __systemModulePreConstruct(){
         
@@ -19,6 +20,10 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		    SmartestCache::save('user:messages:nextRequest:'.$this->getUser()->getId(), array(), -1, true);
 		    
 	    }
+	    
+	    $language_options = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Languages/options.yml");
+		$this->_languages = $language_options['languages'];
+		$this->send($this->_languages, '_languages');
 	    
 	    if($this->getSite() instanceof SmartestSite){
 	        $this->send(true, 'show_left_nav_options');

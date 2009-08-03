@@ -378,6 +378,7 @@ class Assets extends SmartestSystemApplication{
     		    $asset->setShared($shared);
     		    $asset->setUserId($this->getUser()->getId());
     		    $asset->setCreated(time());
+    		    $asset->setLanguage(strtolower(substr($post['asset_language'], 0, 3)));
 		    
     		    $suffixes = array();
 		    
@@ -1236,7 +1237,7 @@ class Assets extends SmartestSystemApplication{
     		    $content = $post['asset_content'];
     		    $content = SmartestStringHelper::unProtectSmartestTags($content);
     		    $asset->setContent($content);
-    	        
+    	        $asset->setLanguage(strtolower(substr($post['asset_language'], 0, 3)));
     	        $asset->setModified(time());
                 $asset->save();
                 

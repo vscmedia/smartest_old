@@ -1067,8 +1067,6 @@ class Items extends SmartestSystemApplication{
 		
 		$item = SmartestCmsItem::retrieveByPk($item_id);
 		
-	    // print_r($item);
-	    
 	    if(is_object($item)){
 	        
 	        if($item->getItem()->getIsHeld() && $item->getItem()->getHeldBy() != $this->getUser()->getId()){

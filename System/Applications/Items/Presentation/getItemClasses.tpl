@@ -87,7 +87,7 @@ View: <a href="{dud_link}" onclick="setView('list', 'options_grid')">List</a> /
 <ul class="actions-list" id="non-specific-actions">
   <li><span style="color:#999">Recently edited items</span></li>
   {foreach from=$recent_items item="recent_item"}
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/openItem?item_id={$recent_item.id}'"><img border="0" src="{$domain}Resources/Icons/package.png" style="width:16px;height:16px" /> {$recent_item.name}</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_item.action_url}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label}</a></li>
   {/foreach}
 </ul>
 

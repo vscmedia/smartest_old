@@ -3,6 +3,16 @@
   <input type="hidden" name="asset_id" value="{$asset.id}" />
   <input type="hidden" name="asset_type" value="{$asset.type}" />
     
+    <div class="special-box">
+      <span class="heading">Language</span>
+      <select name="asset_language">
+        <option value="">{$lang.label}</option>
+    {foreach from=$_languages item="lang" key="langcode"}
+        <option value="{$langcode}"{if $asset.language == $langcode} selected="selected"{/if}>{$lang.label}</option>
+    {/foreach}
+      </select>
+    </div>
+    
     {foreach from=$asset.type_info.param item="parameter"}
     <div class="edit-form-row">
       <div class="form-section-label">{$parameter.name}</div>
@@ -10,7 +20,6 @@
     </div>
     {/foreach}
     
-    Name of the Asset:  {$asset.stringid}<br />
     <div id="textarea-holder" style="width:100%">
         <textarea name="asset_content" id="tpl_textArea" wrap="virtual" style="width:100%;padding:0">{$textfragment_content}</textarea>
         <div class="buttons-bar">

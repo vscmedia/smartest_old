@@ -114,13 +114,24 @@ function validateUploadSuffix(){
     </div>
     
     <div class="edit-form-row">
+      <div class="form-section-label">Language</div>
+      <select name="asset_language">
+        <option value="">{$lang.label}</option>
+{foreach from=$_languages item="lang" key="langcode"}
+        <option value="{$langcode}">{$lang.label}</option>
+{/foreach}
+      </select>
+    </div>
+    
+    <div class="edit-form-row">
       <div class="form-section-label">Share this asset with other sites?</div>
       <input type="checkbox" name="asset_shared" /> Check here to allow all sites to use this file.
     </div>
     
     <div class="edit-form-row">
       <div class="buttons-bar">
-        <input type="submit" value="Save">
+        <input type="button" value="Cancel" onclick="cancelForm();">
+        <input type="submit" value="Save" />
       </div>
     </div>
     

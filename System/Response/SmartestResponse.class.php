@@ -619,7 +619,7 @@ class SmartestResponse{
 		}
 	}
 	
-    function prepareContent(){
+    protected function prepareContent(){
 		
 		try{
 			SmartestQuery::init(true);

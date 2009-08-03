@@ -8,6 +8,10 @@
 
 <div class="instruction">Edit page meta information.</div>
 
+{if $show_deleted_warning}
+  <div class="warning">Warning: This page is currently in the trash.</div>
+{/if}
+
 <form id="updatePage" name="updatePage" action="{$domain}{$section}/updatePage" method="post" style="margin:0px">
   
   <input type="hidden" name="page_id" value="{$pageInfo.id}">

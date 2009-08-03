@@ -248,6 +248,22 @@ div.instruction{
 	font-size:12px;
 }
 
+div.form-section-label{
+	font-size:1.1em;
+	background-color:#f4f4f4;
+	border:1px solid #ddd;
+	color:#666;
+}
+
+div.buttons-bar{
+	font-size:1.1em;
+	color:#fff;
+	border:1px solid #999;
+	background-color:#aaa;
+	background-image:url('../Images/admin_button_bar_bg.gif');
+	background-repeat:repeat-x;
+}
+
 div.special-box{
     font-size:12px;
     border:3px solid #ccc;
@@ -259,6 +275,16 @@ div.special-box{
 
 div.special-box a{
     color:#F4842A;
+}
+
+div.special-box .heading{
+    color:#333;
+    font-weight:bold;
+}
+
+div.special-box div.form-section-label{
+    border:0px;
+    background-color:#ddd;
 }
 
 div.warning{
@@ -275,22 +301,6 @@ div.error{
     background-color:#fdd;
     padding:5px;
     margin:10px 0 10px 0;
-}
-
-div.form-section-label{
-	font-size:1.1em;
-	background-color:#f4f4f4;
-	border:1px solid #ddd;
-	color:#666;
-}
-
-div.buttons-bar{
-	font-size:1.1em;
-	color:#fff;
-	border:1px solid #999;
-	background-color:#aaa;
-	background-image:url('../Images/admin_button_bar_bg.gif');
-	background-repeat:repeat-x;
 }
 
 div#footer{

@@ -76,10 +76,10 @@
         <suffix mime="image/jpeg">jpeg</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" />
         <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
+        <param name="credit" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="id" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="class" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="style" type="SM_DATATYPE_SL_TEXT" required="false" />
-        <param name="credit" type="SM_DATATYPE_SL_TEXT" required="false" />
     </type>
     
     <type id="SM_ASSETTYPE_PNG_IMAGE" category="image">
@@ -94,10 +94,10 @@
         <suffix mime="image/png">png</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" />
         <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
+        <param name="credit" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="id" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="class" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="style" type="SM_DATATYPE_SL_TEXT" required="false" />
-        <param name="credit" type="SM_DATATYPE_SL_TEXT" required="false" />
     </type>
     
     <type id="SM_ASSETTYPE_GIF_IMAGE" category="image">
@@ -112,10 +112,10 @@
         <suffix mime="image/gif">gif</suffix>
         <param name="link_href" type="SM_DATATYPE_URL" required="false" />
         <param name="alt_text" type="SM_DATATYPE_SL_TEXT" />
+        <param name="credit" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="id" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="class" type="SM_DATATYPE_SL_TEXT" required="false" />
         <param name="style" type="SM_DATATYPE_SL_TEXT" required="false" />
-        <param name="credit" type="SM_DATATYPE_SL_TEXT" required="false" />
     </type>
     
     <type id="SM_ASSETTYPE_JAVASCRIPT" category="browser_instructions">

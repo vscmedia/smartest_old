@@ -3,8 +3,12 @@
     <a href="javascript:hideUploader();">never mind</a>
   </div>
   
+  <div class="edit-form-row">
+    <div class="form-section-label">Name this file</div>
+    <input type="text" name="string_id" />
+  </div>
+  
   <div style="width:100%" id="text_window">
-    Name This Asset: <input type="text" name="string_id" />
     <textarea name="content" id="tpl_textArea" wrap="virtual"></textarea>
   </div>
 
