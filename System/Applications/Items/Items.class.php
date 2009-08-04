@@ -917,11 +917,15 @@ class Items extends SmartestSystemApplication{
 	    
 	    if($model->hydrate($model_id)){
 	        
-	        // print_r($model->getDefaultMetaPageId($this->getSite()->getId()));
+	        $this->send($model, 'model');
+	        $this->send($model->getMetaPages(), 'metapages');
 	        
-	        $this->send($model->__toArray(), 'model');
-	        $this->send($model->getMetaPagesAsArrays(), 'metapages');
-	        // $props = $model->getAvailableDescriptionProperties();
+	        $num_items_on_site = count($model->getSimpleItems($this->getSite()->getId()));
+	        $num_items_all_sites = count($model->getSimpleItems());
+	        
+	        $this->send(($num_items_on_site > 0) ? number_format($num_items_on_site) : 'none', 'num_items_on_site');
+	        $this->send(number_format($num_items_all_sites), 'num_items_all_sites');
+	        
 	        $this->send($model->getAvailableDescriptionPropertiesAsArrays(), 'description_properties');
 	    }else{
 	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);

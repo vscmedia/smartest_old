@@ -517,11 +517,11 @@ class SmartestCmsLink extends SmartestHelper{
             
             case SM_LINK_TYPE_EXTERNAL:
             
-            if($this->_destination_properties->getParameter('newwin')){
-                return "javascript:window.open('".$this->_destination_properties->getParameter('destination')."');";
-            }else{
+            // if($this->_destination_properties->getParameter('newwin')){
+            //    return "javascript:window.open('".$this->_destination_properties->getParameter('destination')."');";
+            //}else{
                 return $this->_destination_properties->getParameter('destination');
-            }
+            // }
             
             break;
             
@@ -539,9 +539,13 @@ class SmartestCmsLink extends SmartestHelper{
             }else{
                 if($this->_markup_attributes->getParameter('target') == '_blank' || $this->_markup_attributes->getParameter('target') == '_new'){
                     $this->_destination_properties->setParameter('newwin', true);
-                    $this->_markup_attributes->clearParameter('target');
                 }
             }
+            
+            if($this->_destination_properties->getParameter('newwin')){
+                $this->_markup_attributes->setParameter('target', '_blank');
+            }
+            
         }
         
         $url = $this->getUrl($draft_mode);

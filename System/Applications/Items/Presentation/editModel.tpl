@@ -14,6 +14,11 @@
       </div>
       
       <div class="edit-form-row">
+        <div class="form-section-label">Number of items</div>
+        This site: <strong>{$num_items_on_site}</strong>; All sites: <strong>{$num_items_all_sites}</strong>
+      </div>
+      
+      <div class="edit-form-row">
         <div class="form-section-label">Model Class</div>
         Library/ObjectModel/{$model.name|camelcase}.class.php
       </div>
