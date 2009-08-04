@@ -26,8 +26,8 @@ function smartest_filter_preview($html, &$filter){
         
     }else{
         
-        $creator = "\n<!--Powered by Smartest(TM) Web Platform-->\n";
-        $html = str_replace('</body>', $creator."<!--Page was returned in: ".SM_TOTAL_TIME."ms -->\n</body>", $html);
+        $creator = "\n<!--Powered by Smartest(TM) Online Publishing Platform, v".constant('SM_INFO_VERSION_NUMBER')." -->\n";
+        $html = str_replace('</body>', $creator."<!--Page was returned in: ".constant('SM_TOTAL_TIME')."ms -->\n</body>", $html);
         
     }
     

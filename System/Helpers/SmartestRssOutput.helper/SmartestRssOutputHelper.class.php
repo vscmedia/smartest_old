@@ -29,7 +29,7 @@ class SmartestRssOutputHelper{
 			
 			$this->_domObject = new DOMDocument('1.0');
 	        $this->_domObject->formatOutput = true;
-			$this->_domObject->loadXML('<?xml version="1.0" encoding="UTF-8" ?'.'><!-- generator="Smartest '.SM_INFO_VERSION_NUMBER.'" --><rss version="2.0" />');
+			$this->_domObject->loadXML('<?xml version="1.0" encoding="UTF-8" ?'.'><!-- generator="Smartest v'.SM_INFO_VERSION_NUMBER.'" --><rss version="2.0" />');
 	    
 	        $this->_domRootTagElement = $this->_domObject->getElementsByTagName('rss')->item(0);
     	    $channel = $this->_domObject->createElement("channel");

@@ -224,7 +224,7 @@ class SmartestCmsLink extends SmartestHelper{
                 $d->hydrate($result[0]);
                 $this->_destination = $d;
             }else{
-                return $this->error("The requested page was not found.");
+                return $this->error("The requested page was not found. (Link destination: ".$this->_destination_properties->getParameter('destination').')');
             }
             
             break;
@@ -255,6 +255,7 @@ class SmartestCmsLink extends SmartestHelper{
                     }
                 
                 }else{
+                    echo $sql;
                     return $this->error("The requested page was not found. (Link destination: ".$this->_destination_properties->getParameter('destination').')');
                 }
             
@@ -297,7 +298,6 @@ class SmartestCmsLink extends SmartestHelper{
             case SM_LINK_TYPE_IMAGE:
             $d = new SmartestAsset;
             $d->hydrateBy('url', $this->_destination_properties->getParameter('filename'));
-            // print_r($d);
             $this->_destination = $d;
             break;
             

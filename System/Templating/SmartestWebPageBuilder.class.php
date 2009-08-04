@@ -502,10 +502,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                     foreach($data as $item){
                         
-                        /* $this->_tpl_vars['item'] = $item;
-                        $this->assign("repeated_item", $item->__toArray());
-                        $this->assign("repeated_item_object", $item); */
-                        
                         if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
         				    $edit_link = "<a title=\"Click to edit ".$item['_model']['name'].": ".$item['name']."\" href=\"".SM_CONTROLLER_DOMAIN."datamanager/editItem?item_id=".$item['id']."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this item--></a>";
         			    }else{
@@ -521,19 +517,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             	        
             	        $this->killChildProcess($child->getProcessId());
         			    
-        			    // $content .= $this->fetch($list->getRepeatingTemplate($this->getDraftMode()), array());
                     }
                 
-                    /* foreach($data as $item){
-                    
-                        if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-        				    $edit_link = "<a title=\"Click to edit ".$item['_model']['name'].": ".$item['name']."\" href=\"".SM_CONTROLLER_DOMAIN."datamanager/editItem?item_id=".$item['id']."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this item--></a>";
-        			    }else{
-        				    $edit_link = "<!--edit link-->";
-        			    }
-        			    
-                    } */
-            
                     if($list->hasFooterTemplate($this->getDraftMode())){
                         $this->run($list->getFooterTemplate($this->getDraftMode()), array());
                     }
@@ -547,8 +532,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         	        $child->setDraftMode($this->getDraftMode());
         	        $content = $child->fetch($list->getRepeatingTemplate($this->getDraftMode()));
         	        $this->killChildProcess($child->getProcessId());
-        	        // $content .= "Hello";
-        	        // echo "hello";
                     
                 }
             

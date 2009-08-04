@@ -84,7 +84,7 @@ class SmartestStringHelper extends SmartestHelper{
     }
     
     static function stripNewLines($s){
-        return preg_replace("/[\n\r]/m", "", $s);
+        return preg_replace("/[\n\r]/m", " ", $s);
     }
     
 	static function toSlug($normal_string, $clean_non_ascii=false){
@@ -95,7 +95,7 @@ class SmartestStringHelper extends SmartestHelper{
 		    $page_name = self::toAscii($page_name);
 		}
 		
-		$page_name = trim($page_name, " ?!%$#&£*|()/\\");
+		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
 		$page_name = preg_replace("/[^\w-]+/", "-", $page_name);
 		return $page_name;
@@ -110,7 +110,7 @@ class SmartestStringHelper extends SmartestHelper{
 		    $page_name = self::toAscii($page_name);
 		}
 		
-		$page_name = trim($page_name, " ?!%$#&£*|()/\\");
+		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
 		$page_name = preg_replace("/[^\w_-]+/", "_", $page_name);
 		return $page_name;
@@ -119,7 +119,7 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	static function toConstantName($string, $clean_non_ascii=false){
 		
-		$constant_name = trim($string, " ?!%$#&£*|/\\");
+		$constant_name = trim($string, " ?!%$#&£*|/\\-");
 		
 		if($clean_non_ascii && !self::isAscii($constant_name)){
 		    $constant_name = self::toAscii($constant_name);

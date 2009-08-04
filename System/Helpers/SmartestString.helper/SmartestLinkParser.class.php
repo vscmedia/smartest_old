@@ -60,40 +60,34 @@ class SmartestLinkParser{
                     
                     if(strpos($l->getParameter('destination'), '=')){
 
-                        if(preg_match('/(name|id|webid)=([\w_-]+)(:(name|id|webid)=([\w_-]+))?/i', $l->getParameter('destination'), $dm)){
+                        // if(preg_match('/(name|id|webid)=([\w_-]+)(:(name|id|webid)=([\w_-]+))?/i', $l->getParameter('destination'), $dm)){
+                        if(preg_match('/(meta)?page:((name|id|webid)=)?([\w_-]+)(:((name|id|webid)=)?([\w_-]+))?/i', $l->getParameter('destination'), $dm)){
                             
                             $l->setParameter('format', SM_LINK_FORMAT_AUTO);
                             
-                            if($l->getParameter('namespace') == 'page'){
-                            
-                                $l->setParameter('page_ref_field_name', $dm[1]);
-                                
-                                if($dm[1] != 'webid'){
-                                    $l->setParameter('page_ref_field_value', SmartestStringHelper::toSlug($m[4]));
-                                }else{
-                                    $l->setParameter('page_ref_field_value', $m[4]);
-                                }
-                            
-                            }else if($l->getParameter('namespace') == 'metapage'){
-                                
-                                $l->setParameter('page_ref_field_name', $dm[1]);
-                                
-                                if($dm[1] != 'webid'){
-                                    $l->setParameter('page_ref_field_value', SmartestStringHelper::toSlug($m[4]));
-                                }else{
-                                    $l->setParameter('page_ref_field_value', $m[4]);
-                                }
+                            if(strlen($dm[2])){
+                                $l->setParameter('page_ref_field_name', $dm[3]);
+                            }else{
+                                $l->setParameter('page_ref_field_name', 'name');
+                            }
 
-                                if(isset($dm[5])){
-                                    if($dm[4] == 'name'){
+                            if($dm[3] == 'webid'){
+                                $l->setParameter('page_ref_field_value', $dm[4]);
+                            }else{
+                                $l->setParameter('page_ref_field_value', trim(SmartestStringHelper::toSlug($dm[4])));
+                            }
+
+                            if(isset($dm[5]) && strlen($dm[5])){
+                                if(strlen($dm[6])){
+                                    if($dm[7] == 'name'){
                                         $l->setParameter('item_ref_field_name', 'slug');
                                     }else{
-                                        $l->setParameter('item_ref_field_name', $dm[4]);
+                                        $l->setParameter('item_ref_field_name', $dm[7]);
                                     }
-                                    $l->setParameter('item_ref_field_value', SmartestStringHelper::toSlug($dm[5]));
-                                    
+                                }else{
+                                    $l->setParameter('item_ref_field_name', 'slug');
                                 }
-                                
+                                $l->setParameter('item_ref_field_value', trim(SmartestStringHelper::toSlug($dm[8])));
                             }
 
                         }else{
@@ -170,15 +164,33 @@ class SmartestLinkParser{
             
             if(strpos($l->getParameter('destination'), '=')){
             
-                if(preg_match('/(name|id|webid)=([\w_-]+)(:(name|id|webid)=([\w_-]+))?/i', $l->getParameter('destination'), $m)){
-                
-                    $l->setParameter('page_ref_field_name', $m[1]);
-                    $l->setParameter('page_ref_field_value', SmartestStringHelper::toSlug($m[2]));
+                if(preg_match('/(meta)?page:((name|id|webid)=)?([\w_-]+)(:((name|id|webid)=)?([\w_-]+))?/i', $l->getParameter('destination'), $m)){
+                    
+                    if(strlen($m[2])){
+                        $l->setParameter('page_ref_field_name', $m[3]);
+                    }else{
+                        $l->setParameter('page_ref_field_name', 'name');
+                    }
+                    
+                    if($m[3] == 'webid'){
+                        $l->setParameter('page_ref_field_value', $m[4]);
+                    }else{
+                        $l->setParameter('page_ref_field_value', trim(SmartestStringHelper::toSlug($m[4])));
+                    }
+                    
                     $l->setParameter('format', SM_LINK_FORMAT_AUTO);
                     
-                    if($m[5]){
-                        $l->setParameter('item_ref_field_name', $m[4]);
-                        $l->setParameter('item_ref_field_value', SmartestStringHelper::toSlug($m[5]));
+                    if(isset($m[5]) && strlen($m[5])){
+                        if(strlen($m[6])){
+                            if($m[7] == 'name'){
+                                $l->setParameter('item_ref_field_name', 'slug');
+                            }else{
+                                $l->setParameter('item_ref_field_name', $m[7]);
+                            }
+                        }else{
+                            $l->setParameter('item_ref_field_name', 'slug');
+                        }
+                        $l->setParameter('item_ref_field_value', SmartestStringHelper::toSlug($m[8]));
                     }
                 
                 }

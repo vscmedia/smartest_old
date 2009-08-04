@@ -662,14 +662,24 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        $type_info = $property->getTypeInfo();
 	        
 	        if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
-	            $asset = new SmartestAsset;
 	            
-	            if($asset->hydrate($this->getPropertyValueByNumericKey($property->getId()))){
-	                // get asset content
-	                return $asset->getContent();
+	            $value = $this->getPropertyValueByNumericKey($property->getId());
+	            
+	            if(is_object($value)){
+	                // $id = $value->getId();
+	                return $value->render();
+	            }else if(is_numeric($value)){
+	                $asset = new SmartestRenderableAsset;
+	                if($asset->hydrate($value)){
+    	                // get asset content
+    	                return $asset->render();
+    	            }else{
+    	                // throw new SmartestException(sprintf("Asset with ID %s was not found.", $this->getPropertyValueByNumericKey($property_id)));
+    	                return null;
+    	            }
 	            }else{
-	                // throw new SmartestException(sprintf("Asset with ID %s was not found.", $this->getPropertyValueByNumericKey($property_id)));
-	                return null;
+	                $id = null;
+	                SmartestLog::getInstance('system')->log('SmartestItem->getPropertyValueByNumericKey() should return an object for SM_DATATYPE_ASSET properties. '.gettype($id).' given in SmartestItem::getDescriptionFieldContents().', SmartestLog::ERROR);
 	            }
 	            
 	        }else{

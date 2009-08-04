@@ -19,7 +19,6 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	        
 	        $sql = "SELECT * FROM Lists WHERE list_name='".$list_name."' AND list_page_id='".$page->getId()."'";
 	        $result = $this->database->queryToArray($sql);
-	        // print_r($result);
 	        
 	        if(count($result)){
 	            $this->hydrate($result[0]);
@@ -37,8 +36,6 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	    
 	    $sql = "SELECT * FROM Lists WHERE list_name='".SmartestStringHelper::toVarName($list_name)."' AND list_page_id='".$page_id."'";
         $result = $this->database->queryToArray($sql);
-        
-        // echo $sql."<br />";
         
         if(count($result)){
             $this->hydrate($result[0]);
@@ -108,10 +105,14 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	        $repeating_template_file_name = $this->getLiveTemplateFile();
 	    }
 	    
-	    if($this->getType() == 'SM_LIST_ARTICULATED'){
-	        return SM_ROOT_DIR.'Presentation/ListItems/'.$repeating_template_file_name;
+	    if($this->getType() == 'SM_LIST_SIMPLE'){
+            if(is_file(SM_ROOT_DIR.'Presentation/Layouts/'.$repeating_template_file_name)){
+                return SM_ROOT_DIR.'Presentation/Layouts/'.$repeating_template_file_name;
+            }else if(is_file(SM_ROOT_DIR.'Presentation/ListItems/'.$repeating_template_file_name)){
+                return SM_ROOT_DIR.'Presentation/ListItems/'.$repeating_template_file_name;
+            }
         }else{
-            return SM_ROOT_DIR.'Presentation/Layouts/'.$repeating_template_file_name;
+            return SM_ROOT_DIR.'Presentation/ListItems/'.$repeating_template_file_name;
         }
         
 	}
