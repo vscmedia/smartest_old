@@ -123,7 +123,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	
 	public function offsetExists($offset){
 	    
-	    return parent::offsetExists($offset) || in_array($offset, array('title', 'url', 'link_contents', 'model', 'tags', 'authors'));
+	    return parent::offsetExists($offset) || in_array($offset, array('title', 'url', 'link_contents', 'class', 'model', 'tags', 'authors'));
 	    
 	}
 	

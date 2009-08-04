@@ -265,10 +265,14 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 		$cf_start = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id'];
 		
 		$result = false;
+		$len = strlen($cf_start);
+		$log = SmartestLog::getInstance('system');
 		
 		foreach($cache_files as $f){
-		    if(substr($f, 0, strlen($cf_start)) == $cf_start){
-		        $result = unlink(SM_ROOT_DIR."System/Cache/Pages/".$f);
+		    if(substr($f, 0, $len) == $cf_start){
+		        if($result = unlink(SM_ROOT_DIR."System/Cache/Pages/".$f)){
+		            $log->log('Cached copy of page \''.$this->_properties['title'].'\' was removed from the cache.');
+		        }
 		    }
 		}
 		
@@ -313,9 +317,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 		$this->setLastPublished(time());
 		$this->setIsPublished('TRUE');
 		$this->save();
+		SmartestLog::getInstance('system')->log('SmartestPage: Page \''.$this->_properties['title'].'\' was published.');
 		
 		// publish all textfragments on the page
-		foreach($this->getParsableTextFragments() as $tf){
+		foreach($this->getParsableTextFragments($item_id) as $tf){
 		    $tf->publish();
 		}
 		
@@ -336,7 +341,11 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 		$this->setIsPublished('FALSE');
 		if($auto_save){
 		    $this->save();
+		    SmartestLog::getInstance('system')->log('SmartestPage: Page \''.$this->_properties['title'].'\' was un-published.');
+	    }else{
+	        SmartestLog::getInstance('system')->log('SmartestPage: Page \''.$this->_properties['title'].'\' published was set to \'FALSE\'.');
 	    }
+	    
 	}
 	
 	public function getTextFragments(){
@@ -458,7 +467,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	
 	public function getPreviousPage(){
 	    $sql  = "SELECT * FROM Pages WHERE page_order_index < '".$this->getOrderIndex()."' AND page_parent='".$this->getParent()."' AND page_id !='".$this->_properties['id']."' AND page_deleted !='TRUE' ORDER BY page_order_index DESC LIMIT 1";
-	    // echo $sql;
 	    $result = $this->database->queryToArray($sql);
 	    if(count($result)){
 	        $pp = $result[0];
@@ -575,10 +583,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	    
 	    $sql = "SELECT * FROM Assets WHERE asset_type IN ('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE') AND (asset_site_id='".$this->_properties['site_id']."' OR asset_shared=1) AND asset_deleted!=1 ORDER BY asset_url";
 	    $result = $this->database->queryToArray($sql);
-	    
-	    // print_r($this->getSite());
-	    
-	    // echo $sql;
 	    
 	    $filenames = array();
 	    
