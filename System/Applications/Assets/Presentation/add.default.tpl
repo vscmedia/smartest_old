@@ -1,0 +1,1 @@
+<div class="warning">The file type you specified, {$wanted_type}, does not exist or is not installed.</div>

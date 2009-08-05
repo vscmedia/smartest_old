@@ -47,8 +47,6 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    
 	    $info = $this->getTypeInfo();
 	    
-	    // print_r($info);
-	    
 	    if($info['valuetype'] == 'foreignkey'){
 	        return true;
 	    }else{
@@ -128,10 +126,18 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	                        
 	                        if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE' || !isset($info['filter']['optionsettype'][$this->getOptionSetType()])){
 	                
-        	                    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";
+        	                    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE 1=1";
+        	                    
+        	                    if($filter && $info['filter']['entitysource']['matchfield']){
+        	                        $sql .= " AND ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";
+        	                    }
 	                    
-        	                    if($site_id && $info['filter']['entitysource']['sitefield'] && $info['filter']['entitysource']['sharedfield']){
-        	                        $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
+        	                    if($site_id && $info['filter']['entitysource']['sitefield']){
+        	                        if($info['filter']['entitysource']['sharedfield']){
+        	                            $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
+    	                            }else{
+    	                                $sql .= " AND ".$info['filter']['entitysource']['sitefield']."='".$site_id."'";
+    	                            }
         	                    }
     	                    
         	                    if(isset($info['filter']['condition'])){
@@ -145,10 +151,10 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
         	                    if(isset($info['filter']['entitysource']['sortfield'])){
         	                        $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
         	                    }
-                            
+                                
                                 $result = $this->database->queryToArray($sql);
         	                    $options = array();
-	                    
+        	                    
         	                    foreach($result as $raw_array){
 	                        
         	                        $class = $info['filter']['entitysource']['class'];

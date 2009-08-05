@@ -167,6 +167,8 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function offsetGet($offset){
 	    
+	    // echo '<br />offsetGet: '.$offset.', ';
+	    
 	    if(defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && constant('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && defined('SM_CMS_PAGE_ID')){
 		    $dah = new SmartestDataAppearanceHelper;
             $dah->setItemAppearsOnPage($this->getId(), constant('SM_CMS_PAGE_ID'));
@@ -178,7 +180,9 @@ class SmartestCmsItem implements ArrayAccess{
 	        
 	    }else if(isset($this->_varnames_lookup[$offset])){
 	        
-	        return $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset]);
+	        $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset]);
+	        // var_dump($this->_properties[$this->_varnames_lookup[$offset]]->getData()->getDraftContent()->__toString());
+	        return $v;
 	        
 	    }else{
 	        
@@ -406,10 +410,6 @@ class SmartestCmsItem implements ArrayAccess{
 		        $this->generateModel();
 		    }
 		    
-		    /* if(!$this->_lookups_built){
-		        $this->generatePropertiesLookup();
-		    } */
-		    
 		    if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
 			    $properties_result = SmartestCache::load('model_properties_'.$this->_model_id, true);
 		    }else{
@@ -443,9 +443,6 @@ class SmartestCmsItem implements ArrayAccess{
 			    $ipv->hydrate($propertyvalue);
 			    
                 // if the property object does not exist, create and hydrate it
-                // var_dump($this->_item->getId());
-                // var_dump(isset($this->_properties[$ipv->getPropertyId()]));
-                // var_dump(is_object($this->_properties[$ipv->getPropertyId()]));
                 
                 if(!isset($this->_properties[$ipv->getPropertyId()]) || !is_object($this->_properties[$ipv->getPropertyId()])){
                     
@@ -453,15 +450,11 @@ class SmartestCmsItem implements ArrayAccess{
 		            
 			    }
 			    
-			    // var_dump($this->_properties[$ipv->getPropertyId()]->hasData());
-			    
 			    if(!$this->_properties[$ipv->getPropertyId()]->hasData()){
 			        
 		            $this->_properties[$ipv->getPropertyId()]->hydrateValueFromIpvObject($ipv);
 		            
 	            }
-			    
-			    // echo "<br />\n";
 			    
 			    // give the property the current item id, so that it knows which ItemPropertyValue record to retrieve in any future operations (though it isn't needed in this one)
 			    $this->_properties[$ipv->getPropertyId()]->setContextualItemId($this->_item->getId());

@@ -218,12 +218,11 @@ class Items extends SmartestSystemApplication{
     	// return $this->manager->deleteItemClassProperty($itemproperty_id);
     	$property = new SmartestItemProperty;
     	
-    	if($property->hydrate($get['itemproperty_id'])){
+    	if($property->find($get['itemproperty_id'])){
     	    
     	    $model = new SmartestModel;
     	    
-    	    
-    	    if($model->hydrate($property->getModelId())){
+    	    if($model->find($property->getItemclassId())){
     	        // delete property - this should done before any cache or code files are regenerated
     	        $property->delete();
     	        // clear the cache and rebuild auto object model file

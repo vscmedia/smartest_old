@@ -517,6 +517,8 @@ class SmartestCmsLink extends SmartestHelper{
             
             case SM_LINK_TYPE_EXTERNAL:
             
+            // TODO: Make this an option
+            
             // if($this->_destination_properties->getParameter('newwin')){
             //    return "javascript:window.open('".$this->_destination_properties->getParameter('destination')."');";
             //}else{

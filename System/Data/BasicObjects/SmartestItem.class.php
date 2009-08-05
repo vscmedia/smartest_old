@@ -156,9 +156,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	    $data['asset_id'] = $this->getId();
 	    $data['asset_webid'] = $this->getWebid();
-	    // $data['asset_type'] = $this->getType();
 	    $data['asset_type'] = 'item';
-	    // $data['assetclass_name'] = SmartestStringHelper::toVarName($this->getName());
 	    $data['assetclass_name'] = $this->getSlug();
 	    $data['assetclass_id'] = 'item_'.$this->getId();
 	    $data['defined'] = 'PUBLISHED';

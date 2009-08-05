@@ -36,8 +36,6 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	    
 	    if(!$this->_value instanceof SmartestItemPropertyValue){
 	        
-	        // echo 'Get Data Again<br />';
-	        
 	        $this->_value = new SmartestItemPropertyValue;
 	        
 	        if($this->_contextual_item_id){
@@ -58,8 +56,8 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	                if($this->getId()){
 
         	            $this->_value->setPropertyId($this->getId());
-        	            // $this->_value->save();
         	            $this->_value->setDraftContent($this->getDefaultValue());
+        	            
         	        }
 	            
                 }
@@ -67,6 +65,7 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	        }else{
 	            
 	            // Not even sure what item this is - something must be seriously wrong
+	            SmartestLog::getInstance('system')->log('SmartestItemProprtyValueHolder->getData() called without a contextual item ID.');
 	            
 	        }
 	        

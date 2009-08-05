@@ -403,8 +403,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     
                     if($template->hydrate($template_id)){
                         
-                        // echo $template->getUrl();
-                        
                         $template_path = SM_ROOT_DIR.'Presentation/Layouts/'.$template->getUrl();
                         $render_process_id = SmartestStringHelper::toVarName('itemspace_template_'.SmartestStringHelper::removeDotSuffix($template->getUrl()).'_'.substr(microtime(true), -6));
             	        
@@ -413,8 +411,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             	        $item = $def->getItem(false, $this->getDraftMode());
             	        $item->setDraftMode($this->getDraftMode());
             	        $child->assign('item', $item);
-            	        $content = $child->fetch($template_path);
+            	        $content = '<!--rendering itemspace: '.$itemspace_name."-->\n\n";
+            	        $content .= $this->renderItemEditButton($item->getId());
+            	        $content .= $child->fetch($template_path);
             	        $this->killChildProcess($child->getProcessId());
+            	        
             	        return $content;
             	        
                     }else{
@@ -425,6 +426,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                     // itemspace doesn't use template, but data is still loaded
                     $this->_comment("ItemSpace '".$itemspace_name."' does not use a template.");
+                    $item = $def->getItem(false, $this->getDraftMode());
+        	        $item->setDraftMode($this->getDraftMode());
+        	        $child->assign('item', $item);
+        	        return $this->renderItemEditButton($item->getId());
                 
                 }
             
@@ -444,13 +449,25 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
     }
     
+    public function renderItemEditButton($item_id){
+        
+        if($this->getDraftMode()){
+            $html = '<a href="'.SM_CONTROLLER_DOMAIN.'datamanager/openItem?item_id='.$item_id.'" target="_top" title="Edit item ID '.$item_id.'"><img src="'.SM_CONTROLLER_DOMAIN.'Resources/Icons/package_small.png" alt="Edit item ID '.$item_id.'" /></a>';
+        }else{
+            $html = '';
+        }
+        
+        return $html;
+        
+    }
+    
     public function renderField($field_name, $params){
         
         if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
     
             $value = $this->_page_rendering_data['fields'][$field_name];
         
-            if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
+            if($this->getDraftMode()){
 			    $edit_link = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".SM_CONTROLLER_DOMAIN."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
 		    }else{
 			    $edit_link = '';

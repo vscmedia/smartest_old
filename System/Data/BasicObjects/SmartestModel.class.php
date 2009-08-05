@@ -11,55 +11,6 @@ class SmartestModel extends SmartestBaseModel{
 		
 	}
 	
-	/* public function hydrate($id){
-		
-		// determine what kind of identification is being used
-
-		if($id){
-		
-			if(is_numeric($id)){
-				// numeric_id
-				$field = 'itemclass_id';
-			}else if(preg_match('/[a-zA-Z0-9]{32}/', $id)){
-				// 'webid'
-				$field = 'itemclass_webid';
-			}else if(preg_match('/[a-z0-9_-]+/', $id)){
-				// name
-				$field = 'itemclass_varname';
-			}else if(preg_match('/[a-zA-Z0-9\s_-]+/', $id)){
-				// name
-				$field = 'itemclass_name';
-			}
-		
-			if($field){
-				$sql = "SELECT * FROM ItemClasses WHERE $field='$id'";
-				$result = $this->database->queryToArray($sql);
-			}
-		
-			if(count($result)){
-			
-				foreach($result[0] as $name => $value){
-					if (substr($name, 0, 10) == $this->_table_prefix) {
-						$this->_properties[substr($name, 10)] = $value;
-						$this->_properties_lookup[SmartestStringHelper::toCamelCase(substr($name, 10))] = substr($name, 10);
-					}
-				}
-			
-				$this->_came_from_database = true;
-				
-				$this->buildPropertyMap();
-				
-				return true;
-			}else{
-				return false;
-			}
-		
-		}else{
-			return false;
-		}
-		
-	} */
-	
 	public function hydrate($id){
 	    $bool = parent::hydrate($id);
 	    $this->buildPropertyMap();
@@ -68,15 +19,12 @@ class SmartestModel extends SmartestBaseModel{
 	
 	protected function buildPropertyMap(){
 		
-		// $this->_model_properties = array();
-		
 		if(SmartestCache::hasData('model_properties_'.$this->_properties['id'], true)){
 		    $result = SmartestCache::load('model_properties_'.$this->_properties['id'], true);
 	    }else{
-		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_properties['id']."'";
+		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_properties['id']."' ORDER BY itemproperty_id ASC";
 		    $result = $this->database->queryToArray($sql);
 		    SmartestCache::save('model_properties_'.$this->_properties['id'], $result, -1, true);
-		    // print_r(SmartestCache::load('model_properties_'.$this->_properties['id'], true));
 	    }
 		
 		foreach($result as $db_property){

@@ -32,10 +32,8 @@ function toggleParamsHolder(){
 
 function showUploader(){
 	$('uploader').style.display = 'block';
-	// new Effect.BlindDown('uploader', {duration: 0.6});
 	$('uploader_link').style.display = 'none';
 	$('text_window').style.display = 'none';
-	// new Effect.BlindUp('text_window', {duration: 0.6});
 	input_mode = 'upload';
 	$('input_mode').value = input_mode;
 	
@@ -43,21 +41,11 @@ function showUploader(){
 
 function hideUploader(){
 	$('uploader').style.display = 'none';
-	// new Effect.BlindUp('uploader', {duration: 0.6});
 	$('uploader_link').style.display = 'block';
 	$('text_window').style.display = 'block';
-	// new Effect.BlindDown('text_window', {duration: 0.6});
 	input_mode = 'direct';
 	$('input_mode').value = input_mode;
 	$('tpl_textArea').disabled = false;
-	/* tinyMCE.init({
-  	mode : "textareas",
-  	theme : "advanced",
-  	theme_advanced_buttons3_add_before : "tablecontrols,separator",
-  	theme_advanced_toolbar_location : "top",
-  	theme_advanced_resizing : true,
-  	convert_fonts_to_spans : false
-  });*/
 }
 
 function validateUploadSuffix(){

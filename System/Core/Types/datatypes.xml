@@ -95,6 +95,26 @@
         
     </type>
     
+    <type id="SM_DATATYPE_ASSET_GROUP" valuetype="foreignkey">
+        
+        <label>Group of files from the repository</label>
+        <description></description>
+        <usage>itemproperty</usage>
+        <long>false</long>
+        
+        <filter>
+          <entitysource type="db" table="Sets" sortfield="set_name" sitefield="set_site_id" class="SmartestAssetGroup" label="Group" />
+          <condition field="set_type" value="SM_SET_ASSETGROUP" operator="EQUAL" />
+        </filter>
+        
+        <menu value="id" display="url" />
+        
+        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
+        
+        <class>SmartestAssetGroup</class>
+        
+    </type>
+    
     <type id="SM_DATATYPE_CMS_ITEM" valuetype="foreignkey">
         
         <label>CMS Item</label>
@@ -103,8 +123,8 @@
         <long>false</long>
         
         <filter>
-          <typesource type="db" table="ItemClasses" matchfield="id" label="Model" class="SmartestModel" orderfield="itemclass_plural_name" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.models.tpl" />
-          <entitysource type="db" table="Items" matchfield="item_itemclass_id" sitefield="item_site_id" sharedfield="item_shared" class="SmartestItem" />
+          <typesource type="db" table="ItemClasses" matchfield="id" label="Model" class="SmartestModel" sortfield="itemclass_plural_name" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.models.tpl" />
+          <entitysource type="db" table="Items" matchfield="item_itemclass_id" sitefield="item_site_id" sharedfield="item_shared" class="SmartestItem" sortfield="item_name" />
           <optionsettype id="SM_PROPERTY_FILTERTYPE_DATASET" class="SmartestCmsItemSet" table="Sets" sitefield="set_site_id" />
           <!--Conditions only apply to filtering when no group is in use-->
           <condition field="item_is_archived" value="1" operator="NOT_EQUAL" />

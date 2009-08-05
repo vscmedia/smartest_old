@@ -496,13 +496,11 @@ class PagesManager{
 			foreach($fieldNames as $fieldName){
                 
                 $field = new SmartestPageField;
-                // $field->hydrateBy('name', $fieldName);
                 // a simple 'hydrateBy' did not take into account that fields are not cross-site and multiple fields may exist of the same name (one for each site)
                 $correct_sql = "SELECT * FROM PageProperties WHERE pageproperty_name='".$fieldName."' AND pageproperty_site_id='".$site_id."'";
                 $result = $this->database->queryToArray($correct_sql);
                 $field->hydrate($result[0]);
                 
-				// $info[$i]['info']['exists'] = $this->getFieldExists($fieldName);
 				$info[$i]['info']['exists'] = (count($result) > 0) ? 'true' : 'false';
 				$info[$i]['info']['defined'] = $this->getFieldDefinedOnPage($fieldName, $page->getId());
 				$info[$i]['info']['assetclass_name'] = $fieldName;
@@ -524,9 +522,7 @@ class PagesManager{
 		
 			foreach($placeholderNames as $placeholderName){
 			    
-			    // $placeholder = new SmartestPlaceholder;
-			    
-				$info[$i]['info'] = $this->getAssetClassInfo($placeholderName);
+			    $info[$i]['info'] = $this->getAssetClassInfo($placeholderName);
 				
 				$info[$i]['info']['exists'] = $this->getAssetClassExists($placeholderName);
 				$info[$i]['info']['defined'] = $this->getAssetClassDefinedOnPage($placeholderName, $page->getId());
@@ -604,9 +600,23 @@ class PagesManager{
                     
                     if($item_space->getUsesTemplate()){
                         $template = new SmartestContainerTemplateAsset;
+                        
                         if($template->find($item_space->getTemplateAssetId())){
-                            $info[$i]['children'][] = $template->getArrayForElementsTree($level+1);
+                            
+                            $template_array = $template->getArrayForElementsTree($level+1);
+                            
+                            $info[$i]['info']['asset_id'] = $asset;
+    					    $info[$i]['info']['asset_webid'] = $template->getWebid();
+                            $info[$i]['info']['filename'] = '';
+                            
+    					    $child_template_file = SM_ROOT_DIR."Presentation/Layouts/".$template->getUrl();
+    					    
+                            $template_array['children'] = $this->getTemplateAssetClasses($child_template_file, $page, $level+2, $version, $item_id);
+    	                    
+    	                    $info[$i]['children'][] = $template_array;
+                            
                         }
+                        
                     }
                     
                 }else{

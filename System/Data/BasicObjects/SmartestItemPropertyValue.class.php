@@ -52,64 +52,74 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
         
         if(!$this->_value_object){
             
-            $t = $this->getProperty()->getTypeInfo();
-            $class = $t['class'];
+            $p = $this->getProperty();
             
-            // echo $class;
-            
-            if(!class_exists($class)){
-                throw new SmartestException("Class ".$class." required for handling properties of type ".$t['id']." does not exist.");
-            }
-            
-            if($draft){
-                $raw_data = $this->_properties['draft_content'];
-            }else{
-                $raw_data = $this->_properties['content'];
-            }
-            
-            if($t['valuetype'] == 'foreignkey'){
+            if($p->getId()){
                 
-                // these first two options are both hacks, but will be fixed in the future
-                if($class == 'SmartestCmsItem'){
-                    // get model id
-                    $model_id = $this->getProperty()->getForeignKeyFilter();
-                    $model = new SmartestModel;
-                    $model->hydrate($model_id);
-                    $class = $model->getClassName();
-                    // echo $class;
+                $t = $p->getTypeInfo();
+                $class = $t['class'];
+                
+                if(!class_exists($class)){
+                    throw new SmartestException("Class ".$class." required for handling properties of type ".$t['id']." does not exist.");
                 }
-                
-                $obj = new $class;
-                
-                if($class == 'SmartestRenderableAsset'){
-                    $obj->setDraftMode($draft);
-                    $obj->setAdditionalRenderData($this->getInfo);
-                }
-                
-                if($class == 'SmartestDropdownOption'){
-                    $obj->hydrateByValueWithDropdownId($raw_data, $this->getProperty()->getForeignKeyFilter());
+            
+                if($draft){
+                    $raw_data = $this->_properties['draft_content'];
                 }else{
-                    // get the asset, dropdown menu option or what have you
-                    if($obj instanceof SmartestCmsItem){
+                    $raw_data = $this->_properties['content'];
+                }
+            
+                if($t['valuetype'] == 'foreignkey'){
+                
+                    // these first two options are both hacks, but will be fixed in the future
+                    if($class == 'SmartestCmsItem'){
+                        // get model id
+                        $model_id = $this->getProperty()->getForeignKeyFilter();
+                        $model = new SmartestModel;
+                        $model->hydrate($model_id);
+                        $class = $model->getClassName();
+                    }
+                
+                    $obj = new $class;
+                
+                    if(method_exists($obj, 'setDraftMode')){
+                        $obj->setDraftMode($draft);
+                    }
+                
+                    if($class == 'SmartestRenderableAsset'){
+                        $obj->setAdditionalRenderData($this->getInfo);
+                    }
+                
+                    if($class == 'SmartestDropdownOption'){
+                        $obj->hydrateByValueWithDropdownId($raw_data, $this->getProperty()->getForeignKeyFilter());
+                    }else{
+                        // get the asset, dropdown menu option or what have you
+                        if($obj instanceof SmartestCmsItem){
                         
-                        // only bother trying to hydrate the SmartestCmsItem subclass if we have an actual foreign key to use:
-                        if(strlen($raw_data)){
+                            // only bother trying to hydrate the SmartestCmsItem subclass if we have an actual foreign key to use:
+                            if(strlen($raw_data)){
+                                $obj->hydrate($raw_data);
+                            }
+                        
+                        }else{
                             $obj->hydrate($raw_data);
                         }
-                        
-                    }else{
-                        $obj->hydrate($raw_data);
                     }
-                }
                 
+                }else{
+                    // get a SmartestBasicType object
+                    $obj = new $class;
+                    $obj->setValue($raw_data);
+                }
+            
+                $this->_value_object = $obj;
+            
             }else{
-                // get a SmartestBasicType object
-                $obj = new $class;
-                $obj->setValue($raw_data);
+                
+                SmartestLog::getInstance('system')->log("Item property found for non existent property ID: ".$this->getPropertyId(), SmartestLog::WARNING);
+                
             }
-            
-            $this->_value_object = $obj;
-            
+        
         }
         
         return $this->_value_object;
@@ -126,45 +136,8 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     // Now no longer used
     protected function processContent($draft=false){
         
-        /* if($draft){
-            $raw_data = $this->_properties['draft_content'];
-        }else{
-            $raw_data = $this->_properties['content'];
-        } */
-        
         switch($this->getProperty()->getDatatype()){
             
-            /* case "SM_DATATYPE_DATE":
-                
-                if(!is_numeric($raw_data)){
-                    $time = strtotime($raw_data);
-                }else{
-                    $time = $raw_data;
-                }
-                
-                $data = array(
-                    'Y'=>date('Y', $time),
-                    'M'=>date('m', $time),
-                    'D'=>date('d', $time)
-                );
-                
-                break;
-            
-            case "SM_DATATYPE_BOOLEAN":
-                
-                $data = new SmartestBoolean($data);
-                
-                if($raw_data == "FALSE" || $raw_data == "0"){
-                    $data = false;
-                }else{
-                    $data = true;
-                }
-                
-                break; 
-                
-            case "SM_DATATYPE_CMS_ITEM":
-                break; */
-                
             default:
                 $data = $this->getValueObject($draft);
                 break;
@@ -178,30 +151,23 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     // converts data to storeable format
     protected function filterNewContent($raw_data){
         
-        // $this->assignNewValueToValueObject();
-        
         switch($this->getProperty()->getDatatype()){
             
             case "SM_DATATYPE_DATE":
                 
-                // print_r($raw_data);
-                
                 if(is_array($raw_data) && isset($raw_data['Y']) && isset($raw_data['M']) && isset($raw_data['D'])){
                     $time = mktime(0, 0, 0, $raw_data['M'], $raw_data['D'], $raw_data['Y']);
-                    // echo $time;
                 }
                 
                 $data = $time;
                 break;
             
             case "SM_DATATYPE_BOOLEAN":
-                // echo $raw_data;
                 $data = $raw_data;
                 break;
                 
             default:
                 $data = SmartestStringHelper::sanitize($raw_data);
-                
                 break;
         }
         
@@ -239,14 +205,12 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     
     public function getContent(){
         
-        // return $this->processContent();
         return $this->getValueObject();
         
     }
     
     public function getDraftContent(){
         
-        // return $this->processContent(true);
         return $this->getValueObject(true);
         
     }

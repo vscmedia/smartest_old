@@ -291,7 +291,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function addAsset($get){
 		
-		$asset_type = $get['asset_type'];
+		$asset_type = SmartestStringHelper::toConstantName($get['asset_type']);
 		
 		$types_array = SmartestDataUtility::getAssetTypes();
 		
@@ -348,6 +348,7 @@ class Assets extends SmartestSystemApplication{
 	        $this->send(json_encode($suffixes), 'suffixes');
 	        
 		}else{
+		    $this->send($asset_type, 'wanted_type');
 		    $this->setTitle("Asset Type Not Recognized.");
 		    $form_include = "add.default.tpl";
 		}

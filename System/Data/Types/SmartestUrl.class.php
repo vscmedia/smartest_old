@@ -23,7 +23,7 @@ class SmartestUrl implements SmartestBasicType, ArrayAccess{
     }
     
     public function offsetExists($offset){
-        return in_array($offset, array('host', 'request'));
+        return in_array($offset, array('host', 'request', 'protocol'));
     }
     
     public function offsetGet($offset){
@@ -31,6 +31,8 @@ class SmartestUrl implements SmartestBasicType, ArrayAccess{
             case "host":
             return $this->getValue();
             case 'request':
+            return $this->getValue();
+            case 'protocol':
             return $this->getValue();
         }
     }
