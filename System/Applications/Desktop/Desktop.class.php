@@ -215,6 +215,13 @@ class Desktop extends SmartestSystemApplication{
 	    $this->formForward();
 	    
 	}
+	
+	public function comments($get){
+	    
+	    $status = (isset($get['show']) && in_array($get['show'], array('SM_COMMENTSTATUS_APPROVED', 'SM_COMMENTSTATUS_PENDING', 'SM_COMMENTSTATUS_REJECTED'))) ? $get['show'] : 'SM_COMMENTSTATUS_PENDING';
+	    $this->send($this->getSite()->getPublicComments(constant($status)), 'comments');
+	    
+	}
     
     public function caches(){
         
@@ -325,12 +332,20 @@ class Desktop extends SmartestSystemApplication{
     
     public function aboutSmartest(){
         
-        $this->send($_SERVER['SERVER_SOFTWARE'], 'platform');
+        preg_match('/(Apache\/(1|2.\d.\d))/', $_SERVER['SERVER_SOFTWARE'], $matches);
+        $server = str_replace('/', ' ', $matches[1]);
+        
+        $this->send($server, 'platform');
         $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
         $this->send($sys['system']['info']['revision'], 'revision');
         $this->send($sys['system']['info']['version'], 'version');
-        $this->send(str_replace('M', 'MB', ini_get('memory_limit')), 'memory_limit');
+        $this->send(str_replace('M', ' MB', ini_get('memory_limit')), 'memory_limit');
         $this->send(phpversion(), 'php_version');
+        
+        $linux = `head -n 1 /etc/issue`;
+        $linux = trim(str_replace('\n', '', $linux));
+        $linux = trim(str_replace('\l', '', $linux));
+        $this->send($linux, 'linux_version');
         
         $this->send(SmartestSystemSettingHelper::load('_server_speed_index'), 'speed_score');
         
