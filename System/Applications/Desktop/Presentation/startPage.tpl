@@ -11,8 +11,6 @@
 
 <h3>Welcome to the {$site.name} administration interface</h3>
 
-<div class="instruction">What would you like to do?</div>
-
 <ul class="options-grid-no-scroll">
   <li><a href="{$domain}smartest/pages" class="option" id="option_1"><img border="0" src="{$domain}Resources/Icons/package.png" />Create and edit pages</a></li>
   <li><a href="{$domain}smartest/models" class="option" id="option_2"><img border="0" src="{$domain}Resources/Icons/package.png" />Create and edit items</a></li>

@@ -1163,25 +1163,28 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	
 	public function renderGoogleAnalyticsTags($params){
 	    
-	    if(isset($params['id'])){
+	    if(!$this->getDraftMode()){
+	    
+	        if(isset($params['id'])){
 	        
-	        if(isset($params['legacy']) && SmartestStringHelper::toRealBool($params['legacy']) == false){
-	            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/google_analytics_legacy.tpl';
-            }else{
-                $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/google_analytics.tpl';
-            }
+    	        if(isset($params['legacy']) && SmartestStringHelper::toRealBool($params['legacy']) == false){
+    	            $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/google_analytics_legacy.tpl';
+                }else{
+                    $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/google_analytics.tpl';
+                }
             
-            $render_process_id = 'google_analytics_'.$params['id'];
-	        $child = $this->startChildProcess($render_process_id);
-	        $child->assign('analytics_id', $params['id']);
-	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
-	        $content = $child->fetch($file);
-	        $this->killChildProcess($child->getProcessId());
-	        return $content;
+                $render_process_id = 'google_analytics_'.$params['id'];
+    	        $child = $this->startChildProcess($render_process_id);
+    	        $child->assign('analytics_id', $params['id']);
+    	        $child->setContext(SM_CONTEXT_DYNAMIC_TEXTFRAGMENT);
+    	        $content = $child->fetch($file);
+    	        $this->killChildProcess($child->getProcessId());
+    	        return $content;
 	        
-	    }else{
-	        return $this->raiseError("Google Analytics ID not supplied.");
-	    }
+    	    }else{
+    	        return $this->raiseError("Google Analytics ID not supplied.");
+    	    }
+        }
 	}
 	
 	public function renderIframe($params){

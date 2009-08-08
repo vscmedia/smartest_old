@@ -61,6 +61,10 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		return $messages;
 	}
 	
+	protected function setTitle($page_title){
+		$this->getPresentationLayer()->assign("sectionName", $page_title);
+	}
+	
 	///// Authentication Stuff /////
 	
 	protected function requireAuthenticatedUser(){

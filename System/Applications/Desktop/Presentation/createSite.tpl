@@ -44,7 +44,7 @@ var section = '{$section}';
   <div class="form-section-label">Master template</div>
   <select name="site_master_template">
     <option value="_DEFAULT">None for now, I will create one later</option>
-    <option value="_BLANK"{if !$allow_create_master_tpl} disabled="disabled"{/if}>Create a new, blank template</option>
+    <option value="_BLANK"{if !$allow_create_master_tpl} disabled="disabled"{/if}>Create a new, blank template{if !$allow_create_master_tpl} (directory is not writable){/if}</option>
     {foreach from=$templates item="template"}
     <option value="{$template}">Use {$template}</option>
     {/foreach}

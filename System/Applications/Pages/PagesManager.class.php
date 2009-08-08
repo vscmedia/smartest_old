@@ -50,7 +50,6 @@ class PagesManager{
 	        if(is_array($args[0][0])){
 	            $types = $args[0][0];
 	        }else if(is_array($args[0])){
-	            // print_r($args);
 	            $types = $args[0];
             }else{
                 $types = $args;
@@ -635,13 +634,6 @@ class PagesManager{
 			
 			foreach($listNames as $listName){
                 
-				/* $info[$i]['info']['exists'] = 'true';
-				$info[$i]['info']['defined'] = $this->getListDefinedOnPage($listName, $page->getId());
-				$info[$i]['info']['assetclass_name'] = $listName;
-				$info[$i]['info']['type'] = "list";
-				$info[$i]['info']['level'] = $level;
-				$i++; */
-				
 				$list = new SmartestCmsItemList;
 				
 				if($list->exists($listName, $page->getId())){
@@ -718,16 +710,19 @@ class PagesManager{
 				if($info[$i]['info']['assetclass_type'] == 'SM_ASSETCLASS_CONTAINER'){
 					
 					if($version == "live"){
-						$asset = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), false, $item_id);
+						$asset_id = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), false, $item_id);
 					}else{
-						$asset = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), true, $item_id);
+						$asset_id = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), true, $item_id);
 					}
 					
 					$assetObj = new SmartestContainerTemplateAsset();
 					
-					if($assetObj->hydrate($asset)){
-					
-					    $info[$i]['info']['asset_id'] = $asset;
+					if($assetObj->find($asset_id)){
+					    
+					    // This is new code, and works. It was tested here but will be implemented in SmartestContainerTemplateAsset.class.php
+					    // $tags = $assetObj->getTagsByName(array('placeholder', 'field'));
+					    
+					    $info[$i]['info']['asset_id'] = $asset_id;
 					    $info[$i]['info']['asset_webid'] = $assetObj->getWebid();
 					    
 					    $child_template_file = SM_ROOT_DIR."Presentation/Layouts/".$assetObj->getUrl();

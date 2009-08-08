@@ -94,9 +94,9 @@ class SmartestFile implements ArrayAccess{
         // use xml file to get mime type from dot suffix
     }
     
-    public function getContent(){
+    public function getContent($binary_safe=false){
         
-        return SmartestFileSystemHelper::load($this->_current_file_path);
+        return SmartestFileSystemHelper::load($this->_current_file_path, $binary_safe);
         
     }
     

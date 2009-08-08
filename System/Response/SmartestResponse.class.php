@@ -484,6 +484,10 @@ class SmartestResponse{
 			$this->smarty->assign("sm_main_interface", $this->templateFile);
 			$this->templateFile = SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_templateNotFound.tpl";
 		}
+		
+		if(SmartestSession::hasData('current_open_project')){
+		    $this->smarty->assign("sm_currentSite", SmartestSession::get('current_open_project'));
+		}
         
         $this->userInterfaceTemplate = $user_interface;
         $this->smarty->assign("template", $this->templateFile);

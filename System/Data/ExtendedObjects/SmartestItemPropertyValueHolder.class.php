@@ -24,12 +24,19 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	}
 	
 	public function hydrateValueFromIpvObject(SmartestItemPropertyValue $ipv_object){
-	    // var_dump($ipv_object);
 	    $this->_value = $ipv_object;
 	}
 	
 	public function hasData(){
 	    return is_object($this->_value instanceof SmartestItemPropertyValue);
+	}
+	
+	public function delete(){
+	    throw new SmartestException('Cannot delete temporary SmartestItemPropertyValueHolder object. Deletion of properties should use SmartestItemProperty, values should use SmartestItemPropertyValueHolder.');
+	}
+	
+	public function save(){
+	    throw new SmartestException('Cannot save temporary SmartestItemPropertyValueHolder object. Modification or insertion of properties should use SmartestItemProperty, values should use SmartestItemPropertyValueHolder.');
 	}
 	
 	public function getData(){

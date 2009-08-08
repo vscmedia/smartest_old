@@ -26,6 +26,26 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    return $result;
 	    
 	}
+	
+	public function delete(){
+	    
+	    // clean up now-disused values for this property
+	    $sql = "DELETE FROM ItemPropertyValues WHERE itempropertyvalue_property_id='".$this->getId()."'";
+	    $this->database->rawQuery($sql);
+	    
+	    $model = new SmartestModel;
+	    
+        if($model->find($this->getItemclassId())){
+	        // delete property - this should done before any cache or code files are regenerated
+	        parent::delete();
+	        // clear the cache and rebuild auto object model file
+	        SmartestCache::clear('model_properties_'.$model->getId(), true);
+	        SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
+        }else{
+            parent::delete();
+        }
+	    
+	}
 
 	public function getTypeInfo(){
 	    

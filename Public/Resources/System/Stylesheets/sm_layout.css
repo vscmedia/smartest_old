@@ -42,7 +42,7 @@ div#admin-menu{
 	left:0px;
 	top:45px;
 	height:100%;
-	width:150px;
+	width:165px;
 	z-index:21;
 }
 
@@ -73,7 +73,7 @@ div#work-area{
 	margin:0px;
 	margin-top:45px;
 	padding-right:220px;
-	padding-left:160px;
+	padding-left:175px;
 }
 
 div#work-area h3{

@@ -349,7 +349,11 @@ class SmartestDataObjectHelper{
 	
 	}
 	
-	static function loadExtendedObjects(){
+	static function loadExtendedObjects($directory='__SYSTEM_DEFAULT'){
+	    
+	    if($directory == '__SYSTEM_DEFAULT'){
+	        $directory = SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Data'.DIRECTORY_SEPARATOR.'ExtendedObjects'.DIRECTORY_SEPARATOR;
+	    }
 		
 		$available_objects = SmartestCache::load('smartest_available_extended_objects', true);
 		
@@ -360,14 +364,14 @@ class SmartestDataObjectHelper{
 		
 		$object_type_cache_string = '';
 		
-		if($res = opendir(SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Data'.DIRECTORY_SEPARATOR.'ExtendedObjects'.DIRECTORY_SEPARATOR)){
+		if($res = opendir($directory)){
 			
 			while (false !== ($file = readdir($res))) {
     		
-    			if(preg_match('/([A-Z]\w+)\.class\.php$/', $file, $matches)){
+    			if(preg_match('/^([A-Z][A-Za-z0-9]+)\.class\.php$/', $file, $matches)){
     				$object_type = array();
     				$object_type['name'] = $matches[1];
-    				$object_type['file'] = SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Data'.DIRECTORY_SEPARATOR.'ExtendedObjects'.DIRECTORY_SEPARATOR.$matches[0];
+    				$object_type['file'] = $directory.$matches[0];
     				$object_type_cache_string .= sha1_file($object_type['file']);
     				$object_types[] = $object_type;
     			}
@@ -384,7 +388,7 @@ class SmartestDataObjectHelper{
 		
 		$use_cache = (defined('SM_DEVELOPER_MODE') && constant('SM_DEVELOPER_MODE')) ? false : true;
 		$rebuild_cache = ($use_cache && (SmartestCache::load('smartest_extended_objects_hash', true) != $extended_object_cache_hash || !is_file(SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Cache'.DIRECTORY_SEPARATOR.'Includes'.DIRECTORY_SEPARATOR.'SmartestExtendedObjects.cache.php')));
-	
+	    
 	    foreach($object_types as $h){
 			if(is_file($h['file'])){
 				if($use_cache){

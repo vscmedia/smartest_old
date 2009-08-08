@@ -8,7 +8,7 @@
  * @category   System
  * @package    Smartest
  * @license    Smartest License
- * @author     Marcus Gilroy-Ware <marcus@visudo.com>
+ * @author     Marcus Gilroy-Ware <marcus@vsccreative.com>
  */
 
 // DO NOT EDIT! This file may be overwritten when Smartest is upgraded
@@ -16,7 +16,6 @@
 class SmartestBaseApplication extends SmartestBaseProcess{
 
 	protected $_results;
-	// public $_presentationLayer;
 	public $manager;
 	public $domain;
 	public $module;
@@ -47,6 +46,10 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		// Applications can come bundled with their own template plugins
 		if(is_dir(SM_CONTROLLER_MODULE_DIR.'Library/Templating/Plugins/')){
 		    $this->getPresentationLayer()->addPluginDirectory(SM_CONTROLLER_MODULE_DIR.'Library/Templating/Plugins/');
+		}
+		
+		if(is_dir(SM_CONTROLLER_MODULE_DIR.'Library/Data/ExtendedObjects/')){
+		    SmartestDataObjectHelper::loadExtendedObjects(SM_CONTROLLER_MODULE_DIR.'Library/Data/ExtendedObjects/');
 		}
 		
 		// load user-defined application-wide settings
@@ -86,7 +89,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		
 		define("SM_MANAGER_CLASS", $managerClass);
 		
-		if(@is_file(SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php")){
+		if(is_file(SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php")){
 		
 			define("SM_MANAGER_CLASS_FILE", SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php");
 			include_once(SM_MANAGER_CLASS_FILE);
@@ -99,7 +102,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 			
 		}else if(defined("SM_CONTROLLER_MODULE_DIR")){
 		  
-		    if(@is_file(SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php")){
+		    if(is_file(SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php")){
 			
 				define("SM_MANAGER_CLASS_FILE", SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php");
 				include_once(SM_MANAGER_CLASS_FILE);
@@ -144,7 +147,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     
     /////////////// THIS SHIT IS DEPRECATED. SmartestStringHelper OR SmartestString SHOULD BE USED FOR STRING MANIPULATION //////////////////
     
-	protected function getRandomString($size=32){ // creates a "random" string, $size chars in length
+	/* protected function getRandomString($size=32){ // creates a "random" string, $size chars in length
 	
 		return SmartestStringHelper::random($size);
 		
@@ -154,7 +157,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     	
 		return SmartestStringHelper::toVarName($page_title);
     	
-	}
+	} */
 	
 	///// Authentication Stuff /////
 	
@@ -204,11 +207,8 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 	    return SmartestPersistentObject::get('userAgent');
 	}
 	
-	protected function setTitle($page_title){
-		$this->getPresentationLayer()->assign("sectionName", $page_title);
-	}
-    
-    final protected function bring($data, $name=""){
+	final protected function bring($data, $name=""){
+	    SmartestLog::getInstance('system')->log('Deprecated function used: SmartestBaseApplication->bring(). Use SmartestBaseApplication->send()');
     	$this->send($data, $name);
     }
     
@@ -251,11 +251,12 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		}
 		
 		header("location:".$destination);
-		// exit;
+		
 	}
     
     ///// Check for Libraries /////
     
+    // TODO: Deprecate this and implement FS#172
     protected function loadApplicationClass($class){
         
         $dir = SM_CONTROLLER_MODULE_DIR.'Library/';
@@ -292,7 +293,9 @@ class SmartestBaseApplication extends SmartestBaseProcess{
             }
         }else{
             // We could either be referring to a user-created library or to a system library (but without using the 'Smartest' prefix, ie 'ManyToMany' for SmartestManyToManyHelper)
-            if(is_dir(SM_ROOT_DIR.'Library/Helpers/'.$helper.'.helper') && class_exists($full_helper)){
+            if(is_dir(SM_CONTROLLER_MODULE_DIR.'Library/Helpers/'.$helper.'.helper') && class_exists($full_helper)){
+                return true;
+            }else if(is_dir(SM_ROOT_DIR.'Library/Helpers/'.$helper.'.helper') && class_exists($full_helper)){
                 return true;
             }else if(is_dir(SM_ROOT_DIR.'System/Helpers/Smartest'.$helper.'.helper') && class_exists('Smartest'.$full_helper)){
                 return true;

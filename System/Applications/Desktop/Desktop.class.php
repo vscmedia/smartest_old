@@ -18,7 +18,7 @@ class Desktop extends SmartestSystemApplication{
         }else{
             
             if($this->getUserAgent()->isExplorer() && $this->getUserAgent()->getAppVersionInteger() < 7){
-                $this->addUserMessage("Smartest has noticed that you're using Internet Explorer 6 or below. Your browser <em>is</em> supported, however you may find that the interface works better in IE7 or Firefox.");
+                $this->addUserMessage("Smartest has noticed that you're using Internet Explorer 6 or below. Your browser <em>is</em> supported, however you may find that the interface works better in Internet Explorer 7, Safari or Firefox.");
             }
             
             $this->setTitle('Choose a Site');
@@ -124,7 +124,7 @@ class Desktop extends SmartestSystemApplication{
 	public function createSite(){
 	    if($this->getUser()->hasToken('create_sites')){
 	        $this->send(SM_ROOT_DIR, "sm_root_dir");
-	        $this->send($this->getUser()->__toArray(), "user");
+	        $this->send($this->getUser(), "user");
 	        $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/Masters/');
 	        $this->send($templates, 'templates');
 	        $this->send(is_writable(SM_ROOT_DIR.'Presentation/Masters/'), 'allow_create_master_tpl');

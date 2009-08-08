@@ -60,7 +60,7 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	}
 	
 	public function hasChanged(){
-	    return ($this->_properties['draft_set_id'] == $this->_properties['live_set_id'] && $this->_properties['draft_template_file'] == $this->_properties['live_template_file'] && $this->_properties['draft_header_template'] == $this->_properties['live_header_template'] && $this->_properties['draft_footer_template'] == $this->_properties['live_footer_template']) ? true : false;
+	    return ($this->_properties['draft_set_id'] == $this->_properties['live_set_id'] && $this->_properties['draft_template_file'] == $this->_properties['live_template_file'] && $this->_properties['draft_header_template'] == $this->_properties['live_header_template'] && $this->_properties['draft_footer_template'] == $this->_properties['live_footer_template']) ? false : true;
 	}
 	
 	public function hasHeaderTemplate($draft=false){

@@ -411,6 +411,14 @@ div#admin-menu ul li.on{
 	background-repeat:repeat-x;
 }
 
+div#admin-menu ul li.site-top-level{
+    font-weight:bold;
+}
+
+div#admin-menu ul li.break{
+    margin-top:10px;
+}
+
 ul.actions-list{
 	border:0px;
 	border-bottom:1px dotted #ddd;

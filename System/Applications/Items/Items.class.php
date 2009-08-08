@@ -208,10 +208,10 @@ class Items extends SmartestSystemApplication{
 	deleteItemClass()
 	*/
 	
-	function removeProperty($get, $post){
+	/* function removeProperty($get, $post){
 		$itemproperty_id = mysql_real_escape_string($post['itemproperty_id']);
     		return $this->manager->deleteItemClassProperty($itemproperty_id);
-	}
+	} */
 	
 	function deleteProperty($get){
 	    // $itemproperty_id = mysql_real_escape_string($get['itemproperty_id']);
@@ -220,18 +220,7 @@ class Items extends SmartestSystemApplication{
     	
     	if($property->find($get['itemproperty_id'])){
     	    
-    	    $model = new SmartestModel;
-    	    
-    	    if($model->find($property->getItemclassId())){
-    	        // delete property - this should done before any cache or code files are regenerated
-    	        $property->delete();
-    	        // clear the cache and rebuild auto object model file
-    	        SmartestCache::clear('model_properties_'.$model->getId(), true);
-    	        SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
-            }else{
-                // just delete the property
-                $property->delete();
-            }
+    	    $property->delete();
 	        
 	        $this->addUserMessageToNextRequest("The property has been deleted.", SmartestUserMessage::SUCCESS);
 	        $this->formForward();
