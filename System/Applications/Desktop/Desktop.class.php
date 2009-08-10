@@ -10,10 +10,12 @@ class Desktop extends SmartestSystemApplication{
         
         if($this->getSite() instanceof SmartestSite){
             
+            $this->setFormReturnUri();
+            
             // code to assemble the desktop goes here
             $this->setTitle('Start Page');
             $this->send('desktop', 'display');
-            $this->send($this->getSite()->__toArray(), 'site');
+            $this->send($this->getSite(), 'site');
             
         }else{
             
@@ -22,18 +24,19 @@ class Desktop extends SmartestSystemApplication{
             }
             
             $this->setTitle('Choose a Site');
-            $result = $this->getUser()->getAllowedSites();
+            $sites = $this->getUser()->getAllowedSites();
 
-    		$sites = array();
+    		/* $sites = array();
 
     		foreach($result as $site){
     		    $sites[] = $site->__toArray();
-    		}
+    		} */
     		
     		$this->send($sites, 'sites');
     		$this->send('sites', 'display');
     		$this->send(count($sites), 'num_sites');
     		$this->send($this->getUser()->hasToken('create_sites'), 'show_create_button');
+    		
         }
         
         
@@ -71,7 +74,7 @@ class Desktop extends SmartestSystemApplication{
 	        $site->setName($post['site_name']);
 	        $site->setTitleFormat($post['site_title_format']);
 	        $site->setDomain($post['site_domain']);
-	        $site->setRoot($post['site_root']);
+	        $site->setIsEnabled((int) (bool) $post['site_is_enabled']);
 	        $site->setTopPageId($post['site_top_page']);
 	        $site->setTagPageId($post['site_tag_page']);
 	        $site->setSearchPageId($post['site_search_page']);

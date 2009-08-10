@@ -1,0 +1,80 @@
+/*** Style ***/
+
+div#admin-menu{
+	background-color:#fff;
+	border-right:1px solid #aaa;
+}
+
+div#admin-menu ul{
+	list-style-type:none;
+	border-top:1px solid #aaa;
+}
+
+div#admin-menu ul li{
+	font-size:12px;
+	margin:0px;
+}
+
+div#admin-menu ul li.off a{
+	color: #333;
+}
+
+div#admin-menu ul li.off a:hover{
+	text-decoration:none;
+}
+
+div#admin-menu ul li.on a{
+	color: #333;
+}
+
+div#admin-menu ul li.on a:hover{
+	text-decoration:none;
+}
+
+div#admin-menu ul li.on{
+	background-image:url('../Images/admin_left_nav_bg_on.gif');
+	background-repeat:repeat-x;
+}
+
+div#admin-menu ul li.site-top-level{
+    font-weight:bold;
+}
+
+/*** Layout ***/
+
+div#admin-menu{
+	position:absolute;
+	left:0px;
+	top:45px;
+	height:100%;
+	width:165px;
+	z-index:21;
+}
+
+div#admin-menu ul{
+	padding:0px;
+	margin:0px;
+}
+
+div#admin-menu ul li{
+	display:block;
+	height:24px;
+}
+
+div#admin-menu ul li.off a{
+	padding-left:10px;
+	padding-top:4px;
+	height:20px;
+	display:block;
+}
+
+div#admin-menu ul li.on a{
+	padding-left:10px;
+	padding-top:4px;
+	height:20px;
+	display:block;
+}
+
+div#admin-menu ul li.break{
+    margin-top:10px;
+}

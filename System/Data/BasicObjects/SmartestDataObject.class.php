@@ -411,6 +411,7 @@ class SmartestDataObject implements ArrayAccess{
 		
 		}else{
 		    
+		    SmartestLog::getInstance('system')->log("Deprecated usage of function '".get_class($this)."->hydrate()'. Please use only with an array.");
 		    return $this->find($id, $site_id);
 	        
 		}
@@ -421,11 +422,13 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    if(strlen($id)){
         
-            $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$id."'";
+            /* $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$id."'";
 	    
 			if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
 			    $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
-			}
+			} */
+			
+			$sql = $this->getRetrievalSqlQuery($id, 'id', $site_id);
 	    
 		    $this->_last_query = $sql;
 			$result = $this->database->queryToArray($sql, $file, $line);
@@ -465,7 +468,7 @@ class SmartestDataObject implements ArrayAccess{
 			$column_name = $this->_table_prefix.$field;
 		}
 	    
-	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
+	    /* $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
 	    
 	    if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
 	        if(isset($this->_properties['site_id'])){
@@ -473,7 +476,9 @@ class SmartestDataObject implements ArrayAccess{
 	        }
 	    }
 	    
-	    $this->_last_query = $sql;
+	    $this->_last_query = $sql; */
+	    
+	    $sql = $this->getRetrievalSqlQuery($value, $field, $site_id);
 	    
 	    $result = $this->database->queryToArray($sql);
 	    
@@ -496,8 +501,29 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	}
 	
+	protected function getRetrievalSqlQuery($value, $field='id', $site_id=''){
+	    
+	    if(isset($this->_no_prefix[$field])){
+		    $column_name = $field;
+		}else{
+			$column_name = $this->_table_prefix.$field;
+		}
+	    
+	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
+	    
+	    if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
+	        if(isset($this->_properties['site_id'])){
+	            $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
+	        }
+	    }
+	    
+	    return $sql;
+	    
+	}
+	
 	public function hydrateBy($field, $value, $site_id=''){
 	    
+	    SmartestLog::getInstance('system')->log("Deprecated function used: ".get_class($this)."->hydrateBy()");
 	    return $this->findBy($field, $value, $site_id);
 	    
 	}
@@ -554,7 +580,7 @@ class SmartestDataObject implements ArrayAccess{
     					$sql .= ', ';
     				}
 				
-    				$sql .= "'$value'";
+    				$sql .= "'".$value."'";
     				$i++;
     			}
 			
@@ -565,7 +591,8 @@ class SmartestDataObject implements ArrayAccess{
     			$this->_properties['id'] = $id;
     			$this->_came_from_database = true;
     		}
-		
+		    
+		    $this->database->clearQueryFromCache($this->getRetrievalSqlQuery($this->_properties['id']), 'id');
     		$this->_modified_properties = array();
 		
 	    }

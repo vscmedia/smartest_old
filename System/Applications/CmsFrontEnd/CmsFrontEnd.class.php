@@ -71,7 +71,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        $this->_page = new SmartestPage;
 		        $this->_page->find($this->_site->getTopPageId());
 		        
-		        // $this->send($this->_page, '_page');
 		        $this->renderPage();
 		        
 		    }
@@ -131,8 +130,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], false, $this->_site->getDomain())){
 		        
 		            // we are viewing a meta-page (based on an item from a data set)
-		            // $this->send($this->_page, '_page');
-		            // echo $get['item_id'];
 		            $this->renderPage();
 		        
 		        }else{
@@ -161,21 +158,18 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		    
 	    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){
 	        
-	        // $this->send($this->_page, '_page');
 	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
 	        $this->_page->setDraftMode(true);
 	        $this->renderPage(true);
 	        
 	    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], true)){
 	        
-	        // we are viewing a meta-page (based on an item from a data set)
 	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
 	        $this->_page->setDraftMode(true);
 	        $this->renderPage(true);
 	        
 	    }else{
     		
-    		// define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
     		$this->renderNotFoundPage();
     		
     	}
@@ -196,7 +190,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
             $p->setSearchQuery($get['q']);
             
             $this->_page = $p;
-            // $this->send($this->_page, '_page');
             $this->renderPage();
             
             return Quince::NODISPLAY;
@@ -242,7 +235,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
     	        $rss->send();
     	        
     	    }else{
-    	        // $objects = array();
     	        $this->renderNotFoundPage();
     	    }
     	    
@@ -302,26 +294,34 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	private function renderPage($draft_mode=false){
 	    
-	    $ph = new SmartestWebPagePreparationHelper($this->_page);
+	    if($draft_mode || (is_object($this->_site) && (bool) $this->_site->getIsEnabled())){
 	    
-	    $overhead_finish_time = microtime(true);
-		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
+    	    $ph = new SmartestWebPagePreparationHelper($this->_page);
+	    
+    	    $overhead_finish_time = microtime(true);
+    		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
 		
-		if($this->_page instanceof SmartestItemPage){
-		    $this->_page->addHit();
-		}
+    		if($this->_page instanceof SmartestItemPage){
+    		    $this->_page->addHit();
+    		}
 		
-		define("SM_OVERHEAD_TIME", $overhead_time_taken);
+    		define("SM_OVERHEAD_TIME", $overhead_time_taken);
 	    
-	    $html = $ph->fetch($draft_mode);
+    	    $html = $ph->fetch($draft_mode);
 	    
-	    $fc = new SmartestFilterChain("WebPageBuilder");
-	    $fc->setDraftMode($draft_mode);
-	    $html = $fc->execute($html);
+    	    $fc = new SmartestFilterChain("WebPageBuilder");
+    	    $fc->setDraftMode($draft_mode);
+	        $html = $fc->execute($html);
 	    
-	    echo $html;
+	        echo $html;
+	        exit;
 	    
-	    exit;
+        }else{
+            
+            echo "Site not enabled";
+            exit;
+            
+        }
 	    
 	}
 	

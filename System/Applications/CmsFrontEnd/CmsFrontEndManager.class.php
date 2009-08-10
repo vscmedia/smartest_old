@@ -93,11 +93,13 @@ class CmsFrontEndManager{
 	    $pageObj = new SmartestPage;
 	    
 	    if(count($page) > 0){
-			// print_r($page[0]);
+			
 			$pageObj->hydrate($page[0]);
+			
 			if($draft_mode){
 			    $pageObj->setDraftMode(true);
 			}
+			
 			return $pageObj;
 		}else{
 			return null;

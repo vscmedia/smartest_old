@@ -11,10 +11,13 @@
     
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_style.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_layout.css" />
+    <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_admin_menu.css" />
+    <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_actions_menu.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_itemsview.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_treeview.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_dropdown_menu.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_columns.css" />
+    <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_tabs.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_buttons.css" />
     
     <script type="text/javascript" language="javascript">
@@ -31,7 +34,6 @@
                                                                                                   
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/interface.js"></script>
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/treeview.js"></script>
-    {* <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/server.js"></script> *}
     
     <style type="text/css">
       img{ldelim} behavior:url({$domain}Resources/System/Javascript/iepngfix/iepngfix.htc); {rdelim}
@@ -43,8 +45,6 @@
     <div id="top-strip" style="background-image:url({$domain}Resources/System/Images/admin_top_bar_bg.gif)">
       <img src="{$domain}Resources/System/Images/admin_top_bar_logo.gif" alt="Smartest" border="0" />
     </div>
-    
-    {*adminbutton type="url" object="smartest/logout" text="Log Out"}, <a href="{$domain}smartest/users">My Account</a>*}
     
     <div id="user-info">
       Signed in as: <strong>{$_user.firstname} {$_user.lastname}</strong> | <a href="{$domain}smartest/logout" id="sm-signout-link">Sign Out</a>&nbsp;&nbsp;

@@ -54,7 +54,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
                     }
                     
                     $asset = new SmartestRenderableAsset;
-                    $asset->hydrate($asset_id);
+                    $asset->find($asset_id);
                     
                     if(in_array($placeholder->getType(), array('SM_ASSETTYPE_IMAGE', 'SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_SL_TEXT'))){
                         $this->_is_linkable = true;
@@ -147,7 +147,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
             
             $a = new SmartestRenderableAsset;
             
-            if($a->hydrate($asset_id)){
+            if($a->find($asset_id)){
                 $this->_asset = $a;
             }else{
                 // no asset defined

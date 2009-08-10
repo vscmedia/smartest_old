@@ -1,0 +1,42 @@
+/******** Multi-purpose tabs *********/
+
+ul.tabset{
+    border-bottom:1px #aaa solid;
+    list-style-type:none;
+    margin:0 0 10px 0;
+    padding:0 0 0 2px;
+    width: 100%;
+    height:27px;
+}
+
+ul.tabset li{
+    float:left;
+    background-color:#ccc;
+    background-image:url('../Images/tab_bg_off.png');
+    border-top:1px solid #c0c0c0;
+    border-left:1px solid #c0c0c0;
+    border-right:1px solid #c0c0c0;
+    margin-left:5px;
+}
+
+ul.tabset li.current{
+    background-color:#fff;
+    background-image:url('../Images/tab_bg_on.png');
+    border-color:#ccc;
+}
+
+ul.tabset li a{
+    color: #333;
+    display:block;
+    text-decoration: none;
+    padding:5px 6px 6px 6px;
+    border:0px;
+}
+
+ul.tabset li a:hover{
+    text-decoration: none;
+}
+
+ul.tabset li.current a{
+    border-bottom:1px solid #fff;
+}

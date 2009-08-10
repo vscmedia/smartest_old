@@ -37,15 +37,6 @@ div#user-info{
 	z-index:22;
 }
 
-div#admin-menu{
-	position:absolute;
-	left:0px;
-	top:45px;
-	height:100%;
-	width:165px;
-	z-index:21;
-}
-
 div#global-container{
 	width:850px;
 	padding:0px;
@@ -117,47 +108,6 @@ div.top-pad{
 	height:30px;
 }
 
-div.js-menu{
-    width:200px;
-}
-
-div.js-menu ul{
-    margin:0px;
-    padding:0px;
-}
-
-div.js-menu ul li{
-    margin:0px;
-    padding:0px;
-}
-
-div.js-menu ul li a{
-    padding:3px;
-    margin:0px;
-    display:block;
-}
-
-div.js-menu ul li span{
-    padding:3px;
-    margin:0px;
-    display:block;
-}
-
-/* div#user-message-container-outer{
-	position:absolute;
-	left:0px;
-	top:100px;
-	z-index:100;
-	text-align:center;
-	width:100%;
-	display:block;
-}
-
-div#user-message-container-inner{
-    margin-left:180px;
-	margin-right:auto;
-} */
-
 div.user-message{
 	width:450px;
 	height:110px;
@@ -193,8 +143,8 @@ div#preview{
 	padding:3px;
 	text-align:right;
 	position:absolute;
-	top:144px;
-	left:158px;
+	top:150px;
+	left:173px;
 	right:10px;
 }
 
@@ -206,7 +156,7 @@ div#preview iframe{
 div#preview-actions-menu{
     position:absolute;
 	top:143px;
-	left:158px;
+	left:173px;
 	z-index:100;
 }
 
@@ -233,26 +183,4 @@ div#footer{
 	text-align:center;
 	float:left;
 	width:100%;
-}
-
-ul.actions-list{
-	list-style-type:none;
-	padding:0px;
-	width:200px;
-	margin:0 0 10px 0;
-}
-
-ul.invisible-actions-list{
-	list-style-type:none;
-	padding:0px;
-	width:200px;
-	margin:0 0 10px 0;
-}
-
-ul.actions-list li{
-	height:22px;
-}
-
-ul.invisible-actions-list li{
-	height:22px;
 }

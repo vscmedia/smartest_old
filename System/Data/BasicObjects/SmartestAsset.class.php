@@ -373,11 +373,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
                 }
 	        }
 	        
-	        // print_r($xml_params);
-	        
 	        $default_serialized_data = $this->getParameterDefaults();
-	        
-	        // echo $default_serialized_data;
 	        
 	        if($asset_params = @unserialize($default_serialized_data)){
 	            
@@ -397,8 +393,6 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	        
 	        
 	    }
-	    
-	    // print_r($params);
 	    
 	    return $params;
 	    

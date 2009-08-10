@@ -1,53 +1,66 @@
-div#admin-menu{
-	background-color:#fff;
-	border-right:1px solid #aaa;
+/*** Style ***/
+
+a.js-menu-activator{
+    color:#333;
 }
 
-div#admin-menu ul{
-	list-style-type:none;
-	padding:0px;
-	margin:0px;
-	border-top:1px solid #aaa;
+a.js-menu-activator:hover;{
+    text-decoration:none;
 }
 
-div#admin-menu ul li{
-	font-size:12px;
-	margin:0px;
-	display:block;
-	height:24px;
-	/* border-bottom:1px solid #aaa; */
+div.js-menu{
+    background-color:#eee;
+    border:1px solid #999;
 }
 
-div#admin-menu ul li.off a{
-	color: #333;
-	padding-left:10px;
-	padding-top:4px;
-	height:20px;
-	display:block;
+div.js-menu ul{
+    list-style-type:none;
 }
 
-div#admin-menu ul li.off a:hover{
-	color: #333;
-	text-decoration:none;
-	padding-left:10px;
-	padding-top:4px;
-	height:20px;
-	display:block;
+div.js-menu ul li{
+    
 }
 
-div#admin-menu ul li.on a{
-	color: #333;
-	padding-left:10px;
-	padding-top:4px;
-	height:20px;
-	display:block;
+div.js-menu ul li a{
+    color:#333;
+    cursor:default;
 }
 
-div#admin-menu ul li.on a:hover{
-	color: #333;
-	text-decoration:none;
-	padding-left:10px;
-	padding-top:4px;
-	height:20px;
-	display:block;
+div.js-menu ul li a:hover{
+    background-color:#23f;
+    color:#fff;
+    text-decoration:none;
+}
+
+div.js-menu ul li span{
+    color:#999;
+    cursor:default;
+}
+
+/*** Layout ***/
+
+div.js-menu{
+    width:200px;
+}
+
+div.js-menu ul{
+    margin:0px;
+    padding:0px;
+}
+
+div.js-menu ul li{
+    margin:0px;
+    padding:0px;
+}
+
+div.js-menu ul li a{
+    padding:3px;
+    margin:0px;
+    display:block;
+}
+
+div.js-menu ul li span{
+    padding:3px;
+    margin:0px;
+    display:block;
 }

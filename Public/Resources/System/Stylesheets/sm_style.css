@@ -1,7 +1,6 @@
 body{
 	background-color:#fff;
 	text-align:center;
-/*	background:url('/Resources/Images/admin_body_bg.jpg'); */
 	background-repeat: no-repeat;
 	background-position: top center;
 }
@@ -18,8 +17,6 @@ h3{
 
 div{
  	font-family: lucida grande,verdana,sans-serif;
-/*    font-family:arial,sans-serif; */
-/*    letter-spacing:0.1em; */
 }
 
 a img{
@@ -177,7 +174,7 @@ div#work-area h3{
     font-weight:normal;
     font-family:"helvetica neue",helvetica,arial,sans-serif;
     background-color:#d9d8d8;
-	border:1px solid #ccc;
+	border:1px solid #cbcbcb;
 	background-image:url('../Images/interface_title_bg.gif');
     background-repeat:repeat-x;
 }
@@ -203,43 +200,6 @@ div#actions-area{
 	border-top:1px solid #aaa;
 }
 
-a.js-menu-activator{
-    color:#333;
-}
-
-a.js-menu-activator:hover;{
-    text-decoration:none;
-}
-
-div.js-menu{
-    background-color:#eee;
-    border:1px solid #999;
-}
-
-div.js-menu ul{
-    list-style-type:none;
-}
-
-div.js-menu ul li{
-    
-}
-
-div.js-menu ul li a{
-    color:#333;
-    cursor:default;
-}
-
-div.js-menu ul li a:hover{
-    background-color:#23f;
-    color:#fff;
-    text-decoration:none;
-}
-
-div.js-menu ul li span{
-    color:#999;
-    cursor:default;
-}
-
 ul#item-specific-actions{
 	
 }
@@ -253,6 +213,14 @@ div.form-section-label{
 	background-color:#f4f4f4;
 	border:1px solid #ddd;
 	color:#666;
+}
+
+div.edit-form-row select{
+	width:320px;
+}
+
+div.edit-form-row input[type="text"]{
+	width:320px;
 }
 
 div.buttons-bar{
@@ -309,13 +277,10 @@ div#footer{
 	color:#999;
 }
 
-div.edit-form-row select{
-	width:300px;
-}
 
 /******** Top Nav *******/
 
-ul.top-nav-buttons li{
+/* ul.top-nav-buttons li{
 	display:block;
 	float:left;
 	width:50px;
@@ -343,43 +308,6 @@ img.top-nav-icon{
 	width:40px;
 }
 
-/******** Multi-purpose tabs *********/
-
-ul.tabset{
-    border:1px #aaa solid;
-    list-style-type:none;
-    margin:0px;
-    margin-bottom:8px;
-    padding:0px;
-    background-color:#ccc;
-    float:left;
-    width: 100%;
-    clear:both;
-}
-
-ul.tabset li{
-    float:left;
-    background-color:#ccc;
-}
-
-ul.tabset li a{
-    color: #333;
-    display:block;
-    text-decoration: none;
-    padding:5px 6px 6px 6px;
-    border:0px;
-    border-right:1px #bbb solid;
-}
-
-ul.tabset li a:hover{
-    color: #333;
-    text-decoration: none;
-}
-
-ul.tabset li.current a{
-    background-color:#fff;
-}
-
 a.prefpane-tab{
 	padding:7px;
 	border:1px solid #999;
@@ -392,7 +320,7 @@ a.prefpane-tab:hover{
 	border:1px solid #999;
 	border-bottom: 0px;
 	background-color:#fff;
-}
+} */
 
 a.right-nav-link{
 	color:#444;
@@ -406,45 +334,7 @@ a.mainpanel-link{
 	text-decoration:none
 }
 
-div#admin-menu ul li.on{
-	background-image:url('../Images/admin_left_nav_bg_on.gif');
-	background-repeat:repeat-x;
-}
-
-div#admin-menu ul li.site-top-level{
-    font-weight:bold;
-}
-
-div#admin-menu ul li.break{
-    margin-top:10px;
-}
-
-ul.actions-list{
-	border:0px;
-	border-bottom:1px dotted #ddd;
-}
-
-ul.invisible-actions-list{
-	border:0px;
-/*	display:none; */
-	border-bottom:1px dotted #ddd;
-}
-
-li.permanent-action{
-	font-size:11px;
-}
-
-li.permanent-action a{
-	text-decoration:none;
-	color:#444;
-}
-
-li.permanent-action a:hover{
-	text-decoration:none;
-	color:#F4842A;
-}
-
-div#horizontal-nav{
+/* div#horizontal-nav{
 	width:830px;
 	height:25px;
 	border:1px solid #ccc;
@@ -460,11 +350,11 @@ div#horizontal-nav a{
 	padding:5px;
 	border-right:1px solid #ccc;
 	background-color:#fff;
-}
+} */
 
 /*** Buttons ***/
 
-a.button{
+/* a.button{
 	color:#333;
 	text-decoration:none;
 	background-image:url(/Resources/Images/grey_button_bg.gif);
@@ -489,4 +379,4 @@ a.button:hover{
 	text-decoration:none;
 	background-image:url(/Resources/Images/grey_button_bg.gif);
 	height:22px;
-}
+} */

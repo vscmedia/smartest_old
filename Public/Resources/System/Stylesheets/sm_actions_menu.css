@@ -1,0 +1,49 @@
+/*** Style ***/
+
+ul.actions-list{
+	border:0px;
+	border-bottom:1px dotted #ddd;
+}
+
+ul.invisible-actions-list{
+	border:0px;
+	border-bottom:1px dotted #ddd;
+}
+
+li.permanent-action{
+	font-size:11px;
+}
+
+li.permanent-action a{
+	text-decoration:none;
+	color:#444;
+}
+
+li.permanent-action a:hover{
+	text-decoration:none;
+	color:#F4842A;
+}
+
+/*** Layout ***/
+
+ul.actions-list{
+	list-style-type:none;
+	padding:0px;
+	width:200px;
+	margin:0 0 10px 0;
+}
+
+ul.invisible-actions-list{
+	list-style-type:none;
+	padding:0px;
+	width:200px;
+	margin:0 0 10px 0;
+}
+
+ul.actions-list li{
+	height:22px;
+}
+
+ul.invisible-actions-list li{
+	height:22px;
+}

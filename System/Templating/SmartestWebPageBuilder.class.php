@@ -263,6 +263,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 $asset = $placeholder->getAsset($this->getDraftMode());
                 
+                // print_r($asset->getRenderData());
+                
                 if(is_object($asset)){
                     
                     if($display == 'file'){

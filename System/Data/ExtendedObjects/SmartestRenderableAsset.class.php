@@ -12,6 +12,39 @@ class SmartestRenderableAsset extends SmartestAsset{
 	}
 	
 	public function hydrate($id, $site_id=''){
+	    
+	    $result = parent::hydrate($id, $site_id);
+	    
+	    if($result){
+	        $this->setAdditionalRenderData($this->getDefaultParams());
+	        return is_object($result) ? $result : true;
+	    }else{
+	        return false;
+	    }
+	    
+	}
+	
+	public function hydrateBy($field, $value, $site_id=''){
+	    
+	    SmartestLog::getInstance('system')->log("Deprecated function used: SmartestRenderableAsset->hydrateBy()");
+	    return $this->findBy($field, $value, $site_id);
+	    
+	}
+	
+	public function findBy($field, $value, $site_id=''){
+	    
+	    $result = parent::findBy($field, $value, $site_id);
+	    
+	    if($result){
+	        $this->setAdditionalRenderData($this->getDefaultParams());
+	        return true;
+	    }else{
+	        return false;
+	    }
+	    
+	}
+	
+	/* public function hydrate($id, $site_id=''){
 		
 		if(is_array($id)){
 		        
@@ -29,7 +62,6 @@ class SmartestRenderableAsset extends SmartestAsset{
 	            }
 	        }
 	        
-	        // print_r($this->getDefaultParams());
 	        $this->setAdditionalRenderData($this->getDefaultParams());
 				
 			$this->_came_from_database = true;
@@ -46,14 +78,13 @@ class SmartestRenderableAsset extends SmartestAsset{
 	        
 		}
 		
-	}
+	} */
 	
 	public function find($id, $site_id=''){
 	    
 	    $result = parent::find($id, $site_id);
 	    
 	    if($result){
-	        // print_r($this->getDefaultParams());
 	        $this->setAdditionalRenderData($this->getDefaultParams());
 	    }
 	    

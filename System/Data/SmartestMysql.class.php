@@ -176,6 +176,18 @@ class SmartestMysql{
 	    return $hash;
 	}
 	
+	public function clearQueryFromCache($query){
+	    
+	    $hash = $this->getHashFromQuery($query);
+	    
+	    if(isset($this->queryHashes[$hash])){
+	        unset($this->queryHashes[$hash]);
+	        $cache_name = 'smartest_mysql_cached_result'.$hash;
+            SmartestCache::clear($cache_name, true);
+        }
+        
+	}
+	
 	public function queryToArray($querystring, $refresh=false){
 	    
 		if(!$this->dblink && !$this->reconnect()){

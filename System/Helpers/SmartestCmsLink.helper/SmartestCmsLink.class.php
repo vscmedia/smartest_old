@@ -404,10 +404,8 @@ class SmartestCmsLink extends SmartestHelper{
         if($this->_render_data->getParameter('with')){
             // if the with="" attribute is specified
             if(substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
-                // return $this->_destination->__toString();
                 $a = new SmartestRenderableAsset;
-                $a->hydrateBy('url', substr($this->_render_data->getParameter('with'), 6));
-                // print_r($a);
+                $a->findBy('url', substr($this->_render_data->getParameter('with'), 6));
                 return $a->render($draft_mode);
             }else{
                 return $this->_render_data->getParameter('with');
