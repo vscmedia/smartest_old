@@ -58,9 +58,7 @@ class SmartestSite extends SmartestBaseSite{
 			$tree[0]["treeLevel"] = 0;
 			$tree[0]["children"] = $home_page->getPagesSubTree(1, $get_items);
 			
-			// if($get_items){
 			$tree[0]["child_items"] = array();
-		    // }
 			
 			SmartestCache::save('site_pages_tree_'.$this->getId().$items_suffix, $tree, -1, true);
 		
@@ -72,14 +70,9 @@ class SmartestSite extends SmartestBaseSite{
 	
 	public function getPagesList($draft_mode=false, $get_items=false){
 	    
-	    // $tree = $this->getPagesTree();
-	    // print_r($tree);
-	    // $page = new SmartestPage;
 	    $this->displayPages = array();
 	    $this->displayPagesIndex = 0;
 	    $list = $this->getSerializedPageTree($this->getPagesTree($draft_mode, $get_items));
-	    // echo count($list);
-	    // print_r($list);
 	    return $list;
 	    
 	}
@@ -87,10 +80,6 @@ class SmartestSite extends SmartestBaseSite{
 	public function getSerializedPageTree($tree){
 		
 		foreach($tree as $key => $page){
-			
-			// echo $key;
-			
-			// print_r($page);
 			
 			$this->displayPages[$this->displayPagesIndex]['info'] = $page['info'];
 			$this->displayPages[$this->displayPagesIndex]['treeLevel'] = $page['treeLevel'];
@@ -230,13 +219,10 @@ class SmartestSite extends SmartestBaseSite{
 	
 	public function getTitleFormatSeparator(){
 	    
-	    $found = preg_match_all('/[\/\|\-:>›\xBB]+/', $this->getTitleFormat(), $matches);
+	    $found = preg_match_all('/[\/\|\>›\xBB-]+/', $this->getTitleFormat(), $matches);
 	    
 	    if(count($matches)){
 	        $symbols = $matches[0];
-	        /* if(count($symbols) > 1){
-	            
-	        } */
 	        return $symbols[0];
         }
 	}
@@ -246,8 +232,6 @@ class SmartestSite extends SmartestBaseSite{
 	    $sql = "SELECT Sets. * , ItemClasses.itemclass_id FROM Sets, ItemClasses WHERE Sets.set_itemclass_id = ItemClasses.itemclass_id AND ItemClasses.itemclass_site_id = '".$this->getId()."'";
 	    $result = $this->database->queryToArray($sql);
 	    $sets = array();
-	    
-	    // print_r($result);
 	    
 	    if(count($result)){
 	        
@@ -308,6 +292,14 @@ class SmartestSite extends SmartestBaseSite{
 	    
 	    return $placeholders;
 	    
+	}
+	
+	public function getUniqueId(){
+	    // TODO: Make a field to store this once it has been initially generated
+	    $site_id = implode(':', str_split(substr(md5($this->getId()), 0, 6), 2));
+	    $install_id = implode(':', str_split(substr(md5(SM_ROOT_DIR), 0, 6), 2));
+	    $id = $install_id.':'.$site_id;
+	    return $id;
 	}
 	
 }

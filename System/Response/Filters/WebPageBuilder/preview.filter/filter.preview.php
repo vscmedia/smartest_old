@@ -26,7 +26,13 @@ function smartest_filter_preview($html, &$filter){
         
     }else{
         
-        $creator = "\n<!--Powered by Smartest(TM) Online Publishing Platform, v".constant('SM_INFO_VERSION_NUMBER')." -->\n";
+        if(defined('SM_CMS_PAGE_SITE_UNIQUE_ID')){
+            $sid = "<!--SITEID: ".SM_CMS_PAGE_SITE_UNIQUE_ID."-->\n";
+        }else{
+            $sid = '';
+        }
+        
+        $creator = "\n<!--Powered by Smartest(TM) Online Publishing Platform, v".constant('SM_INFO_VERSION_NUMBER')." -->\n".$sid;
         $html = str_replace('</body>', $creator."<!--Page was returned in: ".constant('SM_TOTAL_TIME')."ms -->\n</body>", $html);
         
     }

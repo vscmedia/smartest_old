@@ -60,7 +60,7 @@ class SmartestFilterChain{
     
     public function execute($html){
         
-        preg_match('/<body[^>]*?'.'>/i', $html, $match);
+        /* preg_match('/<body[^>]*?'.'>/i', $html, $match);
 		
 		if(!empty($match[0])){
 			$body_tag = $match[0];
@@ -72,12 +72,13 @@ class SmartestFilterChain{
 			$creator = "\n<!--Powered by Smartest-->\n";
 		}else{
 			$creator = "";
-		}
+		} */
 		
         $filters = $this->loadFilters();
 		
 		$end_time = microtime(true);
 		$full_time_taken = number_format(($end_time - SM_START_TIME)*1000, 2, ".", "");
+		
 		define("SM_TOTAL_TIME", $full_time_taken);
 		define("SM_SMARTY_TIME", $full_time_taken - SM_OVERHEAD_TIME);
 		

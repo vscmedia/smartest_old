@@ -404,7 +404,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	        return $this->getUrl();
 	    }else{
 	        $info = $this->getTypeInfo();
-	        // print_r($info);
+	        
 	        if(count($info['suffix'])){
 	            $dot_suffix = $info['suffix'][0]['_content'];
 	        }else{
@@ -414,8 +414,6 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	        
 	        $file_name = strlen($this->getStringid()) ? $this->getStringid() : 'asset';
 	        $file_name .= '.'.$dot_suffix;
-	        
-	        // echo $file_name;
 	        
 	        return $file_name;
 	        
@@ -691,7 +689,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	public function getPossibleGroups(){
 	    
 	    $alh = new SmartestAssetsLibraryHelper;
-	    $groups = $alh->getAssetGroupsThatAcceptType($this->getType());
+	    $groups = $alh->getAssetGroupsThatAcceptType($this->getType(), $this->getSiteId());
 	    
 	    $existing_group_ids = $this->getGroupIds();
 	    

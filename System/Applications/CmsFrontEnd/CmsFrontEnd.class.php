@@ -20,6 +20,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
 		    if(is_object($this->_site)){
 		        define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+		        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
 		    }
 		    
 		    return true;

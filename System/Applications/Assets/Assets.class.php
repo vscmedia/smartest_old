@@ -303,7 +303,7 @@ class Assets extends SmartestSystemApplication{
 		    $this->send($type, 'new_asset_type_info');
 		    
 		    $alh = new SmartestAssetsLibraryHelper;
-		    $possible_groups = $alh->getAssetGroupsThatAcceptType($asset_type);
+		    $possible_groups = $alh->getAssetGroupsThatAcceptType($asset_type, $this->getSite()->getId());
 		    $this->send($possible_groups, 'possible_groups');
 		    
 		    if(isset($type['param'])){
@@ -769,7 +769,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
     
-    function editAsset($get, $post){
+    public function editAsset($get, $post){
 
 		$asset_id = $get['asset_id'];
 
@@ -824,7 +824,6 @@ class Assets extends SmartestSystemApplication{
                     $content = SmartestStringHelper::protectSmartestTags($content);
                     
 			        $this->send($content, 'textfragment_content');
-    			    // print_r($this->getPresentationLayer()->_tpl_vars);
 
 			    }else{
 			        $formTemplateInclude = "edit.default.tpl";

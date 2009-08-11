@@ -48,16 +48,24 @@ class SmartestFilter{
         $function_name = 'smartest_filter_'.$this->_name;
         
         if(!function_exists($function_name)){
-        
-            require $this->_function_file;
-        
-            if(function_exists($function_name)){
             
-                $html = call_user_func($function_name, $html, $this);
-                return $html;
+            if(is_file($this->_function_file)){
+                
+                require $this->_function_file;
+        
+                if(function_exists($function_name)){
+            
+                    $html = call_user_func($function_name, $html, $this);
+                    return $html;
+            
+                }else{
+                    SmartestLog::getInstance('system')->log('Filter '.$this->_name.' expects a function called '.$function_name.' to be defined in file '.$this->_function_file.', but none exists.', SmartestLog::WARNING);
+                }
             
             }else{
-            
+                
+                SmartestLog::getInstance('system')->log('Filter '.$this->_name.' is supposed to contain a file called '.$this->_function_file.', but none exists.', SmartestLog::WARNING);
+                
             }
             
         }
