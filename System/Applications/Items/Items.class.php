@@ -1114,6 +1114,8 @@ class Items extends SmartestSystemApplication{
 			        $item->getItem()->setSlug(SmartestStringHelper::toSlug($post['item_slug']));
 		        }
 		        
+		        $item->getItem()->setLanguage(SmartestStringHelper::sanitize($post['item_language']));
+		        
 		        $item->getItem()->setSearchField(SmartestStringHelper::sanitize($post['item_search_field']));
 		        $item->getItem()->setMetapageId($post['item_metapage_id']);
         		$item->getItem()->setModified(time());

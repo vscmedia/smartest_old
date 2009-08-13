@@ -12,7 +12,7 @@
 
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} Name</div>
-  <input type="text" name="item[_name]" value="Untitled {$item._model.name}" style="width:250px" />
+  <input type="text" name="item[_name]" value="Untitled {$item._model.name}" />
 </div>
 
 {foreach from=$item._properties key="pid" item="property"}
@@ -22,6 +22,15 @@
 </div>
 
 {/foreach}
+
+<div class="edit-form-row">
+  <div class="form-section-label">Language</div>
+  <select name="_language">
+{foreach from=$_languages item="lang" key="langcode"}
+    <option value="{$langcode}">{$lang.label}</option>
+{/foreach}
+  </select>
+</div>
 
 <div class="edit-form-row">
   <div class="buttons-bar">

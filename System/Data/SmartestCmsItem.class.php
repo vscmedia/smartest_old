@@ -346,19 +346,12 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function hydrateNewFromRequest($request_data){
 	    
-	    // print_r($request_data);
-	    
-	    // $this->_save_errors = array();
-	    
 	    if(is_array($request_data)){
 	            
-		$this->_item->setName(SmartestStringHelper::sanitize($request_data['_name']));
+		    $this->_item->setName(SmartestStringHelper::sanitize($request_data['_name']));
+		    $this->_item->setLanguage(SmartestStringHelper::sanitize($request_data['_language']));
             
-            //if(isset($request_data['_is_public']) && in_array($request_data['_is_public'], array("TRUE", "FALSE"))){
-            //    $this->_item->setPublic($request_data['_is_public']);
-            // }else{
             $this->_item->setPublic('FALSE');
-            // }
             
             $this->_item->setItemclassId($this->_model_id);
             $this->_item->setSlug(SmartestStringHelper::toSlug($this->_item->getName(), true));
@@ -401,9 +394,7 @@ class SmartestCmsItem implements ArrayAccess{
 		
 		if($this->_item->hydrate($id)){
 		    
-		    // echo($id.' was hydrated ');
 		    $this->_came_from_database = true;
-		    // var_dump($this->isHydrated());
 		    
 		    if(!$this->_model_built){
 		        $this->_model_id = $this->_item->getItemclassId();

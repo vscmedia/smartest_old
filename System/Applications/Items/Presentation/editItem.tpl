@@ -59,6 +59,15 @@
 </div>
 {/foreach}
 
+<div class="edit-form-row">
+  <div class="form-section-label">Language</div>
+  <select name="item_language">
+{foreach from=$_languages item="lang" key="langcode"}
+    <option value="{$langcode}"{if $item.language == $langcode} selected="selected"{/if}>{$lang.label}</option>
+{/foreach}
+  </select>
+</div>
+
 {if count($metapages)}
 <div class="edit-form-row">
   <div class="form-section-label">Meta-Page</div>

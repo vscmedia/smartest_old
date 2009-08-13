@@ -106,7 +106,7 @@
   	  {if $ishomepage == "true"}
     	<tr style="background-color:#{cycle values="ddd,fff"};height:20px"><td>
     		<div style="display:inline" id="siteDomainField_0">
-    		  <a href="http://{$site.domain}/" target="_blank">http://{$site.domain}/</a></div>
+    		  <a href="http://{$site.domain}{$domain}" target="_blank">http://{$site.domain}{$domain}</a></div>
     	</td>
     	<td>&nbsp;</td>
       </tr>{/if}
@@ -147,7 +147,7 @@
     </select>
   </div>
   
-  {if $ishomepage != "true"}
+  {if !$ishomepage}
   <div class="edit-form-row">
     <div class="form-section-label">Parent Page</div>
     <select name="page_parent" style="width:300px">
