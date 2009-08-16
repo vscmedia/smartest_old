@@ -9,5 +9,9 @@ class SmartestInterfaceBuilder extends SmartestEngine{
 	    $this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/InterfaceBuilder/";
 	    
 	}
+	
+	public function getDraftMode(){
+	    return false;
+	}
     
 }

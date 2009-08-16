@@ -11,8 +11,8 @@ class SmartestModel extends SmartestBaseModel{
 		
 	}
 	
-	public function hydrate($id){
-	    $bool = parent::hydrate($id);
+	public function find($id){
+	    $bool = parent::find($id);
 	    $this->buildPropertyMap();
 	    return $bool;
 	}

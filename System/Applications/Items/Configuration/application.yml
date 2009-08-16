@@ -1,0 +1,4 @@
+app:
+  name: datamanager
+  label: Data Manager
+  class: Items

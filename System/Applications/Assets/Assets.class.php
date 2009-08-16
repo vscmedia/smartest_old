@@ -501,8 +501,8 @@ class Assets extends SmartestSystemApplication{
     		        
         		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
         		            $everything_ok = false;
-        		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
-        		            // $this->addUserMessage(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
+        		            // $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
+        		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
         		        }else{
         		            $asset->setUrl(basename($final_file_name));
         		        }

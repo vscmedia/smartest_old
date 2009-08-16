@@ -56,19 +56,14 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		// TODO: add caching here
 		if(is_file(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml")){
 			
-			$this->settings->setParameter('application', SmartestYamlHelper::toParameterHolder(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml", SM_DEVELOPER_MODE));
+			$this->settings->setParameter('settings', SmartestYamlHelper::toParameterHolder(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml", SM_DEVELOPER_MODE));
 			
-			// print_r($this->settings->getParameter('application')->getParameter('messages')->getParameter('summaries'));
+		}
+		
+		if(is_file(SM_CONTROLLER_MODULE_DIR."Configuration/application.yml")){
 			
-			/* if(is_array($appSettingsFileData)){
-			    
-			    // $this->settings['application'] = new SmartestParameterHolder('Application Settings Holder', true);
-			    // $this->settings['application']->loadArray($appSettingsFileData, true);
-			    $this->settings['application'] = $appSettingsFileData;
-			    
-			}else{
-				throw new SmartestException("Error parsing config file: ".SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml");
-			} */
+			$this->settings->setParameter('application', SmartestYamlHelper::toParameterHolder(SM_CONTROLLER_MODULE_DIR."Configuration/application.yml", SM_DEVELOPER_MODE));
+			
 		}
 		
 		// load user-defined system-wide settings

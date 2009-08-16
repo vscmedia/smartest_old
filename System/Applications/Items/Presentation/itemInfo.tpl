@@ -18,6 +18,18 @@
     <code>[[{$item._model.name|strtolower}:{$item.slug}]]</code> <em>OR</em> <code>&lt;?sm:link to="metapage:id={$page.id}:id={$item.id}":?&gt;</code>
   </div>
   {/if}
+  {if $item.created > 0}
+  <div class="edit-form-row">
+    <div class="form-section-label">Created:</div>
+    {$item.created|date_format:"%A %B %e, %Y, %l:%M%p"}
+  </div>
+  {/if}
+  {if $item.modified > 0}
+  <div class="edit-form-row">
+    <div class="form-section-label">Modified:</div>
+    {$item.modified|date_format:"%A %B %e, %Y, %l:%M%p"}
+  </div>
+  {/if}
   <div class="edit-form-row">
     <div class="form-section-label">Author(s)</div>
     {$byline}

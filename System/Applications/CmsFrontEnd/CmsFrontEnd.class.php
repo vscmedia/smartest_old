@@ -2,7 +2,6 @@
 
 class CmsFrontEnd extends SmartestSystemApplication{
 
-	// protected $smarty;
 	public $url;
 	protected $_site;
 	protected $_page;
@@ -44,18 +43,15 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		            if($this->_page = $this->manager->getNormalPageByUrl($this->url, $this->_site->getId())){
 
         		        // we are viewing a static page
-        		        // $this->send($this->_page, '_page');
         		        $this->renderPage();
 
         		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->url, $this->_site->getId())){
 
         		        // we are viewing a meta-page (based on an item from a data set)
-        		        // $this->send($this->_page, '_page');
         		        $this->renderPage();
 
         		    }else{
 
-            		    // $this->send($this->renderNotFoundPage(), '_page');
             		    $this->renderNotFoundPage();
 
             	    }
@@ -109,23 +105,19 @@ class CmsFrontEnd extends SmartestSystemApplication{
                     $p->assignTag($tag);
                     
                     $this->_page = $p;
-                    // $this->send($this->_page, '_page');
                     $this->renderPage();
 
         	    }else{
-        	        // $this->send($this->renderNotFoundPage(), '_page');
         	        $this->renderNotFoundPage();
         	    }
 		        
 		    }else{
     		    
     		    $page_webid = $get['page_id'];
-    		    // echo $get['item_id'];
     		    
     		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, false, $this->_site->getDomain())){
 		        
 		            // we are viewing a static page
-		            // $this->send($this->_page, '_page');
 		            $this->renderPage();
 		        
 		        }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], false, $this->_site->getDomain())){
@@ -229,6 +221,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
     	    $tag = new SmartestTag;
 	    
     	    if($tag->hydrateBy('name', $tag_identifier)){
+    	        
     	        $objects = $tag->getObjectsOnSite($this->_site->getId(), true);
     	        
     	        $rss = new SmartestRssOutputHelper($objects);
@@ -330,12 +323,15 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	    if($this->lookupSiteDomain()){
 	        
+	        $draft_mode = (SM_CONTROLLER_METHOD == 'renderEditableDraftPage');
+	        
 	        $error_page_id = $this->_site->getErrorPageId();
 	        $this->_page = new SmartestPage;
 	        $this->_page->find($error_page_id);
+	        $this->_page->setDraftMode($draft_mode);
 	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
 	        
-	        $this->renderPage();
+	        $this->renderPage($draft_mode);
 	        
 	        return Quince::NODISPLAY;
 	        

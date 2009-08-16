@@ -144,13 +144,15 @@ ul.basic-list li a:hover{
 
 a{
     /* color:#F4842A; */
-    color:#777;
+    /* color:#777; */
+    color:#4180F9;
 	text-decoration:none
 }
 
 a:hover{
     /* color:#F4842A; */
-    color:#999;
+    /* color:#999; */
+    color:#3868FF;
 	text-decoration:underline
 }
 

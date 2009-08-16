@@ -27,7 +27,11 @@ class SmartestLogType extends SmartestParameterHolder{
 	    $site_id = 0;
 	    
 	    if(SM_CONTROLLER_MODULE == 'website'){
-            $site_id = constant('SM_CMS_PAGE_SITE_ID');
+	        if(defined('SM_CMS_PAGE_SITE_ID')){
+	            $site_id = constant('SM_CMS_PAGE_SITE_ID');
+            }else{
+                // throw new SmartestException("Site ID not defined.");
+            }
         }else if(is_object(SmartestPersistentObject::get('current_open_project'))){ // make sure the site object exists
             $site_id = SmartestPersistentObject::get('current_open_project')->getId();
         }

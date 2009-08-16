@@ -1,2 +1,1 @@
-<div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
-<input type="text" name="item[{$property.id}]" value="{$value|escape_double_quotes}" style="width:250px" />
+<input type="text" name="{$_input_data.name}" value="{$_input_data.value}" id="{$_input_data.id}" />

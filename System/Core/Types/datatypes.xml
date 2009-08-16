@@ -2,25 +2,30 @@
 <datatypes>
     
     <type id="SM_DATATYPE_NUMERIC" valuetype="string">
-        
         <label>Number</label>
         <description>A numeric value in standard notation such as an integer or decimal. Scientific notation, fractions and logarithms are not supported.</description>
         <usage>field,itemproperty</usage>
         <class>SmartestNumber</class>
         <long>false</long>
-        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
-        
+        <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
     </type>
     
     <type id="SM_DATATYPE_SL_TEXT" valuetype="string">
-        
         <label>Single-line Text</label>
         <description>Short piece of text such as first or last name. Maximum 255 characters.</description>
         <usage>field,itemproperty</usage>
         <class>SmartestString</class>
         <long>true</long>
-        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
-        
+        <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
+    </type>
+    
+    <type id="SM_DATATYPE_URL" valuetype="string">
+        <label>Link</label>
+        <description>Points either to exterior files on the web (starting with http://) or files stored locally on the filesystem.</description>
+        <usage>field,itemproperty</usage>
+        <class>SmartestUrl</class>
+        <long>false</long>
+        <render template="System/Presentation/WebPageBuilder/property.url.tpl" />
     </type>
     
     <type id="SM_DATATYPE_ML_TEXT" valuetype="string">
@@ -29,18 +34,16 @@
         <usage>itemproperty</usage>
         <class>SmartestString</class>
         <long>false</long>
-        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
-        
+        <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
     </type>
     
     <type id="SM_DATATYPE_BOOLEAN" valuetype="string">
-        <label>Boolean</label>
+        <label>True/False (Boolean)</label>
         <description>A simple True/False value.</description>
         <usage>field,itemproperty</usage>
         <class>SmartestBoolean</class>
         <long>false</long>
-        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
-        
+        <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
     </type>
     
     <type id="SM_DATATYPE_ASSET" valuetype="foreignkey">
@@ -63,7 +66,7 @@
         
         <menu value="id" display="url" />
         
-        <render template="System/Applications/Items/Presentation/CMS/property.asset.tpl" />
+        <render template="System/Presentation/WebPageBuilder/property.asset.tpl" />
         
         <class>SmartestRenderableAsset</class>
         
@@ -89,7 +92,7 @@
         
         <menu value="id" display="url" />
         
-        <render template="System/Applications/Items/Presentation/CMS/property.download.tpl" />
+        <render template="System/Presentation/WebPageBuilder/property.download.tpl" />
         
         <class>SmartestAsset</class>
         
@@ -109,7 +112,7 @@
         
         <menu value="id" display="url" />
         
-        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
+        <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         
         <class>SmartestAssetGroup</class>
         
@@ -128,9 +131,10 @@
           <optionsettype id="SM_PROPERTY_FILTERTYPE_DATASET" class="SmartestCmsItemSet" table="Sets" sitefield="set_site_id" />
           <!--Conditions only apply to filtering when no group is in use-->
           <condition field="item_is_archived" value="1" operator="NOT_EQUAL" />
+          <condition field="item_deleted" value="1" operator="NOT_EQUAL" />
         </filter>
         
-        <render template="System/Applications/Items/Presentation/CMS/property.cms_item.tpl" />
+        <render template="System/Presentation/WebPageBuilder/property.cms_item.tpl" />
         
         <menu value="id" display="name" />
         
@@ -150,7 +154,7 @@
           <entitysource type="db" table="Sets" sitefield="set_site_id" sharedfield="set_shared" class="SmartestCmsItemSet" />
         </filter>
         
-        <render template="System/Applications/Items/Presentation/CMS/property.cms_item_set.tpl" />
+        <render template="System/Presentation/WebPageBuilder/property.cms_item_set.tpl" />
         
         <menu value="id" display="name" />
         
@@ -170,32 +174,10 @@
           <entitysource type="db" table="DropDownValues" matchfield="dropdownvalue_dropdown_id" class="SmartestDropdownOption" />
         </filter>
         
-        <render template="System/Applications/Items/Presentation/CMS/property.dropdownvalue.tpl" />
+        <render template="System/Presentation/WebPageBuilder/property.dropdownvalue.tpl" />
         <menu value="value" display="label" />
         
         <class>SmartestDropdownOption</class>
-        
-    </type>
-    
-    <type id="SM_DATATYPE_HEX_COLOR" valuetype="string">
-      
-        <label>RGB Color</label>
-        <description>A color</description>
-        <usage>field,itemproperty</usage>
-        <class>SmartestRgbColor</class>
-        <long>false</long>
-        <render template="System/Applications/Items/Presentation/CMS/property.default.tpl" />
-        
-    </type>
-    
-    <type id="SM_DATATYPE_URL" valuetype="string">
-        
-        <label>Uniform Resource Locator</label>
-        <description>Points either to exterior files on the web (starting with http://) or files stored locally on the filesystem.</description>
-        <usage>field,itemproperty</usage>
-        <class>SmartestUrl</class>
-        <long>false</long>
-        <render template="System/Applications/Items/Presentation/CMS/property.url.tpl" />
         
     </type>
     
@@ -206,7 +188,7 @@
         <usage>field,itemproperty,feed</usage>
         <class>SmartestDateTime</class>
         <long>false</long>
-        <render template="System/Applications/Items/Presentation/CMS/property.timestamp.tpl" />
+        <render template="System/Presentation/WebPageBuilder/property.timestamp.tpl" />
         
     </type>
     
@@ -217,8 +199,19 @@
         <usage>field,itemproperty,feed</usage>
         <class>SmartestDateTime</class>
         <long>false</long>
-        <render template="System/Applications/Items/Presentation/CMS/property.date.tpl" />
+        <render template="System/Presentation/WebPageBuilder/property.date.tpl" />
         
     </type>
+    
+    <!--<type id="SM_DATATYPE_HEX_COLOR" valuetype="string">
+      
+        <label>RGB Color</label>
+        <description>A color</description>
+        <usage>field,itemproperty</usage>
+        <class>SmartestRgbColor</class>
+        <long>false</long>
+        <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
+        
+    </type>-->
     
 </datatypes>

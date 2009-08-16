@@ -1,2 +1,1 @@
-<div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
-<input type="text" name="item[{$property.id}]" value="{$value}" style="width:250px" />{if !empty($value)}&nbsp;(<a href="{$value}" target="_blank">Test</a>){/if}
+<input type="text" name="item[{$property.id}]" value="{$value}" />{if strlen($value)}&nbsp;({link to=$value target="_blank" with="Test"}){/if}

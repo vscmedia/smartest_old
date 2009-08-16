@@ -609,12 +609,8 @@ class Pages extends SmartestSystemApplication{
 		
 		if($page->hydrate($page_webid)){
 		    
-		    // $page_id = $page->getId();
+		    $this->send($page, 'page');
 		    
-		    $this->send($page->__toArray(), 'page');
-		    
-		    // $domain = str_replace($_SERVER['HTTP_HOST'], $page->getSite()->getDomain(), SM_CONTROLLER_DOMAIN);
-		    // echo $domain;
 		    $domain = 'http://'.$page->getParentSite()->getDomain();
 		    
 		    if(!SmartestStringHelper::endsWith('/', $domain)){

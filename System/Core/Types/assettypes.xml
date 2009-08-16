@@ -185,7 +185,7 @@
     
     <type id="SM_ASSETTYPE_MP3" category="embedded">
       <label>MP3 Audio</label>
-      <description>A MPEG Layer-3 File</description>
+      <description>A MPEG Layer-3 file</description>
       <class>SmartestAsset</class>
       <icon>music.png</icon>
       <storage type="file" location="Public/Resources/Assets/" />
@@ -234,7 +234,7 @@
       <icon>page_white_acrobat.png</icon>
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/pdf">pdf</suffix>
-      <render template="System/Presentation/WebPageBuilder/display.default.tpl" />
+      <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
     </type>
     
     <type id="SM_ASSETTYPE_ARCHIVE" category="other">
@@ -246,7 +246,7 @@
       <suffix mime="application/x-gzip">gz</suffix>
       <suffix mime="application/x-tar">tar</suffix>
       <suffix mime="application/x-zip-compressed">zip</suffix>
-      <render template="System/Presentation/WebPageBuilder/display.default.tpl" />
+      <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
     </type>
     
     <type id="SM_ASSETTYPE_MS_WORD" category="other">

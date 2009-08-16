@@ -45,7 +45,7 @@ class SmartestErrorStack{
 		$this->stackIndex++;
 	}
 	
-	function getErrors(){
+	public function getErrors(){
 		return $this->stack;
 	}
 	

@@ -107,8 +107,6 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	private function generateModel(){
 		
-		// $this->getModel();
-		
 		if(isset($this->_model_id) && !$this->_model_built){
 		
 		    if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
@@ -120,19 +118,14 @@ class SmartestCmsItem implements ArrayAccess{
 			    SmartestCache::save('model_properties_'.$this->_model_id, $result, -1, true);
 		    } 
 		
-		    // print_r($result);
-			
 		    $properties = array();
 			
 		    foreach($result as $key => $raw_property){
 		        
 		        $property = new SmartestItemPropertyValueHolder;
+		        $property->hydrate($raw_property);
+		        $this->_properties[$raw_property['itemproperty_id']] = $property;
 		        
-		        // if(!){
-		            $property->hydrate($raw_property);
-		        // }
-		        
-			    $this->_properties[$raw_property['itemproperty_id']] = $property;
 		    }
 		    
 		    $this->_model_built = true;
@@ -392,7 +385,7 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function hydrate($id, $draft=false){
 		
-		if($this->_item->hydrate($id)){
+		if($this->_item->find($id)){
 		    
 		    $this->_came_from_database = true;
 		    
@@ -531,7 +524,7 @@ class SmartestCmsItem implements ArrayAccess{
 	    
 	    if(!$this->_model && is_object($this->_item) && $this->_item->getItemclassId()){
 	        $model = new SmartestModel;
-	        $model->hydrate($this->_item->getItemclassId());
+	        $model->find($this->_item->getItemclassId());
 	        $this->_model = $model;
 	    }
 	    
@@ -882,11 +875,11 @@ class SmartestCmsItem implements ArrayAccess{
     public static function getModelClassName($item_id){
 	    
 	    $item = new SmartestItem;
-	    $item->hydrate($item_id);
+	    $item->find($item_id);
 	    $model_id = $item->getItemclassId();
 	    
 	    $model = new SmartestModel;
-	    $model->hydrate($model_id);
+	    $model->find($model_id);
 	    return $model->getClassName();
 	    
     }

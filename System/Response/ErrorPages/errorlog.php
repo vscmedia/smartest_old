@@ -73,5 +73,6 @@
     </div>
     </div>
 <?php endif; ?>
+  <script language="javascript">if(parent){parent.showPreview();}</script>
   </body>
 </html>

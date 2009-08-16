@@ -1,0 +1,1 @@
+<a href="<?sm:$domain:?>download/<?sm:$asset_info.url:?>?key=<?sm:$asset_info.webid:?>" class="sm-download"><img src="<?sm:$asset_info.small_icon:?>" alt="" />&nbsp;<?sm:$asset_info.url:?></a>

@@ -1,0 +1,2 @@
+<input type="checkbox" name="{$_input_data.name}" id="{$_input_data.id}" value="TRUE"{if $_input_data.value == true} checked="checked"{/if} />
+<span class="form-hint">{if $_input_data.value == true}Un-tick this box to change this field's value{else}Tick this box to change this field's value{/if}</span>

@@ -1125,6 +1125,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	
 	public function __toArray($getChildren=false){
 	    
+	    SmartestLog::getInstance('system')->log('Deprecated API function used: '.get_class($this).'->__toArray()');
+	    
 	    $array = parent::__toArray();
 	    
 	    $array['title'] = $this->getTitle();
@@ -1520,7 +1522,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	    
 	    $model = new SmartestModel;
 	    
-	    if($model->hydrate($model_id)){
+	    if($model->find($model_id)){
 	    
 	        $ds = new SmartestQueryResultSet($model->getId(), $model->getClassName(), $this->getDraftMode());
 	    
@@ -1529,7 +1531,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 		    }
 	    
 	        return $ds->getItems();
-	        // return array();
 	    
         }else{
             return array();
@@ -1991,6 +1992,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	public function getParentSite(){
 	    
 	    if(!$this->_parent_site){
+	        // var_dump($this->_properties['site_id']);
+	        /* if(!$this->_properties['site_id']){
+	            throw new SmartestException("No site ID");
+	        } */
 	        $sql = "SELECT * FROM Sites WHERE Sites.site_id='".$this->_properties['site_id']."'";
             $result = $this->database->queryToArray($sql);
             $s = new SmartestSite;
