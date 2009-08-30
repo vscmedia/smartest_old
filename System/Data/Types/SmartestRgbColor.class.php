@@ -10,7 +10,7 @@ class SmartestRgbColor{
         
     }
     
-    public function __toString($mode='hex'){
+    public function __toString(){
         
     }
     
