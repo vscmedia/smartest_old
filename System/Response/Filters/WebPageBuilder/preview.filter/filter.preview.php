@@ -1,6 +1,6 @@
 <?php
 
-function smartest_filter_preview($html, &$filter){
+function smartest_filter_preview($html, $filter){
     
     if($filter->getDraftMode()){
         
