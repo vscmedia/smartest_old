@@ -225,6 +225,20 @@ class SmartestResponse{
 		
 		session_start();
 		
+		$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+		
+        if(version_compare(PHP_VERSION, $sd['system']['info']['minimum_php_version']) === -1){
+            $this->error("This version of PHP is too old to run Smartest. You need to have version ".$sd['system']['info']['minimum_php_version'].' or better.');
+        }
+        
+        if(version_compare(PHP_VERSION, '5.3.0') >= 0){
+            if(!ini_get('date.timezone')){
+                // echo 'no date';
+                date_default_timezone_set($sd['system']['info']['default_timezone']);
+                SmartestLog::getInstance('system')->log("Default timezone must be set for PHP Version 5.3.0 and later. Was automatically set to ".$sd['system']['info']['default_timezone'].' (in system.yml)', SmartestLog::WARNING);
+            }
+        }
+		
 	    SmartestPersistentObject::set('errors:stack', $this->errorStack);
 		SmartestPersistentObject::set('centralDataHolder', new SmartestResponseDataHolder);
 		

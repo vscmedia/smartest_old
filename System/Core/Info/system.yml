@@ -1,7 +1,9 @@
 system:
   info:
-    version: "0.3.7.2 (0.4-dev, build 19)"
-    revision: 277
+    version: "0.3.7.3 (0.4-dev, build 23)"
+    revision: 279
+    minimum_php_version: 5.2
+    default_timezone: Europe/London
   reserved_classes:
     - Assets
     - CmsFrontEnd

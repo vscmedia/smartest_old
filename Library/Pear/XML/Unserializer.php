@@ -6,12 +6,14 @@
  *
  * Parses any XML document into PHP data structures.
  *
- * PHP versions 4 and 5
+ * PHP version 5 only
  *
  * LICENSE:
  *
  * Copyright (c) 2003-2008 Stephan Schmidt <schst@php.net>
  * All rights reserved.
+ *
+ * Modified for use in PHP 5.3 by Marcus Gilroy-Ware <marcus@vsccreative.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -798,10 +800,10 @@ class XML_Unserializer extends PEAR
             if ($this->options[XML_UNSERIALIZER_OPTION_TAG_AS_CLASSNAME] === true
                 && class_exists($classname)
             ) {
-                $value['value'] = &new $classname;
+                $value['value'] = new $classname;
             } else {
                 $value['value'] =
-                    &new $this->options[XML_UNSERIALIZER_OPTION_DEFAULT_CLASS];
+                    new $this->options[XML_UNSERIALIZER_OPTION_DEFAULT_CLASS];
             }
             if (trim($data) !== '') {
                 if ($value['guessType'] === true) {
@@ -971,7 +973,7 @@ class XML_Unserializer extends PEAR
             $this->_parser->free();
             unset($this->_parser);
         }
-        $this->_parser = &new XML_Parser($this->
+        $this->_parser = new XML_Parser($this->
             options[XML_UNSERIALIZER_OPTION_ENCODING_SOURCE],
             'event', $this->options[XML_UNSERIALIZER_OPTION_ENCODING_TARGET]);
 
