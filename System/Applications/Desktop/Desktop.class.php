@@ -75,7 +75,7 @@ class Desktop extends SmartestSystemApplication{
 	        $site->setTitleFormat($post['site_title_format']);
 	        $site->setDomain($post['site_domain']);
 	        $site->setIsEnabled((int) (bool) $post['site_is_enabled']);
-	        $site->setTopPageId($post['site_top_page']);
+	        // $site->setTopPageId($post['site_top_page']);
 	        $site->setTagPageId($post['site_tag_page']);
 	        $site->setSearchPageId($post['site_search_page']);
 	        $site->setErrorPageId($post['site_error_page']);

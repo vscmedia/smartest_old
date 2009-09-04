@@ -46,11 +46,11 @@ var section = '{$section}';
 
 <div class="edit-form-row">
   <div class="form-section-label">Site status</div>
-  Enabled <input type="radio" name="site_is_enabled" value="1"{if $site.is_enabled == 1} checked="checked"{/if} />
-  Disabled <input type="radio" name="site_is_enabled" value="0"{if $site.is_enabled == 0} checked="checked"{/if} /><span class="form-hint">This will take effect immediately</span>
+  <label for="enable-site">Enabled</label> <input type="radio" id="enable-site" name="site_is_enabled" value="1"{if $site.is_enabled == 1} checked="checked"{/if} />
+  <label for="disable-site">Disabled</label> <input type="radio" id="disable-site" name="site_is_enabled" value="0"{if $site.is_enabled == 0} checked="checked"{/if} /><span class="form-hint">This will take effect immediately</span>
 </div>
 
-<div class="edit-form-row">
+{* <div class="edit-form-row">
   <div class="form-section-label">Select Home Page (Advanced)</div>
   <select name="site_top_page">
     {foreach from=$pages item="page"}
@@ -59,10 +59,10 @@ var section = '{$section}';
       {/if}
     {/foreach}
   </select>
-</div>
+</div> *}
 
 <div class="edit-form-row">
-  <div class="form-section-label">Select Search Page (Advanced)</div>
+  <div class="form-section-label">Search Page (Advanced)</div>
   <select name="site_search_page">
     {foreach from=$pages item="page"}
       {if $page.info.id != $site.error_page_id && $page.info.id != $site.top_page_id}
@@ -70,6 +70,7 @@ var section = '{$section}';
       {/if}
     {/foreach}
   </select>
+  <br /><span class="form-hint">This page will handle search queries made to http://{$site.domain}{$domain}search.</span>
 </div>
 
 <div class="edit-form-row">
@@ -81,6 +82,7 @@ var section = '{$section}';
       {/if}
     {/foreach}
   </select>
+  <br /><span class="form-hint">This page will be loaded when a tag is requested, eg: http://{$site.domain}{$domain}tag/elephants.html.</span>
 </div>
 
 <div class="edit-form-row">
@@ -92,6 +94,7 @@ var section = '{$section}';
       {/if}
     {/foreach}
   </select>
+  <br /><span class="form-hint">This page will be loaded when an unknown or unpublished page is requested, eg: http://{$site.domain}{$domain}kigsdfkjhg.</span>
 </div>
 
 <div class="buttons-bar">

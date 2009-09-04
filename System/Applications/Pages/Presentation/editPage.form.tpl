@@ -38,7 +38,7 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">Title</div>
-    	<input type="text" name="page_title" value="{$pageInfo.static_title}" style="width:200px" />
+    	<input type="text" name="page_title" value="{$pageInfo.static_title}" />
     	{if !$pageInfo.title}<div>You must have a title! </div>{/if}
   </div>
   
@@ -54,6 +54,11 @@
     <div class="form-section-label">Short Name</div>
     {if $allow_edit_page_name}<input type="text" name="page_name" value="{$pageInfo.name}" /><span class="form-hint">Numbers, lowercase letters and hyphens only, please</span>{else}{$pageInfo.name}{/if}
   </div>
+  
+  <div class="edit-form-row">
+      <div class="form-section-label">Link code</div>
+      <code>[[page:{$pageInfo.name}]]</code>
+    </div>
   
   <div class="edit-form-row">
     <div class="form-section-label">Status</div>
