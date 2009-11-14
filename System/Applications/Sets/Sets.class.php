@@ -344,6 +344,7 @@ class Sets extends SmartestSystemApplication{
 	            $this->redirect('/sets/editSet?set_id='.$set->getId());
 	        }
 	        
+	        $this->send($set->getModel(), 'model');
 	        $this->send($set, 'set');
 	        $this->send($set->getMembers(SM_QUERY_ALL_DRAFT), 'items');
 	        

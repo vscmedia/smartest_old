@@ -279,6 +279,21 @@ div#footer{
 	color:#999;
 }
 
+ul.re-orderable-list{
+    margin:0px;
+    padding:0px;
+}
+
+ul.re-orderable-list li{
+    padding:5px;
+    background-color:#f8f8f8;
+    border:1px solid #ddd;
+    margin-bottom:5px;
+}
+
+ul.re-orderable-list li div.buttons{
+    float:right;
+}
 
 /******** Top Nav *******/
 

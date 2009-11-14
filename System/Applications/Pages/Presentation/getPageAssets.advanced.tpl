@@ -134,7 +134,7 @@
 	<img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/notexist.gif" />
 	{/if}
 	
-	<b>{$assetclass.info.assetclass_name}</b> This {$assetclass.info.type} doesn't exist.&nbsp;
+	<b>{$assetclass.info.assetclass_name}</b> Smartest needs more information about this new {$assetclass.info.type}.&nbsp;
 	  {if $assetclass.info.type=='container'}
 	    <a href="{$domain}assets/addContainer?name={$assetclass.info.assetclass_name}&amp;type={$assetclass.info.type}">Add it</a>
 	  {elseif $assetclass.info.type=='placeholder'}
