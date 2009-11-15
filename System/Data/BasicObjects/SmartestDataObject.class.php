@@ -310,7 +310,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	protected function getField($field_name){
 		if(isset($this->_properties[$field_name])){
-			return $this->_properties[$field_name];
+			return stripslashes($this->_properties[$field_name]);
 		}else if(array_key_exists($field_name.'_id', $this->_properties)){
 			// retrieve foreign key object, getSite(), getModel(), etc...
 			if(array_key_exists($this->_properties[$field_name], $this->_foreign_key_objects)){
@@ -336,7 +336,7 @@ class SmartestDataObject implements ArrayAccess{
 	public function getFieldByName($field_name){
 	    
 	    if(isset($this->_properties[$field_name])){
-			return $this->_properties[$field_name];
+			return stripslashes($this->_properties[$field_name]);
 		}else if(isset($this->_properties[substr($field_name, strlen($this->_table_prefix))])){
 		    return $this->_properties[substr($field_name, strlen($this->_table_prefix))];
 		}else if(isset($this->_properties[$field_name.'_id'])){
@@ -369,7 +369,12 @@ class SmartestDataObject implements ArrayAccess{
 			
 			// field being set is part of the model and corresponds to a column in the db table
 			$this->_properties[$field_name] = $value;
-			$value = str_replace("'", "\\'", $value);
+			
+			// Magic Quotes is deprecated but if switched on can still fuck things up.
+			if(!SM_OPTIONS_MAGIC_QUOTES){
+			    $value = addslashes($value);
+		    }
+			
 			$this->_modified_properties[$field_name] = SmartestStringHelper::sanitize($value);
 			
 		}else{

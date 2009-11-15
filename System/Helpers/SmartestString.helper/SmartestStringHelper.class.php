@@ -2,6 +2,8 @@
 
 SmartestHelper::register('String');
 
+define("SM_OPTIONS_MAGIC_QUOTES", (bool) ini_get('magic_quotes_gpc'));
+
 class SmartestStringHelper extends SmartestHelper{
 
 	static function random($size){
@@ -303,14 +305,11 @@ class SmartestStringHelper extends SmartestHelper{
 	static function sanitize($string){
 	    
 	    if(is_string($string)){
-	        // $string = mysql_real_escape_string($string);
 	        $string = str_replace('<?php', '', $string);
 	        $string = str_replace('DELETE FROM', '', $string);
 	        $string = str_replace('DROP TABLE', '', $string);
 	        $string = str_replace('DROP DATABASE', '', $string);
         }
-	    
-	    // echo $string;
 	    
 	    return $string;
 	    

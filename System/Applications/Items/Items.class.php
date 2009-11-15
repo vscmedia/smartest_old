@@ -1057,6 +1057,8 @@ class Items extends SmartestSystemApplication{
 		
 		$item_id = $get['item_id'];
 		
+		// var_dump();
+		
 		$item = SmartestCmsItem::retrieveByPk($item_id);
 		
 	    if(is_object($item)){
@@ -1104,6 +1106,8 @@ class Items extends SmartestSystemApplication{
     		if(is_object($item)){
 		        
 		        $allow_edit_item_slug = true;
+		        
+		        // echo $post['item_name'].'<br />';
 		        
     		    // update name
     		    if (strlen($post['item_name'])){
