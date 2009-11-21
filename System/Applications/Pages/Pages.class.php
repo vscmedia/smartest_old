@@ -46,11 +46,10 @@ class Pages extends SmartestSystemApplication{
 	            
 	            if($this->getUser()->hasToken('modify_page_properties')){
 	            
-	                if($page->getIsHeld() && $page->getHeldBy() && $page->getHeldBy() != $this->getUser()->getId()){
+	                if($page->getIsHeld() && $page->getHeldBy() && $page->getHeldBy() != $this->getUser()->getId() && !$this->getUser()->hasToken('edit_held_pages')){
     	                
     	                // page is already being edited by another user
     	                $editing_user = new SmartestUser;
-	                    // var_dump($page->getIsHeld());
 	                    
     	                if($editing_user->hydrate($page->getHeldBy())){
     	                    $this->addUserMessageToNextRequest($editing_user->__toString().' is already editing this page.', SmartestUserMessage::ACCESS_DENIED);
@@ -67,14 +66,26 @@ class Pages extends SmartestSystemApplication{
 	                    // page is available to edit
 			            SmartestSession::set('current_open_page', $page->getId());
 			            
-			            if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId())){
-			                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId(), 0);
-		                }
-		        
-			            // lock it against being edited by other people
-			            $page->setIsHeld(1);
-			            $page->setHeldBy($this->getUser()->getId());
-			            $page->save();
+			            if($this->getUser()->hasToken('edit_held_pages') && $page->getHeldBy() != $this->getUser()->getId()){
+			                
+			                $editing_user = new SmartestUser;
+
+        	                if($editing_user->hydrate($page->getHeldBy())){
+        	                    $this->addUserMessageToNextRequest('Careful: '.$editing_user->__toString().' has not yet released this page.', SmartestUserMessage::INFO);
+        	                }else{
+        	                    $this->addUserMessageToNextRequest('Careful: another user has not yet released this page.', SmartestUserMessage::INFO);
+        	                }
+        	                
+			            }else{
+			                // lock it against being edited by other people
+    			            $page->setIsHeld(1);
+    			            $page->setHeldBy($this->getUser()->getId());
+    			            $page->save();
+			            
+    			            if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId())){
+    			                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId(), 0);
+    		                }
+	                    }
 			            
 			            $page->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
         			    $this->getUser()->addRecentlyEditedPageById($page->getId(), $this->getSite()->getId());
@@ -282,19 +293,10 @@ class Pages extends SmartestSystemApplication{
     		
             	if($this->getUser()->hasToken('modify_page_properties')){
 		
-            		// $site_id = $page->getSiteId();
             		$site_id = $this->getSite()->getId();
             		$page_id = $page->getId();
 		
-            		// $site = new SmartestSite;
-            		// $site->hydrate($site_id);
-		
-            		// $this->setFormReturnUri();
-    		        // $saved = $get['saved'];
-		
             		if($site_id){
-			
-            			// $homepage_id = $site->getTopPageId();
 			
             			if($this->getSite()->getTopPageId() == $page->getId()){
             				$ishomepage = true;
@@ -312,7 +314,7 @@ class Pages extends SmartestSystemApplication{
             		}
         		
             		$this->send($allow_release, 'allow_release');
-            		$this->send(true, 'allow_edit_page_name');
+            		$this->send($this->getUser()->hasToken('edit_page_name'), 'allow_edit_page_name');
 		
             		$pageUrls = $page->getUrlsAsArrays();
 		        
@@ -327,16 +329,10 @@ class Pages extends SmartestSystemApplication{
                         if($model->hydrate($page->getDatasetId())){
                             $editorContent['model_name'] = $model->getName();
                             
-                            // print_r($editorContent);
-                            
-                            // $type_index[$page_webid]
-                            
                             if($page->getParent() && ($type_index[$page->getParent()] == 'ITEMCLASS' || $type_index[$page->getParent()] == 'SM_PAGETYPE_ITEMCLASS' || $type_index[$page->getParent()] == 'SM_PAGETYPE_DATASET')){
                                 
                                 $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage(false)->getDatasetId(), (int) $get['item_id']);
                             
-                                // print_r($parent_indicator_properties);
-                                
                                 $this->send(true, 'show_parent_meta_page_property_control');
                                 $this->send($model->__toArray(), 'model');
                                 
@@ -419,7 +415,6 @@ class Pages extends SmartestSystemApplication{
                                         $property_array['selected_item_name'] = "Unknown";
                                     }
                                     
-                                    // print_r($property_array);
                                     $this->send($property_array, 'parent_meta_page_property');
                                     
                                 }else{
@@ -456,6 +451,7 @@ class Pages extends SmartestSystemApplication{
             		$this->send($ishomepage, "ishomepage");
             		$this->send($this->getSite()->__toArray(), "site");
             		$this->send(true, 'allow_edit');
+            		// $this->send($this->getUser()->hasToken('edit_page_name'), 'allow_name_edit');
 		
         	    }else{
 	        
@@ -1161,9 +1157,11 @@ class Pages extends SmartestSystemApplication{
         if($page->hydrate($post['page_id'])){
             
             $page->setTitle($post['page_title']);
-            if(isset($post['page_name']) && strlen($post['page_name'])){
+            
+            if(isset($post['page_name']) && strlen($post['page_name']) && $this->getUser()->hasToken('edit_page_name')){
                 $page->setName(SmartestStringHelper::toSlug($post['page_name']));
             }
+            
             $page->setParent($post['page_parent']);
             $page->setForceStaticTitle((isset($post['page_force_static_title']) && ($post['page_force_static_title'] == 'true')) ? 1 : 0);
             $page->setIsSection((isset($post['page_is_section']) && ($post['page_is_section'] == 'true')) ? 1 : 0);

@@ -25,7 +25,7 @@
       
       <div class="edit-form-row">
         <div class="form-section-label">Model Plural Name</div>
-        <input type="text" name="itemclass_plural_name" value="{$model.plural_name}" style="width:250px" />
+        {if $allow_plural_name_edit}<input type="text" name="itemclass_plural_name" value="{$model.plural_name}" style="width:250px" />{else}{$model.plural_name}{/if}
       </div>
       
       <div class="edit-form-row">

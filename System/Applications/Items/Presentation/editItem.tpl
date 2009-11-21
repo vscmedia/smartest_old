@@ -36,12 +36,12 @@
 
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} name</div>
-  <input type="text" name="item_name" value="{$item.name|escape_double_quotes}" style="width:250px" />
+  <input type="text" name="item_name" value="{$item.name|escape_double_quotes}" />
 </div>
 
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} short name (Used in links and URLS)</div>
-  <input type="text" name="item_slug" value="{$item.slug}" style="width:250px" />
+  {if $allow_edit_item_slug}<input type="text" name="item_slug" value="{$item.slug}" /><span class="form-hint">Numbers, lowercase letters and hyphens only, please</span>{else}{$item.slug}{/if}
 </div>
 
 <div class="edit-form-row">

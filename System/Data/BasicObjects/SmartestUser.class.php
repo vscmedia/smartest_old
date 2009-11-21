@@ -178,10 +178,12 @@ class SmartestUser extends SmartestBaseUser{
 	    
 	    $to = $this->_properties['email'];
 	    
-	    // if($to){
+	    if(SmartestStringHelper::isEmailAddress($to)){
 	        mail($to, $subject, $message, "From: ".$from."\r\nReply-to: ".$from);
 	        return true;
-        // }
+        }else{
+            SmartestLog::getInstance('system')->log("Could not send e-mail to invalid e-mail address: '".$to."'.");
+        }
 	    
 	}
 	

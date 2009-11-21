@@ -63,9 +63,9 @@ class Settings extends SmartestSystemApplication{
     
 	}
 
-	function cartSettings(){
+	/* function cartSettings(){
 		return $this->manager->getSettings();    
-	}
+	} */
   
 	function updateUser($get, $post){
 		
@@ -302,14 +302,12 @@ class Settings extends SmartestSystemApplication{
 	    
 	    if($this->getUser()->hasToken('modify_user_permissions')){
 	    
-	        $permission_editable_sites = $this->getUser()->getPermissionEditableSitesAsArrays();
+	        $permission_editable_sites = $this->getUser()->getPermissionEditableSites();
 	        
-	        // print_r($permission_editable_sites);
-	        
-    	    $user_id = $get['user_id'];	
-        	$user_being_edited = new SmartestUser;
+	        $user_id = $get['user_id'];	
+        	$user = new SmartestSystemUser;
     	
-        	if($user_being_edited->hydrate($user_id)){
+        	if($user->hydrate($user_id)){
     	
         	    $this->setFormReturnUri();
     	        
@@ -321,10 +319,24 @@ class Settings extends SmartestSystemApplication{
     	            $site_id = $this->getSite()->getId();
     	        }
     	        
-        	    $utokens = $this->manager->getUserPermissions($user_id, $site_id); //print_r($utokens);
-    		    $tokens = $this->manager->getAvailablePermissions($user_id, $site_id);
+    	        // $h = new SmartestUsersHelper;
+        	    // $utokens = $this->manager->getUserPermissions($user_id, $site_id); // print_r($utokens);
+        	    // $tokens = $h->getUserPermissions();
+        	    // print_r($user);
+        	    $utokens = $user->getTokensOnSite($site_id, true);
+        	    
+        	    // $t = $user->getTokenCodes();
+        	    // print_r($utokens);
     		    
-		        $this->send($user_being_edited->__toArray(), 'user');
+    		    $tokens = $user->getAvailableTokens($site_id);
+    		    
+    		    // $tokens_old = $this->manager->getAvailablePermissions($user_id, $site_id);
+    		    // $tokens = SmartestUsersHelper::getTokenData();
+    		    
+    		    /* print_r($tokens);
+    		    print_r($tokens_old); */
+    		    
+		        $this->send($user, 'user');
     		    $this->send($utokens, 'utokens');
     		    $this->send($tokens, 'tokens');
     		    $this->send($permission_editable_sites, 'sites');
@@ -332,6 +344,8 @@ class Settings extends SmartestSystemApplication{
     		    $this->send($allow_global, 'allow_global');
 		    
         	    // return array("user_id"=>$user_id, "utokens"=>$utokens,"tokens"=>$tokens);
+        	    
+        	    // header("Location: /");
     	
     	    }else{
     	        $this->addUserMessageToNextRequest("The user ID was not recognised");
@@ -357,7 +371,7 @@ class Settings extends SmartestSystemApplication{
     	    $utokens = $this->manager->getRolePermissions($role_id); //print_r($utokens);
 		    $tokens = $this->manager->getRoleAvailablePermissions($role_id);
 		    
-		    $this->addUserMessage('Editing this role will not affect users created with it. To edit the permission of specific users, select the user and choose the \'Edit user tokens\' option.');
+		    // $this->addUserMessage('Editing this role will not affect users created with it. To edit the permission of specific users, select the user and choose the \'Edit user tokens\' option.');
 		    
 		    $this->send($role->__toArray(), 'role');
 		    $this->send($utokens, 'utokens');
@@ -372,16 +386,30 @@ class Settings extends SmartestSystemApplication{
 	function transferTokens($get, $post){
     	
     	if($this->getUser()->hasToken('modify_user_permissions')){
-    	
-    	    if($post['transferAction'] == 'add'){
-			    $this->manager->addTokensToUser($post['tokens'], $post['user_id'], $post['site_id']);
-		    }else{
-			    $this->manager->removeTokensFromUser($post['sel_tokens'], $post['user_id'], $post['site_id']);
-		    }
+    	    
+    	    $user = new SmartestSystemUser;
+    	    
+    	    if($user->find($post['user_id'])){
+    	        
+    	        if($post['transferAction'] == 'add'){
+			        foreach($post['tokens'] as $token_id){
+			            $user->addTokenById($token_id, $post['site_id']);
+			        }
+		        }else{
+		            foreach($post['sel_tokens'] as $token_id){
+			            $user->removeTokenById($token_id, $post['site_id']);
+			        }
+		        }
+		    
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest('The user ID was not recognized.', SmartestUserMessage::ERROR);
+	            
+	        }
 		
 	    }else{
 	        
-	        $this->addUserMessageToNextRequest('You do not have the permissions needed to modify the permissions of other users.');
+	        $this->addUserMessageToNextRequest('You do not have the permissions needed to modify the permissions of other users.', SmartestUserMessage::ERROR);
 	        
 	    }
 		
@@ -391,21 +419,11 @@ class Settings extends SmartestSystemApplication{
 	
 	function transferTokensToRole($get, $post){
     	
-    	// if($this->getUser()->hasToken('modify_user_permissions')){
-    	
-    	    if($post['transferAction'] == 'add'){
-			    $this->manager->addTokensToRole($post['tokens'], $post['role_id']);
-		    }else{
-			    $this->manager->removeTokensFromRole($post['sel_tokens'], $post['role_id']);
-		    }
-		    
-		    // print_r($this->database);
-		
-	    // }else{
-	        
-	    //    $this->addUserMessageToNextRequest('You do not have the permissions needed to modify the permissions of other users');
-	        
-	    // }
+    	if($post['transferAction'] == 'add'){
+		    $this->manager->addTokensToRole($post['tokens'], $post['role_id']);
+		}else{
+		    $this->manager->removeTokensFromRole($post['sel_tokens'], $post['role_id']);
+		}
 		
 		$this->formForward();
 		

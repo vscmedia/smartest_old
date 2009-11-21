@@ -6,16 +6,37 @@ class SmartestUsersHelper extends SmartestHelper{
     
     var $database;
     
-    function __construct(){
+    public function __construct(){
 		$this->database = SmartestPersistentObject::get('db:main');
+    }
+    
+    public static function getTokenData(){
+        
+        $tokens = SmartestPffrHelper::getContentsFast(SM_ROOT_DIR.'System/Core/Types/usertokens.pff');
+        return $tokens;
+        
+    }
+    
+    public function getTokenId($token){
+        
+        $all_tokens = self::getTokenData();
+        
+        foreach($all_tokens as $t){
+            if($t['code'] == $token){
+                return $t['id'];
+            }
+        }
+        
+        return null;
+        
     }
     
     public function getUsersThatHaveToken($token, $site_id=''){
         
 	    if(is_array($token)){
-	        $sql = "SELECT DISTINCT Users.* FROM Users, UsersTokensLookup, UserTokens WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND UserTokens.token_code IN ('".implode("', '", $token)."')";
-        }else{
-	        $sql = 'SELECT DISTINCT Users.* FROM Users, UsersTokensLookup, UserTokens WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND UserTokens.token_code='.$token."'";
+	        $sql = "SELECT DISTINCT Users.* FROM Users, UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id IN ('".implode("', '", $token)."')";
+        }else{                                                                                                                   
+	        $sql = 'SELECT DISTINCT Users.* FROM Users, UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id='.$token."'";
 	    }
 	    
         if(is_numeric($site_id)){
@@ -53,7 +74,7 @@ class SmartestUsersHelper extends SmartestHelper{
     public function getUsersOnSite($site_id){
         
         $site_id = (int) $site_id;
-        $sql = "SELECT Users.* FROM `Users`, `UsersTokensLookup`, `UserTokens` WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND UserTokens.token_code='site_access' AND (UsersTokensLookup.utlookup_site_id='".$site_id."' OR UsersTokensLookup.utlookup_is_global='1')";
+        $sql = "SELECT Users.* FROM `Users`, `UsersTokensLookup` WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=21 AND (UsersTokensLookup.utlookup_site_id='".$site_id."' OR UsersTokensLookup.utlookup_is_global='1')";
         $result = $this->database->queryToArray($sql);
         $users = array();
         
@@ -131,7 +152,7 @@ class SmartestUsersHelper extends SmartestHelper{
 		return $has_token;
     }
 
-    function getUserTokens($db=false){  
+    public function getUserTokens($db=false){  
     		
     		if($db==true){
 			
@@ -143,11 +164,9 @@ class SmartestUsersHelper extends SmartestHelper{
 			}
 			
 		}else{
-			$tokens = $_SESSION["user"]["tokens"];
+			// $tokens = $_SESSION["user"]["tokens"];
 		}
 		
 		return $tokens;
     }
 }
-
-?>

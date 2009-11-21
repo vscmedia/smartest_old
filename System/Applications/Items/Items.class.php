@@ -351,13 +351,14 @@ class Items extends SmartestSystemApplication{
 	    
 	    if($item->find($get['item_id'])){
 	    
-	        if($item->getIsHeld() && $item->getHeldBy() != $this->getUser()->getId()){
+	        if($item->getIsHeld() && $item->getHeldBy() != $this->getUser()->getId() && !$this->getUser()->hasToken('edit_held_items')){
     	        
     	        // item is being edited by somebody else
+    	        
     	        $u = new SmartestUser;
-    	        $u->hydrate($item->getHeldBy());
-    	        $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
-    		    
+        	    $u->hydrate($item->getHeldBy());
+        	    $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
+		    
     		    if($get['from']=='todoList'){
         		    $this->redirect('/smartest/todo');
         		}else{
@@ -370,13 +371,19 @@ class Items extends SmartestSystemApplication{
                     
                     $item->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
                     
-                    $item->setIsHeld(1);
-                    $item->setHeldBy($this->getUser()->getId());
-                    $item->save();
+                    if($this->getUser()->hasToken('edit_held_items') && $item->getHeldBy() != $this->getUser()->getId()){
+            		    $u = new SmartestUser;
+                	    $u->hydrate($item->getHeldBy());
+                	    $this->addUserMessageToNextRequest('Careful: this item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
+            		}else{
+            		    $item->setIsHeld(1);
+                        $item->setHeldBy($this->getUser()->getId());
+                        $item->save();
                 
-                    if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId())){
-    	                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId(), 0);
-                    }
+                        if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId())){
+        	                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_ITEM', $item->getId(), 0);
+                        }
+            		}
                 
     		        $destination = '/'.SM_CONTROLLER_MODULE.'/editItem?item_id='.$item->getId();
 		
@@ -913,6 +920,7 @@ class Items extends SmartestSystemApplication{
 	        
 	        $this->send(($num_items_on_site > 0) ? number_format($num_items_on_site) : 'none', 'num_items_on_site');
 	        $this->send(number_format($num_items_all_sites), 'num_items_all_sites');
+	        $this->send($this->getUser()->hasToken('edit_model_plural_name'), 'allow_plural_name_edit');
 	        
 	        $this->send($model->getAvailableDescriptionPropertiesAsArrays(), 'description_properties');
 	    }else{
@@ -941,7 +949,9 @@ class Items extends SmartestSystemApplication{
             }
             
             if(isset($post['itemclass_plural_name']) && strlen($post['itemclass_plural_name'])){
-                $model->setPluralName($post['itemclass_plural_name']);
+                if($this->getUser()->hasToken('edit_model_plural_name')){
+                    $model->setPluralName($post['itemclass_plural_name']);
+                }
             }else{
                 $this->addUserMessageToNextRequest("The plural name you entered was invalid.");
                 $error = true;
@@ -1057,8 +1067,6 @@ class Items extends SmartestSystemApplication{
 		
 		$item_id = $get['item_id'];
 		
-		// var_dump();
-		
 		$item = SmartestCmsItem::retrieveByPk($item_id);
 		
 	    if(is_object($item)){
@@ -1073,7 +1081,7 @@ class Items extends SmartestSystemApplication{
 		    $this->send($item->getModel()->getMetaPagesAsArrays(), 'metapages');
 		    $this->setTitle('Edit '.$item->getModel()->getName().' | '.$item->getName());
 		    $this->send($item_array, 'item');
-		    $this->send(true, 'allow_edit_item_name');
+		    $this->send((bool) $this->getUser()->hasToken('edit_item_name'), 'allow_edit_item_slug');
 		    
 		    $sets = $item->getItem()->getCurrentStaticSets();
 		    $this->send($sets, 'sets');
@@ -1105,11 +1113,9 @@ class Items extends SmartestSystemApplication{
 		
     		if(is_object($item)){
 		        
-		        $allow_edit_item_slug = true;
+		        $allow_edit_item_slug = $this->getUser()->hasToken('edit_item_name');
 		        
-		        // echo $post['item_name'].'<br />';
-		        
-    		    // update name
+		        // update name
     		    if (strlen($post['item_name'])){
 			        $item->getItem()->setName(SmartestStringHelper::sanitize($post['item_name']));
 		        }

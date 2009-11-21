@@ -27,7 +27,7 @@ function executeTransfer(){
 
 <h3><a href="{$domain}{$section}">Settings</a> &gt; <a href="{$domain}{$section}/users">Users</a> &gt; Edit User Tokens</h3>
 
-<div class="instruction">Modifying User: <strong>{$user.username}</strong></div>
+<div class="instruction">Modifying User: <strong>{$user.full_name} ({$user.username})</strong></div>
 
 <form action="{$domain}{$section}/transferTokens" method="post" name="transferForm">
   <input type="hidden" id="transferAction" name="transferAction" value="" /> 
@@ -42,7 +42,8 @@ function executeTransfer(){
         {foreach from=$sites item="site"}
         <option value="{$site.id}"{if $site.id==$site_id} selected="selected"{/if}>{$site.name}</option>
         {/foreach}
-      </select><br /><br />
+      </select><br />
+      {if $site_id== 'GLOBAL' && $allow_global}<div class="warning">Note: Granting a permission globally will remove any instances of that permission being granted on individual sites.</div>{/if}
     </td>
   </tr>
   
@@ -50,7 +51,7 @@ function executeTransfer(){
     
     <td valign="top">
       Permissions not granted:<br />
-      <select name="tokens[]" size="2" multiple style="width:300px;height:200px;" onclick="setMode('add')">
+      <select name="tokens[]" size="2" multiple style="width:350px;height:200px;" onclick="setMode('add')">
         {foreach from=$tokens key="key" item="values"}
         <option value="{$values.token_id}" >{$values.token_description}</option>
         {/foreach}
@@ -64,7 +65,7 @@ function executeTransfer(){
     
     <td valign="top">
       Permissions granted:<br />
-      <select name="sel_tokens[]"  id='sel_roles' size="4" multiple style="width:300px;height:200px" onclick="setMode('remove')" >	
+      <select name="sel_tokens[]"  id='sel_roles' size="4" multiple style="width:350px;height:200px" onclick="setMode('remove')" >	
         {foreach from=$utokens key="key" item="value"}
         <option value="{$value.token_id}"  >{$value.token_description}</option>
         {/foreach}

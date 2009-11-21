@@ -1,5 +1,7 @@
+# This is a comment
+id:type:scope:code:description
 0:p:s:root_permission:Carry out any action on any site.
-1:u:s:create_remove_settings:Unused - formerly was create, remove, and edit settings themselves.
+1:u:s:create_remove_settings:[Unused] was formerly to create, remove, and edit settings themselves.
 2:p:s:modify_system_settings:Modify values of system settings.
 3:p:s:add_new_pages:Add pages to the sitemap.
 4:p:s:remove_pages:Remove pages from the sitemap.
@@ -10,7 +12,7 @@
 9:p:s:modify_page_properties:Modify the properties of pages, such as title, URLs, and meta information.
 10:p:s:modify_draft_pages:Modify draft versions of pages in the content management system.
 11:p:s:approve_page_changes:Approve pages marked as ready for approval.
-12:u:s::Unused - formerly was a setting, but settings are now handled separately.
+12:u:s::[Unused] was formerly a setting, but settings are now handled separately.
 13:p:s:modify_user_permissions:Edit the permissions of other users.
 14:p:s:modify_items:Modify CMS Items that do not belong to the user.
 15:p:s:approve_item_changes:Approve changes to items that do not belong to the user.
@@ -35,3 +37,6 @@
 34:p:s:edit_item_name:Edit item short name/slug
 35:p:s:see_server_speed:See the server's speed rating
 36:p:s:test_server_speed:Test/recalibrate the server's speed rating
+37:p:s:edit_model_plural_name:Edit the plural names of models
+38:p:s:edit_held_pages:Edit pages that are currently held by another user
+39:p:s:edit_held_items:Edit items that are currently held by another user

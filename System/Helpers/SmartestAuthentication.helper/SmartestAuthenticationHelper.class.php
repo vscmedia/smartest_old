@@ -21,7 +21,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		}		
 	}
 
-	function newLogin($username, $password, $service='smartest'){
+	public function newLogin($username, $password, $service='smartest'){
 		if($user = $this->checkLoginDetails($username, $password, $service)){
 			return $user;
 		}else{
@@ -57,7 +57,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 	
 	function getUserIsLoggedIn(){
 		
-		if($this->userLoggedIn){
+		if(SmartestSession::get('user:isAuthenticated')){
 			return true;
 		}else{
 			return false;
@@ -80,8 +80,9 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		
 	} */
 	
-	function logout(){
-		$this->userLoggedIn = false;
+	public function logout(){
+		// $this->userLoggedIn = false;
+		SmartestSession::set('user:isAuthenticated', false);
 		SmartestSession::clearAll();
 		$this->user = array();
 	}

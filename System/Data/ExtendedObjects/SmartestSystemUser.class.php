@@ -2,29 +2,35 @@
 
 class SmartestSystemUser extends SmartestUser{
     
+    protected $_tokens;
+    protected $_token_codes;
+    
     public function getPermissionEditableSites(){
 	    
+	    // Retrieves a list of sites where the user is allowed to edit the permissins of other users
+	    
+	    if($this->hasGlobalPermission('modify_user_permissions')){
+            $sql = "SELECT * FROM Sites";
+        }else{
+            // modify_user_permissions token ID is ALWAYS 13
+            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UsersTokensLookup.utlookup_token_id = '13' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
+        }   
+        
+        $this->_site_ids = array();
+        
+	    $result = $this->database->queryToArray($sql);
 	    $sites = array();
 	    
-	    // if the user has global permission to edit user permissions on sites (all sites), then whatever site he was logged into would let him edit permissions, so show a list of all sites.
-	    if($this->hasGlobalPermission('modify_user_permissions')){
-	        $sql = "SELECT * FROM Sites";
-	        // return list of all sites
-	    }else{
-	        // otherwise find all the sites where he allowed to edit user permissions
-	        $sql = "SELECT DISTINCT Sites.* FROM Users, UserTokens, UsersTokensLookup, Sites WHERE Users.user_id =  '".$this->getId()."' AND UserTokens.token_code =  'modify_user_permissions' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND UserTokens.token_id = UsersTokensLookup.utlookup_token_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id";
-	    }
-	    
-	    $result = $this->database->queryToArray($sql);
-	    
 	    foreach($result as $site_array){
+	        
 	        $site = new SmartestSite;
 	        $site->hydrate($site_array);
 	        $sites[] = $site;
+	        
+	        if($site->getId()){
+	            $this->_site_ids[] = $site->getId();
+            }
 	    }
-	    
-	    // echo $sql;
-	    // print_r($result);
 	    
 	    return $sites;
 	    
@@ -36,7 +42,6 @@ class SmartestSystemUser extends SmartestUser{
 	    $array = array();
 	    
 	    foreach($site_objects as $site){
-	        // print_r($site);
 	        $array[] = $site->__toArray();
 	    }
 	    
@@ -46,23 +51,24 @@ class SmartestSystemUser extends SmartestUser{
 	
 	public function getAllowedSites(){
 	    
+	    // Retrieves a list of sites where the user is allowed to edit the permissins of other users
+	    
 	    if($this->hasGlobalPermission('site_access')){
             $sql = "SELECT * FROM Sites";
         }else{
-            $sql = "SELECT DISTINCT Sites.* FROM Users, UserTokens, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UserTokens.token_code = 'site_access' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND UserTokens.token_id = UsersTokensLookup.utlookup_token_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id";
+            // site_access token is ALWAYS ID 21
+            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UsersTokensLookup.utlookup_token_id = '21' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
         }   
         
         $this->_site_ids = array();
         
-	    // echo $sql;
 	    $result = $this->database->queryToArray($sql);
-	    // print_r($result);
 	    $sites = array();
 	    
 	    foreach($result as $site_array){
+	        
 	        $site = new SmartestSite;
 	        $site->hydrate($site_array);
-	        // print_r($site);
 	        $sites[] = $site;
 	        
 	        if($site->getId()){
@@ -84,17 +90,18 @@ class SmartestSystemUser extends SmartestUser{
 	}
 	
 	public function hasToken($token){
-	    return in_array($token, $this->_tokens);
+	    return in_array($token, $this->getTokenCodes()) || in_array('root_permission', $this->getTokenCodes());
 	}
 	
 	public function hasGlobalPermission($permission){
 	    
 	    $token_code = SmartestStringHelper::toVarName($permission);
+	    $h = new SmartestUsersHelper;
 	    
-	    $sql = "SELECT UsersTokensLookup.*, UserTokens.token_id FROM UsersTokensLookup, UserTokens WHERE utlookup_user_id='".$this->getId()."' AND UserTokens.token_code='".$token_code."' AND UserTokens.token_id=UsersTokensLookup.utlookup_token_id AND utlookup_is_global='1'";
+	    $token_id = $h->getTokenId($token_code);
+	    
+	    $sql = "SELECT UsersTokensLookup.* FROM UsersTokensLookup WHERE utlookup_user_id='".$this->getId()."' AND UsersTokensLookup.utlookup_token_id='".$token_id."' AND utlookup_is_global='1'";
 	    $result = $this->database->queryToArray($sql);
-	    
-	    // echo $sql .'<br />';
 	    
 	    if(count($result)){
 	        return true;
@@ -103,32 +110,155 @@ class SmartestSystemUser extends SmartestUser{
 	    }
 	}
 	
+	// STRICT parameter excludes globally granted tokens and only returns tokens or ids granted on the side having he ID provided
+	
+	public function getTokenIdsOnSite($site_id, $strict=false){
+	    
+	    if($site_id == 'GLOBAL'){
+	        
+	        $sql = "SELECT UsersTokensLookup.* FROM UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id='".$this->getId()."'";
+	        
+	        if($strict){
+	            $sql .= " AND UsersTokensLookup.utlookup_is_global='1'";
+	        }
+	        
+	        $result = $this->database->queryToArray($sql);
+	        
+	    }else{
+	    
+	        $site_id = (int) $site_id;
+	        
+	        if($strict){
+	            $sql = "SELECT UsersTokensLookup.* FROM UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id='".$this->getId()."' AND UsersTokensLookup.utlookup_site_id='".$site_id."'";
+            }else{
+                $sql = "SELECT UsersTokensLookup.* FROM UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id='".$this->getId()."' AND (UsersTokensLookup.utlookup_is_global='1' OR UsersTokensLookup.utlookup_site_id='".$site_id."')";
+            }
+	        
+	        $result = $this->database->queryToArray($sql);
+	    
+        }
+		
+		$token_ids = array();
+	
+		foreach($result as $t){
+		    $token_ids[] = $t['utlookup_token_id'];
+		}
+		
+		return $token_ids;
+	    
+	}
+	
+	public function getTokensOnSite($site_id, $strict=false){
+	
+		$all_tokens = SmartestUsersHelper::getTokenData();
+		$token_ids = $this->getTokenIdsOnSite($site_id, true);
+		$tokens = array();
+		
+		foreach($all_tokens as $t){
+		    if(in_array($t['id'], $token_ids) && strlen($t['code'])){
+		        $token = new SmartestUserToken_New($t);
+		        $tokens[] = $token;
+		    }
+		}
+		
+		return $tokens;
+	}
+	
+	public function getAvailableTokens($site_id){
+	    
+	    if($site_id=='GLOBAL'){
+	        $granted_ids = $this->getTokenIdsOnSite('GLOBAL', true);
+	    }else if(is_numeric($site_id)){
+	        $global_granted_ids = $this->getTokenIdsOnSite('GLOBAL', true);
+	        $granted_ids = $this->getTokenIdsOnSite($site_id, true);
+	    }
+	    
+	    $tokens = SmartestUsersHelper::getTokenData();
+	    $available_tokens = array();
+	    
+	    if($site_id=='GLOBAL'){
+	        foreach($tokens as $k=>$t){
+	            if(!in_array($t['id'], $granted_ids)){
+	                $available_tokens[] = new SmartestUserToken_New($tokens[$k]);
+	            }
+	        }
+	    }else{
+	        foreach($tokens as $k=>$t){
+	            if(!in_array($t['id'], $granted_ids) && !in_array($t['id'], $global_granted_ids)){
+	                $available_tokens[] = new SmartestUserToken_New($tokens[$k]);
+	            }
+	        }
+	    
+        }
+	    
+	    return $available_tokens;
+	    
+	}
+	
 	public function getTokens($reload=false){
 	
 		if(count($this->_tokens) && !$reload){
 			return $this->_tokens;
 		}else{
 		    
+		    $all_tokens = SmartestUsersHelper::getTokenData();
+		    
 		    if(SmartestSession::get('current_open_project') instanceof SmartestSite){
+		        // print_r(SmartestSession::get('current_open_project'));
 		        $site_id = SmartestSession::get('current_open_project')->getId();
-		        $sql = "SELECT UserTokens.token_code FROM UsersTokensLookup, UserTokens WHERE UsersTokensLookup.utlookup_user_id='".$this->getId()."' AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND (UsersTokensLookup.utlookup_is_global='1' OR UsersTokensLookup.utlookup_site_id='$site_id')";
-		    }else{
-			    $sql = "SELECT UserTokens.token_code FROM UsersTokensLookup, UserTokens WHERE UsersTokensLookup.utlookup_user_id='".$this->getId()."' AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND UsersTokensLookup.utlookup_is_global='1'";
+		        $sql = "SELECT UsersTokensLookup.* FROM UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id='".$this->getId()."' AND (UsersTokensLookup.utlookup_is_global='1' OR UsersTokensLookup.utlookup_site_id='".$site_id."')";
+		    }else{                                                                                                                                      
+			    $sql = "SELECT UsersTokensLookup.* FROM UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id='".$this->getId()."' AND UsersTokensLookup.utlookup_is_global='1'";
 			}
 			
 			$result = $this->database->queryToArray($sql);
+			
+			$token_ids = array();
 		
-			foreach($result as $key=>$token){
-				$this->_tokens[$key] = $token['token_code'];
+			foreach($result as $t){
+			    $token_ids[] = $t['utlookup_token_id'];
 			}
+			
+			$tokens = array();
+			
+			foreach($all_tokens as $t){
+			    if(in_array($t['id'], $token_ids) && strlen($t['code'])){
+			        $token = new SmartestUserToken_New($t);
+			        $tokens[] = $token;
+			    }
+			}
+			
+			$this->_tokens = $tokens;
+			
+			return $this->_tokens;
+			
 		}
 	}
 	
-	public function reloadTokens(){
-	    $this->getTokens(true);
+	public function getTokenCodes($reload=false){
+	    
+	    if(empty($this->_tokens) || empty($this->_token_codes) || $reload){
+	    
+	        $tokens = $this->getTokens($reload);
+	    
+    	    $codes = array();
+	    
+    	    foreach($tokens as $t){
+    	        $codes[] = $t->getCode();
+    	    }
+	    
+    	    $this->_token_codes = $codes;
+	    
+        }
+	    
+	    return $this->_token_codes;
+	    
 	}
 	
-	// public function
+	public function reloadTokens(){
+	    // This reloads the permission tokens via $this->getTokens(true);
+	    $this->getTokenCodes(true);
+	}
 	
 	public function getUnusedTokens(){
 	    
@@ -138,28 +268,54 @@ class SmartestSystemUser extends SmartestUser{
 	
 	public function addToken($token_code, $site_id){
 	    
-	    $token = new SmartestUserToken;
+	    // $token = new SmartestUserToken;
+	    $h = new SmartestUsersHelper;
 	    
-	    if($token->hydrateBy('code', $token_code)){
+	    if($token_id = $h->getTokenId($token_code)){
 	        
-	        $utl = new SmartestUserTokenLookup;
-		    $utl->setUserId($this->getId());
-		    $utl->setTokenId($token->getId());
-		    $utl->setGrantedTimestamp(time());
-		    
-		    if($site_id == "GLOBAL"){
-		        $utl->setIsGlobal(1);
-		    }else{
-		        $utl->setSiteId($site_id);
-		    }
-		    
-		    $utl->save();
+	       $this->addTokenById($token_id, $site_id);
 		    
 		}else{
 		    SmartestLog::getInstance('system')->log("Tried to hydrate a non-existent user token.", SM_LOG_WARNING);
 		}
 		
 		$this->reloadTokens();
+	}
+	
+	public function addTokenById($token_id, $site_id){
+	    
+	    $utl = new SmartestUserTokenLookup;
+		$utl->setUserId($this->getId());
+	    $utl->setTokenId($token_id);
+	    $utl->setGrantedTimestamp(time());
+	    
+	    if($site_id == "GLOBAL"){
+	        $utl->setIsGlobal(1);
+	        
+	        // Remove any non-global assignments of the same token
+	        $sql = "DELETE FROM UsersTokensLookup WHERE utlookup_token_id='".$token_id."' AND utlookup_is_global != '1' AND utlookup_user_id='".$this->getId()."'";
+	        $this->database->rawQuery($sql);
+	        
+	    }else{
+	        $utl->setSiteId($site_id);
+	    }
+	    
+	    $utl->save();
+	    
+	}
+	
+	public function removeTokenById($token_id, $site_id){
+	    
+	    $sql = "DELETE FROM UsersTokensLookup WHERE utlookup_token_id='".$token_id."' AND utlookup_user_id='".$this->getId()."'";
+	    
+	    if($site_id == "GLOBAL"){
+	        $sql .= " AND utlookup_is_global = '1'";
+	    }else{
+	        $sql .= " AND utlookup_is_global != '1' AND utlookup_site_id='".$site_id."'";
+	    }
+	    
+	    $this->database->rawQuery($sql);
+	    
 	}
 	
 	// Held Pages
