@@ -344,6 +344,15 @@ class Assets extends SmartestSystemApplication{
 	            $form_include = "add.image.tpl";
 	        }
 	        
+	        if($type['storage']['type'] != 'database'){
+	            $path = SM_ROOT_DIR.$type['storage']['location'];
+	            $allow_save = is_writable($path);
+	            $this->send($allow_save, 'allow_save');
+	            $this->send($path, 'path');
+            }else{
+                $this->send(true, 'allow_save');
+            }
+	        
 	        $this->send($starting_mode, 'starting_mode');
 	        $this->send(json_encode($suffixes), 'suffixes');
 	        
@@ -828,6 +837,20 @@ class Assets extends SmartestSystemApplication{
 			    }else{
 			        $formTemplateInclude = "edit.default.tpl";
 			    }
+			    
+			    if($asset_type['storage']['type'] != 'database' && SmartestStringHelper::toRealBool($asset_type['editable'])){
+    	            
+    	            $path = SM_ROOT_DIR.$asset_type['storage']['location'];
+    	            $dir_is_writable = is_writable($path);
+    	            $file_is_writable = is_writable($path.$asset->getUrl());
+    	            $this->send($path, 'path');
+    	            
+    	            $allow_save = $dir_is_writable && $file_is_writable;
+    	            $this->send($allow_save, 'allow_save');
+    	            
+                }else{
+                    $this->send(true, 'allow_save');
+                }
 
     			$this->send($formTemplateInclude, "formTemplateInclude");
     			$this->setTitle('Edit File | '.$asset_type['label']);

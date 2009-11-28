@@ -1,4 +1,10 @@
-<form action="{$domain}{$section}/updateAsset" method="post" name="newHtml" enctype="multipart/form-data">
+{if !$file_is_writable}
+  <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
+{elseif !$dir_is_writable}
+  <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
+{/if}
+
+{if $allow_edit}<form action="{$domain}{$section}/updateAsset" method="post" name="newHtml" enctype="multipart/form-data">{/if}
 
     <input type="hidden" name="asset_id" value="{$asset.id}" />
     <input type="hidden" name="asset_type" value="{$asset.type}" />
@@ -21,11 +27,13 @@
     {/foreach}
     
     <div id="textarea-holder" style="width:100%">
+      <div class="textarea-holder">
         <textarea name="asset_content" id="tpl_textArea" wrap="virtual" style="width:100%;padding:0">{$textfragment_content}</textarea>
-        <div class="buttons-bar">
-            <input type="submit" value="Save Changes" />
-            <input type="button" onclick="cancelForm();" value="Cancel" />
-        </div>
+      </div>
+      <div class="buttons-bar">
+        {if $allow_edit}<input type="submit" value="Save Changes" />{/if}
+        <input type="button" onclick="cancelForm();" value="Cancel" />
+      </div>
     <div>
       
     <script src="{$domain}Resources/System/Javascript/CodeMirror-0.65/js/codemirror.js" type="text/javascript"></script>
@@ -35,8 +43,9 @@
       parserfile: 'parsexml.js',
       stylesheet: "{$domain}Resources/System/Javascript/CodeMirror-0.65/css/xmlcolors.css",
       continuousScanning: 500,
+      height: '400px',
       path: "{$domain}Resources/System/Javascript/CodeMirror-0.65/js/"
     {literal}  }); {/literal}
     </script>
         
-</form>
+{if $allow_edit}</form>{/if}

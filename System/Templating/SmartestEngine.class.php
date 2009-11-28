@@ -16,6 +16,7 @@ class SmartestEngine extends Smarty{
 	protected $_log = array();
 	protected $_included_scripts = array();
 	protected $_included_stylesheets = array();
+	protected $_series = array();
 	
 	public function __construct($process_id){
 	    
@@ -41,7 +42,7 @@ class SmartestEngine extends Smarty{
 		$this->compiler_file = SM_ROOT_DIR."System/Templating/SmartestEngineCompiler.class.php";
         $this->compiler_class = "SmartestEngineCompiler";
     	
-    	$this->left_delimiter = '{';
+        $this->left_delimiter = '{';
 		$this->right_delimiter = '}';
 		
 	}
@@ -203,6 +204,16 @@ class SmartestEngine extends Smarty{
 	        }
 	    }else{
 	        throw new SmartestException("Tried to add non-existent plugin directory: ".$directory, SM_ERROR_USER);
+	    }
+	}
+	
+	public function initNumberSeriesByName($series_name){
+	    if(isset($this->_series[$series_name])){
+	        return $this->_series[$series_name];
+	    }else{
+	        $this->_series[$series_name] = new SmartestNumberSeries;
+	        $this->_series[$series_name]->setName($series_name);
+	        return $this->_series[$series_name];
 	    }
 	}
 

@@ -17,7 +17,7 @@ Found templates. View as:
 {foreach from=$templateList item="template"}
 <li>
   <a href="javascript:nothing()"  class="option" id="item_{$template}" onclick="setSelectedItem('{$template}');">
-    <img border="0" src="{$domain}Resources/Icons/page.png" />{$template}</a></li>
+    <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$template}</a></li>
 {/foreach}
 </ul>
 
@@ -37,7 +37,7 @@ Found templates. View as:
 
 <ul class="actions-list" id="non-specific-actions">
     <li><b>Template Options</b></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="workWithItem('addTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add Another ListItem Template</a></li>
+	<li class="disabled-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addTemplate?type=SM_LIST_ITEM_TEMPLATE';" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add Another ListItem Template</a></li>
 </ul>
 
 </div>

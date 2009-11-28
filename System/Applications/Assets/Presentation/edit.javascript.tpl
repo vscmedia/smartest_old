@@ -1,4 +1,10 @@
-<form action="{$domain}{$section}/updateAsset" method="post" name="newJscr" enctype="multipart/form-data">
+{if !$file_is_writable}
+  <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
+{elseif !$dir_is_writable}
+  <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
+{/if}
+
+{if $allow_edit}<form action="{$domain}{$section}/updateAsset" method="post" name="newJscr" enctype="multipart/form-data">{/if}
     
     <input type="hidden" name="asset_id" value="{$asset.id}" />
     <input type="hidden" name="asset_type" value="{$asset.type}" />
@@ -24,14 +30,14 @@
     
     <div class="edit-form-row">
       <div class="form-section-label">File contents</div>
-      <div id="editTMPL">
+      <div id="editTMPL" class="textarea-holder">
         <textarea name="asset_content" id="tpl_textArea" wrap="virtual" >{$textfragment_content}</textarea>
       </div>
     </div>
     
     <div class="buttons-bar">
-      <input type="submit" value="Save Changes" />
-      <input type="button" onclick="cancelForm();" value="Done" />
+      {if $allow_edit}<input type="submit" value="Save Changes" />{/if}
+      <input type="button" onclick="cancelForm();" value="Cancel" />
     </div>
     
     <script src="{$domain}Resources/System/Javascript/CodeMirror-0.65/js/codemirror.js" type="text/javascript"></script>
@@ -41,8 +47,9 @@
       parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
       stylesheet: "{$domain}Resources/System/Javascript/CodeMirror-0.65/css/jscolors.css",
       continuousScanning: 500,
+      height: '450px',
       path: "{$domain}Resources/System/Javascript/CodeMirror-0.65/js/"
     {literal}  }); {/literal}
     </script>
 
-</form>
+{if $allow_edit}</form>{/if}

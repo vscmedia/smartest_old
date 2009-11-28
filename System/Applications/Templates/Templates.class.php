@@ -70,30 +70,35 @@ class Templates extends SmartestSystemApplication{
 		switch($type){
 		    case "SM_PAGE_MASTER_TEMPLATE":
 		    $title = "Add a Page Master Template";
+		    $path = SM_ROOT_DIR."Presentation/Masters/";
 		    break;
 		    
 		    case "SM_LIST_ITEM_TEMPLATE":
 		    $title = "Add a List Item Template";
+		    $path = SM_ROOT_DIR."Presentation/ListItems/";
 		    break;
 		    
 		    case "SM_CONTAINER_TEMPLATE":
 		    $title = "Add a Container Template";
+		    $path = SM_ROOT_DIR."Presentation/Layouts/";
 		    break;
 		}
 		
 		$this->setTitle($title);
 		
 		// Allow the user to make the addition.
+		
+		$allow_save = is_writable($path);
 
 		$formTemplateInclude = "addTemplate.tpl";
 				
+		$this->send($allow_save, 'allow_save');
+		$this->send($path, 'path');
 		$this->send($title, 'interface_title');
 		$this->send($type, 'template_type');
 	}
 	
  	function saveNewTemplate($get, $post){
-		
-		// $this->addUserMessage($post['add_type']);
 		
 		$template_type = $post['template_type'];
 		

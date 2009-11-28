@@ -19,7 +19,7 @@ Found templates. View as:
 {foreach from=$templateList item="template"}
 <li>
   <a href="javascript:nothing()" class="option" id="item_{$template}" onclick="setSelectedItem('{$template}');">
-    <img border="0" src="{$domain}Resources/Icons/page.png" />{$template}</a>
+    <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$template}</a>
 </li>
 {/foreach}
 </ul>

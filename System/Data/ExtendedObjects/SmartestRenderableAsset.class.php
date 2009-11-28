@@ -163,6 +163,9 @@ class SmartestRenderableAsset extends SmartestAsset{
         
             case "render_data":
             return $this->_render_data;
+            
+            case "link_contents":
+            return 'image:'.$this->getUrl();
         
         }
         

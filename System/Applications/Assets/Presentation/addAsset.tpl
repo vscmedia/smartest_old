@@ -66,6 +66,8 @@ function validateUploadSuffix(){
   
   <h3>Add a new file</h3>
   
+  {if $allow_save}
+  
   <form action="{$domain}{$section}/saveNewAsset" method="post" name="newAsset" enctype="multipart/form-data">
     
     <input type="hidden" name="asset_type" value="{$type_code}" />
@@ -124,6 +126,14 @@ function validateUploadSuffix(){
     </div>
     
   </form>
+  
+  {else}
+  
+  <div class="warning">
+    The directory <strong><code>{$path}</code></strong> is not writable by the web server, so <strong>{$new_asset_type_info.label}</strong> files cannot currently be created or uploaded via Smartest.
+  </div>
+  
+  {/if}
   
 </div>
 

@@ -1,7 +1,7 @@
 system:
   info:
-    version: "0.4-dev (build 30)"
-    revision: 286
+    version: "0.4-dev (build 31)"
+    revision: 287
     minimum_php_version: 5.2
     default_timezone: Europe/London
   reserved_classes:

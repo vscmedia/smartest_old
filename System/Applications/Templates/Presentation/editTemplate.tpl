@@ -17,7 +17,7 @@
     <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
   {/if}
   
-  <div style="width:100%" id="editTMPL">
+  <div style="width:100%" id="editTMPL" class="textarea-holder">
     <textarea name="template_content" id="tpl_textArea" style="display:block">{$template_content}</textarea>
   </div>
   
@@ -42,6 +42,7 @@
   parserfile: 'parsexml.js',
   stylesheet: "{$domain}Resources/System/Javascript/CodeMirror-0.65/css/xmlcolors.css",
   continuousScanning: 500,
+  height: '400px',
   path: "{$domain}Resources/System/Javascript/CodeMirror-0.65/js/"
 {literal}  }); {/literal}
 </script>
