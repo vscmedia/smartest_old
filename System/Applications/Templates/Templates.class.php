@@ -200,13 +200,11 @@ class Templates extends SmartestSystemApplication{
 		
 		$show_form = false;
 		
-		
-		
 		if($template_type == 'SM_PAGE_MASTER_TEMPLATE'){
 			
 			$path = SM_ROOT_DIR."Presentation/Masters/";
 			$template_name = $get['template_name'];
-			$title = 'Edit Master Template';
+			$title = 'Edit master template';
 			$show_form = true;
 			$this->setFormReturnUri();
 		
@@ -214,7 +212,7 @@ class Templates extends SmartestSystemApplication{
 			
 			$path = SM_ROOT_DIR."Presentation/ListItems/";
 			$template_name = $get['template_name'];
-			$title = 'Edit ListItem Template';
+			$title = 'Edit list item template';
 			$show_form = true;
 			$this->setFormReturnUri();
 			
@@ -222,7 +220,7 @@ class Templates extends SmartestSystemApplication{
     		
     		$path = SM_ROOT_DIR."Presentation/Layouts/";
     		$template = new SmartestAsset;
-    		$title = 'Edit Container Template';
+    		$title = 'Edit container template';
     		$show_form = true;
     		$this->setFormReturnUri();
     		
@@ -245,6 +243,13 @@ class Templates extends SmartestSystemApplication{
 	        $show_form = false;
 	        $this->addUserMessage('The template file '.$template_name.' does not exist, or is out of the editing scope.', SmartestUserMessage::ERROR);
 	    }
+		
+		$this->send($path, 'path');
+		$this->send(is_writable($path), 'dir_is_writable');
+		$this->send(is_writable($file), 'file_is_writable');
+		
+		$is_editable = (is_writable($path) && is_writable($file) && $show_form);
+		$this->send($is_editable, 'is_editable');
 		
 		$formTemplateInclude = "editTemplate.tpl";
 		$this->send($contents, "template_content");

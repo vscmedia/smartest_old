@@ -71,6 +71,10 @@ div#preview iframe.built{
     border:1px solid #999;
 }
 
+#editTMPL{
+    border:1px solid #999;
+}
+
 textarea#tpl_textArea{
 	border:1px solid #999;
 }
@@ -259,8 +263,8 @@ div.special-box div.form-section-label{
 
 div.warning{
     font-size:12px;
-    border:1px solid #FF9011;
-    background-color:#F3D17A;
+    border:3px solid #EB9A38;
+    background-color:#F5C564;
     padding:5px;
     margin:10px 0 10px 0;
 }

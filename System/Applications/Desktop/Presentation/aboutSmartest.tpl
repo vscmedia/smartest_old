@@ -11,7 +11,7 @@
     <p><strong>Installed</strong>: {if $system_installed_timestamp > 0}{$system_installed_timestamp|date_format:"%A %B %e, %Y, %l:%M%p"}{else}<em>Unknown</em>{/if}</p>
     <p><strong>PHP Version</strong>: {$php_version}</p>
     <p><strong>Available Memory</strong>: {$memory_limit}</p>
-    <p><strong>Server Speed</strong>: {$speed_score} <input type="button" value="Test..." onclick="window.location='{$domain}desktop/testServerSpeed'" /></p>
+    {if $allow_see_server_speed}<p><strong>Server Speed</strong>: {$speed_score} {if $allow_test_server_speed}<input type="button" value="Test..." onclick="window.location='{$domain}desktop/testServerSpeed'" />{/if}</p>{/if}
     <p><strong>Web Server</strong>: {$platform}</p>
     <p><strong>Operating System</strong>: {$linux_version}</p>
     <p><strong>Credit</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Chris Brauer, Eddie Tejeda, Sereen Joseph, Nancy Arnold, Paul Gilroy, Vron Ware, a few brave MA Journalism students at City University London, and early adopters everywhere.</p>

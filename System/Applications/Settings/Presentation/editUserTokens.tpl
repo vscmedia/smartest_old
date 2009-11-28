@@ -27,7 +27,7 @@ function executeTransfer(){
 
 <h3><a href="{$domain}{$section}">Settings</a> &gt; <a href="{$domain}{$section}/users">Users</a> &gt; Edit User Tokens</h3>
 
-<div class="instruction">Modifying User: <strong>{$user.full_name} ({$user.username})</strong></div>
+
 
 <form action="{$domain}{$section}/transferTokens" method="post" name="transferForm">
   <input type="hidden" id="transferAction" name="transferAction" value="" /> 
@@ -36,13 +36,17 @@ function executeTransfer(){
 <table border="0" cellspacing="0" cellpadding="0" style="width:550px">
   
   <tr>
-    <td colspan="3">Granting permissions on which site?<br />
-      <select name="site_id" onchange="window.location='{$domain}{$section}/editUserTokens?user_id={$user.id}&amp;site_id='+this.value;">
-        {if $allow_global}<option value="GLOBAL">All Sites</option>{/if}
-        {foreach from=$sites item="site"}
-        <option value="{$site.id}"{if $site.id==$site_id} selected="selected"{/if}>{$site.name}</option>
-        {/foreach}
-      </select><br />
+    <td colspan="3">
+      <div class="special-box">
+        Modifying permissions of user <strong>{$user.full_name} ({$user.username})</strong>
+        <br /> for website:&nbsp;
+        <select name="site_id" onchange="window.location='{$domain}{$section}/editUserTokens?user_id={$user.id}&amp;site_id='+this.value;">
+          {if $allow_global}<option value="GLOBAL">All sites (global)</option>{/if}
+          {foreach from=$sites item="site"}
+          <option value="{$site.id}"{if $site.id==$site_id} selected="selected"{/if}>{$site.name}</option>
+          {/foreach}
+        </select>
+      </div>
       {if $site_id== 'GLOBAL' && $allow_global}<div class="warning">Note: Granting a permission globally will remove any instances of that permission being granted on individual sites.</div>{/if}
     </td>
   </tr>

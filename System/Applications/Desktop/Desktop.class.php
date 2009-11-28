@@ -350,6 +350,9 @@ class Desktop extends SmartestSystemApplication{
         $linux = trim(str_replace('\l', '', $linux));
         $this->send($linux, 'linux_version');
         
+        $this->send($this->getUser()->hasToken('test_server_speed'), 'allow_test_server_speed');
+        $this->send($this->getUser()->hasToken('see_server_speed'), 'allow_see_server_speed');
+        
         $this->send(SmartestSystemSettingHelper::load('_server_speed_index'), 'speed_score');
         
         if(SmartestSystemSettingHelper::hasData('_system_installed_timestamp')){
@@ -373,28 +376,36 @@ class Desktop extends SmartestSystemApplication{
     
     public function testServerSpeed(){
         
-        $sql = "SELECT page_id FROM Pages WHERE page_deleted != 'TRUE' ORDER BY page_id DESC LIMIT 1";
-        $db = SmartestPersistentObject::get('db:main');
-        $r = $db->queryToArray($sql);
-        $id = $r[0]['page_id'];
+        if($this->getUser()->hasToken('test_server_speed')){
         
-        $test_start_time = microtime(true);
+            $sql = "SELECT page_id FROM Pages WHERE page_deleted != 'TRUE' ORDER BY page_id DESC LIMIT 1";
+            $db = SmartestPersistentObject::get('db:main');
+            $r = $db->queryToArray($sql);
+            $id = $r[0]['page_id'];
         
-        for($i=0;$i<2000;$i++){
+            $test_start_time = microtime(true);
+        
+            for($i=0;$i<2000;$i++){
             
-            // look it up and hydrate it by ID
-            $p = new SmartestPage;
-            $p->find($id);
+                // look it up and hydrate it by ID
+                $p = new SmartestPage;
+                $p->find($id);
             
-            // access it via ArrayAccess
-            $d = $p['title'];
+                // access it via ArrayAccess
+                $d = $p['title'];
+            
+            }
+            
+            $test_finish_time = microtime(true);
+            $test_time_taken = number_format(($test_finish_time - $test_start_time)*1000, 2, ".", "");
+        
+            SmartestSystemSettingHelper::save('_server_speed_index', $test_time_taken);
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("You do not have permission to test the server's speed.", SmartestUserMessage::ACCESS_DENIED);
             
         }
-        
-        $test_finish_time = microtime(true);
-        $test_time_taken = number_format(($test_finish_time - $test_start_time)*1000, 2, ".", "");
-        
-        SmartestSystemSettingHelper::save('_server_speed_index', $test_time_taken);
         
         $this->redirect('/desktop/aboutSmartest');
         

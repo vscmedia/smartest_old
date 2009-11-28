@@ -1,20 +1,22 @@
-# This is a comment
+# Smartest User Tokens / Last updated in reveision 286 by Marcus
 id:type:scope:code:description
-0:p:s:root_permission:Carry out any action on any site.
-1:u:s:create_remove_settings:[Unused] was formerly to create, remove, and edit settings themselves.
-2:p:s:modify_system_settings:Modify values of system settings.
+0:p:s:root_permission:ROOT! Carry out any action on any site.
+# Number 1 was formerly "create_remove_settings" for adding and removing system settings themselves
+1:u:s:unused_1:[Unused] (1)
+2:p:s:modify_system_settings:Edit values of system settings.
 3:p:s:add_new_pages:Add pages to the sitemap.
 4:p:s:remove_pages:Remove pages from the sitemap.
 5:p:s:create_remove_models:Create, remove, and edit item classes.
 6:p:s:create_remove_properties:Create, remove and edit item class properties.
 7:p:s:add_items:Add items to existing item classes.
 8:p:s:delete_items:Delete items from existing item classes.
-9:p:s:modify_page_properties:Modify the properties of pages, such as title, URLs, and meta information.
-10:p:s:modify_draft_pages:Modify draft versions of pages in the content management system.
+9:p:s:modify_page_properties:Edit the properties of pages, such as title, URLs, and meta information.
+10:p:s:modify_draft_pages:Update placeholders, containers, itemspaces &amp; lists
 11:p:s:approve_page_changes:Approve pages marked as ready for approval.
-12:u:s::[Unused] was formerly a setting, but settings are now handled separately.
+# Number 12 was formerly a setting for seeing the advanced page edit screen
+12:p:s:edit_model:Edit model properties
 13:p:s:modify_user_permissions:Edit the permissions of other users.
-14:p:s:modify_items:Modify CMS Items that do not belong to the user.
+14:p:s:modify_items:Edit CMS Items that do not belong to the user.
 15:p:s:approve_item_changes:Approve changes to items that do not belong to the user.
 16:p:s:publish_approved_pages:Publish changes to pages that have been modified, and those modifications accepted.
 17:p:s:publish_approved_items:Publish changes to items that have been modified, and those modifications accepted.
@@ -26,7 +28,7 @@ id:type:scope:code:description
 23:p:s:grant_site_access:Grant access to a site to another user.
 24:p:g:grant_global_permissions:Permission to grant permissions that will persist across all sites.
 25:p:s:create_sites:Allows the user to create new sites.
-26:p:s:modify_assets:Modify existing files.
+26:p:s:modify_assets:Edit existing media files
 27:p:s:delete_assets:Delete files that the user doesn't own.
 28:p:s:create_assets:Add new files to the system.
 29:p:s:clear_pages_cache:Clear the pages cache.

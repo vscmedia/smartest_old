@@ -22,9 +22,11 @@
 
 <div class="special-box">
   <form id="viewSelect" action="{$domain}{$section}/pageAssets" method="get" style="margin:0px">
+    
     <input type="hidden" name="page_id" value="{$page.webid}" />
     <input type="hidden" name="site_id" value="{$site_id}" />
     <input type="hidden" name="version" value="{$version}" />
+    {if $page.type == 'ITEMCLASS' && $item.id}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
     
     Viewing mode:
     <select name="version" onchange="document.getElementById('viewSelect').submit();">
