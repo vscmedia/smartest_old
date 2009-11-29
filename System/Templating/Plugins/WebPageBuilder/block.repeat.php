@@ -45,7 +45,6 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	    $smartest_engine->assign("repeated_item", $item);
 	    $smartest_engine->assign("repeated_item_object", $item); // legacy support
 	    $smartest_engine->assign("key", $index);
-	    // var_dump($item->getId());
 	    
 	    // if($smartest_engine->getDraftMode()){
 	        $dah->setItemAppearsOnPage($item->getId(), $smartest_engine->getPage()->getId());

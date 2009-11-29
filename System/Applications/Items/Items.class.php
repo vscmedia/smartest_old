@@ -357,7 +357,7 @@ class Items extends SmartestSystemApplication{
     	        
     	        $u = new SmartestUser;
         	    $u->hydrate($item->getHeldBy());
-        	    $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
+        	    $this->addUserMessageToNextRequest('The item is already being edited by '.$u->getFullName().'.', SmartestUserMessage::INFO);
 		    
     		    if($get['from']=='todoList'){
         		    $this->redirect('/smartest/todo');
@@ -371,10 +371,10 @@ class Items extends SmartestSystemApplication{
                     
                     $item->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
                     
-                    if($this->getUser()->hasToken('edit_held_items') && $item->getHeldBy() != $this->getUser()->getId()){
+                    if($item->getIsHeld() && $this->getUser()->hasToken('edit_held_items') && $item->getHeldBy() != $this->getUser()->getId()){
             		    $u = new SmartestUser;
                 	    $u->hydrate($item->getHeldBy());
-                	    $this->addUserMessageToNextRequest('Careful: this item is already being edited by '.$u->getUsername().'.', SmartestUserMessage::INFO);
+                	    $this->addUserMessageToNextRequest('Careful: this item is already being edited by '.$u->getFullName().'.', SmartestUserMessage::INFO);
             		}else{
             		    $item->setIsHeld(1);
                         $item->setHeldBy($this->getUser()->getId());
@@ -1071,7 +1071,7 @@ class Items extends SmartestSystemApplication{
 		
 	    if(is_object($item)){
 	        
-	        if($item->getItem()->getIsHeld() && $item->getItem()->getHeldBy() != $this->getUser()->getId()){
+	        if($item->getItem()->getIsHeld() && $item->getItem()->getHeldBy() != $this->getUser()->getId() && !$this->getUser()->hasToken('edit_held_items')){
 	            $this->addUserMessageToNextRequest('The item is already being edited.', SmartestUserMessage::ACCESS_DENIED);
 	            SmartestLog::getInstance('site')->log('Suspicious activity: '.$this->getUser()->__toString().' tried to edit '.strtolower($item->getModel()->getName()).' \''.$item->getName().'\' via direct URL entry.');
     		    $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItem()->getItemclassId());

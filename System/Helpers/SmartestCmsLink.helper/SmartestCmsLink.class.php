@@ -303,6 +303,8 @@ class SmartestCmsLink extends SmartestHelper{
             
             case SM_LINK_TYPE_DOWNLOAD:
             $d = new SmartestAsset;
+            // echo $this->_destination_properties->getParameter('filename');
+            // var_dump($this->_destination_properties->getParameters());
             $d->hydrateBy('url', $this->_destination_properties->getParameter('filename'));
             $this->_destination = $d;
             break;

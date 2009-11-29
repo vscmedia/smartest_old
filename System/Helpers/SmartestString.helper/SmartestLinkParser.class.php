@@ -147,6 +147,10 @@ class SmartestLinkParser{
             $l->setParameter('destination', $m[1].$m[3]);
             $l->setParameter('namespace', $m[2]);
             $l->setParameter('format', SM_LINK_FORMAT_USER);
+            
+            if(in_array($m[2], array('image', 'asset', 'download'))){
+                $l->setParameter('filename', $m[3]);
+            }
         
             if(isset($m[5])){
                 $l->setParameter('text', $m[5]);
