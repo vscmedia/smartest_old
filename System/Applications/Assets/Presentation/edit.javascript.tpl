@@ -1,10 +1,4 @@
-{if !$file_is_writable}
-  <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
-{elseif !$dir_is_writable}
-  <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
-{/if}
-
-{if $allow_edit}<form action="{$domain}{$section}/updateAsset" method="post" name="newJscr" enctype="multipart/form-data">{/if}
+{if $allow_save}<form action="{$domain}{$section}/updateAsset" method="post" name="newJscr" enctype="multipart/form-data">{/if}
     
     <input type="hidden" name="asset_id" value="{$asset.id}" />
     <input type="hidden" name="asset_type" value="{$asset.type}" />
@@ -36,7 +30,7 @@
     </div>
     
     <div class="buttons-bar">
-      {if $allow_edit}<input type="submit" value="Save Changes" />{/if}
+      {if $allow_save}<input type="submit" value="Save Changes" />{/if}
       <input type="button" onclick="cancelForm();" value="Cancel" />
     </div>
     
@@ -52,4 +46,4 @@
     {literal}  }); {/literal}
     </script>
 
-{if $allow_edit}</form>{/if}
+{if $allow_save}</form>{/if}

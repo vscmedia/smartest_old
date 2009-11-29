@@ -1,0 +1,382 @@
+type: 
+  SM_ASSETTYPE_RICH_TEXT:
+    id: SM_ASSETTYPE_RICH_TEXT
+    category: user_text
+    label: Formatted Text
+    description: Formatted text without images.
+    class: SmartestTextAsset
+    source-editable: true
+    editable: true
+    parsable: true
+    icon: style.png
+    render:
+      template: System/Presentation/WebPageBuilder/display.rich_text.tpl
+    storage:
+      type: database
+    suffix:
+      - {mime: text/html, _content: html}
+      - {mime: text/html, _content: htm}
+    param:
+      - {name: parse_urls, label: Parse URLs, type: SM_DATATYPE_BOOLEAN, default: true, required: false}
+    
+  SM_ASSETTYPE_PLAIN_TEXT:
+    id: SM_ASSETTYPE_PLAIN_TEXT
+    category: user_text
+    label: Plain Text
+    description: "Plain, static unformatted text."
+    class: SmartestTextAsset
+    source_editable: false
+    editable: true
+    icon: page_white_text.png
+    render:
+      template: System/Presentation/WebPageBuilder/display.plain_text.tpl
+    suffix:
+      - {mime: text/html, _content: html}
+    param:
+      - {name: parse_urls, label: Parse URLs, type: SM_DATATYPE_BOOLEAN, default: true, required: false}
+      - {name: convert_double_line_breaks, label: Convert double line breaks to new paragraphs, type: SM_DATATYPE_BOOLEAN, default: true, required: false}
+      
+  SM_ASSETTYPE_HTML_FRAGMENT:
+    id: SM_ASSETTYPE_HTML_FRAGMENT
+    category: user_text
+    label: HTML Fragment
+    description: "A piece of HTML for whatever you like."
+    class: SmartestAsset
+    source_editable: false
+    parsable: true
+    editable: true
+    attachable: true
+    icon: layout.png
+    render:
+      template: System/Presentation/WebPageBuilder/display.rich_text.tpl
+    storage:
+      type: database
+    suffix:
+      - {mime: text/html, _content: html}
+      - {mime: text/html, _content: htm}
+      
+  SM_ASSETTYPE_JPEG_IMAGE:
+    id: SM_ASSETTYPE_JPEG_IMAGE
+    category: image
+    label: JPEG image
+    description: An image in JPEG format.
+    class: SmartestImageAsset
+    icon: picture.png
+    attachable: true
+    captionable: true
+    storage:
+      type: file
+      location: Public/Resources/Images/
+    render:
+      template: System/Presentation/WebPageBuilder/display.image.tpl
+    suffix:
+      - {mime: image/jpeg, _content: jpg}
+      - {mime: image/jpeg, _content: jpeg}
+    param:
+      - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
+      - {name: link_href, label: Link destination, type: SM_DATATYPE_URL, required: false}
+      
+  SM_ASSETTYPE_PNG_IMAGE:
+    id: SM_ASSETTYPE_PNG_IMAGE
+    category: image
+    label: PNG image
+    description: An image in PNG format.
+    class: SmartestImageAsset
+    icon: picture.png
+    attachable: true
+    captionable: true
+    storage:
+      type: file
+      location: Public/Resources/Images/
+    render:
+      template: System/Presentation/WebPageBuilder/display.image.tpl
+    suffix:
+      - {mime: image/png, _content: png}
+    param:
+      - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
+      - {name: link_href, label: Link destination, type: SM_DATATYPE_URL, required: false}
+      
+  SM_ASSETTYPE_GIF_IMAGE:
+    id: SM_ASSETTYPE_GIF_IMAGE
+    category: image
+    label: GIF image
+    description: An image in GIF format.
+    class: SmartestImageAsset
+    icon: picture.png
+    attachable: true
+    captionable: true
+    storage:
+      type: file
+      location: Public/Resources/Images/
+    render:
+      template: System/Presentation/WebPageBuilder/display.image.tpl
+    suffix:
+      - {mime: image/gif, _content: gif}
+    param:
+      - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
+      - {name: link_href, label: Link destination, type: SM_DATATYPE_URL, required: false}
+  
+  SM_ASSETTYPE_JAVASCRIPT:
+    id: SM_ASSETTYPE_JAVASCRIPT
+    category: browser_instructions
+    label: Javascript
+    description: A javascript file
+    editable: true
+    class: SmartestAsset
+    icon: script.png
+    storage:
+      type: file
+      location: Public/Resources/Javascript/
+    render:
+      template: System/Presentation/WebPageBuilder/display.javascript.tpl
+      
+  SM_ASSETTYPE_STYLESHEET:
+    id: SM_ASSETTYPE_STYLESHEET
+    category: browser_instructions
+    label: Stylesheet (CSS)
+    description: A CSS file
+    editable: true
+    class: SmartestAsset
+    storage:
+      type: file
+      location: Public/Resources/Stylesheets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.stylesheet.tpl
+      
+  SM_ASSETTYPE_QUICKTIME_MOVIE:
+    id: SM_ASSETTYPE_QUICKTIME_MOVIE
+    category: embedded
+    label: Quicktime Movie
+    description: A movie saved in any of Apple's proprietary QuickTime formats
+    class: SmartestAsset
+    storage:
+      type: file
+      location: Public/Resources/Assets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.quicktime.tpl
+    suffix:
+      - {mime: video/quicktime, _content: mov}
+      - {mime: video/quicktime, _content: qt}
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: auto_start, label: "Auto start", type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: show_controller, label: "Show controller", type: SM_DATATYPE_BOOLEAN, required: false}
+      
+  SM_ASSETTYPE_MPEG_MOVIE:
+    id: SM_ASSETTYPE_MPEG_MOVIE
+    category: embedded
+    label: MPEG Movie
+    description: A movie saved in any MPEG format
+    class: SmartestAsset
+    storage:
+      type: file
+      location: Public/Resources/Assets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.mpeg.tpl
+    suffix:
+      - {mime: video/mpeg, _content: mpg}
+      - {mime: video/mpeg, _content: mpeg}
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: auto_start, label: "Auto start", type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: show_controller, label: "Show controller", type: SM_DATATYPE_BOOLEAN, required: false}
+      
+  SM_ASSETTYPE_FLASH_VIDEO:
+    id: SM_ASSETTYPE_FLASH_VIDEO
+    category: embedded
+    label: Flash Video
+    description: A file in Flash Video format
+    class: SmartestAsset
+    icon: page_white_flash.png
+    storage:
+      type: file
+      location: Public/Resources/Assets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.flash_video.tpl
+    suffix:
+      - {mime: video/x-flv, _content: flv}
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: false}
+      
+  SM_ASSETTYPE_MP3:
+    id: SM_ASSETTYPE_MP3
+    category: embedded
+    label: MP3 Audio
+    description: A sound file in MPEG Layer-3 formt
+    class: SmartestAsset
+    icon: music.png
+    storage:
+      type: file
+      location: Public/Resources/Assets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.mp3_audio.tpl
+    suffix:
+      - {mime: audio/mpeg, _content: mp3}
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      
+  SM_ASSETTYPE_SHOCKWAVE_FLASH:
+    id: SM_ASSETTYPE_SHOCKWAVE_FLASH
+    category: embedded
+    label: Shockwave Flash
+    description: A published Adobe Flash file
+    icon: page_white_flash.png
+    class: SmartestAsset
+    captionable: true
+    storage: 
+      type: file
+      location: Public/Resources/Assets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.flash.tpl
+    suffix:
+      - {mime: application/x-shockwave-flash, _content: swf}
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: auto_start, label: "Auto start", type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: show_controller, label: "Show controller", type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: quality, label: "Quality", type: SM_DATATYPE_DROPOWN_MENU, required: false, values: {low: "Low", medium: "Medium", high: "High"}}
+      
+  SM_ASSETTYPE_WMV:
+    id: SM_ASSETTYPE_WMV
+    category: embedded
+    label: Windows Media Video (WMV)
+    description: A movie saved in Microsoft's proprietary WMV format
+    icon: page_white_flash.png
+    class: SmartestAsset
+    captionable: true
+    storage: 
+      type: file
+      location: Public/Resources/Assets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.wmv.tpl
+    suffix:
+      - {mime: application/x-ms-wmv, _content: wmv}
+    param:
+      - {name: width, type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: auto_start, type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: auto_rewind, type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: show_display, type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: show_controller, type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: show_status_bar, type: SM_DATATYPE_BOOLEAN, required: false}
+      
+  SM_ASSETTYPE_PDF:
+    id: SM_ASSETTYPE_PDF
+    category: other
+    label: Adobe PDF
+    description: A document in PDF format
+    class: SmartestAsset
+    icon: page_white_acrobat.png
+    storage: 
+      type: file
+      location: Documents/Downloads/
+    suffix:
+      - {mime: application/pdf, _content: pdf}
+    render:
+      template: System/Presentation/WebPageBuilder/display.download.tpl
+  
+  SM_ASSETTYPE_ARCHIVE:
+    id: SM_ASSETTYPE_ARCHIVE
+    category: other
+    label: Archive
+    description: An archived folder or document
+    class: SmartestAsset
+    storage: 
+      type: file
+      location: Documents/Downloads/
+    suffix:
+      - {mime: application/x-tar-gz, _content: tgz}
+      - {mime: application/x-gzip, _content: gz}
+      - {mime: application/x-tar, _content: tar}
+      - {mime: application/x-zip-compressed, _content: zip}
+    render:
+      template: System/Presentation/WebPageBuilder/display.download.tpl
+  
+  SM_ASSETTYPE_MS_WORD:
+    id: SM_ASSETTYPE_MS_WORD
+    category: other
+    label: Microsoft Word
+    description: A document in Microsoft Word format
+    class: SmartestAsset
+    icon: page_word.png
+    storage: 
+      type: file
+      location: Documents/Downloads/
+    suffix:
+      - {mime: application/vnd.ms-word, _content: doc}
+    render:
+      template: System/Presentation/WebPageBuilder/display.download.tpl
+      
+  SM_ASSETTYPE_MS_EXCEL:
+    id: SM_ASSETTYPE_MS_EXCEL
+    category: other
+    label: Microsoft Excel Spreadsheet
+    description: A document in XLS Spreadsheet format
+    class: SmartestAsset
+    icon: page_excel.png
+    storage: 
+      type: file
+      location: Documents/Downloads/
+    suffix:
+      - {mime: application/vnd.ms-excel, _content: xls}
+    render:
+      template: System/Presentation/WebPageBuilder/display.download.tpl
+      
+  SM_ASSETTYPE_MS_POWERPOINT:
+    id: SM_ASSETTYPE_MS_POWERPOINT
+    category: other
+    label: Microsoft Powerpoint
+    description: A document in Microsoft Powerpoint format
+    class: SmartestAsset
+    icon: page_white_powerpoint.png
+    storage: 
+      type: file
+      location: Documents/Downloads/
+    suffix:
+      - {mime: application/vnd.ms-powerpoint, _content: ppt}
+    render:
+      template: System/Presentation/WebPageBuilder/display.download.tpl
+      
+  SM_ASSETTYPE_CONTAINER_TEMPLATE:
+    id: SM_ASSETTYPE_CONTAINER_TEMPLATE
+    category: templates
+    label: Container/layout template
+    description: Dynamic HTML template that can be rendered by the Smartest presentation layer
+    editable: true
+    icon: layout.png
+    class: SmartestContainerTemplateAsset
+    storage: 
+      type: file
+      location: Presentation/Layouts/
+    suffix:
+      - {mime: application/octet-stream, _content: tpl}
+      
+  SM_ASSETTYPE_MASTER_TEMPLATE:
+    id: SM_ASSETTYPE_MASTER_TEMPLATE
+    category: templates
+    label: Container/layout template
+    description: Dynamic HTML template that can be rendered by the Smartest presentation layer
+    editable: true
+    icon: layout.png
+    class: SmartestContainerTemplateAsset
+    storage: 
+      type: file
+      location: Presentation/Masters/
+    suffix:
+      - {mime: application/octet-stream, _content: tpl}

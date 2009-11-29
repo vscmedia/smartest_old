@@ -4,6 +4,12 @@
   
   {if $asset.deleted}<div class="warning">Warning: This {$asset.type_info.label} is currently in the trash.</div>{/if}
   
+  {if !$file_is_writable}
+    <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
+  {elseif !$dir_is_writable}
+    <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
+  {/if}
+  
   <div class="instruction">You are editing {$asset.type_info.label}: ({$asset.url})</div>
   
   <div id="groups" class="special-box">

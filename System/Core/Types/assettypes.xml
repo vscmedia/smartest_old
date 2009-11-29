@@ -53,16 +53,6 @@
         <param name="link_href" type="SM_DATATYPE_URL" />
     </type>
     
-    <type id="SM_ASSETTYPE_CONTAINER_TEMPLATE" category="user_text" visible="false">
-        <label>Dynamic HTML Template</label>
-        <description>Dynamic HTML template that can be rendered by the Smartest presentation layer</description>
-        <editable>true</editable>
-        <icon>layout.png</icon>
-        <storage type="file" location="Presentation/Layouts/" />
-        <class>SmartestContainerTemplateAsset</class>
-        <suffix mime="application/octet-stream">tpl</suffix>
-    </type>
-    
     <type id="SM_ASSETTYPE_JPEG_IMAGE" category="image">
         <label>JPEG Image</label>
         <description>An image in JPEG format.</description>
@@ -277,6 +267,36 @@
       <storage type="file" location="Documents/Downloads/" />
       <suffix mime="application/vnd.ms-powerpoint">ppt</suffix>
       <render template="System/Presentation/WebPageBuilder/display.download.tpl" />
+    </type>
+    
+    <type id="SM_ASSETTYPE_CONTAINER_TEMPLATE" category="templates" visible="false">
+      <label>Dynamic HTML Template</label>
+      <description>Dynamic HTML template that can be rendered by the Smartest presentation layer</description>
+      <editable>true</editable>
+      <icon>layout.png</icon>
+      <storage type="file" location="Presentation/Layouts/" />
+      <class>SmartestContainerTemplateAsset</class>
+      <suffix mime="application/octet-stream">tpl</suffix>
+    </type>
+    
+    <type id="SM_ASSETTYPE_MASTER_TEMPLATE" category="templates" visible="false">
+      <label>Page Master Template</label>
+      <description>Full-page dynamic HTML template that can be rendered by the Smartest presentation layer</description>
+      <editable>true</editable>
+      <icon>layout.png</icon>
+      <storage type="file" location="Presentation/Masters/" />
+      <class>SmartestContainerTemplateAsset</class>
+      <suffix mime="application/octet-stream">tpl</suffix>
+    </type>
+    
+    <type id="SM_ASSETTYPE_LISTITEM_TEMPLATE" category="templates" visible="false">
+      <label>Page Master Template</label>
+      <description>Full-page dynamic HTML template that can be rendered by the Smartest presentation layer</description>
+      <editable>true</editable>
+      <icon>layout.png</icon>
+      <storage type="file" location="Presentation/Masters/" />
+      <class>SmartestContainerTemplateAsset</class>
+      <suffix mime="application/octet-stream">tpl</suffix>
     </type>
     
 </assettypes>

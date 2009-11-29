@@ -800,15 +800,13 @@ class Assets extends SmartestSystemApplication{
 			    
 			    $asset->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
 			    $this->getUser()->addRecentlyEditedAssetById($asset->getId(), $this->getSite()->getId());
-
-    			if(isset($asset_type['editable']) && $asset_type['editable'] != 'false'){
+			    
+			    if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
 
     			    $formTemplateInclude = "edit.".strtolower(substr($assettype_code, 13)).".tpl";
 
     			    if($asset_type['storage']['type'] == 'database'){
     			        if($asset->usesTextFragment()){
-    			            // $content = utf8_encode(htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8'));
-    			            // print_r($asset->getTextFragment());
     			            $content = htmlspecialchars($asset->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
     			        }
 			        }else{
@@ -838,17 +836,33 @@ class Assets extends SmartestSystemApplication{
 			        $formTemplateInclude = "edit.default.tpl";
 			    }
 			    
-			    if($asset_type['storage']['type'] != 'database' && SmartestStringHelper::toRealBool($asset_type['editable'])){
+			    if($asset_type['storage']['type'] != 'database'){
     	            
-    	            $path = SM_ROOT_DIR.$asset_type['storage']['location'];
-    	            $dir_is_writable = is_writable($path);
-    	            $file_is_writable = is_writable($path.$asset->getUrl());
-    	            $this->send($path, 'path');
+    	            // if(SmartestStringHelper::toRealBool($asset_type['editable'])){
     	            
-    	            $allow_save = $dir_is_writable && $file_is_writable;
-    	            $this->send($allow_save, 'allow_save');
+        	            $path = SM_ROOT_DIR.$asset_type['storage']['location'];
+        	            $dir_is_writable = is_writable($path);
+        	            $file_is_writable = is_writable($path.$asset->getUrl());
+        	            
+        	            $this->send($path, 'path');
+        	            $this->send($dir_is_writable, 'dir_is_writable');
+        	            $this->send($file_is_writable, 'file_is_writable');
+    	            
+        	            $allow_save = $dir_is_writable && $file_is_writable;
+        	            
+        	            $this->send($allow_save, 'allow_save');
+    	            
+	                /* }else{
+	                    
+	                    $this->send(true, 'dir_is_writable');
+        	            $this->send(true, 'file_is_writable');
+                        $this->send(true, 'allow_save');
+	                    
+	                } */
     	            
                 }else{
+                    $this->send(true, 'dir_is_writable');
+    	            $this->send(true, 'file_is_writable');
                     $this->send(true, 'allow_save');
                 }
 

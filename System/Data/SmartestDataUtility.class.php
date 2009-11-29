@@ -440,12 +440,63 @@ class SmartestDataUtility{
 	
 	static function getAssetTypes(){
 	    
+	    // $data = self::getAssetTypesXmlData();
+	    $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assettypes.yml');
+	    
+	    $types = $data['type'];
+	    // $types = array();
+	    
+	    // print_r($data['type']);
+	    
+	    foreach($types as $id=>$raw_type){
+	        
+	        /* $types[$raw_type['id']] = $raw_type;
+	        
+	        if(!defined($raw_type['id'])){
+	            define($raw_type['id'], $raw_type['id']);
+	        }
+	        
+	        if(is_array($types[$raw_type['id']]['suffix'])){
+	            
+	            if(isset($types[$raw_type['id']]['suffix']['mime'])){
+	                
+	                // $key = $types[$raw_type['id']]['suffix']['_content'];
+	                $suffix = $types[$raw_type['id']]['suffix'];
+	                $types[$raw_type['id']]['suffix'] = array();
+	                $types[$raw_type['id']]['suffix'][0] = $suffix;
+	                
+	            }
+	        
+            } */
+            
+            // if(isset($types[$raw_type['id']]['param'])){
+            if(isset($types[$id]['param'])){
+                if(isset($types[$id]['param']['name'])){
+                    // $types[$raw_type['id']]['param'] = array($types[$raw_type['id']]['param']);
+                    $types[$id]['param'] = array($types[$id]['param']);
+                }
+            }else{
+                // $types[$raw_type['id']]['param'] = array();
+                $types[$id]['param'] = array();
+            }
+	    }
+	    
+	    // print_r($types);
+	    return $types;
+	}
+	
+	static function getAssetTypes_old(){
+	    
 	    $data = self::getAssetTypesXmlData();
+	    // $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assettypes.yml');
 	    
-	    $raw_types = $data;
+	    // $types = $data['type'];
 	    $types = array();
+	    $raw_data = $data;
 	    
-	    foreach($raw_types as $raw_type){
+	    // print_r($data['type']);
+	    
+	    foreach($raw_data as $raw_type){
 	        
 	        $types[$raw_type['id']] = $raw_type;
 	        
@@ -466,15 +517,19 @@ class SmartestDataUtility{
 	        
             }
             
+            // if(isset($types[$raw_type['id']]['param'])){
             if(isset($types[$raw_type['id']]['param'])){
                 if(isset($types[$raw_type['id']]['param']['name'])){
                     $types[$raw_type['id']]['param'] = array($types[$raw_type['id']]['param']);
+                    // $types[$id]['param'] = array($types[$id]['param']);
                 }
             }else{
                 $types[$raw_type['id']]['param'] = array();
+                // $types[$id]['param'] = array();
             }
 	    }
 	    
+	    // print_r($types);
 	    return $types;
 	}
 	

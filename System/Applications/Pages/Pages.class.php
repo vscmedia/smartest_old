@@ -66,11 +66,11 @@ class Pages extends SmartestSystemApplication{
 	                    // page is available to edit
 			            SmartestSession::set('current_open_page', $page->getId());
 			            
-			            if($this->getUser()->hasToken('edit_held_pages') && $page->getHeldBy() != $this->getUser()->getId()){
+			            if($page->getIsHeld() && $this->getUser()->hasToken('edit_held_pages') && $page->getHeldBy() != $this->getUser()->getId()){
 			                
 			                $editing_user = new SmartestUser;
-
-        	                if($editing_user->hydrate($page->getHeldBy())){
+                            
+                            if($editing_user->hydrate($page->getHeldBy())){
         	                    $this->addUserMessageToNextRequest('Careful: '.$editing_user->__toString().' has not yet released this page.', SmartestUserMessage::INFO);
         	                }else{
         	                    $this->addUserMessageToNextRequest('Careful: another user has not yet released this page.', SmartestUserMessage::INFO);

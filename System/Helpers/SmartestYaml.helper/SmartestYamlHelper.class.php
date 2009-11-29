@@ -12,6 +12,7 @@ class SmartestYamlHelper extends SmartestHelper{
         if(is_file($file_name)){
             $spyc = new Spyc;
             $array = $spyc->load($file_name);
+            // print_r($array);
             // $array = Spyc::YAMLLoad($file_name);
             return $array;
         }else{
