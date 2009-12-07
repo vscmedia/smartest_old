@@ -191,7 +191,7 @@ class SmartestBasicRenderer extends SmartestEngine{
             
             if(SM_CONTROLLER_METHOD == "renderEditableDraftPage" && $path == 'none'){
 			    
-			    if(isset($asset_type_info['editable']) && $asset_type_info['editable'] && $asset_type_info['editable'] != 'false'){
+			    if(isset($asset_type_info['editable']) && SmartestStringHelper::toRealBool($asset_type_info['editable'])){
 			        $edit_link .= "<a title=\"Click to edit file: ".$this->_asset->getUrl()." (".$this->_asset->getType().")\" href=\"".SM_CONTROLLER_DOMAIN."assets/editAsset?asset_id=".$this->_asset->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
 			    }else{
 			        $edit_link = "<!--edit link-->";

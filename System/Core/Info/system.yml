@@ -1,7 +1,8 @@
 system:
   info:
-    version: "0.4-dev (build 33)"
-    revision: 289
+    version: "0.3.7.1 (0.4-dev)"
+    revision: 290
+    build_id: 34
     minimum_php_version: 5.2
     default_timezone: Europe/London
   reserved_classes:
