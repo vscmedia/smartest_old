@@ -104,6 +104,21 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
+	static function toValidDomain($normal_string, $clean_non_ascii=false){
+	
+		$page_name = strtolower($normal_string);
+		
+		if($clean_non_ascii && !self::isAscii($page_name)){
+		    $page_name = self::toAscii($page_name);
+		}
+		
+		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");
+		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
+		$page_name = preg_replace("/[^\w-]+/", ".", $page_name);
+		return $page_name;
+	
+	}
+	
 	static function toVarName($normal_string, $clean_non_ascii=false){
 	
 		$page_name = strtolower($normal_string);
@@ -346,6 +361,10 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	static function isEmailAddress($string){
 		return preg_match('/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/i', $string);
+	}
+	
+	static function isValidExternalUri($string){
+		return preg_match('/^https?:\/\//i', $string);
 	}
 	
 	static function getRelatedWords($word){

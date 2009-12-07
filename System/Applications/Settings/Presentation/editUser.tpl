@@ -121,9 +121,9 @@ return true;
 </div>
 <div id="actions-area">
   <ul class="actions-list">
-     <li><b>Users &amp; Permissions</b></li>
+     <li><b>Users &amp; Tokens</b></li>
      <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/listUsers'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Go back to users</a></li>
-     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/editUserTokens?user_id={$user.id}'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Edit Permissions</a></li>
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/editUserTokens?user_id={$user.id}'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Edit tokens</a></li>
   </ul>
 </div>
 </form>

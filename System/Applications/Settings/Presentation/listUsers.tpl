@@ -38,9 +38,9 @@
 
 </ul>
 <ul class="actions-list">
-   <li class="permanent-action"><b>Users &amp; Permissions</b></li>
+   <li><b>Users &amp; Tokens</b></li>
    <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addUser'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add User</a></li>
-   <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/listRoles'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Role Editor</a></li>
+   {* <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/listRoles'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Role Editor</a></li> *}
 </ul></td>
 
 </tr>

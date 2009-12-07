@@ -1,8 +1,8 @@
 system:
   info:
     version: "0.3.7.1 (0.4-dev)"
-    revision: 290
-    build_id: 34
+    revision: 291
+    build_id: 35
     minimum_php_version: 5.2
     default_timezone: Europe/London
   reserved_classes:
@@ -43,6 +43,7 @@ system:
   writable_locations:
     always:
       - Sites/
+      - Library/ObjectModel/
       - System/Cache/SmartestEngine/
       - System/Cache/Smarty/
       - System/Cache/Pages/
@@ -52,7 +53,11 @@ system:
       - System/Cache/ObjectModel/DataObjects/
       - System/Cache/Settings/
       - System/Cache/Controller/
-      - Library/ObjectModel/
+      - System/Cache/TextFragments/Previews/
+      - System/Cache/TextFragments/Live/
+      - System/Logs/
+      - Logs/
+    files_repo:
       - Documents/
       - Documents/Deleted/
       - Public/Resources/Images/
@@ -60,10 +65,6 @@ system:
       - Public/Resources/Stylesheets/
       - Public/Resources/Javascript/
       - System/Temporary/
-      - System/Cache/TextFragments/Previews/
-      - System/Cache/TextFragments/Live/
-      - Logs/
-      - System/Logs/
     installation:
       - Public/
       - System/Core/Info/

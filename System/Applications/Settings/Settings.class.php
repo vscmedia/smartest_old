@@ -202,6 +202,10 @@ class Settings extends SmartestSystemApplication{
     		$email = $post['user_email'];
     		$website = $post['user_website'];
     		$hash = md5($post['password']);
+    		
+    		if(!SmartestStringHelper::isValidExternalUri($website)){
+    		    $website = 'http://'.$website;
+    		}
 		
     		$user->setUsername($username);
     		$user->setPassword($hash);
@@ -209,12 +213,10 @@ class Settings extends SmartestSystemApplication{
     		$user->setLastname($lastname);
     		$user->setEmail($email);
     		$user->setWebsite($website);
+		    
+		    $user->save();
 		
-    		$user->save();
-		
-    		// $site_id = $post['site_id'];
-		
-            // add user tokens
+    		// add user tokens
             $role_id = $post['user_role'];
         
             $role = new SmartestRole;

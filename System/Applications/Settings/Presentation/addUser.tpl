@@ -46,7 +46,42 @@ function check(){
 
 <form id="addUser" name="addUser" action="{$domain}{$section}/addUserAction" method="post" style="margin:0px">
 
-<table width="100%" style="border:1px solid #ccc;padding:2px;" cellpadding="0" cellspacing="2" >
+  <div class="edit-form-row">
+    <div class="form-section-label">Username </div>
+    <input type="text" style="width:150px" name="username" /><span class="form-hint">letters, numbers and underscores only please</span>
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Password </div>
+    <input type="password" style="width:150px" name="password" />
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">First name </div>
+    <input type="text" name="user_firstname" />
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Last name </div>
+    <input type="text" name="user_lastname" />
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Email address </div>
+    <input type="text" name="user_email" />
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Website address </div>
+    http://<input type="text" style="width:278px" name="user_website" />
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">About the user </div>
+    <textarea name="user_bio" style="width:500px;height:60px">Share a little biographical information to fill out your profile. This may be shown publicly.</textarea>
+  </div>
+
+{* <table width="100%" style="border:1px solid #ccc;padding:2px;" cellpadding="0" cellspacing="2" >
   
   <tr>
     <td class="text" valign="top">Role </td>
@@ -57,7 +92,9 @@ function check(){
         {/foreach}
       </select>
     </td>
-  </tr>
+  </tr> 
+  
+
   
   <tr>
     <td class="text" valign="top">Username </td>
@@ -95,7 +132,7 @@ function check(){
   <tr>
 	<td class="text" style="width:100px" valign="top">Website </td>
     <td align="left">
-    	 <input type="text" style="width:200px" name="user_website" />
+    	 http://<input type="text" style="width:200px" name="user_website" />
     	</td>
   </tr>
   
@@ -105,11 +142,11 @@ function check(){
     	<textarea name="user_bio" style="width:500px;height:60px">Share a little biographical information to fill out your profile. This may be shown publicly.</textarea></td>
   </tr>
   
-</table>
+</table> *}
 
 <div class="edit-form-row">
   <div class="buttons-bar">
-    <input type="submit" value="Save" />
+    <input type="submit" value="Create new user" />
   </div>
 </div>    
 
@@ -119,8 +156,8 @@ function check(){
 
 <div id="actions-area">
   <ul class="actions-list">
-     <li><b>Users &amp; Permissions</b></li>
-     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addRole'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add Role</a></li>
+     <li><b>Users &amp; Tokens</b></li>
+     {* <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addRole'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add Role</a></li> *}
      <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/listUsers'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Go back to users</a></li>
   </ul>
 </div>
