@@ -141,6 +141,8 @@ type:
       location: Public/Resources/Javascript/
     render:
       template: System/Presentation/WebPageBuilder/display.javascript.tpl
+    suffix:
+      - {mime: text/javascript, _content: js}
       
   SM_ASSETTYPE_STYLESHEET:
     id: SM_ASSETTYPE_STYLESHEET
@@ -154,6 +156,8 @@ type:
       location: Public/Resources/Stylesheets/
     render:
       template: System/Presentation/WebPageBuilder/display.stylesheet.tpl
+    suffix:
+      - {mime: text/css, _content: css}
       
   SM_ASSETTYPE_QUICKTIME_MOVIE:
     id: SM_ASSETTYPE_QUICKTIME_MOVIE
