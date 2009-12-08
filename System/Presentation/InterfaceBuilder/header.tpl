@@ -47,5 +47,5 @@
     </div>
     
     <div id="user-info">
-      Signed in as: <strong>{$_user.firstname} {$_user.lastname}</strong> | <a href="{$domain}smartest/logout" id="sm-signout-link">Sign Out</a>&nbsp;&nbsp;
+      Signed in as: <strong>{$_user.firstname} {$_user.lastname}</strong>{if $show_left_nav_options} | <a href="{$domain}smartest/todo" id="sm-signout-link">To-do list</a>{/if} | <a href="{$domain}smartest/logout" id="sm-signout-link">Sign Out</a>&nbsp;&nbsp;
     </div>
