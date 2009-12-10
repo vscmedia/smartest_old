@@ -894,8 +894,8 @@ class Assets extends SmartestSystemApplication{
 
 		$asset = new SmartestAsset;
 
-		if($asset->hydrate($asset_id)){
-
+		if($asset->find($asset_id)){
+		    
 			$assettype_code = $asset->getType();
 			$types_data = SmartestDataUtility::getAssetTypes();
 			$default_params = $asset->getDefaultParams();
@@ -903,8 +903,8 @@ class Assets extends SmartestSystemApplication{
 			if(array_key_exists($assettype_code, $types_data)){
 
 			    $asset_type = $types_data[$assettype_code];
-
-    			if(isset($asset_type['editable']) && $asset_type['editable'] != 'false'){
+                        
+			    if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
 
     			    $formTemplateInclude = "edit.".strtolower(substr($assettype_code, 13)).".tpl";
 
@@ -917,9 +917,7 @@ class Assets extends SmartestSystemApplication{
 			            $file = SM_ROOT_DIR.$asset_type['storage'].$asset->getUrl();
 			            $content = htmlspecialchars(SmartestFileSystemHelper::load($asset->getFullPathOnDisk()), ENT_COMPAT, 'UTF-8');
 			        }
-                    
-                    // SmartestEasyLinkHelper::findAll($content);
-                    
+
 			        $this->send($content, 'textfragment_content');
 			        
 			        if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
