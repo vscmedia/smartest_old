@@ -19,6 +19,7 @@
   
   <div style="width:100%" id="editTMPL" class="textarea-holder">
     <textarea name="template_content" id="tpl_textArea" style="display:block">{$template_content}</textarea>
+    <div style="height:14px"><span class="form-hint">Editor powered by CodeMirror</span></div>
   </div>
   
   <div class="buttons-bar">

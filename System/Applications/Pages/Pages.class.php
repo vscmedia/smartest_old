@@ -745,6 +745,10 @@ class Pages extends SmartestSystemApplication{
 		}*/
 	}
 	
+	public function comments(){
+	    
+	}
+	
 	function deletePage($get){
 		
 		$id = $get['page_id'];
