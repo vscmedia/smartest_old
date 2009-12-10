@@ -10,7 +10,6 @@ function debug_time(){
 
 ini_set('session.gc_maxlifetime', 30*60);
 
-
 // error reporting control
 error_reporting(E_ALL ^ E_NOTICE);
 ini_set("display_errors", 1);

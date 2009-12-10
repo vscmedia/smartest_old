@@ -350,7 +350,7 @@ class SmartestDataObjectHelper{
 	}
 	
 	static function loadExtendedObjects($directory='__SYSTEM_DEFAULT'){
-	    
+	    // echo "LEO";
 	    if($directory == '__SYSTEM_DEFAULT'){
 	        $directory = SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Data'.DIRECTORY_SEPARATOR.'ExtendedObjects'.DIRECTORY_SEPARATOR;
 	    }
@@ -388,7 +388,7 @@ class SmartestDataObjectHelper{
 		
 		$use_cache = (defined('SM_DEVELOPER_MODE') && constant('SM_DEVELOPER_MODE')) ? false : true;
 		$rebuild_cache = ($use_cache && (SmartestCache::load('smartest_extended_objects_hash', true) != $extended_object_cache_hash || !is_file(SM_ROOT_DIR.'System'.DIRECTORY_SEPARATOR.'Cache'.DIRECTORY_SEPARATOR.'Includes'.DIRECTORY_SEPARATOR.'SmartestExtendedObjects.cache.php')));
-	    
+	    // var_dump($use_cache);
 	    foreach($object_types as $h){
 			if(is_file($h['file'])){
 				if($use_cache){
@@ -398,8 +398,11 @@ class SmartestDataObjectHelper{
     			        // don't need to include anything because types are already in cache
     			    }
 				}else{
+				    // echo "including ".$h['file'];
 				    // Include the original file rather than the cache
 				    include $h['file'];
+				    
+				    // echo "<br />";
 				}
 			}else{
 				// File was there a moment ago but has now disappeared (???)

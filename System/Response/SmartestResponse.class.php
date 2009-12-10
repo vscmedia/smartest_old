@@ -224,7 +224,6 @@ class SmartestResponse{
 	public function init(){
 		
 		session_start();
-		
 		$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
 		
         if(version_compare(PHP_VERSION, $sd['system']['info']['minimum_php_version']) === -1){

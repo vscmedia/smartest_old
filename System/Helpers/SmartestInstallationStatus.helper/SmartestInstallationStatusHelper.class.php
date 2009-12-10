@@ -12,7 +12,7 @@ class SmartestInstallationStatusHelper{
         }else{
         // if(SmartestCache::load('installation_status', true) !== SM_INSTALLSTATUS_COMPLETE || $purge || (!is_file(SM_ROOT_DIR.'Public/.htaccess') || !is_file(SM_ROOT_DIR.'Configuration/controller.xml') || !is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
             
-            session_start();
+            // session_start();
             $system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml', false);
             $writable_files = array_merge($system_data->g('system')->g('writable_locations')->g('always')->toArray(), $system_data->g('system')->g('writable_locations')->g('installation')->toArray());
             

@@ -43,8 +43,8 @@ class SmartestInit{
 	}
 	
 	static function go(){
-	
-		self::setRootDir();
+	    
+	    self::setRootDir();
 		self::setIncludePaths();
 	    
 	    require SM_ROOT_DIR.'System/Base/constants.php';
