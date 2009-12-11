@@ -29,7 +29,7 @@ function openPage(pageAction){
 
 <h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; {$model.plural_name}</h3>
 <a name="top"></a>
-<div class="instruction">Double click one of the {$content.itemBaseValues.itemclass_plural_name|lower} to edit it or choose from the options on the right.</div>
+<div class="instruction">Double click one of the {$model.plural_name|strtolower} below to edit it, or click once and choose from the options on the right.</div>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="item_id" id="item_id_input" value="" />

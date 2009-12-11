@@ -499,7 +499,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 		
 	}
 	
-	public function getPagesSubTree($level=1, $get_items){
+	public function getPagesSubTree($level=1, $get_items=false){
 	
 		$working_array = array();
 		$index = 0;
@@ -560,8 +560,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 			$children = $page['children'];
 			
 			$this->displayPagesIndex++;
-			
-			// print_r($children);
 			
 			if(count($children) > 0){
 			    

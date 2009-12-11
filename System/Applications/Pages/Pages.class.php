@@ -1123,17 +1123,17 @@ class Pages extends SmartestSystemApplication{
 			
         			case "ELEMENTS":
         			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
-        			$this->redirect($this->domain.$this->module."/pageAssets?page_id=".$page_webid);
+        			$this->redirect($this->module."/pageAssets?page_id=".$page_webid);
         			break;
 			
         			case "EDIT":
         			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
-        			$this->redirect($this->domain.$this->module."/openPage?page_id=".$page_webid);
+        			$this->redirect($this->module."/openPage?page_id=".$page_webid);
         			break;
 			
         			case "PREVIEW":
         			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
-        			$this->redirect($this->domain.$this->module."/preview?page_id=".$page_webid);
+        			$this->redirect($this->module."/preview?page_id=".$page_webid);
     			    break;
     			
     		    }

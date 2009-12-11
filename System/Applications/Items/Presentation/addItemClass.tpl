@@ -6,11 +6,8 @@
 var setPlural = true;
 
 function suggestPluralName(){
-	// alert(document.getElementById('plural').value);
-	
-	
 	if(setPlural == true){
-		document.getElementById('plural').value = document.getElementById('livesearch').value+"s";
+		$('plural').value = $('modelname').value+"s";
 	}
 }
 
@@ -23,18 +20,44 @@ function turnOffAutoPlural(){
 
 <div id="work-area">
 
-<h3><a href="{$domain}{$section}">Data Manager</a> &gt; Build a New Model</h3>
-
-<div class="instruction">Please enter the name of your new model.</div>
+<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; Build a new model</h3>
 
 <form name="searchform" onsubmit="return liveSearchSubmit()" method="post" action="{$domain}{$section}/insertItemClass">
 <input type="hidden" name="stage" value="2" />
     
 <div class="edit-form-row">
   <div class="form-section-label">Model Name:</div>
-  <input id="livesearch" onkeyup="suggestPluralName()" type="text" name="itemclass_name" style="width:200px" />
+  <input id="modelname" onkeyup="suggestPluralName()" type="text" name="itemclass_name" style="width:200px" /><span class="form-hint">ie "Article", "Car", "Person"</span>
+</div>
+
+<div class="edit-form-row">
   <div class="form-section-label">Model Plural Name:</div>
-  <input id="plural" onkeyup="turnOffAutoPlural()" type="text" name="itemclass_plural_name" style="width:200px" />     
+  <input id="plural" onkeyup="turnOffAutoPlural()" type="text" name="itemclass_plural_name" style="width:200px" /><span class="form-hint">ie "Articles", "Cars", "People"</span>
+</div>
+
+<div class="special-box">
+  
+  <input type="checkbox" name="create_meta_page" id="create-meta-page" value="1" onchange="toggleFormAreaVisibilityBasedOnCheckbox('create-meta-page', 'extra-form-options');"{if $cmp} checked="checked"{/if} /><label for="create-meta-page">Create meta-page now for this model</label>
+  
+  <div style="display:{if $cmp}block{else}none{/if}" id="extra-form-options">
+    <div class="edit-form-row">
+      <div class="form-section-label">Meta-page template</div>
+      <select name="meta_page_template">
+        {foreach from=$templates item="template"}
+        <option value"{$template}">{$template}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="edit-form-row">
+      <div class="form-section-label">Meta-page parent</div>
+      <select name="meta_page_parent">
+        {foreach from=$pages item="page"}
+          <option value="{$page.info.id}"{if $pageInfo.parent == $page.info.id} selected="selected"{/if}>+{section name="dashes" loop=$page.treeLevel}-{/section} {$page.info.title}</option>
+        {/foreach}
+      </select>
+    </div>
+  </div>
+  
 </div>
     
 {* <div class="edit-form-row">

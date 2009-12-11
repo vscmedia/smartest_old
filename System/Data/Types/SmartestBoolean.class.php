@@ -34,6 +34,10 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess{
             return $this->__toString();
             case 'int':
             return (int) $this->_value;
+            case 'cssdisplayblock':
+            return 'display:'.$this->_value ? 'block' : 'none';
+            case 'cssdisplayinline':
+            return 'display:'.$this->_value ? 'inline' : 'none';
         }
     }
     

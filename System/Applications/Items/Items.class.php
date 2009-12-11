@@ -1818,11 +1818,19 @@ class Items extends SmartestSystemApplication{
 		}
 	} */
 	
-	public function addItemClass(){
+	public function addItemClass($get){
 		
 		if($this->getUser()->hasToken('create_remove_models')){
 		
-		    // nothing needed here at the moment
+		    // get possible parent pages for meta page
+		    $pagesTree = $this->getSite()->getNormalPagesList(true);
+		    $this->send($pagesTree, 'pages');
+		    $this->send((isset($get['createmetapage']) && $get['createmetapage'] == 'true') ? true : false, 'cmp');
+		    
+		    // get page templates
+		    $path = SM_ROOT_DIR.'Presentation/Masters/';
+            $templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
+            $this->send($templates, 'templates');
 		
 	    }else{
 	        
@@ -1844,6 +1852,25 @@ class Items extends SmartestSystemApplication{
     		    $model->setVarname(SmartestStringHelper::toVarName($post['itemclass_plural_name']));
     		    $model->setWebid(SmartestStringHelper::random(16));
     		    $model->save();
+    		    
+    		    if(isset($post['create_meta_page']) && $post['create_meta_page'] == 1){
+    		        $p = new SmartestPage;
+    		        $p->setTitle($post['itemclass_name']);
+    		        $p->setWebId(SmartestStringHelper::random(32));
+    		        $p->setName(SmartestStringHelper::toSlug($post['itemclass_name']));
+    		        $p->setSiteId($this->getSite()->getId());
+    		        $p->addUrl(SmartestStringHelper::toSlug($post['itemclass_plural_name']).'/:name.html'); 
+    		        $p->setParent($post['meta_page_parent']);
+    		        $p->setDraftTemplate($post['meta_page_template']);
+    		        $p->setCreated(time());
+    		        $p->setCreatedbyUserid(0);
+    		        $p->setIsPublished('FALSE');
+    		        $p->setType('ITEMCLASS');
+    		        $p->setDataSetId($model->getId());
+    		        $p->save();
+    		        SmartestCache::clear('site_pages_tree_'.$this->getSite()->getId(), true);
+    		    }
+    		    
     		    $this->addUserMessageToNextRequest("The new model has been saved. Now add some properties.", SmartestUserMessage::SUCCESS);
     		    SmartestCache::clear('model_class_names', true);
     		    SmartestCache::clear('model_id_name_lookup', true);

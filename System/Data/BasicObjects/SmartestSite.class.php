@@ -19,23 +19,16 @@ class SmartestSite extends SmartestBaseSite{
 	
 	public function getHomePage($draft_mode=false){
 	    
-	    // $this->setTopPageId(29);
-	    // $this->save();
-	    
-	    // echo $this->getTopPageId();
-	    
-	    // if(!$this->_home_page){
-	        $page = new SmartestPage;
-	        $page->hydrate($this->getTopPageId());
-	        $page->setDraftMode($draft_mode);
-	        $this->_home_page = $page;
-	    // }
+	    $page = new SmartestPage;
+	    $page->find($this->getTopPageId());
+	    $page->setDraftMode($draft_mode);
+	    $this->_home_page = $page;
 	    
 	    return $this->_home_page;
 	    
 	}
 	
-	public function getPagesTree($draft_mode=true, $get_items=false){
+	public function getPagesTree($draft_mode=true, $get_items=false, $normal_pages_only=false){
 	    
 	    /* if($get_items){
 	        $items_suffix = '_with_child_items';
@@ -68,11 +61,11 @@ class SmartestSite extends SmartestBaseSite{
 	    
 	}
 	
-	public function getPagesList($draft_mode=false, $get_items=false){
+	public function getPagesList($draft_mode=false, $get_items=false, $normal_pages_only=false){
 	    
 	    $this->displayPages = array();
 	    $this->displayPagesIndex = 0;
-	    $list = $this->getSerializedPageTree($this->getPagesTree($draft_mode, $get_items));
+	    $list = $this->getSerializedPageTree($this->getPagesTree($draft_mode, $get_items, $normal_pages_only));
 	    return $list;
 	    
 	}
@@ -98,6 +91,22 @@ class SmartestSite extends SmartestBaseSite{
 		
 		return $this->displayPages;
 		
+	}
+	
+	public function getSpecialPageIds($include_home=false){
+	    $ids = array("search_page_id"=>$this->getSearchPageId(), "tag_page_id"=>$this->getTagPageId(), "error_page_id"=>$this->getErrorPageId());
+	    return $ids;
+	}
+	
+	public function getNormalPagesList(){
+	    $list = $this->getPagesList();
+	    foreach($list as $k=>$page){
+            if($page['info']['type'] != 'NORMAL' || in_array($page['info']['id'], $this->getSpecialPageIds())){
+	            unset($list[$k]);
+	        }
+	    }
+	    
+	    return array_values($list);
 	}
 	
 	public function getSearchResults($query){

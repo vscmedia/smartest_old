@@ -7,7 +7,6 @@ var lastRowColor;
 var domain = '{$domain}';
 var section = '{$section}';
 
-// alert(document.getElementById('pageViewForm'));
 {literal}
 
 function viewmodel(){
@@ -32,7 +31,9 @@ function setView(viewName, list_id){
 
 <h3><a href="{$domain}smartest/data">Items</a> &gt; Models</h3>
 
-<div class="instruction">Your data is collected into functionally distinct types called models. Please choose one to continue.</div>
+{if empty($models)}
+<div class="special-box">No models yet. Click <a href="{$domain}{$section}/addItemClass?createmetapage=true">here</a> to create one.</div>
+{/if}
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="class_id" id="item_id_input" value="" />
@@ -48,8 +49,7 @@ View: <a href="{dud_link}" onclick="setView('list', 'options_grid')">List</a> /
   <li ondblclick="window.location='{$domain}{$section}/getItemClassMembers?class_id={$itemClass.id}'">
     <a id="item_{$itemClass.id}" class="option" href="{dud_link}" onclick="setSelectedItem('{$itemClass.id}');">
       <img border="0" src="{$domain}Resources/Icons/model.png">
-      {$itemClass.plural_name}</a>
-	{if $itemClass.number_properties < 1}{*(<a class="normal" href="{$domain}{$section}/addPropertyToClass?class_id={$itemClass.id}">No Properties</a>)*}{/if}</li>
+      {$itemClass.plural_name}</a></li>
 {/foreach}
 </ul>
 

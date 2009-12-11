@@ -29,8 +29,14 @@ function cancelForm(){
 	history.go(-1);
 }
 
-function nothing(){
-	
+function nothing(){}
+
+function toggleFormAreaVisibilityBasedOnCheckbox(checkbox_id, form_div_id){
+  if($(checkbox_id).checked){
+    new Effect.BlindDown(form_div_id, {duration: 1.5, transition: Effect.Transitions.spring});
+  }else{
+    new Effect.BlindUp(form_div_id, {duration: 0.5, transition: Effect.Transitions.sinoidal});
+  }
 }
 
 function getUIEffectsAreOk(){
