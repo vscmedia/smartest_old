@@ -7,6 +7,10 @@ class SmartestSession{
     const NOTFALSE = 102;
     const NOT_FALSE = 102;
     
+    final public static function isRegistered(){
+        return isset($_SESSION);
+    }
+    
 	final static function get($object_name){
 		
 		if(strlen($object_name)){

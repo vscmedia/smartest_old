@@ -344,6 +344,7 @@ class Desktop extends SmartestSystemApplication{
         $this->send($sys['system']['info']['version'], 'version');
         $this->send(str_replace('M', ' MB', ini_get('memory_limit')), 'memory_limit');
         $this->send(phpversion(), 'php_version');
+        $this->send(SM_ROOT_DIR, 'root_dir');
         
         $linux = `head -n 1 /etc/issue`;
         $linux = trim(str_replace('\n', '', $linux));

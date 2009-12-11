@@ -16,11 +16,13 @@ class SmartestLogType extends SmartestParameterHolder{
         $this->_read_only = true;
     }
     
-    public function getSiteId(){
+    /* public function getSiteId(){
         
-        return SmartestPersistentObject::get('current_open_project')->getId();
+        if(isset($_SESSION)){
+            return SmartestPersistentObject::get('current_open_project')->getId();
+        }
         
-    }
+    } */
     
     protected function getCurrentSiteId(){
 	    
@@ -31,9 +33,18 @@ class SmartestLogType extends SmartestParameterHolder{
 	            $site_id = constant('SM_CMS_PAGE_SITE_ID');
             }else{
                 // throw new SmartestException("Site ID not defined.");
+                return '0';
             }
-        }else if(is_object(SmartestPersistentObject::get('current_open_project'))){ // make sure the site object exists
-            $site_id = SmartestPersistentObject::get('current_open_project')->getId();
+        }else{
+            if(isset($_SESSION)){
+                if(is_object(SmartestPersistentObject::get('current_open_project'))){ // make sure the site object exists
+                    $site_id = SmartestPersistentObject::get('current_open_project')->getId();
+                }else{
+                    return '0';
+                }
+            }else{
+                return '0';
+            }
         }
         
         return $site_id;

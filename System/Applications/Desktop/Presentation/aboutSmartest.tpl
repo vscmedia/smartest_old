@@ -13,6 +13,7 @@
     <p><strong>Available Memory</strong>: {$memory_limit}</p>
     {if $allow_see_server_speed}<p><strong>Server Speed</strong>: {$speed_score} {if $allow_test_server_speed}<input type="button" value="Test..." onclick="window.location='{$domain}desktop/testServerSpeed'" />{/if}</p>{/if}
     <p><strong>Web Server</strong>: {$platform}</p>
+    <p><strong>Root directory</strong>: <code>{$root_dir}</code></p>
     <p><strong>Operating System</strong>: {$linux_version}</p>
     <p><strong>Credit</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Chris Brauer, Eddie Tejeda, Sereen Joseph, Nancy Arnold, Paul Gilroy, Vron Ware, a few brave MA Journalism students at City University London, and early adopters everywhere.</p>
     <p style="margin-top:25px"><img src="{$domain}Resources/System/Images/info_vsc_labs.png" alt="More great software from VSC Labs" /></p>
