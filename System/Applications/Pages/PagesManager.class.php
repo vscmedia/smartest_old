@@ -598,7 +598,7 @@ class PagesManager{
                     }
                     
                     if($item_space->getUsesTemplate()){
-                        $template = new SmartestContainerTemplateAsset;
+                        $template = new SmartestTemplateAsset;
                         
                         if($template->find($item_space->getTemplateAssetId())){
                             
@@ -660,7 +660,7 @@ class PagesManager{
 		        
 		        if(is_file(SM_ROOT_DIR."Presentation/Layouts/".$templateName)){
 		            
-		            $assetObj = new SmartestContainerTemplateAsset();
+		            $assetObj = new SmartestTemplateAsset();
 		            
 		            $info[$i]['info']['asset_id'] = $asset;
     			    // $info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
@@ -715,11 +715,11 @@ class PagesManager{
 						$asset_id = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), true, $item_id);
 					}
 					
-					$assetObj = new SmartestContainerTemplateAsset();
+					$assetObj = new SmartestTemplateAsset();
 					
 					if($assetObj->find($asset_id)){
 					    
-					    // This is new code, and works. It was tested here but will be implemented in SmartestContainerTemplateAsset.class.php
+					    // This is new code, and works. It was tested here but will be implemented in SmartestTemplateAsset.class.php
 					    // $tags = $assetObj->getTagsByName(array('placeholder', 'field'));
 					    
 					    $info[$i]['info']['asset_id'] = $asset_id;

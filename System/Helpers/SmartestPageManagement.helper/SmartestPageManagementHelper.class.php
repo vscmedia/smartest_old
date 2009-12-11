@@ -662,7 +662,7 @@ class SmartestPageManagementHelper extends SmartestHelper{
 						$asset = $this->getAssetClassDraftDefinition($info[$i]['info']['assetclass_name'], $page->getId());
 					}
 					
-					$assetObj = new SmartestContainerTemplateAsset();
+					$assetObj = new SmartestTemplateAsset();
 					
 					if($assetObj->hydrate($asset)){
 					

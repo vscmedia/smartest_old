@@ -6,6 +6,9 @@ class SmartestAssetsLibraryHelper{
     protected $types;
     protected $typesSuffixesMap = array();
     
+    const ASSET_TYPE_UNKNOWN = -1024;
+    const MISSING_DATA = -512;
+    
     public function __construct(){
         $this->database = SmartestPersistentObject::get('db:main');
     }
@@ -49,6 +52,120 @@ class SmartestAssetsLibraryHelper{
         }
         
         return $location_types;
+        
+    }
+    
+    public function getStorageLocationByTypeCode($type_code){
+        
+        $asset_types = SmartestDataUtility::getAssetTypes();
+        
+        if(isset($asset_types[$type_code])){
+            $type = $asset_types[$type_code];
+            if(isset($type['storage']['location'])){
+                return $type['storage']['location'];
+            }else{
+                return self::MISSING_DATA;
+            }
+        }else{
+            return self::ASSET_TYPE_UNKNOWN;
+        }
+        
+    }
+    
+    public function getAllTypesBySuffix(){
+        
+        $asset_types = SmartestDataUtility::getAssetTypes();
+        $suffixes = array();
+        
+        foreach($asset_types as $t){
+            if(isset($t['suffix']) && is_array($t['suffix'])){
+                
+                foreach($t['suffix'] as $s){
+                    
+                    if($t['storage']['type'] == 'file'){
+                        
+                        $safe_suffix = SmartestStringHelper::toVarName($s['_content']);
+                        
+                        if(!isset($suffixes[$safe_suffix])){
+                            $suffixes[$safe_suffix] = array();
+                        }
+                        
+                        $suffix = $s;
+                        $suffix['type'] = $t;
+                        $suffix['storage_location'] = $t['storage']['location'];
+                        
+                        $suffixes[$s['_content']][] = $suffix;
+                        
+                    }
+                }
+            }
+        }
+        
+        return $suffixes;
+        
+    }
+    
+    public function getPossibleTypesBySuffix($s){
+        
+        $suffixes = $this->getAllTypesBySuffix();
+        $suffix = strtolower($s);
+        
+        if(isset($suffixes[$suffix])){
+            return $suffixes[$suffix];
+        }else{
+            return array();
+        }
+        
+    }
+    
+    public function getAcceptableNameOptionsForUnknownSuffix($filename, $location=''){
+        
+        if(!strlen($location)){
+            $location = false;
+        }
+        
+        $root_name = SmartestStringHelper::removeDotSuffix($filename);
+        $types = $this->getImportableFileTypes();
+        $options = array();
+        
+        foreach($types as $t){
+            if(isset($t['suffix']) && isset($t['suffix'][0]['_content'])){
+                if(!$location || $location == $t['storage']['location']){
+                    $suffix = $t['suffix'][0]['_content'];
+                    $option = array();
+                    $option['filename'] = $root_name.'.'.$suffix;
+                    $option['type'] = $t;
+                    $option['storage_location'] = $t['storage']['location'];
+                    $options[] = $option;
+                }
+            }
+        }
+        
+        return $options;
+        
+    }
+    
+    public function getImportableFileTypes(){
+        
+        $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assettypecategories.yml');
+        $categories = $data['categories'];
+        $importable_category_short_names = array();
+        
+        foreach($categories as $c){
+            if(isset($c['importable']) && $c['importable']){
+                $importable_category_short_names[] = $c['short_name'];
+            }
+        }
+        
+        $asset_types = SmartestDataUtility::getAssetTypes();
+        
+        foreach($asset_types as $id=>$type){
+            if($type['storage']['type'] != 'file' || !in_array($type['category'], $importable_category_short_names)){
+                unset($asset_types[$id]);
+            }
+        }
+        
+        return $asset_types;
         
     }
     

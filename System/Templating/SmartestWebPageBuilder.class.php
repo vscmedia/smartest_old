@@ -401,7 +401,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 if($def->getItemspace()->usesTemplate()){
                 
                     $template_id = $def->getItemspace()->getTemplateAssetId();
-                    $template = new SmartestContainerTemplateAsset;
+                    $template = new SmartestTemplateAsset;
                     
                     if($template->hydrate($template_id)){
                         

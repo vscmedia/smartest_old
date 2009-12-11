@@ -1,0 +1,37 @@
+categories:
+  user_text:
+    id: SM_ASSETTYPECAT_USER_TEXT
+    short_name: user_text
+    label: "Text & markup"
+    has_system_files: true
+    importable: true
+  browser_instructions:
+    id: SM_ASSETTYPECAT_BROWSER_INSTRUCTIONS
+    short_name: browser_instructions
+    label: "Browser instructions"
+    has_system_files: true
+    importable: true
+  image:
+    id: SM_ASSETTYPECAT_IMAGES
+    short_name: image
+    label: "Images"
+    has_system_files: true
+    importable: true
+  embedded:
+    id: SM_ASSETTYPECAT_EMBEDDED_MEDIA
+    short_name: embedded
+    label: "Movies and stuff"
+    has_system_files: true
+    importable: true
+  other:
+    id: SM_ASSETTYPECAT_DOWNLOAD_ONLY
+    short_name: other
+    label: "Things that need to be downloaded"
+    has_system_files: false
+    importable: true
+  templates:
+    id: SM_ASSETTYPECAT_TEMPLATES
+    short_name: templates
+    label: "Dynamic HTML-based templates"
+    has_system_files: true
+    importable: false

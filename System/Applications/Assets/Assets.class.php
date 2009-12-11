@@ -184,7 +184,6 @@ class Assets extends SmartestSystemApplication{
 	    }
 	    
 	    $this->send($location_types_info, 'types_info');
-	    // print_r($location_types_info);
 	    
 	    // now, get a list of the file names for each location that can be found in the database
 	    foreach($location_types as $location => $types){
@@ -239,17 +238,36 @@ class Assets extends SmartestSystemApplication{
 	    $files_array = array();
 	    $i = 0;
 	    
+	    // $types_list_for_unknown_extensions = $h->getImportableFileTypes();
+	    // $this->send($types_list_for_unknown_extensions, 'all_importable_types');
+	    
 	    foreach($new_files as $f){
+	        
 	        $files_array[$i] = array();
-	        $type = $h->getTypeInfoBySuffix(SmartestStringHelper::getDotSuffix($f));
-	        $files_array[$i]['current_directory'] = dirname($f).'/';
+	        $types = $h->getPossibleTypesBySuffix(SmartestStringHelper::getDotSuffix($f));
 	        $files_array[$i]['filename'] = basename($f);
+	        $files_array[$i]['suggested_name'] = SmartestStringHelper::removeDotSuffix($files_array[$i]['filename']);
+	        $files_array[$i]['current_directory'] = dirname($f).'/';
+	        
+	        if(count($types)){
+	            $files_array[$i]['possible_types'] = $types;
+	            $files_array[$i]['suffix_recognized'] = true;
+            }else{
+                $files_array[$i]['possible_types'] = $h->getAcceptableNameOptionsForUnknownSuffix($files_array[$i]['filename'], $files_array[$i]['current_directory']);
+                $files_array[$i]['suffix_recognized'] = false;
+                $files_array[$i]['actual_suffix'] = SmartestStringHelper::getDotSuffix($f);
+            }
+            
 	        $files_array[$i]['type_code'] = $type['id'];
 	        $files_array[$i]['type_label'] = $type['label'];
+	        
 	        $alh = new SmartestAssetsLibraryHelper;
-	        $files_array[$i]['possible_groups'] = $alh->getAssetGroupsThatAcceptType($type['id']);
+	        
+	        /* if(count($types)){
+	            $files_array[$i]['possible_groups'] = $alh->getAssetGroupsThatAcceptType($types[0]['type']['id']);
+            } */
 	        $files_array[$i]['size'] = SmartestFileSystemHelper::getFileSizeFormatted(SM_ROOT_DIR.$f);
-	        $files_array[$i]['correct_directory'] = $type['storage']['location'];
+	        // $files_array[$i]['correct_directory'] = $type['storage']['location'];
 	        $i++;
 	    }
 	    
@@ -265,26 +283,62 @@ class Assets extends SmartestSystemApplication{
 	        $new_files = array();
 	    }
 	    
+	    $h = new SmartestAssetsLibraryHelper;
+	    $asset_types = SmartestDataUtility::getAssetTypes();
+	    
 	    foreach($new_files as $nf){
 	        
-	        $a = new SmartestAsset;
-	        $a->setType($nf['type']);
-	        $a->setSiteId($this->getSite()->getId());
-	        $a->setShared(isset($nf['shared']) ? 1 : 0);
-	        $a->setWebid(SmartestStringHelper::random(32));
-	        $a->setStringid(SmartestStringHelper::toVarName($nf['name']));
-	        $a->setUrl(basename($nf['filename']));
-	        $a->setUserId($this->getUser()->getId());
-	        $a->save();
+	        $type = $asset_types[$nf['type']];
+	        $required_suffixes = array();
 	        
-	        if(isset($nf['group']) && is_numeric($nf['group'])){
-	            $a->addToGroupById($nf['group'], true);
+	        foreach($type['suffix'] as $s){
+	            $required_suffixes[] = $s['_content'];
 	        }
+	        
+	        $existing_location = dirname($nf['filename']).'/';
+	        $existing_suffix = SmartestStringHelper::getDotSuffix($nf['filename']);
+	        
+	        $required_location = $type['storage']['location'];
+	        
+	        if($existing_location != $required_location){
+	            // The file type has been recognized by its file suffix, but needs to be moved to the right place (so needs to be moved - user has been warned about this)
+	            $move_to = SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.$required_location.SmartestFileSystemHelper::baseName($nf['filename']));
+	            $success = SmartestFileSystemHelper::move(SM_ROOT_DIR.$nf['filename'], $move_to);
+	            $filename = SmartestFileSystemHelper::baseName($move_to);
+	        }else if(!in_array($existing_suffix, $required_suffixes)){
+	            // The file is in the right place, but had an unrecognized file suffix (so needs to be renamed - user has been warned about this)
+	            $no_suffix = SmartestStringHelper::removeDotSuffix($nf['filename']);
+	            $move_to = SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.$required_location.SmartestFileSystemHelper::baseName($no_suffix).'.'.$required_suffixes[0]);
+	            $success = SmartestFileSystemHelper::move(SM_ROOT_DIR.$nf['filename'], $move_to);
+	            $filename = SmartestFileSystemHelper::baseName($move_to);
+	        }else{
+	            $move_to = SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.$nf['filename']);
+	            $filename = SmartestFileSystemHelper::baseName($nf['filename']);
+	            $success = true;
+	        }
+	        
+	        if($success){
+	            
+    	        $a = new SmartestAsset;
+    	        
+    	        $a->setType($nf['type']);
+    	        $a->setSiteId($this->getSite()->getId());
+    	        $a->setShared(isset($nf['shared']) ? 1 : 0);
+    	        $a->setWebid(SmartestStringHelper::random(32));
+    	        $a->setStringid(SmartestStringHelper::toVarName($nf['name']));
+    	        $a->setUrl($filename);
+    	        $a->setUserId($this->getUser()->getId());
+    	        $a->setCreated(time());
+    	        $a->save();
+	        
+    	        /* if(isset($nf['group']) && is_numeric($nf['group'])){
+    	            $a->addToGroupById($nf['group'], true);
+    	        } */
+            }
 	        
 	    }
 	    
 	    $this->addUserMessageToNextRequest(count($new_files)." file".((count($new_files) == 1) ? " was " : "s were ")."successfully added to the repository.", SmartestUserMessage::SUCCESS);
-	    
 	    $this->formForward();
 	    
 	}

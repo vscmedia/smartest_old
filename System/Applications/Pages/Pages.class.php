@@ -2816,7 +2816,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $id = $get['assetclass_id'];
 	    $page_webid = $get['page_id'];
-	    $asset = new SmartestContainerTemplateAsset;
+	    $asset = new SmartestTemplateAsset;
 	    
 	    if($asset->hydrateBy('stringid', $id)){
             $this->redirect('/templates/editTemplate?type=SM_CONTAINER_TEMPLATE&template_id='.$asset->getId().'&from=pageAssets');

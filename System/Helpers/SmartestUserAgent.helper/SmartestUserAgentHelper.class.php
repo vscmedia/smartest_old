@@ -125,6 +125,10 @@ class SmartestUserAgentHelper extends SmartestHelper{
     	            $this->browser['appVersion'] = '3.1.1';
     	            $this->browser['appVersionInteger'] = 3;
     	            break;
+    	            case 531:
+    	            $this->browser['appVersion'] = '4.0.3';
+    	            $this->browser['appVersionInteger'] = 4;
+    	            break;
     	        }
     	    }else if($this->isFirefox()){
     	        preg_match('/Firefox\/(\d[\d\.]+\d+)/i', $this->userAgent, $matches);

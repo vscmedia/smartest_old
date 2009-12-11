@@ -51,7 +51,7 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
                         
                     }
                     
-                    $template = new SmartestContainerTemplateAsset;
+                    $template = new SmartestTemplateAsset;
                     
                     if($draft){
                         $template_id = $this->getDraftAssetId();
@@ -120,7 +120,7 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
                     
                     if($container->getType() == "SM_ASSETCLASS_CONTAINER"){
                         
-                        $template = new SmartestContainerTemplateAsset;
+                        $template = new SmartestTemplateAsset;
                         $this->_template = $template;
                         $this->_template->setIsDraft($draft);
                         $this->_loaded = true;
@@ -179,7 +179,7 @@ class SmartestContainerDefinition extends SmartestAssetIdentifier{
         $container->hydrate($array);
         $this->_asset_class = $container;
         
-        $template = new SmartestContainerTemplateAsset;
+        $template = new SmartestTemplateAsset;
         $template->hydrate($array);
         $this->_template = $template;
         

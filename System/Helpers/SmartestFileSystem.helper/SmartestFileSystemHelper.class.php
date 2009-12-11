@@ -336,6 +336,18 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    return (bool) strlen(SmartestStringHelper::getDotSuffix($file));
 	}
 	
+	public static function baseName($file_path, $separator='/'){
+	    $parts = explode($separator, $file_path);
+	    return end($parts);
+	}
+	
+	// note that this function will return directories that end with /, while PHP's dirname function does not
+	public static function dirName($file_path){
+	    $o = strlen(self::baseName($file_path));
+	    $end = $o*-1;
+	    return substr($file_path, 0, $end);
+	}
+	
 	static function setSuffix(){
 		
 	}

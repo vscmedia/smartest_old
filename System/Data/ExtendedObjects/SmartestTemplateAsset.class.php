@@ -1,6 +1,6 @@
 <?php 
 
-class SmartestContainerTemplateAsset extends SmartestAsset{
+class SmartestTemplateAsset extends SmartestAsset{
     
     protected $_template_file;
     protected $_base_dir = '';
@@ -316,7 +316,7 @@ class SmartestContainerTemplateAsset extends SmartestAsset{
                     }
                     
                     if($item_space->getUsesTemplate()){
-                        $template = new SmartestContainerTemplateAsset;
+                        $template = new SmartestTemplateAsset;
                         
                         if($template->find($item_space->getTemplateAssetId())){
                             
@@ -378,7 +378,7 @@ class SmartestContainerTemplateAsset extends SmartestAsset{
 		        
 		        if(is_file(SM_ROOT_DIR."Presentation/Layouts/".$templateName)){
 		            
-		            $assetObj = new SmartestContainerTemplateAsset();
+		            $assetObj = new SmartestTemplateAsset();
 		            
 		            $info[$i]['info']['asset_id'] = $asset;
     			    // $info[$i]['info']['asset_webid'] = $this->database->specificQuery("asset_webid", "asset_id", $asset, "Assets");
@@ -433,7 +433,7 @@ class SmartestContainerTemplateAsset extends SmartestAsset{
 						$asset = $this->getAssetClassDefinition($info[$i]['info']['assetclass_name'], $page->getId(), true, $item_id);
 					}
 					
-					$assetObj = new SmartestContainerTemplateAsset();
+					$assetObj = new SmartestTemplateAsset();
 					
 					if($assetObj->hydrate($asset)){
 					
