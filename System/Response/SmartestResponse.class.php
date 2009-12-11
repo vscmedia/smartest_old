@@ -195,6 +195,7 @@ class SmartestResponse{
     	$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
 		define('SM_INFO_REVISION_NUMBER', $sd['system']['info']['revision']);
         define('SM_INFO_VERSION_NUMBER', $sd['system']['info']['version']);
+        define('SM_INFO_BUILD_NUMBER', $sd['system']['info']['build']);
         
         try{
 	        

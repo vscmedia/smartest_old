@@ -26,12 +26,6 @@ class Desktop extends SmartestSystemApplication{
             $this->setTitle('Choose a Site');
             $sites = $this->getUser()->getAllowedSites();
 
-    		/* $sites = array();
-
-    		foreach($result as $site){
-    		    $sites[] = $site->__toArray();
-    		} */
-    		
     		$this->send($sites, 'sites');
     		$this->send('sites', 'display');
     		$this->send(count($sites), 'num_sites');
@@ -251,12 +245,7 @@ class Desktop extends SmartestSystemApplication{
         
         $this->setTitle('Your To-do List');
         
-        // $todo_item_objects = $this->getUser()->getTodoItems();
-        // print_r($todo_item_objects);
-        
         $todo_items = $this->getUser()->getTodoItemsAsArrays(false, true);
-        // print_r($todo_items);
-        
         $this->send($todo_items, 'todo_items');
         
         /*
@@ -342,6 +331,7 @@ class Desktop extends SmartestSystemApplication{
         $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
         $this->send($sys['system']['info']['revision'], 'revision');
         $this->send($sys['system']['info']['version'], 'version');
+        $this->send($sys['system']['info']['build'], 'build');
         $this->send(str_replace('M', ' MB', ini_get('memory_limit')), 'memory_limit');
         $this->send(phpversion(), 'php_version');
         $this->send(SM_ROOT_DIR, 'root_dir');
@@ -349,7 +339,14 @@ class Desktop extends SmartestSystemApplication{
         $linux = `head -n 1 /etc/issue`;
         $linux = trim(str_replace('\n', '', $linux));
         $linux = trim(str_replace('\l', '', $linux));
-        $this->send($linux, 'linux_version');
+        
+        if(strlen($linux)){
+            $this->send($linux, 'linux_version');
+        }else if(is_file('/Applications/Utilities/Terminal.app/Contents/version.plist')){
+            // sw_vers | grep 'ProductVersion:' | grep -o '[0-9]*\.[0-9]*\.[0-9]*'
+            $linux = "Mac OS X ".`sw_vers | grep 'ProductVersion:' | grep -o '[0-9]*\.[0-9]*\.[0-9]*'`;
+            $this->send($linux, 'linux_version');
+        }
         
         $this->send($this->getUser()->hasToken('test_server_speed'), 'allow_test_server_speed');
         $this->send($this->getUser()->hasToken('see_server_speed'), 'allow_see_server_speed');

@@ -2,6 +2,20 @@
 
 // set up required paths and environmental constants
 
+function debug_time(){
+    return number_format(microtime(true)*1000, 0, ".", "");
+}
+
+ini_set('session.gc_maxlifetime', 30*60);
+
+// error reporting control
+error_reporting(E_ALL ^ E_NOTICE);
+ini_set("display_errors", 0);
+
+// set the debug level for the controller
+define("SM_CONTROLLER_DEBUG_LEVEL", 0);
+define("SM_DEVELOPER_MODE", true);
+
 class SmartestInit{
 
 	static function setRootDir(){
@@ -50,13 +64,12 @@ class SmartestInit{
 	    require SM_ROOT_DIR.'System/Base/constants.php';
 		require SM_ROOT_DIR.'System/Response/SmartestResponse.class.php';
         
-        // $everything is everything
+        // as the Donny Hathaway song says, $everything is everything
 		$everything = new SmartestResponse;
 		$everything->init();
 		$everything->build();
 		$everything->finish();
 		
 	}
-	
-	
+
 }

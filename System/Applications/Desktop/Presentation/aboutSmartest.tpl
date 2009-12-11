@@ -8,6 +8,7 @@
       <img src="{$domain}Resources/System/Images/info_logo.png" alt="Smartest Logo" />
     </div>
     <p><strong>Version</strong>: Smartest {$version} (Revision {$revision})</p>
+    <p><strong>Build</strong>: {$build}</p>
     <p><strong>Installed</strong>: {if $system_installed_timestamp > 0}{$system_installed_timestamp|date_format:"%A %B %e, %Y, %l:%M%p"}{else}<em>Unknown</em>{/if}</p>
     <p><strong>PHP Version</strong>: {$php_version}</p>
     <p><strong>Available Memory</strong>: {$memory_limit}</p>

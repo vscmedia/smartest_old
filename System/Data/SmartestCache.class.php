@@ -29,11 +29,11 @@ class SmartestCache{
 		
 		$file_path = SM_ROOT_DIR.'System/Cache/Data/'.$file_name;
 	    
-	    // if(file_put_contents($file_path, serialize($data))){
+	    if(file_put_contents($file_path, serialize($data))){
 			return true;
-		/* }else{
+		}else{
 			return false;
-		} */
+		}
 	}
 	
 	static function hasData($token, $is_smartest=false){
