@@ -12,3 +12,12 @@
 </ul>
 
 </div>
+
+<div id="actions-area">
+  
+  <ul class="actions-list" id="non-specific-actions">
+    <li><strong>Options</strong></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}templates/import'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" /> Import templates</a></li>
+  </ul>
+  
+</div>

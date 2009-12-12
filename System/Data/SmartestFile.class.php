@@ -38,6 +38,10 @@ class SmartestFile implements ArrayAccess{
         return $this->_current_file_path;
     }
     
+    public function getSmartestPath(){
+        return substr($this->getPath(), strlen(SM_ROOT_DIR));
+    }
+    
     public function getFileName(){
         return basename($this->getPath());
     }
@@ -118,6 +122,10 @@ class SmartestFile implements ArrayAccess{
 	        
 	        case "file_path":
 	        return $this->getPath();
+	        break;
+	        
+	        case "smartest_path":
+	        return $this->getSmartestPath();
 	        break;
 	        
 	        case "public_file_path":

@@ -21,10 +21,15 @@ class Assets extends SmartestSystemApplication{
 	}
 	
 	public function getAssetTypes(){
-	
+	    
+	    $h = new SmartestAssetsLibraryHelper;
+		
 		$this->setTitle("Asset Types");
 		$this->setFormReturnUri(); // set the url of the page to be return to
-		$assetTypes = $this->manager->getAssetTypes();
+		
+		$assetTypes_old = $this->manager->getAssetTypes();
+		$assetTypes = $h->getTypesByCategory(array('templates'));
+		
 		$this->send($assetTypes, "assetTypeCats");
 		
 		$recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId());
@@ -171,7 +176,7 @@ class Assets extends SmartestSystemApplication{
 	    $database = SmartestPersistentObject::get('db:main');
 	    
 	    // first, get the folders where uploads will be found, and match those to types
-	    $location_types = $h->getTypeCodesByStorageLocation();
+	    $location_types = $h->getTypeCodesByStorageLocation($h->getNonImportableCategoryNames());
 	    $locations = array_keys($location_types);
 	    $types = $h->getTypes();
 	    $location_types_info = $location_types;
@@ -179,7 +184,6 @@ class Assets extends SmartestSystemApplication{
 	    foreach($location_types_info as $path => &$l){
 	        foreach($l as &$type){
 	            $type = $types[$type];
-	            // $type['comma_separated_list'] = implode(', ', );
 	        }
 	    }
 	    
@@ -284,7 +288,7 @@ class Assets extends SmartestSystemApplication{
 	    }
 	    
 	    $h = new SmartestAssetsLibraryHelper;
-	    $asset_types = SmartestDataUtility::getAssetTypes();
+	    $asset_types = $h->getTypes();
 	    
 	    foreach($new_files as $nf){
 	        

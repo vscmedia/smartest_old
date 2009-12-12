@@ -1,8 +1,9 @@
 <div id="work-area">
+  <h3>Import templates</h3>
   
-  <h3>Detect New File Uploads</h3>
-  <div class="instruction">Check the box next to any files that you wish to add to the repository.</div>
-  <form action="{$domain}{$section}/enterNewFileData" method="post">
+  <div class="instruction">Check the box next to any templates that you wish to import</div>
+  
+  <form action="{$domain}{$section}/addTemplateData" method="post">
   {foreach from=$new_files key="path" item="files_of_this_type"}
   <h4 style="margin-bottom:0px">Files found in: {$path}</h4>
   <p style="margin-top:0px">({foreach from=$types_info[$path] item="type" name="types"}{if $smarty.foreach.types.index > 0}, {/if}{$type.label}{/foreach})</p>
@@ -17,4 +18,5 @@
   {/foreach}
   <div class="buttons-bar"><input type="submit" value="Continue &gt;&gt;" /></div>
   </form>
+  
 </div>

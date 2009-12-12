@@ -17,8 +17,6 @@ type:
     suffix:
       - {mime: text/html, _content: html}
       - {mime: text/html, _content: htm}
-    param:
-      - {name: parse_urls, label: Parse URLs, type: SM_DATATYPE_BOOLEAN, default: true, required: false}
     
   SM_ASSETTYPE_PLAIN_TEXT:
     id: SM_ASSETTYPE_PLAIN_TEXT

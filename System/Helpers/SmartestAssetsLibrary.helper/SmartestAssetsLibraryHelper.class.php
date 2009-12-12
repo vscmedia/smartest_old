@@ -4,6 +4,7 @@ class SmartestAssetsLibraryHelper{
     
     protected $database;
     protected $types;
+    protected $categories;
     protected $typesSuffixesMap = array();
     
     const ASSET_TYPE_UNKNOWN = -1024;
@@ -14,12 +15,85 @@ class SmartestAssetsLibraryHelper{
     }
     
     public function getTypes(){
+        
         if(!$this->types){
             $this->types = SmartestDataUtility::getAssetTypes();
         }
         
         return $this->types;
     }
+    
+    public function getCategories($importable_only=false){
+        
+        if(!$this->categories){
+            $cats_data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assettypecategories.yml');
+    		$this->categories = $cats_data['categories'];
+        }
+        
+        $cats = $this->categories;
+        
+        if($importable_only){
+            foreach($cats as $k=>$cat){
+                if(!$cat['importable']){
+                    unset($cats[$k]);
+                }
+            }
+        }
+        
+        return $cats;
+    }
+    
+    public function getCategoryShortNames($importable_only=false){
+        
+        $names = array();
+        
+        foreach($this->getCategories($importable_only) as $cat){
+            $names[] = $cat['short_name'];
+        }
+        
+        return $names;
+    }
+    
+    public function getTypesByCategory($exclude_categories=''){
+		
+		/* $types = array(
+		    "user_text" => array(),
+		    "image" => array(),
+		    "browser_instructions" => array(),
+		    "embedded" => array(),
+		    "other" => array()
+		); */
+		
+		
+		
+		$types = $this->getCategories();
+		
+		if(!is_array($exclude_categories)){
+		    $exclude_categories = array();
+		}
+		
+		foreach($exclude_categories as $ec){
+		    if(isset($types[$ec])){
+		        unset($types[$ec]);
+		    }
+		}
+		
+		//  && !in_array($type_array['category'], $exclude_categories)
+		
+		$processed_xml_data = SmartestDataUtility::getAssetTypes();
+		
+		if(is_array($processed_xml_data)){
+		    foreach($processed_xml_data as $type_array){
+		        if(isset($types[$type_array['category']])){
+		            $cat_array =& $types[$type_array['category']]['types'];
+		            $cat_array[] = $type_array;
+		        }
+		    }
+	    }
+	    
+	    return $types;
+		
+	}
     
     public function getUploadLocations(){
         
@@ -38,7 +112,11 @@ class SmartestAssetsLibraryHelper{
         
     }
     
-    public function getTypeCodesByStorageLocation(){
+    public function getTypeCodesByStorageLocation($exclude_categories=''){
+        
+        if(!is_array($exclude_categories)){
+            $exclude_categories = array();
+        }
         
         $asset_types = SmartestDataUtility::getAssetTypes();
         $locations = array();
@@ -46,7 +124,7 @@ class SmartestAssetsLibraryHelper{
         
         // get the folders where uploads are made to, and match those to types
         foreach($asset_types as $key => $t){
-            if($t['storage']['type'] == 'file'){
+            if($t['storage']['type'] == 'file' && !in_array($t['category'], $exclude_categories)){
                 $location_types[$t['storage']['location']][] = $key;
             }
         }
@@ -69,6 +147,22 @@ class SmartestAssetsLibraryHelper{
         }else{
             return self::ASSET_TYPE_UNKNOWN;
         }
+        
+    }
+    
+    public function getNonImportableCategoryNames(){
+        
+        $cats_data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assettypecategories.yml');
+		$cats = $cats_data['categories'];
+		$names = array();
+		
+		foreach($cats as $c){
+		    if(!$c['importable']){
+		        $names[] = $c['short_name'];
+		    }
+		}
+		
+		return $names;
         
     }
     

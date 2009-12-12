@@ -8,13 +8,13 @@
   <input type="hidden" id="item_id_input" name="asset_type" value="" />
 </form>
   
-{foreach from=$assetTypeCats item="assetTypeCategory" key="category_name"}
+{foreach from=$assetTypeCats item="assetTypeCategory"}
 
-<div class="form-section-label">{$category_name}</div>
+<div class="form-section-label">{$assetTypeCategory.label}</div>
 
 <ul class="options-grid-no-scroll" style="margin-top:0px">
 
-{foreach from=$assetTypeCategory item="assetType"}
+{foreach from=$assetTypeCategory.types item="assetType"}
   <li ondblclick="window.location='{$domain}{$section}/getAssetTypeMembers?asset_type={$assetType.id}'">
     <a href="javascript:nothing();" id="item_{$assetType.id}" class="option" onclick="setSelectedItem('{$assetType.id}', '{$assetType.label|escape:quotes}');">
       <img border="0" src="{$domain}Resources/Icons/folder.png" />{$assetType.label}</a></li>{* $assetType.icon *}

@@ -36,6 +36,17 @@ class SmartestTemplateAsset extends SmartestAsset{
         
     }
     
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "status":
+            return "imported";
+        }
+        
+        return parent::offsetGet($offset);
+        
+    }
+    
     public function hydrateByFileName($filename){
         
         
