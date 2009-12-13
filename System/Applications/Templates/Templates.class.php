@@ -285,11 +285,10 @@ class Templates extends SmartestSystemApplication{
             if($existing_location != $required_location){
                 // The file type has been recognized by its file suffix, but needs to be moved to the right place (so needs to be moved - user has been warned about this)
                 $move_to = SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.$required_location.SmartestFileSystemHelper::baseName($current_path));
-                // var_dump($required_location);
                 $success = SmartestFileSystemHelper::move($current_path, $move_to);
                 $filename = SmartestFileSystemHelper::baseName($move_to);
             }else{
-                $move_to = SmartestFileSystemHelper::getUniqueFileName($current_path);
+                $move_to = $current_path;
                 $filename = SmartestFileSystemHelper::baseName($move_to);
                 $success = true;
             }

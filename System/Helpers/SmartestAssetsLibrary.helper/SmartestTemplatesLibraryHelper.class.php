@@ -23,15 +23,17 @@ class SmartestTemplatesLibraryHelper{
 		$result = $this->database->queryToArray($sql);
 		
 		foreach($result as $foreign_template_asset){
-		    $key = array_search($foreign_template_asset['asset_url'], $all_templates);
-		    unset($all_templates[$key]);
+		    if($foreign_template_asset['asset_shared'] != '1'){
+		        $key = array_search($foreign_template_asset['asset_url'], $all_templates);
+		        unset($all_templates[$key]);
+	        }
 		}
 		
 		// Templates already imported into the repository for this site should have proper SmartestTemplateAsset objects
-		$sql = "SELECT * FROM Assets WHERE asset_site_id ='".$site_id."' AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_deleted=0";
+		$sql = "SELECT * FROM Assets WHERE (asset_site_id='".$site_id."' OR asset_shared='1') AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_deleted=0";
 		$result = $this->database->queryToArray($sql);
 		$db_templates = array();
-		$db_template_names;
+		$db_template_names = array();
 		
 		foreach($result as $imported_template_record){
 		    $t = new SmartestTemplateAsset;
