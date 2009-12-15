@@ -19,7 +19,7 @@ class SmartestTemplatesLibraryHelper{
 		$templates = array();
 		
 		// Templates already imported into the repository but for other sites can be ignored
-		$sql = "SELECT * FROM Assets WHERE asset_site_id !='".$site_id."' AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE'";
+		$sql = "SELECT * FROM Assets WHERE asset_site_id !='".$site_id."' AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_shared!='1'";
 		$result = $this->database->queryToArray($sql);
 		
 		foreach($result as $foreign_template_asset){
@@ -56,6 +56,55 @@ class SmartestTemplatesLibraryHelper{
         
     }
     
+    public function getCompoundListTemplates($site_id){
+        
+        $path = SM_ROOT_DIR.'Presentation/Layouts/';
+		
+        $template_filenames = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
+        // more_templates = SmartestFileSystemHelper::getDirectoryContents($path2, false, SM_DIR_SCAN_FILES);
+        // $all_templates = array_merge($some_templates, $more_templates);
+		$templates = array();
+		
+		// Templates already imported into the repository as container templates can be ignored
+		$sql = "SELECT * FROM Assets WHERE asset_type='SM_ASSETTYPE_CONTAINER_TEMPLATE'";
+		$result = $this->database->queryToArray($sql);
+		
+		foreach($result as $foreign_template_asset){
+		    if($foreign_template_asset['asset_shared'] != '1'){
+		        $key = array_search($foreign_template_asset['asset_url'], $template_filenames);
+		        unset($template_filenames[$key]);
+	        }
+		}
+		
+		// print_r($template_filenames);
+		
+		// Templates already imported into the repository for this site should have proper SmartestTemplateAsset objects
+		/* $sql = "SELECT * FROM Assets WHERE (asset_site_id='".$site_id."' OR asset_shared='1') AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_deleted=0";
+		$result = $this->database->queryToArray($sql);
+		$db_templates = array();
+		$db_template_names = array();
+		
+		foreach($result as $imported_template_record){
+		    $t = new SmartestTemplateAsset;
+		    $t->hydrate($imported_template_record);
+		    $db_templates[] = $t;
+		    $db_template_names[] = $t->getUrl();
+		}
+		
+		foreach($all_templates as $template_on_disk){
+		    
+		    if(in_array($template_on_disk, $db_template_names)){
+		        $k = array_search($template_on_disk, $db_template_names);
+		        $templates[] = $db_templates[$k];
+		    }else{
+		        $templates[] = new SmartestUnimportedTemplate(SM_ROOT_DIR.'Presentation/Masters/'.$template_on_disk);
+		    }
+		} */
+		
+		return $templates;
+        
+    }
+    
     public function getTypes(){
         
         if(!count($this->types)){
@@ -74,6 +123,18 @@ class SmartestTemplatesLibraryHelper{
         }
         
         return $this->types;
+        
+    }
+    
+    public function getTypeCodes(){
+        
+        $codes = array();
+        
+        foreach($this->getTypes() as $t){
+            $codes[] = $t['id'];
+        }
+        
+        return $codes;
         
     }
     

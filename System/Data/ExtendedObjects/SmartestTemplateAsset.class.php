@@ -7,7 +7,7 @@ class SmartestTemplateAsset extends SmartestAsset{
     
     public function getFile(){
         
-        $this->_base_dir = SM_ROOT_DIR.'Presentation/Layouts/';
+        $this->_base_dir = SM_ROOT_DIR.$this->getStorageLocation();
         
         if(!$this->_template_file){
             
@@ -47,12 +47,6 @@ class SmartestTemplateAsset extends SmartestAsset{
         
     }
     
-    public function hydrateByFileName($filename){
-        
-        
-        
-    }
-    
     public function getArrayForElementsTree($level){
 	    
 	    $info = array();
@@ -67,6 +61,33 @@ class SmartestTemplateAsset extends SmartestAsset{
 	    $info['type'] = 'template';
 	    $level++;
 	    return array('info'=>$info, 'level'=>$level);
+	}
+	
+	public function getContent(){
+	    
+	    $file = $this->getFullPathOnDisk();
+	    
+	    if(is_file($file)){
+		    $contents = SmartestFileSystemHelper::load($file, true);
+		    return $contents;
+	    }
+	    
+	}
+	
+	public function getContentForEditor(){
+	    return htmlentities($this->getContent(), ENT_COMPAT, 'UTF-8');
+	}
+	
+	public function setContent($content){
+	    
+	    $file = $this->getFullPathOnDisk();
+	    return SmartestFileSystemHelper::save($file, $content, true);
+	    
+	    // if(is_file($file)){
+		//    $contents = SmartestFileSystemHelper::load($file, true);
+		//    return $contents;
+	    // }
+	    
 	}
 	
 	public function getTags($tagnames, SmartestPage $page, $level=0, $version="draft", $item_id=false){

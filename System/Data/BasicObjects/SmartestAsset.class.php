@@ -67,6 +67,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
     	        return $this->getFullPathOnDisk();
             }
             
+            case "storage_location":
+            return $this->getStorageLocation();
+            
             case "web_path":
             if($this->usesLocalFile()){
                 return $this->getFullWebPath();
@@ -313,13 +316,22 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	
 	public function getFullPathOnDisk(){
 	    
-	    $info = $this->getTypeInfo();
+	    if($this->usesLocalFile()){
+	        return SM_ROOT_DIR.$this->getStorageLocation().$this->getUrl();
+	    }else{
+	        return null;
+	    }
+	    
+	}
+	
+	public function getStorageLocation(){
 	    
 	    if($this->usesLocalFile()){
 	        if($this->getDeleted()){
-	            return SM_ROOT_DIR.'Documents/Deleted/'.$this->getUrl();
+	            return 'Documents/Deleted/';
 	        }else{
-	            return SM_ROOT_DIR.$info['storage']['location'].$this->getUrl();
+	            $info = $this->getTypeInfo();
+	            return $info['storage']['location'];
             }
 	    }else{
 	        return null;

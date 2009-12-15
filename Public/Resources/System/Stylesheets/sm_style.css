@@ -79,6 +79,21 @@ textarea#tpl_textArea{
 	border:1px solid #999;
 }
 
+a#site-exit-button{
+    float:right;
+    /* padding-right:3px; */
+    margin:4px 0 0 0;
+    width:10px;
+    height:16px;
+    display:block;
+    background-image:url('../Images/site_exit_off.png');
+    background-repeat:no-repeat;
+}
+
+a#site-exit-button:hover{
+    background-image:url('../Images/site_exit_on.png');
+}
+
 ul.basic-list{
     list-style-type:disc;
     list-style-image:url('../Images/generic_bullet.gif');

@@ -35,6 +35,7 @@
   {/foreach}
   </ul>
   <div class="buttons-bar">
+    <input type="button" value="&lt;&lt; Back" onclick="window.location='{$domain}{$section}/import'" />
     <input type="submit" value="Finish" />
   </div>
   </form>

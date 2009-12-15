@@ -6,11 +6,18 @@
 
 {if $is_editable}<form action="{$domain}{$section}/updateTemplate" method="post" name="newTemplate" enctype="multipart/form-data">{/if}
   
-  <input type="hidden" name="type" value="{$template_type}" />
-  <input type="hidden" name="filename" value="{$template_name}" />
-  {if $template_type == "SM_CONTAINER_TEMPLATE"}<input type="hidden" name="template_id" value="{$template_id}" />{/if}
+  {if $template.status == "imported"}
+  <input type="hidden" name="edit_type" value="imported" />
+  <input type="hidden" name="template_id" value="{$template.id}" />
+  {else}
+  <input type="hidden" name="edit_type" value="unimported" />
+  <input type="hidden" name="type" value="{$template.type}" />
+  <input type="hidden" name="filename" value="{$template.url}" />
+  {/if}
   
-  <div class="special-box"><strong>Template</strong>: <code>{$path}</code><strong><code>{$template_name}</code></strong></div>
+  {* if $template_type == "SM_CONTAINER_TEMPLATE"}<input type="hidden" name="template_id" value="{$template.id}" />{/if *}
+  
+  <div class="special-box"><strong>Template</strong>: <code>{$template.storage_location}</code><strong><code>{$template.url}</code></strong></div>
   {if !$file_is_writable}
     <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
   {elseif !$dir_is_writable}

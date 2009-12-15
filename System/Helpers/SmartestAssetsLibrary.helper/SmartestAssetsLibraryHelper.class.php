@@ -409,6 +409,19 @@ class SmartestAssetsLibraryHelper{
 		return $assets;
 	}
 	
+	public function getClassNamesByTypeCode(){
+	    
+	    $types = $this->getTypes();
+	    $classes = array();
+	    
+	    foreach($types as $t){
+	        $classes[$t['id']] = $t['class'];
+	    }
+	    
+	    return $classes;
+	    
+	}
+	
 	public function getAssetsByTypeCode($code, $site_id='', $mode=1, $avoid_ids=''){
 		
 		if(is_array($code)){
@@ -434,8 +447,17 @@ class SmartestAssetsLibraryHelper{
 		$result = $this->database->queryToArray($sql);
 		$assets = array();
 		
+		$classes = $this->getClassNamesByTypeCode();
+		
 		foreach($result as $r){
-		    $a = new SmartestAsset;
+		    
+		    if(class_exists($classes[$r['asset_type']])){
+		        $c = $classes[$r['asset_type']];
+		        $a = new $c;
+		    }else{
+		        $a = new SmartestAsset;
+		    }
+		    
 		    $a->hydrate($r);
 		    $assets[] = $a;
 		}

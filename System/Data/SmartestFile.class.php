@@ -99,9 +99,11 @@ class SmartestFile implements ArrayAccess{
     }
     
     public function getContent($binary_safe=false){
-        
         return SmartestFileSystemHelper::load($this->_current_file_path, $binary_safe);
-        
+    }
+    
+    public function setContent($content, $binary_safe=false){
+        return SmartestFileSystemHelper::save($this->_current_file_path, $template_content, $binary_safe);
     }
     
     public function getSize($formatted=true){

@@ -23,8 +23,8 @@
     
     <div class="edit-form-row">
       <div class="form-section-label">Multi-site sharing</div>
-      <input type="checkbox" name="template_shared" value="{$template.suggested_name}" id="template-shared" />
-      <label for="template-shared">Check this box to make this template available to all the websites you host in Smartest</label>
+      <input type="checkbox" name="template_shared" value="{$template.suggested_name}" id="template-shared" {if $force_shared}checked="checked" disabled="disabled" {/if}/>
+      {if $force_shared}<span class="form-hint">This template is already in use on other websites, so it must be shared.</span>{else}<label for="template-shared">Check this box to make this template available to all the websites you host in Smartest</label>{/if}
     </div>
     
     <div class="edit-form-row">

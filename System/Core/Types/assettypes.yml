@@ -401,6 +401,21 @@ type:
       location: Presentation/Masters/
     suffix:
       - {mime: application/octet-stream, _content: tpl}
+      
+  SM_ASSETTYPE_ITEMSPACE_TEMPLATE:
+    id: SM_ASSETTYPE_ITEMSPACE_TEMPLATE
+    template_type: SM_CONTAINER_TEMPLATE
+    category: templates
+    label: Itemspace template
+    description: "Template used to define itemspaces"
+    editable: true
+    icon: layout.png
+    class: SmartestTemplateAsset
+    storage: 
+      type: file
+      location: Presentation/Masters/
+    suffix:
+      - {mime: application/octet-stream, _content: tpl}
 
   SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE:
     id: SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE

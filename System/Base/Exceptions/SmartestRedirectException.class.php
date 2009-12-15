@@ -26,7 +26,7 @@ class SmartestRedirectException extends SmartestException{
 	    return $this->_redirectUrl;
 	}
 	
-	public function redirect($sc=301){
+	public function redirect($sc=303){
 	    
 	    header("HTTP/1.1 ".$sc." ".$this->_status_codes[$sc]);
         header("Location: ".$this->getRedirectUrl());

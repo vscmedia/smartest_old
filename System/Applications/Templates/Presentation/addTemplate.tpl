@@ -26,7 +26,7 @@ function hideUploader(){
 
 <form action="{$domain}{$section}/saveNewTemplate" method="post" name="newTemplate" enctype="multipart/form-data">
 
-  <input type="hidden" name="template_type" value="{$template_type}" />
+  <input type="hidden" name="template_type" value="{$template_type.id}" />
   <input type="hidden" name="add_type" id="add_type" value="DIRECT" />
   
   <div class="special-box">

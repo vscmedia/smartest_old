@@ -5,7 +5,7 @@
   {foreach from=$files item="file" name="files"}
     <li style="padding:10px;background-color:#{cycle values="fff,ddd"}">
       
-      <b>Title</b>: <input type="text" name="new_files[{$smarty.foreach.files.index}][name]" value="{$file.suggested_name}" /><br />
+      <b>Title</b>: <input type="text" name="new_files[{$smarty.foreach.files.index}][name]" value="{$file.suggested_name}" style="width:300px" /><br />
       <b>File Path</b>: <code>{$file.current_directory}{$file.filename}</code><input type="hidden" name="new_files[{$smarty.foreach.files.index}][filename]" value="{$file.current_directory}{$file.filename}" /><br />
       <b>Import as</b>:
       
@@ -35,6 +35,7 @@
   {/foreach}
   </ul>
   <div class="buttons-bar">
+    <input type="button" value="&lt;&lt; Back" onclick="window.location='{$domain}{$section}/detectNewUploads'" />
     <input type="submit" value="Finish" />
   </div>
   </form>
