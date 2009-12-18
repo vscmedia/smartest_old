@@ -147,6 +147,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function renderEditableDraftPage($get){
 		
+		define('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN', $this->getUser()->hasToken('edit_containers_in_preview', false));
+		
 		$page_webid = $get['page_id'];
 		    
 	    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){

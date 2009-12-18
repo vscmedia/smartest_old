@@ -4,13 +4,13 @@
   
   {if $asset.deleted}<div class="warning">Warning: This {$asset.type_info.label} is currently in the trash.</div>{/if}
   
-  {if !$file_is_writable}
+  {if !$file_is_writable && $asset.type_info.editable}
     <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
   {elseif !$dir_is_writable}
     <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
   {/if}
   
-  <div class="instruction">You are editing {$asset.type_info.label}: ({$asset.url})</div>
+  <div class="instruction">You are editing {$asset.type_info.label}: <code>{$asset.type_info.storage.location}</code><strong><code>{$asset.url}</code></strong></div>
   
   <div id="groups" class="special-box">
     File groups: {if count($groups)}{foreach from=$groups item="group"}<a href="{$domain}{$section}/browseAssetGroup?group_id={$group.id}">{$group.label}</a> (<a href="{$domain}{$section}/transferSingleAsset?asset_id={$asset.id}&amp;group_id={$group.id}&amp;transferAction=remove">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}

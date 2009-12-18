@@ -226,6 +226,12 @@ class SmartestSite extends SmartestBaseSite{
 	    
 	}
 	
+	public function getPublicComments(){
+	    
+	    
+	    
+	}
+	
 	public function getTitleFormatSeparator(){
 	    
 	    $found = preg_match_all('/[\/\|\>›\xBB-]+/', $this->getTitleFormat(), $matches);

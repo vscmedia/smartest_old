@@ -28,11 +28,25 @@ class SmartestSiteCreationHelper{
 	        $master_template_name = SmartestFileSystemHelper::getFileName(SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.'Presentation/Masters/'.SmartestStringHelper::toVarName($site->getName()).'.tpl'));
 	        $master_template_contents = str_replace('default.tpl', $master_template_name, file_get_contents(SM_ROOT_DIR.'System/Install/Samples/default.tpl'));
 	        if(file_put_contents(SM_ROOT_DIR.'Presentation/Masters/'.$master_template_name, $master_template_contents)){
+	            
 	            $master_template = $master_template_name;
+	            
+	            // Add the template to to the templates database
+	            $t = new SmartestTemplateAsset;
+	            $t->setUserId($u->getId());
+	            $t->setSiteId($site->getId());
+	            $t->setStringId(SmartestFileSystemHelper::removeDotSuffix($master_template_name));
+	            $t->setUrl($master_template_name);
+	            $t->setCreated(time());
+	            $t->setWebId(SmartestStringHelper::random(32));
+	            $t->setType('SM_ASSETTYPE_MASTER_TEMPLATE');
+	            $t->save();
+	            
 	        }else{
 	            $master_template = '';
 	            SmartestLog::getInstance('system')->log("Could not create ".SM_ROOT_DIR.'Presentation/Masters/'.$master_template_name.": Permission denied", SM_LOG_WARNING);
 	        }
+	        
 	    }else{
 	        if(is_file(SM_ROOT_DIR.'Presentation/Masters/'.$p->getParameter('site_master_template'))){
 	            $master_template = $p->getParameter('site_master_template');

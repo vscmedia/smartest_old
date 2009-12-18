@@ -224,6 +224,10 @@ class SmartestCmsItem implements ArrayAccess{
 	            return $this->getProperties();
 	            break;
 	            
+	            case '_editable_properties':
+	            return $this->getProperties();
+	            break;
+	            
 	        }
 	        
 	    }

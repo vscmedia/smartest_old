@@ -82,7 +82,7 @@
   	    <div class="form-section-label">Main Template</div>
   	    <select name="page_draft_template" id="page_draft_template"{if $newPage.preset} disabled="true"{/if}>
   	      {foreach from=$templates item="template"}
-  	      <option value="{$template.filename}"{if $newPage.draft_template == $template.filename} selected="selected"{/if}>{$template.filename}</option>
+  	      <option value="{$template.url}"{if $newPage.draft_template == $template.url} selected="selected"{/if}>{$template.url}</option>
   	      {/foreach}
   	    </select>
   	  </div>

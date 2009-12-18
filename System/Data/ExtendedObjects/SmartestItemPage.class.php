@@ -71,6 +71,28 @@ class SmartestItemPage extends SmartestPage{
 	    return $this->_simple_item->getTagsAsArrays();
 	    
 	}
+	
+	public function getUrls(){
+	    
+	    if(!count($this->_urls)){
+		
+		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id ='".$this->_properties['id']."'";
+		    $pageUrls = $this->database->queryToArray($sql);
+		
+		    foreach($pageUrls as $key => $url){
+		        
+		        $urlObj = new SmartestItemPageUrl;
+		        $urlObj->hydrate($url);
+		        $urlObj->setItem($this->_simple_item);
+		        $this->_urls[$key] = $urlObj;
+		        
+		    }
+		
+	    }
+	    
+	    return $this->_urls;
+	    
+	}
     
     public function setIdentifyingFieldName($field_name){
         if(!isset($this->_identifying_field_name)){
@@ -238,6 +260,12 @@ class SmartestItemPage extends SmartestPage{
 	        
 	        case "model_plural_name":
 	        return $this->_simple_item->getModel()->getPluralName(); */
+	        
+	        case "fallback_url":
+	        return "website/renderPageFromId?page_id=".$this->getWebid().'&item_id='.$this->_simple_item->getId();
+	        
+	        case "link_code":
+	        return "[[".SmartestStringHelper::toVarName($this->_simple_item->getModel()->getName()).":".$this->_simple_item->getSlug()."]]";
 	        
 	        case "model":
 	        return $this->_simple_item->getModel();

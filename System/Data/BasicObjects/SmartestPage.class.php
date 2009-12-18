@@ -633,7 +633,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 		if(!count($this->_urls)){
 		
 		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id ='".$this->_properties['id']."'";
-		    // echo $sql;
 		    $pageUrls = $this->database->queryToArray($sql);
 		
 		    foreach($pageUrls as $key => $url){
@@ -1164,6 +1163,12 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	        case "url":
 	        return $this->getDefaultUrl();
 	        
+	        case "fallback_url":
+	        return "website/renderPageFromId?page_id=".$this->getWebid();
+	        
+	        case "urls":
+	        return $this->getUrls();
+	        
 	        case "formatted_title":
 	        return $this->getFormattedTitle();
 	        
@@ -1183,6 +1188,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
             }
             
 	        break;
+	        
+	        case "link_code":
+	        return "[[page:".$this->getName()."]]";
 	        
 	        case "is_tag_page":
 	        return $this->isTagPage();

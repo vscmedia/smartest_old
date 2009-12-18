@@ -48,19 +48,23 @@
 {if $version == "draft"}
     <span>
       Master Template:
-      <select name="template_name" onchange="document.getElementById('templateSelect').submit();">
+      <select name="template_name" onchange="$('templateSelect').submit();">
         <option value="">Not Selected</option>
 {foreach from=$templates item="template"}
-        <option value="{$template.filename}"{if $templateMenuField == $template.filename} selected{/if}>{$template.filename}</option>
+        <option value="{$template.url}"{if $templateMenuField == $template.url} selected{/if}>{$template.url}</option>
 {/foreach}
       </select>
     </span>
 {else}
-    <span>Master template: <b title="Changing this value may affect which placeholders need to be defined on this page">{$templateMenuField}</b></span>
+    <span>Page template: <b title="Changing this value may affect which placeholders need to be defined on this page">{$templateMenuField}</b></span>
 {/if}
 
   </form>
 </div>
+
+{if $show_template_warning}
+  <div class="warning">Warning: the page template you are currently using is not yet in the templates repository. Click <a href="{$domain}templates/importSingleTemplate?asset_type=SM_ASSETTYPE_MASTER_TEMPLATE&amp;template={$templateMenuField}">here</a> to import it.</div>
+{/if}
 
 <div class="preference-pane" id="assets_draft" style="display:block">
 

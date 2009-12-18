@@ -9,6 +9,10 @@
     <input type="hidden" name="container_id" value="{$container.id}" />
     <input type="hidden" name="asset_id" id="item_id_input" value="" />
   
+    <div class="edit-form-row">
+      <div class="form-section-label">Container:</div>
+      {$container.name}
+    </div>
   
   {if $show_item_options}
     <div class="edit-form-row">
@@ -65,7 +69,7 @@
 
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
-    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/pageAssets?page_id={$page.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Cancel</a></li>
+    <li class="permanent-action"><a href="#" onclick="alert('geese!');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Cancel</a></li>
   </ul>
   
 </div>

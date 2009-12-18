@@ -381,6 +381,7 @@ type:
     editable: true
     icon: layout.png
     class: SmartestTemplateAsset
+    allow_convert_to: [SM_ASSETTYPE_ITEMSPACE_TEMPLATE, SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE]
     storage: 
       type: file
       location: Presentation/Layouts/
@@ -391,7 +392,7 @@ type:
     id: SM_ASSETTYPE_MASTER_TEMPLATE
     template_type: SM_PAGE_MASTER_TEMPLATE
     category: templates
-    label: Page master template
+    label: Page template
     description: "Template used to give a page its most basic, outermost features"
     editable: true
     icon: layout.png
@@ -413,7 +414,7 @@ type:
     class: SmartestTemplateAsset
     storage: 
       type: file
-      location: Presentation/Masters/
+      location: Presentation/Layouts/
     suffix:
       - {mime: application/octet-stream, _content: tpl}
 
@@ -421,7 +422,7 @@ type:
     id: SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE
     template_type: SM_LIST_ITEM_TEMPLATE
     category: templates
-    label: Compound list template
+    label: Simple list template
     description: Template used to define compound lists
     editable: true
     icon: layout.png
@@ -437,7 +438,7 @@ type:
     template_type: SM_LIST_ITEM_TEMPLATE
     category: templates
     label: Articulated list template
-    description: Dynamic HTML template that can be rendered by the Smartest presentation layer
+    description: "Template used to define the header, footer, or repeating parts of articulated lists"
     editable: true
     icon: layout.png
     class: SmartestTemplateAsset

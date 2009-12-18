@@ -271,9 +271,9 @@ class Pages extends SmartestSystemApplication{
                 $model = new SmartestModel;
                 
                 if($model->hydrate($page->getDatasetId())){
-                    $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+                    $items = $model->getSimpleItems($this->getSite()->getId());
                     $this->send($items, 'items');
-                    $this->send($model->__toArray(), 'model');
+                    $this->send($model, 'model');
                     $this->send($page, 'page');
                     $this->send(true, 'require_item_select');
                     $this->send('Please choose an item to continue editing.', 'chooser_message');
@@ -316,7 +316,7 @@ class Pages extends SmartestSystemApplication{
             		$this->send($allow_release, 'allow_release');
             		$this->send($this->getUser()->hasToken('edit_page_name'), 'allow_edit_page_name');
 		
-            		$pageUrls = $page->getUrlsAsArrays();
+            		// $pageUrls = $page->getUrlsAsArrays();
 		        
     		        $available_icons = $page->getAvailableIconImageFilenames();
     		        
@@ -440,16 +440,16 @@ class Pages extends SmartestSystemApplication{
                         }
                     }
                 
-            		$count_url = count($pageUrls);
+            		// $count_url = count($pageUrls);
             		$this->setTitle("Edit Page | ".$page->getTitle());
     		
             		$this->send($editorContent, "pageInfo");
             		$this->send($parent_pages, "parent_pages");
             		// $this->send($saved, "saved");
-            		$this->send($pageUrls, "pageurls");
-            		$this->send($count_url, "count");
+            		// $this->send($pageUrls, "pageurls");
+            		// $this->send($count_url, "count");
             		$this->send($ishomepage, "ishomepage");
-            		$this->send($this->getSite()->__toArray(), "site");
+            		$this->send($this->getSite(), "site");
             		$this->send(true, 'allow_edit');
             		// $this->send($this->getUser()->hasToken('edit_page_name'), 'allow_name_edit');
 		
@@ -564,7 +564,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        $page->moveUp();
-	        $this->addUserMessageToNextRequest("The page has been moved up.", SmartestUserMessage::SUCCESS);
+	        // $this->addUserMessageToNextRequest("The page has been moved up.", SmartestUserMessage::SUCCESS);
 	        SmartestCache::clear('site_pages_tree_'.$page->getSiteId(), true);
 	    }else{
 	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.", SmartestUserMessage::ERROR);
@@ -581,7 +581,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    if($page->hydrateBy('webid', $page_webid)){
 	        $page->moveDown();
-	        $this->addUserMessageToNextRequest("The page has been moved down.", SmartestUserMessage::SUCCESS);
+	        // $this->addUserMessageToNextRequest("The page has been moved down.", SmartestUserMessage::SUCCESS);
 	        SmartestCache::clear('site_pages_tree_'.$page->getSiteId(), true);
 	    }else{
 	        $this->addUserMessageToNextRequest("The page ID wasn't recognised.", SmartestUserMessage::ERROR);
@@ -872,7 +872,9 @@ class Pages extends SmartestSystemApplication{
 			$parent_info = $parent;
 		}
 		
-		$templates = $helper->getMasterTemplates($site_id); 
+		// $templates = $helper->getMasterTemplates($site_id);
+		$tlh = new SmartestTemplatesLibraryHelper;
+		$templates = $tlh->getMasterTemplates($this->getSite()->getId());
 
 		switch($stage){
 			
@@ -1293,7 +1295,11 @@ class Pages extends SmartestSystemApplication{
     		        }
             		
             		$site_id = $this->database->specificQuery("page_site_id", "page_webid", $get['page_id'], "Pages");
-            		$templates = $this->manager->getMasterTemplates($site_id);
+            		// $templates = $this->manager->getMasterTemplates($site_id);
+            		$tlh = new SmartestTemplatesLibraryHelper;
+            		$templates = $tlh->getMasterTemplates($this->getSite()->getId());
+            		
+            		
 		
             		$this->setTitle("Page Elements");
     		
@@ -1302,6 +1308,8 @@ class Pages extends SmartestSystemApplication{
             		}else{
             		    $template_name = $page->getDraftTemplate();
             		}
+            		
+            		$this->send((!$tlh->getMasterTemplateHasBeenImported($page->getDraftTemplate()) && $version == 'draft'), 'show_template_warning');
     		
             		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
             		    $allow_release = true;
@@ -1674,7 +1682,7 @@ class Pages extends SmartestSystemApplication{
 	        $this->send($users, 'users');
 	        $author_ids = $page->getAuthorIds();
 	        $this->send($author_ids, 'author_ids');
-	        $this->send($page->__toArray(), 'page');
+	        $this->send($page, 'page');
 	        
 	    }else{
             $this->addUserMessage('The page ID was not recognized', SmartestUserMessage::ERROR);
@@ -1785,11 +1793,9 @@ class Pages extends SmartestSystemApplication{
 		    $assetClasseslist = $this->manager->getSerialisedAssetClassTree($assetClasses['tree']);
  		    
  		    $this->send($assetClasseslist, 'elements');
- 		    $this->send($page->__toArray(), 'page');
+ 		    $this->send($page, 'page');
  		
 	    }
- 		
-		// return array("assets"=>$assetClasses['tree'], "page_id"=>$page_id);
 	}
 	
 	function createLayoutPreset($get, $post){
@@ -2819,7 +2825,7 @@ class Pages extends SmartestSystemApplication{
 	    $asset = new SmartestTemplateAsset;
 	    
 	    if($asset->hydrateBy('stringid', $id)){
-            $this->redirect('/templates/editTemplate?type=SM_CONTAINER_TEMPLATE&template_id='.$asset->getId().'&from=pageAssets');
+            $this->redirect('/templates/editTemplate?type=SM_ASSETTYPE_CONTAINER_TEMPLATE&template='.$asset->getId().'&from=pageAssets');
         }else{
             if(strlen($page_webid) == 32){
 	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
@@ -3088,7 +3094,6 @@ class Pages extends SmartestSystemApplication{
                 // this is a new list
             }
             
-            // print_r($list->__toArray());
             $this->send($list->getDraftHeaderTemplate(), 'header_template');
             $this->send($list->getDraftFooterTemplate(), 'footer_template');
             $this->send($list->getDraftTemplateFile(), 'main_template');
@@ -3097,10 +3102,10 @@ class Pages extends SmartestSystemApplication{
             $this->send($list_name, 'list_name');
             
             $alh = new SmartestAssetsLibraryHelper;
-            // $c->setSiteId($this->getSite()->getId());
-            // print_r($alh->getAssetsByTypeCode('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId()));
-            // print_r(SmartestPersistentObject::get('db:main')->getDebugInfo());
-            $this->send($alh->getAssetsByTypeCode('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId()), 'container_templates');
+            $this->send($alh->getAssetsByTypeCode('SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE', $this->getSite()->getId()), 'compound_list_templates');
+            
+            $tlh = new SmartestTemplatesLibraryHelper;
+            $this->send($tlh->getArticulatedListTemplates($this->getSite()->getId()), 'art_list_templates');
             
             $datautil = new SmartestDataUtility;
             
@@ -3297,7 +3302,7 @@ class Pages extends SmartestSystemApplication{
 	        
 	        // get templates
 	        $assetshelper = new SmartestAssetsLibraryHelper;
-	        $templates = $assetshelper->getAssetsByTypeCodeAsArrays('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId());
+	        $templates = $assetshelper->getAssetsByTypeCode('SM_ASSETTYPE_ITEMSPACE_TEMPLATE', $this->getSite()->getId());
 	        $this->send($templates, 'templates');
 	        
 	        // get sets
@@ -3379,7 +3384,7 @@ class Pages extends SmartestSystemApplication{
                 $this->send($definition_id, 'definition_id');
                 $this->send($options, 'options');
                 $this->send($item_space->__toArray(), 'itemspace');
-                $this->send($page->__toArray(), 'page');
+                $this->send($page, 'page');
                 
             }else{
                 $this->addUserMessageToNextRequest("The itemspace ID wasn't recognized", SmartestUserMessage::ERROR);
@@ -3521,27 +3526,25 @@ class Pages extends SmartestSystemApplication{
 		$page = new SmartestPage;
 		$url = new SmartestPageUrl;
 		
-		if($url->hydrate($get['url'])){
-		    $urlInfo = $url->__toArray();
-		}
+		if($url->find($get['url_id'])){
+		    
+		    $this->send($url, "url");
 		
-		// print_r($get);
-		// $url = $get['url'];
-		$ishomepage = $get['ishomepage'];
-		
-		if($page->hydrate($page_webid)){
-		    $page->setDraftMode(true);
-		    // $page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
-		    // $editorContent = $this->manager->getPage($page_id);
-		    $editorContent = $page->__toArray();
-		    $site = $page->getSite()->__toArray();
+    		if($page->find($url->getPageId())){
+    		    
+    		    if($page->getType() == "ITEMCLASS"){
+    		        $model = new SmartestModel;
+    		        $model->find($page->getDatasetId());
+    		        $this->send($model, "model");
+    		    }
+    		    
+    		    $page->setDraftMode(true);
+    		    $site = $page->getSite();
+    		    $this->send($site, 'site');
+    		    $this->send($page->isHomepage(), "ishomepage");
+    		    $this->send($page, "pageInfo");
+    	    }
 	    }
-	    
-	    $this->send($editorContent, "pageInfo");
-	    $this->send($urlInfo, "url");
-	    $this->send($ishomepage, "ishomepage");
-	    $this->send($site, 'site');
-		// return array("pageInfo"=>$editorContent, "url"=>$url, "ishomepage"=>$ishomepage );
 	}
 	
 	public function updatePageUrl($get,$post){

@@ -89,8 +89,12 @@ class SmartestSystemUser extends SmartestUser{
 	    
 	}
 	
-	public function hasToken($token){
-	    return in_array($token, $this->getTokenCodes()) || in_array('root_permission', $this->getTokenCodes());
+	public function hasToken($token, $include_root=true){
+	    if($include_root){
+	        return in_array($token, $this->getTokenCodes()) || in_array('root_permission', $this->getTokenCodes());
+        }else{
+            return in_array($token, $this->getTokenCodes());
+        }
 	}
 	
 	public function hasGlobalPermission($permission){

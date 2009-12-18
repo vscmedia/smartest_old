@@ -11,7 +11,7 @@
 </form>
 
 <div id="options-view-chooser">
-Found {$count} {$type.label|lower}s. View as:
+Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
 <a href="javascript:nothing()" onclick="setView('list', 'options_grid')">List</a> /
 <a href="javascript:nothing()" onclick="setView('grid', 'options_grid')">Icons</a>
 </div>
@@ -32,24 +32,27 @@ Found {$count} {$type.label|lower}s. View as:
 <ul class="actions-list" id="imported-template-specific-actions" style="display:none">
     
   <li><b>Selected Template:</b></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('editTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit this template</a></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage && confirm('Really delete this template?')){ workWithItem('deleteTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt=""> Delete this template</a></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('downloadTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Download this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="workWithItem('editTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="workWithItem('templateInfo');" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('duplicateTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(confirm('Really delete this template?')){ workWithItem('deleteTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="workWithItem('downloadTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_put.png" border="0" alt="" /> Download this template</a></li>
 </ul>
 
 <ul class="actions-list" id="unimported-template-specific-actions" style="display:none">
     
   <li><b>Unimported Template:</b></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('importSingleTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Import this template</a></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('editTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit as-is</a></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage && confirm('Really delete this template?')){ workWithItem('deleteTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt=""> Delete this template</a></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('duplicateTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Duplicate this template</a></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('downloadTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Download this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('importSingleTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Import this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('editTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit as-is</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage && confirm('Really delete this template?')){ workWithItem('deleteTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('duplicateTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate this template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('downloadTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_put.png" border="0" alt="" /> Download this template</a></li>
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Template Options</b></li>
-	<li class="disabled-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addTemplate?type=SM_PAGE_MASTER_TEMPLATE';" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add Another Master Template</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addTemplate?type={$type.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add another {$type.label|lower}</a></li>
+	<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/templates';" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" border="0" alt="" style="width:16px;height:16px" /> Back to template types</a></li>
 </ul>
 
 </div>

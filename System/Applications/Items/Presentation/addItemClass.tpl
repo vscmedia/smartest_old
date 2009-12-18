@@ -44,7 +44,7 @@ function turnOffAutoPlural(){
       <div class="form-section-label">Meta-page template</div>
       <select name="meta_page_template">
         {foreach from=$templates item="template"}
-        <option value"{$template}">{$template}</option>
+        <option value"{$template.url}">{$template.url}</option>
         {/foreach}
       </select>
     </div>

@@ -87,6 +87,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	            
 	            $info = $this->getTypeInfo();
 	            $filter = $this->getForeignKeyFilter();
+	            // echo $filter.' ';
 	            
 	            if($info['filter']['entitysource']['type'] == 'db'){
 	                
@@ -171,14 +172,17 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
         	                    if(isset($info['filter']['entitysource']['sortfield'])){
         	                        $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
         	                    }
+        	                    
+        	                    // echo $sql;
                                 
                                 $result = $this->database->queryToArray($sql);
         	                    $options = array();
+        	                    $class = $info['filter']['entitysource']['class'];
         	                    
         	                    foreach($result as $raw_array){
 	                        
-        	                        $class = $info['filter']['entitysource']['class'];
         	                        $option = new $class;
+        	                        // $option = new stdClass;
         	                        $option->hydrate($raw_array);
         	                        $options[] = $option;
                         
@@ -310,6 +314,17 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    $sql .= "'".$condition['value']."'";
 	    
 	    return $sql;
+	    
+	}
+	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        case "_options":
+	        return $this->getPossibleValues();
+	    }
+	    
+	    return parent::offsetGet($offset);
 	    
 	}
 	

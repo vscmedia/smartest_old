@@ -44,11 +44,11 @@ class Items extends SmartestSystemApplication{
 		$model = new SmartestModel;
 		$model->hydrate($itemclassid);
 		
-		$modelarray = $model->__toArray();
+		$modelarray = $model;
 		
 		$this->setTitle("Properties of model: ".$model->getName());
 		
-		$definition = $model->getPropertiesAsArrays();
+		$definition = $model->getProperties();
 		
 		$this->send($modelarray, 'itemclass');
 		$this->send($definition, 'definition');
@@ -459,7 +459,7 @@ class Items extends SmartestSystemApplication{
 	        
 	        $model = new SmartestModel;
 	        $model->hydrate($item->getItemclassId());
-	        $this->send($model->__toArray(), 'model');
+	        $this->send($model, 'model');
 	        
 	        $this->setTitle($item->getName().' | Tags');
 	        
@@ -487,7 +487,7 @@ class Items extends SmartestSystemApplication{
 	        // print_r($t);
 	        
 	        $this->send($item_tags, 'tags');
-	        $this->send($item->__toArray(), 'item');
+	        $this->send($item, 'item');
 	        
 	    }else{
 	        $this->addUserMessage('The item ID has not been recognized.', SmartestUserMessage::ERROR);
@@ -1077,7 +1077,9 @@ class Items extends SmartestSystemApplication{
     		    $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItem()->getItemclassId());
 	        }
 		    
-		    $item_array = $item->__toArray(true, true, true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
+		    // $item_array = $item->__toArray(true, true, true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
+		    $item_array = $item;
+		    
 		    $this->send($item->getModel()->getMetaPagesAsArrays(), 'metapages');
 		    $this->setTitle('Edit '.$item->getModel()->getName().' | '.$item->getName());
 		    $this->send($item_array, 'item');
@@ -1585,8 +1587,9 @@ class Items extends SmartestSystemApplication{
     	        if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items')){
 	            
     	            // user has permission - show options
-    	            $item_data = $item->__toArray(true, false, true);
-    	            $this->send($item_data, 'item');
+    	            // $item_data = $item->__toArray(true, false, true);
+    	            // $this->send($item_data, 'item');
+    	            $this->send($item, 'item');
     	            $this->setTitle('Publish '.$item_data['_model']['name']);
 	            
     	        }else{
@@ -1828,8 +1831,10 @@ class Items extends SmartestSystemApplication{
 		    $this->send((isset($get['createmetapage']) && $get['createmetapage'] == 'true') ? true : false, 'cmp');
 		    
 		    // get page templates
-		    $path = SM_ROOT_DIR.'Presentation/Masters/';
-            $templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
+		    // $path = SM_ROOT_DIR.'Presentation/Masters/';
+            // $templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
+            $tlh = new SmartestTemplatesLibraryHelper;
+            $templates = $tlh->getMasterTemplates($this->getSite()->getId());
             $this->send($templates, 'templates');
 		
 	    }else{

@@ -77,6 +77,7 @@ div#preview iframe.built{
 
 textarea#tpl_textArea{
 	border:1px solid #999;
+	background-color:#fff;
 }
 
 a#site-exit-button{
@@ -162,16 +163,16 @@ ul.basic-list li a:hover{
 } */
 
 a{
-    /* color:#F4842A; */
+    color:#F4842A;
     /* color:#777; */
-    color:#4180F9;
+    /* color:#4180F9; */
 	text-decoration:none
 }
 
 a:hover{
-    /* color:#F4842A; */
+    color:#F4842A;
     /* color:#999; */
-    color:#3868FF;
+    /* color:#3868FF; */
 	text-decoration:underline
 }
 
@@ -282,6 +283,10 @@ div.warning{
     background-color:#F5C564;
     padding:5px;
     margin:10px 0 10px 0;
+}
+
+div.warning a{
+    color:#F4842A;
 }
 
 div.error{

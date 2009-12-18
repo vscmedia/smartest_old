@@ -74,7 +74,12 @@
 <ul class="actions-list" id="non-specific-actions">
   <li><b>File group options</b></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editAssetGroupContents?group_id={$group.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_edit.png" border="0" alt="" /> Edit this group</a></li>
-	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a new file group</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_add.png" border="0" alt="" /> Create a new file group</a></li>
+</ul>
+
+<ul class="actions-list" id="non-specific-actions">
+  <li><b>Other options</b></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/assets'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" /> View all files by type</a></li>
 </ul>
 
 </div>

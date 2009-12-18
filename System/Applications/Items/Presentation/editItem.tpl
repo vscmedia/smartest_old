@@ -53,7 +53,7 @@
   {/if}
 </div>
 
-{foreach from=$item._properties key="pid" item="property"}
+{foreach from=$item._editable_properties key="pid" item="property"}
 <div class="edit-form-row">
   {item_field property=$property value=$item[$pid]}
 </div>

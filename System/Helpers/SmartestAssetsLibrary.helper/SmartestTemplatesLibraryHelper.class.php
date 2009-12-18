@@ -58,28 +58,37 @@ class SmartestTemplatesLibraryHelper{
     
     public function getCompoundListTemplates($site_id){
         
-        $path = SM_ROOT_DIR.'Presentation/Layouts/';
+        $templates = array();
+		return $templates;
+        
+    }
+    
+    public function getArticulatedListTemplates($site_id){
+        
+        // unimported template files in Presentation/ListItems/ become SmartestUnimportedTemplate objects
+        // except that 
+        //// 1) unimported template files in Presentation/ListItems/ that are in use as compound templates should be ignored
+        //// 2) template files in Presentation/ListItems/ that have already been imported as compound templates should be ignored
+        // and articulated list templates that have already been imported need to be included too
+        
+        $path = SM_ROOT_DIR.'Presentation/ListItems/';
 		
-        $template_filenames = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
-        // more_templates = SmartestFileSystemHelper::getDirectoryContents($path2, false, SM_DIR_SCAN_FILES);
-        // $all_templates = array_merge($some_templates, $more_templates);
+        $all_templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
 		$templates = array();
 		
-		// Templates already imported into the repository as container templates can be ignored
-		$sql = "SELECT * FROM Assets WHERE asset_type='SM_ASSETTYPE_CONTAINER_TEMPLATE'";
+		// Templates already imported into the repository but for other sites can be ignored
+		$sql = "SELECT * FROM Assets WHERE asset_site_id !='".$site_id."' AND asset_type='SM_ASSETTYPE_ART_LIST_TEMPLATE' AND asset_shared!='1'";
 		$result = $this->database->queryToArray($sql);
 		
 		foreach($result as $foreign_template_asset){
 		    if($foreign_template_asset['asset_shared'] != '1'){
-		        $key = array_search($foreign_template_asset['asset_url'], $template_filenames);
-		        unset($template_filenames[$key]);
+		        $key = array_search($foreign_template_asset['asset_url'], $all_templates);
+		        unset($all_templates[$key]);
 	        }
 		}
 		
-		// print_r($template_filenames);
-		
 		// Templates already imported into the repository for this site should have proper SmartestTemplateAsset objects
-		/* $sql = "SELECT * FROM Assets WHERE (asset_site_id='".$site_id."' OR asset_shared='1') AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_deleted=0";
+		$sql = "SELECT * FROM Assets WHERE (asset_site_id='".$site_id."' OR asset_shared='1') AND asset_type='SM_ASSETTYPE_ART_LIST_TEMPLATE' AND asset_deleted=0";
 		$result = $this->database->queryToArray($sql);
 		$db_templates = array();
 		$db_template_names = array();
@@ -97,9 +106,9 @@ class SmartestTemplatesLibraryHelper{
 		        $k = array_search($template_on_disk, $db_template_names);
 		        $templates[] = $db_templates[$k];
 		    }else{
-		        $templates[] = new SmartestUnimportedTemplate(SM_ROOT_DIR.'Presentation/Masters/'.$template_on_disk);
+		        $templates[] = new SmartestUnimportedTemplate($path.$template_on_disk);
 		    }
-		} */
+		}
 		
 		return $templates;
         
@@ -118,6 +127,9 @@ class SmartestTemplatesLibraryHelper{
             
             foreach($rt as $t){
                 $this->types[$t['id']] = $t;
+                if(is_dir(SM_ROOT_DIR.$t['storage']['location'])){
+                    $this->types[$t['id']]['storage']['writable'] = is_writable(SM_ROOT_DIR.$t['storage']['location']);
+                }
             }
         
         }
@@ -152,6 +164,18 @@ class SmartestTemplatesLibraryHelper{
         }else{
             return self::ASSET_TYPE_UNKNOWN;
         }
+        
+    }
+    
+    public function getMasterTemplateHasBeenImported($template_filename){
+        
+        if(is_file(SM_ROOT_DIR.'Presentation/Masters/'.$template_filename)){
+            $sql = "SELECT asset_id FROM Assets WHERE asset_url='".$template_filename."' AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_deleted=0";
+		    $result = $this->database->queryToArray($sql);
+		    return (bool) count($result);
+	    }else{
+	        return false;
+	    }
         
     }
 

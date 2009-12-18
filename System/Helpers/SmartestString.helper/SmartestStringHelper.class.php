@@ -300,7 +300,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    $dot_pieces = explode('.', $filename);
 	    
 	    if(count($dot_pieces) < 2){
-	        return null;
+	        return $filename;
         }else{
             $suffix = end($dot_pieces);
             $ns = ((mb_strlen($suffix)+1) * -1);

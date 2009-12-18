@@ -22,7 +22,7 @@
   
   <div class="edit-form-row">
     <div class="buttons-bar">
-      <input type="button" value="Cancel" onlick="cancelForm();" />
+      <input type="button" value="Cancel" onclick="cancelForm();" />
       <input type="submit" value="Save" />
     </div>
   </div>

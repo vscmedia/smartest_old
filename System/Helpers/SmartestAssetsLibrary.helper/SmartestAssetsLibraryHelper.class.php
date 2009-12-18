@@ -23,6 +23,24 @@ class SmartestAssetsLibraryHelper{
         return $this->types;
     }
     
+    public function getSelectedTypes($type_codes=''){
+        
+        $selected_types = array();
+        
+        if(!is_array($type_codes)){
+            $type_codes = array();
+        }
+        
+        foreach($this->getTypes() as $t){
+            if(in_array($t['id'], $type_codes)){
+                $selected_types[] = $t;
+            }
+        }
+        
+        return $selected_types;
+        
+    }
+    
     public function getCategories($importable_only=false){
         
         if(!$this->categories){

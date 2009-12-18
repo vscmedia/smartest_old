@@ -21,85 +21,76 @@ class SmartestResponse{
 	// The actual template file being included (has method name and ".tpl" appended)
 	public $templateFile;
 	
-	// The object that handles requests for assetclasses, images, etc. *very* important.
-	var $templateHelper;
-	
-	// The current controller method
-	var $method;
-	
 	// The current controller section/page
-	var $section;
+	private $section;
 	
 	// The controller $domain
-	var $domain;
+	private $domain;
 	
 	// An object for browser sniffing
-	var $browser;
+	private $browser;
 	
 	// The name of the current class instantiated by the controller as per controller.xml
-	var $userClass;
+	private $userClass;
 	
 	// The result of the current method
-	var $content;
+	private $content;
 	
 	// A "Cleaned" version of the $_GET string
-	var $get;
+	private $get;
 	
 	// The database/data-access object
-	var $database;
+	private $database;
 	
 	// The database/data-access object
-	var $database_sqllite;
+	// private $database_sqllite;
 	
 	// The settings from Configuration/database.ini
-	var $dbconfig;
+	private $dbconfig;
 	
 	// Time in milliseconds at start of pageload
-	var $startTime;
+	private $startTime;
 	
 	// Time in milliseconds at end of pageload
-	var $endTime;
+	private $endTime;
 	
 	// Resulting time taken/overhead
-	var $timeTaken;
+	private $timeTaken;
 	
 	// Resulting time taken/overhead, including template parse.
-	var $fullTimeTaken;
+	private $fullTimeTaken;
 	
 	// Resulting time taken/overhead by controller prior to calling user action
-	var $controllerPrepareTimeTaken;
+	private $controllerPrepareTimeTaken;
 	
 	// Resulting time taken/overhead by controller including calling user action
-	var $controllerActionTimeTaken;
+	private $controllerActionTimeTaken;
 	
 	// Settings manager object
-	var $configuration;
+	private $configuration;
 	
 	// Filter Chain
 	private $filters = array();
 	
 	// Files that need to be editable, but aren't
-	var $unwritableFiles;
+	private $unwritableFiles;
 	
 	// Files that need not to be editable, but are
-	var $writableFiles;
+	private $writableFiles;
 	
 	// Files that need to exist, but don't
-	var $missingFiles;
-	
-	// measuring units
-	var $measuringUnits;
+	private $missingFiles;
 	
 	// Authentication object
-	var $authentication;
+	private $authentication;
 	
 	// URL
-	var $url;
+	protected $url;
 	
 	// Log
-	var $log = array();
+	protected $log = array();
 	
-	var $userInterfaceTemplate;
+	protected $userInterfaceTemplate;
 	
 	public function __construct(){
 		
@@ -233,9 +224,8 @@ class SmartestResponse{
         
         if(version_compare(PHP_VERSION, '5.3.0') >= 0){
             if(!ini_get('date.timezone')){
-                // echo 'no date';
                 date_default_timezone_set($sd['system']['info']['default_timezone']);
-                SmartestLog::getInstance('system')->log("Default timezone must be set for PHP Version 5.3.0 and later. Was automatically set to ".$sd['system']['info']['default_timezone'].' (in system.yml)', SmartestLog::WARNING);
+                SmartestLog::getInstance('system')->log("Default timezone must be set for PHP Version 5.3.0 and later. Was automatically set to ".$sd['system']['info']['default_timezone'].' (in system.yml). Update your php.ini file to make this notice go away.', SmartestLog::WARNING);
             }
         }
 		
@@ -393,7 +383,7 @@ class SmartestResponse{
 			$this->smarty->assign("module_dir", $this->controller->getModuleDirectory());
 		}
 		
-		$this->method = $this->controller->getMethodName();
+		// $this->method = $this->controller->getMethodName();
 		$this->smarty->assign("method", $this->controller->getMethodName());
 		
 		$this->domain = $this->controller->getDomainName();
@@ -450,7 +440,7 @@ class SmartestResponse{
 		// If it is the former, require that the user is logged in.
 		
 		// Instantiate templating helper object that deals with getting asset classes, links, images, etc.
-		$this->templateHelper = new SmartestTemplateHelper($this->controller->getGetVariables());
+		// $this->templateHelper = new SmartestTemplateHelper($this->controller->getGetVariables());
 		
 		$this->errorStack->display();
 		
@@ -483,7 +473,7 @@ class SmartestResponse{
 		$sc = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
 		define('SM_SYSTEM_SYS_TEMPLATES_DIR', $sc['system']['places']['templates_dir']);
 		
-		$user_interface = (strlen($this->method)) ? SM_CONTROLLER_MODULE_DIR.'Presentation/'.SM_CONTROLLER_METHOD.".tpl" : null;
+		$user_interface = (strlen($this->controller->getMethodName())) ? SM_CONTROLLER_MODULE_DIR.'Presentation/'.SM_CONTROLLER_METHOD.".tpl" : null;
 			
 		if(is_file($user_interface)){
 			$this->smarty->assign("sm_interface", $user_interface);

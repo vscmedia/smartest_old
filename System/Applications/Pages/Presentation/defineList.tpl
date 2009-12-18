@@ -68,7 +68,7 @@ function adjustListOptions(currentListValue){
     <div class="edit-form-row">
       <div class="form-section-label">Template</div>
       <select name="main_template" onchange="">
-        {foreach from=$container_templates item="ct"}
+        {foreach from=$compound_list_templates item="ct"}
         <option value="{$ct.url}" {if $main_template == $ct.url} selected="selected"{/if}>{$ct.url}</option>
         {/foreach}
       </select>
@@ -91,8 +91,8 @@ function adjustListOptions(currentListValue){
     <div class="edit-form-row">
       <div class="form-section-label">Repeating Template</div>
       <select name="main_template" onchange="">
-        {foreach from=$templates item="rt"}
-        <option value="{$rt}" {if $main_template == $rt} selected="selected"{/if}>{$rt}</option>
+        {foreach from=$art_list_templates item="rt"}
+        <option value="{$rt}" {if $main_template == $rt.url} selected="selected"{/if}>{$rt.url}</option>
         {/foreach}
       </select>
     </div>

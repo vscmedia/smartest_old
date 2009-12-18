@@ -47,6 +47,62 @@ class SmartestTemplateAsset extends SmartestAsset{
         
     }
     
+    public function delete(){
+        if(unlink($this->getFullPathOnDisk())){
+            $this->database->rawQuery("DELETE FROM Assets WHERE asset_id='".$this->_properties['id']."' LIMIT 1");
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    public function getTypeConvertOptions(){
+        
+        $type = $this->getTypeInfo();
+        
+        if(isset($type['allow_convert_to']) && is_array($type['allow_convert_to'])){
+		    return $type['allow_convert_to'];
+		}else{
+		    return array();
+		}
+        
+    }
+    
+    public function isInUse(){
+        
+        switch($this->getType()){
+            case "SM_ASSETTYPE_MASTER_TEMPLATE":
+                $sql = "SELECT DISTINCT Sites.*, page_site_id FROM Pages, Sites WHERE (page_draft_template='".$base_name."' OR page_live_template='".$base_name."') AND Pages.page_site_id=Sites.site_id";
+                $result = $this->database->queryToArray($sql);
+                break;
+            case "SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE":
+                $sql = "SELECT DISTINCT Sites.*, page_site_id, list_page_id FROM Pages, Sites, Lists WHERE (list_draft_template_file='".$base_name."' OR list_live_template_file='".$base_name."') AND Lists.list_type='SM_LIST_SIMPLE' AND Lists.list_page_id=Pages.page_site_id AND Pages.page_site_id=Sites.site_id";
+                $result = $this->database->queryToArray($sql);
+                break;
+            case "SM_ASSETTYPE_ART_LIST_TEMPLATE":
+                $sql = "SELECT DISTINCT Sites.*, page_site_id, list_page_id FROM Pages, Sites, Lists WHERE ((list_draft_template_file='".$base_name."' OR list_live_template_file='".$base_name."') OR (list_draft_header_template='".$base_name."' OR list_live_header_template='".$base_name."') OR (list_draft_footer_template='".$base_name."' OR list_live_footer_template='".$base_name."')) AND Lists.list_type='SM_LIST_ARTICULAED' AND Lists.list_page_id=Pages.page_site_id AND Pages.page_site_id=Sites.site_id";
+                $result = $this->database->queryToArray($sql);
+                break;
+            case "SM_ASSETTYPE_CONTAINER_TEMPLATE":
+                $sql = "SELECT Assets.asset_id FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetClasses.assetclass_type='SM_ASSETCLASS_CONTAINER' AND AssetClasses.assetclass_id=AssetIdentifiers.assetidentifier_assetclass_id AND ((AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id AND AssetIdentifiers.assetidentifier_draft_asset_id='".$this->getId()."') OR (AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id AND AssetIdentifiers.assetidentifier_live_asset_id='".$this->getId()."'))";
+                $result = $this->database->queryToArray($sql);
+                break;
+        }
+        
+        return (bool) count($result);
+        
+    }
+    
+    public function isConvertable(){
+        
+        if(count($this->getTypeConvertOptions()) && !$this->isInUse()){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+    
     public function getArrayForElementsTree($level){
 	    
 	    $info = array();

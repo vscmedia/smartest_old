@@ -29,6 +29,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		    SmartestPersistentObject::set('template_layer_data:items', new SmartestParameterHolder("Template Layer Items"));
 		    
 		}
+		
+		if(!defined('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN')){
+		    define('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN', true);
+		}
 	    
 	}
 	
@@ -161,26 +165,33 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 $container_def = $this->getPage()->getContainerDefinition($container_name, $this->getDraftMode());
                 
-                if($this->getDraftMode()){
-                    
-                }
-                
                 $this->run($container_def->getTemplateFilePath(), array());
                 
                 if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
 		    
     			    $edit_link = '';
-		    
-    			    if(is_object($container_def->getTemplate())){
-    			        // TODO: Make it an admin-controlled setting as to whether containers are changeable in the preview screen
-    			        // $edit_link .= "<a title=\"Click to edit template: ".$container->getTemplate()->getUrl()."\" href=\"".SM_CONTROLLER_DOMAIN."templates/editTemplate?template_id=".$container->getTemplate()->getId()."&amp;type=SM_CONTAINER_TEMPLATE&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this template--></a>";
-    			    }
-		    
-    			    // $edit_link .= "<a title=\"Click to edit definition for container: ".$container_name."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
+    			    
+    			    if(constant("SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN")){
+    			        
+		                // print_r($container_def->getTemplate());
+		                    
+    	    		    if(is_object($container_def->getTemplate())){
+        			        $edit_link .= "<a title=\"Click to edit template: ".$container_def->getTemplate()->getUrl()."\" href=\"".SM_CONTROLLER_DOMAIN."templates/editTemplate?template=".$container_def->getTemplate()->getId()."&amp;type=SM_ASSETTYPE_CONTAINER_TEMPLATE&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this template--></a>";
+        			    }
+	                    
+	                    if($this->getPage() instanceOf SmartestItemPage){
+    			            $edit_link .= "<a title=\"Click to edit definition for container: ".$container_name."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;item_id=".$this->getPage()->getSimpleItem()->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_red.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+			            }else{
+			                $edit_link .= "<a title=\"Click to edit definition for container: ".$container_name."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_red.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+			            }
+
+			        }
 		    
     		    }else{
-    			    // $edit_link = "<!--edit link-->";
+    			    $edit_link = "<!--edit link-->";
     		    }
+    		    
+    		    return $edit_link;
                 
             }
             
@@ -561,7 +572,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             // echo 'hello';
             
             if(SM_CONTROLLER_METHOD == "renderEditableDraftPage"){
-			    $edit_link = "<a title=\"Click to edit definitions for embedded list: ".$list->getName()."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineList?assetclass_id=".$list->getName()."&amp;page_id=".$this->getPage()->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this list--></a>";
+			    $edit_link = "<a title=\"Click to edit definitions for embedded list: ".$list->getName()."\" href=\"".SM_CONTROLLER_DOMAIN."websitemanager/defineList?assetclass_id=".$list->getName()."&amp;page_id=".$this->getPage()->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".SM_CONTROLLER_DOMAIN."Resources/Icons/arrow_refresh_blue.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this list--></a>";
 		    }else{
 			    $edit_link = "<!--edit link-->";
 		    }
@@ -728,8 +739,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 }else{
                     $limit = null;
                 }
-                // var_dump(SmartestPersistentObject::get('db:main'));
-        		if($set->hydrateBy('name', $name) || $this->getDataSetsHolder()->h($name)){
+                
+                if($set->hydrateBy('name', $name) || $this->getDataSetsHolder()->h($name)){
         		    
         		    $dah = new SmartestDataAppearanceHelper;
                     $dah->setDataSetAppearsOnPage($set->getId(), $this->getPage()->getId());
@@ -739,10 +750,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         		    
         		}else{
         		    $items = array();
-        		}
-        		
-        		if($this->getDraftMode()){
-        		    // print_r(array_keys($items));
         		}
         		
         		if(isset($params['start'])){
@@ -789,28 +796,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     	            }
 	            }
 	            
-	            // $params['path'] = $path;
-	            
-	            /* if($this->getDraftMode()){
-                    $rd = $placeholder->getDraftRenderData();
-                }else{
-                    $rd = $placeholder->getLiveRenderData();
-                }
-                
-                if($data = @unserialize($rd)){
-                    $external_render_data = $data;
-                }else if($data = $placeholder->getDefaultAssetRenderData($this->getDraftMode())){
-                    $external_render_data = $data;
-                }else{
-                    $external_render_data = array();
-                }
-                
-                foreach($external_render_data as $key => $value){
-                    $render_data[$key] = $value;
-                }*/
-                
-                // return $this->_renderAssetObject($asset, $params, $render_data, $path);
-                $asset->setAdditionalRenderData($render_data, true);
+	            $asset->setAdditionalRenderData($render_data, true);
                 return $asset->render($this->getDraftMode());
                 
             }else{
@@ -998,10 +984,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                                 return $this->raiseError("Render template '".$render_template."' is missing.");
                             }
                             
-                        }else if(in_array($requested_property_name, array_keys($object->__toArray(true)))){
+                        }else if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
                             
-                            $array = $object->__toArray(true);
-                            return $array[$requested_property_name];
+                            // $array = $object->__toArray(true);
+                            // return $array[$requested_property_name];
+                            return $object->getPropertyValueByVarName($requested_property_name);
                             
                         }else{
                             
@@ -1074,10 +1061,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                         return $this->raiseError("Render template '".$render_template."' is missing.");
                     }
                     
-                }else if(in_array($requested_property_name, array_keys($object->__toArray(true)))){
+                }else if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
                     
-                    $array = $object->__toArray(true);
-                    return $array[$requested_property_name];
+                    // $array = $object->__toArray(true);
+                    // return $array[$requested_property_name];
+                    return $object->getPropertyValueByVarName($requested_property_name);
                     
                 }else{
                     
@@ -1089,8 +1077,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 // $object is not an object
                 // if($this->getDraftMode()){
-                    /* echo "Item is not an object.";
-                    print_r($object); */
                     return $this->raiseError("Item is not an object");
                 // }
                 

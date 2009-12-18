@@ -324,14 +324,16 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	    
 	}
 	
-	public function getStorageLocation(){
+	public function getStorageLocation($include_smartest_root=false){
+	    
+	    $root = $include_smartest_root ? SM_ROOT_DIR : null;
 	    
 	    if($this->usesLocalFile()){
 	        if($this->getDeleted()){
-	            return 'Documents/Deleted/';
+	            return $root.'Documents/Deleted/';
 	        }else{
 	            $info = $this->getTypeInfo();
-	            return $info['storage']['location'];
+	            return $root.$info['storage']['location'];
             }
 	    }else{
 	        return null;

@@ -328,6 +328,10 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    
 	}
 	
+	static function removeDotSuffix($file){
+	    return SmartestStringHelper::removeDotSuffix($file);
+	}
+	
 	static function getDotSuffix($file){
 		return SmartestStringHelper::getDotSuffix($file);
 	}

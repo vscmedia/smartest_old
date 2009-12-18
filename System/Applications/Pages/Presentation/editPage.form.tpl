@@ -39,14 +39,18 @@
   <div class="edit-form-row">
     <div class="form-section-label">Title</div>
     	<input type="text" name="page_title" value="{$pageInfo.static_title}" />
-    	{if !$pageInfo.title}<div>You must have a title! </div>{/if}
+    	{if $pageInfo.type == "ITEMCLASS"}
+    	  <span class="form-hint">This is only visible to the public if you check "Always use page name" below.</span>
+    	{else}
+    	  {if !$pageInfo.title}<div>You must have a title! </div>{/if}
+    	{/if}
   </div>
   
   {if $pageInfo.type == "ITEMCLASS"}
   <div class="edit-form-row">
     <div class="form-section-label">Always use page name</div>
     <input type="checkbox" name="page_force_static_title" id="page_force_static_title" value="true"{if $pageInfo.force_static_title=='1'} checked="checked"{/if} />
-    <label for="page_force_static_title">{if $pageInfo.force_static_title=='1'}Un-tick this box to make this meta-page have the title of the {$pageInfo.model.name} that is being displayed.{else}Tick this box to make sure this meta-page keeps the title above, instead of the {$pageInfo.model.name} that is being displayed.{/if}</label>
+    <label for="page_force_static_title">{if $pageInfo.force_static_title=='1'}Un-tick this box to make this meta-page have the title of the {$pageInfo.model.name|lower} that is being displayed.{else}Tick this box to make sure this meta-page keeps the title above, instead of the {$pageInfo.model.name|lower} that is being displayed.{/if}</label>
   </div>
   {/if}
   
@@ -57,7 +61,7 @@
   
   <div class="edit-form-row">
       <div class="form-section-label">Link code</div>
-      <code>[[page:{$pageInfo.name}]]</code>
+      <code>{$pageInfo.link_code}</code>
     </div>
   
   <div class="edit-form-row">
@@ -105,39 +109,46 @@
   
   {if $pageInfo.id > 0}
   <div class="edit-form-row">
-    <div class="form-section-label">Address</div>
+    <div class="form-section-label">URL</div>
 		
 	  <table width="100%" style="border:1px solid #ccc;padding:2px;" cellpadding="0" cellspacing="0">
+  	  
   	  {if $ishomepage == "true"}
-    	<tr style="background-color:#{cycle values="ddd,fff"};height:20px"><td>
-    		<div style="display:inline" id="siteDomainField_0">
-    		  <a href="http://{$site.domain}{$domain}" target="_blank">http://{$site.domain}{$domain}</a></div>
-    	</td>
-    	<td>&nbsp;</td>
-      </tr>{/if}
+    	<tr style="background-color:#{cycle values="ddd,fff"};height:20px">
+    	  <td>
+    		  <div style="display:inline" id="siteDomainField_0">
+    		    <a href="http://{$site.domain}{$domain}" target="_blank">http://{$site.domain}{$domain}</a></div></td>
+    	  <td>&nbsp;</td>
+      </tr>
+      {/if}
       
-  	  {if !empty($pageurls)}
-  	  {foreach from=$pageurls item=pageurl}
-  	  {capture name="pageUrl" assign="pageUrl"}http://{$site.domain}{$domain}{$pageurl.url}{/capture}
+  	  {if count($pageInfo.urls)}
+  	  
+  	  {foreach from=$pageInfo.urls item=pageurl}
+  	    {capture name="pageUrl" assign="pageUrl"}http://{$site.domain}{$domain}{$pageurl.url}{/capture}
   	  <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
   	    <td>
   		    <div style="display:inline" id="siteDomainField_{$pageurl.id}">
   		      {if $pageInfo.is_published == "TRUE"}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}</div></td>
   	    <td>
-  		    <input type="button" name="edit" value="Edit" onclick="window.location='{$domain}{$section}/editPageUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage}'" />
+  		    <input type="button" name="edit" value="Edit" onclick="window.location='{$domain}{$section}/editPageUrl?url_id={$pageurl.id}'" />
   		    <input type="button" name="mkdefault" value="Make Default" onclick="window.location='{$domain}{$section}/setPageDefaultUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}'"{if $pageurl.is_default == 1 || $pageurl.type == 'SM_PAGEURL_INTERNAL_FORWARD'} disabled="disabled"{/if} />
-  		    {if $count > 1 || $ishomepage == "true"}<input type="button" name="delete" value="Delete" onclick="if(confirm('Are you sure you want to delete this URL?')) window.location='{$domain}{$section}/deletePageUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage};'"/>{/if}</td></tr> 
+  		    {if count($pageInfo.urls) > 1 || $ishomepage == "true"}<input type="button" name="delete" value="Delete" onclick="if(confirm('Are you sure you want to delete this URL?')) window.location='{$domain}{$section}/deletePageUrl?page_id={$pageInfo.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage};'"/>{/if}</td></tr> 
       {/foreach}
+      
 	    {else}
-      {capture name="defaultUrl" assign="defaultUrl"}http://{$site.domain}{$domain}website/renderPageFromId?page_id={$pageInfo.webid}{/capture}
+	    
       <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
         <td>
           <div style="display:inline" id="siteDomainField">
-          {if $pageInfo.is_published == "TRUE"}<a href="{$defaultUrl}" target="_blank">{$defaultUrl|truncate:100:"..."}</a>{else}{$defaultUrl|truncate:100:"..."}{/if}</div></td>
-  	    <td></td></tr>{/if}
+          {if $pageInfo.is_published == "TRUE"}<a href="http://{$site.domain}{$domain}{$pageInfo.fallback_url}" target="_blank">http://{$site.domain}{$domain}{$pageInfo.fallback_url|truncate:100:"..."}</a>{else}http://{$site.domain}{$domain}{$pageInfo.fallback_url|truncate:100:"..."}{/if}</div></td>
+  	    <td></td></tr>
+  	    
+  	  {/if}
+  	  
   	</table>
 	
-  	<a href="{$domain}{$section}/addPageUrl?page_id={$pageInfo.webid}&amp;ishomepage={$ishomepage}">{if !empty($pageurls)}Add Another Url{else}Give This Page A Nicer Url{/if}</a><br />
+  	<a href="{$domain}{$section}/addPageUrl?page_id={$pageInfo.webid}&amp;ishomepage={$ishomepage}">{if count($pageInfo.urls)}Add Another Url{else}Give This Page A Nicer Url{/if}</a><br />
   	<img src="{$domain}Resources/Images/spacer.gif" width="1" height="10" />
   </div>
   
@@ -155,7 +166,7 @@
   {if !$ishomepage}
   <div class="edit-form-row">
     <div class="form-section-label">Parent Page</div>
-    <select name="page_parent" style="width:300px">
+    <select name="page_parent">
       {foreach from=$parent_pages item="page"}
         {if $page.id != $pageInfo.id}
         <option value="{$page.info.id}"{if $pageInfo.parent == $page.info.id} selected="selected"{/if}>+{section name="dashes" loop=$page.treeLevel}-{/section} {$page.info.title}</option>
@@ -168,7 +179,7 @@
   <div class="edit-form-row">
     <div class="form-section-label">Parent Meta-Page Item Source</div>
     {if $parent_mpp_control_type == 'dropdown'}
-    <select name="page_parent_data_source" style="width:300px">
+    <select name="page_parent_data_source">
       {if $show_self_option}<option value="_SELF"{if $parent_data_source_property_id == '_SELF'} selected="selected"{/if}>The same {$model.name} as on this page</option>{/if}
       {foreach from=$parent_meta_page_property_options item="parent_meta_page_property"}
       <option value="{$parent_meta_page_property.id}"{if $parent_data_source_property_id == $parent_meta_page_property.id} selected="selected"{/if}>Property: {$parent_meta_page_property.name} ({$parent_meta_page_property.selected_item_name})</option>

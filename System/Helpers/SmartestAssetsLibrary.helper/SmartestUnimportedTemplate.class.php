@@ -106,8 +106,9 @@ class SmartestUnimportedTemplate implements ArrayAccess{
         return $this->_probable_asset_type;
     }
     
-    public function getStorageLocation(){
-        return SmartestFileSystemHelper::dirName($this->_file->getSmartestPath());
+    public function getStorageLocation($include_smartest_root=false){
+        $root = $include_smartest_root ? SM_ROOT_DIR : null;
+        return $root.SmartestFileSystemHelper::dirName($this->_file->getSmartestPath());
     }
     
     public function getContent(){
@@ -124,6 +125,14 @@ class SmartestUnimportedTemplate implements ArrayAccess{
 	
 	public function getUrl(){
 	    return $this->_file->getFileName();
+	}
+	
+	public function getFullPathOnDisk(){
+	    return $this->_file->getPath();
+	}
+	
+	public function delete(){
+	    return $this->_file->delete();
 	}
     
     public function offsetGet($offset){
@@ -145,6 +154,8 @@ class SmartestUnimportedTemplate implements ArrayAccess{
             return $this->_file->getSize(false);
             case "file_path":
             return $this->_file->getSmartestPath();
+            case "full_path":
+            return $this->_file->getPath();
             case "suggested_name":
             return SmartestStringHelper::removeDotSuffix($this->_file->getFileName());
             case "storage_location":

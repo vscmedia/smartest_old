@@ -15,8 +15,6 @@
   <input type="hidden" name="filename" value="{$template.url}" />
   {/if}
   
-  {* if $template_type == "SM_CONTAINER_TEMPLATE"}<input type="hidden" name="template_id" value="{$template.id}" />{/if *}
-  
   <div class="special-box"><strong>Template</strong>: <code>{$template.storage_location}</code><strong><code>{$template.url}</code></strong></div>
   {if !$file_is_writable}
     <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
@@ -31,8 +29,9 @@
   
   <div class="buttons-bar">
     {if $is_editable}
-    <input type="submit" value="Save Changes" />
-    <input type="button" onclick="cancelForm();" value="Done" />
+    <input type="button" onclick="cancelForm();" value="Abandon changes" />
+    <input type="submit" name="submit" value="Save &amp; quit" />
+    <input type="submit" name="submit" value="Save &amp; continue editing" />
     {else}
     <input type="button" onclick="cancelForm();" value="Cancel" />
     {/if}
@@ -60,7 +59,8 @@
 <div id="actions-area">
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
-    {if $template_type == "SM_CONTAINER_TEMPLATE"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/containerTemplates'">Back to container temnplates</a></li>{/if}
+    {if $is_convertable}<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/convertTemplateType?template_id={$template.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/wrench_orange.png" border="0" alt="" /> Convert to another type</a></li>{/if}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/listByType?type={$template.type}'"><img src="{$domain}Resources/Icons/page_white_stack.png" border="0" alt="" /> Back to {$type_info.label|lower}s</a></li>
     {if $template_type == "SM_LIST_ITEM_TEMPLATE"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/listItemTemplates'">Back to list item temnplates</a></li>{/if}
     {if $template_type == "SM_PAGE_MASTER_TEMPLATE"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/masterTemplates'">Back to master temnplates</a></li>{/if}
   </ul>

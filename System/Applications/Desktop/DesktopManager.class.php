@@ -123,7 +123,7 @@ class DesktopManager{
         foreach($result as $item){
             $itemObj = new SmartestItem;
             $itemObj->hydrate($item);
-            $items[] = $itemObj->__toArray();
+            $items[] = $itemObj();
         }
         
         return $items;
@@ -139,7 +139,7 @@ class DesktopManager{
         foreach($result as $page){
             $itemObj = new SmartestPage;
             $itemObj->hydrate($page);
-            $pages[] = $itemObj->__toArray();
+            $pages[] = $itemObj();
         }
         
         return $pages;
@@ -152,7 +152,7 @@ class DesktopManager{
         foreach($result as $item){
             $itemObj = new SmartestItem;
             $itemObj->hydrate($item);
-            $items[] = $itemObj->__toArray();
+            $items[] = $itemObj();
         }
         
         return $items;
@@ -167,7 +167,7 @@ class DesktopManager{
         foreach($result as $page){
             $itemObj = new SmartestPage;
             $itemObj->hydrate($page);
-            $pages[] = $itemObj->__toArray();
+            $pages[] = $itemObj();
         }
         
         return $pages;

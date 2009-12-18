@@ -87,8 +87,8 @@ div#work-area textarea#tpl_textArea{
 	display:block;
 }
 
-#editTMPL{
-    height:400px;
+div.textarea-holder{
+    height:414px;
 }
 
 div#actions-area{

@@ -4,10 +4,12 @@
 <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
 {asset_select id=$property_id name=$name value=$value options=$property._options required=$property.required}
 
-{if count($asset.type_info.param) && $asset.id}
+{* $property *}
+
+{if count($value.type_info.param) && $value.id}
   <input type="button" onclick="window.location='{$domain}{$section}/editItemPropertyValueAssetData?item_id={$item.id}&amp;property_id={$property.id}'" value="Edit Parameters" />
 {/if}
 
-{if $asset.type_info.editable=='true'}
+{if $value.type_info.editable=='true'}
  <input type="button" onclick="window.location='{$domain}assets/editAsset?from=item_edit&amp;asset_id='+$('item_property_{$property.id}').value" value="Edit &gt;&gt;" />
 {/if}

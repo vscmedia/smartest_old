@@ -237,7 +237,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     
     ///// Flow Control //////
     
-    protected function redirect($destination=""){
+    protected function redirect($destination="", $exit=false){
 		
 		if(strlen($destination) == 0){
 			$destination = constant('SM_CONTROLLER_DOMAIN');
@@ -246,6 +246,9 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		}
 		
 		header("location:".$destination);
+		if($exit){
+		    exit;
+		}
 		
 	}
     

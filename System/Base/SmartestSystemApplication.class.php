@@ -92,9 +92,28 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    if(isset($_GET['from']) && isset($_GET['from']{0})){
 	        // do nothing
 	    }else{
-		    $_SESSION["_FORM_RETURN"] = reset(explode("?", $_SERVER["REQUEST_URI"]));
-		    $_SESSION["_FORM_RETURN_VARS"] = $_GET;
+		    SmartestSession::set("form:return:location", reset(explode("?", $_SERVER["REQUEST_URI"])));
+		    SmartestSession::set("form:return:vars", $_GET);
 	    }
+	}
+	
+	public function getFormReturnUri($escape=false){
+	    
+	    if(SmartestSession::hasData("form:return:location")){
+			$form_return_uri =& SmartestSession::get("form:return:location");
+		}else{
+			$form_return_uri = "/smartest";
+		}
+		
+		if(SmartestSession::hasData("form:return:vars") && is_array(SmartestSession::get("form:return:vars"))){
+		    
+			$form_return_uri .= "?";
+			$form_return_uri .= SmartestStringHelper::toQueryString(SmartestSession::get("form:return:vars"), $escape);
+			
+		}
+		
+		return $form_return_uri;
+	    
 	}
 	
 	protected function setFormCompleteUri(){
@@ -118,23 +137,8 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	
 	protected function formForward(){
 		
-		if($_SESSION["_FORM_RETURN"]){
-			$this->_formReturnUri =& $_SESSION["_FORM_RETURN"];
-		}else{
-			$this->_formReturnUri = "/smartest";
-		}
+		$this->redirect($this->getFormReturnUri(), true);
 		
-		$uri = $this->_formReturnUri;
-		
-		if(is_array($_SESSION["_FORM_RETURN_VARS"])){
-			$uri .= "?";
-			foreach($_SESSION["_FORM_RETURN_VARS"] as $var=>$value){
-				$uri .= "$var=$value&";
-			}
-		}
-		
-		header("Location:".$uri);
-		exit;
 	}
 	
 	protected function formContinue(){
