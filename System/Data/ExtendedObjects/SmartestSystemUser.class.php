@@ -248,7 +248,9 @@ class SmartestSystemUser extends SmartestUser{
     	    $codes = array();
 	    
     	    foreach($tokens as $t){
-    	        $codes[] = $t->getCode();
+    	        if(is_object($t)){
+    	            $codes[] = $t->getCode();
+	            }
     	    }
 	    
     	    $this->_token_codes = $codes;

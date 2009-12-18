@@ -514,17 +514,25 @@ class Assets extends SmartestSystemApplication{
         		        // $new_temp_file
         		        // copy the file from System/Temporary/ to the location dictated by the Type
         		        // delete copy in System/Temporary/ if necessary
-    		        
-        		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
-        		            $everything_ok = false;
-        		            $message = sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name));
-        		            $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
-        		            SmartestLog::getInstance('site')->log($message, SmartestLog::ERROR);
-        		            SmartestLog::getInstance('site')->log("File that failed to move to final location is still stored at: ".$new_temp_file, SmartestLog::NOTICE);
-        		        }else{
-        		            $asset->setUrl(basename($final_file_name));
-        		            $asset->setWebid(SmartestStringHelper::random(32));
-        		        }
+    		            
+    		            if(is_file($new_temp_file)){
+    		            
+        		            if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
+            		            $everything_ok = false;
+            		            $message = sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name));
+            		            $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
+            		            SmartestLog::getInstance('site')->log($message, SmartestLog::ERROR);
+            		            SmartestLog::getInstance('site')->log("File that failed to move to final location is still stored at: ".$new_temp_file, SmartestLog::NOTICE);
+            		        }else{
+            		            $asset->setUrl(basename($final_file_name));
+            		            $asset->setWebid(SmartestStringHelper::random(32));
+            		        }
+        		        
+    		            }else{
+    		                
+    		                SmartestLog::getInstance('site')->log("Temporary upload ".$new_temp_file." was unexpectedly not created.", SmartestLog::ERROR);
+    		                
+    		            }
         		    }
 		        
     		    }else{ // The new asset is being uploaded
@@ -543,8 +551,8 @@ class Assets extends SmartestSystemApplication{
 		        
     		        // give it hashed name for now and save it to disk
     		        $upload->setFileName(md5(microtime(true)).'.tmp');
-    		        $upload->save();
-		        
+    		        $r = $upload->save();
+    		        
     		        $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.$upload->getFileName();
 		        
     		        // create string id based on actual file name
@@ -565,14 +573,28 @@ class Assets extends SmartestSystemApplication{
 		            
         		        $intended_file_name = SM_ROOT_DIR.$type['storage']['location'].$filename;
         		        $final_file_name = SmartestFileSystemHelper::getUniqueFileName($intended_file_name);
+        		        
+        		        if(is_file($new_temp_file)){
     		        
-        		        if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
-        		            $everything_ok = false;
-        		            // $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
-        		            $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
+        		            if(!SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
+            		            $everything_ok = false;
+            		            // $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
+            		            // $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
+            		            $message = sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name));
+            		            $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
+            		            SmartestLog::getInstance('site')->log($message, SmartestLog::ERROR);
+            		            SmartestLog::getInstance('site')->log("File that failed to move to final location is still stored at: ".$new_temp_file, SmartestLog::NOTICE);
+            		        }else{
+            		            $asset->setUrl(basename($final_file_name));
+            		        }
+        		        
         		        }else{
-        		            $asset->setUrl(basename($final_file_name));
-        		        }
+    		                
+    		                $everything_ok = false;
+    		                $this->addUserMessageToNextRequest("Temporary upload ".$new_temp_file." was unexpectedly not created.", SmartestUserMessage::ERROR);
+    		                SmartestLog::getInstance('site')->log("Temporary upload ".$new_temp_file." was unexpectedly not created.", SmartestLog::ERROR);
+    		                
+    		            }
     		        
     		        }
 		        
