@@ -14,11 +14,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	    
 	    $this->_context = SM_CONTEXT_CONTENT_PAGE;
 	    
-	    if(!defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS')){
-		    define('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS', true);
-		}
-		
-		if(!SmartestPersistentObject::get('template_layer_data:sets')){
+	    if(!SmartestPersistentObject::get('template_layer_data:sets')){
 		    
 		    SmartestPersistentObject::set('template_layer_data:sets', new SmartestParameterHolder("Template Layer Datasets"));
 		    

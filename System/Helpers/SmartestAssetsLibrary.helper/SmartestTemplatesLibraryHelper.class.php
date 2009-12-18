@@ -14,6 +14,7 @@ class SmartestTemplatesLibraryHelper{
     public function getMasterTemplates($site_id){
         
         $path = SM_ROOT_DIR.'Presentation/Masters/';
+        $site_id = (int) $site_id;
 		
         $all_templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
 		$templates = array();
@@ -56,9 +57,47 @@ class SmartestTemplatesLibraryHelper{
         
     }
     
-    public function getCompoundListTemplates($site_id){
+    public function getSharedMasterTemplates(){
         
-        $templates = array();
+        $path = SM_ROOT_DIR.'Presentation/Masters/';
+		
+        $all_templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
+		$templates = array();
+		
+		// Templates already imported into the repository but for other sites can be ignored
+		$sql = "SELECT * FROM Assets WHERE asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_shared!='1'";
+		$result = $this->database->queryToArray($sql);
+		
+		foreach($result as $foreign_template_asset){
+		    if($foreign_template_asset['asset_shared'] != '1'){
+		        $key = array_search($foreign_template_asset['asset_url'], $all_templates);
+		        unset($all_templates[$key]);
+	        }
+		}
+		
+		// Templates already imported into the repository for this site should have proper SmartestTemplateAsset objects
+		$sql = "SELECT * FROM Assets WHERE asset_shared='1' AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_deleted=0";
+		$result = $this->database->queryToArray($sql);
+		$db_templates = array();
+		$db_template_names = array();
+		
+		foreach($result as $imported_template_record){
+		    $t = new SmartestTemplateAsset;
+		    $t->hydrate($imported_template_record);
+		    $db_templates[] = $t;
+		    $db_template_names[] = $t->getUrl();
+		}
+		
+		foreach($all_templates as $template_on_disk){
+		    
+		    if(in_array($template_on_disk, $db_template_names)){
+		        $k = array_search($template_on_disk, $db_template_names);
+		        $templates[] = $db_templates[$k];
+		    }else{
+		        $templates[] = new SmartestUnimportedTemplate(SM_ROOT_DIR.'Presentation/Masters/'.$template_on_disk);
+		    }
+		}
+		
 		return $templates;
         
     }

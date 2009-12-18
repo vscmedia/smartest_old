@@ -122,7 +122,8 @@ class Desktop extends SmartestSystemApplication{
 	    if($this->getUser()->hasToken('create_sites')){
 	        $this->send(SM_ROOT_DIR, "sm_root_dir");
 	        $this->send($this->getUser(), "user");
-	        $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/Masters/');
+	        $tlh = new SmartestTemplatesLibraryHelper;
+	        $templates = $tlh->getSharedMasterTemplates();
 	        $this->send($templates, 'templates');
 	        $this->send(is_writable(SM_ROOT_DIR.'Presentation/Masters/'), 'allow_create_master_tpl');
 	    }else{

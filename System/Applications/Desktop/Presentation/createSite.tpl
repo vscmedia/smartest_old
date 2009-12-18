@@ -46,7 +46,7 @@ var section = '{$section}';
     <option value="_DEFAULT">None for now, I will create one later</option>
     <option value="_BLANK"{if !$allow_create_master_tpl} disabled="disabled"{/if}>Create a new, blank template{if !$allow_create_master_tpl} (directory is not writable){/if}</option>
     {foreach from=$templates item="template"}
-    <option value="{$template}">Use {$template}</option>
+    <option value="{$template.url}">Use {$template.url}</option>
     {/foreach}
   </select>
 </div>

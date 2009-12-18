@@ -10,17 +10,11 @@
 
 <ul class="options-grid-no-scroll" style="margin-top:0px">
   {foreach from=$types item="assetType"}
-    <li ondblclick="window.location='{$domain}{$section}/getAssetTypeMembers?asset_type={$assetType.id}'">
+    <li ondblclick="window.location='{$domain}{$section}/listByType?type={$assetType.id}'">
       <a href="javascript:nothing();" id="item_{$assetType.id}" class="option" onclick="setSelectedItem('{$assetType.id}', '{$assetType.label|escape:quotes}');">
         <img border="0" src="{$domain}Resources/Icons/folder.png" />{$assetType.label}s</a></li>{* $assetType.icon *}
   {/foreach}
 </ul><br clear="all" />
-
-{* <ul class="basic-list">
-  <li><a href="{$domain}templates/containerTemplates">Container Templates</a></li>
-  <li><a href="{$domain}templates/masterTemplates">Master Templates</a></li>
-  <li><a href="{$domain}templates/listItemTemplates">ListItem Templates</a></li>
-</ul> *}
 
 </div>
 

@@ -34,8 +34,6 @@ class SmartestSession{
 		
 		if(strlen($object_name)){
 			
-			// print_r(array_keys($_SESSION));
-			
 			$key = 'smartest/';
 			
 			$parts = explode(':', $object_name);
@@ -44,11 +42,7 @@ class SmartestSession{
 			$key .= $name;
 			
 			if(isset($_SESSION)){
-			    // echo '$_SESSION['.$key.'] = '.print_r($data, true)."\n";
 			    $_SESSION[$key] = &$data;
-			    if($key == 'smartest/__newPage'){
-			        echo $data;
-			    }
 			}else{
 			    throw new SmartestException('SmartestSession or SmartestPersistentObject used while session was not active');
 			}
