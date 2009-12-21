@@ -40,6 +40,14 @@ class SmartestString implements SmartestBasicType, ArrayAccess{
     	return SmartestStringHelper::toCamelCase($this->_string);
     }
     
+    public function toHexUrlEncoded(){
+        return SmartestStringHelper::toHexUrlEncoded($this->_string);
+    }
+    
+    public function toHtmlEncoded(){
+        return SmartestStringHelper::toHtmlEncoded($this->_string);
+    }
+    
     public function isMd5Hash(){
     	return SmartestStringHelper::isMd5Hash($this->_string);
     }
@@ -68,6 +76,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess{
             return strlen($this->_string);
             case "paragraphs":
             return $this->toParagraphsArray();
+            case "encoded":
+            return $this->toHexEncoded();
         }
     }
     

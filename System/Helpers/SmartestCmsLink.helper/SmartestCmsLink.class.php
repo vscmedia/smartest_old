@@ -19,6 +19,7 @@ class SmartestCmsLink extends SmartestHelper{
     const DOWNLOAD = 8;
     const TAG = 16;
     const EXTERNAL = 256;
+    const MAILTO = 512;
     
     const ERROR_PAGE_NOT_FOUND = 1;
     const ERROR_ITEM_NOT_FOUND = 2;
@@ -60,7 +61,7 @@ class SmartestCmsLink extends SmartestHelper{
             $du = new SmartestDataUtility;
             $model_names = array_keys($du->getModelNamesLowercase());
         
-            if(in_array($ns, array('page', 'metapage', 'item', 'image', 'img', 'download', 'dl', 'tag', 'tag', 'tag_page'))){
+            if(in_array($ns, array('page', 'metapage', 'item', 'image', 'img', 'download', 'dl', 'tag', 'tag', 'tag_page', 'mailto'))){
             
                 switch($ns){
                 
@@ -88,6 +89,11 @@ class SmartestCmsLink extends SmartestHelper{
                     case "tag_page":
                     $this->setType(SM_LINK_TYPE_TAG);
                     break;
+                    
+                    case "mailto":
+                    $this->setType(SM_LINK_TYPE_MAILTO);
+                    break;
+                    
                 }
                 
                 $this->setNamespace($ns);
@@ -314,6 +320,11 @@ class SmartestCmsLink extends SmartestHelper{
             $this->_destination = $d;
             break;
             
+            case SM_LINK_TYPE_MAILTO:
+            $d = new SmartestString($this->_destination_properties->getParameter('destination'));
+            $this->_destination = $d;
+            break;
+            
         }
         
     }
@@ -457,6 +468,11 @@ class SmartestCmsLink extends SmartestHelper{
                         case SM_LINK_TYPE_DOWNLOAD:
                         return $this->_destination->getUrl();
                         break;
+                        
+                        case SM_LINK_TYPE_MAILTO:
+                        return $this->_destination->toHtmlEncoded();
+                        break;
+                        
                     }
                 
                 }
@@ -526,6 +542,9 @@ class SmartestCmsLink extends SmartestHelper{
             // }
             
             break;
+            
+            case SM_LINK_TYPE_MAILTO:
+            return "&#109;&#97;&#105;&#108;&#116;&#111;&#58;".$this->_destination->toHexUrlEncoded();
             
         }
         

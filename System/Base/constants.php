@@ -121,6 +121,7 @@ define('SM_LINK_TYPE_IMAGE', 4);
 define('SM_LINK_TYPE_DOWNLOAD', 8);
 define('SM_LINK_TYPE_TAG', 16);
 define('SM_LINK_TYPE_EXTERNAL', 256);
+define('SM_LINK_TYPE_MAILTO', 512);
 
 define('SM_LINK_SCOPE_NONE', 0);
 define('SM_LINK_SCOPE_INTERNAL', 1);

@@ -63,6 +63,13 @@
     <accept>SM_ASSETTYPE_MS_POWERPOINT</accept>
   </type>
   
+  <type id="SM_ASSETCLASS_EXP1">
+    <label>Exp1</label>
+    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
+    <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_CONTAINER_TEMPLATE</accept>
+  </type>
+  
   <type id="SM_ASSETCLASS_CONTAINER">
     <hide>true</hide>
     <label>A Container</label>

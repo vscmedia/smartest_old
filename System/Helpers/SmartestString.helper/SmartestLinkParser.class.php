@@ -52,6 +52,8 @@ class SmartestLinkParser{
                     if(in_array($m[3], array('image', 'asset', 'download'))){
                         $l->setParameter('destination', $m[2].$m[4]);
                         $l->setParameter('filename', $m[4]);
+                    }else if($m[3] == 'mailto'){
+                        $l->setParameter('destination', $m[4]);
                     }else{
                         $l->setParameter('destination', $m[2].SmartestStringHelper::toSlug($m[4]));
                     }
@@ -148,6 +150,10 @@ class SmartestLinkParser{
             $l->setParameter('namespace', $m[2]);
             $l->setParameter('format', SM_LINK_FORMAT_USER);
             
+            if($l->getParameter('namespace') == 'mailto'){
+                $l->setParameter('destination', $m[3]);
+            }
+                
             if(in_array($m[2], array('image', 'asset', 'download'))){
                 $l->setParameter('filename', $m[3]);
             }

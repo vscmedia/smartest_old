@@ -21,6 +21,8 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         $properties = SmartestLinkParser::parseSingle($to);
         $link = new SmartestCmsLink($properties, $markup_attributes);
         
+        // print_r($properties->getparameters());
+        
         return $link;
         
     }

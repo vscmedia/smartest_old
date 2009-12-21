@@ -223,6 +223,32 @@ class SmartestStringHelper extends SmartestHelper{
         return $new_string;
 	}
 	
+	public static function toHexUrlEncoded($string){
+	    
+	    for ($c = 0; $c < strlen($string); $c++) {
+            if(preg_match('!\w!', $string{$c})) {
+                $string_encode .= '%'.bin2hex($string{$c});
+            }else{
+                $string_encode .= $string{$c};
+            }
+        }
+        
+        return $string_encode;
+	}
+	
+	public static function toHtmlEncoded($string){
+	    
+	    for ($c = 0; $c < strlen($string); $c++) {
+            if(preg_match('!\w!', $string{$c})) {
+                $string_encode .= '&#x'.bin2hex($string{$c}).';';
+            }else{
+                $string_encode .= $string{$c};
+            }
+        }
+        
+        return $string_encode;
+	}
+	
 	static function toHash($string, $length=32, $type='MD5'){
 	    
 	    if($type == 'SHA1'){
