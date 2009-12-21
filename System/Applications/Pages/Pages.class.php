@@ -1125,17 +1125,17 @@ class Pages extends SmartestSystemApplication{
 			
         			case "ELEMENTS":
         			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
-        			$this->redirect($this->module."/pageAssets?page_id=".$page_webid);
+        			$this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
         			break;
 			
         			case "EDIT":
         			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
-        			$this->redirect($this->module."/openPage?page_id=".$page_webid);
+        			$this->redirect('/websitemanager/openPage?page_id='.$page_webid);
         			break;
 			
         			case "PREVIEW":
         			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
-        			$this->redirect($this->module."/preview?page_id=".$page_webid);
+        			$this->redirect('/websitemanager/preview?page_id='.$page_webid);
     			    break;
     			
     		    }
@@ -1201,8 +1201,6 @@ class Pages extends SmartestSystemApplication{
 	}
 
 	function pageAssets($get){
-	    
-	    // SmartestDataUtility::getAssetClassTypes();
 	    
 	    if($this->getUser()->hasToken('modify_draft_pages')){
 	        
@@ -1299,8 +1297,6 @@ class Pages extends SmartestSystemApplication{
             		$tlh = new SmartestTemplatesLibraryHelper;
             		$templates = $tlh->getMasterTemplates($this->getSite()->getId());
             		
-            		
-		
             		$this->setTitle("Page Elements");
     		
     		        if($version == 'live'){
@@ -1308,6 +1304,9 @@ class Pages extends SmartestSystemApplication{
             		}else{
             		    $template_name = $page->getDraftTemplate();
             		}
+            		
+            		$template_object = $tlh->hydrateMasterTemplateByFileName($template_name, $this->getSite()->getId());
+            		// print_r($template_object);
             		
             		$this->send((!$tlh->getMasterTemplateHasBeenImported($page->getDraftTemplate()) && $version == 'draft'), 'show_template_warning');
     		
@@ -1327,6 +1326,7 @@ class Pages extends SmartestSystemApplication{
             		$this->send($assetClasses["tree"], "assets");
             		$this->send($definedAssets, "definedAssets");
             		$this->send($page, "page");
+            		$this->send($template_object, "page_template");
             		$this->send($templates, "templates");
             		$this->send($template_name, "templateMenuField");
             		$this->send($site_id, "site_id");
@@ -3155,8 +3155,6 @@ class Pages extends SmartestSystemApplication{
             
             $list = new SmartestCmsItemList;
             
-            // print_r($page);
-            
             if($list->load($list_name, $page, true)){
                 // this list was already defined
                 $this->addUserMessageToNextRequest("The list \"".$list_name."\" was updated successfully.", SmartestUserMessage::SUCCESS);
@@ -3199,7 +3197,7 @@ class Pages extends SmartestSystemApplication{
                     $list->setDraftSetId((int) $post['dataset_id']);
                 }
                 
-                $list->setDraftTemplateFile($post['main_template']);
+                $list->setDraftTemplateFile($post['art_main_template']);
                 
             }
             

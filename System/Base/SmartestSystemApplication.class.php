@@ -30,6 +30,9 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    }else{
 	        $this->send(false, 'show_left_nav_options');
 	    }
+	    
+	    $this->send($this->getFormReturnUri(), 'sm_cancel_uri');
+	    
     }
     
     ///// Communicate with the user /////

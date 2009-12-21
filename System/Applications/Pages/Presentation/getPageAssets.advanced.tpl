@@ -50,8 +50,8 @@
       Master Template:
       <select name="template_name" onchange="$('templateSelect').submit();">
         <option value="">Not Selected</option>
-{foreach from=$templates item="template"}
-        <option value="{$template.url}"{if $templateMenuField == $template.url} selected{/if}>{$template.url}</option>
+{foreach from=$templates item="t"}
+        <option value="{$t.url}"{if $templateMenuField == $t.url} selected{/if}>{$t.url}</option>
 {/foreach}
       </select>
     </span>
@@ -128,7 +128,6 @@
 	  {/if}
 	  
 	{else}
-	{* <img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/exclamation.png" /> *}
 	
 	{if $assetclass.info.type == "list"}
 	<img border="0" style="width:16px;height:16px;" src="{$domain}Resources/Icons/notexist_list.gif" />

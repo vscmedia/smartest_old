@@ -26,6 +26,7 @@
        var sm_section = '{$section}';
        var sm_method = '{$method}';
        var sm_user_agent = {$sm_user_agent_json};
+       var sm_cancel_uri = '{$sm_cancel_uri}';
        
     </script>
 

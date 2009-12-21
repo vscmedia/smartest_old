@@ -17,6 +17,10 @@ class SmartestUnimportedTemplate implements ArrayAccess{
         
     }
     
+    public function __toString(){
+        return $this->getUrl();
+    }
+    
     private function calculateProbableTypes(){
         
         $h = new SmartestTemplatesLibraryHelper;

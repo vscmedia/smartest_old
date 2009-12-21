@@ -69,7 +69,7 @@
 
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
-    <li class="permanent-action"><a href="#" onclick="alert('geese!');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Cancel</a></li>
+    <li class="permanent-action"><a href="#" onclick="window.location=sm_cancel_uri;" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Cancel</a></li>
   </ul>
   
 </div>

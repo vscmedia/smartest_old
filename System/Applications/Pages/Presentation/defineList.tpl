@@ -64,48 +64,47 @@ function adjustListOptions(currentListValue){
     
     <div id="simple_options"{if $list.type == 'SM_LIST_ARTICULATED'} style="display:none"{/if}>
     
-    {$ct.url}
-    <div class="edit-form-row">
-      <div class="form-section-label">Template</div>
-      <select name="main_template" onchange="">
-        {foreach from=$compound_list_templates item="ct"}
-        <option value="{$ct.url}" {if $main_template == $ct.url} selected="selected"{/if}>{$ct.url}</option>
-        {/foreach}
-      </select>
-    </div>
+      <div class="edit-form-row">
+        <div class="form-section-label">Template</div>
+        <select name="art_main_template" onchange="">
+          {foreach from=$compound_list_templates item="ct"}
+          <option value="{$ct.url}" {if $main_template == $ct.url} selected="selected"{/if}>{$ct.url}</option>
+          {/foreach}
+        </select>
+      </div>
     
     </div>
     
     <div id="articulated_options"{if $list.type != 'SM_LIST_ARTICULATED'} style="display:none"{/if}>
     
-    <div class="edit-form-row">
-      <div class="form-section-label">Header Template (Optional)</div>
-      <select name="header_template" onchange="">
-        <option></option>
-        {foreach from=$templates item="ht"}
-        <option value="{$ht}" {if $header_template == $ht} selected="selected"{/if}>{$ht}</option>
-        {/foreach}
-      </select>
-    </div>
+      <div class="edit-form-row">
+        <div class="form-section-label">Header Template (Optional)</div>
+        <select name="header_template" onchange="">
+          <option></option>
+          {foreach from=$templates item="ht"}
+          <option value="{$ht}" {if $header_template == $ht} selected="selected"{/if}>{$ht}</option>
+          {/foreach}
+        </select>
+      </div>
     
-    <div class="edit-form-row">
-      <div class="form-section-label">Repeating Template</div>
-      <select name="main_template" onchange="">
-        {foreach from=$art_list_templates item="rt"}
-        <option value="{$rt}" {if $main_template == $rt.url} selected="selected"{/if}>{$rt.url}</option>
-        {/foreach}
-      </select>
-    </div>
+      <div class="edit-form-row">
+        <div class="form-section-label">Repeating Template</div>
+        <select name="main_template" onchange="">
+          {foreach from=$art_list_templates item="rt"}
+          <option value="{$rt}" {if $main_template == $rt.url} selected="selected"{/if}>{$rt.url}</option>
+          {/foreach}
+        </select>
+      </div>
      
-    <div class="edit-form-row">
-      <div class="form-section-label">Footer Template (Optional)</div>
-      <select name="footer_template" onchange="">
-        <option></option>
-        {foreach from=$templates item="ft"}
-        <option value="{$ft}" {if $footer_template == $ft} selected="selected"{/if}>{$ft}</option>
-        {/foreach}
-      </select>
-    </div>
+      <div class="edit-form-row">
+        <div class="form-section-label">Footer Template (Optional)</div>
+        <select name="footer_template" onchange="">
+          <option></option>
+          {foreach from=$templates item="ft"}
+          <option value="{$ft}" {if $footer_template == $ft} selected="selected"{/if}>{$ft}</option>
+          {/foreach}
+        </select>
+      </div>
     
     </div>
     

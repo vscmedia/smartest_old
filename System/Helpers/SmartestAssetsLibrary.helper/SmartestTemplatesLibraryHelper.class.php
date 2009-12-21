@@ -153,6 +153,30 @@ class SmartestTemplatesLibraryHelper{
         
     }
     
+    public function hydrateMasterTemplateByFileName($filename, $site_id=''){
+        
+        $sql = "SELECT * FROM Assets WHERE asset_url='".$filename."' AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_deleted='0'";
+        
+        if(is_numeric($site_id)){
+            $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1)";
+        }
+        
+        $sql .= " LIMIT 1";
+        
+        // echo $sql;
+        $result = $this->database->queryToArray($sql);
+        
+        if(count($result)){
+            $template = new SmartestTemplateAsset;
+            $template->hydrate($result[0]);
+        }else{
+            $template = new SmartestUnimportedTemplate(SM_ROOT_DIR.'Presentation/Masters/'.$filename);
+        }
+        
+        return $template;
+        
+    }
+    
     public function getTypes(){
         
         if(!count($this->types)){
