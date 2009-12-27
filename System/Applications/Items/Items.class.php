@@ -1760,9 +1760,10 @@ class Items extends SmartestSystemApplication{
                 
                 if($model->hydrate($model_id)){
             
-                    $model_array = $model->__toArrayLikeCmsItemArray();
-                    
-                    $this->send($model_array, 'item');
+                    // $model_array = $model->__toArrayLikeCmsItemArray();
+                    // $this->send($model_array, 'item');
+                    $this->send($model->getProperties(), 'properties');
+                    $this->send($model, 'model');
                 
                 }else{
                     
