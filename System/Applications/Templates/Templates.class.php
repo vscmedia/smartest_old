@@ -845,7 +845,7 @@ class Templates extends SmartestSystemApplication{
 	        
 	    }
 	    
-	    if($post['submit'] == "Save & continue editing"){
+	    if($post['_submit_action'] == "continue"){
 	        if($edit_type == 'imported'){
 	            $url_id = $template->getId();
 	        }else{

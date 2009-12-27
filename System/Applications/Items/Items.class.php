@@ -25,6 +25,9 @@ class Items extends SmartestSystemApplication{
 		$models = $du->getModelsAsArrays();
 		$this->send($models, 'models');
 		
+		$this->setTitle("Items");
+		$this->setFormReturnDescription('items');
+		
 		$recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId());
         $this->send($recent, 'recent_items');
 		
@@ -46,7 +49,7 @@ class Items extends SmartestSystemApplication{
 		
 		$modelarray = $model;
 		
-		$this->setTitle("Properties of model: ".$model->getName());
+		$this->setTitle("Model Properties | ".$model->getName());
 		
 		$definition = $model->getProperties();
 		
@@ -95,6 +98,9 @@ class Items extends SmartestSystemApplication{
   	        $this->send(count($items), 'num_items');
   	        $this->send($model, 'model');
   	        $this->send($query, 'query');
+  	        
+  	        $this->setTitle($model->getPluralName());
+  	        $this->setFormReturnDescription(strtolower($model->getPluralName()));
   	        
   	        $recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $model_id);
   	        $this->send($recent, 'recent_items');
@@ -1062,7 +1068,7 @@ class Items extends SmartestSystemApplication{
 	public function editItem($get, $post){
 		
 		if(!isset($get['from'])){
-		    $this->setFormReturnUri();
+		    // $this->setFormReturnUri();
 		}
 		
 		$item_id = $get['item_id'];
@@ -1161,7 +1167,11 @@ class Items extends SmartestSystemApplication{
             
         }
 	    
-	    $this->formForward();
+	    if($post['_submit_action'] == "continue"){
+	        $this->redirect("/datamanager/editItem?item_id=".$item->getItem()->getId());
+	    }else{
+	        $this->formForward();
+	    }
 	
 	}
 	

@@ -24,8 +24,9 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $h = new SmartestAssetsLibraryHelper;
 		
-		$this->setTitle("Asset Types");
+		$this->setTitle("Files");
 		$this->setFormReturnUri(); // set the url of the page to be return to
+		$this->setFormReturnDescription('file types');
 		
 		$assetTypes_old = $this->manager->getAssetTypes();
 		$assetTypes = $h->getTypesByCategory(array('templates'));
@@ -145,7 +146,7 @@ class Assets extends SmartestSystemApplication{
 		if(count($assets) > 0){
 		    $this->send($assets, 'assets');
 		    $this->setTitle($type['label']." Files");
-			// return array("assetList"=>$assetTypeMembers, "assetType"=>strtoupper($code));
+		    $this->setFormReturnDescription('files');
 		}else {
 			return array("error"=>"No members of this type");
 		}
@@ -715,6 +716,7 @@ class Assets extends SmartestSystemApplication{
 	    $group_id = $get['group_id'];
 	    $mode = isset($get["mode"]) ? (int) $get["mode"] : 1;
 	    $this->setFormReturnUri();
+	    $this->setFormReturnDescription('file group');
 	    
 	    $group = new SmartestAssetGroup;
 	    
@@ -863,12 +865,12 @@ class Assets extends SmartestSystemApplication{
 		$asset_id = $get['asset_id'];
 
 		if(!isset($get['from'])){
-		    $this->setFormReturnUri();
+		    // $this->setFormReturnUri();
 		}
 
 		$asset = new SmartestAsset;
 
-		if($asset->hydrate($asset_id)){
+		if($asset->find($asset_id)){
 
 			$assettype_code = $asset->getType();
 			$types_data = SmartestDataUtility::getAssetTypes();
@@ -1342,7 +1344,7 @@ class Assets extends SmartestSystemApplication{
 
 		$asset = new SmartestAsset;
 
-		if($asset->hydrate($asset_id)){
+		if($asset->find($asset_id)){
             
             if($asset->getUserId() == $this->getUser()->getId() || $this->getUser()->hasToken('modify_assets')){
             
@@ -1357,16 +1359,27 @@ class Assets extends SmartestSystemApplication{
                 $asset->save();
                 
     		    $this->addUserMessageToNextRequest("The file has been successfully updated.", SmartestUserMessage::SUCCESS);
+    		    $success = true;
+    		    // $message = 
 		    
 		    }else{
     	        $this->addUserMessageToNextRequest("You don't have permission to edit assets created by other users.", SmartestUserMessage::WARNING);
+    	        $success = false;
     	    }
 
 		}else{
 		    $this->addUserMessageToNextRequest("The file you are trying to update no longer exists or has been deleted by another user.", SmartestUserMessage::WARNING);
+		    $success = false;
 		}
 		
-	    $this->formForward();
+	    // $this->formForward();
+	    
+	    if($post['_submit_action'] == "continue" && $success){
+	        $this->redirect("/assets/editAsset?asset_type=".$asset->getType()."&asset_id=".$asset->getId());
+	    }else{
+	        // $this->addUserMessageToNextRequest($message, $message_type);
+	        $this->formForward();
+	    }
 
 	}
 	

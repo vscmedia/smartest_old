@@ -25,3 +25,9 @@ languages:
   fas:
     label: Farsi (Persian)
     charset: UTF-8
+  jpn:
+    label: Japanese
+    charset: UTF-8
+  zho:
+    label: Chinese
+    charset: UTF-8

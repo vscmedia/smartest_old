@@ -24,14 +24,18 @@
     
     <div class="edit-form-row">
       <div class="form-section-label">File contents</div>
-      <div id="editTMPL" class="textarea-holder">
+      <div class="textarea-holder">
         <textarea name="asset_content" id="tpl_textArea" wrap="virtual" >{$textfragment_content}</textarea>
+        <span class="form-hint">Editor powered by CodeMirror</span>
       </div>
     </div>
     
     <div class="buttons-bar">
-      {if $allow_save}<input type="submit" value="Save Changes" />{/if}
+      {if $allow_save}
+      {save_buttons}
+      {else}
       <input type="button" onclick="cancelForm();" value="Cancel" />
+      {/if}
     </div>
     
     <script src="{$domain}Resources/System/Javascript/CodeMirror-0.65/js/codemirror.js" type="text/javascript"></script>
@@ -41,7 +45,7 @@
       parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
       stylesheet: "{$domain}Resources/System/Javascript/CodeMirror-0.65/css/jscolors.css",
       continuousScanning: 500,
-      height: '450px',
+      height: '400px',
       path: "{$domain}Resources/System/Javascript/CodeMirror-0.65/js/"
     {literal}  }); {/literal}
     </script>

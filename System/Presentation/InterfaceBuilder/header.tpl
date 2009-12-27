@@ -5,7 +5,7 @@
 
   <head>
   
-    <title>Smartest&trade; Web Platform{if $sectionName} | {$sectionName}{/if}</title>
+    <title>Smartest&trade; Web Platform{if $_interface_title} | {$_interface_title}{/if}</title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     

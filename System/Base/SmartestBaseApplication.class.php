@@ -66,17 +66,6 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 			
 		}
 		
-		// load user-defined system-wide settings
-		// TODO: add caching here
-		/* if(is_file(SM_ROOT_DIR."Configuration/user.ini")){
-			if($this->_settings['global'] = @parse_ini_file(SM_ROOT_DIR."Configuration/user.ini")){
-				
-			}else{
-				throw new SmartestException("Error parsing config file: ".SM_ROOT_DIR."Configuration/user.ini");
-			}
-		} */
-		
-		
 		/////////////// MANAGERS CODE WILL BE DEPRECATED SOON - FUNCTIONALITIES IN MANAGERS ARE BEING MOVED TO HELPERS ////////////////
 		// Detect to see if manager classes exist and initiate them, if configured to do so
 		$managerClassFile = SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php";
@@ -237,12 +226,16 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     
     ///// Flow Control //////
     
-    protected function redirect($destination="", $exit=false){
+    protected function redirect($to="", $exit=false){
 		
-		if(strlen($destination) == 0){
+		if(!$to){
 			$destination = constant('SM_CONTROLLER_DOMAIN');
-		}else if($destination{0} == "/"){
-		    $destination = constant('SM_CONTROLLER_DOMAIN').substr($destination, 1);
+		}else if($to{0} == "/"){
+		    if(constant('SM_CONTROLLER_DOMAIN') == '/' || substr($to, 0, strlen(constant('SM_CONTROLLER_DOMAIN'))) == constant('SM_CONTROLLER_DOMAIN')){
+		        $destination = $to;
+	        }else{
+	            $destination = constant('SM_CONTROLLER_DOMAIN').substr($to, 1);
+	        }
 		}
 		
 		header("location:".$destination);
@@ -254,7 +247,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     
     ///// Check for Libraries /////
     
-    // TODO: Deprecate this and implement FS#172
+    // TODO: Deprecate this and implement FS#172 (http://bugs.vsclabs.com/task/172)
     protected function loadApplicationClass($class){
         
         $dir = SM_CONTROLLER_MODULE_DIR.'Library/';

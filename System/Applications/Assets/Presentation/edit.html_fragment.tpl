@@ -23,10 +23,14 @@
     <div id="textarea-holder" style="width:100%">
       <div class="textarea-holder">
         <textarea name="asset_content" id="tpl_textArea" wrap="virtual" style="width:100%;padding:0">{$textfragment_content}</textarea>
+        <span class="form-hint">Editor powered by CodeMirror</span>
       </div>
       <div class="buttons-bar">
-        {if $allow_save}<input type="submit" value="Save Changes" />{/if}
+        {if $allow_save}
+        {save_buttons}
+        {else}
         <input type="button" onclick="cancelForm();" value="Cancel" />
+        {/if}
       </div>
     <div>
       

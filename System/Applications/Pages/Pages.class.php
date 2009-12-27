@@ -592,9 +592,10 @@ class Pages extends SmartestSystemApplication{
 	
 	function preview($get){
 		
-		if(!isset($get['from'])){
+		// if(!isset($get['from'])){
 		    $this->setFormReturnUri();
-	    }
+		    $this->setFormReturnDescription('page preview');
+	    // }
 		
 		$content = array();
 		
@@ -1281,6 +1282,7 @@ class Pages extends SmartestSystemApplication{
     	            }
 	                
     		        $this->setFormReturnUri();
+    		        $this->setFormReturnDescription('page elements tree');
 		
             		// $definedAssets = $this->manager->getDefinedPageAssetsList($get['page_id']);
             		$version = (!empty($get['version']) && $get['version'] == "live") ? "live" : "draft";

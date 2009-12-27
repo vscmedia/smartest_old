@@ -89,8 +89,7 @@
 
 <div class="edit-form-row">
   <div class="buttons-bar">
-    <input type="button" onclick="window.location='{$domain}{$section}/getItemClassMembers?class_id={$item._model.id}';" value="Cancel" />
-    <input type="submit" value="Save Changes" />
+    {save_buttons}
   </div>
 </div>
 

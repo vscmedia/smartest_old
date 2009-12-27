@@ -30,8 +30,11 @@
   </div>
   
   <div class="buttons-bar">
-    {if $allow_save}<input type="submit" value="Save Changes" />{/if}
+    {if $allow_save}
+    {save_buttons}
+    {else}
     <input type="button" onclick="cancelForm();" value="Cancel" />
+    {/if}
   </div>
   
   <script src="{$domain}Resources/System/Javascript/CodeMirror-0.65/js/codemirror.js" type="text/javascript"></script>

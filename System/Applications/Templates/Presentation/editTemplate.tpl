@@ -29,9 +29,7 @@
   
   <div class="buttons-bar">
     {if $is_editable}
-    <input type="button" onclick="cancelForm();" value="Abandon changes" />
-    <input type="submit" name="submit" value="Save &amp; quit" />
-    <input type="submit" name="submit" value="Save &amp; continue editing" />
+    {save_buttons}
     {else}
     <input type="button" onclick="cancelForm();" value="Cancel" />
     {/if}

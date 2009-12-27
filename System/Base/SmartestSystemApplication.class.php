@@ -6,6 +6,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
     
     protected $_userMessages = array();
     protected $_languages = array();
+    protected $_smartest_request_info = null;
     
     public function __systemModulePreConstruct(){
         
@@ -20,6 +21,8 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		    SmartestCache::save('user:messages:nextRequest:'.$this->getUser()->getId(), array(), -1, true);
 		    
 	    }
+	    
+	    $this->_smartest_request_info = new SmartestParameterHolder("Request information");
 	    
 	    $language_options = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Languages/options.yml");
 		$this->_languages = $language_options['languages'];
@@ -60,12 +63,12 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	}
 	
 	final public function getUserMessages(){
-	    $messages = $this->_userMessages;
-		return $messages;
+	    return $this->_userMessages;
 	}
 	
-	protected function setTitle($page_title){
-		$this->getPresentationLayer()->assign("sectionName", $page_title);
+	protected function setTitle($interface_title){
+	    $this->_smartest_request_info->setParameter('interface_title', $interface_title);
+		$this->getPresentationLayer()->assign("_interface_title", $interface_title);
 	}
 	
 	///// Authentication Stuff /////
@@ -82,8 +85,8 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    
 	}
 	
-	protected function requireToken($token){
-	    if(!$this->getUser()->hasToken($token)){
+	protected function requireToken($token, $exclude_root=false){
+	    if(!$this->getUser()->hasToken($token, $exclude_root)){
 	        $this->addUserMessageToNextRequest('You do not have sufficient access privileges for that action.', SM_USER_MESSAGE_ACCESS_DENIED);
 	        $this->redirect('/smartest');
 	    }
@@ -108,10 +111,9 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 			$form_return_uri = "/smartest";
 		}
 		
-		if(SmartestSession::hasData("form:return:vars") && is_array(SmartestSession::get("form:return:vars"))){
+		if(SmartestSession::hasData("form:return:vars") && is_array(SmartestSession::get("form:return:vars")) && count(SmartestSession::get("form:return:vars"))){
 		    
-			$form_return_uri .= "?";
-			$form_return_uri .= SmartestStringHelper::toQueryString(SmartestSession::get("form:return:vars"), $escape);
+			$form_return_uri .= "?".SmartestStringHelper::toQueryString(SmartestSession::get("form:return:vars"), $escape);
 			
 		}
 		
@@ -119,7 +121,15 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    
 	}
 	
-	protected function setFormCompleteUri(){
+	public function getFormReturnDescription(){
+	    return SmartestSession::get("form:return:description");
+	}
+	
+	protected function setFormReturnDescription($rd){
+	    return SmartestSession::set("form:return:description", $rd);
+	}
+	
+	/* protected function setFormCompleteUri(){
 		$_SESSION["_FORM_RETURN"] = reset(explode("?", $_SERVER["REQUEST_URI"]));
 		$_SESSION["_FORM_RETURN_VARS"] = $_GET;
 	}
@@ -136,7 +146,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	
 	protected function setFormReturnVar($var, $value){
 		$_SESSION["_FORM_RETURN_VARS"][$var] = $value;
-	}
+	} */
 	
 	protected function formForward(){
 		
@@ -144,7 +154,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		
 	}
 	
-	protected function formContinue(){
+	/* protected function formContinue(){
 		
 		if($_SESSION["_FORM_CONTINUE"]){
 			$this->_formContinueUri =& $_SESSION["_FORM_CONTINUE"];
@@ -184,7 +194,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		
 		header("Location:".$uri);
 		exit;
-	}
+	} */
 	
 	///// Errors /////
     

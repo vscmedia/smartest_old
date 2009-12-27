@@ -23,8 +23,7 @@
     <div id="textarea-holder" style="width:100%">
         <textarea name="asset_content" id="tpl_textArea" wrap="virtual" style="width:100%;padding:0">{$textfragment_content}</textarea>
         <div class="buttons-bar">
-            <input type="submit" value="Save Changes" />
-            <input type="button" onclick="cancelForm();" value="Cancel" />
+            {save_buttons}
         </div>
     <div>
         
