@@ -242,9 +242,31 @@ class SmartestSite extends SmartestBaseSite{
         }
 	}
 	
+	public function getModels(){
+	    
+	    $sql = "SELECT * FROM ItemClasses WHERE ItemClasses.itemclass_type='SM_ITEMCLASS_MODEL' AND (ItemClasses.itemclass_shared='1' OR ItemClasses.itemclass_site_id = '".$this->getId()."') ORDER BY itemclass_name";
+	    $result = $this->database->queryToArray($sql);
+	    $models = array();
+	    
+	    if(count($result)){
+	        
+	        foreach($result as $m_array){
+	            $m = new SmartestModel;
+	            $m->hydrate($m_array);
+	            $models[] = $m;
+	        }
+	        
+	        return $models;
+	        
+	    }else{
+	        return array();
+	    }
+	    
+	}
+	
 	public function getDataSets(){
 	    
-	    $sql = "SELECT Sets. * , ItemClasses.itemclass_id FROM Sets, ItemClasses WHERE Sets.set_itemclass_id = ItemClasses.itemclass_id AND ItemClasses.itemclass_site_id = '".$this->getId()."'";
+	    $sql = "SELECT * FROM Sets WHERE (Sets.set_type='DYNAMIC' || Sets.set_type='STATIC') AND (Sets.set_shared='1' OR Sets.set_site_id = '".$this->getId()."') ORDER BY set_name";
 	    $result = $this->database->queryToArray($sql);
 	    $sets = array();
 	    
@@ -277,7 +299,7 @@ class SmartestSite extends SmartestBaseSite{
 	
 	public function getContainers(){
 	    
-	    $sql = "SELECT * FROM AssetClasses WHERE assetclass_site_id='".$this->getId()."' AND assetclass_type='SM_ASSETCLASS_CONTAINER'";
+	    $sql = "SELECT * FROM AssetClasses WHERE (assetclass_site_id='".$this->getId()."' OR assetclass_shared='1') AND assetclass_type='SM_ASSETCLASS_CONTAINER'";
 	    $result = $this->database->queryToArray($sql);
 	    
 	    $containers = array();
@@ -294,7 +316,7 @@ class SmartestSite extends SmartestBaseSite{
 	
 	public function getPlaceholders(){
 	    
-	    $sql = "SELECT * FROM AssetClasses WHERE assetclass_site_id='".$this->getId()."' AND assetclass_type NOT IN ('SM_ASSETCLASS_CONTAINER', 'SM_ASSETCLASS_ITEMSPACE')";
+	    $sql = "SELECT * FROM AssetClasses WHERE (assetclass_site_id='".$this->getId()."' OR assetclass_shared='1') AND assetclass_type NOT IN ('SM_ASSETCLASS_CONTAINER', 'SM_ASSETCLASS_ITEMSPACE')";
 	    $result = $this->database->queryToArray($sql);
 	    
 	    $placeholders = array();
@@ -309,6 +331,10 @@ class SmartestSite extends SmartestBaseSite{
 	    
 	}
 	
+	public function getFullDirectoryPath(){
+	    return SM_ROOT_DIR.'Sites/'.$this->getDirectoryName().'/';
+	}
+	
 	public function getUniqueId(){
 	    // TODO: Make a field to store this once it has been initially generated
 	    $site_id = implode(':', str_split(substr(md5($this->getId()), 0, 6), 2));
@@ -316,5 +342,11 @@ class SmartestSite extends SmartestBaseSite{
 	    $id = $install_id.':'.$site_id;
 	    return $id;
 	}
+	
+	public function testDirectoryStructure(){
+	    // $directory = 
+        /* $d = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+        $structure = */
+    }
 	
 }

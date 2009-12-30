@@ -160,8 +160,6 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function offsetGet($offset){
 	    
-	    // echo '<br />offsetGet: '.$offset.', ';
-	    
 	    if(defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && constant('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && defined('SM_CMS_PAGE_ID')){
 		    $dah = new SmartestDataAppearanceHelper;
             $dah->setItemAppearsOnPage($this->getId(), constant('SM_CMS_PAGE_ID'));
@@ -169,9 +167,14 @@ class SmartestCmsItem implements ArrayAccess{
 	    
 	    if($this->_item->offsetExists($offset)){
 	        
+	        // echo 'SmartestItem property';
 	        return $this->_item->offsetGet($offset);
 	        
 	    }else if(isset($this->_varnames_lookup[$offset])){
+	        
+	        // echo '<br />offsetGet: '.$offset.', ';
+	        // echo 'SmartestCmsItem property';
+	        // echo ' '.$this->_varnames_lookup[$offset].' ';
 	        
 	        $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset]);
 	        // var_dump($this->_properties[$this->_varnames_lookup[$offset]]->getData()->getDraftContent()->__toString());
@@ -300,12 +303,14 @@ class SmartestCmsItem implements ArrayAccess{
 	
 	public function setModelId($id){
 	    
-	    if($this instanceof SmartestCmsItem && !$this->_model_built && is_numeric($id)){
+	    $id = (int) $id;
+	    
+	    if($this instanceof SmartestCmsItem && !$this->_model_built){
 	        
 	        $this->_model_id = $id;
 	        $this->_model = new SmartestModel;
 	        
-	        if(!$this->_model->hydrate($this->_model_id)){
+	        if(!$this->_model->find($this->_model_id)){
 	            throw new SmartestException('The model ID '.$this->_model_id.' doesn\'t exist.');
 	        }
 	        
@@ -360,7 +365,7 @@ class SmartestCmsItem implements ArrayAccess{
                 $this->_item->setCreatedbyUserid(SmartestPersistentObject::get('user')->getId());
             }
 	        
-	        foreach($request_data as $key => $value){
+	        /* foreach($request_data as $key => $value){
 	        
 	            if(isset($this->_properties[$key]) && !in_array($key, array('_name', '_is_public')) && is_object($this->_properties[$key])){
 	                
@@ -372,7 +377,13 @@ class SmartestCmsItem implements ArrayAccess{
 	                // $this->_save_errors[$key] = $value;
 	                // TODO: decide what to do here and implement it here
 	            }
-	        }
+	        } */
+	        
+	        foreach($this->getModel()->getProperties() as $p){
+                if(isset($request_data[$p->getId()])){
+                    $this->setPropertyValueByNumericKey($p->getId(), $request_data[$p->getId()]);
+                }
+            }
 	        
 	        if(!count($this->_save_errors)){
 	            return true;
@@ -530,6 +541,11 @@ class SmartestCmsItem implements ArrayAccess{
 	        $model = new SmartestModel;
 	        $model->find($this->_item->getItemclassId());
 	        $this->_model = $model;
+	    }else if(!$this->_model && $this->_model_id){
+	        $model = new SmartestModel;
+	        if($model->find($this->_model_id)){
+	            $this->_model = $model;
+	        }
 	    }
 	    
 	    return $this->_model;
@@ -708,6 +724,7 @@ class SmartestCmsItem implements ArrayAccess{
 	}
 	
 	public function getPropertyValueByNumericKey($key){
+	    // print_r(array_keys($this->_properties));
 	    if(array_key_exists($key, $this->_properties)){
 	        if($this->getDraftMode()){
 	            return $this->_properties[$key]->getData()->getDraftContent();
@@ -737,6 +754,10 @@ class SmartestCmsItem implements ArrayAccess{
 	        
 	        if(!$this->_properties[$key]->getData()->getPropertyId()){
 	            $this->_properties[$key]->getData()->setPropertyId($key);
+	        }
+	        
+	        if(!$this->_properties[$key]->getData()->getItemId()){
+	            $this->_properties[$key]->getData()->setItemId($this->getId());
 	        }
 	        
 	        return $this->_properties[$key]->getData()->setContent($value);
@@ -773,38 +794,43 @@ class SmartestCmsItem implements ArrayAccess{
 		
 		if(!$this->_came_from_database){
 		    
-		    // create web id for SmartestItem object first
-		    $webid = SmartestStringHelper::random(32);
-		    $this->_item->setWebId($webid);
+		    if(!$this->_item->getWebId()){
 		    
-		    if($this->_item->getName()){
-		        
-		        $this->_item->save();
-	            
-	            foreach($this->_properties as $key => $value){
-	                
-	                $this->_properties[$key]->setContextualItemId($this->_item->getId());
-	                $this->_properties[$key]->getData()->setItemId($this->_item->getId());
-	                
-	                if($this->_properties[$key]->getRequired() == 'TRUE'){
-	                    if(!$this->_properties[$key]->getData()->getDraftContent()){
-	                        // raise error
-	                        $this->_save_errors[] = $key; // SmartestItemPropertyValue::OMISSION_ERROR;
-	                    }else{
-	                        // save the value
-	                        $this->_properties[$key]->getData()->save();
-	                    }
-	                }else{
-	                    // save the value regardless of whether it has a value
-	                    $this->_properties[$key]->getData()->save();
-	                }
-	            }
-	            
-	        }else{
-	            // raise error - the item had no name
-	            $this->_save_errors[] = '_name';
+		        // create web id for SmartestItem object first
+		        $webid = SmartestStringHelper::random(32);
+		        $this->_item->setWebId($webid);
+		    
 	        }
 	    }
+	    
+	    if($this->_item->getName()){
+	        
+	        $this->_item->save();
+            
+            foreach($this->getModel()->getProperties() as $prop){
+                
+                $key = $prop->getId();
+                
+                $this->_properties[$key]->setContextualItemId($this->_item->getId());
+                $this->_properties[$key]->getData()->setItemId($this->_item->getId());
+                
+                if($this->_properties[$key]->getRequired() == 'TRUE' && !$this->_properties[$key]->getData()->getDraftContent()){
+                    
+                    // raise error
+                    $this->_save_errors[] = $key; // SmartestItemPropertyValue::OMISSION_ERROR;
+                    
+                }
+                
+                // save a value object regardless if it is
+                $this->_properties[$key]->getData()->save();
+                
+            }
+            
+        }else{
+            // raise error - the item had no name
+            $this->_save_errors[] = '_name';
+            throw new SmartestException("Item saved without a name");
+        }
 
         if(count($this->_save_errors)){
             return false;
@@ -812,6 +838,10 @@ class SmartestCmsItem implements ArrayAccess{
             return true;
         }
         
+	}
+	
+	public function getSaveErrors(){
+	    return $this->_save_errors;
 	}
 	
 	public function delete(){
@@ -833,6 +863,14 @@ class SmartestCmsItem implements ArrayAccess{
 		}
 	}
 	
+	public function hardDelete(){
+	    
+	    if($this->_item instanceof SmartestItem && $this->_item->isHydrated()){
+	        $this->_item->delete(true);
+	    }
+	    
+	}
+	
 	public function publish(){
 	    
 	    // NOTE: the SmartestItemPropertyValue::publish() function checks the user's permission, so this one doesn't need to
@@ -852,8 +890,6 @@ class SmartestCmsItem implements ArrayAccess{
 	    $this->_item->setIsHeld(0);
 	    $this->_item->setPublic('TRUE');
 	    $this->_item->save();
-	    
-	    // print_r($this->getCacheFiles());
 	    
 	    foreach($this->getCacheFiles() as $file){
 	        

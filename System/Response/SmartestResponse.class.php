@@ -219,7 +219,7 @@ class SmartestResponse{
 		$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
 		
         if(version_compare(PHP_VERSION, $sd['system']['info']['minimum_php_version']) === -1){
-            $this->error("This version of PHP is too old to run Smartest. You need to have version ".$sd['system']['info']['minimum_php_version'].' or better.');
+            $this->error("This version of PHP is too old to run Smartest. You need to have version ".$sd['system']['info']['minimum_php_version'].' or later.');
         }
         
         if(version_compare(PHP_VERSION, '5.3.0') >= 0){
@@ -235,6 +235,8 @@ class SmartestResponse{
 		$this->checkRequiredExtensionsLoaded();
 		$this->checkWritablePermissions();
 		$this->checkRequiredFilesExist();
+		
+		// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/autoArticle.class.php';
 		
 		// load up settings
 		$this->configuration = new SmartestConfigurationHelper();
@@ -366,7 +368,6 @@ class SmartestResponse{
 		try{
 		    $this->checkAuthenicationStatus();
 		}catch (SmartestRedirectException $e){
-		    // $this->redirect($e->getRedirectUrl());
 		    $e->redirect();
 		}
 		
@@ -685,44 +686,6 @@ class SmartestResponse{
 		
 		$this->smarty->assign("content", $this->content);
 		
-	}
-	
-	function getConstants($keys=false){
-		$all_constants = get_defined_constants();
-		
-		$smartest_constants = array();
-		
-		foreach ($all_constants as $constant_name=>$constant_value){
-			if(substr($constant_name, 0, 3) == 'SM_'){
-				$smartest_constants[$constant_name] = $constant_value;
-			}
-		}
-		
-		if($keys == true){
-			return array_keys($smartest_constants);
-		}else{
-			return $smartest_constants;
-		}
-	}
-	
-	function getClasses($keys=false){
-		$all_classes = get_declared_classes();
-		
-		$smartest_classes = array();
-		
-		foreach ($all_classes as $class_name=>$class_value){
-			if(substr($class_value, 0, 8) == 'Smartest'){
-				$smartest_classes[] = $class_value;
-			}
-		}
-		
-		$smartest_classes[] = $this->controller->getClassName();
-		
-		if($keys == true){
-			return array_keys($smartest_classes);
-		}else{
-			return $smartest_classes;
-		}
 	}
 	
 	function _log($message){

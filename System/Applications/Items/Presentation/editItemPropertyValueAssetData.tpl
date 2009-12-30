@@ -1,5 +1,5 @@
 <div id="work-area">
-  <h3>Parameters</h3>
+  <h3>File display parameters</h3>
   
   <div class="instruction">How should this {$asset_type.label} look on {$model.name} '{$item.name}'</div>
   

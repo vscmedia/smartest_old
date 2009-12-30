@@ -3,36 +3,36 @@ id:type:scope:code:category:description
 0:p:s:root_permission:SM_USERTOKEN_SYSTEM:ROOT! Carry out any action on any site.
 # Number 1 was formerly "create_remove_settings" for adding and removing system settings themselves
 1:u:s:unused_1:SM_USERTOKEN_UNUSED:[Unused] (1)
-2:p:s:modify_system_settings:SM_USERTOKEN_SYSTEM:Edit values of system settings.
-3:p:s:add_new_pages:SM_USERTOKEN_PAGES:Add pages to the sitemap.
-4:p:s:remove_pages:SM_USERTOKEN_PAGES:Remove pages from the sitemap.
-5:p:s:create_remove_models:SM_USERTOKEN_ITEMS:Create, remove, and edit item classes.
-6:p:s:create_remove_properties:SM_USERTOKEN_ITEMS:Create, remove and edit item class properties.
-7:p:s:add_items:SM_USERTOKEN_ITEMS:Add items to existing item classes.
-8:p:s:delete_items:SM_USERTOKEN_ITEMS:Delete items from existing item classes.
-9:p:s:modify_page_properties:SM_USERTOKEN_PAGES:Edit the properties of pages, such as title, URLs, and meta information.
+2:p:s:modify_system_settings:SM_USERTOKEN_SYSTEM:Edit values of system settings
+3:p:s:add_new_pages:SM_USERTOKEN_PAGES:Add pages to the sitemap
+4:p:s:remove_pages:SM_USERTOKEN_PAGES:Remove pages from the sitemap
+5:p:s:create_models:SM_USERTOKEN_ITEMS:Create models
+6:p:s:create_remove_properties:SM_USERTOKEN_ITEMS:Create, remove and edit item class properties
+7:p:s:add_items:SM_USERTOKEN_ITEMS:Add items to existing item classes
+8:p:s:delete_items:SM_USERTOKEN_ITEMS:Delete items from existing item classes
+9:p:s:modify_page_properties:SM_USERTOKEN_PAGES:Edit the properties of pages, such as title, URLs, and meta information
 10:p:s:modify_draft_pages:SM_USERTOKEN_PAGES:Update placeholders, containers, itemspaces &amp; lists
-11:p:s:approve_page_changes:SM_USERTOKEN_PAGES:Approve pages marked as ready for approval.
+11:p:s:approve_page_changes:SM_USERTOKEN_PAGES:Approve pages marked as ready for approval
 # Number 12 was formerly a setting for seeing the advanced page edit screen
 12:p:s:edit_model:SM_USERTOKEN_ITEMS:Edit model properties
-13:p:s:modify_user_permissions:SM_USERTOKEN_USERS:Edit the permissions of other users.
-14:p:s:modify_items:SM_USERTOKEN_ITEMS:Edit CMS Items that do not belong to the user.
-15:p:s:approve_item_changes:SM_USERTOKEN_ITEMS:Approve changes to items that do not belong to the user.
-16:p:s:publish_approved_pages:SM_USERTOKEN_PAGES:Publish changes to pages that have been modified, and those modifications accepted.
-17:p:s:publish_approved_items:SM_USERTOKEN_ITEMS:Publish changes to items that have been modified, and those modifications accepted.
-18:p:s:publish_all_pages:SM_USERTOKEN_PAGES:Publish changed pages without needing approval.
-19:p:s:publish_all_items:SM_USERTOKEN_ITEMS:Publish changed items without needing approval.
-20:p:s:modify_site_parameters:SM_USERTOKEN_SYSTEM:Edit site parameters.
-21:p:s:site_access:SM_USERTOKEN_USERS:See the contents of the site; to open it in order to work on it.
-22:p:s:modify_other_user_details:SM_USERTOKEN_USERS:Edit the details of other users.
-23:p:s:grant_site_access:SM_USERTOKEN_USERS:Grant access to a site to another user.
-24:p:g:grant_global_permissions:SM_USERTOKEN_USERS:Permission to grant permissions that will persist across all sites.
-25:p:s:create_sites:SM_USERTOKEN_SYSTEM:Allows the user to create new sites.
+13:p:s:modify_user_permissions:SM_USERTOKEN_USERS:Edit the permissions of other users
+14:p:s:modify_items:SM_USERTOKEN_ITEMS:Edit CMS Items that do not belong to the user
+15:p:s:approve_item_changes:SM_USERTOKEN_ITEMS:Approve changes to items that do not belong to the user
+16:p:s:publish_approved_pages:SM_USERTOKEN_PAGES:Publish changes to pages that have been modified, and those modifications accepted
+17:p:s:publish_approved_items:SM_USERTOKEN_ITEMS:Publish changes to items that have been modified, and those modifications accepted
+18:p:s:publish_all_pages:SM_USERTOKEN_PAGES:Publish changed pages without needing approval
+19:p:s:publish_all_items:SM_USERTOKEN_ITEMS:Publish changed items without needing approval
+20:p:s:modify_site_parameters:SM_USERTOKEN_SYSTEM:Edit site parameters
+21:p:s:site_access:SM_USERTOKEN_USERS:See the contents of the site; to open it in order to work on it
+22:p:s:modify_other_user_details:SM_USERTOKEN_USERS:Edit the details of other users
+23:p:s:grant_site_access:SM_USERTOKEN_USERS:Grant access to a site to another user
+24:p:g:grant_global_permissions:SM_USERTOKEN_USERS:Permission to grant permissions that will persist across all sites
+25:p:s:create_sites:SM_USERTOKEN_SYSTEM:Allows the user to create new sites
 26:p:s:modify_assets:SM_USERTOKEN_ASSETS:Edit existing media files
-27:p:s:delete_assets:SM_USERTOKEN_ASSETS:Delete files that the user doesn't own.
-28:p:s:create_assets:SM_USERTOKEN_ASSETS:Add new files to the system.
-29:p:s:clear_pages_cache:SM_USERTOKEN_PAGES:Clear the pages cache.
-30:p:s:approve_assets:SM_USERTOKEN_ASSETS:Approve for specific files (assets) for use on live pages.
+27:p:s:delete_assets:SM_USERTOKEN_ASSETS:Delete files that the user doesn't own
+28:p:s:create_assets:SM_USERTOKEN_ASSETS:Add new files to the system
+29:p:s:clear_pages_cache:SM_USERTOKEN_PAGES:Clear the pages cache
+30:p:s:approve_assets:SM_USERTOKEN_ASSETS:Approve for specific files (assets) for use on live pages
 31:p:s:create_users:SM_USERTOKEN_USERS:Create user accounts
 32:p:s:publish_text_assets:SM_USERTOKEN_ASSETS:Publish text assets
 33:p:s:edit_page_name:SM_USERTOKEN_PAGES:Edit page short name/slug
@@ -43,3 +43,4 @@ id:type:scope:code:category:description
 38:p:s:edit_held_pages:SM_USERTOKEN_PAGES:Edit pages that are currently held by another user
 39:p:s:edit_held_items:SM_USERTOKEN_ITEMS:Edit items that are currently held by another user
 40:p:s:edit_containers_in_preview:SM_USERTOKEN_PAGES:Change the values of containers from the page preview screen
+41:p:s:delete_models:SM_USERTOKEN_ITEMS:Permanently delete models and all their items

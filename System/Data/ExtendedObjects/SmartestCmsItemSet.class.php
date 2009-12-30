@@ -27,14 +27,17 @@ class SmartestCmsItemSet extends SmartestSet{
 	
 	public function addItems($item_ids){
 	    
+	    $order_index = $this->getNextOrderIndex();
+	    
 	    foreach($item_ids as $key=>$id){
 
-		    $this->addItem($id);
+		    $this->addItem($id, false, $order_index);
+		    $order_index++;
 		    
         }
 	}
 	
-	public function addItem($id, $safe=false){
+	public function addItem($id, $safe=false, $order_index=''){
 	    
 	    if($this->getType() == 'STATIC'){
 	    
@@ -44,9 +47,13 @@ class SmartestCmsItemSet extends SmartestSet{
             }else{
                 $count = 0;
             }
-	    
+	        
+	        if(!$order_index){
+	            $order_index = $this->getNextOrderIndex();
+	        }
+	        
 	        if($count == 0){
-	            $sql = "INSERT INTO SetsItemsLookup (setlookup_set_id, setlookup_item_id) VALUES ('".$this->getId()."','".$id."')";
+	            $sql = "INSERT INTO SetsItemsLookup (setlookup_set_id, setlookup_item_id, setlookup_order) VALUES ('".$this->getId()."','".$id."', '".$order_index."')";
 	            $this->database->rawQuery($sql);
             }
         
@@ -55,6 +62,28 @@ class SmartestCmsItemSet extends SmartestSet{
             SmartestLog::getInstance('system')->log("SmartestCmsItemSet::addItem() was called on a non-static data set: '{$this->getName()}'.");
             
         }
+	    
+	}
+	
+	public function getNextOrderIndex(){
+	    
+	    if($this->getType() == 'STATIC'){
+	    
+	        $sql = "SELECT setlookup_order FROM SetsItemsLookup, Sets WHERE SetsItemsLookup.setlookup_set_id=Sets.set_id AND Sets.set_id='".$this->getId()."' ORDER BY SetsItemsLookup.setlookup_order DESC LIMIT 1";
+	        $result = $this->database->queryToArray($sql);
+	        
+	        if(count($result)){
+	            $existing_highest_index = (int) $result[0]['setlookup_order'];
+	            return $existing_highest_index+1;
+	        }else{
+	            return 0;
+	        }
+	    
+	    }else{
+	        
+	        SmartestLog::getInstance('system')->log("SmartestCmsItemSet::getNextOrderIndex() was called on a non-static data set: '{$this->getName()}'.");
+	        
+	    }
 	    
 	}
 	
@@ -211,8 +240,6 @@ class SmartestCmsItemSet extends SmartestSet{
 		        }
     	        
     	        $sql .= " ORDER BY SetsItemsLookup.setlookup_order ASC";
-    	        
-    	        // echo $sql;
     	        
     	        $results = $this->database->queryToArray($sql);
 	            

@@ -416,7 +416,7 @@ class SmartestDataObject implements ArrayAccess{
 		
 		}else{
 		    
-		    SmartestLog::getInstance('system')->log("Deprecated usage of function '".get_class($this)."->hydrate()'. Please use only with an array.");
+		    // SmartestLog::getInstance('system')->log("Deprecated usage of function '".get_class($this)."->hydrate()'. Please use only with an array.");
 		    return $this->find($id, $site_id);
 	        
 		}

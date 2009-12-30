@@ -1,14 +1,14 @@
 <div id="work-area">
 
-<h3>{$group.label}</h3>
+{load_interface file="edit_filegroup_tabs.tpl"}
 
-
+<h3>Files in group "{$group.label}"</h3>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="asset_id" id="item_id_input" value="" />
 </form>
 
-<div>
+<div class="special-box">
   <form id="mode-form" method="get" action="">
     <input type="hidden" name="group_id" value="{$group.id}" />
     Show: <select name="mode" onchange="$('mode-form').submit();">
@@ -79,6 +79,7 @@
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Other options</b></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/assetGroups'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" /> View all file groups</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/assets'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" /> View all files by type</a></li>
 </ul>
 

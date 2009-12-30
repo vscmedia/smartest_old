@@ -309,15 +309,26 @@ class SmartestQuery{
 	
 	public static function init($force_regenerate=false){
 		
+		// print_r(SmartestCache::load('models_query', true));
+		
 		if(!defined('SM_QUERY_INIT_COMPLETE') || $force_regenerate == true){
 		
 			$database =& SmartestPersistentObject::get('db:main');
 			
-			if(SmartestCache::hasData('model_id_name_lookup', true) && $force_regenerate != true){
+			$du = new SmartestDataUtility;
+			$models = $du->getModels();
+			
+			foreach($models as $m){
+			    
+			    $m->init();
+			    
+			}
+			
+			define('SM_QUERY_INIT_COMPLETE', true);
+			
+			/* if(SmartestCache::hasData('model_id_name_lookup', true) && $force_regenerate != true){
 				
 				$models = SmartestCache::load('model_id_name_lookup', true);
-				
-				// print_r($models);
 				
 				foreach($models as $constant_name => $constant_value){
 				
@@ -349,13 +360,11 @@ class SmartestQuery{
  						
  					}
  					
- 					// print_r($models);
- 					
  					SmartestCache::save('model_id_name_lookup', $models, -1, true);
  				}
-			}
+			} */
 			
-			if(SmartestCache::hasData('model_class_names', true) && SmartestCache::hasData('model_names', true)){
+			/* if(SmartestCache::hasData('model_class_names', true) && SmartestCache::hasData('model_names', true)){
 			
 				$modelclassnames = SmartestCache::load('model_class_names', true);
 				$modelnames = SmartestCache::load('model_names', true);
@@ -378,41 +387,15 @@ class SmartestQuery{
  				SmartestCache::save('model_class_names', $modelclassnames, -1, true);
  				SmartestCache::save('model_names', $modelnames, -1, true);
 				
-			}
+			} */
 			
 			// print_r($modelnames);
 			
-			foreach($modelclassnames as $class_id => $class_name){
+			/* foreach($modelclassnames as $class_id => $class_name){
 				
-				// echo 'Loading Auto OM Class: auto'.$class_name.'<br />';
 				
-				if(is_file(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php')){
-					include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
-				}else{
-					// build auto class
-					if(SmartestObjectModelHelper::buildAutoClassFile($class_id, $class_name)){
-						include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
-					}else{
-						throw new SmartestException('Could not auto-generate model class: '.$class_name, SM_ERROR_MODEL);
-					}
-				}
-				
-				// echo 'Loading OM Class: '.$class_name.'<br />';
-					
-				if(is_file(SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php')){
-					include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
-				}else{
-					// build extensible class
-					if(SmartestObjectModelHelper::buildClassFile($class_id, $class_name)){
-						include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
-					}else{
-						throw new SmartestException('Could not auto-generate model class: '.$class_name, SM_ERROR_MODEL);
-					}
-				}
  				
-			}
-			
-			define('SM_QUERY_INIT_COMPLETE', true);
+			} */
 		
 		}else{
 			// init has already taken place - do nothing

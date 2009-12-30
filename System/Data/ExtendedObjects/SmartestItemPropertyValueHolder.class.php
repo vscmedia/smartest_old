@@ -28,7 +28,7 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	}
 	
 	public function hasData(){
-	    return is_object($this->_value instanceof SmartestItemPropertyValue);
+	    return ($this->_value instanceof SmartestItemPropertyValue);
 	}
 	
 	public function delete(){

@@ -4,70 +4,82 @@ class SmartestObjectModelHelper{
 
 	static function buildClassFile($id, $name){
 		
-		$className = $name;
+		$model = new SmartestModel;
 		
-		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/object_template.txt')){
+		if($model->find($id)){
+		    
+		    $className = $model->getClassName();
+		    
+		    if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/object_template.txt')){
 		
-			$file = str_replace('__THISCLASSNAME__', $className, $file);
-			$file = str_replace('__AUTOCLASSNAME__', 'auto'.$className, $file);
-			$file = str_replace('__TIME__', date("Y-m-d H:i:s"), $file);
-		
-			file_put_contents(SM_ROOT_DIR.'Library/ObjectModel/'.$className.'.class.php', $file);
+    			$file = str_replace('__THISCLASSNAME__', $className, $file);
+    			$file = str_replace('__AUTOCLASSNAME__', 'auto'.$className, $file);
+    			$file = str_replace('__TIME__', date("Y-m-d H:i:s"), $file);
+    			
+    			file_put_contents($model->getClassFilePath(), $file);
 			
-			return true;
+    			return true;
 			
-		}else{
-			return false;
-		}
+    		}else{
+    			return false;
+    		}
+		
+	    }
 		
 	}
 	
 	static function buildAutoClassFile($id, $name){
 		
-		if(count(explode(' ', $name)) > 1){
+		/* if(count(explode(' ', $name)) > 1){
 		    $className = SmartestStringHelper::toCamelCase($name);
 	    }else{
 	        $className = $name;
-	    }
+	    } */
 	    
-		$constants = '';
 		$model = new SmartestModel;
-		$model->hydrate($id);
-		$properties = $model->getProperties();
 		
-		foreach($properties as $property){
-			
-			$constant_name  = SmartestStringHelper::toConstantName($property->getName());
-			$constant_value = $property->getId();
-			
-			if(is_numeric($constant_name{0})){
-				$constant_name = '_'.$constant_name;
-			}
-			
-			$new_constant = '    const '.$constant_name.' = '.$constant_value.";\n";
-			
-			$constants .= $new_constant;
-			
-		}
+		if($model->find($id)){
+		    
+		    $className = $model->getClassName();
+		    $properties = $model->getProperties();
+		    $constants = '';
 		
-		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt')){
+    		foreach($properties as $property){
 			
-			$functions = self::buildAutoClassFunctionCode($model);
-			$varnames_lookup = self::buildAutoClassVarnameLookupCode($model);
+    			$constant_name  = SmartestStringHelper::toConstantName($property->getName());
+    			$constant_value = $property->getId();
 			
-			$file = str_replace('__THISCLASSNAME__', 'auto'.$className, $file);
-			$file = str_replace('__THECONSTANTS__', $constants, $file);
-			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
-			$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);
-			$file = str_replace('__MODEL_ID__', $id, $file);
-			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
+    			if(is_numeric($constant_name{0})){
+    				$constant_name = '_'.$constant_name;
+    			}
+			
+    			$new_constant = '    const '.$constant_name.' = '.$constant_value.";\n";
+			
+    			$constants .= $new_constant;
+			
+    		}
 		
-			file_put_contents(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$className.'.class.php', $file);
-			return true;
+    		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt')){
 			
-		}else{
-			return false;
-		}
+    			$functions = self::buildAutoClassFunctionCode($model);
+    			$varnames_lookup = self::buildAutoClassVarnameLookupCode($model);
+			
+    			$file = str_replace('__THISCLASSNAME__', 'auto'.$className, $file);
+    			$file = str_replace('__THECONSTANTS__', $constants, $file);
+    			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
+    			$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);
+    			$file = str_replace('__MODEL_ID__', $id, $file);
+    			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
+		
+    			// file_put_contents(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$className.'.class.php', $file);
+    			file_put_contents($model->getAutoClassFilePath(), $file);
+    			return true;
+			
+    		}else{
+    			return false;
+    		}
+		
+	    }
 		
 	}
 	

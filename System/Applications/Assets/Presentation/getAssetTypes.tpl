@@ -1,8 +1,10 @@
 <div id="work-area">
 
-<h3>Files Repository</h3>
+<h3>Files repository</h3>
 
-<div class="text" style="margin-bottom:10px">Double click an icon below to see assets in that category.</div>
+{load_interface file="file_browse_tabs.tpl"}
+
+<div class="text" style="margin-bottom:10px">Double click an icon below to see files of that type.</div>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" id="item_id_input" name="asset_type" value="" />

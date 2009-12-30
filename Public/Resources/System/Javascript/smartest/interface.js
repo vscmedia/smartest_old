@@ -26,7 +26,11 @@ function toSlug(myString){
 }
 
 function cancelForm(){
-	history.go(-1);
+	// history.go(-1);
+	if(sm_cancel_uri){
+	  // alert(sm_cancel_uri);
+	  window.location=sm_cancel_uri;
+	}
 }
 
 function nothing(){}

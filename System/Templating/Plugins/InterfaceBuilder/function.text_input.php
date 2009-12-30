@@ -16,7 +16,7 @@ function smarty_function_text_input($params, &$smartest_engine){
         if(isset($params['value'])){
             $input->setParameter('value', $params['value']);
         }else{
-            $input->setParameter('value', array());
+            $input->setParameter('value', null);
         }
         
         $smartest_engine->assign('_input_data', $input);

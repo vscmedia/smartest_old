@@ -26,7 +26,7 @@ class SmartestAssetGroup extends SmartestSet{
         
     }
     
-    public function getMemberShips($refresh=false, $mode=1, $approved_only=false){
+    public function getMemberships($refresh=false, $mode=1, $approved_only=false){
         
         $q = new SmartestManyToManyQuery($this->_membership_type);
         $q->setTargetEntityByIndex(1);
@@ -152,6 +152,31 @@ class SmartestAssetGroup extends SmartestSet{
         }
         
         return parent::save();
+    }
+    
+    public function isUsableForPlaceholders(){
+        return ($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETTYPE');
+    }
+    
+    public function getPlaceholdersWhereUsed(){
+        
+        $sql = "SELECT * FROM AssetClasses WHERE AssetClasses.assetclass_type='SM_ASSETCLASS_PLACEHOLDER' AND AssetClasses.assetclass_filter_type='SM_ASSETCLASS_FILTERTYPE_ASSETGROUP' AND AssetClasses.assetclass_filter_value='".$this->getId()."'";
+        $result = $this->database->queryToArray($sql);
+        
+        $placeholders = array();
+        
+        foreach($result as $r){
+            $placeholder = new SmartestPlaceholder;
+            $placeholder->hydrate($r);
+            $placeholders[] = $placeholder;
+        }
+        
+        return $placeholders;
+        
+    }
+    
+    public function isUsedForPlaceholders(){
+        return (bool) count($this->getPlaceholdersWhereUsed());
     }
 
 }

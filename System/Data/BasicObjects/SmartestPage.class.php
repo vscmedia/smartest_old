@@ -1841,9 +1841,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	
 	public function getItemSpaceDefinition($itemspace_name){
 	    
-	    // print_r($this->_itemspaces);
-	    // echo $itemspace_name;
-	    
 	    if(array_key_exists($itemspace_name, $this->_itemspaces)){
 	        
 	        $itemspace = $this->_itemspaces[$itemspace_name];
@@ -1864,22 +1861,18 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	
 	public function getRelatedContentForRender(){
 	    
-	    // $content = array();
 	    $data = new SmartestParameterHolder('Related Content');
 	    
 	    $du = new SmartestDataUtility;
-        $models = $du->getModels();
+        $models = $du->getModels(false, $this->_properties['site_id']);
     
         foreach($models as $m){
             $key = SmartestStringHelper::toVarName($m->getPluralName());
-            // $content[$key] = $this->getRelatedItems($m->getId());
             $data->setParameter($key, $this->getRelatedItems($m->getId()));
         }
         
-        // $content['pages'] = $this->getRelatedPages();
         $data->setParameter('pages', $this->getRelatedPages());
         
-        // return $content;
         return $data;
 	}
 	

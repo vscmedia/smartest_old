@@ -1,6 +1,8 @@
 <div id="work-area">
 
-<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; {if $model.id}<a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}sets/getItemClassSets?class_id={$model.id}">Sets</a>{else}<a href="{$domain}smartest/sets">Sets</a>{/if} &gt; <a href="{$domain}sets/editSet?set_id={$set.id}">{$set.label}</a> &gt; Preview</h3>
+{load_interface file="edit_set_tabs.tpl"}
+
+<h3><a href="{$domain}smartest/models">Items</a> &gt; {if $model.id}<a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}sets/getItemClassSets?class_id={$model.id}">Sets</a>{else}<a href="{$domain}smartest/sets">Sets</a>{/if} &gt; <a href="{$domain}sets/editSet?set_id={$set.id}">{$set.label}</a> &gt; Browse</h3>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="set_id"  value="{$set.id}" />
@@ -41,7 +43,7 @@ View as:
   <ul class="{if $content.count > 10}options-list{else}options-grid{/if}" id="{if $content.count > 10}options_list{else}options_grid{/if}">
   {foreach from=$items key="key" item="item"}
     <li>
-      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="setSelectedItem('{$item.id}', '{$item.name|escape:quotes}');">
+      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="setSelectedItem('{$item.id}', '{$item.name|escape:quotes}');" ondblclick="window.location='{$domain}datamanager/openItem?item_id={$item.id}'">
         <img border="0" src="{$domain}Resources/Icons/item.png">{$item.name}</a></li>
   {/foreach}
   </ul>

@@ -20,7 +20,7 @@ function turnOffAutoPlural(){
 
 <div id="work-area">
 
-<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; Build a new model</h3>
+<h3><a href="{$domain}smartest/models">Items</a> &gt; Build a new model</h3>
 
 <form name="searchform" onsubmit="return liveSearchSubmit()" method="post" action="{$domain}{$section}/insertItemClass">
 <input type="hidden" name="stage" value="2" />
@@ -33,6 +33,11 @@ function turnOffAutoPlural(){
 <div class="edit-form-row">
   <div class="form-section-label">Model Plural Name:</div>
   <input id="plural" onkeyup="turnOffAutoPlural()" type="text" name="itemclass_plural_name" style="width:200px" /><span class="form-hint">ie "Articles", "Cars", "People"</span>
+</div>
+
+<div class="edit-form-row">
+  <div class="form-section-label">Shared</div>
+  <input id="shared" type="checkbox" name="itemclass_shared" checked="checked" value="1" /><label for="shared">Make this model available to all sites</label>
 </div>
 
 <div class="special-box">

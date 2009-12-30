@@ -18,43 +18,57 @@ class SmartestDataUtility{
         
     }
 	
-	public function getModels($simple = false, $site_id=''){
+	public function getModels($simple = false, $site_id='', $force_regenerate=false){
+	    
+	    if(is_numeric($site_id)){
+	        $cache_name = 'models_query_site_'.$site_id;
+	    }else{
+	        $cache_name = 'models_query';
+	    }
 		
-		if($simple){
-			$sql = "SELECT itemclass_id FROM ItemClasses";
-		}else{
-			$sql = "SELECT * FROM ItemClasses";
+		if(!SmartestCache::hasData($cache_name, true) || $force_regenerate || $simple){
+		
+		    if($simple){
+    			$sql = "SELECT itemclass_id FROM ItemClasses";
+    		}else{
+    			$sql = "SELECT * FROM ItemClasses";
+    		}
+		
+    		$sql .= " WHERE itemclass_type='SM_ITEMCLASS_MODEL'";
+		
+    		if(is_numeric($site_id)){
+    		    $sql .= " AND (itemclass_site_id='".$site_id."' OR itemclass_shared='1')";
+    		}
+		
+    		$sql .= ' ORDER BY itemclass_name';
+		
+    		$result = $this->database->queryToArray($sql);
+    		
+    		if($simple){
+    		    return $result;
+    		}else{
+    		    SmartestCache::save($cache_name, $result, -1, true);
+		    }
+		
+	    }else{
+	        $result = SmartestCache::load($cache_name, true);
+	    }
+		
+		$model_objects = array();
+		
+		foreach($result as $model){
+			$m = new SmartestModel;
+			$m->hydrate($model);
+			$model_objects[] = $m;
 		}
 		
-		if(is_numeric($site_id)){
-		    $sql .= " WHERE itemclass_site_id='".$site_id."'";
-		}
+		return $model_objects;
 		
-		$sql .= ' ORDER BY itemclass_name';
-		
-		$result = $this->database->queryToArray($sql);
-		
-		if($simple){
-			
-			return $result;
-			
-		}else{
-			
-		    $model_objects = array();
-			
-			foreach($result as $model){
-				$m = new SmartestModel;
-				$m->hydrate($model);
-				$model_objects[] = $m;
-			}
-			
-			return $model_objects;
-		}
 	}
 	
-	public function getModelIds(){
+	public function getModelIds($site_id=''){
 	    
-	    $result = $this->getModels(true);
+	    $result = $this->getModels(true, $site_id);
 	    $ids = array();
 	    
 	    foreach($result as $r){
@@ -65,9 +79,26 @@ class SmartestDataUtility{
 	    
 	}
 	
-	public function getModelPluralNamesLowercase(){
+	public function getSharedModels(){
 	    
-	    $models = $this->getModels();
+	    $sql = "SELECT * FROM ItemClasses WHERE itemclass_shared = 1";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $model_objects = array();
+		
+		foreach($result as $model){
+			$m = new SmartestModel;
+			$m->hydrate($model);
+			$model_objects[] = $m;
+		}
+		
+		return $model_objects;
+	    
+	}
+	
+	public function getModelPluralNamesLowercase($site_id=''){
+	    
+	    $models = $this->getModels(false, $site_id);
 	    $names = array();
 	    
 	    foreach($models as $m){
@@ -78,9 +109,9 @@ class SmartestDataUtility{
 	    
 	}
 	
-	public function getModelNamesLowercase(){
+	public function getModelNamesLowercase($site_id=''){
 	    
-	    $models = $this->getModels();
+	    $models = $this->getModels(false, $site_id);
 	    $names = array();
 	    
 	    foreach($models as $m){
@@ -93,7 +124,7 @@ class SmartestDataUtility{
 	
 	public function getModelsAsArrays($simple=false, $site_id=''){
 	    
-	    $models = $this->getModels($simple, $site_id);
+	    $models = $this->getModels(false, $site_id);
 	    $arrays = array();
 	    
 	    foreach($models as $m){
@@ -266,7 +297,7 @@ class SmartestDataUtility{
 	    
 	}
 	
-	static function isValidModelName($string){
+	public function isValidModelName($string){
 	    
 	    $constant_names = array_keys(get_defined_constants());
 	    $class_names = get_declared_classes();
@@ -277,6 +308,35 @@ class SmartestDataUtility{
 	    }else{
 	        return true;
 	    }
+	}
+	
+	public function modelNameIsAvailable($name, $site_id, $shared){
+	    
+	    if($shared){
+	        $models = $this->getSharedModels();
+	    }else{
+	        $models = $this->getModels(false, $site_id);
+	    }
+	    
+	    foreach($models as $m){
+	        if($m->getName() == $name){
+	            return false;
+	        }
+	    }
+	    
+	    return true;
+	    
+	}
+	
+	public function flushModelsCache(){
+	    
+	    SmartestCache::clear('models_query', true);
+	    
+	    foreach($this->getSites() as $s){
+	        $cache_name = 'models_query_site_'.$s->getId();
+	        SmartestCache::clear($cache_name, true);
+	    }
+	    
 	}
 	
 	static function isValidPropertyName($string, $model=''){

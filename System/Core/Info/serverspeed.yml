@@ -1,0 +1,21 @@
+levels:
+  5000:
+    description: Piss-poor - get a new server
+    image: server-level-1.png
+    color: ff1000
+  1600:
+    description: Slow
+    image: server-level-2.png
+    color: e16900
+  1250:
+    description: Average
+    image: server-level-3.png
+    color: c7c300
+  850:
+    description: Good
+    image: server-level-4.png
+    color: 86c400
+  450:
+    description: Blazin'
+    image: server-level-5.png
+    color: 0ebd00

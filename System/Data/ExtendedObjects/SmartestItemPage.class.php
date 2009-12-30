@@ -189,28 +189,23 @@ class SmartestItemPage extends SmartestPage{
     
     public function getRelatedContentForRender(){
 	    
-	    // $content = array();
 	    $data = new SmartestParameterHolder('Related Content');
 	    
 	    $du = new SmartestDataUtility;
-        $models = $du->getModels();
+        $models = $du->getModels(false, $this->_properties['site_id']);
     
         foreach($models as $m){
             $key = SmartestStringHelper::toVarName($m->getPluralName());
             
             if($m->getId() == $this->_simple_item->getModelId()){
-                // $content[$key] = $this->_simple_item->getRelatedItems($this->getDraftMode());
                 $data->setParameter($key, $this->_simple_item->getRelatedItems($this->getDraftMode()));
             }else{
-                // $content[$key] = $this->_simple_item->getRelatedForeignItems($this->getDraftMode(), $m->getId());
                 $data->setParameter($key, $this->_simple_item->getRelatedForeignItems($this->getDraftMode(), $m->getId()));
             }
         }
         
-        // $content['pages'] = $this->_simple_item->getRelatedPages($this->getDraftMode());
         $data->setParameter('pages', $this->_simple_item->getRelatedPages($this->getDraftMode()));
         
-        // return $content;
         return $data;
         
 	}

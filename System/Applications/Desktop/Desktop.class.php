@@ -128,6 +128,7 @@ class Desktop extends SmartestSystemApplication{
 	        $this->send(is_writable(SM_ROOT_DIR.'Presentation/Masters/'), 'allow_create_master_tpl');
 	    }else{
 	        $this->addUserMessageToNextRequest('You don\'t have permission to create new sites. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
+	        SmartestLog::getInstance('system')->log($this->getUser()->getFullName().' tried to create a new site, but doesn\'t have permission to do so.');
             $this->redirect('/smartest');
 	    }
 	}
@@ -325,50 +326,52 @@ class Desktop extends SmartestSystemApplication{
     
     public function aboutSmartest(){
         
-        preg_match('/(Apache\/(1|2.\d.\d))/', $_SERVER['SERVER_SOFTWARE'], $matches);
-        $server = str_replace('/', ' ', $matches[1]);
-        
+        // Web server
+        $server = SmartestSystemHelper::getWebServerSoftware();
         $this->send($server, 'platform');
+        
+        // Version, Build and Revision
         $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
         $this->send($sys['system']['info']['revision'], 'revision');
         $this->send($sys['system']['info']['version'], 'version');
         $this->send($sys['system']['info']['build'], 'build');
-        $this->send(str_replace('M', ' MB', ini_get('memory_limit')), 'memory_limit');
-        $this->send(phpversion(), 'php_version');
+        
+        // Memory Limit
+        $this->send(SmartestSystemHelper::getPhpMemoryLimit(), 'memory_limit');
+        
+        // PHP Version
+        $this->send(SmartestSystemHelper::getPhpVersion(), 'php_version');
+        
+        // Root Directory
         $this->send(SM_ROOT_DIR, 'root_dir');
         
-        $linux = `head -n 1 /etc/issue`;
-        $linux = trim(str_replace('\n', '', $linux));
-        $linux = trim(str_replace('\l', '', $linux));
+        // Operating system
+        $this->send(SmartestSystemHelper::getOperatingSystem(), 'linux_version');
         
-        if(strlen($linux)){
-            $this->send($linux, 'linux_version');
-        }else if(is_file('/Applications/Utilities/Terminal.app/Contents/version.plist')){
-            // sw_vers | grep 'ProductVersion:' | grep -o '[0-9]*\.[0-9]*\.[0-9]*'
-            $linux = "Mac OS X ".`sw_vers | grep 'ProductVersion:' | grep -o '[0-9]*\.[0-9]*\.[0-9]*'`;
-            $this->send($linux, 'linux_version');
-        }
-        
+        // Server speed
         $this->send($this->getUser()->hasToken('test_server_speed'), 'allow_test_server_speed');
         $this->send($this->getUser()->hasToken('see_server_speed'), 'allow_see_server_speed');
         
-        $this->send(SmartestSystemSettingHelper::load('_server_speed_index'), 'speed_score');
+        $raw_speed_score = SmartestSystemSettingHelper::load('_server_speed_index');
+        $cats = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/serverspeed.yml');
+        $speed_categories = $cats['levels'];
+        $previous_category = array('description'=>'Unrated', 'image'=>'server-level-0.png', 'color'=>'333');
         
-        if(SmartestSystemSettingHelper::hasData('_system_installed_timestamp')){
-            $system_installed_timestamp = SmartestSystemSettingHelper::load('_system_installed_timestamp');
-        }else{
-            
-            // Attempt to figure out when the system was set up by looking at the oldest page
-            $sql = "SELECT page_created FROM Pages ORDER BY page_id ASC LIMIT 1";
-            $db = SmartestPersistentObject::get('db:main');
-            $r = $db->queryToArray($sql);
-            $system_installed_timestamp = $r[0]['page_created'];
-            
-            if($system_installed_timestamp > 0){
-                SmartestSystemSettingHelper::save('_system_installed_timestamp', $system_installed_timestamp);
+        foreach($speed_categories as $k => $sc){
+            if($raw_speed_score < $k){
+                $previous_category = $speed_categories[$k];
+                continue;
+            }else{
+                $category = $previous_category;
+                break;
             }
         }
         
+        $this->send($raw_speed_score, 'speed_score');
+        $this->send($category, 'speed_category_info');
+        
+        // Install date
+        $system_installed_timestamp = SmartestSystemHelper::getInstallDate(true);
         $this->send($system_installed_timestamp, 'system_installed_timestamp');
         
     }

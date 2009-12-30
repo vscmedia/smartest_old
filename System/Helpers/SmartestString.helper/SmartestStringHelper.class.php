@@ -6,7 +6,7 @@ define("SM_OPTIONS_MAGIC_QUOTES", (bool) ini_get('magic_quotes_gpc'));
 
 class SmartestStringHelper extends SmartestHelper{
 
-	static function random($size){
+	public static function random($size){
 	
 		$possValues = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s"
 			    , "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", 
@@ -24,11 +24,11 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
-	static function isAscii(){
+	public static function isAscii(){
 	    return (preg_match('/(?:[^\x00-\x7F])/',$str) !== 1);
 	}
 	
-	static function toAscii($string){
+	public static function toAscii($string){
 
         static $UTF8_LOWER_ACCENTS = NULL;
         static $UTF8_UPPER_ACCENTS = NULL;
@@ -85,11 +85,11 @@ class SmartestStringHelper extends SmartestHelper{
 
     }
     
-    static function stripNewLines($s){
+    public static function stripNewLines($s){
         return preg_replace("/[\n\r]/m", " ", $s);
     }
     
-	static function toSlug($normal_string, $clean_non_ascii=false){
+	public static function toSlug($normal_string, $clean_non_ascii=false){
 	
 		$page_name = strtolower($normal_string);
 		
@@ -104,7 +104,7 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
-	static function toValidDomain($normal_string, $clean_non_ascii=false){
+	public static function toValidDomain($normal_string, $clean_non_ascii=false){
 	
 		$page_name = strtolower($normal_string);
 		
@@ -119,7 +119,7 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
-	static function toVarName($normal_string, $clean_non_ascii=false){
+	public static function toVarName($normal_string, $clean_non_ascii=false){
 	
 		$page_name = strtolower($normal_string);
 		
@@ -134,7 +134,7 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
-	static function toConstantName($string, $clean_non_ascii=false){
+	public static function toConstantName($string, $clean_non_ascii=false){
 		
 		$constant_name = trim($string, " ?!%$#&£*|/\\-");
 		
@@ -149,7 +149,7 @@ class SmartestStringHelper extends SmartestHelper{
     	return $constant_name;
 	}
 	
-	static function toCamelCase($string, $omitfirst=false){
+	public static function toCamelCase($string, $omitfirst=false){
 		// takes a string, splits it by -, _, or '', and returns it lowercase with the first letter of each 'word' being uppercase
 		$string = self::toSlug($string);
 		$words = preg_split('/[_-]/', $string);
@@ -175,7 +175,7 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	
-	static function toQueryString($array, $escapeAmpersand=false){
+	public static function toQueryString($array, $escapeAmpersand=false){
 	    if(is_array($array)){
 	        
 	        $i = 0;
@@ -197,12 +197,33 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function capitalizeFirstLetter($string){
+	public static function parseQueryString($string, $htmlAmpersand=false){
+	    
+	    if($string){
+	        
+	        $amp = $htmlAmpersand ? '&amp;' : '&';
+	        
+	        $pairs = explode($amp, $string);
+    	    $data = array();
+
+    	    foreach($pairs as $nvp){
+    	        $parts = explode('=', $nvp);
+    	        $data[trim($parts[0])] = trim($parts[1]);
+    	    }
+	        
+	        return $data;
+	        
+	    }else{
+	        return array();
+	    }
+	}
+	
+	public static function capitalizeFirstLetter($string){
 	    $string{0} = strtoupper($string{0});
 	    return $string;
 	}
 	
-	static function toTitleCase($string){
+	public static function toTitleCase($string){
 	    
         $non_capitalised_words = array('to', 'the', 'and', 'in', 'of', 'with', 'a', 'an');
         $words = explode(' ', $string);
@@ -249,7 +270,7 @@ class SmartestStringHelper extends SmartestHelper{
         return $string_encode;
 	}
 	
-	static function toHash($string, $length=32, $type='MD5'){
+	public static function toHash($string, $length=32, $type='MD5'){
 	    
 	    if($type == 'SHA1'){
 	        $hash = sha1($string);
@@ -260,7 +281,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    return substr($hash, 0, $length);
 	}
 	
-	static function isMd5Hash($string){
+	public static function isMd5Hash($string){
 		if(preg_match("/^[0-9a-f]{32}$/", $string)){ // if
 			return true;
 		}else{
@@ -268,7 +289,7 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 	}
 	
-	static function isFalse($string){
+	public static function isFalse($string){
 	    if(strlen($string) == 0 || in_array(strtolower($string), array('false', 'off', '0'))){
 	        return true;
 	    }else{
@@ -276,7 +297,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function toRealBool($string){
+	public static function toRealBool($string){
 	    if($string){
 	        return self::isFalse($string) ? false : true;
         }else{
@@ -284,7 +305,7 @@ class SmartestStringHelper extends SmartestHelper{
         }
 	}
 	
-	static function endsWith($word, $symbol){
+	public static function endsWith($word, $symbol){
 	    if(mb_strlen($word)){
 	        $pos = (mb_strlen($word) - 1);
 	        if($word{$pos} == $symbol){
@@ -297,7 +318,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function startsWith($word, $symbol){
+	public static function startsWith($word, $symbol){
 	    if(mb_strlen($word)){
 	        $pos = 0;
 	        if($word{$pos} == $symbol){
@@ -310,7 +331,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function getDotSuffix($filename){
+	public static function getDotSuffix($filename){
 	    
 	    $file = end(explode('/', $filename));
 	    
@@ -321,7 +342,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function removeDotSuffix($filename){
+	public static function removeDotSuffix($filename){
 	    
 	    $dot_pieces = explode('.', $filename);
 	    
@@ -336,14 +357,14 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	// now deprecated
-	static function sanitizeFileContents($string){
+	public static function sanitizeFileContents($string){
 	    
 	    return self::sanitize($string);
 	    
 	}
 	
 	// protects the database
-	static function sanitize($string){
+	public static function sanitize($string){
 	    
 	    if(is_string($string)){
 	        $string = str_replace('<?php', '', $string);
@@ -356,14 +377,14 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	}
 	
-	static function toSensibleFileName($string){
+	public static function toSensibleFileName($string){
 	    $suffix = self::getDotSuffix($string);
 	    $base = self::removeDotSuffix($string);
 	    $base = preg_replace("/[\s\.]/", '_', $base);
 	    return $base.'.'.$suffix;
 	}
 	
-	static function toSummary($string, $char_length=300){
+	public static function toSummary($string, $char_length=300){
 	    // find the end of first paragraph and cut there
 	    preg_match_all('/<p[^>]*>(.+?)<\/p>/mi', self::stripNewLines($string), $paragraphs);
       
@@ -385,20 +406,15 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	}
 	
-	static function isEmailAddress($string){
+	public static function isEmailAddress($string){
 		return preg_match('/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/i', $string);
 	}
 	
-	static function isValidExternalUri($string){
+	public static function isValidExternalUri($string){
 		return preg_match('/^https?:\/\//i', $string);
 	}
 	
-	static function getRelatedWords($word){
-		// query wikipedia
-		
-	}
-	
-	static function parseNameValueString($string){
+	public static function parseNameValueString($string){
 	    
 	    $pairs = explode(';', $string);
 	    $data = array();
@@ -412,7 +428,7 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	
-	static function toNameValueString($array){
+	public static function toNameValueString($array){
 	    if(!is_array($array)){
 	        return '0:'.$array;
 	    }else{
@@ -426,21 +442,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	}
 	
-	/* static function parseAttributeString($string){
-	    
-	    $pairs = explode(';', $string);
-	    $data = array();
-	    
-	    foreach($pairs as $nvp){
-	        $parts = explode(':', $nvp);
-	        $data[trim($parts[0])] = trim($parts[1]);
-	    }
-	    
-	    return $data;
-	} */
-	
-	
-	static function toAttributeString($array){
+	public static function toAttributeString($array){
 	    if(!is_array($array)){
 	        return '';
 	    }else{
@@ -453,15 +455,15 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function toHtmlEntities($string){
+	public static function toHtmlEntities($string){
     	return htmlentities($string, ENT_QUOTES, 'UTF-8') ;
     }
     
-    static function toXmlEntities($string){
+    public static function toXmlEntities($string){
     	return htmlspecialchars($string, ENT_QUOTES, 'UTF-8') ;
     }
     
-    static function protectSmartestTags($string){
+    public static function protectSmartestTags($string){
         
         $string = preg_replace('/([\w_]+)=&(amp;)?quot;([\w\s\.:_-]*)&(amp;)?quot;/i', '$1="$3"', $string);
         
@@ -473,7 +475,7 @@ class SmartestStringHelper extends SmartestHelper{
         return $string;
     }
     
-    static function unProtectSmartestTags($string){
+    public static function unProtectSmartestTags($string){
         
         $string = preg_replace('/([\w_]+)=&(amp;)?quot;([^&]*)&(amp;)?quot;/i', '$1="$3"', $string);
         
@@ -485,12 +487,12 @@ class SmartestStringHelper extends SmartestHelper{
         return $string;
     }
     
-    static function separateParagraphs($string){
+    public static function separateParagraphs($string){
         $string = str_replace('</p><p', "</p>\n\n<p", $string);
         return $string;
     }
     
-    static function toRegularExpression($string, $add_slashes=false){
+    public static function toRegularExpression($string, $add_slashes=false){
 	    $regexp = str_replace('/', '\/', $string);
 	    $regexp = str_replace('|', '\|', $regexp);
 		$regexp = str_replace('+', '\+', $regexp);
@@ -513,7 +515,7 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 	}
 	
-	static function toCommaSeparatedList($array){
+	public static function toCommaSeparatedList($array){
 	    
 	    if(is_array($array)){
 	        

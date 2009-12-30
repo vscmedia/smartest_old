@@ -27,7 +27,9 @@ function openPage(pageAction){
 
 <div id="work-area">
 
-<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; {$model.plural_name}</h3>
+{load_interface file="model_list_tabs.tpl"}
+
+<h3><a href="{$domain}smartest/models">Items</a> &gt; {$model.plural_name}</h3>
 <a name="top"></a>
 <div class="instruction">Double click one of the {$model.plural_name|strtolower} below to edit it, or click once and choose from the options on the right.</div>
 
@@ -90,13 +92,11 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('toggleItemArchived');">Archive/Un-archive</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> <a href="{dud_link}" onclick="if(selectedPage && confirm('Are you sure you want to delete this {$model.name|lower} ?')) {ldelim}workWithItem('deleteItem');{rdelim}">Delete</a></li>
 {* <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="if(selectedPage) {ldelim}workWithItem('duplicateItem');{rdelim}">Duplicate</a></li> *}
-
-  <!--<tr style="height:25px"><td class="text"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="{literal}if(selectedPage){workWithItem('getItemXml');}{/literal}">Export</a></td></tr>-->
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Model Options</b></li>
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png" /> Add a new {$model.name}</a></li>
+  {if $allow_create_new}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/add.png" /> Add a new {$model.name}</a></li>{/if}
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/releaseUserHeldItems?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/lock_open.png" /> Release all {$model.plural_name}</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editModel?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/information.png" /> Model info</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/pencil.png" /> Edit model properties</a></li>

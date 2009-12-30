@@ -1,0 +1,6 @@
+site_layout:
+  - Configuration/
+  - Presentation/
+  - Library/
+    - ObjectModel/
+    - Actions/

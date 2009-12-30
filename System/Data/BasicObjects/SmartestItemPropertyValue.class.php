@@ -278,7 +278,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
         $this->_modified_properties['draft_content'] = addslashes($filtered_data);
         
         if(isset($this->_properties['item_id']) && is_numeric($this->_properties['item_id'])){
-            $this->save();
+            // $this->save();
         }
         
         return true;

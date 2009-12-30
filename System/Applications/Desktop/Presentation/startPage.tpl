@@ -9,7 +9,9 @@
   </tr>
 </table> *}
 
-<h3>Welcome to the {$site.name} administration interface</h3>
+<h3>Home</h3>
+
+<div class="instruction">Welcome to the "<strong>{$site.name}</strong>" web administration interface.</div>
 
 <ul class="options-grid-no-scroll">
   <li><a href="{$domain}smartest/pages" class="option" id="option_1"><img border="0" src="{$domain}Resources/Icons/package.png" />Create and edit pages</a></li>

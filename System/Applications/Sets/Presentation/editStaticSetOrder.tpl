@@ -1,6 +1,8 @@
 <div id="work-area">
   
-  <h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; {if $model.id}<a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}sets/getItemClassSets?class_id={$model.id}">Sets</a>{else}<a href="{$domain}smartest/sets">Sets</a>{/if} &gt; <a href="{$domain}sets/editSet?set_id={$set.id}">{$set.label}</a> &gt; Set Order</h3>
+  {load_interface file="edit_set_tabs.tpl"}
+  
+  <h3><a href="{$domain}smartest/models">Items</a> &gt; {if $model.id}<a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}sets/getItemClassSets?class_id={$model.id}">Sets</a>{else}<a href="{$domain}smartest/sets">Sets</a>{/if} &gt; <a href="{$domain}sets/editSet?set_id={$set.id}">{$set.label}</a> &gt; Set Order</h3>
   
   {if count($items)}
   
@@ -14,7 +16,7 @@
   </ul>
   
   <div class="edit-form-row">
-    <div class="buttons-bar"><input type="button" value="Done" onclick="window.location='{$domain}{$section}/editSet?set_id={$set.id}'" /></div>
+    <div class="buttons-bar"><input type="button" value="Done" onclick="cancelForm();" /></div>
   </div>
   
   {else}

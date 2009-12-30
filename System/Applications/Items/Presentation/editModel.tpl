@@ -1,6 +1,8 @@
 <div id="work-area">
   
-  <h3>Edit Model</h3>
+  {load_interface file="edit_model_tabs.tpl"}
+  
+  <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Model info</h3>
   
   <form action="{$domain}{$section}/updateModel" method="post">
     
@@ -19,15 +21,51 @@
       </div>
       
       <div class="edit-form-row">
-        <div class="form-section-label">Model Class</div>
-        Library/ObjectModel/{$model.name|camelcase}.class.php
+        <div class="form-section-label">Model class</div>
+        <code>{$class_file}</code>
       </div>
       
       <div class="edit-form-row">
-        <div class="form-section-label">Model Plural Name</div>
-        {if $allow_plural_name_edit}<input type="text" name="itemclass_plural_name" value="{$model.plural_name}" style="width:250px" />{else}{$model.plural_name}{/if}
+        <div class="form-section-label">Model plural name</div>
+        {if $allow_plural_name_edit}<input type="text" name="itemclass_plural_name" value="{$model.plural_name}" />{else}{$model.plural_name}{/if}
       </div>
       
+      <div class="edit-form-row">
+        <div class="form-section-label">Shared on all sites</div>
+        <input type="checkbox" name="itemclass_shared" id="itemclass-shared" value="1"{if $shared} checked="checked"{/if}{if !$allow_sharing_toggle} disabled="disabled"{/if} />
+        
+            {if $shared}
+              {if $allow_sharing_toggle}
+                <label for="itemclass-shared">Uncheck the box to make only this site able to store and display {$model.plural_name|lower}</label>
+              {else}
+                <span class="form-hint">This model must be shared because 
+                {if $model.site_id == '0'}
+                  it isn't currently attached to one of your sites
+                {else}
+                  it is already in use on sites other than this one
+                {/if}</span>
+              {/if}
+            {else}
+              {if $allow_sharing_toggle}
+                <label for="itemclass-shared">Check the box to make all sites able to store and display {$model.plural_name|lower}</label>
+              {else}
+                <span class="form-hint">This model cannot be shared because other models with conflicting or identical names exist on other sites</span>
+              {/if}
+            {/if}
+      </div>
+      
+      {if $allow_main_site_switch}
+      <div class="edit-form-row" id="">
+        <div class="form-section-label">Main site</div>
+        <select name="itemclass_site_id">
+          {foreach from=$sites item="s"}
+          <option value="{$s.id}"{if $current_site_id_id==$s.id} selected="selected"{/if}>{$s.name}</option>
+          {/foreach}
+        </select><span class="form-hint">The model's main site is the one that can use it if the model is not shared.</span>
+      </div>
+      {/if}
+      
+      {if count($metapages)}
       <div class="edit-form-row">
         <div class="form-section-label">Default Meta-Page</div>
         <select name="itemclass_default_metapage_id">
@@ -37,6 +75,7 @@
           {/foreach}
         </select>
       </div>
+      {/if}
       
       <div class="edit-form-row">
         <div class="form-section-label">Description Property</div>

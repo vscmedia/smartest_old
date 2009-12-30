@@ -14,13 +14,3 @@
     <li class="top-level off"><a href='{$domain}smartest/logout'>Sign out</a></li>
   </ul>
 </div>
-
-{* <!--
-<div class="top-nav">
-  <ul class="top-nav-buttons">
-    <li><a href="{$domain}smartest" class="top-nav-link"><img src="{$domain}Resources/Icons/nav-home.gif" border="0" alt="Home" class="top-nav-icon" /></a></li>
-    <li><a href="{$domain}smartest/logout" class="top-nav-link"><img src="{$domain}Resources/Icons/nav-home.gif" border="0" alt="Log Out" class="top-nav-icon" /></a></li>
-  </ul>
-  <img src="http://universal.visudo.com/images/logos/smartest-small.gif" id="smartest_logo" alt="Smartest" style="float:right;margin:10px;" border="0" />
-</div>
---> *}

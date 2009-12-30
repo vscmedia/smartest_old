@@ -731,6 +731,66 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 	
+	public function editAssetGroup($get){
+	    
+	    $group = new SmartestAssetGroup;
+	    
+	    if($group->find($get['group_id'])){
+	        
+	        $this->send($group, 'group');
+	        $this->send($this->getUser()->hasToken('edit_file_group_name'), 'allow_name_edit');
+	        
+	        if($group->isUsableForPlaceholders()){
+	            if($group->isUsedForPlaceholders()){
+	                $this->send(false, 'allow_shared_toggle');
+	            }else{
+	                $this->send(true, 'allow_shared_toggle');
+	            }
+	        }else{
+	            $this->send(true, 'allow_shared_toggle');
+	        }
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	    }
+	    
+	}
+	
+	public function updateAssetGroup($get, $post){
+	    
+	    $group = new SmartestAssetGroup;
+	    $group_id = (int) $post['group_id'];
+	    
+	    if($group->find($group_id)){
+	        
+	        $group->setLabel($post['group_label']);
+	        
+	        if($this->getUser()->hasToken('edit_file_group_name')){
+	            $group->setName(SmartestStringHelper::toVarName($post['group_name']));
+	        }
+	        
+	        if($group->isUsedForPlaceholders()){
+                $group->setShared(1);
+            }else{
+                $shared = (isset($post['group_shared']) && $post['group_shared']) ? 1 : 0;
+                $group->setShared($shared);
+            }
+            
+            $group->save();
+            
+            $this->addUserMessageToNextRequest("The file group was updated", SmartestUserMessage::SUCCESS);
+            $this->redirect('/assets/editAssetGroup?group_id='.$group_id);
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The file group ID was not recognized", SmartestUserMessage::ERROR);
+	        $this->redirect('/assets/assetGroups');
+	        
+	    }
+	    
+	}
+	
 	public function editAssetGroupContents($get){
 	    
 	    $group_id = $get['group_id'];

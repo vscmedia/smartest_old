@@ -19,24 +19,31 @@ class SmartestModel extends SmartestBaseModel{
 	
 	protected function buildPropertyMap(){
 		
-		if(SmartestCache::hasData('model_properties_'.$this->_properties['id'], true)){
-		    $result = SmartestCache::load('model_properties_'.$this->_properties['id'], true);
-	    }else{
-		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_properties['id']."' ORDER BY itemproperty_id ASC";
-		    $result = $this->database->queryToArray($sql);
-		    SmartestCache::save('model_properties_'.$this->_properties['id'], $result, -1, true);
-	    }
+		if(!count($this->_model_properties)){
+	    
+	        if(SmartestCache::hasData('model_properties_'.$this->_properties['id'], true)){
+    		    $result = SmartestCache::load('model_properties_'.$this->_properties['id'], true);
+    	    }else{
+    		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_properties['id']."' ORDER BY itemproperty_id ASC";
+    		    $result = $this->database->queryToArray($sql);
+    		    SmartestCache::save('model_properties_'.$this->_properties['id'], $result, -1, true);
+    	    }
 		
-		foreach($result as $db_property){
-			$property = new SmartestItemProperty;
-			$property->hydrate($db_property);
-			$this->_model_properties[] = $property;
-		}
+    		foreach($result as $db_property){
+    			$property = new SmartestItemProperty;
+    			$property->hydrate($db_property);
+    			$this->_model_properties[] = $property;
+    		}
+		
+	    }
 		
 	}
 	
 	public function getProperties(){
-		return $this->_model_properties;
+	    
+	    $this->buildPropertyMap();
+	    return $this->_model_properties;
+	    
 	}
 	
 	public function refresh(){
@@ -44,7 +51,26 @@ class SmartestModel extends SmartestBaseModel{
         SmartestObjectModelHelper::buildAutoClassFile($this->_properties['id'], SmartestStringHelper::toCamelCase($this->getName()));
 	}
 	
-	public function offsetGet($offset){
+	public function delete($remove=false){
+	    
+	    if($remove){
+	    
+	        // Delete properties and property values
+    	    foreach($this->getProperties() as $p){
+    	        $p->delete(false);
+    	    }
+	    
+    	    // Delete items, now bereft of any property values
+    	    $sql = "DELETE FROM Items WHERE item_itemclass_id='".$this->getId()."'";
+    	    $this->database->rawQuery($sql);
+	    
+    	    parent::delete();
+	    
+        }
+	    
+	}
+	
+    public function offsetGet($offset){
 	    
 	    switch($offset){
 	        
@@ -110,7 +136,7 @@ class SmartestModel extends SmartestBaseModel{
 	    
 	}
 	
-	public function getPropertiesAsArrays(){
+	/* public function getPropertiesAsArrays(){
 		
 		$propertyarrays = array();
 		
@@ -119,6 +145,17 @@ class SmartestModel extends SmartestBaseModel{
 		}
 		
 		return $propertyarrays;
+	} */
+	
+	public function getPropertyIds(){
+		
+		$ids = array();
+		
+		foreach($this->_model_properties as $mp){
+			$ids[] = $mp->getId();
+		}
+		
+		return $ids;
 	}
 	
 	public function getPropertyNames(){
@@ -158,7 +195,7 @@ class SmartestModel extends SmartestBaseModel{
 	    return SmartestStringHelper::toCamelCase($this->getName());
     }
     
-    public function getSimpleItems($site_id='', $mode=0, $query=''){
+    public function getSimpleItems($site_id='', $mode=0, $query='', $exclude=''){
         
         $mode = (int) $mode;
         
@@ -209,9 +246,11 @@ class SmartestModel extends SmartestBaseModel{
             
         }
         
-        $sql .= " ORDER BY item_name";
+        if(is_array($exclude)){
+            $sql .= " AND item_id NOT IN ('".implode("', '", $exclude)."')";
+        }
         
-        // echo $sql;
+        $sql .= " ORDER BY item_name";
         
         $result = $this->database->queryToArray($sql);
         $items = array();
@@ -414,5 +453,280 @@ class SmartestModel extends SmartestBaseModel{
         return (bool) count($this->getForeignKeyPropertiesForModelId($model_id));
         
     }
+    
+    public function getMainSite(){
+        
+        $s = new SmartestSite;
+        
+        if($this->getSiteId() == '0'){
+            $sql = "SELECT site_id FROM Sites ORDER BY site_id ASC";
+            $result = $this->database->queryToArray($sql);
+            $first_site_id = $result[0]['site_id'];
+            $copy = $this->copy();
+            $copy->setSiteId($first_site_id);
+            $copy->save();
+            $site_id = $first_site_id;
+        }else{
+            $site_id = $this->getSiteId();
+        }
+        
+        if(!$s->find($site_id)){
+            SmartestLog::getInstance('system')->log("Model ".$this->getName()." is attached to a site that no longer exists and must be reassigned.");
+        }
+        
+        return $s;
+    }
+    
+    public function getSitesWhereUsed(){
+        
+        $sql = "SELECT DISTINCT Sites.* FROM Sites, Items, ItemClasses, Pages WHERE (Items. item_itemclass_id=ItemClasses.itemclass_id AND Items.item_site_id=Sites.site_id AND ItemClasses.itemclass_id='".$this->getId()."') OR (Pages.page_type='ITEMCLASS' AND Pages.page_dataset_id='".$this->getId()."' AND Pages.page_site_id=Sites.site_id)";
+        
+        $result = $this->database->queryToArray($sql);
+        
+        $sites = array();
+        
+        foreach($result as $r){
+            $s = new SmartestSite;
+            $s->hydrate($r);
+            $sites[] = $s;
+        }
+        
+        return $sites;
+    }
+    
+    public function getNumberOfSitesWhereUsed(){
+        return count($this->getSitesWhereUsed());
+    }
+    
+    public function isUsedOnMultipleSites(){
+        return $this->getNumberOfSitesWhereUsed() > 1;
+    }
+    
+    public function getOtherModelsWithSameName(){
+        
+        $sql = "SELECT * FROM ItemClasses WHERE itemclass_type='SM_ITEMCLASS_MODEL' AND itemclass_name='".$this->getName()."' AND itemclass_id != '".$this->getId()."'";
+        $result = $this->database->queryToArray($sql);
+        
+        $model_objects = array();
+		
+		foreach($result as $model){
+			$m = new SmartestModel;
+			$m->hydrate($model);
+			$model_objects[] = $m;
+		}
+		
+		return $model_objects;
+        
+    }
+    
+    public function hasSameNameAsModelOnOtherSite(){
+        
+        return (bool) count($this->getOtherModelsWithSameName());
+        
+    }
+    
+    public function setShared($new_shared_status){
+        
+        $currently_shared = $this->getShared();
+        
+        // If the shared status is being changed
+        if($currently_shared != $new_shared_status){
+            if($new_shared_status == '0'){
+                // Model is being made site-specific, so move class file to Sites/.../Library/ObjectModel/
+                if(SmartestFileSystemHelper::move($this->getClassFilePath(1), $this->getClassFilePath(0))){
+                    parent::setShared('0');
+                }
+            }else if($new_shared_status == '1'){
+                // Model is being shared, so move class file to Library/ObjectModel/
+                if(SmartestFileSystemHelper::move($this->getClassFilePath(0), $this->getClassFilePath(1))){
+                    parent::setShared('1');
+                }
+            }
+        }
+    }
+    
+    // Code for building and including model classes
+    
+    public function init(){
+        
+        // Do constants first
+	    $constant_name = SmartestStringHelper::toCamelCase($this->getName());
+		
+	    if(!defined($constant_name)){
+			define($constant_name, $item_class["itemclass_id"], true);
+		}
+		
+		// if(is_file(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php')){
+		if(is_file($this->getAutoClassFilePath())){
+			// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
+			include $this->getAutoClassFilePath();
+		}else{
+			// build auto class
+			if($this->buildAutoClassFile()){
+				// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
+				include $this->getAutoClassFilePath();
+			}else{
+				throw new SmartestException('Could not auto-generate model class: '.$this->getName(), SM_ERROR_MODEL);
+			}
+		}
+		
+		if(is_file($this->getClassFilePath())){
+			// include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
+			include $this->getClassFilePath();
+		}else{
+			// build extensible class
+			if($this->buildClassFile()){
+				// include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
+				include $this->getClassFilePath();
+			}else{
+				throw new SmartestException('Could not auto-generate model class: '.$this->getName(), SM_ERROR_MODEL);
+			}
+		}
+        
+    }
+    
+    public function getAutoClassFilePath(){
+        
+        // if($this->getShared()){
+            return SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$this->getClassName().$this->getId().'.class.php';
+        // }else{
+        //    return SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$this->getClassName().'.class.php';
+        //}
+        
+    }
+    
+    public function getClassFilePath($shared_status=-1){
+        
+        if($shared_status == -1){
+            $shared = $this->getShared();
+            $specified = true;
+        }else{
+            $shared = $shared_status;
+            $specified = false;
+        }
+        
+        if($shared){
+            return SM_ROOT_DIR.'Library/ObjectModel/'.$this->getClassName().'.class.php';
+        }else{
+            if(!is_dir(SM_ROOT_DIR.'Sites/'.$this->getMainSite()->getDirectoryName().'/Library/ObjectModel/') && !@mkdir(SM_ROOT_DIR.'Sites/'.$this->getMainSite()->getDirectoryName().'/Library/ObjectModel/')){
+                SmartestLog::getInstance('system')->log('Site-specific model class could not be created because '.SM_ROOT_DIR.'Sites/'.$this->getMainSite()->getDirectoryName().'/Library/ObjectModel/ is not writable.', SmartestLog::WARNING);
+                if(!$specified){
+                    return SM_ROOT_DIR.'Library/ObjectModel/'.$this->getClassName().'.class.php';
+                }
+            }
+            return SM_ROOT_DIR.'Sites/'.$this->getMainSite()->getDirectoryName().'/Library/ObjectModel/'.$this->getClassName().'.class.php';
+        }
+        
+    }
+    
+    public function buildClassFile(){
+		
+		$className = $this->getClassName();
+		    
+		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/object_template.txt')){
+	
+			$file = str_replace('__THISCLASSNAME__', $className, $file);
+			$file = str_replace('__AUTOCLASSNAME__', 'auto'.$className, $file);
+			$file = str_replace('__TIME__', date("Y-m-d H:i:s"), $file);
+			
+			return file_put_contents($this->getClassFilePath(), $file);
+		
+		}else{
+			return false;
+		}
+		
+	}
+    
+    public function buildAutoClassFile(){
+		
+		$className = $this->getClassName();
+	    $properties = $this->getProperties();
+	    $constants = '';
+	
+		foreach($properties as $property){
+		
+			$constant_name  = SmartestStringHelper::toConstantName($property->getName());
+			$constant_value = $property->getId();
+		
+			if(is_numeric($constant_name{0})){
+				$constant_name = '_'.$constant_name;
+			}
+		
+			$new_constant = '    const '.$constant_name.' = '.$constant_value.";\n";
+		    $constants .= $new_constant;
+		
+		}
+	
+		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt')){
+		
+			$functions = $this->buildAutoClassFunctionCode();
+			$varnames_lookup = $this->buildAutoClassVarnameLookupCode();
+		
+			$file = str_replace('__THISCLASSNAME__', 'auto'.$className, $file);
+			$file = str_replace('__THECONSTANTS__', $constants, $file);
+			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
+			$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);
+			$file = str_replace('__MODEL_ID__', $this->getId(), $file);
+			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
+	
+			file_put_contents($this->getAutoClassFilePath(), $file);
+			return true;
+		
+		}else{
+			return false;
+		}
+		
+	}
+	
+	public function buildAutoClassVarnameLookupCode(){
+	    
+	    $varnames_lookup = '    protected $_varnames_lookup = array('."\n";
+		$i = 1;
+		
+		$properties = $this->getProperties();
+		
+		foreach($properties as $property){
+			
+			$new_constant = "        '".$property->getVarname()."' => ".$property->getId();
+			
+			if($i < count($properties)){
+			    $new_constant .= ',';
+			}
+			
+			$new_constant .= "\n";
+			
+			$varnames_lookup .= $new_constant;
+			$i++;
+			
+		}
+		
+		$varnames_lookup .= '    );'."\n\n";
+		
+		return $varnames_lookup;
+	    
+	}
+	
+	public function buildAutoClassFunctionCode(){
+	    
+	    $file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_datafunctions.txt');
+	    $code = '';
+	    
+	    foreach($this->getProperties() as $property){
+			
+			$constant_name  = SmartestStringHelper::toCamelCase($property->getName());
+			$constant_value = $property->getId();
+			$bool_typecast = $property->getDatatype() == '' ? '(bool) ' : '';
+			
+			$f = str_replace('__PROPNAME__', $constant_name, $file);
+			$f = str_replace('__PROPID__', $constant_value, $f);
+			$f = str_replace('__BOOLTYPECAST__', $bool_typecast, $f);
+			
+			$code .= $f;
+			
+		}
+		
+		return $code;
+	    
+	}
     
 }

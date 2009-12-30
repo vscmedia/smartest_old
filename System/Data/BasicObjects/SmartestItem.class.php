@@ -137,6 +137,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	
 	public function delete($remove=false){
 	    if($remove){
+	        $id = $this->getId();
 		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
 		    $this->database->rawQuery($sql);
 		    $sql = "DELETE FROM ItemPropertyValues WHERE itempropertyvalue_item_id='".$this->_properties['id']."'";

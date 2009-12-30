@@ -907,19 +907,7 @@ class Pages extends SmartestSystemApplication{
 			
 			if($page_type == 'ITEMCLASS'){
 				
-				// get a lst of the models
-				$du = new SmartestDataUtility;
-				// $set_objects = $du->getDataSets();
-				$model_objects = $du->getModels();
-				/// $sets = SmartestDataUtility::getDatasets();
-				
-				$models = array();
-				
-				foreach($model_objects as $model){
-				    $models[] = $model;
-				}
-				
-				$this->send($models, 'models');
+				$this->send($this->getSite()->getModels(), 'models');
 				
 			}else if(SmartestPersistentObject::get('__newPage')->getType() == 'TAG'){
 			    

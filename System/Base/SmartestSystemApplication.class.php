@@ -94,13 +94,44 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	
 	///// Form forwarding //////
 	
-	protected function setFormReturnUri(){
-	    if(isset($_GET['from']) && isset($_GET['from']{0})){
+	// You can pass it a URI, or if not, it will use the current request URI
+	protected function setFormReturnUri($uri=''){
+	    
+	    if(strlen($uri)){
+	        
+	        $uri_parts = explode("?", $uri);
+	        
+	        $fn = $uri_parts[0];
+	        
+	        if(substr($fn, 0, strlen(constant('SM_CONTROLLER_DOMAIN'))) != constant('SM_CONTROLLER_DOMAIN')){
+	            if($fn{0} == '/'){
+	                $request_filename = constant('SM_CONTROLLER_DOMAIN').$fn;
+	            }else{
+	                $request_filename = constant('SM_CONTROLLER_DOMAIN').'/'.$fn;
+	            }
+	        }else{
+	            $request_filename = $fn;
+	        }
+	        
+	        if(count($uri_parts) > 1){
+	            $qs = $uri_parts[1];
+	            $request_vars = SmartestStringHelper::parseQueryString($qs);
+            }else{
+                $request_vars = array();
+            }
+	        
+	    }else{
+	        $request_vars = $_GET;
+	        $request_filename = reset(explode("?", $_SERVER["REQUEST_URI"]));
+        }
+        
+        if(isset($request_vars['from']) && isset($request_vars['from']{0})){
 	        // do nothing
 	    }else{
-		    SmartestSession::set("form:return:location", reset(explode("?", $_SERVER["REQUEST_URI"])));
-		    SmartestSession::set("form:return:vars", $_GET);
+		    SmartestSession::set("form:return:location", $request_filename);
+		    SmartestSession::set("form:return:vars", $request_vars);
 	    }
+        
 	}
 	
 	public function getFormReturnUri($escape=false){

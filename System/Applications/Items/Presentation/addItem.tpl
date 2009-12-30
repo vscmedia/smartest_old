@@ -1,13 +1,13 @@
 <div id="work-area">
 
-<h3><a href="{$domain}smartest/data">Items</a> &gt; <a href="{$domain}smartest/models">Models</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Add a new {$item._model.name|strtolower}</h3>
+{* <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Add a new {$model.name|strtolower}</h3> *}
+<h3>Add a new {$model.name|strtolower}</h3>
 
 <div id="instruction">You are submitting the draft property values of the new {$model.name|lower}.</div>
 
-<form action="{$domain}{$section}/addItem" enctype="multipart/form-data" method="post">
+<form action="{$domain}{$section}/insertItem" method="post">
 
 <input type="hidden" name="class_id" value="{$model.id}" />
-<input type="hidden" name="save_item" value="{$item.id}" />
 
 <div class="edit-form-row">
   <div class="form-section-label">{$model.name} Name</div>
@@ -17,7 +17,7 @@
 {foreach from=$properties key="pid" item="property"}
 
 <div class="edit-form-row">
-  {item_field property=$property value=$property.default_value}
+  {item_field property=$property}
 </div>
 
 {/foreach}

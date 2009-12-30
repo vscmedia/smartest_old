@@ -1104,7 +1104,7 @@ class PagesManager{
 		}
 	}
 	
-	public function getMasterTemplates($site_id){
+	/* public function getMasterTemplates($site_id){
 		// $siteRoot = $this->database->specificQuery("site_root", "site_id", $site_id, "Sites");
 		// $templates_dir = $siteRoot."Presentation/Masters/";
 		$templates_dir = "Presentation/Masters/";
@@ -1125,7 +1125,7 @@ class PagesManager{
 		}
 		
 		return($templates);
-	}
+	} */
 	
 	public function setDraftAsset($page_webid, $assetclass_name, $asset_id){
 		

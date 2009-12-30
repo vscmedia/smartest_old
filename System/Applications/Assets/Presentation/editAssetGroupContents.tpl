@@ -25,8 +25,10 @@ function executeTransfer(){
 </script>
 
 <div id="work-area">
-    
-  <h3>Files in {$group.label}</h3>
+  
+  {load_interface file="edit_filegroup_tabs.tpl"}
+  
+  <h3>Files in group "{$group.label}"</h3>
   
   <form action="{$domain}{$section}/transferAssets" method="post" name="transferForm">
 

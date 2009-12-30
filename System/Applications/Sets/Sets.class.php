@@ -133,34 +133,33 @@ class Sets extends SmartestSystemApplication{
 	    
 	    $set = new SmartestCmsItemSet;
 	    
-	    if($set->hydrate($set_id)){
+	    if($set->find($set_id)){
 	        
 	        if($set->getType() == "DYNAMIC"){
 	            
 	            $du = new SmartestDataUtility;
-	            $sites = $du->getSitesAsArrays();
-	            $conditions = $set->getConditionsAsArrays();
+	            $sites = $du->getSites();
+	            $conditions = $set->getConditions();
 	            $this->send($sites, 'sites');
 	            $this->send($conditions, 'conditions');
-	            $this->send($set->__toArray(), 'set');
+	            $this->send($set, 'set');
 	            $this->send(true, 'show_form');
-	            $this->send($set->getModel()->getPropertiesAsArrays(), 'properties');
+	            $this->send($set->getModel()->getProperties(), 'properties');
 	            $this->setTitle('Edit Dynamic Set');
 	            
 	            $formTemplateInclude = "editSet.dynamic.tpl";
 	        
 	        }else{
 	            
-	            // fetch all item ids
-	            $all_items = $set->getModel()->getSimpleItemsAsArrays($this->getSite()->getId());
+	            
 	            
 	            // fetch set member item ids (and create objects for form)
-	            $set_member_ids = $set->getMemberIds(SM_QUERY_ALL_DRAFT);
+	            // $set_member_ids = $set->getMemberIds(SM_QUERY_ALL_DRAFT);
 	            
 	            // do the math
-	            $set_member_arrays = array();
+	            // $set_member_arrays = array();
 	            
-	            foreach($all_items as $key=>$item){
+	            /* foreach($all_items as $key=>$item){
 	                
 	                // if the item is in the set
 	                if(in_array($item['id'], $set_member_ids)){
@@ -170,10 +169,16 @@ class Sets extends SmartestSystemApplication{
 	                    unset($all_items[$key]);
 	                }
 	                
-	            }
+	            } */
 	            
-	            $this->send($set->__toArray(), 'set');
-	            $this->send($set_member_arrays, 'members');
+	            $set_members = $set->getMembers();
+	            // $all_items = 
+	            
+	            // fetch all item ids
+	            $all_items = $set->getModel()->getSimpleItems($this->getSite()->getId(), SM_QUERY_ALL_DRAFT, '', $set->getMemberIds());
+	            
+	            $this->send($set, 'set');
+	            $this->send($set_members, 'members');
 	            $this->send($all_items, 'non_members');
 	            $this->setTitle('Edit Static Set');
 	            
@@ -183,13 +188,12 @@ class Sets extends SmartestSystemApplication{
 	        
 	        $this->send($set->getModel(), 'model');
 	        $this->send($formTemplateInclude, 'formTemplateInclude');
+	        // $this->setFormReturnUri();
 	        
 	    }else{
 	        $this->send(false, 'show_form');
 	        $this->addUserMessage('The Set ID was not recognised', SmartestUserMessage::ERROR);
 	    }
-	    
-	    $this->setFormReturnUri();
 	    
 	}
 	
@@ -201,7 +205,7 @@ class Sets extends SmartestSystemApplication{
 	        
 	        $set = new SmartestCmsItemSet;
 	        
-	        if($set->hydrate($set_id)){
+	        if($set->find($set_id)){
 	            
 	            $set->setLabel($post['set_name']);
 	            $set->setName(SmartestStringHelper::toVarName($post['set_name']));
@@ -212,6 +216,13 @@ class Sets extends SmartestSystemApplication{
 	            
 	            $set->setSortDirection($direction);
 	            $set->save();
+	            
+	            $success = true;
+	            
+	        }else{
+	            
+	            $success = false;
+	            
 	        }
 	    }
 	    
@@ -254,7 +265,12 @@ class Sets extends SmartestSystemApplication{
 	    }
 	    
 	    $this->addUserMessageToNextRequest("Your set has been updated.", SmartestUserMessage::SUCCESS);
-	    $this->formForward();
+	    
+	    if($post['_submit_action'] == "continue" && $success){
+	        $this->redirect('/sets/editSet?set_id='.$set->getId());
+	    }else{
+	        $this->formForward();
+	    }
 	    
 	}
 	
@@ -268,32 +284,46 @@ class Sets extends SmartestSystemApplication{
 	        
 	    }
 	    
-	    $this->formForward();
+	    $this->redirect('/sets/editSet?set_id='.$set->getId());
+	    // $this->formForward();
 	    
 	}
 	
 	function transferItem($get, $post){
 		
-		$set_id = $post['set_id'];
+		$set_id = (int) $post['set_id'];
 		$set = new SmartestCmsItemSet;
 		
-		if($set->hydrate($set_id) && $set->getType() == "STATIC"){
-		
-		    if($post['transferAction'] == 'add'){
-			    // $this->manager->addItemToStaticSet($post['available_items'], $post['set_id']);
-			    $item_ids = (isset($post['available_items']) && is_array($post['available_items'])) ? $post['available_items'] : array();
-			    $set->addItems($item_ids);
-			    $set->fixOrderIndices();
-		    }else{
-			    // $this->manager->removeItemFromStaticSet($post['used_items'], $post['set_id']);
-			    $item_ids = (isset($post['used_items']) && is_array($post['used_items'])) ? $post['used_items'] : array();
-			    $set->removeItems($item_ids);
-			    $set->fixOrderIndices();
-		    }
-		
+		if($set->find($set_id)){
+		    
+		    if($set->getType() == "STATIC"){
+		    
+		        if($post['transferAction'] == 'add'){
+    			    $item_ids = (isset($post['available_items']) && is_array($post['available_items'])) ? $post['available_items'] : array();
+    			    $set->addItems($item_ids);
+    			    $set->fixOrderIndices();
+    		    }else{
+    			    $item_ids = (isset($post['used_items']) && is_array($post['used_items'])) ? $post['used_items'] : array();
+    			    $set->removeItems($item_ids);
+    			    $set->fixOrderIndices();
+    		    }
+		    
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest("The set is the wrong type to have items transferred into it.", SmartestUserMessage::WARNING);
+	            
+	        }
+	        
+		    $this->redirect('/sets/editSet?set_id='.$set_id);
+		    
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The set ID was not recognized.", SmartestUserMessage::ERROR);
+	        
 	    }
 		
-		$this->formForward();
+		
+		// $this->formForward();
 	}
 	
 	public function transferSingleItem($get, $post){
@@ -419,7 +449,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	}
 	
-	function previewSet($get){     
+	public function previewSet($get){     
 	    
 	    if(isset($get['mode'])){
 	        $mode = (int) $get['mode'];
@@ -428,13 +458,12 @@ class Sets extends SmartestSystemApplication{
 	    }
 	    
 	    $this->send($mode, 'mode');
-	    $this->setFormReturnUri();
 	    
 	    $set_id = $get['set_id'];
 	    $set = new SmartestCmsItemSet;
 	    
-	    if($set->hydrate($set_id)){
-	    
+	    if($set->find($set_id)){
+	        
 	        $items = $set->getMembers($mode);
 	    
     	    $this->send($items, 'items');
@@ -443,8 +472,10 @@ class Sets extends SmartestSystemApplication{
     	    
     	    $model = new SmartestModel;
     	    
-    	    if($model->hydrate($set->getItemclassId())){
+    	    if($model->find($set->getItemclassId())){
     	        $this->send($model, 'model');
+    	        $this->setFormReturnUri();
+        	    $this->setFormReturnDescription('data set');
     	    }
 	    
         }else{
