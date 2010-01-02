@@ -1103,8 +1103,9 @@ class Items extends SmartestSystemApplication{
             }else{
                 if($model->getSiteId() == $this->getSite()->getId()){
                     $shared = isset($post['itemclass_shared']) ? 1 : 0;
+                    // var_dump($shared);
                     if($model->setShared($shared)){
-                        $model->save();
+                        
                     }else{
                         $this->addUserMessageToNextRequest("The model's class file could not be moved.", SmartestUserMessage::WARNING);
                         $error = true;
@@ -1114,8 +1115,8 @@ class Items extends SmartestSystemApplication{
             
             if(!$error){
                 $this->addUserMessageToNextRequest("The model has been successfully updated.", SmartestUserMessage::SUCCESS);
+                $model->save();
             }
-            
             
             $this->redirect("/datamanager/editModel?class_id=".$model->getId());
             

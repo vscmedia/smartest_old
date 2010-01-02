@@ -529,6 +529,8 @@ class SmartestModel extends SmartestBaseModel{
         
         $currently_shared = $this->getShared();
         
+        // echo $this->getClassFilePath(1).' '.$this->getClassFilePath(0);
+        
         // If the shared status is being changed
         if($currently_shared != $new_shared_status){
             if($new_shared_status == '0'){

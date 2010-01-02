@@ -526,6 +526,13 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	}
 	
+	public function clearRetrievalSqlQueryFromCache(){
+	    
+	    // $this->database->clearQueryFromCache($this->);
+	    $this->database->clearQueryFromCache($this->getRetrievalSqlQuery($this->_properties['id']), 'id');
+	    
+	}
+	
 	public function hydrateBy($field, $value, $site_id=''){
 	    
 	    SmartestLog::getInstance('system')->log("Deprecated function used: ".get_class($this)."->hydrateBy()");
@@ -597,7 +604,7 @@ class SmartestDataObject implements ArrayAccess{
     			$this->_came_from_database = true;
     		}
 		    
-		    $this->database->clearQueryFromCache($this->getRetrievalSqlQuery($this->_properties['id']), 'id');
+		    $this->clearRetrievalSqlQueryFromCache();
     		$this->_modified_properties = array();
 		
 	    }
