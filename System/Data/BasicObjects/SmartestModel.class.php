@@ -612,14 +612,19 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
+    // returs a binary, rather that getShared() which returns a raw value from the database
+    public function isShared(){
+        return ($this->_properties['shared'] == '1');
+    }
+    
     public function getClassFilePath($shared_status=-1){
         
         if($shared_status == -1){
-            $shared = $this->getShared() == '1';
-            $specified = true;
+            $shared = $this->isShared();
+            $specified = false;
         }else{
             $shared = $shared_status;
-            $specified = false;
+            $specified = true;
         }
         
         if($shared){

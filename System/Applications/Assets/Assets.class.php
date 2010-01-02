@@ -717,7 +717,7 @@ class Assets extends SmartestSystemApplication{
 	        
 	        $draft_mode = ($mode == "draft");
 	        
-	        $definitions = $placeholder->getDefinitions($draft_mode);
+	        $definitions = $placeholder->getDefinitions($draft_mode, $this->getSite()->getId());
 	        
 	        $this->send($placeholder, 'placeholder');
 	        $this->send($definitions, 'definitions');
