@@ -3,6 +3,7 @@
 class SmartestWebPagePreparationHelper{
     
     protected $_page;
+    protected $database;
     
     public function __construct($page){
         
@@ -13,6 +14,8 @@ class SmartestWebPagePreparationHelper{
         }else{
             throw new SmartestException("Supplied data is not a valid SmartestPage object.");
         }
+        
+        $this->database = SmartestPersistentObject::get('db:main');
         
     }
     

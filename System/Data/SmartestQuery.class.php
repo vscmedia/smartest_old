@@ -4,7 +4,7 @@ class SmartestQuery{
 	
 	protected $database;
 	protected $conditions = array();
-	protected $model;
+	protected $_model;
 	protected $site_id = null;
 	
 	const EQUAL = 0;
@@ -42,23 +42,41 @@ class SmartestQuery{
 		
 		$this->database =& SmartestPersistentObject::get('db:main');
 		
-		if(!SmartestCache::hasData('model_id_name_lookup', true)){
+		/* if(!SmartestCache::hasData('model_id_name_lookup', true)){
 			self::init(true);
-		}
+		} */
 		
 		$this->setSiteId($site_id);
 		
 		$models = SmartestCache::load('model_id_name_lookup', true);
 		
-		if(in_array($model_id, $models)){
+		$m = new SmartestModel;
+		
+		if($m->find($model_id)){
+		    $this->_model = $m;
+		}else{
+		    // ERROR: using non-existent model
+		}
+		
+		/* if(in_array($model_id, $models)){
 			
-			$this->model = new SmartestModel;
-			$this->model->hydrate($model_id);
+			$this->_model = new SmartestModel;
+			$this->_model->hydrate($model_id);
 			
 		}else{
 			// ERROR: using non-existent model
-		}
+		} */
 		
+	}
+	
+	public static function getModelIdNameLookup(){
+	    
+	    if(SmartestCache::hasData('model_id_name_lookup', true)){
+	        return SmartestCache::load('model_id_name_lookup', true);
+	    }else{
+	        
+	    }
+	    
 	}
 	
 	public function setSiteId($site_id){
@@ -76,7 +94,7 @@ class SmartestQuery{
 	}
 	
 	public function getModel(){
-		return $this->model;
+		return $this->_model;
 	}
 	
 	public function add($property_id, $value, $operator=0){
@@ -105,15 +123,9 @@ class SmartestQuery{
 		
 		$ids_array = array();
 		
-		$models = array_flip(SmartestCache::load('model_id_name_lookup', true));
+		$class_name = $this->_model->getClassName();
 		
-		// print_r($models);
-		
-		$class_name = $models[$this->model->getId()];
-		
-		// var_dump($this->model->getId());
-		
-		$ds = new SmartestQueryResultSet($this->model->getId(), $this->model->getClassName(), $set_item_draft_mode);
+		$ds = new SmartestQueryResultSet($this->_model->getId(), $this->_model->getClassName(), $set_item_draft_mode);
 		
 		if(count($this->conditions)){
 		    
@@ -169,28 +181,28 @@ class SmartestQuery{
 				
     				if($condition['field'] == SmartestCmsItem::ID){
 				
-    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_id ";
+    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_id ";
 				
     				}else if($condition['field'] == SmartestCmsItem::NAME){
 				
-    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_name ";
+    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_name ";
 				    
 				    }else if($condition['field'] == SmartestCmsItem::NUM_COMMENTS){
 
-        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_num_comments ";
+        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_num_comments ";
 
                     }else if($condition['field'] == SmartestCmsItem::NUM_HITS){
 
-            			$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_num_hits ";
+            			$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_num_hits ";
 
                     }else if($condition['operator'] == self::TAGGED_WITH){
 				        
 				        $tag_name = SmartestStringHelper::toSlug($condition['value']);
         				$tag = new SmartestTag;
-        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
+        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
         				
         				if($tag->hydrateBy('name', $tag_name)){
-        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->model->getId());
+        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->_model->getId());
         				    $sql .= "AND Items.item_id IN ('".implode("', '", $ids)."')";
         				}else{
         				    if(SM_DEVELOPER_MODE){
@@ -207,14 +219,14 @@ class SmartestQuery{
         				
         				
         				if($tag->hydrateBy('name', $tag_name)){
-        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_id ";
-        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->model->getId());
+        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_id ";
+        				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->_model->getId());
         				    $sql .= "NOT IN ('".implode("', '", $ids)."')";
         				}else{
         				    if(SM_DEVELOPER_MODE){
         				        // throw new SmartestException('Unknown tag: \''.$tag_name.'\' in SmartestQuery::doSelect()');
         				    }
-        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
+        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
         				}
 				    
     				}else{
@@ -292,7 +304,7 @@ class SmartestQuery{
 			    
 			}else{
 			    
-			    $sql = "SELECT DISTINCT item_id FROM Items WHERE Items.item_itemclass_id='".$this->model->getId()."'";
+			    $sql = "SELECT DISTINCT item_id FROM Items WHERE Items.item_itemclass_id='".$this->_model->getId()."'";
 			    $result = $this->database->queryToArray($sql);
 			    return $this->createDataSet(array(), $draft);
 			    
@@ -307,7 +319,7 @@ class SmartestQuery{
 	
 	//////////////////////////////// INIT FUNCTION //////////////////////////////////
 	
-	public static function init($force_regenerate=false){
+	public static function init($force_regenerate=false, $site_id=''){
 		
 		// print_r(SmartestCache::load('models_query', true));
 		
@@ -316,7 +328,9 @@ class SmartestQuery{
 			$database =& SmartestPersistentObject::get('db:main');
 			
 			$du = new SmartestDataUtility;
-			$models = $du->getModels();
+			$models = $du->getModels(false, $site_id);
+			
+			// print_r($models);
 			
 			foreach($models as $m){
 			    

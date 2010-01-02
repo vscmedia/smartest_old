@@ -195,6 +195,10 @@ class SmartestModel extends SmartestBaseModel{
 	    return SmartestStringHelper::toCamelCase($this->getName());
     }
     
+    public function getAutoClassName(){
+        return 'auto'.$this->getClassName();
+    }
+    
     public function getSimpleItems($site_id='', $mode=0, $query='', $exclude=''){
         
         $mode = (int) $mode;
@@ -594,31 +598,39 @@ class SmartestModel extends SmartestBaseModel{
 		}
 		
 		// if(is_file(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php')){
-		if(is_file($this->getAutoClassFilePath())){
-			// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
-			include $this->getAutoClassFilePath();
+		if(class_exists($this->getAutoClassName())){ // $this->getAutoClassName()
+		    
 		}else{
-			// build auto class
-			if($this->buildAutoClassFile()){
-				// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
-				include $this->getAutoClassFilePath();
-			}else{
-				throw new SmartestException('Could not auto-generate model class: '.$this->getName(), SM_ERROR_MODEL);
-			}
-		}
+        	if(is_file($this->getAutoClassFilePath())){
+        		// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
+        		include $this->getAutoClassFilePath();
+        	}else{
+        		// build auto class
+        		if($this->buildAutoClassFile()){
+        			// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
+        			include $this->getAutoClassFilePath();
+        		}else{
+        			throw new SmartestException('Could not auto-generate model class: '.$this->getName(), SM_ERROR_MODEL);
+        		}
+        	}
+	    }
 		
-		if(is_file($this->getClassFilePath())){
-			// include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
-			include $this->getClassFilePath();
+		if(class_exists($this->getClassName())){
+		    
 		}else{
-			// build extensible class
-			if($this->buildClassFile()){
-				// include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
-				include $this->getClassFilePath();
-			}else{
-				throw new SmartestException('Could not auto-generate model class: '.$this->getName(), SM_ERROR_MODEL);
-			}
-		}
+        	if(is_file($this->getClassFilePath())){
+        		// include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
+        		include $this->getClassFilePath();
+        	}else{
+        		// build extensible class
+        		if($this->buildClassFile()){
+        			// include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
+        			include $this->getClassFilePath();
+        		}else{
+        			throw new SmartestException('Could not auto-generate model class: '.$this->getName(), SM_ERROR_MODEL);
+        		}
+        	}
+	    }
         
     }
     
@@ -721,7 +733,7 @@ class SmartestModel extends SmartestBaseModel{
 			$functions = $this->buildAutoClassFunctionCode();
 			$varnames_lookup = $this->buildAutoClassVarnameLookupCode();
 		
-			$file = str_replace('__THISCLASSNAME__', 'auto'.$className, $file);
+			$file = str_replace('__THISCLASSNAME__', $this->getAutoClassName(), $file);
 			$file = str_replace('__THECONSTANTS__', $constants, $file);
 			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
 			$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);

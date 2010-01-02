@@ -15,6 +15,9 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	protected function lookupSiteDomain(){
 	    
 	    // look up site by domain
+	    
+	    // $h = new SmartestWebPagePreparationHelper;
+	    
 		if($this->_site = $this->manager->getSiteByDomain($_SERVER['HTTP_HOST'])){
 		
 		    if(is_object($this->_site)){

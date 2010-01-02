@@ -416,6 +416,25 @@ class SmartestResponse{
 		    exit();
 		}
 		
+		if($this->isWebsitePage()){
+		    $h = new SmartestSiteIdentificationHelper;
+		    if($this->controller->getMethodName() == 'renderEditableDraftPage'){
+		        if($site = $h->getSiteByPageWebId($_GET['page_id'])){
+	                $GLOBALS['_site'] = $site;
+	            }else{
+	                // unknown page id
+	            }
+	        }else{
+	            if($site = $h->getSiteByDomain($_REQUEST['HTTP_HOST'])){
+	                $GLOBALS['_site'] = $site;
+	            }else{
+	                // unknown site domain
+	            }
+	        }
+		}else if(SmartestSession::hasData('current_open_project')){
+		    $GLOBALS['_site'] =& SmartestPersistentObject::get('current_open_project')->getId();
+		}
+		
 		$this->errorStack->display();
 		
 		switch($this->controller->getNamespace()){
@@ -629,7 +648,11 @@ class SmartestResponse{
     protected function prepareContent(){
 		
 		try{
-			SmartestQuery::init(true);
+		    if(is_object($GLOBALS['_site'])){
+		        SmartestQuery::init(true, $GLOBALS['_site']->getId());
+	        }else{
+	            SmartestQuery::init(true);
+	        }
 		}catch(SmartestException $e){
 			$this->errorFromException($e);
 		}
