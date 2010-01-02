@@ -134,7 +134,29 @@ type:
       - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
       - {name: link_href, label: Link destination, type: SM_DATATYPE_URL, required: false}
-
+      
+  SM_ASSETTYPE_SVG_IMAGE:
+    id: SM_ASSETTYPE_SVG_IMAGE
+    category: image
+    label: SVG image
+    description: A vector image in SVG format.
+    class: SmartestAsset
+    icon: picture.png
+    attachable: true
+    captionable: true
+    storage:
+      type: file
+      location: Public/Resources/Images/
+      system_location: Public/Resources/System/Images/
+    render:
+      template: System/Presentation/WebPageBuilder/display.svg.tpl
+    suffix:
+      - {mime: image/svg+xml, _content: svg}
+    param:
+      - {name: width, label: "Bounding box width", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, label: "Bounding box height", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
+      
 # Browser Instructions
   SM_ASSETTYPE_JAVASCRIPT:
     id: SM_ASSETTYPE_JAVASCRIPT

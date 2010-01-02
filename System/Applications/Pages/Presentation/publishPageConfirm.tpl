@@ -15,13 +15,13 @@
 
 {elseif $count == 1}
 
-<div class="instruction"><b>Warning</b>: The {$undefined_asset_classes[0].info.type} <strong>{$undefined_asset_classes[0].info.assetclass_name}</strong> is not defined.</div>
+<div class="warning"><strong>Warning</strong>: The {$undefined_asset_classes[0].info.type} <strong>{$undefined_asset_classes[0].info.assetclass_name}</strong> is not defined.</div>
 	
 {elseif $count > 1}
 
 <div class="edit-form-row">
 
-<div class="form-section-label"><b>Warning</b>: The following elements are not defined in the draft version of this page:</div>
+<div class="warning"><strong>Warning</strong>: The following elements are not defined in the draft version of this page:</div>
 
 <ul class="basic-list">
 
@@ -31,7 +31,7 @@
 
 </ul>
 
-<div class="instruction">Publishing this page will cause undefined placeholders and containers to be included on a live page.<br />Are you sure you want to continue?</div>
+<div class="special-box">Publishing this page will cause undefined placeholders and containers to be included on a live page.<br />Are you sure you want to continue?</div>
 
 </div>
 

@@ -101,10 +101,12 @@ class SmartestLinkParser{
                             $l->setParameter('page_ref_field_name', 'name');
                             $l->setParameter('page_ref_field_value', SmartestStringHelper::toSlug($m[4]));
                         }else{
-                            $l->setParameter('destination', $m[2].SmartestStringHelper::toSlug($m[4]));
-                            $l->setParameter('item_ref_field_name', 'slug');
-                            $l->setParameter('item_ref_field_value', SmartestStringHelper::toSlug($m[4]));
-                            $l->setParameter('format', SM_LINK_FORMAT_USER);
+                            if(!in_array($l->getParameter('namespace'), array('image', 'download', 'tag', 'asset', 'mailto'))){
+                                $l->setParameter('destination', $m[2].SmartestStringHelper::toSlug($m[4]));
+                                $l->setParameter('item_ref_field_name', 'slug');
+                                $l->setParameter('item_ref_field_value', SmartestStringHelper::toSlug($m[4]));
+                                $l->setParameter('format', SM_LINK_FORMAT_USER);
+                            }
                         }
                     }
                 
