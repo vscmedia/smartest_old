@@ -4,6 +4,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
     
     protected $_placeholder;
     protected $_asset;
+    protected $_page;
     protected $_is_linkable = false;
     
 	protected function __objectConstruct(){
@@ -188,13 +189,38 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         
         $this->hydrate($array);
         
-        $placeholder = new SmartestPlaceHolder;
-        $placeholder->hydrate($array);
-        $this->_asset_class = $placeholder;
+        if(isset($array['assetclass_id'])){
+            $placeholder = new SmartestPlaceHolder;
+            $placeholder->hydrate($array);
+            $this->_asset_class = $placeholder;
+        }
         
-        $asset = new SmartestRenderableAsset;
-        $asset->hydrate($array);
-        $this->_asset = $asset;
+        if(isset($array['asset_id'])){
+            $asset = new SmartestRenderableAsset;
+            $asset->hydrate($array);
+            $this->_asset = $asset;
+        }
+        
+        if(isset($array['page_id'])){
+            $page = new SmartestPage;
+            $page->hydrate($array);
+            $this->_page = $page;
+        }
+        
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "asset":
+            return $this->_asset;
+            case "page":
+            return $this->_page;
+            case "placeholder":
+            return $this->_asset_class;
+        }
+        
+        return parent::offsetGet($offset);
         
     }
 

@@ -71,6 +71,14 @@ class SmartestDropdown extends SmartestBaseDropdown{
         
     }
     
+    public function getFieldsWhereUsed(){
+        
+    }
+    
+    public function getItemPropertiesWhereUsed(){
+        
+    }
+    
     public function offsetGet($offset){
         
         switch($offset){
@@ -82,6 +90,9 @@ class SmartestDropdown extends SmartestBaseDropdown{
             case "num_values":
             case "num_options":
             return count($this->getOptions());
+            
+            case "render_options":
+            return $this->getOptionsForRender();
             
         }
         

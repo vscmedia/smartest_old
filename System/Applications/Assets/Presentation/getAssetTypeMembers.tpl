@@ -1,6 +1,8 @@
 <div id="work-area">
 
-<h3>{$type_label} Files</h3>
+  <h3>{$type_label} files</h3>
+
+  {load_interface file="assettype_tabs.tpl"}
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="assettype_code" value="{$type_code}" />

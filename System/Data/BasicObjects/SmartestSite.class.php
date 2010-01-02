@@ -316,7 +316,7 @@ class SmartestSite extends SmartestBaseSite{
 	
 	public function getPlaceholders(){
 	    
-	    $sql = "SELECT * FROM AssetClasses WHERE (assetclass_site_id='".$this->getId()."' OR assetclass_shared='1') AND assetclass_type NOT IN ('SM_ASSETCLASS_CONTAINER', 'SM_ASSETCLASS_ITEMSPACE')";
+	    $sql = "SELECT * FROM AssetClasses WHERE (assetclass_site_id='".$this->getId()."' OR assetclass_shared='1') AND assetclass_type NOT IN ('SM_ASSETCLASS_CONTAINER', 'SM_ASSETCLASS_ITEM_SPACE')";
 	    $result = $this->database->queryToArray($sql);
 	    
 	    $placeholders = array();

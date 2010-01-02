@@ -1,26 +1,20 @@
 <div id="work-area">
-
-  <h3>Edit dropdown</h3>
+  
+  {load_interface file="edit_dropdown_tabs.tpl"}
+  <h3>Dropdown values: {$dropdown.label}</h3>
   
   <form id="pageViewForm" method="get" action="">
     <input type="hidden" name="dropdown_id" id="drop_down" value="{$dropdown.id}" />
     <input type="hidden" name="dropdown_value_id" id="item_id_input" value="" />
   </form>
-
-  <form id="pageViewForm" method="post" action="{$domain}{$section}/updateDropDown">
   
     <input type="hidden" name="dropdown_id" value="{$dropdown.id}" />
   
     <div id="edit-form-layout">
-    
-      <div class="edit-form-row">
-        <div class="form-section-label">Label </div>
-        <input type="text" name="dropdown_label" value="{$dropdown.label}" />
-      </div>
       
       <div class="edit-form-row">
         
-        <div class="form-section-label">Values in {$dropdown.label}. </div>
+        <div class="instruction">Values in dropdown <strong>{$dropdown.label}</strong></div>
 
 {if $dropdown.num_options > 0}
 
@@ -28,7 +22,7 @@
           Preview:
           <select name="preview">
 {foreach from=$dropdown.values item="value"}
-            <option value="">{$value.label}</option>
+            <option value="">{$value.label} {$value.order}</option>
 {/foreach}
           </select> <a href="{$domain}{$section}/addDropDownValue?dropdown_id={$dropdown.id}">+ Add a value</a>
         </div>
@@ -46,17 +40,8 @@
 {/if}
       
       </div>
-      
-      <div class="edit-form-row">
-        <div class="buttons-bar">
-          <input type="button" value="Cancel" onlick="cancelForm();">
-          <input type="submit"  value="Save changes">
-        </div>
-      </div>
 
     </div>
-
-  </form>
 
 </div>
 

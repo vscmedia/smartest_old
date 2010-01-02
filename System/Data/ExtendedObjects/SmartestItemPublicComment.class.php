@@ -1,7 +1,9 @@
 <?php
 
 class SmartestItemPublicComment extends SmartestComment{
-  
+    
+    protected $_simple_item;
+    
     public function save(){
         
         if(!$this->getType()){
@@ -22,19 +24,47 @@ class SmartestItemPublicComment extends SmartestComment{
         
     }
     
-    public function getItemId($id){
+    public function getItemId(){
         
         return $this->getObjectId();
         
     }
     
+    public function hydrateWithSimpleItem($data){
+        
+        if($this->hydrate($data)){
+            
+            $item = new SmartestItem;
+            
+            if($item->hydrate($data)){
+                $this->_simple_item = $item;
+                return true;
+            }else{
+                return false;
+            }
+            
+        }else{
+            return false;
+        }
+        
+    }
+    
     public function getSimpleItem(){
         
-        $item = new SmartestItem;
+        if(!$this->_simple_item instanceof SmartestItem){
         
-        if($item->find($this->getObjectId())){
+            $item = new SmartestItem;
+        
+            if($item->find($this->getObjectId())){
+                
+                $this->_simple_item = $item;
+                return $item;
             
-            return $item;
+            }
+        
+        }else{
+            
+            return $this->_simple_item;
             
         }
         
@@ -84,6 +114,17 @@ class SmartestItemPublicComment extends SmartestComment{
         if($old_status == 'SM_COMMENTSTATUS_APPROVED'){
             $item->refreshCache();
         }
+        
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "item":
+            return $this->_simple_item;
+        }
+        
+        return parent::offsetGet($offset);
         
     }
   

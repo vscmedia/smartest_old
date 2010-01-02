@@ -52,9 +52,23 @@ class Dropdowns extends SmartestSystemApplication{
 	    
 	}
 
-	public function editDropDown($get){
+	public function dropdownInfo($get){
 	    
-	    $this->setFormReturnUri();
+	    $dropdown_id = (int) $get['dropdown_id'];
+	    $dropdown = new SmartestDropdown;
+	    
+	    if($dropdown->find($dropdown_id)){
+	        $this->send($dropdown, 'dropdown');
+	        $this->send($dropdown->getFieldsWhereUsed($this->getSite()->getId()), 'fields');
+	        $this->send($dropdown->getItemPropertiesWhereUsed($this->getSite()->getId()), 'item_properties');
+	    }else{
+	        $this->addUserMessageToNextRequest('The dropdown ID was not recognized.', SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/dropdowns');
+	    }
+	         
+	}
+	
+	public function editValues($get){
 	    
 	    $dropdown_id = (int) $get['dropdown_id'];
 	    $dropdown = new SmartestDropdown;
@@ -69,9 +83,19 @@ class Dropdowns extends SmartestSystemApplication{
 	         
 	}
 
-	public function updateDropDown($get,$post){ 
-	    $dropdown=$post['drop_down'];$drop_down_id=$post['drop_down_id'];
-	    $this->manager->updateDropDown($dropdown,$drop_down_id);
+	public function updateDropDown($get, $post){ 
+	    
+	    $dropdown_id = (int) $post['dropdown_id'];
+	    $dropdown = new SmartestDropdown;
+	    
+	    if($dropdown->find($dropdown_id)){
+	        $dropdown->setLabel($post['dropdown_label']);
+	        $dropdown->setLanguage($post['dropdown_language']);
+	        $dropdown->save();
+	    }
+	    
+	    $this->formForward();
+	    
 	}
 
 	public function deleteDropDown($get){ 

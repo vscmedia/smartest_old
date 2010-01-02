@@ -213,5 +213,24 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	    return $array;
 	    
 	}
+	
+	public function getDefinitions($draft_mode=false){
+	    
+	    $assetidentifier_field = $draft_mode ? 'assetidentifier_draft_asset_id' : 'assetidentifier_live_asset_id';
+	    $sql = "SELECT * FROM AssetIdentifiers, AssetClasses, Assets, Pages WHERE AssetIdentifiers.".$assetidentifier_field." = Assets.asset_id AND AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetClasses.assetclass_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_page_id=Pages.page_id";
+	    $result = $this->database->queryToArray($sql);
+	    $definitions = array();
+	    
+	    // echo $sql;
+	    
+	    foreach($result as $r){
+	        $d = new SmartestPlaceholderDefinition;
+	        $d->hydrateFromGiantArray($r);
+	        $definitions[] = $d;
+	    }
+	    
+	    return $definitions;
+	    
+	}
 
 }

@@ -1,5 +1,6 @@
 <div id="work-area">
   
+  {load_interface file="edit_asset_tabs.tpl"}
   <h3>Edit file: {$asset.url}</h3>
   
   {if $asset.deleted}<div class="warning">Warning: This {$asset.type_info.label} is currently in the trash.</div>{/if}

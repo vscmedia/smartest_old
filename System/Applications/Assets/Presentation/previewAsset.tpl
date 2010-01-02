@@ -1,4 +1,5 @@
 <div id="work-area">
+    {load_interface file="edit_asset_tabs.tpl"}
  <h3>Preview File {$asset.stringid}</h3>
  <div class="instruction">The file will look something like this:</div>
  <div id="html-preview">

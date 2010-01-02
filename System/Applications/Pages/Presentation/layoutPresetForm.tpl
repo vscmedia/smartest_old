@@ -30,8 +30,6 @@ return true;
 
 <h3>Create a Page Preset</h3>
 
-<a name="top"></a>
-
 <div class="instruction">Click the checkbox corresponding to each asset to add it to preset</div>
 
 <form id="createLayoutPreset" action="{$domain}{$section}/createLayoutPreset" method="post" style="margin:0px">

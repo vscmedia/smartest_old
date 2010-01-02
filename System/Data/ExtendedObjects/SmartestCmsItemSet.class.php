@@ -1,6 +1,6 @@
 <?php
 
-class SmartestCmsItemSet extends SmartestSet{
+class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi{
 
     protected $_set_members = array();
     protected $_set_members_simple = array();

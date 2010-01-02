@@ -1,4 +1,5 @@
 <div id="work-area">
+    {load_interface file="edit_asset_tabs.tpl"}
   <h3>File Info</h3>
   
   <table cellspacing="1" cellpadding="2" border="0" style="width:100%;background-color:#ccc;margin-top:10px">

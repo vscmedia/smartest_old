@@ -19,6 +19,11 @@
         <div class="form-section-label">Short name</div>
         {if $allow_name_edit}<input type="text" name="group_name" value="{$group.name}" /><span class="form-hint">letters, numbers and underscored only, please.</span>{else}{$group.name}{/if}
       </div>
+      
+      <div class="edit-form-row">
+        <div class="form-section-label">Accepted file types</div>
+        {$group.type_labels_list} <span class="form-hint">({$group.filter_value})</span>
+      </div>
     
       <div class="edit-form-row">
         <div class="form-section-label">Shared</div>

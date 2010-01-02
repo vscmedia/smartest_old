@@ -70,7 +70,7 @@
     <li><b>This {$item._model.name}</b></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" />&nbsp;Try to edit it</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addTodoItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" />&nbsp;Assign To-do</a></li>
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/comments?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/comment.png" border="0" />&nbsp;View public comments</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/itemComments?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/comment.png" border="0" />&nbsp;View public comments</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">

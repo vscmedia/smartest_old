@@ -523,6 +523,27 @@ class Pages extends SmartestSystemApplication{
 	    
 	}
 	
+	public function placeholderDefinitions($get){
+	    
+	    $placeholder_id = (int) $get['placeholder_id'];
+	    $placeholder = new SmartestPlaceholder;
+	    
+	    if($placeholder->find($placeholder_id)){
+	        
+	        $mode = (isset($get['mode']) && $get['mode'] == 'live') ? "live" : "draft";
+	        
+	        $draft_mode = ($mode == "draft");
+	        
+	        $definitions = $placeholder->getDefinitions($draft_mode);
+	        
+	        $this->send($placeholder, 'placeholder');
+	        $this->send($definitions, 'definitions');
+	        $this->send($mode, 'mode');
+	    
+	    }
+	    
+	}
+	
 	public function updatePlaceholder($get, $post){
 	    
 	    $placeholder_id = (int) $post['placeholder_id'];

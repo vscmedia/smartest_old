@@ -1,5 +1,6 @@
 <div id="work-area">
-  
+    
+  {load_interface file="placeholder_tabs.tpl"}
   <h3>Edit placeholder</h3>
   
   <form id="updatePlaceholder" name="updatePlaceholder" action="{$domain}{$section}/updatePlaceholder" method="post" style="margin:0px">
@@ -43,5 +44,5 @@
 </div>
 
 <div id="actions-area">
-  
+
 </div>

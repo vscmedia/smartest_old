@@ -116,19 +116,21 @@ class SmartestResponse{
             $this->errorStack->display();
         }
         
-        /// This neds more compatibility work as it breaks on newer servers
+        SmartestDataObjectHelper::loadInterfaces();
+        
+        /// This needs more compatibility work as it breaks on newer servers
         
         SmartestFileSystemHelper::include_group(
 
         	'System/Response/SmartestUserMessage.class.php',
         	'System/Data/SmartestSession.class.php',
         	'System/Data/SmartestPersistentObject.class.php',
-        	'System/Data/SmartestDataAccessClass.interface.php',
-        	'System/Data/Types/SmartestBasicType.interface.php',
-        	'System/Response/SmartestResponseDataHolder.class.php',
+//        	'System/Data/SmartestDataAccessClass.interface.php',
+//        	'System/Data/Types/SmartestBasicType.interface.php',
+//         	'System/Response/SmartestResponseDataHolder.class.php',
         	'System/Data/SmartestMysql.class.php',
         	'System/Data/SmartestSqllite.class.php',
-        	'System/Data/SmartestCacheDb.class.php',
+//         	'System/Data/SmartestCacheDb.class.php',
         	'System/Data/SmartestCmsItem.class.php',
         	'System/Data/SmartestFile.class.php',
         	'System/Base/Exceptions/SmartestWebPageBuilderException.class.php',
@@ -156,13 +158,13 @@ class SmartestResponse{
 	    
 	    SmartestFileSystemHelper::include_group(
 
-        	'System/Data/DataQuery.class.php',
+//        	'System/Data/DataQuery.class.php',
         	'System/Data/SmartestQuery.class.php',
         	'System/Data/SmartestQueryResultSet.class.php',
         	'System/Data/SmartestManyToManyQuery.class.php',
         	'System/Data/SmartestObjectModelHelper.class.php',
         	'System/Data/SmartestGenericListedObject.class.php',
-        	'System/Data/SmartestSystemUiObject.interface.php',
+//         	'System/Data/SmartestSystemUiObject.interface.php',
         	'Library/Quince/Quince.class.php',
         	'Library/Quince/QuinceException.class.php',
         	'Library/Quince/QuinceBase.interface.php',
@@ -192,9 +194,8 @@ class SmartestResponse{
 	        
 	        // load database connection settings
             $c = SmartestDatabase::readConfiguration('SMARTEST');
-	        
-	        $d = new SmartestDataObjectHelper($c);
-	        $d->loadBasicObjects();
+            $d = new SmartestDataObjectHelper($c);
+            $d->loadBasicObjects();
             $d->loadExtendedObjects();
             
             SmartestFileSystemHelper::include_group(
@@ -230,13 +231,10 @@ class SmartestResponse{
         }
 		
 	    SmartestPersistentObject::set('errors:stack', $this->errorStack);
-		SmartestPersistentObject::set('centralDataHolder', new SmartestResponseDataHolder);
 		
 		$this->checkRequiredExtensionsLoaded();
 		$this->checkWritablePermissions();
 		$this->checkRequiredFilesExist();
-		
-		// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/autoArticle.class.php';
 		
 		// load up settings
 		$this->configuration = new SmartestConfigurationHelper();

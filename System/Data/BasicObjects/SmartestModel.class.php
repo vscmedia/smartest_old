@@ -595,10 +595,27 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
+    public function getComments($status, $site_id=''){
+        
+        $sql = "SELECT * FROM Items, Comments WHERE Comments.comment_object_id=Items.item_id AND Comments.comment_type='SM_COMMENTTYPE_ITEM_PUBLIC' AND Comments.comment_status='".$status."' AND Items.item_itemclass_id='".$this->getId()."'";
+        $result = $this->database->queryToArray($sql);
+        
+        $comments = array();
+        
+        foreach($result as $r){
+            $c = new SmartestItemPublicComment;
+            $c->hydrateWithSimpleItem($r);
+            $comments[] = $c;
+        }
+        
+        return $comments;
+        
+    }
+    
     public function getClassFilePath($shared_status=-1){
         
         if($shared_status == -1){
-            $shared = $this->getShared();
+            $shared = $this->getShared() == '1';
             $specified = true;
         }else{
             $shared = $shared_status;

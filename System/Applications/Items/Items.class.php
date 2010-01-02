@@ -167,10 +167,20 @@ class Items extends SmartestSystemApplication{
         
         $model = new SmartestModel;
         $model_id = (int) $get['class_id'];
+        $status = (isset($get['show']) && in_array($get['show'], array('SM_COMMENTSTATUS_APPROVED', 'SM_COMMENTSTATUS_PENDING', 'SM_COMMENTSTATUS_REJECTED'))) ? $get['show'] : 'SM_COMMENTSTATUS_APPROVED';
         
-        /* if($model->find($mo)){
+        if($model->find($model_id)){
             
-        } */
+            $comments = $model->getComments($status, $this->getSite()->getId());
+            $this->send($comments, 'comments');
+            $this->send(count($comments), 'num_comments');
+            $this->send($model, 'model');
+            $this->send($status, 'show');
+            
+        }else{
+            $this->addUserMessageToNextRequest('The model ID was not recognized', SmartestUserMessage::ERROR);
+            $this->redirect('/smartest/models');
+        }
         
     }
 
@@ -894,7 +904,7 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
-	public function comments($get){
+	public function itemComments($get){
 	    
 	    $item_id = (int) $get['item_id'];
 	    $item = new SmartestItem;
@@ -915,15 +925,22 @@ class Items extends SmartestSystemApplication{
 	
 	public function moderateComment($get){
 	    
-	    $item_id = (int) $get['item_id'];
-	    $item = new SmartestItem;
+	    $from = (isset($get['from']) && in_array($get['from'], array('item_list', 'model_list'))) ? $get['from'] : 'model_list';
 	    
-	    if($item->find($item_id)){
+	    $comment_id = (int) $get['comment_id'];
+	    $comment = new SmartestItemPublicComment;
+	    
+	    if($comment->find($comment_id)){
 	        
-	        $comment_id = (int) $get['comment_id'];
-    	    $comment = new SmartestItemPublicComment;
+	        if(isset($get['item_id'])){
+	            $item_id = (int) $get['item_id'];
+            }else{
+                $item_id = $comment->getItemId();
+            }
+            
+    	    $item = new SmartestItem;
     	    
-    	    if($comment->find($comment_id)){
+    	    if($item->find($item_id)){
 	        
 	            $action = (isset($get['action']) && in_array($get['action'], array('APPROVE', 'MAKEPENDING', 'REJECT'))) ? $get['action'] : 'REJECT';
 	            
@@ -947,18 +964,30 @@ class Items extends SmartestSystemApplication{
 	            }
 	            
 	            $this->addUserMessageToNextRequest($message, SmartestUserMessage::SUCCESS);
-	            $this->redirect('/datamanager/comments?item_id='.$item_id);
+	            
+	            if($from == 'item_list'){
+	                $this->redirect('/datamanager/itemComments?item_id='.$item_id.'&show='.$get['fromStatus']);
+                }else{
+                    $this->redirect('/datamanager/getItemClassComments?class_id='.$item->getItemclassId().'&show='.$get['fromStatus']);
+                }
 	        
             }else{
                 
-                $this->addUserMessageToNextRequest("The comment ID was not recognized", SmartestUserMessage::ERROR);
-                $this->redirect('/datamanager/comments?item_id='.$item_id);
+                $this->addUserMessageToNextRequest("The item ID was not recognized", SmartestUserMessage::ERROR);
+    	        // $this->redirect('/datamanager/itemComments?item_id='.$item_id);
+                
+                /* if($from == 'item_list'){
+	                $this->redirect('/datamanager/itemComments?item_id='.$item_id.'&show='.$get['fromStatus']);
+                }else{
+                    $this->redirect('/datamanager/getItemClassComments?class_id='.$item->getItemclassId().'&show='.$get['fromStatus']);
+                } */
+                $this->redirect('/smartest/models');
                 
             }
 	    
 	    }else{
 	        
-	        $this->addUserMessageToNextRequest("The item ID was not recognized", SmartestUserMessage::ERROR);
+	        $this->addUserMessageToNextRequest("The comment ID was not recognized", SmartestUserMessage::ERROR);
 	        $this->redirect('/smartest/models');
 	        
 	    }

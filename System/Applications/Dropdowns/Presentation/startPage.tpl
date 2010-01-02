@@ -12,7 +12,7 @@
 
 <ul class="{if $content.count > 10}options-list{else}options-grid{/if}" id="{if $content.count > 10}options_list{else}options_grid{/if}">
 {foreach from=$dropdowns key=key item=dropdown}
-  <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/editDropDown?dropdown_id={$dropdown.dropdown_id}'">
+  <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/dropdownInfo?dropdown_id={$dropdown.dropdown_id}'">
     <a class="option" id="item_{$dropdown.dropdown_id}" onclick="setSelectedItem('{$dropdown.dropdown_id}');" >
       <img border="0" src="{$domain}Resources/Icons/package.png" />{$dropdown.dropdown_label}</a></li>
 {/foreach}
@@ -29,7 +29,8 @@
 
 <ul class="actions-list" id="item-specific-actions" style="display:none">
   <li><b>Selected dropdown</b></li>
-  <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){workWithItem('editDropDown');}{/literal}"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Edit dropdown</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){workWithItem('dropdownInfo');}{/literal}"><img border="0" src="{$domain}Resources/Icons/information.png"> Dropdown info</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){workWithItem('editValues');}{/literal}"><img border="0" src="{$domain}Resources/Icons/pencil.png"> Edit values</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteDropDown');}{/literal}"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> Delete dropdown</a></li>
 </ul>
 <ul class="actions-list">

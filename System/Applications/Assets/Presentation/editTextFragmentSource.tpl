@@ -1,4 +1,6 @@
 <div id="work-area">
+  
+  {load_interface file="edit_asset_tabs.tpl"}
   <h3>Edit Text File Source</h3>
   <form action="{$domain}{$section}/updateAsset" method="post" name="newHtml" enctype="multipart/form-data">
 
@@ -20,8 +22,10 @@
       </div>
         
       <div class="buttons-bar">
-        <input type="submit" value="Save Changes" />
-        <input type="button" onclick="cancelForm();" value="Cancel" />
+        {* <input type="submit" value="Save Changes" />
+        <input type="button" onclick="cancelForm();" value="Cancel" /> *}
+        <input type="hidden" name="editor" value="source" />
+        {save_buttons}
       </div>
 
   </form>

@@ -71,6 +71,7 @@ View: <a href="{dud_link}" onclick="setView('list', 'options_grid')">List</a> /
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('addItem');"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Add a new item</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('editModel');"><img border="0" src="{$domain}Resources/Icons/information.png"> Model info</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('getItemClassProperties');"><img border="0" src="{$domain}Resources/Icons/pencil.png"> Edit Model Properties</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('getItemClassComments');"><img border="0" src="{$domain}Resources/Icons/comments.png"> Browse comments</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('getItemClassSets');"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View data sets for this model</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('addSet');"><img border="0" src="{$domain}Resources/Icons/folder_add.png"> Create a new set from this model</a></li>
   {if $allow_create_models}<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(confirm('Are you sure you want to permanently delete this model and all its items?')){workWithItem('deleteItemClass');}{/literal}"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> Delete This Model</a></li>{/if}

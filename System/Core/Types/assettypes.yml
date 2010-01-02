@@ -6,7 +6,7 @@ type:
     label: Formatted Text
     description: Formatted text without images.
     class: SmartestTextAsset
-    source-editable: true
+    source_editable: true
     editable: true
     parsable: true
     icon: style.png
@@ -25,6 +25,7 @@ type:
     description: "Plain, static unformatted text."
     class: SmartestTextAsset
     source_editable: false
+    parsable: false
     editable: true
     icon: page_white_text.png
     render:
@@ -64,6 +65,7 @@ type:
     icon: picture.png
     attachable: true
     captionable: true
+    parsable: false
     storage:
       type: file
       location: Public/Resources/Images/
@@ -90,6 +92,7 @@ type:
     icon: picture.png
     attachable: true
     captionable: true
+    parsable: false
     storage:
       type: file
       location: Public/Resources/Images/
@@ -115,6 +118,7 @@ type:
     icon: picture.png
     attachable: true
     captionable: true
+    parsable: false
     storage:
       type: file
       location: Public/Resources/Images/
@@ -140,6 +144,7 @@ type:
     editable: true
     class: SmartestAsset
     icon: script.png
+    parsable: false
     storage:
       type: file
       location: Public/Resources/Javascript/
@@ -156,6 +161,7 @@ type:
     description: A CSS file
     editable: true
     class: SmartestAsset
+    parsable: false
     storage:
       type: file
       location: Public/Resources/Stylesheets/
@@ -172,6 +178,7 @@ type:
     label: Quicktime Movie
     description: A movie saved in any of Apple's proprietary QuickTime formats
     class: SmartestAsset
+    parsable: false
     storage:
       type: file
       location: Public/Resources/Assets/
@@ -193,6 +200,7 @@ type:
     label: MPEG Movie
     description: A movie saved in any MPEG format
     class: SmartestAsset
+    parsable: false
     storage:
       type: file
       location: Public/Resources/Assets/
@@ -214,6 +222,7 @@ type:
     label: Flash Video
     description: A file in Flash Video format
     class: SmartestAsset
+    parsable: false
     icon: page_white_flash.png
     storage:
       type: file
@@ -233,6 +242,7 @@ type:
     label: MP3 Audio
     description: A sound file in MPEG Layer-3 formt
     class: SmartestAsset
+    parsable: false
     icon: music.png
     storage:
       type: file
@@ -252,6 +262,7 @@ type:
     description: A published Adobe Flash file
     icon: page_white_flash.png
     class: SmartestAsset
+    parsable: false
     captionable: true
     storage: 
       type: file
@@ -275,6 +286,7 @@ type:
     description: A movie saved in Microsoft's proprietary WMV format
     icon: page_white_flash.png
     class: SmartestAsset
+    parsable: false
     captionable: true
     storage: 
       type: file
@@ -300,6 +312,7 @@ type:
     label: Adobe PDF
     description: A document in PDF format
     class: SmartestAsset
+    parsable: false
     icon: page_white_acrobat.png
     storage: 
       type: file
@@ -315,6 +328,7 @@ type:
     label: Archive
     description: An archived folder or document
     class: SmartestAsset
+    parsable: false
     storage: 
       type: file
       location: Documents/Downloads/
@@ -332,6 +346,7 @@ type:
     label: Microsoft Word
     description: A document in Microsoft Word format
     class: SmartestAsset
+    parsable: false
     icon: page_word.png
     storage: 
       type: file
@@ -347,6 +362,7 @@ type:
     label: Microsoft Excel Spreadsheet
     description: A document in XLS Spreadsheet format
     class: SmartestAsset
+    parsable: false
     icon: page_excel.png
     storage: 
       type: file
@@ -362,6 +378,7 @@ type:
     label: Microsoft Powerpoint
     description: A document in Microsoft Powerpoint format
     class: SmartestAsset
+    parsable: false
     icon: page_white_powerpoint.png
     storage: 
       type: file

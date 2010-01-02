@@ -1,5 +1,6 @@
 <div id="work-area">
-  
+    
+  {load_interface file="edit_asset_tabs.tpl"}
   <h3>Attachments</h3>
 {if count($attachments)}  
   <div class="special-box">The following attachment tags were recognized in this text:</div>

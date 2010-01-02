@@ -82,8 +82,6 @@ class SmartestAssetsLibraryHelper{
 		    "other" => array()
 		); */
 		
-		
-		
 		$types = $this->getCategories();
 		
 		if(!is_array($exclude_categories)){
@@ -111,6 +109,22 @@ class SmartestAssetsLibraryHelper{
 	    
 	    return $types;
 		
+	}
+	
+	public function getTypesByPlaceholderType($type){
+	    
+	    $ptypes = SmartestDataUtility::getAssetClassTypes();
+	    
+	    if(isset($ptypes[$type])){
+	        $atypes = $ptypes[$type]['accept'];
+	        if(is_array($atypes)){
+	            return $this->getSelectedTypes($atypes);
+	            // return $atypes;
+	        }else{
+	            return array();
+	        }
+	    }
+	    
 	}
     
     public function getUploadLocations(){
@@ -615,7 +629,7 @@ class SmartestAssetsLibraryHelper{
 	        $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
 	        
 	        if(is_numeric($site_id)){
-    	        $sql .= " AND set_site_id='".$site_id."'";
+    	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared='1')";
     	    }
     	    
     	    if(count($types) > 1){

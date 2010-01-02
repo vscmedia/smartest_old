@@ -126,11 +126,13 @@ class Assets extends SmartestSystemApplication{
 		    $type = $types_array[$code];
 		    $this->send('editableasset', 'sidebartype');
 		    
-		    if(isset($type['source-editable']) && SmartestStringHelper::toRealBool($type['source-editable'])){
+		    if(isset($type['source_editable']) && SmartestStringHelper::toRealBool($type['source_editable'])){
 		        $this->send(true, 'allow_source_edit');
 		    }else{
 		        $this->send(false, 'allow_source_edit');
 		    }
+		    
+		    $this->send($type, 'type');
 		    
 		    $recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId(), $code);
   	        $this->send($recent, 'recent_assets');
@@ -662,9 +664,31 @@ class Assets extends SmartestSystemApplication{
 	    $alh = new SmartestAssetsLibraryHelper;
 	    $groups = $alh->getAssetGroups($this->getSite()->getId());
 	    
-	    $poss_groups = $alh->getAssetGroupsThatAcceptType('SM_ASSETTYPE_RICH_TEXT');
-	    
 	    $this->send($groups, 'groups');
+	    
+	}
+	
+	public function assetGroupsByType($get){
+	    
+	    $alh = new SmartestAssetsLibraryHelper;
+	    
+	    $code = $get['asset_type'];
+	    
+	    $types_array = SmartestDataUtility::getAssetTypes();
+		
+		if(in_array($code, array_keys($types_array))){
+		    
+		    $groups = $alh->getAssetGroupsThatAcceptType($get['asset_type'], $this->getSite()->getId());
+
+    	    $this->send($groups, 'groups');
+    	    $this->send($get['asset_type'], 'type_code');
+    	    $this->send($types_array[$code], 'type');
+    	    
+    	    // print_r($groups);
+		    
+		}else{
+		    $this->addUserMessageToNextRequest('The file type was not recognized.', SmartestUserMessage::ERROR);
+		}
 	    
 	}
 	
@@ -679,6 +703,27 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $this->send($asset_types, 'asset_types');
 	    $this->send($placeholder_types, 'placeholder_types');
+	    
+	}
+	
+	public function newAssetGroupFromPlaceholder($get){
+	    
+	    $placeholder_id = (int) $get['placeholder_id'];
+	    $placeholder = new SmartestPlaceholder;
+	    
+	    if($placeholder->find($placeholder_id)){
+	        
+	        $mode = (isset($get['mode']) && $get['mode'] == 'live') ? "live" : "draft";
+	        
+	        $draft_mode = ($mode == "draft");
+	        
+	        $definitions = $placeholder->getDefinitions($draft_mode);
+	        
+	        $this->send($placeholder, 'placeholder');
+	        $this->send($definitions, 'definitions');
+	        $this->send($mode, 'mode');
+	    
+	    }
 	    
 	}
 	
@@ -707,8 +752,46 @@ class Assets extends SmartestSystemApplication{
 	    $set->save();
 	    
 	    $this->redirect('/assets/editAssetGroupContents?group_id='.$set->getId());
-	    // $this->formForward();
 	    
+	}
+	
+	public function createNewAssetGroupFromPlaceholder($get, $post){
+	    
+	    $placeholder_id = (int) $post['placeholder_id'];
+	    $placeholder = new SmartestPlaceholder;
+	    
+	    if($placeholder->find($placeholder_id)){
+	        
+	        if(isset($post['asset_ids']) && is_array($post['asset_ids'])){
+	        
+	            $set = new SmartestAssetGroup;
+    	        $set->setLabel($post['asset_group_label']);
+    	        $set->setName(SmartestStringHelper::toVarName($post['asset_group_label']));
+    	        $set->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
+    	        $set->setSiteId($this->getSite()->getId());
+    	        $set->setShared(0);
+    	        $set->setFilterValue($placeholder->getType());
+    	        $set->save();
+	        
+	            foreach($post['asset_ids'] as $asset_id){
+	                $set->addAssetById($asset_id, false);
+	            }
+	            
+	            $this->addUserMessageToNextRequest("A group was successfully created and ".count($post['asset_ids'])." files were added to it.", SmartestUserMessage::SUCCESS);
+	            $this->redirect("/assets/browseAssetGroup?group_id=".$set->getId());
+	            
+            }else{
+                
+                $this->addUserMessageToNextRequest("No group was created because no files were selected.", SmartestUserMessage::INFO);
+                $this->redirect("/websitemanager/placeholderDefinitions?placeholder_id=".$placeholder->getId());
+                
+            }
+            
+        }else{
+            $this->addUserMessageToNextRequest("The placeholder ID was not recognized.", SmartestUserMessage::ERROR);
+            $this->redirect("/websitemanager/placeholders");
+        }
+        
 	}
 	
 	public function browseAssetGroup($get){
@@ -900,7 +983,7 @@ class Assets extends SmartestSystemApplication{
 		    $this->send($asset->getGroups(), 'groups');
 		    $this->send($asset->getPossibleGroups(), 'possible_groups');
 		    
-		    if(isset($data['type_info']['source-editable']) && SmartestStringHelper::toRealBool($data['type_info']['source-editable'])){
+		    if(isset($data['type_info']['source_editable']) && SmartestStringHelper::toRealBool($data['type_info']['source_editable'])){
 		        $this->send(true, 'allow_source_edit');
 		    }else{
 		        $this->send(false, 'allow_source_edit');
@@ -929,10 +1012,10 @@ class Assets extends SmartestSystemApplication{
 		}
 
 		$asset = new SmartestAsset;
-
+		
 		if($asset->find($asset_id)){
-
-			$assettype_code = $asset->getType();
+            
+            $assettype_code = $asset->getType();
 			$types_data = SmartestDataUtility::getAssetTypes();
 			$default_params = $asset->getDefaultParams();
 
@@ -956,7 +1039,9 @@ class Assets extends SmartestSystemApplication{
 			            $content = htmlspecialchars(SmartestFileSystemHelper::load($asset->getFullPathOnDisk()), ENT_COMPAT, 'UTF-8');
 			        }
                     
-                    if(isset($asset_type['source-editable']) && SmartestStringHelper::toRealBool($asset_type['source-editable'])){
+                    
+                    
+                    if(isset($asset_type['source_editable']) && SmartestStringHelper::toRealBool($asset_type['source_editable'])){
         		        $this->send(true, 'allow_source_edit');
         		    }else{
         		        $this->send(false, 'allow_source_edit');
@@ -1278,7 +1363,7 @@ class Assets extends SmartestSystemApplication{
 	        
 	        // $data = $asset->__toArray(false, true); // don't include object, do include owner info
 		    
-		    if(isset($asset['type_info']['source-editable']) && SmartestStringHelper::toRealBool($asset['type_info']['source-editable'])){
+		    if(isset($asset['type_info']['source_editable']) && SmartestStringHelper::toRealBool($asset['type_info']['source_editable'])){
 		        $this->send(true, 'allow_source_edit');
 		    }else{
 		        $this->send(false, 'allow_source_edit');
@@ -1435,7 +1520,11 @@ class Assets extends SmartestSystemApplication{
 	    // $this->formForward();
 	    
 	    if($post['_submit_action'] == "continue" && $success){
-	        $this->redirect("/assets/editAsset?asset_type=".$asset->getType()."&asset_id=".$asset->getId());
+	        if(isset($post['editor']) && $post['editor'] == 'source'){
+	            $this->redirect("/assets/editTextFragmentSource?asset_id=".$asset->getId());
+	        }else{
+	            $this->redirect("/assets/editAsset?asset_type=".$asset->getType()."&asset_id=".$asset->getId());
+            }
 	    }else{
 	        // $this->addUserMessageToNextRequest($message, $message_type);
 	        $this->formForward();
@@ -1728,7 +1817,7 @@ class Assets extends SmartestSystemApplication{
 		    $this->send($comments, 'comments');
 		    $this->send($asset, 'asset');
 		    
-		    if(isset($asset['type_info']['source-editable']) && SmartestStringHelper::toRealBool($asset['type_info']['source-editable'])){
+		    if(isset($asset['type_info']['source_editable']) && SmartestStringHelper::toRealBool($asset['type_info']['source_editable'])){
 		        $this->send(true, 'allow_source_edit');
 		    }else{
 		        $this->send(false, 'allow_source_edit');

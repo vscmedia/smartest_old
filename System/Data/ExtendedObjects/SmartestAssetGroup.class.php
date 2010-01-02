@@ -1,6 +1,6 @@
 <?php
 
-class SmartestAssetGroup extends SmartestSet{
+class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
     
     public function __objectConstruct(){
         $this->_membership_type = 'SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP';
@@ -119,9 +119,47 @@ class SmartestAssetGroup extends SmartestSet{
         
     }
     
-    public function addAssetById($id){
+    public function getTypes(){
         
-        if(!in_array($id, $this->getMemberIds())){
+        $du = new SmartestAssetsLibraryHelper;
+        
+        if($this->getFilterType() == 'SM_SET_FILTERTYPE_NONE'){
+            return $du->getTypes();
+        }else if($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETCLASS'){
+            $du = new SmartestAssetsLibraryHelper;
+            return $du->getTypesByPlaceholderType($this->getFilterValue());
+        }else if($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETTYPE'){
+            // print_r($this->getFilterValue());
+            return $du->getSelectedTypes(array($this->getFilterValue()));
+        }
+        
+    }
+    
+    public function getFileTypeLabel(){
+        if($this->getFilterType() == 'SM_SET_FILTERTYPE_NONE'){
+            return 'All file types';
+        }else{
+            
+            $types = $this->getTypes();
+            $labels = array();
+            
+            foreach($types as $t){
+                $labels[] = $t['label'];
+            }
+            
+            $l = SmartestStringHelper::toCommaSeparatedList($labels).' files';
+            
+            if($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETTYPE'){
+                return $l.' only';
+            }else{
+                return $l;
+            }
+        }
+    }
+    
+    public function addAssetById($id, $strict_checking=true){
+        
+        if(!$strict_checking || !in_array($id, $this->getMemberIds())){
             
             $m = new SmartestAssetGroupMembership;
             $m->setAssetId($id);
@@ -177,6 +215,19 @@ class SmartestAssetGroup extends SmartestSet{
     
     public function isUsedForPlaceholders(){
         return (bool) count($this->getPlaceholdersWhereUsed());
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "types":
+            return $this->getTypes();
+            case "type_labels_list":
+            return $this->getFileTypeLabel();
+        }
+        
+        return parent::offsetGet($offset);
+        
     }
 
 }

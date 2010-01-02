@@ -240,6 +240,17 @@ class SmartestDataObjectHelper{
 	    return $string;
 	}
 	
+	public static function loadInterfaces(){
+	    
+	    $directory = SM_ROOT_DIR.'System/Data/Interfaces/';
+	    $files = SmartestFileSystemHelper::load($directory);
+	    
+	    foreach($files as $f){
+	        include $directory.$f;
+	    }
+	    
+	}
+	
 	public function loadBasicObjects(){
 		
 		$available_objects = SmartestCache::load('smartest_available_objects', true);
