@@ -534,18 +534,53 @@ class SmartestModel extends SmartestBaseModel{
             if($new_shared_status == '0'){
                 // Model is being made site-specific, so move class file to Sites/.../Library/ObjectModel/
                 if(SmartestFileSystemHelper::move($this->getClassFilePath(1), $this->getClassFilePath(0))){
+                    // echo 'moved to sites folder';
                     parent::setShared('0');
+                    return true;
+                }else{
+                    // class file couldn't be moved
+                    return false;
                 }
             }else if($new_shared_status == '1'){
                 // Model is being shared, so move class file to Library/ObjectModel/
                 if(SmartestFileSystemHelper::move($this->getClassFilePath(0), $this->getClassFilePath(1))){
+                    // echo 'moved to library folder';
                     parent::setShared('1');
+                    return true;
+                }else{
+                    // class file couldn't be moved
+                    return false;
                 }
             }
+        }else{
+            return true;
         }
     }
     
-    // Code for building and including model classes
+    public function getLocationsThatMustBeWrtableForSharingToggle(){
+        
+        return array(
+            SmartestFileSystemHelper::dirName($this->getClassFilePath(1)),
+            SmartestFileSystemHelper::dirName($this->getClassFilePath(0)),
+            $this->getClassFilePath()
+        );
+        
+    }
+    
+    public function isMovable(){
+        
+        foreach($this->getLocationsThatMustBeWrtableForSharingToggle() as $file){
+            if(!is_writable($file)){
+                return false;
+            }
+        }
+        
+        return true;
+        
+    }
+    
+    
+    ///////////////////////////// Code for building and including model classes /////////////////////////////////
     
     public function init(){
         

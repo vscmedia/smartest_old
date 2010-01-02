@@ -1016,19 +1016,29 @@ class Items extends SmartestSystemApplication{
 	        
 	        $multiple_sites = $model->isUsedOnMultipleSites();
 	        
-	        $shared = ($model->getShared() == '1' || !strlen($model->getShared()) || $multiple_sites);
+	        // var_dump($model->getShared());
+	        
+	        $shared = ($model->isShared() || $multiple_sites);
 	        $this->send($shared, 'shared');
 	        
+	        $is_movable = $model->isMovable();
+	        // var_dump($is_movable);
+	        
 	        if($shared){
-	            $ast = (!$multiple_sites && $model->getSiteId() == $this->getSite()->getId());
+	            $ast = (!$multiple_sites && $model->getSiteId() == $this->getSite()->getId() && $is_movable);
             }else{
-                $ast = $model->hasSameNameAsModelOnOtherSite() ? false : true;
+                $ast = ($model->hasSameNameAsModelOnOtherSite() || !$is_movable) ? false : true;
             }
             
             $this->send($ast, 'allow_sharing_toggle');
+            $this->send($is_movable, 'is_movable');
+            
+            if(!$is_movable){
+                
+            }
             
 	        $this->send($this->getSite()->getId(), 'current_site_id');
-	        // echo $model->getSiteId();
+	        
 	        if($model->getSiteId() == '0'){
 	            $this->send(true, 'allow_main_site_switch');
                 $this->send($this->getUser()->getAllowedSites(), 'sites');
@@ -1093,7 +1103,12 @@ class Items extends SmartestSystemApplication{
             }else{
                 if($model->getSiteId() == $this->getSite()->getId()){
                     $shared = isset($post['itemclass_shared']) ? 1 : 0;
-                    $model->setShared($shared);
+                    if($model->setShared($shared)){
+                        $model->save();
+                    }else{
+                        $this->addUserMessageToNextRequest("The model's class file could not be moved.", SmartestUserMessage::WARNING);
+                        $error = true;
+                    }
                 }
             }
             
@@ -1101,13 +1116,17 @@ class Items extends SmartestSystemApplication{
                 $this->addUserMessageToNextRequest("The model has been successfully updated.", SmartestUserMessage::SUCCESS);
             }
             
-            $model->save();
+            
+            $this->redirect("/datamanager/editModel?class_id=".$model->getId());
             
 	    }else{
 	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->redirect("/smartest/models");
 	    }
 	    
-	    $this->formForward();
+	    
+	    
+	    // $this->formForward();
 	}
 	
 	public function itemInfo($get){
@@ -1120,10 +1139,10 @@ class Items extends SmartestSystemApplication{
 	        
 	        $this->setFormReturnUri();
 	        
-	        $item_array = $item->__toArray(true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
-		    $this->send($item->getModel()->getMetaPagesAsArrays(), 'metapages');
+	        // $item_array = $item->__toArray(true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
+		    $this->send($item->getModel()->getMetaPages(), 'metapages');
 		    
-		    $authors = $item->getItem()->getAuthorsAsArrays();
+		    $authors = $item->getItem()->getAuthors();
 		    
 		    $num_authors = count($authors);
             $byline = '';
@@ -1158,7 +1177,7 @@ class Items extends SmartestSystemApplication{
 		    $this->send($possible_sets, 'possible_sets');
 		    
 		    $this->setTitle($item->getModel()->getName().' Information | '.$item->getName());
-		    $this->send($item_array, 'item');
+		    $this->send($item, 'item');
 	        
 	    }else{
 	        
