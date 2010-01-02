@@ -218,8 +218,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	
 	static function move($old_path, $new_path){
 	    if(@copy(utf8_decode($old_path), $new_path)){
-	        @unlink($old_path);
-	        return true;
+	        return unlink($old_path);
 	    }else{
 	        return false;
 	    }
