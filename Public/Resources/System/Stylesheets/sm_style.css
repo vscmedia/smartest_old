@@ -238,11 +238,16 @@ div.form-section-label{
 }
 
 div.edit-form-row select{
-	width:320px;
+	width:400px;
 }
 
 div.edit-form-row input[type="text"]{
-	width:320px;
+	width:400px;
+	height:18px;
+	padding:3px;
+	font-size:16px;
+	color:#666;
+	border:1px solid #ccc;
 }
 
 div.buttons-bar{
