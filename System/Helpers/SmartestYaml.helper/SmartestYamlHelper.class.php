@@ -4,14 +4,14 @@ SmartestHelper::register('Yaml');
 
 // wrapper class for Spyc
 
-include SM_ROOT_DIR.'Library/Spyc/spyc.php5';
+include SM_ROOT_DIR.'Library/Spyc/spyc.php';
 
 class SmartestYamlHelper extends SmartestHelper{
     
     public static function load($file_name){
         if(is_file($file_name)){
             $spyc = new Spyc;
-            $array = $spyc->load($file_name);
+            $array = $spyc->loadFile($file_name);
             return $array;
         }else{
             // error

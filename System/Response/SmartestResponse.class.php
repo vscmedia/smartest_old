@@ -588,7 +588,6 @@ class SmartestResponse{
 		
 		foreach($writable_files as $label=>$file){
 			if(!is_writable($file)){
-				// $errors[] = array("label"=>$label, "file"=>$file);
 				$errors[] = SM_ROOT_DIR.$file;
 			}
 		}
