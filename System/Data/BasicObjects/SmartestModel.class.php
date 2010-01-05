@@ -104,7 +104,6 @@ class SmartestModel extends SmartestBaseModel{
 	        if(is_object($p)){
 	            $array['_properties'][$p->getId()] = $p->__toArray();
 	            $array['_properties'][$p->getId()]['_options'] = $p->getPossibleValuesAsArrays();
-	            // print_r($array['_properties'][$p->getId()]);
 	            $array[$p->getId()] = '';
 	        }
 	    }
@@ -358,10 +357,6 @@ class SmartestModel extends SmartestBaseModel{
             
             $info = $p->getTypeInfo();
             
-            /* echo $p->getForeignKeyFilter();
-            echo $p->getDatatype();
-            print_r($text_asset_types); */
-            
             if((isset($info['long']) && strtolower($info['long']) != 'false') || ($p->getDatatype() == 'SM_DATATYPE_ASSET' && in_array($p->getForeignKeyFilter(), $text_asset_types))){
                 $ok_properties[] = $p;
             }
@@ -463,13 +458,20 @@ class SmartestModel extends SmartestBaseModel{
         $s = new SmartestSite;
         
         if($this->getSiteId() == '0'){
+            
             $sql = "SELECT site_id FROM Sites ORDER BY site_id ASC";
             $result = $this->database->queryToArray($sql);
             $first_site_id = $result[0]['site_id'];
-            $copy = $this->copy();
+            
+            // This code will be uncommented in future
+            // It ensures the model is always attached to a site
+            /* $copy = $this->copy();
             $copy->setSiteId($first_site_id);
-            $copy->save();
+            $copy->save(); */
+            
+            SmartestLog::getInstance('system')->log("\SmartestModel->getMainSite() was called on a model (".$this->getName().") that does not yet have a site attached to it.");
             $site_id = $first_site_id;
+            
         }else{
             $site_id = $this->getSiteId();
         }
@@ -533,8 +535,6 @@ class SmartestModel extends SmartestBaseModel{
         
         $currently_shared = $this->getShared();
         
-        // echo $this->getClassFilePath(1).' '.$this->getClassFilePath(0);
-        
         // If the shared status is being changed
         if($currently_shared != $new_shared_status){
             if($new_shared_status == '0'){
@@ -563,7 +563,7 @@ class SmartestModel extends SmartestBaseModel{
         }
     }
     
-    public function getLocationsThatMustBeWrtableForSharingToggle(){
+    public function getFilesThatMustBeWrtableForSharingToggle(){
         
         return array(
             SmartestFileSystemHelper::dirName($this->getClassFilePath(1)),
@@ -573,17 +573,26 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
-    public function isMovable(){
+    public function getFilesThatMustBeWrtableForSharingToggleButAreNot(){
         
-        foreach($this->getLocationsThatMustBeWrtableForSharingToggle() as $file){
+        $bad_files = array();
+        
+        foreach($this->getFilesThatMustBeWrtableForSharingToggle() as $file){
             if(!is_writable($file)){
-                return false;
+                $bad_files[] = $file;
             }
         }
         
-        return true;
+        return $bad_files;
         
     }
+    
+    public function isMovable(){
+        
+        return count($this->getFilesThatMustBeWrtableForSharingToggleButAreNot()) ? false : true;
+        
+    }
+    
     
     
     ///////////////////////////// Code for building and including model classes /////////////////////////////////

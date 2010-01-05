@@ -38,20 +38,42 @@
               {if $allow_sharing_toggle}
                 <label for="itemclass-shared">Uncheck the box to make only this site able to store and display {$model.plural_name|lower}</label>
               {else}
-                <span class="form-hint">This model must be shared because 
-                {if $model.site_id == '0'}
-                  it isn't currently attached to one of your sites
+                <span class="form-hint">
+                {if $is_movable}
+                  This model must be shared because 
+                  {if $model.site_id == '0'}
+                    it isn't currently attached to one of your sites
+                  {else}
+                    it is already in use on sites other than this one
+                  {/if}
                 {else}
-                  it is already in use on sites other than this one
-                {/if}</span>
+                  This model cannot be unshared because file permissions do not allow the model's class file to be moved
+                {/if}
+                </span>
               {/if}
             {else}
               {if $allow_sharing_toggle}
                 <label for="itemclass-shared">Check the box to make all sites able to store and display {$model.plural_name|lower}</label>
               {else}
-                <span class="form-hint">This model cannot be shared because other models with conflicting or identical names exist on other sites</span>
+                <span class="form-hint">
+                  {if $is_movable}
+                  This model cannot be shared because other models with conflicting or identical names exist on other sites
+                  {else}
+                  This model cannot be shared because file permissions do not allow the model's class file to be moved
+                  {/if}
+                </span>
               {/if}
             {/if}
+            
+            {if !$is_movable}
+              <div class="warning">
+                The following files must be writable by the web server before you can {if $shared}unshare this model{else}share this model with other sites{/if}:<br />
+                {foreach from=$unwritable_files item="unwritable_file"}
+                <div><code>{$unwritable_file}</code></div>
+                {/foreach}
+              </div>
+            {/if}
+            
       </div>
       
       {if $allow_main_site_switch}

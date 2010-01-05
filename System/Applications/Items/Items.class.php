@@ -1016,12 +1016,13 @@ class Items extends SmartestSystemApplication{
 	        
 	        $multiple_sites = $model->isUsedOnMultipleSites();
 	        
-	        // var_dump($model->getShared());
+	        // var_dump($model->getSiteId() == $this->getSite()->getId());
 	        
 	        $shared = ($model->isShared() || $multiple_sites);
 	        $this->send($shared, 'shared');
 	        
 	        $is_movable = $model->isMovable();
+	        
 	        // var_dump($is_movable);
 	        
 	        if($shared){
@@ -1034,7 +1035,7 @@ class Items extends SmartestSystemApplication{
             $this->send($is_movable, 'is_movable');
             
             if(!$is_movable){
-                
+                $this->send($model->getFilesThatMustBeWrtableForSharingToggleButAreNot(), 'unwritable_files');
             }
             
 	        $this->send($this->getSite()->getId(), 'current_site_id');
@@ -1089,27 +1090,33 @@ class Items extends SmartestSystemApplication{
                 $error = true;
             }
             
-            if($model->getSiteId() == '0'){
-                if(isset($post['itemclass_site_id']) && (int) $post['itemclass_site_id'] > 0 && in_array($post['itemclass_site_id'], $this->getUser()->getAllowedSiteIds())){
-                    $new_site_id = $post['itemclass_site_id'];
-                }else{
-                    $new_site_id = $this->getSite()->getId();
-                }
-                $model->setSiteId($new_site_id);
-            }
-            
             if($model->isUsedOnMultipleSites()){
+                
                 $model->setShared('1');
+                
             }else{
+                
                 if($model->getSiteId() == $this->getSite()->getId()){
+                    
                     $shared = isset($post['itemclass_shared']) ? 1 : 0;
-                    // var_dump($shared);
+                    
                     if($model->setShared($shared)){
                         
                     }else{
                         $this->addUserMessageToNextRequest("The model's class file could not be moved.", SmartestUserMessage::WARNING);
                         $error = true;
                     }
+                    
+                }else if($model->getSiteId() == '0'){
+                    
+                    if(isset($post['itemclass_site_id']) && (int) $post['itemclass_site_id'] > 0 && in_array($post['itemclass_site_id'], $this->getUser()->getAllowedSiteIds())){
+                        $new_site_id = $post['itemclass_site_id'];
+                    }else{
+                        $new_site_id = $this->getSite()->getId();
+                    }
+                    
+                    $model->setSiteId($new_site_id);
+                    
                 }
             }
             
@@ -1125,9 +1132,8 @@ class Items extends SmartestSystemApplication{
 	        $this->redirect("/smartest/models");
 	    }
 	    
+	    $this->formForward();
 	    
-	    
-	    // $this->formForward();
 	}
 	
 	public function itemInfo($get){
@@ -1140,8 +1146,7 @@ class Items extends SmartestSystemApplication{
 	        
 	        $this->setFormReturnUri();
 	        
-	        // $item_array = $item->__toArray(true); // draft mode, use numeric keys, and $get_all_fk_property_options in that order
-		    $this->send($item->getModel()->getMetaPages(), 'metapages');
+	        $this->send($item->getModel()->getMetaPages(), 'metapages');
 		    
 		    $authors = $item->getItem()->getAuthors();
 		    
