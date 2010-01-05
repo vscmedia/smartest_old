@@ -232,17 +232,21 @@ div.instruction{
 
 div.form-section-label{
 	font-size:1.1em;
-	background-color:#f4f4f4;
+	background-color:#f8f8f9;
 	border:1px solid #ddd;
 	color:#666;
 }
 
-div.edit-form-row select{
-	width:400px;
+div.edit-form-row{
+    border:1px dotted #e8e8e8;
 }
 
-div.edit-form-row input[type="text"]{
-	width:400px;
+div.edit-form-row select{
+	width:380px;
+}
+
+div.edit-form-row input[type="text"], div.edit-form-row input[type="password"]{
+	width:380px;
 	height:18px;
 	padding:3px;
 	font-size:16px;

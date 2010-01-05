@@ -374,6 +374,8 @@ class Desktop extends SmartestSystemApplication{
         $system_installed_timestamp = SmartestSystemHelper::getInstallDate(true);
         $this->send($system_installed_timestamp, 'system_installed_timestamp');
         
+        // Version control
+        $this->send(new SmartestBoolean(is_dir(SM_ROOT_DIR.'.svn/')), 'is_svn_checkout');
     }
     
     public function testServerSpeed(){

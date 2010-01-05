@@ -1294,12 +1294,14 @@ class Items extends SmartestSystemApplication{
     		    if(is_array($new_values)){
 		    
 		            foreach($new_values as $property_id=>$new_value){
-				        $item->setPropertyValueByNumericKey($property_id, $new_value);
+		                $item->setPropertyValueByNumericKey($property_id, $new_value);
 			        }
+			        
+			        $item->save();
 			    
 			    }
-		    
-		        $this->addUserMessageToNextRequest('The item was updated successfully.', SmartestUserMessage::SUCCESS);
+			    
+			    $this->addUserMessageToNextRequest('The item was updated successfully.', SmartestUserMessage::SUCCESS);
 		
 	        }else{
 	        
