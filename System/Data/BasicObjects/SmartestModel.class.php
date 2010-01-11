@@ -709,6 +709,8 @@ class SmartestModel extends SmartestBaseModel{
 			$file = str_replace('__AUTOCLASSNAME__', 'auto'.$className, $file);
 			$file = str_replace('__TIME__', date("Y-m-d H:i:s"), $file);
 			
+			// var_dump($this->isShared());
+			// echo 'Built: '.$this->getClassFilePath();
 			return file_put_contents($this->getClassFilePath(), $file);
 		
 		}else{

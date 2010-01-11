@@ -8,7 +8,7 @@
       
       <div class="edit-form-row">
         <div class="form-section-label">Name this group</div>
-        <input type="text" name="asset_group_label" value="Untitled file group" style="width:250px" />
+        <input type="text" name="asset_group_label" value="Untitled file group" />
       </div>
       
       <div class="edit-form-row">

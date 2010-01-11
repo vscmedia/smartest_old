@@ -245,6 +245,7 @@ class SmartestSite extends SmartestBaseSite{
 	public function getModels(){
 	    
 	    $sql = "SELECT * FROM ItemClasses WHERE ItemClasses.itemclass_type='SM_ITEMCLASS_MODEL' AND (ItemClasses.itemclass_shared='1' OR ItemClasses.itemclass_site_id = '".$this->getId()."') ORDER BY itemclass_name";
+	    echo $sql;
 	    $result = $this->database->queryToArray($sql);
 	    $models = array();
 	    

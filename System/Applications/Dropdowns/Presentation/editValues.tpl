@@ -14,7 +14,7 @@
       
       <div class="edit-form-row">
         
-        <div class="instruction">Values in dropdown <strong>{$dropdown.label}</strong></div>
+        <div class="instruction">Values in dropdown &quot;<strong>{$dropdown.label}</strong>&quot;</div>
 
 {if $dropdown.num_options > 0}
 
@@ -22,7 +22,7 @@
           Preview:
           <select name="preview">
 {foreach from=$dropdown.values item="value"}
-            <option value="">{$value.label} {$value.order}</option>
+            <option value="">{$value.label}</option>
 {/foreach}
           </select> <a href="{$domain}{$section}/addDropDownValue?dropdown_id={$dropdown.id}">+ Add a value</a>
         </div>

@@ -98,7 +98,7 @@ function validateUploadSuffix(){
     {foreach from=$params key="parameter_name" item="parameter_value"}
     <div class="edit-form-row">
       <div class="form-section-label">{$parameter_name}</div>
-      <input type="text" name="params[{$parameter_name}]" style="width:250px" />
+      <input type="text" name="params[{$parameter_name}]" />
     </div>
     {/foreach}
     </div>

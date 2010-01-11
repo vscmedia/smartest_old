@@ -1,5 +1,3 @@
-<h3>Elements used on page: {$page.static_title}{if $page.type == 'ITEMCLASS'} ({$page.title}){/if}</h3>
-
 {if $version == "draft"}
 <div class="instruction">Page elements as they are being rendered on the draft version of this page.</div>
 {else}
@@ -47,7 +45,7 @@
   	  
 {if $version == "draft"}
     <span>
-      Master Template:
+      Page Template:
       <select name="template_name" onchange="$('templateSelect').submit();">
         <option value="">Not Selected</option>
 {foreach from=$templates item="t"}
@@ -56,7 +54,7 @@
       </select>
     </span>
 {else}
-    <span>Page template: <b title="Changing this value may affect which placeholders need to be defined on this page">{$templateMenuField}</b></span>
+    <span>Page template: {if strlen($templateMenuField)}{$templateMenuField}{else}<em style="color:#666">None yet specified</em>{/if}</span>
 {/if}
 
   </form>
@@ -141,15 +139,15 @@
 	
 	<b>{$assetclass.info.assetclass_name}</b> Smartest needs more information about this new {$assetclass.info.type}.&nbsp;
 	  {if $assetclass.info.type=='container'}
-	    <a href="{$domain}assets/addContainer?name={$assetclass.info.assetclass_name}&amp;type={$assetclass.info.type}">Add it</a>
+	    <a href="{$domain}{$section}/addContainer?name={$assetclass.info.assetclass_name}">Enter it now</a>
 	  {elseif $assetclass.info.type=='placeholder'}
-	    <a href="{$domain}assets/addPlaceholder?name={$assetclass.info.assetclass_name}&amp;type={$assetclass.info.type}">Add it</a>
+	    <a href="{$domain}{$section}/addPlaceholder?name={$assetclass.info.assetclass_name}">Enter it now</a>
 	  {elseif $assetclass.info.type=='list'}
-	    <a href="{$domain}{$section}/addList?name={$assetclass.info.assetclass_name}">Add it</a>
+	    <a href="{$domain}{$section}/addList?name={$assetclass.info.assetclass_name}">Enter it now</a>
 	  {elseif $assetclass.info.type=='field'}
-	    <a href="{$domain}metadata/addPageProperty?site_id={$site_id}&amp;name={$assetclass.info.assetclass_name}">Add it</a>
+	    <a href="{$domain}metadata/addPageProperty?site_id={$site_id}&amp;name={$assetclass.info.assetclass_name}">Enter it now</a>
 	  {elseif $assetclass.info.type=='itemspace'}
-  	  <a href="{$domain}{$section}/addItemSpace?site_id={$site_id}&amp;name={$assetclass.info.assetclass_name}">Add it</a>
+  	  <a href="{$domain}{$section}/addItemSpace?site_id={$site_id}&amp;name={$assetclass.info.assetclass_name}">Enter it now</a>
 	  {/if}
 	  
 	{/if}

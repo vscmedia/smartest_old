@@ -440,18 +440,13 @@ class Pages extends SmartestSystemApplication{
                         }
                     }
                 
-            		// $count_url = count($pageUrls);
             		$this->setTitle("Edit Page | ".$page->getTitle());
     		
-            		$this->send($editorContent, "pageInfo");
+            		$this->send($editorContent, "page");
             		$this->send($parent_pages, "parent_pages");
-            		// $this->send($saved, "saved");
-            		// $this->send($pageUrls, "pageurls");
-            		// $this->send($count_url, "count");
             		$this->send($ishomepage, "ishomepage");
             		$this->send($this->getSite(), "site");
             		$this->send(true, 'allow_edit');
-            		// $this->send($this->getUser()->hasToken('edit_page_name'), 'allow_name_edit');
 		
         	    }else{
 	        
@@ -495,7 +490,75 @@ class Pages extends SmartestSystemApplication{
 	    
 	}
 	
-	public function placeholders(){
+	public function addPlaceholder($get){
+		
+		$asset_class_types = SmartestDataUtility::getAssetClassTypes();
+		
+		$placeholder_name = SmartestStringHelper::toVarName($get['name']);
+		
+		$this->send($placeholder_name, 'name');
+		$this->send($asset_class_types, 'types');
+		
+	}
+	
+	public function addContainer($get){
+		
+		$container_name = SmartestStringHelper::toVarName($get['name']);
+		
+		$this->send($container_name, 'name');
+		$this->send($asset_class_types, 'types');
+		
+	}
+	
+	public function insertPlaceholder($get, $post){
+		
+		$placeholder = new SmartestPlaceholder;
+		
+		if($post['placeholder_name']){
+		    $name = SmartestStringHelper::toVarName($post['placeholder_name']);
+		}else{
+		    $name = SmartestStringHelper::toVarName($post['placeholder_label']);
+		}
+		
+		if($placeholder->exists($name, $this->getSite()->getId())){
+	        $this->addUserMessageToNextRequest("A placeholder with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
+	    }else{
+		    $placeholder->setLabel($post['placeholder_label']);
+		    $placeholder->setName($name);
+		    $placeholder->setSiteId($this->getSite()->getId());
+		    $placeholder->setType($post['placeholder_type']);
+		    $placeholder->save();
+		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
+		}
+		
+		$this->formForward();
+	}
+	
+	public function insertContainer($get, $post){
+		
+		if($post['container_name']){
+		    $name = SmartestStringHelper::toVarName($post['container_name']);
+		}else{
+		    $name = SmartestStringHelper::toVarName($post['container_label']);
+		}
+		
+		$container = new SmartestContainer;
+		
+		if($container->exists($name, $this->getSite()->getId())){
+	        $this->addUserMessageToNextRequest("A container with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
+	    }else{
+		    $container->setLabel($post['container_label']);
+		    $container->setName($name);
+		    $container->setSiteId($this->getSite()->getId());
+		    $container->setType('SM_ASSETCLASS_CONTAINER');
+		    $container->save();
+		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
+	    }
+		
+		$this->formForward();
+	}
+	
+    public function placeholders(){
 	    
 	    $this->setFormReturnUri();
 	    
@@ -808,44 +871,43 @@ class Pages extends SmartestSystemApplication{
 	
 	function sitePages($get){
 		
-		if($this->getSite() instanceof SmartestSite){
-		    
-	        $this->setFormReturnUri();
+		$this->requireOpenProject();
+		
+		$this->setFormReturnUri();
 
-	        $site_id = $this->getSite()->getId();
-	        
-	        $pagesTree = $this->getSite()->getPagesTree(true);
-	        
-	        if($get['refresh'] == 1){
-	            SmartestCache::clear('site_pages_tree_'.$site_id, true);
-            }
-	        
-	        $this->setTitle($this->getSite()->getName()." | Site Map");
-	        
-	        $this->send($pagesTree, "tree");
-	        $this->send($site_id, "site_id");
-	        $this->send(true, "site_recognised");
-	        
-	        $recent = $this->getUser()->getRecentlyEditedPages($this->getSite()->getId());
-  	        $this->send($recent, 'recent_pages');
+        $site_id = $this->getSite()->getId();
+        
+        $pagesTree = $this->getSite()->getPagesTree(true);
+        
+        if($get['refresh'] == 1){
+            SmartestCache::clear('site_pages_tree_'.$site_id, true);
+        }
+        
+        $this->setTitle($this->getSite()->getName()." | Site Map");
+        
+        $this->send($pagesTree, "tree");
+        $this->send($site_id, "site_id");
+        $this->send(true, "site_recognised");
+        
+        $recent = $this->getUser()->getRecentlyEditedPages($this->getSite()->getId());
+	    $this->send($recent, 'recent_pages');
 		    
-		}else{
-		    
-		    $this->addUserMessageToNextRequest("You must choose a site first.", SmartestUserMessage::INFO);
-	        $this->redirect('/smartest');
-		    
-		}
 	}
 	
 	public function releaseCurrentUserHeldPages(){
+	    
+	    $this->requireOpenProject();
 	    
 	    $num_held_pages = $this->getUser()->getNumHeldPages($this->getSite()->getId());
 	    $this->getUser()->releasePages($this->getSite()->getId());
 	    $this->addUserMessageToNextRequest($num_held_pages." pages were released.", SmartestUserMessage::SUCCESS);
 	    $this->redirect('/smartest/pages');
+	    
 	}
 	
 	function addPage($get, $post){
+		
+		$this->requireOpenProject();
 		
 		$user_id = SmartestPersistentObject::get('user')->getId(); //['user_id'];
 		
@@ -1462,14 +1524,12 @@ class Pages extends SmartestSystemApplication{
         }else{
             
             // page ID wasn't recognised
+            $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
             
         }
 	    
-	    /* print_r($page_current_tag_ids);
-	    print_r($post['tags']);
-	    print_r($page); */
-	    
 	    $this->formForward();
+	    
 	}
 	
 	public function relatedContent($get){
@@ -1991,6 +2051,8 @@ class Pages extends SmartestSystemApplication{
 	    
         }else{
             // page not found
+            $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
+            $this->redirect('/smartest/pages');
         }
 	    
 	}

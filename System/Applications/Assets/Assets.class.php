@@ -22,6 +22,8 @@ class Assets extends SmartestSystemApplication{
 	
 	public function getAssetTypes(){
 	    
+	    $this->requireOpenProject();
+	    
 	    $h = new SmartestAssetsLibraryHelper;
 		
 		$this->setTitle("Files");
@@ -38,75 +40,9 @@ class Assets extends SmartestSystemApplication{
 		
 	}
 	
-	public function addPlaceholder($get){
-		
-		$asset_class_types = SmartestDataUtility::getAssetClassTypes();
-		
-		$placeholder_name = SmartestStringHelper::toVarName($get['name']);
-		
-		$this->send($placeholder_name, 'name');
-		$this->send($asset_class_types, 'types');
-		
-	}
-	
-	public function addContainer($get){
-		
-		$container_name = SmartestStringHelper::toVarName($get['name']);
-		
-		$this->send($container_name, 'name');
-		$this->send($asset_class_types, 'types');
-		
-	}
-	
-	public function insertPlaceholder($get, $post){
-		
-		$placeholder = new SmartestPlaceholder;
-		
-		if($post['placeholder_name']){
-		    $name = SmartestStringHelper::toVarName($post['placeholder_name']);
-		}else{
-		    $name = SmartestStringHelper::toVarName($post['placeholder_label']);
-		}
-		
-		if($placeholder->exists($name, $this->getSite()->getId())){
-	        $this->addUserMessageToNextRequest("A placeholder with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
-	    }else{
-		    $placeholder->setLabel($post['placeholder_label']);
-		    $placeholder->setName($name);
-		    $placeholder->setSiteId($this->getSite()->getId());
-		    $placeholder->setType($post['placeholder_type']);
-		    $placeholder->save();
-		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
-		}
-		
-		$this->formForward();
-	}
-	
-	public function insertContainer($get, $post){
-		
-		if($post['container_name']){
-		    $name = SmartestStringHelper::toVarName($post['container_name']);
-		}else{
-		    $name = SmartestStringHelper::toVarName($post['container_label']);
-		}
-		
-		$container = new SmartestContainer;
-		
-		if($container->exists($name, $this->getSite()->getId())){
-	        $this->addUserMessageToNextRequest("A container with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
-	    }else{
-		    $container->setLabel($post['container_label']);
-		    $container->setName($name);
-		    $container->setSiteId($this->getSite()->getId());
-		    $container->setType('SM_ASSETCLASS_CONTAINER');
-		    $container->save();
-		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
-	    }
-		
-		$this->formForward();
-	}
-	
 	public function getAssetTypeMembers($get){
+		
+		$this->requireOpenProject();
 		
 		$code = strtoupper($get["asset_type"]);
 		$mode = isset($get["mode"]) ? (int) $get["mode"] : 1;
@@ -284,6 +220,8 @@ class Assets extends SmartestSystemApplication{
 	
 	public function createAssetsFromNewUploads($get, $post){
 	    
+	    $this->requireOpenProject();
+	    
 	    if(isset($post['new_files']) && is_array($post['new_files'])){
 	        $new_files = $post['new_files'];
 	    }else{
@@ -351,6 +289,8 @@ class Assets extends SmartestSystemApplication{
 	}
 	
 	public function addAsset($get){
+		
+		$this->requireOpenProject();
 		
 		$asset_type = SmartestStringHelper::toConstantName($get['asset_type']);
 		
@@ -429,6 +369,8 @@ class Assets extends SmartestSystemApplication{
 	
 	
 	public function saveNewAsset($get, $post){
+	    
+	    $this->requireOpenProject();
 	    
 	    if($this->getUser()->hasToken('create_assets')){
 	    
@@ -661,6 +603,8 @@ class Assets extends SmartestSystemApplication{
 	
 	public function assetGroups(){
 	    
+	    $this->requireOpenProject();
+	    
 	    $alh = new SmartestAssetsLibraryHelper;
 	    $groups = $alh->getAssetGroups($this->getSite()->getId());
 	    
@@ -669,6 +613,8 @@ class Assets extends SmartestSystemApplication{
 	}
 	
 	public function assetGroupsByType($get){
+	    
+	    $this->requireOpenProject();
 	    
 	    $alh = new SmartestAssetsLibraryHelper;
 	    
@@ -683,8 +629,6 @@ class Assets extends SmartestSystemApplication{
     	    $this->send($groups, 'groups');
     	    $this->send($get['asset_type'], 'type_code');
     	    $this->send($types_array[$code], 'type');
-    	    
-    	    // print_r($groups);
 		    
 		}else{
 		    $this->addUserMessageToNextRequest('The file type was not recognized.', SmartestUserMessage::ERROR);
@@ -728,6 +672,8 @@ class Assets extends SmartestSystemApplication{
 	}
 	
 	public function createAssetGroup($get, $post){
+	    
+	    $this->requireOpenProject();
 	    
 	    $set = new SmartestAssetGroup;
 	    $set->setLabel($post['asset_group_label']);
@@ -798,6 +744,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $group_id = $get['group_id'];
 	    $mode = isset($get["mode"]) ? (int) $get["mode"] : 1;
+	    
 	    $this->setFormReturnUri();
 	    $this->setFormReturnDescription('file group');
 	    

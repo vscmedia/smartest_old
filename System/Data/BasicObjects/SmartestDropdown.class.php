@@ -61,13 +61,25 @@ class SmartestDropdown extends SmartestBaseDropdown{
         $index = 0;
         
         $sql = "SELECT DISTINCT dropdownvalue_order FROM DropDownValues WHERE dropdownvalue_dropdown_id='".$this->getId()."' ORDER BY dropdownvalue_order DESC LIMIT 1";
-        $result = $this->database->queryToArray();
+        $result = $this->database->queryToArray($sql);
         
         if(count($result)){
             $index = $result[0]['dropdownvalue_order']+1;
         }
         
         return $index;
+        
+    }
+    
+    public function fixOrderIndices(){
+        
+        $new_index = 0;
+        
+        foreach($this->getOptions() as $opt){
+            $opt->setOrder($new_index);
+            $opt->save();
+            ++$new_index;
+        }
         
     }
     

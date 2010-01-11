@@ -1113,6 +1113,16 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	    return (bool) $this->_properties['changes_approved'];
 	}
 	
+	public function isEditableByUserId($user_id){
+	    if($this->getIsHeld() == '0' || ($this->getIsHeld() == '1' && $this->getHeldBy() == $user_id)){
+            // The page isn't held, or it's held by the user
+            return true;
+        }else{
+            // 
+            // $sql = "SELECT * FROM UsersTokensLookup WHERE utlookup_user_id='".."' AND ".$this->getId()."'";
+        }
+	}
+	
 	public function touch(){
 	    if($this->_came_from_database == true){
 	        $sql = "UPDATE Pages SET page_modified = '".time()."' WHERE Pages.page_id = '".$this->_properties['id']."'";
@@ -1122,7 +1132,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	
 	public function __toArray($getChildren=false){
 	    
-	    SmartestLog::getInstance('system')->log('Deprecated API function used: '.get_class($this).'->__toArray()');
+	    // SmartestLog::getInstance('system')->log('Deprecated API function used: '.get_class($this).'->__toArray()');
 	    
 	    $array = parent::__toArray();
 	    
@@ -1844,7 +1854,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	    if(array_key_exists($itemspace_name, $this->_itemspaces)){
 	        
 	        $itemspace = $this->_itemspaces[$itemspace_name];
-	        // print_r($itemspace);
 	        return $itemspace;
 	        
 	    }else{
@@ -1852,8 +1861,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	        $itemspace = new SmartestItemSpaceDefinition;
             $itemspace->load($itemspace_name, $this, $this->getDraftMode());
             return $itemspace;
-            
-            // throw new SmartestException("itemspace name '".$itemspace_name."' not recognized.");
         
         }
 	    

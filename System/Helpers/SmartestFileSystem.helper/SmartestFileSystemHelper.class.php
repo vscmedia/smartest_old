@@ -133,13 +133,15 @@ class SmartestFileSystemHelper extends SmartestHelper{
     	                // convert to gigabytes
     	                $new_size = $new_size/1024;
     	                
-                        if($new_size >= 1024){
+                        /* if($new_size >= 1024){
         	                // convert to terrabytes
         	                $new_size = $new_size/1024;
-                            return number_format($new_size, 3, '.', ',').' TB';
-                        }else{
+                            return number_format($new_size, 3, '.', ',').' TB'; */
+                        // }else{
                             return number_format($new_size, 2, '.', ',').' GB';
-                        }
+                        //}
+                        
+                        // No point checking for terrabytes
 
                     }else{
                         return number_format($new_size, 1, '.', ',').' MB';

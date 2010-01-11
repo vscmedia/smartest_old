@@ -156,24 +156,25 @@ class Dropdowns extends SmartestSystemApplication{
 	    $dropdown = new SmartestDropdown;
 	    
 	    if($dropdown->find($dropdown_id)){
-	    
+	        
 	        $option = new SmartestDropdownOption;
 	    
 	        $option->setDropdownId($dropdown->getId());
 	        $option->setLabel($label);
 	        $option->setValue($value);
-	        $option->setOrder($dropdown->getNextOrderIndex());
+	        $option->setOrder($dropdown->getNextOptionOrderIndex());
+	        
 	        $option->save();
 	        
 	        $this->addUserMessageToNextRequest('Your new dropdown menu was saved successfully.', SmartestUserMessage::SUCCESS);
+	        $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
 	        
 	    }else{
 	        
 	        $this->addUserMessageToNextRequest('The dropdown ID menu was not recognized.', SmartestUserMessage::ERROR);
+	        $this->formForward();
 	        
 	    }
-	        
-	    $this->formForward();
 	    
 	}
 
@@ -225,19 +226,65 @@ class Dropdowns extends SmartestSystemApplication{
 	    if($option->find($id)){
 	        $option->delete();
 	        $this->addUserMessageToNextRequest("The option was deleted.", SmartestUserMessage::SUCCESS);
+	        $this->redirect('/dropdowns/editValues?dropdown_id='.$option->getDropdownId());
 	    }else{
 	        $this->addUserMessageToNextRequest("The option ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
 	    }
 	    
-	    $this->formForward();
+	}
+	
+	public function moveDropDownValueUp($get, $post){
+	    
+	    $dropdown_id = $get['dropdown_id'];
+	    $dropdown = new SmartestDropdown;
+	    
+	    if($dropdown->find($dropdown_id)){
+	        
+	        $dropdown->fixOrderIndices();
+	        
+	        $option_id = $get['dropdown_value_id'];
+    	    $option = new SmartestDropdownOption;
+
+    	    if($option->find($option_id)){
+                $option->moveUp();
+                $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
+    	    }else{
+    	        $this->addUserMessageToNextRequest("The option ID was not recognized.", SmartestUserMessage::ERROR);
+    	        $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
+    	    }
+    	    
+	    }else{
+	        $this->addUserMessageToNextRequest("The dropdown ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/dropdowns');
+	    }
 	    
 	}
 	
-	public function moveDropDownValueUp(){
+	public function moveDropDownValueDown($get, $post){
 	    
-	}
-	
-	public function moveDropDownValueDown(){
+	    $dropdown_id = $get['dropdown_id'];
+	    $dropdown = new SmartestDropdown;
+	    
+	    if($dropdown->find($dropdown_id)){
+	        
+	        $dropdown->fixOrderIndices();
+	        
+	        $option_id = $get['dropdown_value_id'];
+    	    $option = new SmartestDropdownOption;
+
+    	    if($option->find($option_id)){
+                $option->moveDown();
+                $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
+    	    }else{
+    	        $this->addUserMessageToNextRequest("The option ID was not recognized.", SmartestUserMessage::ERROR);
+    	        $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
+    	    }
+    	    
+	    }else{
+	        $this->addUserMessageToNextRequest("The dropdown ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/dropdowns');
+	    }
 	    
 	}
 	

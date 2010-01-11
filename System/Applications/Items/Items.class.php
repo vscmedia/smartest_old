@@ -1021,6 +1021,10 @@ class Items extends SmartestSystemApplication{
 	        $shared = ($model->isShared() || $multiple_sites);
 	        $this->send($shared, 'shared');
 	        
+	        // var_dump($model->isShared());
+	        
+	        $this->send(SmartestFileSystemHelper::getFileSizeFormatted($model->getClassFilePath()), 'class_file_size');
+	        
 	        $is_movable = $model->isMovable();
 	        
 	        // var_dump($is_movable);
@@ -1131,8 +1135,6 @@ class Items extends SmartestSystemApplication{
 	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
 	        $this->redirect("/smartest/models");
 	    }
-	    
-	    $this->formForward();
 	    
 	}
 	

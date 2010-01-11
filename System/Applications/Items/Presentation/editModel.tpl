@@ -22,7 +22,7 @@
       
       <div class="edit-form-row">
         <div class="form-section-label">Model class</div>
-        <code>{$class_file}</code>
+        <code>{$class_file}</code> <span style="color:#999">({$class_file_size})</span>
       </div>
       
       <div class="edit-form-row">

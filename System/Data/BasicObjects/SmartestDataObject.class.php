@@ -431,13 +431,7 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    if(strlen($id)){
         
-            /* $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$id."'";
-	    
-			if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
-			    $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
-			} */
-			
-			$sql = $this->getRetrievalSqlQuery($id, 'id', $site_id);
+            $sql = $this->getRetrievalSqlQuery((int) $id, 'id', $site_id);
 	    
 		    $this->_last_query = $sql;
 			$result = $this->database->queryToArray($sql, $file, $line);
@@ -462,8 +456,9 @@ class SmartestDataObject implements ArrayAccess{
         }else{
             
             SmartestLog::getInstance('system')->log(get_class($this)."->find() called without a valid ID.", SmartestLog::WARNING);
-            // A bit harsh:
+            // A bit harsh for now:
             // throw new SmartestException("SmartestDataObject->find() must be called with a valid ID.");
+            SmartestLog::getInstance('system')->log(__CLASS__."->find() must be called with a valid ID.");
             
         }
 	    

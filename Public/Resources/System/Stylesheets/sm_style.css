@@ -232,13 +232,14 @@ div.instruction{
 
 div.form-section-label{
 	font-size:1.1em;
-	background-color:#f8f8f9;
+	background-color:#f0f0f0;
 	border:1px solid #ddd;
 	color:#666;
 }
 
 div.edit-form-row{
     border:1px dotted #e8e8e8;
+    -webkit-corner-radius:5px;
 }
 
 div.edit-form-row select{

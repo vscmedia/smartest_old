@@ -85,6 +85,14 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    
 	}
 	
+	protected function requireOpenProject($message=''){
+	    if(!SmartestPersistentObject::get('current_open_project') instanceof SmartestSite){
+	        $user_message = strlen($message) ? $message : 'You need to open a site before you can access that screen.';
+	        $this->addUserMessageToNextRequest($user_message, SmartestUserMessage::INFO);
+	        $this->redirect('/smartest');
+	    }
+	}
+	
 	protected function requireToken($token, $exclude_root=false){
 	    if(!$this->getUser()->hasToken($token, $exclude_root)){
 	        $this->addUserMessageToNextRequest('You do not have sufficient access privileges for that action.', SM_USER_MESSAGE_ACCESS_DENIED);
