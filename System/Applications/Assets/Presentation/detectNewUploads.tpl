@@ -9,7 +9,7 @@
   <div class="special-box" style="margin-bottom:5px">Files found in: <strong><code>{$path}</code></strong></div>
   <span class="form-hint" style="padding:0px">{foreach from=$types_info[$path] item="type" name="types"}{if $smarty.foreach.types.index > 0}, {/if}{$type.label}{/foreach}</span>
   {if count($files_of_this_type)}
-    <p style="margin-bottom:0px">Select <a href="javascript:alert($$('input.checkbox-{$path|varname}').length);">all</a> | <a href="#">none</a></p>
+    <p style="margin-bottom:0px">Select <a href="javascript:new Smartest.UI.CheckBoxGroup('checkbox-{$path|varname}').selectAll();">all</a> | <a href="javascript:new Smartest.UI.CheckBoxGroup('checkbox-{$path|varname}').selectNone();">none</a></p>
   {/if}
   <ul style="list-style-type:none;margin-top:8px">
     {foreach from=$files_of_this_type item="file"}

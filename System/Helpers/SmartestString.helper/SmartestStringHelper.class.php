@@ -546,5 +546,41 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	    
 	}
+	
+	public static function guaranteeUnique($string, $taken_strings){
+	    
+	    if(!is_array($taken_strings)){
+	        SmartestLog::getInstance('system')->log('SmartestStringHelper::guaranteeUnique() called with invalid data type for $taken_strings argument (2)', SmartestLog::WARNING);
+	        return false;
+	    }
+	    
+	    if(in_array($string, $taken_strings)){
+	        
+	        if(preg_match('/(.+)-(\d+)$/', $string, $matches)){
+    	        $number = $matches[2];
+    	        $trunk = $matches[1];
+    	        $try_string = $string;
+    	    }else{
+	            $trunk = $string;
+	            $try_string = $string.'-1';
+    	    }
+    	    
+    	    $max_tries = 100000;
+            $counter = 1;
+            
+            while($counter < $max_tries && in_array($try_string, $taken_strings)){
+                
+                $counter++;
+                $try_string = $trunk.'-'.$counter;
+                
+            }
+            
+            return $try_string;
+    	    
+	    }else{
+	        return $string;
+	    }
+	    
+	}
 
 }

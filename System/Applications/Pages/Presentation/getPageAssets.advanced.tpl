@@ -10,6 +10,10 @@
   {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
 </form>
 
+<script type="text/javascript">
+var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'page-element');
+</script>
+
 {if $show_deleted_warning}
   <div class="warning">Warning: This page is currently in the trash.</div>
 {/if}
@@ -69,7 +73,7 @@
 {if !empty($assets)}
 
 <ul class="tree-parent-node-open" id="tree-root">
-  <li><img border="0" src="{$domain}Resources/Icons/page.png" />Current Page: {$page.title}</li>
+  <li class="page-element"><img border="0" src="{$domain}Resources/Icons/page.png" />Current Page: {$page.title}</li>
   {defun name="menurecursion" list=$assets}
     
     {capture name="foreach_name" assign="foreach_name"}list_{if $assetclass.info.assetclass_id}{$assetclass.info.assetclass_id}{else}0{/if}{/capture}
@@ -83,7 +87,7 @@
       <a href="{dud_link}" onclick="toggleParentNodeFromOpenState('{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}')"><img src="{$domain}Resources/System/Images/open.gif" alt="" border="0" id="toggle_{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}" /></a>
       {else}
       <img src="{$domain}Resources/System/Images/blank.gif" alt="" border="0" />
-      {/if}<a id="item_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="{if $version == "draft"}javascript:setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}javascript:nothing();{/if}">		 
+      {/if}<a id="{$assetclass.info.type|lower}_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="{if $version == "draft"}javascript:elementTree.setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}javascript:nothing();{/if}">		 
     {if $assetclass.info.exists == 'true'}
         
 		{if $assetclass.info.defined == "PUBLISHED"}

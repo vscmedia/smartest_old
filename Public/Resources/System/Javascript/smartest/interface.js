@@ -139,15 +139,6 @@ function setView(viewName, list_id){
 	}
 }
 
-function toggleMenuVisibility(menu_id){
-    var menu = $(menu_id);
-    if(menu.style.display='none'){
-        new Effect.BlindDown(menu_id, { duration: 0.3 });
-    }else if(menu.style.display='block'){
-        new Effect.BlindUp(menu_id, { duration: 0.3 });
-    }
-}
-
 function hideUserMessage(message_id){
 	new Effect.Fade(message_id, { duration: 0.5 });
 }
@@ -205,3 +196,207 @@ function getCaretPosition(textarea_id){
     return caret_pos;
     
 }
+
+var Smartest = Class.create({});
+
+Smartest.UI = Class.create({
+    
+    toggleFormAreaVisibilityBasedOnCheckbox: function(checkbox_id, form_div_id){
+        if($(checkbox_id).checked){
+            new Effect.BlindDown(form_div_id, {duration: 1.5, transition: Effect.Transitions.sinoidal});
+        }else{
+            new Effect.BlindUp(form_div_id, {duration: 0.5, transition: Effect.Transitions.sinoidal});
+        }
+    },
+    
+    updateSpansByClassName: function(className, content){
+        $$('span.'+className).find(function(e){e.update(content);});
+    },
+    
+    allowEffects: function(){
+        return (sm_user_agent.appName == 'Explorer') ? false : true;
+    }
+    
+});
+
+Smartest.UI.Menu = Class.create({
+    
+    isVisible: false,
+    
+    initialize: function(id, link_id){
+        this.menuId = id;
+        this.linkId = link_id;
+        $(this.menuId).style.display = 'none';
+    },
+    
+    show: function(){
+        new Effect.BlindDown(this.menuId, { duration: 0.2 });
+        this.isVisible = true;
+        $(this.linkId).className = 'js-menu-activator-current';
+    },
+    
+    hide: function(){
+        new Effect.BlindUp(this.menuId, { duration: 0.2 });
+        this.isVisible = false;
+        $(this.linkId).className = 'js-menu-activator';
+    },
+    
+    toggleVisibility: function(){
+        if(this.isVisible){
+            this.hide();
+        }else{
+            this.show();
+        }
+    }
+    
+});
+
+Smartest.UI.OptionSet = Class.create({
+    
+    initialize: function(formId, inputId, optionClass, listId){
+        
+        this.setFormId(formId);
+        this.setPrimaryInputId(inputId);
+        this.optionClass = optionClass;
+        
+        if($(listId)){
+            this.setListId(listId);
+        }
+    },
+    
+    setFormId: function(id){
+        if($(id)){
+            this.form = $(id);
+        }else{
+            // TODO: create a new form and append it to the document
+        }
+    },
+    
+    setPrimaryInputId: function(id){
+        if($(id)){
+            this.primaryInput = $(id);
+        }else{
+            // TODO: create a new input and append it to the form
+        }
+    },
+    
+    setListId: function(id){
+        this.listId = id;
+        this.listStyle = $(this.listId).hasClassName('options-list') ? 'list' : 'grid';
+    },
+    
+    showOnly: function(className){
+        var cats = $$('.'+this.optionClass).partition(function(item){return item.hasClassName(className)});
+        cats[1].find(function(item){new Effect.Fade(item, {duration: 0.2}); });
+        cats[0].find(function(item){new Effect.Appear(item, {duration: 0.2, delay: 0.21}); });
+    },
+    
+    setSelectedItem: function(id, category, params){
+        
+        this.currentCategoryName = category ? category : 'default';
+        
+        if(this.currentCategoryName == 'default' || !this.currentCategoryName){
+    		this.actionsDivId = 'item-specific-actions';
+    	}else{
+    		this.actionsDivId = category+'-specific-actions';
+    		if(this.lastItemCategoryName){
+    			this.lastActionsDivId = this.lastItemCategoryName+'-specific-actions';
+    		}
+    	}
+    	
+    	if($(this.actionsDivId)){
+            
+            if(this.lastItemCategoryName){
+    		    if(this.lastItemCategoryName != this.currentCategoryName){
+                    if($(this.lastActionsDivId)){
+                        new Effect.BlindUp(this.lastActionsDivId, { duration: 0.2 });
+                    }
+                    new Effect.BlindDown(this.actionsDivId, { duration: 0.2, delay: 0.21, transition: Effect.Transitions.sinoidal});
+                }
+    	    }else{
+    	        new Effect.BlindDown(this.actionsDivId, { duration: 0.4, transition: Effect.Transitions.sinoidal });
+    	    }
+    	    
+    	}
+    	
+    	if(this.lastItemId){
+    	    var lastDomID = this.lastItemCategoryName+'_'+this.lastItemId;
+    	    if($(lastDomID)){
+    		    $(lastDomID).className = "option";
+		    }
+    	}
+    	
+    	var domID = this.currentCategoryName+'_'+id;
+        
+        if($(domID)){
+    		$(domID).className = "selected-option";
+    	}
+    	
+    	if(params && params.updateFields){
+    	    $H(params.updateFields).each(function(f){
+    	        new Smartest.UI().updateSpansByClassName(f.key, f.value);
+    	    });
+    	}
+    	
+    	this.lastItemId = id;
+    	this.lastItemCategoryName = this.currentCategoryName;
+    	this.primaryInput.value = id;
+    	
+    },
+    
+    getOptionElement: function(id, category){
+        if($(id)){
+            return $(id);
+        }else{
+            if(category){
+                var domID = category+'_'+id;
+                if($(domID)){
+                    return $(domID);
+                }
+            }else if(this.currentCategoryName){
+                var domID = this.currentCategoryName+'_'+id;
+                if($(domID)){
+                    return $(domID);
+                }
+            }
+        }
+    },
+    
+    workWithItem: function(action, params){
+        
+        var app = (params && params.application) ? params.application : sm_section;
+        
+        if(this.lastItemId){
+            if((params && params.confirm && confirm(params.confirm)) || (!params || (params && !params.confirm))){
+                this.form.action = sm_domain+app+"/"+action;
+	            this.form.submit();
+            }
+        }
+    },
+    
+    setView: function(view){
+        if(view == 'grid'){
+            $(this.listId).className = 'options-grid';
+        }
+        if(view == 'list'){
+            $(this.listId).className = 'options-list';
+        }
+    }
+    
+});
+
+Smartest.UI.CheckBoxGroup = Class.create({
+    
+    initialize: function(className){
+        this.className = className;
+    },
+    
+    selectAll: function(){
+        $$('input.'+this.className).find(function(e){e.checked = true;});
+    },
+    
+    selectNone: function(){
+        $$('input.'+this.className).find(function(e){e.checked = false;});
+    }
+    
+})

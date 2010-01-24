@@ -1,16 +1,20 @@
 /*** Style ***/
 
-a.js-menu-activator{
+div.menubar a.js-menu-activator{
     color:#333;
+    background-color:#eee;
+    text-decoration:none;
 }
 
-a.js-menu-activator:hover;{
+div.menubar a.js-menu-activator-current{
+    background-color:#555;
+    color:#eee;
     text-decoration:none;
 }
 
 div.js-menu{
     background-color:#eee;
-    border:1px solid #999;
+    border:1px solid #ccc;
 }
 
 div.js-menu ul{
@@ -27,7 +31,7 @@ div.js-menu ul li a{
 }
 
 div.js-menu ul li a:hover{
-    background-color:#23f;
+    background-color:#555;
     color:#fff;
     text-decoration:none;
 }
@@ -39,8 +43,21 @@ div.js-menu ul li span{
 
 /*** Layout ***/
 
+div.menubar{
+    margin:0 0 10px 0;
+    height:18px;
+}
+
+div.menubar a{
+    float:left;
+    display:block;
+    height:16px;
+    padding:4px;
+}
+
 div.js-menu{
     width:200px;
+    padding:5px 0 5px 0;
 }
 
 div.js-menu ul{

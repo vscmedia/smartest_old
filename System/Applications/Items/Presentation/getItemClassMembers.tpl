@@ -62,36 +62,38 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
 <a href="{dud_link}" onclick="setView('list', 'options_list')">List</a> /
 <a href="{dud_link}" onclick="setView('grid', 'options_list')">Icons</a>
 </div>
-  
-  {* <ul class="{if count($items) > 30}options-list{else}options-grid{/if}" id="options_list"> *}
+
     <ul class="options-grid" id="options_list">
   {foreach from=$items key="key" item="item"}
 	
-    <li ondblclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}'">
-      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="setSelectedItem('{$item.id}', '{$item.name|escape:quotes}');">
-        
+    <li ondblclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}'" class="item {if $item.public=='FALSE'}unpublished{else}published{/if} {if $item.is_archived=='1'}archived{else}available{/if}">
+      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="itemList.setSelectedItem('{$item.id}', 'item', {literal}{{/literal}updateFields: {literal}{{/literal}'item_name_field': '{$item.name|summary:"29"|escape:quotes}', archive_action_name: '{if $item.is_archived}Unarchive{else}Archive{/if}'{literal}}{/literal}{literal}}{/literal});">
         <img src="{$domain}Resources/Icons/item.png" border="0" />{$item.name}</a>{* if $item.public=='FALSE'}&nbsp;(hidden){/if *}</li>
 
   {/foreach}
   
   {* <object id="head-logo" data="{$domain}Resources/Icons/item.svg" type="image/svg+xml"> *}
   </ul>
+  
+  <script type="text/javascript">
+  var itemList = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'item', 'options_list');
+  </script>
 
 </div>
 
 <div id="actions-area">
 
 <ul class="actions-list" id="item-specific-actions" style="display:none">
-  <li><b>Selected {$model.name}</b></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/information.png"> <a href="{dud_link}" onclick="workWithItem('itemInfo');">{$model.name} info</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/pencil.png"> <a href="{dud_link}" onclick="workWithItem('openItem');">Edit {$model.name}</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/lock_open.png"> <a href="{dud_link}" onclick="workWithItem('releaseItem');">Release</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('publishItem');">Publish</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('unpublishItem');">Un-Publish</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/accept.png"> <a href="{dud_link}" onclick="workWithItem('addTodoItem');">Add new to-do</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="workWithItem('toggleItemArchived');">Archive/Un-archive</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> <a href="{dud_link}" onclick="if(selectedPage && confirm('Are you sure you want to delete this {$model.name|lower} ?')) {ldelim}workWithItem('deleteItem');{rdelim}">Delete</a></li>
-{* <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="if(selectedPage) {ldelim}workWithItem('duplicateItem');{rdelim}">Duplicate</a></li> *}
+  <li><b><span class="item_name_field">{$model.name}</span></b></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/information.png"> <a href="{dud_link}" onclick="itemList.workWithItem('itemInfo');">{$model.name} info</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/pencil.png"> <a href="{dud_link}" onclick="itemList.workWithItem('openItem');">Edit this {$model.name|lower}</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/lock_open.png"> <a href="{dud_link}" onclick="itemList.workWithItem('releaseItem');">Release</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('publishItem');">Publish</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('unpublishItem');">Un-Publish</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/accept.png"> <a href="{dud_link}" onclick="itemList.workWithItem('addTodoItem');">Add new to-do</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('toggleItemArchived');"><span class="archive_action_name">Archive/Un-archive<span></a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> <a href="{dud_link}" onclick="itemList.workWithItem('deleteItem', {ldelim}confirm: 'Are you sure you want to delete this {$model.name|lower} ?'{rdelim});">Delete</a></li>
+{* <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('duplicateItem');">Duplicate</a></li> *}
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">

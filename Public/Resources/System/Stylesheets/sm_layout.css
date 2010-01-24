@@ -146,7 +146,7 @@ div#preview{
 	padding:3px;
 	text-align:right;
 	position:absolute;
-	top:150px;
+	top:154px;
 	left:173px;
 	right:10px;
 }
@@ -158,8 +158,8 @@ div#preview iframe{
 
 div#preview-actions-menu{
     position:absolute;
-	top:143px;
-	left:173px;
+	top:157px;
+	left:175px;
 	z-index:100;
 }
 

@@ -211,6 +211,39 @@ class SmartestMysql{
 	    }
 	}
 	
+	public function queryFieldsToArrays($fields, $query, $refresh=false){
+	    
+	    $result = $this->queryToArray($query, $refresh);
+	    
+	    if(count($result)){
+	        
+	        $result_fields = array_keys($result[0]);
+	        
+	        foreach($fields as $f){
+	            if(!in_array($f, $result_fields)){
+	                throw new SmartestDatabaseException("SmartestMysql::queryFieldsToArrays() Requested field '".$f."' not found in returned fieldset: ".implode(', ', $result_fields), SmartestDatabaseException::LOST_CONNECTION);
+	            }
+	        }
+	        
+	        $return_data = array();
+	        $i = 0;
+	        
+	        foreach($result as $record){
+	            foreach($fields as $f){
+	                $return_data[$f][$i] = $record[$f];
+	            }
+	            ++$i;
+	        }
+	        
+	    }else{
+	        $r = array();
+	        foreach($fields as $f){
+	            $r[$f] = array();
+	        }
+	    }
+	    
+	}
+	
 	protected function getSelectQueryResult($query, $refresh=false){
 	    
 	    $hash = $this->getHashFromQuery($query);
