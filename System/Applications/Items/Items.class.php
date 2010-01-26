@@ -1343,7 +1343,7 @@ class Items extends SmartestSystemApplication{
 		        }
 		        
 		        if (strlen($post['item_slug']) && $allow_edit_item_slug){
-			        $item->getItem()->setSlug(SmartestStringHelper::toSlug($post['item_slug']));
+			        $item->getItem()->setSlug(SmartestStringHelper::toSlug($post['item_slug']), $this->getSite()->getId());
 		        }
 		        
 		        $item->getItem()->setLanguage(SmartestStringHelper::sanitize($post['item_language']));

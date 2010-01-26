@@ -235,6 +235,8 @@ class SmartestMysql{
 	            ++$i;
 	        }
 	        
+	        return $return_data;
+	        
 	    }else{
 	        $r = array();
 	        foreach($fields as $f){

@@ -992,6 +992,25 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	}
 	
+	public function setSlug($slug, $site_id=''){
+	    
+	    if($this->_properties['id']){
+	       $sql = "SELECT item_slug FROM Items WHERE (item_site_id='".$this->getSiteId()."' OR item_shared='1') AND item_id != '".$this->getId()."'"; 
+	    }else{
+	        if($site_id){
+	            $sql = "SELECT item_slug FROM Items WHERE (item_site_id='".$site_id."' OR item_shared='1')"; 
+	        }else{
+	            $sql = "SELECT item_slug FROM Items"; 
+	        }
+	    }
+	    
+	    $fields = $this->database->queryFieldsToArrays(array('item_slug'), $sql);
+        $slug = SmartestStringHelper::guaranteeUnique($slug, $fields['item_slug']);
+        
+        return parent::setSlug($slug);
+	    
+	}
+	
 	// System UI calls
 	
 	public function getSmallIcon(){

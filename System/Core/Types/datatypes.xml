@@ -5,7 +5,7 @@
         <label>Number</label>
         <description>A numeric value in standard notation such as an integer or decimal. Scientific notation, fractions and logarithms are not supported.</description>
         <usage>field,itemproperty</usage>
-        <class>SmartestNumber</class>
+        <class>SmartestNumeric</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
     </type>

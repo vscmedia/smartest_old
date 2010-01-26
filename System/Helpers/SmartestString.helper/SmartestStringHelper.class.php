@@ -547,7 +547,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	}
 	
-	public static function guaranteeUnique($string, $taken_strings){
+	public static function guaranteeUnique($string, $taken_strings, $separator='-'){
 	    
 	    if(!is_array($taken_strings)){
 	        SmartestLog::getInstance('system')->log('SmartestStringHelper::guaranteeUnique() called with invalid data type for $taken_strings argument (2)', SmartestLog::WARNING);
@@ -556,7 +556,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	    if(in_array($string, $taken_strings)){
 	        
-	        if(preg_match('/(.+)-(\d+)$/', $string, $matches)){
+	        if(preg_match('/(.+)'.self::toRegularExpression($separator).'(\d+)$/', $string, $matches)){
     	        $number = $matches[2];
     	        $trunk = $matches[1];
     	        $try_string = $string;
