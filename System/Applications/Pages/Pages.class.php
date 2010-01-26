@@ -59,8 +59,6 @@ class Pages extends SmartestSystemApplication{
 	                
     	                $this->redirect('/smartest/pages');
     	                
-    	                $this->send($page->__toArray(), 'page');
-    	                
     	            }else{
 	                    
 	                    // page is available to edit
@@ -315,8 +313,8 @@ class Pages extends SmartestSystemApplication{
         		
             		$this->send($allow_release, 'allow_release');
             		$this->send($this->getUser()->hasToken('edit_page_name'), 'allow_edit_page_name');
-		
-            		// $pageUrls = $page->getUrlsAsArrays();
+            		$this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+		            // $pageUrls = $page->getUrlsAsArrays();
 		        
     		        $available_icons = $page->getAvailableIconImageFilenames();
     		        
@@ -816,7 +814,7 @@ class Pages extends SmartestSystemApplication{
     	        $this->send(false, 'show_publish_button');
     	    }
     	    
-    	    
+    	    $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
 		    
 		}else{
 		    $this->addUserMessage("The page ID was not recognized.", SmartestUserMessage::ERROR);
@@ -830,8 +828,17 @@ class Pages extends SmartestSystemApplication{
 		}*/
 	}
 	
-	public function comments(){
+	public function pageComments($get){
 	    
+	    $id = $get['page_id'];
+	    $page = new SmartestPage;
+		
+		if($page->hydrate($id)){
+		    $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+		}else{
+		    $this->addUserMessage('The page ID has not been recognized.', SmartestUserMessage::ERROR);
+		}
+		
 	}
 	
 	function deletePage($get){
@@ -1395,7 +1402,8 @@ class Pages extends SmartestSystemApplication{
     		
             		// $sub_template = ($mode == "basic") ? "getPageAssets.basic.tpl" : "getPageAssets.advanced.tpl";
         		    $sub_template = "getPageAssets.advanced.tpl";
-		
+		            
+		            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
             		$this->send($assetClasses["tree"], "assets");
             		$this->send($definedAssets, "definedAssets");
             		$this->send($page, "page");
@@ -1480,6 +1488,8 @@ class Pages extends SmartestSystemApplication{
 	            $this->setTitle('Page Tags | '.$page->getTitle());
 	        
             }
+            
+            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
 	        
 	    }else{
 	        $this->addUserMessage('The page ID has not been recognized.', SmartestUserMessage::ERROR);
@@ -1577,6 +1587,8 @@ class Pages extends SmartestSystemApplication{
         	    $this->send(false, 'require_item_select');
     	    
 	        }
+	        
+	        $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
     	    
 	    }else{
 	        $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
@@ -1754,6 +1766,7 @@ class Pages extends SmartestSystemApplication{
 	        $author_ids = $page->getAuthorIds();
 	        $this->send($author_ids, 'author_ids');
 	        $this->send($page, 'page');
+	        $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
 	        
 	    }else{
             $this->addUserMessage('The page ID was not recognized', SmartestUserMessage::ERROR);

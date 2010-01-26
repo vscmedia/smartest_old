@@ -1118,8 +1118,15 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
             // The page isn't held, or it's held by the user
             return true;
         }else{
-            // 
-            // $sql = "SELECT * FROM UsersTokensLookup WHERE utlookup_user_id='".."' AND ".$this->getId()."'";
+            // check if they have 'edit_held_pages' token
+            $sql = "SELECT utlookup_id FROM UsersTokensLookup WHERE utlookup_user_id='".$user_id."' AND (utlookup_site_id='".$this->getSiteId()."' OR utlookup_is_global='1') AND (utlookup_token_id='38' OR utlookup_token_id='0')";
+            $result = $this->database->queryToArray($sql);
+            
+            if(count($result)){
+                return true;
+            }else{
+                return false;
+            }
         }
 	}
 	

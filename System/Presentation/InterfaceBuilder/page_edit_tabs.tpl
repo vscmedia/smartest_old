@@ -1,0 +1,11 @@
+{* Loaded when we are viewing a normal page (and thus most tabs refer to the page) *}
+<ul class="tabset">
+    {if $page_is_editable}<li{if $method == "editPage"} class="current"{/if}><a href="{$domain}websitemanager/editPage?page_id={$smarty.get.page_id}{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}">Page Overview</a></li>{/if}
+    {if $smarty.get.item_id}<li{if $method == "editItem"} class="current"{/if}><a href="{$domain}datamanager/editItem?item_id={$smarty.get.item_id}{if $smarty.get.page_id}&amp;page_id={$smarty.get.page_id}{/if}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}">Item Properties</a></li>{/if}
+    {if $page_is_editable}<li{if $method == "pageAssets"} class="current"{/if}><a href="{$domain}websitemanager/pageAssets?page_id={$smarty.get.page_id}{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}">Page Elements Tree</a></li>{/if}
+    <li{if $method == "preview"} class="current"{/if}><a href="{$domain}websitemanager/preview?page_id={$smarty.get.page_id}{if $smarty.get.item_id}&amp;item_id={$smarty.get.item_id}{/if}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}">Preview</a></li>
+    {if $page_is_editable}<li{if $method == "pageTags"} class="current"{/if}><a href="{if $smarty.get.item_id}{$domain}datamanager/itemTags?item_id={$smarty.get.item_id}{if $smarty.get.page_id}&amp;page_id={$smarty.get.page_id}{/if}{else}{$domain}websitemanager/pageTags?page_id={$smarty.get.page_id}{/if}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}">Tags</a></li>
+    <li{if $method == "relatedContent"} class="current"{/if}><a href="{$domain}websitemanager/relatedContent?page_id={$smarty.get.page_id}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}">Related Content</a></li>
+    <li{if $method == "authors"} class="current"{/if}><a href="{$domain}websitemanager/authors?page_id={$smarty.get.page_id}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}">Authors</a></li>
+    <li{if $method == "pageComments"} class="current"{/if}><a href="{$domain}websitemanager/pageComments?page_id={$smarty.get.page_id}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}">Comments</a></li>{/if}
+</ul>

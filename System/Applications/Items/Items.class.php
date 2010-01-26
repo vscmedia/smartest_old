@@ -533,10 +533,8 @@ class Items extends SmartestSystemApplication{
 	        
 	        $this->setTitle($item->getName().' | Tags');
 	        
-	        // $page_tag_ids = $page->getTagsAsIds();
 	        $du  = new SmartestDataUtility;
 	        $tags = $du->getTags();
-	        // print_r($tags);
 	        
 	        $item_tags = array();
 	        $i = 0;
@@ -554,10 +552,21 @@ class Items extends SmartestSystemApplication{
 	            $i++;
 	        }
 	        
-	        // print_r($t);
-	        
 	        $this->send($item_tags, 'tags');
 	        $this->send($item, 'item');
+	        
+	        if(isset($get['page_id'])){
+		        
+		        $page = new SmartestPage;
+		        if($page->hydrate($get['page_id'])){
+		            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+		        }else{
+		            $this->send(false, 'page_is_editable');
+		        }
+		        
+		    }else{
+		        $this->send(false, 'page_is_editable');
+		    }
 	        
 	    }else{
 	        $this->addUserMessage('The item ID has not been recognized.', SmartestUserMessage::ERROR);
@@ -642,6 +651,19 @@ class Items extends SmartestSystemApplication{
 	        }
 	        
 	        $this->send($models, 'models');
+	        
+	        if(isset($get['page_id'])){
+		        
+		        $page = new SmartestPage;
+		        if($page->hydrate($get['page_id'])){
+		            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+		        }else{
+		            $this->send(false, 'page_is_editable');
+		        }
+		        
+		    }else{
+		        $this->send(false, 'page_is_editable');
+		    }
 	        
 	    }
 	    
@@ -841,7 +863,20 @@ class Items extends SmartestSystemApplication{
 	        $this->send($users, 'users');
 	        $author_ids = $item->getAuthorIds();
 	        $this->send($author_ids, 'author_ids');
-	        $this->send($item->__toArray(), 'item');
+	        $this->send($item, 'item');
+	        
+	        if(isset($get['page_id'])){
+		        
+		        $page = new SmartestPage;
+		        if($page->hydrate($get['page_id'])){
+		            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+		        }else{
+		            $this->send(false, 'page_is_editable');
+		        }
+		        
+		    }else{
+		        $this->send(false, 'page_is_editable');
+		    }
 	        
 	    }else{
             $this->addUserMessage('The item ID was not recognized', SmartestUserMessage::ERROR);
@@ -918,6 +953,19 @@ class Items extends SmartestSystemApplication{
 	        $comments = $item->getPublicComments($show);
 	        $this->send($comments, 'comments');
 	        $this->send(count($comments), 'num_comments');
+	        
+	        if(isset($get['page_id'])){
+		        
+		        $page = new SmartestPage;
+		        if($page->hydrate($get['page_id'])){
+		            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+		        }else{
+		            $this->send(false, 'page_is_editable');
+		        }
+		        
+		    }else{
+		        $this->send(false, 'page_is_editable');
+		    }
 	        
 	    }
 	    
@@ -1252,12 +1300,25 @@ class Items extends SmartestSystemApplication{
 		    
 		    $this->getUser()->addRecentlyEditedItemById($item_id, $this->getSite()->getId());
 		    
-		    $page = new SmartestPage;
+		    $metapage = new SmartestPage;
 		    
-		    if($page->hydrate($item->getMetapageId())){
-		        $this->send($page->getWebid(), 'default_metapage_id');
-		    }else if($page->hydrate($item->getModel()->getDefaultMetapageId($this->getSite()->getId()))){
-		        $this->send($page->getWebid(), 'default_metapage_id');
+		    if($metapage->find($item->getMetapageId())){
+		        $this->send($metapage->getWebid(), 'default_metapage_id');
+		    }else if($metapage->find($item->getModel()->getDefaultMetapageId($this->getSite()->getId()))){
+		        $this->send($metapage->getWebid(), 'default_metapage_id');
+		    }
+		    
+		    if(isset($get['page_id'])){
+		        
+		        $page = new SmartestPage;
+		        if($page->hydrate($get['page_id'])){
+		            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+		        }else{
+		            $this->send(false, 'page_is_editable');
+		        }
+		        
+		    }else{
+		        $this->send(false, 'page_is_editable');
 		    }
 		    
 	    }
