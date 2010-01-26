@@ -93,22 +93,22 @@ function viewLivePage(){
 
 <ul class="invisible-actions-list" id="template-specific-actions" style="display:none">
   <li><b>Template Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('elementTree.editTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit This Template</a></li>
+  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('editTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit This Template</a></li>
 </ul>
 
 <ul class="invisible-actions-list" id="itemspace-specific-actions" style="display:none">
   <li><b>Itemspace Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('elementTree.defineItemspace');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define This Itemspace</a></li>
+  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('defineItemspace');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define This Itemspace</a></li>
 </ul>
 
 <ul class="invisible-actions-list" id="item-specific-actions" style="display:none">
   <li><b>Item Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('elementTree.openItem');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This Item</a></li>
+  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('openItem');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This Item</a></li>
 </ul>
 
 <ul class="invisible-actions-list" id="field-specific-actions" style="display:none">
   <li><b>Field Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('elementTree.editField');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define This Field</a></li>
+  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('editField');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define This Field</a></li>
   <li class="permanent-action">
     <a href="#" onclick="elementTree.workWithItem('setLiveProperty', {ldelim}confirm: 'Are you sure you want to set the draft value as live?'{rdelim})" class="right-nav-link">
       <img src="{$domain}Resources/Icons/page_lightning.png" border="0" alt=""> Publish this field</a></li>

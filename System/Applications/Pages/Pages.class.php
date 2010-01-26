@@ -815,6 +815,7 @@ class Pages extends SmartestSystemApplication{
     	    }
     	    
     	    $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+    	    $this->send(($page->getIsHeld() && $page->getHeldBy() == $this->getUser()->getId()), 'show_release_page_option');
 		    
 		}else{
 		    $this->addUserMessage("The page ID was not recognized.", SmartestUserMessage::ERROR);
@@ -2910,7 +2911,7 @@ class Pages extends SmartestSystemApplication{
 	    $page_webid = $get['page_id'];
 	    $asset = new SmartestTemplateAsset;
 	    
-	    if($asset->hydrateBy('stringid', $id)){
+	    if($asset->findBy('stringid', $id)){
             $this->redirect('/templates/editTemplate?type=SM_ASSETTYPE_CONTAINER_TEMPLATE&template='.$asset->getId().'&from=pageAssets');
         }else{
             if(strlen($page_webid) == 32){

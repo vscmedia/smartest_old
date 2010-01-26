@@ -472,19 +472,10 @@ class SmartestDataObject implements ArrayAccess{
 			$column_name = $this->_table_prefix.$field;
 		}
 	    
-	    /* $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
-	    
-	    if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
-	        if(isset($this->_properties['site_id'])){
-	            $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
-	        }
-	    }
-	    
-	    $this->_last_query = $sql; */
-	    
 	    $sql = $this->getRetrievalSqlQuery($value, $field, $site_id);
 	    
 	    $result = $this->database->queryToArray($sql);
+	    $this->_last_query = $sql;
 	    
 	    if(count($result)){
 	

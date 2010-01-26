@@ -36,6 +36,34 @@ class SmartestTemplateAsset extends SmartestAsset{
         
     }
     
+    public function findBy($field, $value, $site_id=''){
+	    
+	    $sql = $this->getRetrievalSqlQuery($value, $field, $site_id);
+	    $h = new SmartestTemplatesLibraryHelper;
+	    $sql .= " AND asset_type IN ('".implode("', '", $h->getTypeCodes())."')";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    $this->_last_query = $sql;
+	    
+	    if(count($result)){
+	
+		    foreach($result[0] as $name => $value){
+			    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
+				    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
+			    }else if(isset($this->_no_prefix[$name])){
+				    $this->_properties[$name] = $value;
+			    }
+		    }
+	
+		    $this->_came_from_database = true;
+		    
+		    return true;
+	    }else{
+		    return false;
+	    }
+	    
+	}
+    
     public function offsetGet($offset){
         
         switch($offset){
