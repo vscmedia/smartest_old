@@ -437,7 +437,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     $this->_comment("ItemSpace '".$itemspace_name."' does not use a template.");
                     $item = $def->getItem(false, $this->getDraftMode());
         	        $item->setDraftMode($this->getDraftMode());
-        	        $child->assign('item', $item);
+        	        $this->assign($itemspace_name.'_item', $item);
         	        return $this->renderItemEditButton($item->getId());
                 
                 }
@@ -875,7 +875,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 if(is_object($this->page->getPrincipalItem())){
                     
-                    if(in_array($requested_property_name, $this->page->getPrincipalItem()->getPropertyVarNames())){
+                    if(in_array($requested_property_name, $this->page->getPrincipalItem()->getModel()->getPropertyVarNames())){
                     
                         $lookup = $this->page->getPrincipalItem()->getModel()->getPropertyVarNamesLookup();
                         $property = $this->page->getPrincipalItem()->getPropertyByNumericKey($lookup[$requested_property_name]);
@@ -914,6 +914,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                             return $this->raiseError("Render template '".$render_template."' is missing.");
                         }
                         
+                    }else if($requested_property_name == "name"){
+                        return new SmartestString($this->page->getPrincipalItem()->getName());
                     }else{
                         return $this->raiseError("Unknown Property: ".$requested_property_name);
                     }
@@ -986,6 +988,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                             // return $array[$requested_property_name];
                             return $object->getPropertyValueByVarName($requested_property_name);
                             
+                        }else if($requested_property_name == "name"){
+                            return new SmartestString($object->getName());
                         }else{
                             
                             return $this->raiseError("Unknown Property: ".$requested_property_name);
@@ -1020,7 +1024,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     
             if(is_object($object)){
                         
-                if(in_array($requested_property_name, $object->getPropertyVarNames())){
+                if(in_array($requested_property_name, $object->getModel()->getPropertyVarNames())){
 
                     $lookup = $object->getModel()->getPropertyVarNamesLookup();
                     $property = $object->getPropertyByNumericKey($lookup[$requested_property_name]);
@@ -1063,6 +1067,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     // return $array[$requested_property_name];
                     return $object->getPropertyValueByVarName($requested_property_name);
                     
+                }else if($requested_property_name == "name"){
+                    return new SmartestString($object->getName());
                 }else{
                     
                     return $this->raiseError("Unknown Property: ".$requested_property_name);
@@ -1122,6 +1128,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     }
                     
                 
+                }else if($requested_property_name == "name"){
+                    return new SmartestString($this->_tpl_vars['repeated_item_object']->getName());
                 }else{
                     return $this->raiseError("Unknown Property: ".$requested_property_name.".");
                 }
