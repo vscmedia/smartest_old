@@ -44,7 +44,7 @@ class Desktop extends SmartestSystemApplication{
 		    
 		    $main_page_templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/Masters/');
 		    
-		    $sitedetails = $this->getSite()->__toArray();
+		    $sitedetails = $this->getSite();
 		    $pages = $this->getSite()->getPagesList();
             $this->send($pages, 'pages');
             
@@ -66,6 +66,7 @@ class Desktop extends SmartestSystemApplication{
 	        
 	        $site = $this->getSite();
 	        $site->setName($post['site_name']);
+	        $site->setInternalLabel($post['site_internal_label']);
 	        $site->setTitleFormat($post['site_title_format']);
 	        $site->setDomain($post['site_domain']);
 	        $site->setIsEnabled((int) (bool) $post['site_is_enabled']);

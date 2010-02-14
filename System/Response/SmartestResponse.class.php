@@ -95,6 +95,7 @@ class SmartestResponse{
 	public function __construct(){
 		
 		// These files can't be included using the include optimisation because it depends on their already having been included
+		require SM_ROOT_DIR.'System/Response/SmartestInfo.class.php';
 		require SM_ROOT_DIR.'System/Data/SmartestCache.class.php';
         require SM_ROOT_DIR.'System/Helpers/SmartestHelper.class.php';
         require SM_ROOT_DIR.'System/Base/Exceptions/SmartestException.class.php';
@@ -185,10 +186,15 @@ class SmartestResponse{
 
         );
         
+        // General system information
     	$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+    	// Constants need to be phased out as they are slow!!
 		define('SM_INFO_REVISION_NUMBER', $sd['system']['info']['revision']);
+		SmartestInfo::$revision = $sd['system']['info']['revision'];
         define('SM_INFO_VERSION_NUMBER', $sd['system']['info']['version']);
+        SmartestInfo::$version = $sd['system']['info']['version'];
         define('SM_INFO_BUILD_NUMBER', $sd['system']['info']['build']);
+        SmartestInfo::$build = $sd['system']['info']['build'];
         
         try{
 	        

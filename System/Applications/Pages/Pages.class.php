@@ -490,10 +490,18 @@ class Pages extends SmartestSystemApplication{
 	
 	public function addPlaceholder($get){
 		
-		$asset_class_types = SmartestDataUtility::getAssetClassTypes();
+		$h = new SmartestAssetClassesHelper;
+		$asset_class_types = $h->getTypes();
 		
-		$placeholder_name = SmartestStringHelper::toVarName($get['name']);
+		$placeholder_name = SmartestStringHelper::toVarName($get['placeholder_name']);
+		$selected_type = (isset($get['placeholder_type']) && in_array($get['placeholder_type'], $h->getTypeCodes())) ? $get['placeholder_type'] : 'SM_ASSETCLASS_RICH_TEXT';
+		$label = (isset($get['placeholder_label']) && strlen($get['placeholder_label'])) ? $get['placeholder_label'] : SmartestStringHelper::toTitleCaseFromVarName($placeholder_name);
 		
+		$groups = $h->getAssetGroupsForPlaceholderType($selected_type, $this->getSite()->getId());
+		
+		$this->send($groups, 'groups');
+		$this->send($label, 'label');
+		$this->send($selected_type, 'selected_type');
 		$this->send($placeholder_name, 'name');
 		$this->send($asset_class_types, 'types');
 		
@@ -521,10 +529,19 @@ class Pages extends SmartestSystemApplication{
 		if($placeholder->exists($name, $this->getSite()->getId())){
 	        $this->addUserMessageToNextRequest("A placeholder with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
 	    }else{
+	        
 		    $placeholder->setLabel($post['placeholder_label']);
 		    $placeholder->setName($name);
 		    $placeholder->setSiteId($this->getSite()->getId());
 		    $placeholder->setType($post['placeholder_type']);
+		    
+		    if($post['placeholder_filegroup'] == 'NONE'){
+		        $placeholder->setFilterType('SM_ASSETCLASS_FILTERTYPE_NONE');
+		    }else if(is_numeric($post['placeholder_filegroup'])){
+		        $placeholder->setFilterType('SM_ASSETCLASS_FILTERTYPE_ASSETGROUP');
+		        $placeholder->setFilterValue($post['placeholder_filegroup']);
+		    }
+		    
 		    $placeholder->save();
 		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
 		}
@@ -573,7 +590,7 @@ class Pages extends SmartestSystemApplication{
 	    if($placeholder->find($placeholder_id)){
 	        
 	        $this->send($placeholder, 'placeholder');
-	        $this->send($placeholder->getPossibleFileGroups(), 'possible_groups');
+	        $this->send($placeholder->getPossibleFileGroups($this->getSite()->getId()), 'possible_groups');
 	        
 	    }else{
 	        
@@ -2923,22 +2940,22 @@ class Pages extends SmartestSystemApplication{
         }
 	}
 	
-	function setPageTemplate($get){
-		$template_name = $get["template_name"];
-		$field = ($get["version"] == "live") ? "page_live_template" : "page_draft_template";
-		$version = ($get["version"] == "live") ? "live" : "draft";
+	public function setPageTemplate($get){
 		
-		$page_id = $get["page_id"];
-		$this->database->query("UPDATE Pages SET $field='$template_name' WHERE page_webid='$page_id'");
-		// header("Location:".$this->domain.$this->module."/getPageAssets?page_id=$page_id&version=$version");
-		$this->formForward();
+		$template_name = $get["template_name"];
+		
+		if(is_file(SM_ROOT_DIR.'Presentation/Masters/'.$template_name)){
+		    $page_id = $get["page_id"];
+		    $this->database->query("UPDATE Pages SET page_live_template='$template_name' WHERE page_webid='$page_id'");
+		    $this->formForward();
+	    }
+		
 	}
 	
 	function setPageTemplateForLists($get){
 		$template_name = $get["template_name"];
 		$version = ($get["version"] == "live") ? "live" : "draft";
 		$field = ($get["version"] == "live") ? "page_live_template" : "page_draft_template";
-		// echo $get["version"];
 		$page_id = $get["page_id"];
 		$this->database->query("UPDATE Pages SET $field='$template_name' WHERE page_webid='$page_id'");
 		header("Location:".$this->domain.$this->module."/getPageLists?page_id=$page_id&version=$version");
@@ -2948,7 +2965,7 @@ class Pages extends SmartestSystemApplication{
 
 		$this->manager->setDraftAsset($get['page_id'], $get['assetclass_id'], $get['asset_id']);
 		$this->formForward();
-		// header("Location:".$this->domain.$this->module."/defineAssetClass?assetclass_id=".$get["assetclass_id"]."&page_id=".$get["page_id"]);
+		
 	}
 	
 	function setLiveAsset($get){
@@ -2972,8 +2989,6 @@ class Pages extends SmartestSystemApplication{
 		}
 		
 		$this->formForward();
-		
-		//header("Location:".$this->domain.$this->module."/defineAssetClass?assetclass_id=".$get["assetclass_id"]."&page_id=".$get["page_id"]);
 	}
 	
 	function publishPageContainersConfirm($get){

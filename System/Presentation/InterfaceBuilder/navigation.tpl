@@ -1,7 +1,7 @@
 <div id="admin-menu">
   <ul>
     {if $show_left_nav_options}
-    <li class="site-top-level{if $section == "desktop" && $method != 'aboutSmartest'} on{else} off{/if}"><a href="{$domain}smartest" style="float:left">{$sm_currentSite.title|summary:"17"}</a> <a href="{$domain}desktop/closeCurrentSite" id="site-exit-button"></a></li>
+    <li class="site-top-level{if $section == "desktop" && $method != 'aboutSmartest'} on{else} off{/if}"><a href="{$domain}smartest" style="float:left">{$sm_currentSite.internal_label|summary:"17"}</a> <a href="{$domain}desktop/closeCurrentSite" id="site-exit-button"></a></li>
     <li class="top-level{if $section == "websitemanager"} on{else} off{/if}"><a href="{$domain}smartest/pages">Pages</a></li>
     <li class="top-level{if $section == "datamanager" || $section == "sets"} on{else} off{/if}"><a href="{$domain}smartest/models">Items</a></li>
     <li class="top-level{if $section == "assets"} on{else} off{/if}"><a href="{$domain}smartest/assets">Files</a></li>

@@ -228,20 +228,25 @@ class SmartestStringHelper extends SmartestHelper{
         $non_capitalised_words = array('to', 'the', 'and', 'in', 'of', 'with', 'a', 'an');
         $words = explode(' ', $string);
         $new_string = '';
+        $modified_words = array();
         
         foreach($words as $key=>$word){
-            if($key = 0){
-                $new_string = $word;
+            
+            if(in_array($word, $non_capitalised_words)){
+                $modified_words[] = $word;
             }else{
-                if(in_array($word, $non_capitalised_words)){
-                    $new_string .= ' '.$word;
-                }else{
-                    $new_string .= ' '.self::capitalizeFirstLetter($word);
-                }
+                $modified_words[] = self::capitalizeFirstLetter($word);
             }
+                
         }
         
-        return $new_string;
+        return implode(' ', $modified_words);
+	}
+	
+	public static function toTitleCaseFromVarName($string){
+	  
+	    return self::toTitleCase(str_replace('_', ' ', $string));
+	  
 	}
 	
 	public static function toHexUrlEncoded($string){

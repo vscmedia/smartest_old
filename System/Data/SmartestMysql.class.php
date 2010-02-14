@@ -182,8 +182,8 @@ class SmartestMysql{
 	    
 	    if(isset($this->queryHashes[$hash])){
 	        unset($this->queryHashes[$hash]);
-	        $cache_name = 'smartest_mysql_cached_result'.$hash;
-            SmartestCache::clear($cache_name, true);
+	        $cache_name = 'SMCR'.SmartestInfo::$revision.$hash;
+	        SmartestCache::clear($cache_name, true);
         }
         
 	}

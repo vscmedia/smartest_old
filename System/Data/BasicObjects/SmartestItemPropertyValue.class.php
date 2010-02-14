@@ -102,7 +102,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                             }
                         
                         }else{
-                            $obj->hydrate($raw_data);
+                            $obj->find($raw_data);
                         }
                     }
                 

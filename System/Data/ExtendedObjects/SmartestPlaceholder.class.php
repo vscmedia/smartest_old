@@ -91,10 +91,11 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	    
 	}
 	
-	public function getPossibleFileGroups(){
+	public function getPossibleFileGroups($site_id=''){
 	    
-	    $helper = new SmartestAssetsLibraryHelper;
-	    $groups = $helper->getPlaceholderAssetGroupsByType($this->getType());
+	    $helper = new SmartestAssetClassesHelper;
+	    // $groups = $helper->getPlaceholderAssetGroupsByType($this->getType());
+	    $groups = $helper->getAssetGroupsForPlaceholderType($this->getType(), $site_id);
 	    
 	    return $groups;
 	    

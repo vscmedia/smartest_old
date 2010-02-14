@@ -15,10 +15,11 @@
 
 class SmartestBaseApplication extends SmartestBaseProcess{
 
-	protected $_results;
 	public $manager;
 	public $domain;
 	public $module;
+	public $_auth;
+	
 	protected $database;
 	protected $_errorStack;
 	protected $_settings;
@@ -27,7 +28,11 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 	protected $_formContinueUri;
 	protected $_formFailUri;
 	protected $_userTokenHelper;
-	public $_auth;
+	protected $_results;
+	protected $_cached_application_preferences = array();
+	protected $_cached_global_preferences = array();
+	protected $_preferences_helper;
+	
 	private $_user_loaded_classes;
 	
 	final public function __construct(){
@@ -42,6 +47,9 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		
 		SmartestSession::set('user:currentApp', SM_CONTROLLER_MODULE);
 		SmartestSession::set('user:currentAction', SM_CONTROLLER_METHOD);
+		
+		$this->_cached_application_preferences = new SmartestParameterHolder('Cached application-level preferences');
+		$this->_cached_global_preferences = new SmartestParameterHolder('Cached global preferences');
 		
 		// Applications can come bundled with their own template plugins
 		if(is_dir(SM_CONTROLLER_MODULE_DIR.'Library/Templating/Plugins/')){
@@ -101,6 +109,8 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 			
 		}
 		
+		$this->send(SM_CONTROLLER_DOMAIN.SM_CONTROLLER_URL, '_here');
+		
 		if(method_exists($this, '__myConstructor')){
 		    $this->__myConstructor();
 		}
@@ -126,22 +136,6 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 		}
 		
 	}
-	
-	///// String Stuff //////
-    
-    /////////////// THIS SHIT IS DEPRECATED. SmartestStringHelper OR SmartestString SHOULD BE USED FOR STRING MANIPULATION //////////////////
-    
-	/* protected function getRandomString($size=32){ // creates a "random" string, $size chars in length
-	
-		return SmartestStringHelper::random($size);
-		
-	}
-    
-	protected function getPageNameFromTitle($page_title){
-    	
-		return SmartestStringHelper::toVarName($page_title);
-    	
-	} */
 	
 	///// Authentication Stuff /////
 	
@@ -208,7 +202,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     
     ///// Preferences/Settings Access //////
     
-    public function getApplicationPreference($pref_name){
+    /* public function getApplicationPreference($pref_name){
     	if(isset($this->_settings['application'][$pref_name])){
     		return $this->_settings['application'][$pref_name];
     	}else{
@@ -222,6 +216,54 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     	}else{
     		return false;
     	}
+    } */
+    
+    protected function getUserIdOrZero(){
+        if(is_object($this->getUser())){
+            return $this->getUser()->getId();
+        }else{
+            return '0';
+        }
+    }
+    
+    protected function getSiteIdOrZero(){
+        if(is_object($this->getSite())){
+            return $this->getSite()->getId();
+        }else{
+            return '0';
+        }
+    }
+    
+    public function getApplicationPreference($preference_name){
+        
+        if($this->_cached_application_preferences->hasParameter($preference_name)){
+            return $this->_cached_application_preferences->getParameter($preference_name);
+        }else{
+            $value = $this->_preferences_helper->getApplicationPreference($preference_name, $this->_application_id, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        }
+        
+    }
+    
+    public function setApplicationPreference($preference_name, $preference_value){
+        
+        $this->_preferences_helper->setApplicationPreference($preference_name, $preference_value, $this->_application_id, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        
+    }
+    
+    public function getGlobalPreference($preference_name){
+        
+        if($this->_cached_application_preferences->hasParameter($preference_name)){
+            return $this->_cached_application_preferences->getParameter($preference_name);
+        }else{
+            $value = $this->_preferences_helper->getApplicationPreference($preference_name, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        }
+        
+    }
+    
+    public function setGlobalPreference($preference_name, $preference_value){
+        
+        $this->_preferences_helper->setGlobalPreference($preference_name, $preference_value, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        
     }
     
     ///// Flow Control //////

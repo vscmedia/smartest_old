@@ -1,0 +1,13 @@
+metas:
+  database_version:
+    type: SM_DATATYPE_NUMERIC
+    writable: false
+    required: true
+  database_minimum_revision:
+    type: SM_DATATYPE_NUMERIC
+    writable: false
+    required: true
+  system_owner:
+    type: SM_DATATYPE_SL_TEXT
+    writable: false
+    required: false

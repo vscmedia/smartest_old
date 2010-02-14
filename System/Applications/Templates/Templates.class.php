@@ -20,6 +20,7 @@ class Templates extends SmartestSystemApplication{
 		$h = new SmartestTemplatesLibraryHelper;
 		$types = $h->getTypes();
 		$this->send($types, 'types');
+		$this->setFormReturnDescription('template types');
 		
 	}
 
@@ -40,6 +41,7 @@ class Templates extends SmartestSystemApplication{
 	public function listByType($get){
 	    
 	    $this->setFormReturnUri();
+	    $this->setFormReturnDescription('templates');
 	    $h = new SmartestTemplatesLibraryHelper;
 	    $type_code = $get['type'];
 	    $types = $h->getTypes();

@@ -189,7 +189,7 @@ class Assets extends SmartestSystemApplication{
 	        $files_array[$i] = array();
 	        $types = $h->getPossibleTypesBySuffix(SmartestStringHelper::getDotSuffix($f));
 	        $files_array[$i]['filename'] = basename($f);
-	        $files_array[$i]['suggested_name'] = SmartestStringHelper::removeDotSuffix($files_array[$i]['filename']);
+	        $files_array[$i]['suggested_name'] = SmartestStringHelper::toTitleCaseFromVarName(SmartestStringHelper::removeDotSuffix($files_array[$i]['filename']));
 	        $files_array[$i]['current_directory'] = dirname($f).'/';
 	        
 	        if(count($types)){
@@ -1062,9 +1062,9 @@ class Assets extends SmartestSystemApplication{
 
 		$asset_id = $get['asset_id'];
 
-		if(!isset($get['from'])){
+		/* if(!isset($get['from'])){
 		    $this->setFormReturnUri();
-		}
+		} */
 
 		$asset = new SmartestAsset;
 
@@ -1084,7 +1084,6 @@ class Assets extends SmartestSystemApplication{
 
     			    if($asset_type['storage']['type'] == 'database'){
     			        if($asset->usesTextFragment()){
-    			            // $content = utf8_encode(htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8'));
     			            $content = htmlspecialchars(stripslashes($asset->getTextFragment()->getContent()), ENT_COMPAT, 'UTF-8');
     			        }
 			        }else{
@@ -1111,7 +1110,7 @@ class Assets extends SmartestSystemApplication{
     			$this->send($formTemplateInclude, "formTemplateInclude");
     			$this->setTitle('Edit Asset | '.$asset_type['label']);
     			$this->send($asset_type, 'asset_type');
-    			$this->send($asset->__toArray(), 'asset');
+    			$this->send($asset, 'asset');
 
 		    }else{
 		        // asset type is not supported
@@ -1379,9 +1378,9 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $asset_id = $get['asset_id'];
 
-		if(!isset($get['from'])){
+		/* if(!isset($get['from'])){
 		    $this->setFormReturnUri();
-		}
+		} */
 
 		$asset = new SmartestAsset;
 

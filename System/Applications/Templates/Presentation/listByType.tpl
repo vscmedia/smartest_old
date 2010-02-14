@@ -19,7 +19,7 @@ Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
 <ul class="options-grid" style="margin-top:0px" id="options_grid">
 {foreach from=$templates item="template"}
 <li>
-  <a href="javascript:nothing()" class="option" id="item_{if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}" onclick="setSelectedItem('{if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}', '{$template.url}', '{if $template.status == 'imported'}imported-template{else}unimported-template{/if}');">
+  <a href="javascript:nothing()" class="option" id="item_{if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}" onclick="setSelectedItem('{if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}', '{$template.url}', '{if $template.status == 'imported'}imported-template{else}unimported-template{/if}');" ondblclick="window.location='{$domain}{$section}/editTemplate?asset_type={$template.type}&amp;template={if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}'">
     <img border="0" src="{$domain}Resources/Icons/{if $template.status == 'imported'}blank{else}mystery{/if}_page.png" />{$template.url}</a>
 </li>
 {/foreach}

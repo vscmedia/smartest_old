@@ -4,6 +4,10 @@ class SmartestDataUtility{
 
 	protected $database;
 	
+	public static $data_types;
+	public static $asset_types;
+	public static $assetclass_types;
+	
 	public function __construct($connection_name = ''){
         
         if(strlen($connection_name)){
@@ -41,8 +45,8 @@ class SmartestDataUtility{
     		}
 		
     		$sql .= ' ORDER BY itemclass_name';
-		
-    		$result = $this->database->queryToArray($sql);
+    		
+    		$result = $this->database->queryToArray($sql, true);
     		
     		if($simple){
     		    return $result;
@@ -200,11 +204,22 @@ class SmartestDataUtility{
 	            $t = $dt['filter']['typesource']['type'];
 	            
 	            if($t == 'smartest:assettypes'){
-	                $options = self::getAssetTypes();
-	                return $options;
+	                
+	                /* $options = self::getAssetTypes();
+	                return $options; */
+	                
+	                $options = array();
+	                
+	                $options['asset_types'] = SmartestDataUtility::getAssetTypes();
+            	    $options['placeholder_types'] = SmartestDataUtility::getAssetClassTypes(true);
+
+            	    return $options;
+            	    
 	            }else{
+	                
 	                $database = SmartestDatabase::getInstance('SMARTEST');
 	                $sql = "SELECT * FROM ".$dt['filter']['typesource']['table'];
+	                
 	                // add WHERE conditions here later
 	                if(isset($dt['filter']['typesource']['orderfield'])){
 	                    $sql .= " ORDER BY ".$dt['filter']['typesource']['orderfield'];
@@ -301,7 +316,6 @@ class SmartestDataUtility{
 	    
 	    $constant_names = array_keys(get_defined_constants());
 	    $class_names = get_declared_classes();
-	    // $reserved_names = array_merge($constant_names, $class_names);
 	    
 	    if(in_array(SmartestStringHelper::toCamelCase($string), $class_names) || in_array(SmartestStringHelper::toConstantName($string), $constant_names)){
 	        return false;
@@ -364,7 +378,7 @@ class SmartestDataUtility{
 	    } */
 	}
 	
-	static function getDataTypesXmlData(){
+	public static function getDataTypesXmlData(){
 	    
 	    $file_path = SM_ROOT_DIR.'System/Core/Types/datatypes.xml';
 	    
@@ -396,74 +410,82 @@ class SmartestDataUtility{
         
 	}
 	
-	static function getDataTypes($usage_filter=''){
+	public static function getDataTypes($usage_filter=''){
 	    
-	    $data = self::getDataTypesXmlData();
-	    
-	    // print_r($data);
-	    
-	    $raw_types = $data;
-	    $types = array();
-	    
-	    $usage_filter = strlen($usage_filter) ? $usage_filter : null;
-	    
-	    foreach($raw_types as $raw_type){
+	    if(self::$data_types){
 	        
-	        if(isset($raw_type['filter'])){
+	        return self::$data_types;
+	        
+	    }else{
+	        
+	        $data = self::getDataTypesXmlData();
+	    
+    	    $raw_types = $data;
+    	    $types = array();
+	    
+    	    $usage_filter = strlen($usage_filter) ? $usage_filter : null;
+	    
+    	    foreach($raw_types as $raw_type){
+	        
+    	        if(isset($raw_type['filter'])){
 	            
-	            // regularize conditions
-	            if(isset($raw_type['filter']['condition'])){
-	                if(isset($raw_type['filter']['condition']['field'])){
-	                    $raw_type['filter']['condition'] = array($raw_type['filter']['condition']);
-	                }
-	            }else{
-	                $raw_type['filter']['condition'] = array();
-	            }
-	            
-	            // regularize option set types
-	            if(isset($raw_type['filter']['optionsettype'])){
-	                
-	                if(isset($raw_type['filter']['optionsettype']['id'])){
-	                    $raw_type['filter']['optionsettype'] = array($raw_type['filter']['optionsettype']['id'] => $raw_type['filter']['optionsettype']);
-	                }else{
-	                    $osts = array();
-	                    
-	                    foreach($raw_type['filter']['optionsettype'] as $ost){
-	                        $osts[$ost['id']] = $ost;
-	                    }
-	                    
-	                    $raw_type['filter']['optionsettype'] = $osts;
-	                }
-	                
-	                foreach($raw_type['filter']['optionsettype'] as &$ost){
-	                    
-	                    if(isset($ost['condition'])){
-    	                    
-    	                    if(isset($ost['condition']['field'])){
-        	                    $ost['condition'] = array($ost['condition']); // $raw_type['filter']['optionsettype'] = array($raw_type['filter']['optionsettype']);
-        	                }
-        	                
-    	                }else{
-    	                    $ost['condition'] = array();
+    	            // regularize conditions
+    	            if(isset($raw_type['filter']['condition'])){
+    	                if(isset($raw_type['filter']['condition']['field'])){
+    	                    $raw_type['filter']['condition'] = array($raw_type['filter']['condition']);
     	                }
-	                    
-	                }
-	                
-	            }else{
-	                $raw_type['filter']['optionsettype'] = array();
-	            }
+    	            }else{
+    	                $raw_type['filter']['condition'] = array();
+    	            }
 	            
-	        }
+    	            // regularize option set types
+    	            if(isset($raw_type['filter']['optionsettype'])){
+	                
+    	                if(isset($raw_type['filter']['optionsettype']['id'])){
+    	                    $raw_type['filter']['optionsettype'] = array($raw_type['filter']['optionsettype']['id'] => $raw_type['filter']['optionsettype']);
+    	                }else{
+    	                    $osts = array();
+	                    
+    	                    foreach($raw_type['filter']['optionsettype'] as $ost){
+    	                        $osts[$ost['id']] = $ost;
+    	                    }
+	                    
+    	                    $raw_type['filter']['optionsettype'] = $osts;
+    	                }
+	                
+    	                foreach($raw_type['filter']['optionsettype'] as &$ost){
+	                    
+    	                    if(isset($ost['condition'])){
+    	                    
+        	                    if(isset($ost['condition']['field'])){
+            	                    $ost['condition'] = array($ost['condition']); // $raw_type['filter']['optionsettype'] = array($raw_type['filter']['optionsettype']);
+            	                }
+        	                
+        	                }else{
+        	                    $ost['condition'] = array();
+        	                }
+	                    
+    	                }
+	                
+    	            }else{
+    	                $raw_type['filter']['optionsettype'] = array();
+    	            }
+	            
+    	        }
 	        
-	        if($usage_filter){
-	            $usages = explode(',', $raw_type['usage']);
-	            if(in_array($usage_filter, $usages)){
-	                $types[$raw_type['id']] = $raw_type;
-	            }
-	        }else{
-	            $types[$raw_type['id']] = $raw_type;
-            }
-	    }
+    	        if($usage_filter){
+    	            $usages = explode(',', $raw_type['usage']);
+    	            if(in_array($usage_filter, $usages)){
+    	                $types[$raw_type['id']] = $raw_type;
+    	            }
+    	        }else{
+    	            $types[$raw_type['id']] = $raw_type;
+                }
+    	    }
+    	    
+    	    self::$data_types = $types;
+	    
+        }
 	    
 	    return $types;
 	}
@@ -500,61 +522,40 @@ class SmartestDataUtility{
 	
 	static function getAssetTypes(){
 	    
-	    // $data = self::getAssetTypesXmlData();
-	    $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assettypes.yml');
+	    if(self::$asset_types){
+	        
+	        return self::$asset_types;
+	        
+	    }else{
 	    
-	    $types = $data['type'];
-	    // $types = array();
+    	    $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assettypes.yml');
 	    
-	    // print_r($data['type']);
+    	    $types = $data['type'];
 	    
-	    foreach($types as $id=>$raw_type){
+    	    foreach($types as $id=>$raw_type){
 	        
-	        /* $types[$raw_type['id']] = $raw_type;
-	        
-	        if(!defined($raw_type['id'])){
-	            define($raw_type['id'], $raw_type['id']);
-	        }
-	        
-	        if(is_array($types[$raw_type['id']]['suffix'])){
-	            
-	            if(isset($types[$raw_type['id']]['suffix']['mime'])){
-	                
-	                // $key = $types[$raw_type['id']]['suffix']['_content'];
-	                $suffix = $types[$raw_type['id']]['suffix'];
-	                $types[$raw_type['id']]['suffix'] = array();
-	                $types[$raw_type['id']]['suffix'][0] = $suffix;
-	                
-	            }
-	        
-            } */
-            
-            // if(isset($types[$raw_type['id']]['param'])){
-            if(isset($types[$id]['param'])){
-                if(isset($types[$id]['param']['name'])){
-                    // $types[$raw_type['id']]['param'] = array($types[$raw_type['id']]['param']);
-                    $types[$id]['param'] = array($types[$id]['param']);
+    	        if(isset($types[$id]['param'])){
+                    if(isset($types[$id]['param']['name'])){
+                        $types[$id]['param'] = array($types[$id]['param']);
+                    }
+                }else{
+                    $types[$id]['param'] = array();
                 }
-            }else{
-                // $types[$raw_type['id']]['param'] = array();
-                $types[$id]['param'] = array();
-            }
-	    }
+    	    }
+    	    
+    	    self::$asset_types = $types;
+    	    
+        }
 	    
-	    // print_r($types);
 	    return $types;
 	}
 	
-	static function getAssetTypes_old(){
+	/* static function getAssetTypes_old(){
 	    
 	    $data = self::getAssetTypesXmlData();
-	    // $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assettypes.yml');
 	    
-	    // $types = $data['type'];
 	    $types = array();
 	    $raw_data = $data;
-	    
-	    // print_r($data['type']);
 	    
 	    foreach($raw_data as $raw_type){
 	        
@@ -591,9 +592,10 @@ class SmartestDataUtility{
 	    
 	    // print_r($types);
 	    return $types;
-	}
+	    
+	} */
 	
-	static function getAssetClassTypesXmlData(){
+	public static function getAssetClassTypesXmlData(){
 	    
 	    $file_path = SM_ROOT_DIR.'System/Core/Types/placeholdertypes.xml';
 	    
@@ -611,8 +613,6 @@ class SmartestDataUtility{
                 $data = SmartestCache::load('placeholdertypes_xml_file_data', true);
             }
             
-            // return $data;
-            
         }else{
             $new_hash = md5_file($file_path);
             SmartestCache::save('placeholdertypes_xml_file_hash', $new_hash, -1, true);
@@ -625,37 +625,47 @@ class SmartestDataUtility{
         
 	}
 	
-	static function getAssetClassTypes($ignore_hide=false){
+	public static function getAssetClassTypes($ignore_hide=false){
 	    
-	    $data = self::getAssetClassTypesXmlData();
+	    if(self::$assetclass_types){
+	        
+	        return self::$assetclass_types;
 	    
-	    $raw_types = $data;
-	    $types = array();
+	    }else{
 	    
-	    foreach($raw_types as $raw_type){
+	        $data = self::getAssetClassTypesXmlData();
+	    
+    	    $raw_types = $data;
+    	    $types = array();
+	    
+    	    foreach($raw_types as $raw_type){
 	        
-	        if(!$ignore_hide || (!isset($raw_type['hide']) || !SmartestStringHelper::toRealBool($raw_type['hide']))){
+    	        if(!$ignore_hide || (!isset($raw_type['hide']) || !SmartestStringHelper::toRealBool($raw_type['hide']))){
 	        
-	            $types[$raw_type['id']] = $raw_type;
+    	            $types[$raw_type['id']] = $raw_type;
 	        
-    	        if(!defined($raw_type['id'])){
-    	            define($raw_type['id'], $raw_type['id']);
-    	        }
+        	        if(!defined($raw_type['id'])){
+        	            define($raw_type['id'], $raw_type['id']);
+        	        }
 	        
-    	        if(!is_array($types[$raw_type['id']]['accept'])){
+        	        if(!is_array($types[$raw_type['id']]['accept'])){
 	            
-    	            $types[$raw_type['id']]['accept'] = array($types[$raw_type['id']]['accept']);
+        	            $types[$raw_type['id']]['accept'] = array($types[$raw_type['id']]['accept']);
 	        
+                    }
+            
                 }
             
-            }
-            
-	    }
+    	    }
+    	    
+    	    self::$assetclass_types = $types;
+	    
+        }
 	    
 	    return $types;
 	}
 	
-	static function loadTypeObjects(){
+	public static function loadTypeObjects(){
 		
 		$available_objects = SmartestCache::load('smartest_available_type_objects', true);
 		
@@ -735,8 +745,97 @@ class SmartestDataUtility{
 	
 	}
 
-	static function stripSlashes($value){
+	public static function stripSlashes($value){
 		return is_array($value) ? array_map(array('SmartestDataUtility','stripSlashes'), $value) : utf8_encode(stripslashes($value));
+	}
+	
+	public static function objectize($value, $as_type, $fk_field='id'){
+	    
+	    $types = self::getDataTypes();
+	    
+	    if(isset($types[$as_type])){
+	        
+	        if(!class_exists($class)){
+                throw new SmartestException("Class ".$class." required for handling properties of type ".$t['id']." does not exist.");
+            }
+	        
+	        $class = $types[$as_type]['class'];
+	        $object = new $class;
+	        
+	        if($t['valuetype'] == 'foreignkey'){
+	            $object->findBy($fk_field, $value);
+	        }else{
+	            $object->setValue($value);
+            }
+            
+            ////
+            
+            /* $t = $p->getTypeInfo();
+            $class = $t['class'];
+            
+            if(!class_exists($class)){
+                throw new SmartestException("Class ".$class." required for handling properties of type ".$t['id']." does not exist.");
+            }
+        
+            if($draft){
+                $raw_data = $this->_properties['draft_content'];
+            }else{
+                $raw_data = $this->_properties['content'];
+            }
+        
+            if($t['valuetype'] == 'foreignkey'){
+            
+                // these first two options are both hacks, but will be fixed in the future
+                if($class == 'SmartestCmsItem'){
+                    // get model id
+                    $model_id = $this->getProperty()->getForeignKeyFilter();
+                    $model = new SmartestModel;
+                    $model->hydrate($model_id);
+                    $class = $model->getClassName();
+                }
+            
+                $obj = new $class;
+            
+                if(method_exists($obj, 'setDraftMode')){
+                    $obj->setDraftMode($draft);
+                }
+            
+                if($class == 'SmartestRenderableAsset'){
+                    $obj->setAdditionalRenderData($this->getInfo);
+                }
+            
+                if($class == 'SmartestDropdownOption'){
+                    $obj->hydrateByValueWithDropdownId($raw_data, $this->getProperty()->getForeignKeyFilter());
+                }else{
+                    // get the asset, dropdown menu option or what have you
+                    if($obj instanceof SmartestCmsItem){
+                    
+                        // only bother trying to hydrate the SmartestCmsItem subclass if we have an actual foreign key to use:
+                        if(strlen($raw_data)){
+                            $obj->hydrate($raw_data);
+                        }
+                    
+                    }else{
+                        $obj->find($raw_data);
+                    }
+                }
+            
+            }else{
+                // get a SmartestBasicType object
+                $obj = new $class;
+                $obj->setValue($raw_data);
+            }
+        
+            $this->_value_object = $obj; */
+            
+            ////
+            
+	        return $object;
+	        
+	    }else{
+	        throw new SmartestException("Tried to objectify a value as a non-existent type");
+	    }
+	    
 	}
 	
 }

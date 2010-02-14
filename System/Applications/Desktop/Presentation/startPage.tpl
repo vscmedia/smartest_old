@@ -11,7 +11,7 @@
 
 <h3>Home</h3>
 
-<div class="instruction">Welcome to the "<strong>{$site.name}</strong>" web administration interface.</div>
+<div class="instruction">Welcome to the "<strong>{$site.internal_label}</strong>" web administration interface.</div>
 
 <ul class="options-grid-no-scroll">
   <li><a href="{$domain}smartest/pages" class="option" id="option_1"><img border="0" src="{$domain}Resources/Icons/package.png" />Create and edit pages</a></li>
@@ -35,7 +35,7 @@
 <ul class="basic-list">
 {foreach from=$sites item="site" key="key"}
 {if isset($site.name) }
-<li><a href="{$domain}{$section}/openSite?site_id={$site.id}">{$site.name} ({$site.domain})</a></li>
+<li><a href="{$domain}{$section}/openSite?site_id={$site.id}">{$site.internal_label} ({$site.domain})</a></li>
 {/if}
 {/foreach}
 </ul>

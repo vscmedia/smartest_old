@@ -47,7 +47,7 @@ function setVarName(){
     <div class="edit-form-row">
       <div class="form-section-label">Property Name</div>
       <input type="text" value="" name="itemproperty_name" id="itemproperty_name" />
-      <span class="help-text">Property names must be three chars or longer and start with a letter.</span>
+      <span class="form-hint">Property names must be three chars or longer and start with a letter.</span>
     </div>
     
 {if $foreign_key_filter_select}

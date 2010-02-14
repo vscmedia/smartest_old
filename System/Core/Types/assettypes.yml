@@ -8,6 +8,7 @@ type:
     class: SmartestTextAsset
     source_editable: true
     editable: true
+    uploadable: true
     parsable: true
     icon: style.png
     render:
@@ -25,6 +26,7 @@ type:
     description: "Plain, static unformatted text."
     class: SmartestTextAsset
     source_editable: false
+    uploadable: true
     parsable: false
     editable: true
     icon: page_white_text.png
@@ -46,6 +48,7 @@ type:
     parsable: true
     editable: true
     attachable: true
+    uploadable: true
     icon: layout.png
     render:
       template: System/Presentation/WebPageBuilder/display.rich_text.tpl
@@ -66,6 +69,7 @@ type:
     attachable: true
     captionable: true
     parsable: false
+    uploadable: true
     storage:
       type: file
       location: Public/Resources/Images/
@@ -93,6 +97,7 @@ type:
     attachable: true
     captionable: true
     parsable: false
+    uploadable: true
     storage:
       type: file
       location: Public/Resources/Images/
@@ -119,6 +124,7 @@ type:
     attachable: true
     captionable: true
     parsable: false
+    uploadable: true
     storage:
       type: file
       location: Public/Resources/Images/
@@ -144,6 +150,7 @@ type:
     icon: picture.png
     attachable: true
     captionable: true
+    uploadable: true
     storage:
       type: file
       location: Public/Resources/Images/
@@ -167,6 +174,7 @@ type:
     class: SmartestAsset
     icon: script.png
     parsable: false
+    uploadable: true
     storage:
       type: file
       location: Public/Resources/Javascript/
@@ -184,6 +192,7 @@ type:
     editable: true
     class: SmartestAsset
     parsable: false
+    uploadable: true
     storage:
       type: file
       location: Public/Resources/Stylesheets/
@@ -201,6 +210,7 @@ type:
     description: A movie saved in any of Apple's proprietary QuickTime formats
     class: SmartestAsset
     parsable: false
+    uploadable: false
     storage:
       type: file
       location: Public/Resources/Assets/
@@ -223,6 +233,7 @@ type:
     description: A movie saved in any MPEG format
     class: SmartestAsset
     parsable: false
+    uploadable: false
     storage:
       type: file
       location: Public/Resources/Assets/
@@ -245,6 +256,7 @@ type:
     description: A file in Flash Video format
     class: SmartestAsset
     parsable: false
+    uploadable: false
     icon: page_white_flash.png
     storage:
       type: file
@@ -265,6 +277,7 @@ type:
     description: A sound file in MPEG Layer-3 formt
     class: SmartestAsset
     parsable: false
+    uploadable: false
     icon: music.png
     storage:
       type: file
@@ -285,6 +298,7 @@ type:
     icon: page_white_flash.png
     class: SmartestAsset
     parsable: false
+    uploadable: true
     captionable: true
     storage: 
       type: file
@@ -310,6 +324,7 @@ type:
     class: SmartestAsset
     parsable: false
     captionable: true
+    uploadable: false
     storage: 
       type: file
       location: Public/Resources/Assets/
@@ -336,6 +351,7 @@ type:
     class: SmartestAsset
     parsable: false
     icon: page_white_acrobat.png
+    uploadable: true
     storage: 
       type: file
       location: Documents/Downloads/
@@ -351,6 +367,7 @@ type:
     description: An archived folder or document
     class: SmartestAsset
     parsable: false
+    uploadable: false
     storage: 
       type: file
       location: Documents/Downloads/
@@ -370,6 +387,7 @@ type:
     class: SmartestAsset
     parsable: false
     icon: page_word.png
+    uploadable: true
     storage: 
       type: file
       location: Documents/Downloads/
@@ -386,6 +404,7 @@ type:
     class: SmartestAsset
     parsable: false
     icon: page_excel.png
+    uploadable: true
     storage: 
       type: file
       location: Documents/Downloads/
@@ -401,6 +420,7 @@ type:
     description: A document in Microsoft Powerpoint format
     class: SmartestAsset
     parsable: false
+    uploadable: true
     icon: page_white_powerpoint.png
     storage: 
       type: file

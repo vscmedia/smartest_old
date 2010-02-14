@@ -111,6 +111,7 @@ class SmartestAssetsLibraryHelper{
 		
 	}
 	
+	// This is deprecated. Use SmartestAssetClassesHelper::getAssetTypesFromAssetClassType();
 	public function getTypesByPlaceholderType($type){
 	    
 	    $ptypes = SmartestDataUtility::getAssetClassTypes();

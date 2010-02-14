@@ -593,7 +593,14 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
-    
+    public function save(){
+        
+        $r = parent::save();
+        SmartestCache::clear('models_query_site_'.$this->getSiteId(), true);
+        SmartestCache::clear('models_query'.$this->getSiteId(), true);
+        return $r;
+        
+    }
     
     ///////////////////////////// Code for building and including model classes /////////////////////////////////
     
@@ -627,7 +634,7 @@ class SmartestModel extends SmartestBaseModel{
 		if(class_exists($this->getClassName())){
 		    
 		}else{
-        	if(is_file($this->getClassFilePath())){
+		    if(is_file($this->getClassFilePath())){
         		// include SM_ROOT_DIR.'Library/ObjectModel/'.$class_name.'.class.php';
         		include $this->getClassFilePath();
         	}else{

@@ -145,7 +145,7 @@ var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'pa
 	  {if $assetclass.info.type=='container'}
 	    <a href="{$domain}{$section}/addContainer?name={$assetclass.info.assetclass_name}">Enter it now</a>
 	  {elseif $assetclass.info.type=='placeholder'}
-	    <a href="{$domain}{$section}/addPlaceholder?name={$assetclass.info.assetclass_name}">Enter it now</a>
+	    <a href="{$domain}{$section}/addPlaceholder?placeholder_name={$assetclass.info.assetclass_name}">Enter it now</a>
 	  {elseif $assetclass.info.type=='list'}
 	    <a href="{$domain}{$section}/addList?name={$assetclass.info.assetclass_name}">Enter it now</a>
 	  {elseif $assetclass.info.type=='field'}

@@ -25,12 +25,17 @@ var section = '{$section}';
 <div id="edit-form-layout">
 
 <div class="edit-form-row">
-  <div class="form-section-label">Site Title</div>
+  <div class="form-section-label">Public title</div>
   <input type="text" name="site_name" value="{$site.name}"/><span class="form-hint">This will take effect on your pages the next time they are published</span>
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Page Title Format</div>
+  <div class="form-section-label">Internal label</div>
+  <input type="text" name="site_internal_label" value="{$site.internal_label}"/>
+</div>
+
+<div class="edit-form-row">
+  <div class="form-section-label">Page title format</div>
   <input type="text" name="site_title_format" value="{$site.title_format}" /><span class="form-hint">This will take effect on your pages the next time they are published</span>
 </div>
 

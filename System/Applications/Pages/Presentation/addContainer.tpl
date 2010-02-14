@@ -16,7 +16,7 @@ function updateAssetClassName(){
 
 <h3>Website Manager &gt; Assets &gt; Add a New Container</h3>
 
-<form action="{$domain}assets/insertContainer" method="post" style="margin:0px">
+<form action="{$domain}{$section}/insertContainer" method="post" style="margin:0px">
   
 {if $name}
   <input type="hidden" name="container_name" value="{$name}" />
@@ -31,7 +31,7 @@ function updateAssetClassName(){
       
       <div class="edit-form-row">
         <div class="form-section-label">Markup/tag name: </div>
-        {if $name}{ldelim}container name="{$name}"{rdelim}{else}<input type="text" name="container_name" id="container_name" value="{$name}" /><br />
+        {if $name}<code>&lt;?sm:container name="{$name}":?&gt;{else}<input type="text" name="container_name" id="container_name" value="{$name}" /><br />
           <span>If you don't enter a tag name, one will be generated for you.</span>{/if}
       </div>
 
