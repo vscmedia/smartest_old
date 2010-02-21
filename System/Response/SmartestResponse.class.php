@@ -473,7 +473,7 @@ class SmartestResponse{
 		
 	}
 	
-	function checkAuthenicationStatus(){
+	protected function checkAuthenicationStatus(){
 	    
 	    if($this->isSystemClass() && !$this->isPublicMethod()){
 		    

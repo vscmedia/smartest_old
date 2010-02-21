@@ -167,9 +167,9 @@
   <div class="edit-form-row">
     <div class="form-section-label">Parent Page</div>
     <select name="page_parent">
-      {foreach from=$parent_pages item="page"}
-        {if $page.id != $page.id}
-        <option value="{$page.info.id}"{if $page.parent == $page.info.id} selected="selected"{/if}>+{section name="dashes" loop=$page.treeLevel}-{/section} {$page.info.title}</option>
+      {foreach from=$parent_pages item="p_page"}
+        {if $p_page.id != $page.id}
+        <option value="{$p_page.info.id}"{if $page.parent == $p_page.info.id} selected="selected"{/if}>+{section name="dashes" loop=$p_page.treeLevel}-{/section} {$p_page.info.title}</option>
         {/if}
       {/foreach}
     </select>

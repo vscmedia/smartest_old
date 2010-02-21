@@ -304,6 +304,7 @@ class Pages extends SmartestSystemApplication{
             		}
 		        
     		        $parent_pages = $page->getOkParentPages();
+    		        // prinT_r($parent_pages);
         		
             		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
             		    $allow_release = true;
