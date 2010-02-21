@@ -482,6 +482,7 @@ class SmartestResponse{
 					
 					$new_url = $this->controller->getDomain().'smartest/login';
 					
+					header("HTTP/1.1 401 Unauthorized");
 					$e = new SmartestRedirectException();
 					$e->setRedirectUrl($new_url);
 					

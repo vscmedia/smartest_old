@@ -31,7 +31,7 @@ class CmsFrontEndManager{
     	    $result = $this->database->queryToArray($sql);
     	    
     	    if(count($result)){
-	            throw new SmartestRedirectException('http://'.$try_domain.'/'.$url);
+	            throw new SmartestRedirectException('http://'.$try_domain.'/'.$url, SmartestRedirectException::PERMANENT);
 	        }else{
 	            return false;
             }

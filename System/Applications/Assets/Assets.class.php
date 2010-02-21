@@ -572,6 +572,7 @@ class Assets extends SmartestSystemApplication{
     		        }else{
     		            $message = sprintf("The file was successfully saved as '%s'", $asset->getUrl());
     		            $status = SmartestUserMessage::SUCCESS;
+    		            header("HTTP/1.1 201 Created");
     		        }
     		        
     		        $this->addUserMessageToNextRequest($message, $status);
@@ -718,6 +719,7 @@ class Assets extends SmartestSystemApplication{
     	        $set->setShared(0);
     	        $set->setFilterValue($placeholder->getType());
     	        $set->save();
+    	        header("HTTP/1.1 201 Created");
 	        
 	            foreach($post['asset_ids'] as $asset_id){
 	                $set->addAssetById($asset_id, false);
@@ -1696,6 +1698,9 @@ class Assets extends SmartestSystemApplication{
 			}else{
 				$this->setFormReturnVar('savedTheCopy', 'false');
 			}
+			
+			header("HTTP/1.1 201 Created");
+			
 		} */
 
 		$this->formForward();

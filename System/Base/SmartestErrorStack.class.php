@@ -24,6 +24,9 @@ class SmartestErrorStack{
 	
 	function display(){
 		if(count($this->stack)){
+		    
+		    header("HTTP/1.1 500 Internal Server Error");
+		    
 			if(defined("SM_DEVELOPER_MODE") && constant('SM_DEVELOPER_MODE')){
 				$errors = $this->getErrors();
 				include SM_ROOT_DIR."System/Response/ErrorPages/errorlog.php";

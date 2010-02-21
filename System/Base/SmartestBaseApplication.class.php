@@ -268,7 +268,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     
     ///// Flow Control //////
     
-    protected function redirect($to="", $exit=false){
+    protected function redirect($to="", $exit=false, $http_code=303){
 		
 		if(!$to){
 			$destination = constant('SM_CONTROLLER_DOMAIN');
@@ -280,10 +280,13 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 	        }
 		}
 		
-		header("location:".$destination);
+		$r = new SmartestRedirectException($destination);
+		$r->redirect($http_code, $exit);
+		
+		/* header("location:".$destination);
 		if($exit){
 		    exit;
-		}
+		} */
 		
 	}
     

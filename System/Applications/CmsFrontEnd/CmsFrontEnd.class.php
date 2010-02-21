@@ -342,6 +342,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        $this->_page->setDraftMode($draft_mode);
 	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
 	        
+	        header("HTTP/1.1 404 Not Found");
 	        $this->renderPage($draft_mode);
 	        
 	        return Quince::NODISPLAY;
