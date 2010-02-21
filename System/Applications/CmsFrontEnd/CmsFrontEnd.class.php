@@ -18,16 +18,22 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	    // $h = new SmartestWebPagePreparationHelper;
 	    
-		if($this->_site = $this->manager->getSiteByDomain($_SERVER['HTTP_HOST'])){
+	    try{
+	    
+		    if($this->_site = $this->manager->getSiteByDomain($_SERVER['HTTP_HOST'], $this->url)){
 		
-		    if(is_object($this->_site)){
-		        define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
-		        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
-		    }
+    		    if(is_object($this->_site)){
+    		        define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+    		        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
+    		    }
 		    
-		    return true;
+    		    return true;
 		
-	    }
+    	    }
+	    
+        }catch(SmartestRedirectException $e){
+            $e->redirect();
+        }
 	    
 	}
 	

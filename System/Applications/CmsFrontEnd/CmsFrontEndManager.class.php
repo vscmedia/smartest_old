@@ -8,17 +8,34 @@ class CmsFrontEndManager{
 		$this->database = SmartestPersistentObject::get('db:main');
 	}
 	
-	public function getSiteByDomain($domain){
+	public function getSiteByDomain($domain, $url=''){
 	    
 	    $sql = "SELECT * FROM Sites WHERE site_domain='".$domain."'";
 	    $result = $this->database->queryToArray($sql);
 	    
 	    if(count($result)){
+	        
 	        $site = new SmartestSite;
 	        $site->hydrate($result[0]);
 	        return $site;
+	        
 	    }else{
-	        return false;
+	        
+	        if(substr($domain, 0, 4) == 'www.'){
+	            $try_domain = substr($domain, 4);
+	        }else{
+	            $try_domain = 'www.'.$domain;
+	        }
+	        
+	        $sql = "SELECT * FROM Sites WHERE site_domain='".$try_domain."'";
+    	    $result = $this->database->queryToArray($sql);
+    	    
+    	    if(count($result)){
+	            throw new SmartestRedirectException('http://'.$try_domain.'/'.$url);
+	        }else{
+	            return false;
+            }
+            
 	    }
 	    
 	}
