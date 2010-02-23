@@ -1,6 +1,18 @@
--- SMARTEST db tables setup script
+-- phpMyAdmin SQL Dump
+-- version 3.1.1
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Feb 23, 2010 at 07:59 PM
+-- Server version: 5.0.75
+-- PHP Version: 5.2.8-0.dotdeb.1
+-- Smartest Database Schema version 14. Minimum Code revision 334.
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+--
+-- Database: `pacificplaza_smartest`
+--
 
 -- --------------------------------------------------------
 
@@ -22,7 +34,7 @@ CREATE TABLE `AssetClasses` (
   `assetclass_filter_value` varchar(64) NOT NULL,
   PRIMARY KEY  (`assetclass_id`),
   UNIQUE KEY `assetclass_name` (`assetclass_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
@@ -42,7 +54,7 @@ CREATE TABLE `AssetIdentifiers` (
   `assetidentifier_live_render_data` text collate utf8_unicode_ci NOT NULL,
   `assetidentifier_language` varchar(8) collate utf8_unicode_ci NOT NULL default 'eng',
   PRIMARY KEY  (`assetidentifier_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=15 ;
 
 -- --------------------------------------------------------
 
@@ -69,9 +81,10 @@ CREATE TABLE `Assets` (
   `asset_held_by` mediumint(9) NOT NULL default '0',
   `asset_is_approved` tinyint(1) NOT NULL default '0',
   `asset_is_archived` tinyint(1) NOT NULL default '0',
+  `asset_search_field` text NOT NULL,
   PRIMARY KEY  (`asset_id`),
   UNIQUE KEY `Asset_webid` (`asset_webid`,`asset_stringid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=31 ;
 
 -- --------------------------------------------------------
 
@@ -91,7 +104,7 @@ CREATE TABLE `Comments` (
   `comment_language` varchar(8) NOT NULL default 'eng',
   `comment_posted_at` int(10) NOT NULL,
   PRIMARY KEY  (`comment_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -106,7 +119,7 @@ CREATE TABLE `DataExports` (
   `dataexport_pairing_id` int(11) NOT NULL default '0',
   `dataexport_varname` varchar(64) NOT NULL default '',
   PRIMARY KEY  (`dataexport_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -119,7 +132,7 @@ CREATE TABLE `DropDowns` (
   `dropdown_name` varchar(64) NOT NULL default '',
   `dropdown_label` varchar(64) NOT NULL default '',
   PRIMARY KEY  (`dropdown_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -134,7 +147,7 @@ CREATE TABLE `DropDownValues` (
   `dropdownvalue_label` varchar(64) NOT NULL default '',
   `dropdownvalue_value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`dropdownvalue_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -150,13 +163,13 @@ CREATE TABLE `ItemClasses` (
   `itemclass_name` varchar(40) NOT NULL default '',
   `itemclass_plural_name` varchar(64) NOT NULL default '',
   `itemclass_site_id` int(11) NOT NULL default '0',
+  `itemclass_shared` tinyint(1) NOT NULL,
   `itemclass_varname` varchar(64) NOT NULL default '',
   `itemclass_default_description_property_id` int(11) unsigned NOT NULL default '0',
   `itemclass_userid` int(11) NOT NULL default '0',
   `itemclass_rating_max_score` smallint(3) NOT NULL default '5',
-  PRIMARY KEY  (`itemclass_id`),
-  UNIQUE KEY `itemclass_name` (`itemclass_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+  PRIMARY KEY  (`itemclass_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -179,7 +192,7 @@ CREATE TABLE `ItemProperties` (
   `itemproperty_option_set_type` varchar(64) character set ascii NOT NULL default 'SM_PROPERTY_FILTERTYPE_NONE',
   `itemproperty_option_set_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`itemproperty_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -187,7 +200,7 @@ CREATE TABLE `ItemProperties` (
 -- Table structure for table `ItemPropertyValues`
 --
 
-CREATE TABLE IF NOT EXISTS `ItemPropertyValues` (
+CREATE TABLE `ItemPropertyValues` (
   `itempropertyvalue_id` int(9) NOT NULL auto_increment,
   `itempropertyvalue_item_id` int(9) NOT NULL default '0',
   `itempropertyvalue_property_id` int(9) NOT NULL default '0',
@@ -198,7 +211,7 @@ CREATE TABLE IF NOT EXISTS `ItemPropertyValues` (
   `itempropertyvalue_live_info` text NOT NULL,
   `itempropertyvalue_language` varchar(8) NOT NULL default 'eng',
   PRIMARY KEY  (`itempropertyvalue_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -232,7 +245,7 @@ CREATE TABLE `Items` (
   `item_average_rating` float NOT NULL,
   PRIMARY KEY  (`item_id`),
   KEY `item_itemclass_id` (`item_itemclass_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -257,7 +270,7 @@ CREATE TABLE `Lists` (
   `list_page_id` mediumint(9) NOT NULL default '0',
   `list_global` enum('1','0') NOT NULL default '1',
   PRIMARY KEY  (`list_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -281,7 +294,7 @@ CREATE TABLE `ManyToManyLookups` (
   KEY `mtmlookup_entity_2_foreignkey` (`mtmlookup_entity_2_foreignkey`),
   KEY `mtmlookup_entity_3_foreignkey` (`mtmlookup_entity_3_foreignkey`),
   KEY `mtmlookup_entity_4_foreignkey` (`mtmlookup_entity_4_foreignkey`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=117 ;
 
 -- --------------------------------------------------------
 
@@ -296,7 +309,7 @@ CREATE TABLE `PageLayoutPresetDefinitions` (
   `plpd_element_id` mediumint(9) NOT NULL default '0',
   `plpd_element_value` varchar(255) NOT NULL default '0',
   PRIMARY KEY  (`plpd_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -313,7 +326,7 @@ CREATE TABLE `PageLayoutPresets` (
   `plp_orig_from_page_id` mediumint(9) NOT NULL default '0',
   `plp_site_id` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`plp_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -329,7 +342,7 @@ CREATE TABLE `PageProperties` (
   `pageproperty_type` varchar(32) NOT NULL default '',
   `pageproperty_foreign_key_filter` varchar(64) NOT NULL default '',
   PRIMARY KEY  (`pageproperty_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -344,7 +357,7 @@ CREATE TABLE `PagePropertyValues` (
   `pagepropertyvalue_live_value` varchar(255) NOT NULL default '',
   `pagepropertyvalue_draft_value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`pagepropertyvalue_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -386,7 +399,7 @@ CREATE TABLE `Pages` (
   PRIMARY KEY  (`page_id`),
   KEY `page_webid` (`page_webid`),
   KEY `page_name` (`page_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
 
@@ -397,6 +410,7 @@ CREATE TABLE `Pages` (
 CREATE TABLE `PageUrls` (
   `pageurl_id` mediumint(9) NOT NULL auto_increment,
   `pageurl_page_id` mediumint(9) NOT NULL default '0',
+  `pageurl_item_id` int(11) NOT NULL,
   `pageurl_url` varchar(255) NOT NULL default '',
   `pageurl_type` varchar(64) NOT NULL default 'SM_PAGEURL_NORMAL',
   `pageurl_destination` varchar(255) NOT NULL default '',
@@ -404,7 +418,7 @@ CREATE TABLE `PageUrls` (
   PRIMARY KEY  (`pageurl_id`),
   KEY `pageurl_page_id` (`pageurl_page_id`),
   KEY `pageurl_url` (`pageurl_url`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
@@ -420,7 +434,7 @@ CREATE TABLE `PairingDetails` (
   `setting_id` int(11) NOT NULL default '0',
   `setting_value` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -433,7 +447,7 @@ CREATE TABLE `Pairings` (
   `paring_schema_id` int(11) NOT NULL default '0',
   `paring_model_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`paring_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -446,7 +460,7 @@ CREATE TABLE `Roles` (
   `role_label` varchar(64) NOT NULL default '',
   PRIMARY KEY  (`role_id`),
   UNIQUE KEY `usergroup_name` (`role_label`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -459,7 +473,7 @@ CREATE TABLE `RolesTokensLookup` (
   `rtlookup_token_id` int(9) NOT NULL default '0',
   `rtlookup_role_id` int(9) NOT NULL default '0',
   PRIMARY KEY  (`rtlookup_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -477,7 +491,7 @@ CREATE TABLE `SchemaDefinitions` (
   `schemadefinition_root` tinyint(4) NOT NULL default '0',
   `schemadefinition_required` varchar(10) collate utf8_unicode_ci NOT NULL default '0',
   PRIMARY KEY  (`schemadefinition_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -500,7 +514,7 @@ CREATE TABLE `Schemas` (
   PRIMARY KEY  (`schema_id`),
   UNIQUE KEY `schema_name` (`schema_name`),
   KEY `datatypeattribute_name` (`schema_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -516,7 +530,7 @@ CREATE TABLE `SetRules` (
   `setrule_operator` varchar(64) NOT NULL default '',
   `setrule_value` text NOT NULL,
   PRIMARY KEY  (`setrule_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -540,7 +554,7 @@ CREATE TABLE `Sets` (
   `set_filter_type` varchar(32) NOT NULL,
   `set_filter_value` varchar(32) NOT NULL,
   PRIMARY KEY  (`set_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -554,7 +568,7 @@ CREATE TABLE `SetsItemsLookup` (
   `setlookup_item_id` mediumint(9) NOT NULL default '0',
   `setlookup_order` mediumint(9) NOT NULL default '0',
   PRIMARY KEY  (`setlookup_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -564,11 +578,15 @@ CREATE TABLE `SetsItemsLookup` (
 
 CREATE TABLE `Settings` (
   `setting_id` int(9) unsigned NOT NULL auto_increment,
-  `site_id` int(11) NOT NULL default '1',
+  `setting_parent_id` int(11) NOT NULL default '0',
+  `setting_site_id` int(11) NOT NULL default '0',
+  `setting_user_id` int(11) NOT NULL default '0',
+  `setting_application_id` varchar(128) NOT NULL,
+  `setting_type` varchar(64) NOT NULL,
   `setting_name` varchar(50) NOT NULL default '',
   `setting_value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`setting_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -579,14 +597,13 @@ CREATE TABLE `Settings` (
 CREATE TABLE `Sites` (
   `site_id` int(9) unsigned NOT NULL auto_increment,
   `site_name` varchar(64) NOT NULL default '',
+  `site_internal_label` varchar(255) NOT NULL,
   `site_is_enabled` tinyint(1) NOT NULL default '0',
   `site_title_format` varchar(255) NOT NULL default '$site | $page',
   `site_domain` varchar(128) NOT NULL default '',
   `site_root` varchar(100) NOT NULL default '',
   `site_directory_name` varchar(64) NOT NULL default '',
   `site_automatic_urls` enum('ON','OFF') character set utf8 collate utf8_unicode_ci NOT NULL default 'ON',
-  `site_error_title` varchar(128) NOT NULL default '',
-  `site_error_tpl` varchar(64) NOT NULL default '',
   `site_admin_email` varchar(64) NOT NULL default '',
   `site_top_page_id` mediumint(9) NOT NULL default '0',
   `site_search_page_id` int(11) unsigned NOT NULL default '0',
@@ -595,7 +612,7 @@ CREATE TABLE `Sites` (
   `site_tag_page_id` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`site_id`),
   UNIQUE KEY `site_name` (`site_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -608,7 +625,7 @@ CREATE TABLE `Tags` (
   `tag_name` varchar(64) NOT NULL default '',
   `tag_label` varchar(64) NOT NULL default '',
   PRIMARY KEY  (`tag_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -622,8 +639,9 @@ CREATE TABLE `TagsObjectsLookup` (
   `taglookup_object_id` int(9) unsigned NOT NULL default '0',
   `taglookup_type` varchar(32) NOT NULL default 'SM_PAGE_TAG_LINK',
   `taglookup_metapage_id` int(9) unsigned NOT NULL default '0',
+  `taglookup_order_index` int(9) NOT NULL,
   PRIMARY KEY  (`taglookup_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -640,7 +658,7 @@ CREATE TABLE `TextFragments` (
   `textfragment_created` int(10) NOT NULL default '0',
   `textfragment_modified` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`textfragment_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 -- --------------------------------------------------------
 
@@ -664,7 +682,7 @@ CREATE TABLE `TodoItems` (
   `todoitem_description` text NOT NULL,
   `todoitem_size` int(1) NOT NULL default '2',
   PRIMARY KEY  (`todoitem_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 -- --------------------------------------------------------
 
@@ -687,7 +705,7 @@ CREATE TABLE `Users` (
   `user_activated` tinyint(10) NOT NULL default '1',
   PRIMARY KEY  (`user_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 -- --------------------------------------------------------
 
@@ -703,7 +721,7 @@ CREATE TABLE `UsersTokensLookup` (
   `utlookup_is_global` tinyint(1) NOT NULL default '0',
   `utlookup_granted_timestamp` int(11) NOT NULL default '0',
   PRIMARY KEY  (`utlookup_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=34 ;
 
 -- --------------------------------------------------------
 
@@ -718,7 +736,7 @@ CREATE TABLE `UserTokens` (
   `token_description` tinytext character set utf8 NOT NULL,
   PRIMARY KEY  (`token_id`),
   UNIQUE KEY `permission_code` (`token_code`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=32 ;
 
 -- --------------------------------------------------------
 
@@ -742,4 +760,10 @@ CREATE TABLE `Vocabulary` (
   `vocabulary_parent_id` int(11) NOT NULL default '0',
   `vocabulary_definition` varchar(10) collate utf8_unicode_ci NOT NULL default '',
   PRIMARY KEY  (`vocabulary_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- Insert any system meta data
+
+INSERT INTO `Settings` (`setting_id`, `setting_parent_id`, `setting_site_id`, `setting_user_id`, `setting_application_id`, `setting_type`, `setting_name`, `setting_value`) VALUES
+(1, 0, 0, 0, '', 'SM_SETTINGTYPE_SYSTEM_META', 'database_minimum_revision', '334'),
+(2, 0, 0, 0, '', 'SM_SETTINGTYPE_SYSTEM_META', 'database_version', '14');

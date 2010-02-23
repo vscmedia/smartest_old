@@ -138,6 +138,7 @@ class Desktop extends SmartestSystemApplication{
 	    
 	    $p = new SmartestParameterHolder('New site parameters');
 	    $p->setParameter('site_name', $post['site_name']);
+	    $p->setParameter('site_internal_label', $post['site_name']);
 	    $p->setParameter('site_domain', $post['site_domain']);
 	    $p->setParameter('site_admin', $post['site_admin_email']);
 	    $p->setParameter('site_master_template', $post['site_master_template']);

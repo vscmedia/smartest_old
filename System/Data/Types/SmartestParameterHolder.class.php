@@ -35,8 +35,8 @@ class SmartestParameterHolder implements ArrayAccess{
         return 'SmartestParameterHolder: '.$this->_name;
     }
     
-    public function getParameter($n){
-        return isset($this->_data[$n]) ? $this->_data[$n] : null;
+    public function getParameter($n, $default){
+        return isset($this->_data[$n]) ? $this->_data[$n] : (isset($default) ? $default : null);
     }
     
     public function g($n){

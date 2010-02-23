@@ -15,6 +15,7 @@ class SmartestSiteCreationHelper{
         
         $site = new SmartestSite;
         $site->setName($p->getParameter('site_name'));
+        $site->setInternalLabel($p->getParameter('site_internal_label', $p->getParameter('site_name')));
         $site->setTitleFormat('$site | $page');
         $site->setDomain($p->getParameter('site_domain'));
         $site->setAdminEmail($p->getParameter('site_admin'));
@@ -25,8 +26,10 @@ class SmartestSiteCreationHelper{
 	    if($p->getParameter('site_master_template') == '_DEFAULT'){
 	        $master_template = '';
 	    }else if($p->getParameter('site_master_template') == '_BLANK'){
+	        
 	        $master_template_name = SmartestFileSystemHelper::getFileName(SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.'Presentation/Masters/'.SmartestStringHelper::toVarName($site->getName()).'.tpl'));
 	        $master_template_contents = str_replace('default.tpl', $master_template_name, file_get_contents(SM_ROOT_DIR.'System/Install/Samples/default.tpl'));
+	        
 	        if(file_put_contents(SM_ROOT_DIR.'Presentation/Masters/'.$master_template_name, $master_template_contents)){
 	            
 	            $master_template = $master_template_name;
@@ -67,11 +70,11 @@ class SmartestSiteCreationHelper{
 	    $home_page->save();
 	    $home_page->addAuthorById($u->getId());
 	    $site->setTopPageId($home_page->getId());
-	    SmartestLog::getInstance('system')->log("Added home page to new site (page ID {$home_page->getId()})", SM_LOG_DEBUG);
+	    SmartestLog::getInstance('system')->log("Created home page for new site (page ID {$home_page->getId()})", SM_LOG_DEBUG);
     
 	    $error_page = new SmartestPage;
 	    $error_page->setTitle('Page not found');
-	    $error_page->setName('404-error');
+	    $error_page->setName('error-404');
 	    $error_page->setSiteId($site->getId());
 	    $error_page->setDraftTemplate($master_template);
 	    $error_page->setLiveTemplate($master_template);
@@ -83,7 +86,7 @@ class SmartestSiteCreationHelper{
 	    $error_page->save();
 	    $error_page->addAuthorById($u->getId());
 	    $site->setErrorPageId($error_page->getId());
-	    SmartestLog::getInstance('system')->log("Added 404 page to new site (page ID {$error_page->getId()})", SM_LOG_DEBUG);
+	    SmartestLog::getInstance('system')->log("Created and connected 404 page to new site (page ID {$error_page->getId()})", SM_LOG_DEBUG);
         
         $search_page = new SmartestPage;
 	    $search_page->setTitle('Search Results');
@@ -98,7 +101,7 @@ class SmartestSiteCreationHelper{
 	    $search_page->save();
 	    $search_page->addAuthorById($u->getId());
 	    $site->setSearchPageId($search_page->getId());
-	    SmartestLog::getInstance('system')->log("Added search page to new site (page ID {$search_page->getId()})", SM_LOG_DEBUG);
+	    SmartestLog::getInstance('system')->log("Created and connected search page to new site (page ID {$search_page->getId()})", SM_LOG_DEBUG);
 	    
 	    $tag_page = new SmartestPage;
 	    $tag_page->setTitle('Tagged Content');
@@ -113,7 +116,7 @@ class SmartestSiteCreationHelper{
 	    $tag_page->save();
 	    $tag_page->addAuthorById($u->getId());
 	    $site->setTagPageId($tag_page->getId());
-	    SmartestLog::getInstance('system')->log("Added tag page to new site (page ID {$tag_page->getId()})", SM_LOG_DEBUG);
+	    SmartestLog::getInstance('system')->log("Created and connected tag page to new site (page ID {$tag_page->getId()})", SM_LOG_DEBUG);
 	    
 	    $site->save();
     
