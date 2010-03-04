@@ -281,7 +281,8 @@ class SmartestMysql{
 	protected function loadQueryDataFromCache($query){
 	    
 	    $hash = $this->getHashFromQuery($query);
-	    $cache_name = 'smartest_mysql_cached_result'.$hash;
+	    $cache_name = 'SMCR'.SmartestInfo::$revision.$hash;
+	    // $cache_name = 'smartest_mysql_cached_result'.$hash;
 	    
 	    if(SmartestCache::hasData($cache_name, true)){
 	        $result = SmartestCache::load($cache_name, true);

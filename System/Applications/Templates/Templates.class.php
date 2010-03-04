@@ -568,11 +568,11 @@ class Templates extends SmartestSystemApplication{
     		if($post['add_type'] == "DIRECT"){
 			
     			if(SmartestFileSystemHelper::save($full_filename, stripslashes($post['template_content']), true)){
-    				$this->setFormReturnVar('savedNewTemplate', 'true');
+    				// $this->setFormReturnVar('savedNewTemplate', 'true');
     				$this->addUserMessageToNextRequest('The file was saved successfully', SmartestUserMessage::SUCCESS);
     				$file_success = true;
     			}else{
-    				$this->setFormReturnVar('savedNewTemplate', 'failed');
+    				// $this->setFormReturnVar('savedNewTemplate', 'failed');
     				$this->addUserMessageToNextRequest('There was a problem creating the file', SmartestUserMessage::WARNING);
     				$file_success = false;
     			}
@@ -580,7 +580,7 @@ class Templates extends SmartestSystemApplication{
     		}else if($post['add_type'] == "UPLOAD"){
 		
     		    if($uploader->save()) { // Move the file over
-    			    $this->setFormReturnVar('savedNewTemplate', 'true');
+    			    // $this->setFormReturnVar('savedNewTemplate', 'true');
     			    $this->addUserMessageToNextRequest('The file was saved successfully', SmartestUserMessage::SUCCESS);
     			    $file_success = true;
     		    }else{ // Couldn't save the file

@@ -2137,6 +2137,8 @@ class Items extends SmartestSystemApplication{
         		        $p->setDataSetId($model->getId());
         		        $p->save();
         		        SmartestCache::clear('site_pages_tree_'.$this->getSite()->getId(), true);
+        		        $model->setDefaultMetaPageId($this->getSite()->getId(), $p->getId());
+        		        $model->save();
         		    }
     		    
         		    $this->addUserMessageToNextRequest("The new model has been saved. Now add some properties.", SmartestUserMessage::SUCCESS);

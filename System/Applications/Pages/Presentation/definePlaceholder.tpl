@@ -21,7 +21,7 @@ function toggleParamsHolder(){
 
 <div id="work-area">
   
-  <h3>Define Placeholder</h3>
+  <h3>Define placeholder: {$placeholder.name}</h3>
   
   {if $require_choose_item}
   
