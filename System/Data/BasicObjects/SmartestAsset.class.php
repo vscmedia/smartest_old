@@ -776,6 +776,25 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	    
 	}
 	
+	public function setStringId($stringid, $site_id=''){
+	    
+	    if($this->_properties['id']){
+	        $sql = "SELECT asset_stringid FROM Assets WHERE (asset_site_id='".$this->getSiteId()."' OR asset_shared='1') AND asset_id != '".$this->getId()."'"; 
+	    }else{
+	        if($site_id){
+	            $sql = "SELECT asset_stringid FROM Assets WHERE (asset_site_id='".$site_id."' OR asset_shared='1')"; 
+	        }else{
+	            $sql = "SELECT asset_stringid FROM Assets"; 
+	        }
+	    }
+	    
+	    $fields = $this->database->queryFieldsToArrays(array('asset_stringid'), $sql);
+        $stringid = SmartestStringHelper::guaranteeUnique($stringid, $fields['asset_stringid']);
+        
+        return parent::setStringId($stringid);
+	    
+	}
+	
 	// System UI calls
 	
 	public function getSmallIcon(){

@@ -319,14 +319,12 @@ class Items extends SmartestSystemApplication{
 	}
 	
 	function deleteItemClass($get){
-		// $class_id = mysql_real_escape_string($get['class_id']);
-		// return $this->manager->deleteItemClass($class_id);
 		
 		if($this->getUser()->hasToken('delete_models')){
 		    
 		    $model = new SmartestModel;
 		    
-		    if($model->find((int) $get['class_id'])){
+		    if($model->find($get['class_id'])){
 		        $model->delete(true);
 		    }
 		    
@@ -343,7 +341,7 @@ class Items extends SmartestSystemApplication{
 	
 	//// EDIT (pre-action interface/options) and UPDATE (the actual action)
 	
-    public function editItemProperty($get, $post){
+    /* public function editItemProperty($get, $post){
 		
 		$property_id = $get['itemproperty_id']; //print_r($property_id);
 		
@@ -355,7 +353,7 @@ class Items extends SmartestSystemApplication{
 		    $model = new SmartestModel;
 		    $model->hydrate($model_id);
 		    
-		    $this->addUserMessage('Editing existing properties will change how the data referred to by that property is stored and accessed.', SmartestUserMessage::WARNING);
+		    $this->addUserMessage('Editing existing properties will change how the data stored by that property is retrieved and displayed.', SmartestUserMessage::WARNING);
 		    
 		    $data_types = SmartestDataUtility::getDataTypes();
 		    
@@ -376,11 +374,11 @@ class Items extends SmartestSystemApplication{
     		//     $date = explode('-',$property[0]['itemproperty_defaultvalue']);
     		// }
 		
-    	    $propertyTypes = $this->manager->getItemPropertyTypes();
-    		$models = $this->manager->getItemClasses();
-    		$dropdownMenu = $this->manager->getDropdownMenu();
+    	    // $propertyTypes = $this->manager->getItemPropertyTypes();
+    		// $models = $this->manager->getItemClasses();
+    		// $dropdownMenu = $this->manager->getDropdownMenu();
 		
-    		if($get["name"]){
+    		/* if($get["name"]){
     		    $name = $get["name"];
     		}else{
     		    $name = $property[0]['itemproperty_name'];
@@ -413,7 +411,7 @@ class Items extends SmartestSystemApplication{
 	    }
 
 		// return (array("details"=>$property[0], "itemclass"=>$itemClass, "Types"=>$propertyTypes,"models"=>$models,"dropdownMenu"=>$dropdownMenu,"dropdownValues"=>$dropdownValues,"name"=>$name,"type"=>$type,"sel_id"=>$sel_id,"model_id"=>$model_id,"sel_items"=>$items,"month"=>$date[0],"day"=>$date[1]));
-	}
+	} */
 	
 	public function openItem($get){
 	    

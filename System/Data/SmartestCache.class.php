@@ -69,6 +69,7 @@ class SmartestCache{
 			// delete the file
 			if(file_exists($file_path)){
 				$success = unlink($file_path);
+				// echo "deleted ".$file_path."<br />";
 				return $success;
 			}else{
 				return false;

@@ -2947,20 +2947,20 @@ class Pages extends SmartestSystemApplication{
 		
 		if(is_file(SM_ROOT_DIR.'Presentation/Masters/'.$template_name)){
 		    $page_id = $get["page_id"];
-		    $this->database->query("UPDATE Pages SET page_live_template='$template_name' WHERE page_webid='$page_id'");
+		    $this->database->query("UPDATE Pages SET page_draft_template='$template_name' WHERE page_webid='$page_id'");
 		    $this->formForward();
 	    }
 		
 	}
 	
-	function setPageTemplateForLists($get){
+	/* function setPageTemplateForLists($get){
 		$template_name = $get["template_name"];
 		$version = ($get["version"] == "live") ? "live" : "draft";
 		$field = ($get["version"] == "live") ? "page_live_template" : "page_draft_template";
 		$page_id = $get["page_id"];
 		$this->database->query("UPDATE Pages SET $field='$template_name' WHERE page_webid='$page_id'");
 		header("Location:".$this->domain.$this->module."/getPageLists?page_id=$page_id&version=$version");
-	}
+	} */
 	
 	public function setDraftAsset($get){
 
@@ -2992,7 +2992,7 @@ class Pages extends SmartestSystemApplication{
 		$this->formForward();
 	}
 	
-	function publishPageContainersConfirm($get){
+	/* function publishPageContainersConfirm($get){
 		$page_webid=$get['page_id'];
 		$version="draft";
 		$undefinedContainerClasses=$this->manager->publishPageContainersConfirm($page_webid,$version);
@@ -3020,7 +3020,7 @@ class Pages extends SmartestSystemApplication{
 		$page_webid=$get['page_id'];
 		$this->manager->publishPagePlaceholders($page_webid);
 		$this->formForward();
-	}
+	} */
 	
 	function publishPageConfirm($get){
 		

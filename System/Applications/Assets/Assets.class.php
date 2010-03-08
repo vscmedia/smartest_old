@@ -391,7 +391,7 @@ class Assets extends SmartestSystemApplication{
     		    $asset->setShared($shared);
     		    $asset->setUserId($this->getUser()->getId());
     		    $asset->setCreated(time());
-    		    $asset->setLanguage(strtolower(substr($post['asset_language'], 0, 3)));
+    		    $asset->setLanguage(strtolower(substr($post['asset_language'], 0, 3))); // ISO-6639-3 language codes are only ever three letters long
 		    
     		    $suffixes = array();
 		    
@@ -437,7 +437,7 @@ class Assets extends SmartestSystemApplication{
     		            $everything_ok = false;
     		        }
 		        
-    		        $asset->setStringid($string_id);
+    		        $asset->setStringid($string_id, $this->getSite()->getId());
 		        
     		        $content = $post['content'];
 		        
@@ -502,7 +502,8 @@ class Assets extends SmartestSystemApplication{
 		        
     		        // create string id based on actual file name
     		        $string_id = SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix($filename));
-    		        $asset->setStringid($string_id);
+    		        
+    		        $asset->setStringid($string_id, $this->getSite()->getId());
 		        
     		        if($type['storage']['type'] == 'database'){
 		            

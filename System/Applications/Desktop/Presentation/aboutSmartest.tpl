@@ -4,7 +4,7 @@
   {literal}<style type="text/css">p{margin:0 0 5px 0;}</style>{/literal}
   
   <div>
-    <div style="float:left;width:106px;height:350px">
+    <div style="float:left;width:106px;height:400px">
       <img src="{$domain}Resources/System/Images/info_logo.png" alt="Smartest Logo" />
     </div>
     <p><strong>Version</strong>: Smartest {$version} (Revision {$revision})</p>

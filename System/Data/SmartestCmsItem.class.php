@@ -398,7 +398,7 @@ class SmartestCmsItem implements ArrayAccess{
 	    }
 	}
 	
-	public function hydrate($id, $draft=false){
+	public function find($id, $draft=false){
 		
 		if($this->_item->find($id)){
 		    
@@ -478,6 +478,10 @@ class SmartestCmsItem implements ArrayAccess{
 	        
 	    }
 		
+	}
+	
+	public function hydrate($id, $draft=false){
+	    return $this->find($id, $draft);
 	}
 	
 	public function isHydrated(){
@@ -946,7 +950,7 @@ class SmartestCmsItem implements ArrayAccess{
             
         }
         
-        if($object->hydrate($item_id)){
+        if($object->find($item_id)){
             return $object;
         }else{
             return null;

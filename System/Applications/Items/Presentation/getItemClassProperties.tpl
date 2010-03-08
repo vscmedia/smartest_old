@@ -70,7 +70,7 @@ function viewPage(){
   {defun name="menurecursion" list=$definition}
        {foreach from=$list item="element"}
     <li>
-       <a id="item_{$element.id}" class="option" href="javascript:nothing()" onclick="setSelectedItem('{$element.id}');" ondblclick="window.location='{$domain}{$section}/editItemProperty?class_id={$model.id}&amp;itemproperty_id={$element.id}'">		 
+       <a id="item_{$element.id}" class="option" href="javascript:nothing()" onclick="setSelectedItem('{$element.id}');" ondblclick="window.location='{$domain}{$section}/editItemClassProperty?class_id={$model.id}&amp;itemproperty_id={$element.id}'">		 
         <img border="0" src="{$domain}Resources/Icons/page_code.png" />{$element.name}
       </a>
      

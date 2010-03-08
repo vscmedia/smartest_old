@@ -432,8 +432,8 @@ class SmartestDataObject implements ArrayAccess{
 	    if(strlen($id)){
         
             $sql = $this->getRetrievalSqlQuery((int) $id, 'id', $site_id);
-	    
-		    $this->_last_query = $sql;
+	        
+	        $this->_last_query = $sql;
 			$result = $this->database->queryToArray($sql, $file, $line);
 
 		    if(count($result)){
@@ -519,7 +519,9 @@ class SmartestDataObject implements ArrayAccess{
 	public function clearRetrievalSqlQueryFromCache(){
 	    
 	    // $this->database->clearQueryFromCache($this->);
-	    $this->database->clearQueryFromCache($this->getRetrievalSqlQuery($this->_properties['id']), 'id');
+	    // echo get_class($this)." ";
+	    // echo $this->getRetrievalSqlQuery($this->_properties['id']);
+	    return $this->database->clearQueryFromCache($this->getRetrievalSqlQuery($this->_properties['id']), 'id');
 	    
 	}
 	
@@ -599,7 +601,8 @@ class SmartestDataObject implements ArrayAccess{
     		$id = $this->database->query($sql);
 		    
 		    if($this->_came_from_database){
-		        $this->clearRetrievalSqlQueryFromCache();
+		        $cc = $this->clearRetrievalSqlQueryFromCache();
+		        // var_dump($cc);
 		    }else{
     			$this->_properties['id'] = $id;
     			$this->_came_from_database = true;

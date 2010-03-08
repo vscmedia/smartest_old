@@ -129,7 +129,7 @@ class SmartestStringHelper extends SmartestHelper{
 		
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
-		$page_name = preg_replace("/[^\w_-]+/", "_", $page_name);
+		$page_name = preg_replace("/[^\w_]+/", "_", $page_name);
 		return $page_name;
 	
 	}
@@ -143,7 +143,7 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 		
 		$constant_name = preg_replace("/[\"'\.,]+/", "", $constant_name);
-		$constant_name = preg_replace("/[^\w-_]+/", "_", $constant_name);
+		$constant_name = preg_replace("/[^\w_]+/", "_", $constant_name);
 		$constant_name = strtoupper($constant_name);
     	
     	return $constant_name;
@@ -498,6 +498,7 @@ class SmartestStringHelper extends SmartestHelper{
     }
     
     public static function toRegularExpression($string, $add_slashes=false){
+	    
 	    $regexp = str_replace('/', '\/', $string);
 	    $regexp = str_replace('|', '\|', $regexp);
 		$regexp = str_replace('+', '\+', $regexp);

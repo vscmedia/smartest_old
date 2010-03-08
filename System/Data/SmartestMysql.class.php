@@ -34,6 +34,7 @@ class SmartestMysql{
 	public function __construct(SmartestParameterHolder $dbconfig){
 	    
 	    $this->connection_config = $dbconfig;
+	    $this->r = SM_INFO_REVISION_NUMBER;
 	    
 	    if($this->dblink = @mysql_connect($this->connection_config['host'], $this->connection_config['username'], $this->connection_config['password'])){
 			
@@ -182,9 +183,10 @@ class SmartestMysql{
 	    
 	    if(isset($this->queryHashes[$hash])){
 	        unset($this->queryHashes[$hash]);
-	        $cache_name = 'SMCR'.SmartestInfo::$revision.$hash;
-	        SmartestCache::clear($cache_name, true);
         }
+        
+        $cache_name = 'SMCR'.$this->r.$hash;
+        return SmartestCache::clear($cache_name, true);
         
 	}
 	
@@ -281,7 +283,7 @@ class SmartestMysql{
 	protected function loadQueryDataFromCache($query){
 	    
 	    $hash = $this->getHashFromQuery($query);
-	    $cache_name = 'SMCR'.SmartestInfo::$revision.$hash;
+	    $cache_name = 'SMCR'.$this->r.$hash;
 	    // $cache_name = 'smartest_mysql_cached_result'.$hash;
 	    
 	    if(SmartestCache::hasData($cache_name, true)){
@@ -300,7 +302,8 @@ class SmartestMysql{
 	    $hash = $this->getHashFromQuery($query);
 	    
 	    if(is_array($data)){
-	        $cache_name = 'smartest_mysql_cached_result'.$hash;
+	        // $cache_name = 'smartest_mysql_cached_result'.$hash;
+	        $cache_name = 'SMCR'.$this->r.$hash;
 	        SmartestCache::save($cache_name, $data, -1, true);
         }else{
             throw new SmartestDatabaseException("SmartestMysql::saveQueryDataToCache() expects array.", SmartestDatabaseException::INVALID_CACHE_DATA);
@@ -311,7 +314,8 @@ class SmartestMysql{
 	public function clearQueryHistoryCache(){
 	    
 	    foreach($this->queryHashes as $hash=>$bin){
-	        $cache_name = 'smartest_mysql_cached_result'.$hash;
+	        // $cache_name = 'smartest_mysql_cached_result'.$hash;
+	        $cache_name = 'SMCR'.$this->r.$hash;
 	        SmartestCache::clear($cache_name, true);
 	    }
 	    

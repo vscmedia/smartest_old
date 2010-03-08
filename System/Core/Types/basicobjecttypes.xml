@@ -22,10 +22,10 @@
     <class>Comment</class>
   </table>
 
-  <table name="DataExports">
+  <!--<table name="DataExports">
     <prefix>dataexport_</prefix>
     <class>DataExport</class>
-  </table>
+  </table>-->
 
   <table name="DropDowns">
     <prefix>dropdown_</prefix>
@@ -97,7 +97,7 @@
     <class>PageUrl</class>
   </table>
 
-  <table name="PairingDetails">
+  <!--<table name="PairingDetails">
     <prefix>pairingdetail_</prefix>
     <class>PairingDetail</class>
     <noprefix>id</noprefix>
@@ -111,7 +111,7 @@
   <table name="Pairings">
     <prefix>pairing_</prefix>
     <class>Pairing</class>
-  </table>
+  </table>-->
 
   <table name="Roles">
     <prefix>role_</prefix>
@@ -123,7 +123,7 @@
     <class>RoleTokenLookup</class>
   </table>
 
-  <table name="SchemaDefinitions">
+  <!--<table name="SchemaDefinitions">
     <prefix>schemadefinition_</prefix>
     <class>SchemaDefinition</class>
   </table>
@@ -131,7 +131,7 @@
   <table name="Schemas">
     <prefix>schema_</prefix>
     <class>Schema</class>
-  </table>
+  </table>-->
 
   <table name="SetRules">
     <prefix>setrule_</prefix>
@@ -196,9 +196,9 @@
     <class>UserToken</class>
   </table>
 
-  <table name="Vocabulary">
+  <!--<table name="Vocabulary">
     <prefix>vocabulary_</prefix>
     <class>VocabularyItem</class>
-  </table>
+  </table>-->
 
 </dataobjects>
