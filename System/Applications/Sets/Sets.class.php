@@ -171,7 +171,7 @@ class Sets extends SmartestSystemApplication{
 	                
 	            } */
 	            
-	            $set_members = $set->getMembers();
+	            $set_members = $set->getMembers(SM_QUERY_ALL_DRAFT);
 	            // $all_items = 
 	            
 	            // fetch all item ids

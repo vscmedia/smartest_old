@@ -497,6 +497,19 @@ class SmartestStringHelper extends SmartestHelper{
         return $string;
     }
     
+    public static function toParagraphs($string, $classes=''){
+        
+        $parts = preg_split('/[\r\n\t]+/', $string);
+        
+        if(strlen($classes)){
+            $open_tag = '<p class="'.$classes.'">';
+        }else{
+            $open_tag = '<p>';
+        }
+        
+        return $open_tag.implode("</p>\r\n".$open_tag, $parts).'</p>';
+    }
+    
     public static function toRegularExpression($string, $add_slashes=false){
 	    
 	    $regexp = str_replace('/', '\/', $string);
