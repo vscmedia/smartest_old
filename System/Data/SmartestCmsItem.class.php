@@ -852,7 +852,7 @@ class SmartestCmsItem implements ArrayAccess{
 		// mark as deleted
 		if($this->_item instanceof SmartestItem && $this->_item->isHydrated()){
 		    
-		    $sql = "SELECT AssetIdentifiers.assetidentifier_live_asset_id, AssetIdentifiers.assetidentifier_assetclass_id, AssetClasses.assetclass_id, AssetClasses.assetclass_name, Pages.page_title, Pages.page_id FROM AssetIdentifiers, AssetClasses, Pages WHERE AssetIdentifiers.assetidentifier_live_asset_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id=Pages.page_id";
+		    $sql = "SELECT AssetIdentifiers.assetidentifier_live_asset_id, AssetIdentifiers.assetidentifier_assetclass_id, AssetClasses.assetclass_id, AssetClasses.assetclass_name, Pages.page_title, Pages.page_id FROM AssetIdentifiers, AssetClasses, Pages WHERE AssetIdentifiers.assetidentifier_live_asset_id='".$this->getId()."' AND AssetClasses.assetclass_type='SM_ASSETCLASS_ITEM_SPACE' AND AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_page_id=Pages.page_id";
 		    $result = $this->database->queryToArray($sql);
 		    
 		    if(count($result)){

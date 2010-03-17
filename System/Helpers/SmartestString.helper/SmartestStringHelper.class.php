@@ -10,7 +10,7 @@ class SmartestStringHelper extends SmartestHelper{
 	
 		$possValues = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s"
 			    , "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", 
-			    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+			    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "$");
 		$stem = "";
 	
 		for($i=0; $i<$size; $i++){
@@ -22,6 +22,50 @@ class SmartestStringHelper extends SmartestHelper{
 	
 		return $plant;
 	
+	}
+	
+	public static function randomFromFormat($format){
+	    
+	    $uppercase_letters = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+	    $lowercase_letters = array("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
+	    $numbers = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+	    $symbols = array("-", "*", "^", "!", "(", ")");
+	    
+	    $all_letters = array_merge($uppercase_letters, $lowercase_letters);
+	    $random_chars = array_merge($all_letters, $numbers);
+	    
+	    $all = array_merge($random_chars, $symbols);
+	    
+	    $l = strlen($format);
+	    $s = '';
+	    
+	    for($i=0;$i<$l;$i++){
+	        $c = $format{$i};
+	        
+	        if($c == "L"){
+	            $nl = $uppercase_letters[rand(0, count($uppercase_letters)-1)];
+	        }else if($c == "l"){
+	            $nl = $lowercase_letters[rand(0, count($lowercase_letters)-1)];
+	        }else if($c == "a" || $c == "A"){
+	            $nl = $all_letters[rand(0, count($all_letters)-1)];
+	        }else if($c == "n" || $c == "N"){
+    	        $nl = $numbers[rand(0, 9)];
+    	    }else if($c == "r" || $c == "R"){
+    	        $nl = $random_chars[rand(0, count($random_chars)-1)];
+    	    }else if($c == "s" || $c == "S"){
+    	        $nl = $symbols[rand(0, count($symbols)-1)];
+    	    }else if($c == "*"){
+    	        $nl = $all[rand(0, count($all)-1)];
+    	    }else{
+    	        $nl = $c;
+    	    }
+    	    
+    	    $s .= $nl;
+	        
+	    }
+	    
+	    return $s;
+	    
 	}
 	
 	public static function isAscii(){
@@ -295,7 +339,7 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	public static function isFalse($string){
-	    if(strlen($string) == 0 || in_array(strtolower($string), array('false', 'off', '0'))){
+	    if(strlen($string) == 0 || in_array(strtolower($string), array('false', 'off', '0')) || $string === false){
 	        return true;
 	    }else{
 	        return false;
@@ -581,16 +625,16 @@ class SmartestStringHelper extends SmartestHelper{
     	        $try_string = $string;
     	    }else{
 	            $trunk = $string;
-	            $try_string = $string.'-1';
+	            $try_string = $string.$separator.'1';
     	    }
     	    
-    	    $max_tries = 100000;
+    	    $max_tries = 10000;
             $counter = 1;
             
             while($counter < $max_tries && in_array($try_string, $taken_strings)){
                 
                 $counter++;
-                $try_string = $trunk.'-'.$counter;
+                $try_string = $trunk.$separator.$counter;
                 
             }
             

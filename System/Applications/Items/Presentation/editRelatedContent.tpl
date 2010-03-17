@@ -25,8 +25,8 @@
     
       <ul class="basic-list scroll-list" style="height:350px;border:1px solid #ccc">
       
-        {foreach from=$items item="item"}
-        <li><input type="checkbox" name="items[{$item.id}]" id="item_{$item.id}"{if in_array($item.id, $related_ids)} checked="checked"{/if} /><label for="item_{$item.id}">{$item.name}</label></li>
+        {foreach from=$items item="related_item"}
+          {if $related_item.id == $item.id}<!--Skipped item "{$related_item.name}"-->{else}<li><input type="checkbox" name="items[{$related_item.id}]" id="item_{$related_item.id}"{if in_array($related_item.id, $related_ids)} checked="checked"{/if} /><label for="item_{$related_item.id}">{$related_item.name}</label></li>{/if}
         {/foreach}
       
       </ul>

@@ -21,6 +21,7 @@
       
       <b>Size</b>: {$file.size}<br />
       <b>Shared</b>: <input type="checkbox" id="share_{$smarty.foreach.files.index}" name="new_files[{$smarty.foreach.files.index}][shared]" value="1" /><label for="share_{$smarty.foreach.files.index}">Check here to share this file with other sites</label><br />
+      <b>Archive</b>: <input type="checkbox" id="archive_{$smarty.foreach.files.index}" name="new_files[{$smarty.foreach.files.index}][archive]" value="1" /><label for="archive_{$smarty.foreach.files.index}">Check here to archive this file straight away</label><br />
       {if !$file.suffix_recognized}<div class="warning">The suffix of this file (.{$file.actual_suffix}) has not been recognized.</div>{/if}
       
 {*      {if count($file.possible_groups)}<b>Add to group</b>:

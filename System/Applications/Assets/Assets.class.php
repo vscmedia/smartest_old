@@ -269,8 +269,12 @@ class Assets extends SmartestSystemApplication{
     	        $a->setType($nf['type']);
     	        $a->setSiteId($this->getSite()->getId());
     	        $a->setShared(isset($nf['shared']) ? 1 : 0);
+    	        if(isset($nf['archive'])){
+    	            $a->setIsArchived(1);
+    	        }
     	        $a->setWebid(SmartestStringHelper::random(32));
     	        $a->setStringid(SmartestStringHelper::toVarName($nf['name']));
+    	        $a->setLabel($nf['name']);
     	        $a->setUrl($filename);
     	        $a->setUserId($this->getUser()->getId());
     	        $a->setCreated(time());

@@ -142,7 +142,7 @@ function viewLivePage(){
 <ul class="actions-list" id="non-specific-actions">
   <li><span style="color:#999">Recently edited {$model.plural_name|strtolower}</span></li>
   {foreach from=$recent_items item="recent_item"}
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/pageAssets?page_id={$page.webid}&amp;item_id={$recent_item.id}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label}</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/pageAssets?page_id={$page.webid}&amp;item_id={$recent_item.id}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label|summary:"28"}</a></li>
   {/foreach}
 </ul>
 {/if}

@@ -145,7 +145,7 @@ function viewPage(){
 <ul class="actions-list" id="non-specific-actions">
   <li><span style="color:#999">Recently edited pages</span></li>
   {foreach from=$recent_pages item="recent_page"}
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_page.action_url}'"><img border="0" src="{$recent_page.small_icon}" /> {$recent_page.label}</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_page.action_url}'"><img border="0" src="{$recent_page.small_icon}" /> {$recent_page.label|summary:"28"}</a></li>
   {/foreach}
 </ul>
 

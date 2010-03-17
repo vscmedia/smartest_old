@@ -624,12 +624,12 @@ class Items extends SmartestSystemApplication{
 	    
 	    if($item->isHydrated()){
 	        
-	        $this->send($item->__toArray(), 'item');
+	        $this->send($item, 'item');
 	        
 	        $this->setTitle($item->getName()." | Related Content");
 	        $model = $item->getModel();
 	        
-	        $this->send($model->__toArray(), 'model');
+	        $this->send($model, 'model');
 	        
 	        $related_items_this_model = $item->getItem()->getRelatedItemsAsArrays(true);
 	        $related_pages = $item->getItem()->getRelatedPagesAsArrays(true);
@@ -638,7 +638,7 @@ class Items extends SmartestSystemApplication{
 	        $this->send($related_pages, 'related_pages');
 	        
 	        $du = new SmartestDataUtility;
-	        $models = $du->getModelsAsArrays();
+	        $models = $du->getModels(false, $this->getSite()->getId());
         
 	        foreach($models as $key=>$m){
 	            if($m['id'] == $model->getId()){
@@ -691,8 +691,8 @@ class Items extends SmartestSystemApplication{
 	        if($mode == 'items'){
 	            
 	            $this->setTitle($item->getName()." | Related ".$model->getPluralName());
-	            $this->send($item->__toArray(), 'item');
-	            $this->send($model->__toArray(), 'model');
+	            $this->send($item, 'item');
+	            $this->send($model, 'model');
 	            
 	            if($model->getId() == $item->getModelId()){
 	                $related_ids = $item->getRelatedItemIds(true, $model->getId());
@@ -700,14 +700,14 @@ class Items extends SmartestSystemApplication{
                     $related_ids = $item->getRelatedForeignItemIds(true, $model->getId());
                 }
                 
-	            $all_items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
+	            $all_items  = $model->getSimpleItems($this->getSite()->getId());
 	            $this->send($all_items, 'items');
 	            $this->send($related_ids, 'related_ids');
 	            
             }else{
                 
                 $this->setTitle($item->getName()." | Related pages");
-    	        $this->send($item->__toArray(), 'item');
+    	        $this->send($item, 'item');
     	        $related_ids = $item->getRelatedPageIds(true);
     	        $helper = new SmartestPageManagementHelper;
     	        $pages = $helper->getPagesList($this->getSite()->getId());

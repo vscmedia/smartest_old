@@ -20,18 +20,27 @@
   <div class="special-box">Show:
     <input type="hidden" name="set_id"  value="{$set.id}" />
     <select name="mode" onchange="$('mode-form').submit();">
+      {if $set.type == 'DYNAMIC'}
       <option value="0"{if $mode == 0} selected="selected"{/if}>All {$model.plural_name|strtolower}, using draft property values</option>
       <option value="1"{if $mode == 1} selected="selected"{/if}>All {$model.plural_name|strtolower}, using draft property values, but only in archive</option>
-      <option value="2"{if $mode == 2} selected="selected"{/if}>All {$model.plural_name|strtolower}, using draft property values, excluding those in archive</option>
+      <option value="2"{if $mode == 2} selected="selected"{/if}>All {$model.plural_name|strtolower}, using draft property values, those that are archived</option>
       <option value="3"{if $mode == 3} selected="selected"{/if}>All {$model.plural_name|strtolower}, using live property values</option>
       <option value="4"{if $mode == 4} selected="selected"{/if}>All {$model.plural_name|strtolower}, using live property values, but only in archive</option>
-      <option value="5"{if $mode == 5} selected="selected"{/if}>All {$model.plural_name|strtolower}, using live property values, excluding those in archive</option>
+      <option value="5"{if $mode == 5} selected="selected"{/if}>All {$model.plural_name|strtolower}, using live property values, those that are archived</option>
       <option value="6"{if $mode == 6} selected="selected"{/if}>Published {$model.plural_name|strtolower}, but using draft property values</option>
       <option value="7"{if $mode == 7} selected="selected"{/if}>Published {$model.plural_name|strtolower}, but using draft property values, but only in archive</option>
-      <option value="8"{if $mode == 8} selected="selected"{/if}>Published {$model.plural_name|strtolower}, but using draft property values, excluding those in archive</option>
+      <option value="8"{if $mode == 8} selected="selected"{/if}>Published {$model.plural_name|strtolower}, but using draft property values, excluding those that are archived</option>
       <option value="9"{if $mode == 9} selected="selected"{/if}>Published {$model.plural_name|strtolower}, using live property values</option>
       <option value="10"{if $mode == 10} selected="selected"{/if}>Published {$model.plural_name|strtolower}, using live property values, but only in archive</option>
-      <option value="11"{if $mode == 11} selected="selected"{/if}>Published {$model.plural_name|strtolower}, using live property values, excluding those in archive</option>
+      <option value="11"{if $mode == 11} selected="selected"{/if}>Published {$model.plural_name|strtolower}, using live property values, excluding those that are archived</option>
+      {else}
+      <option value="0"{if $mode == 0} selected="selected"{/if}>All {$model.plural_name|strtolower}</option>
+      <option value="1"{if $mode == 1} selected="selected"{/if}>All archived {$model.plural_name|strtolower}</option>
+      <option value="2"{if $mode == 2} selected="selected"{/if}>All {$model.plural_name|strtolower}, excluding those that are archived</option>
+      <option value="6"{if $mode == 6} selected="selected"{/if}>Published {$model.plural_name|strtolower}</option>
+      <option value="7"{if $mode == 7} selected="selected"{/if}>Published {$model.plural_name|strtolower} that are archived</option>
+      <option value="8"{if $mode == 8} selected="selected"{/if}>Published {$model.plural_name|strtolower}, excluding those that are archived</option>
+      {/if}
     </select>
   </div>
 </form>

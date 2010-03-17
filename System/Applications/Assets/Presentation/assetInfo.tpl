@@ -9,11 +9,11 @@
     </tr>
     <tr>
       <td style="background-color:#fff" valign="top">Size:</td>
-      <td style="background-color:#fff" valign="top">{$asset.size}</td>
+      <td style="background-color:#fff" valign="top">{$asset.size}{if $asset.is_image}, ({$asset.width} x {$asset.height} pixels){/if}</td>
     </tr>
     <tr>
       <td style="background-color:#fff" valign="top">Type:</td>
-      <td style="background-color:#fff" valign="top">{$asset.type_info.label} <span style="color:#666">({$asset.type})</span></td>
+      <td style="background-color:#fff" valign="top"><a href="{$domain}{$section}/getAssetTypeMembers?asset_type={$asset.type}">{$asset.type_info.label}</a> <span style="color:#666">({$asset.type})</span></td>
     </tr>
     {if $asset.created > 0}
     <tr>
