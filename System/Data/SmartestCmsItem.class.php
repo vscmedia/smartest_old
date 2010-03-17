@@ -208,7 +208,7 @@ class SmartestCmsItem implements ArrayAccess{
 	            break;
 	            
 	            case 'num_comments':
-	            return $this->getItem()->getNumComments();
+	            return $this->getItem()->getNumApprovedPublicComments();
 	            break;
 	            
 	            case 'is_published':

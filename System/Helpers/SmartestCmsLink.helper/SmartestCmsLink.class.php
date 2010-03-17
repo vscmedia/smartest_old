@@ -134,7 +134,7 @@ class SmartestCmsLink extends SmartestHelper{
             $data = $markup_attributes->getParameters();
         }
         
-        $allowed_attributes = array('title', 'id', 'name', 'style', 'onclick', 'ondblclick', 'onmouseover', 'onmouseout', 'class', 'target');
+        $allowed_attributes = array('title', 'id', 'name', 'style', 'onclick', 'ondblclick', 'onmouseover', 'onmouseout', 'class', 'target', 'rel');
         $html_attributes_array = array();
         $other_attributes_array = array();
         

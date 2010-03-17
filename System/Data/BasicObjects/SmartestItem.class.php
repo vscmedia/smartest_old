@@ -878,6 +878,12 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	}
 	
+	public function getNumApprovedPublicComments(){
+	    
+	    return count($this->getPublicComments('SM_COMMENTSTATUS_APPROVED'));
+	    
+	}
+	
 	public function getPublicComments($status='SM_COMMENTSTATUS_APPROVED'){
 	    
 	    $sql = "SELECT * FROM Comments WHERE comment_type='SM_COMMENTTYPE_ITEM_PUBLIC' AND comment_object_id='".$this->getId()."' AND comment_status='".$status."'";
