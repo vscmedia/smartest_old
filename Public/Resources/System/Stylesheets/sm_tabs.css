@@ -17,6 +17,7 @@ ul.tabset li{
     border-left:1px solid #c0c0c0;
     border-right:1px solid #c0c0c0;
     margin-left:5px;
+    height:27px;
 }
 
 ul.tabset li.current{
