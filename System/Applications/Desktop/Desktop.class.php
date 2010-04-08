@@ -2,10 +2,6 @@
 
 class Desktop extends SmartestSystemApplication{
     
-    protected function __moduleConstruct(){
-        
-    }
-    
     public function startPage(){
         
         if($this->getSite() instanceof SmartestSite){
@@ -33,6 +29,15 @@ class Desktop extends SmartestSystemApplication{
     		
         }
         
+    }
+    
+    public function newDesktop(){
+        
+        if($this->getSite() instanceof SmartestSite){
+            
+            
+            
+        }
         
     }
     

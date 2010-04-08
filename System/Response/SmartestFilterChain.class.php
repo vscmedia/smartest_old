@@ -60,27 +60,22 @@ class SmartestFilterChain{
     
     public function execute($html){
         
-        /* preg_match('/<body[^>]*?'.'>/i', $html, $match);
-		
-		if(!empty($match[0])){
-			$body_tag = $match[0];
-		}else{
-			$body_tag = '';
-		}
-		
-		if(SM_CONTROLLER_METHOD == "renderPageFromUrl" || SM_CONTROLLER_METHOD == "renderPageFromId"){
-			$creator = "\n<!--Powered by Smartest-->\n";
-		}else{
-			$creator = "";
-		} */
-		
         $filters = $this->loadFilters();
+        
+        $start_time = SmartestPersistentObject::get('timing_data')->getParameter('start_time');
+        $overhead_time = SmartestPersistentObject::get('timing_data')->getParameter('overhead_time');
+		$overhead_time_taken = $overhead_time - $start_time;
 		
 		$end_time = microtime(true);
-		$full_time_taken = number_format(($end_time - SM_START_TIME)*1000, 2, ".", "");
+		$full_time_taken = $end_time - $start_time;
+		$smarty_time_taken = $full_time_taken - $overhead_time_taken;
 		
-		define("SM_TOTAL_TIME", $full_time_taken);
-		define("SM_SMARTY_TIME", $full_time_taken - SM_OVERHEAD_TIME);
+		SmartestPersistentObject::get('timing_data')->setParameter('full_time_taken', number_format($full_time_taken*1000, 2, ".", ""));
+		SmartestPersistentObject::get('timing_data')->setParameter('overhead_time_taken', number_format($overhead_time_taken*1000, 2, ".", ""));
+		SmartestPersistentObject::get('timing_data')->setParameter('smarty_time_taken', number_format($smarty_time_taken*1000, 2, ".", ""));
+		
+		// define("SM_TOTAL_TIME", $full_time_taken);
+		// define("SM_SMARTY_TIME", $full_time_taken - $overhead_time_taken);
 		
 		foreach($filters as $f){
 		    

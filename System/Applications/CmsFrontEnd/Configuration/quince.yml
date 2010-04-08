@@ -1,0 +1,10 @@
+module:
+  class: CmsFrontEnd
+  shortname: website
+  identifier: com.smartest.CmsFrontEnd
+  longname: Page renderer
+  default_action: renderPageFromUrl
+  aliases:
+    - {url: /search, action: searchDomain}
+  meta:
+    system: true

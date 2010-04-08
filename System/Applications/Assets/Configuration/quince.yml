@@ -1,0 +1,13 @@
+module:
+  class: Assets
+  shortname: assets
+  identifier: com.smartest.FileManager
+  longname: Files repository 
+  default_action: getAssetTypes
+  routes:
+    home:
+      action: getAssetTypes
+      url: /smartest/assets
+  meta:
+    system: true
+    author: Marcus Gilroy-Ware

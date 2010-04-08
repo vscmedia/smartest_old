@@ -346,7 +346,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	    $info = $this->getTypeInfo();
 	    
 	    if($this->usesLocalFile() && substr($info['storage']['location'], 0, strlen('Public/')) == 'Public/'){
-	        return SM_CONTROLLER_DOMAIN.substr($info['storage']['location'], strlen('Public/')).$this->getUrl();
+	        return $this->_request->getDomain().substr($info['storage']['location'], strlen('Public/')).$this->getUrl();
 	    }else{
 	        return null;
 	    }
@@ -802,9 +802,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	    $info = $this->getTypeInfo();
 	    
 	    if(isset($info['icon']) && is_file(SM_ROOT_DIR.'Public/Resources/Icons/'.$info['icon'])){
-	        return SM_CONTROLLER_DOMAIN.'Resources/Icons/'.$info['icon'];
+	        return $this->_request->getDomain().'Resources/Icons/'.$info['icon'];
 	    }else{
-	        return SM_CONTROLLER_DOMAIN.'Resources/Icons/page_white.png';
+	        return $this->_request->getDomain().'Resources/Icons/page_white.png';
 	    }
 	    
 	}
@@ -823,7 +823,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	
 	public function getActionUrl(){
 	    
-	    return SM_CONTROLLER_DOMAIN.'assets/editAsset?asset_id='.$this->getId();
+	    return $this->_request->getDomain().'assets/editAsset?asset_id='.$this->getId();
 	    
 	}
 

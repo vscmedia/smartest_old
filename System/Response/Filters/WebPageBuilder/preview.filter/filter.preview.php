@@ -5,9 +5,9 @@ function smartest_filter_preview($html, $filter){
     if($filter->getDraftMode()){
         
         $phtml = SmartestFileSystemHelper::load($filter->getDirectory().'previewbar.html.txt');
-        $phtml = str_replace('%OVERHEAD%', SM_OVERHEAD_TIME, $phtml);
-        $phtml = str_replace('%BUILDTIME%', SM_SMARTY_TIME, $phtml);
-        $phtml = str_replace('%TOTAL%', SM_TOTAL_TIME, $phtml);
+        $phtml = str_replace('%OVERHEAD%', SmartestPersistentObject::get('timing_data')->getParameter('overhead_time_taken'), $phtml);
+        $phtml = str_replace('%BUILDTIME%', SmartestPersistentObject::get('timing_data')->getParameter('smarty_time_taken'), $phtml);
+        $phtml = str_replace('%TOTAL%', SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken'), $phtml);
         
         preg_match('/<body[^>]*?'.'>/i', $html, $match);
 		
@@ -18,7 +18,7 @@ function smartest_filter_preview($html, $filter){
 		}
 		
 		$pcss = SmartestFileSystemHelper::load($filter->getDirectory().'previewbar.stylehtml.txt');
-		$pcss = str_replace('%DOMAIN%', SM_CONTROLLER_DOMAIN, $pcss);
+		$pcss = str_replace('%DOMAIN%', $filter->getRequestData()->g('domain'), $pcss);
 		
 		$html = str_replace('</head>', $pcss.'</head>', $html);
 		$html = str_replace($body_tag, $body_tag."\n".$phtml, $html);
@@ -33,7 +33,7 @@ function smartest_filter_preview($html, $filter){
         }
         
         $creator = "\n<!--Powered by Smartest(TM) Online Publishing Platform, v".constant('SM_INFO_VERSION_NUMBER')." -->\n".$sid;
-        $html = str_replace('</body>', $creator."<!--Page was returned in: ".constant('SM_TOTAL_TIME')."ms -->\n</body>", $html);
+        $html = str_replace('</body>', $creator."<!--Page was returned in: ".SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken')."ms -->\n</body>", $html);
         
     }
     

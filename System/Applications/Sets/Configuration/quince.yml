@@ -1,0 +1,13 @@
+module:
+  class: Sets
+  shortname: sets
+  identifier: com.smartest.DataManager.Sets
+  longname: Sets
+  default_action: startPage
+  routes:
+    home:
+      action: startPage
+      url: /smartest/sets
+  meta:
+    system: true
+    author: Marcus Gilroy-Ware

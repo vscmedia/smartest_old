@@ -4,10 +4,14 @@ class SmartestWebPagePreparationHelper{
     
     protected $_page;
     protected $database;
+    // protected $_controller;
+    protected $_request;
     
     public function __construct($page){
         
-        $this->_controller = SmartestPersistentObject::get('controller');
+        // $this->_controller = SmartestPersistentObject::get('controller');
+        // $this->_request_data = SmartestPersistentObject::get('request_data');
+        $this->_request = SmartestPersistentObject::get('controller')->getCurrentRequest();
         
         if($page instanceof SmartestPage){
             $this->_page = $page;
@@ -47,9 +51,9 @@ class SmartestWebPagePreparationHelper{
         
         $b = $this->createBuilder();
         
-        $b->assign('domain', SM_CONTROLLER_DOMAIN);
-        $b->assign('method', SM_CONTROLLER_METHOD);
-        $b->assign('section', SM_CONTROLLER_MODULE);
+        $b->assign('domain', $this->_request->getDomain());
+        $b->assign('method', $this->_request->getAction());
+        $b->assign('section', $this->_request->getModule());
         
         if($ua = SmartestPersistentObject::get('userAgent')){
             $b->assign('sm_user_agent_json', $ua->getSimpleClientSideObjectAsJson());

@@ -22,7 +22,7 @@ class Pages extends SmartestSystemApplication{
 	protected $templatesManager;
 	protected $propertiesManager;
 	
-	function __moduleConstruct(){
+	protected function __smartestApplicationInit(){
 		$this->setsManager = new SetsManager;
 		$this->templatesManager = new TemplatesManager;
 		// $this->propertiesManager = new PagePropertiesManager;
@@ -36,11 +36,11 @@ class Pages extends SmartestSystemApplication{
 	
 	public function openPage($get){
 	    
-	    if(@$get['page_id']){
+	    if($this->getRequestParameter('page_id')){
 	        
 	        $page = new SmartestPage;
 	        
-	        if($page->hydrate($get['page_id'])){
+	        if($page->hydrate($this->getRequestParameter('page_id'))){
 	            
 	            $page->setDraftMode(true);
 	            
@@ -88,7 +88,7 @@ class Pages extends SmartestSystemApplication{
 			            $page->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
         			    $this->getUser()->addRecentlyEditedPageById($page->getId(), $this->getSite()->getId());
 		            
-			            $this->redirect('/'.SM_CONTROLLER_MODULE.'/editPage?page_id='.$page->getWebid());
+			            $this->redirect('/'.$this->getRequest()->getModule().'/editPage?page_id='.$page->getWebid());
     			        
     		        }
 		        
@@ -112,7 +112,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function closeCurrentPage($get){
 	    
-	    if(isset($get['release']) && $get['release'] == 1){
+	    if($this->getRequestParameter('release') && $this->getRequestParameter('release') == 1){
 	        $page = new SmartestPage;
 	        
 	        if($page->hydrate(SmartestSession::get('current_open_page'))){
@@ -130,7 +130,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $page = new SmartestPage;
 	    
-	    if($page->hydrate($get['page_id'])){
+	    if($page->hydrate($this->getRequestParameter('page_id'))){
 	        
 	        $page->setDraftMode(true);
 	        
@@ -160,7 +160,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    // SmartestSession::clear('current_open_page');
 	    
-	    if(isset($get['from']) && $get['from'] == 'todoList'){
+	    if($this->getRequestParameter('from') && $this->getRequestParameter('from') == 'todoList'){
 	        $this->redirect('/smartest/todo');
         }else{
             SmartestSession::clear('current_open_page');
@@ -235,17 +235,17 @@ class Pages extends SmartestSystemApplication{
 		// $this->addUserMessage('This is a really long test message with more than one line of text.');
 		// $this->addUserMessage('You are on thin ice, Mr. Gilroy-Ware.');
 		
-		if(!isset($get['from'])){
+		if(!$this->requestParameterIsSet('from')){
 		    $this->setFormReturnUri();
 		}
 		
-		$page_webid = $get['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		
 		$helper = new SmartestPageManagementHelper;
 		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
 		
 		if(isset($type_index[$page_webid])){
-		    if(($type_index[$page_webid] == 'ITEMCLASS' || $type_index[$page_webid] == 'SM_PAGETYPE_ITEMCLASS' || $type_index[$page_webid] == 'SM_PAGETYPE_DATASET') && isset($get['item_id']) && is_numeric($get['item_id'])){
+		    if(($type_index[$page_webid] == 'ITEMCLASS' || $type_index[$page_webid] == 'SM_PAGETYPE_ITEMCLASS' || $type_index[$page_webid] == 'SM_PAGETYPE_DATASET') && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		        $page = new SmartestItemPage;
 		    }else{
 		        $page = new SmartestPage;
@@ -262,7 +262,7 @@ class Pages extends SmartestSystemApplication{
             
             $page->setDraftMode(true);
     	    
-    	    if(($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET') && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
+    	    if(($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET') && ($this->getRequestParameter('item_id') || !is_numeric($this->getRequestParameter('item_id')))){
             
                 $this->send(true, 'allow_edit');
             
@@ -281,7 +281,7 @@ class Pages extends SmartestSystemApplication{
             }else{
     	        
     	        if($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET'){
-    	            if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+    	            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
     	                $page->setPrincipalItem($item);
     	            }
 	            }
@@ -330,7 +330,7 @@ class Pages extends SmartestSystemApplication{
                             
                             if($page->getParent() && ($type_index[$page->getParent()] == 'ITEMCLASS' || $type_index[$page->getParent()] == 'SM_PAGETYPE_ITEMCLASS' || $type_index[$page->getParent()] == 'SM_PAGETYPE_DATASET')){
                                 
-                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage(false)->getDatasetId(), (int) $get['item_id']);
+                                $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage(false)->getDatasetId(), (int) $this->getRequestParameter('item_id'));
                             
                                 $this->send(true, 'show_parent_meta_page_property_control');
                                 $this->send($model->__toArray(), 'model');
@@ -466,7 +466,7 @@ class Pages extends SmartestSystemApplication{
 	
 	function approvePageChanges($get){
 	    
-	    $page_webid = $get['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
         $page = new SmartestPage;
         
         if($page->hydrate($page_webid)){
@@ -494,9 +494,9 @@ class Pages extends SmartestSystemApplication{
 		$h = new SmartestAssetClassesHelper;
 		$asset_class_types = $h->getTypes();
 		
-		$placeholder_name = SmartestStringHelper::toVarName($get['placeholder_name']);
-		$selected_type = (isset($get['placeholder_type']) && in_array($get['placeholder_type'], $h->getTypeCodes())) ? $get['placeholder_type'] : 'SM_ASSETCLASS_RICH_TEXT';
-		$label = (isset($get['placeholder_label']) && strlen($get['placeholder_label'])) ? $get['placeholder_label'] : SmartestStringHelper::toTitleCaseFromVarName($placeholder_name);
+		$placeholder_name = SmartestStringHelper::toVarName($this->getRequestParameter('placeholder_name'));
+		$selected_type = ($this->getRequestParameter('placeholder_type') && in_array($this->getRequestParameter('placeholder_type'), $h->getTypeCodes())) ? $this->getRequestParameter('placeholder_type') : 'SM_ASSETCLASS_RICH_TEXT';
+		$label = ($this->getRequestParameter('placeholder_label') && strlen($this->getRequestParameter('placeholder_label'))) ? $this->getRequestParameter('placeholder_label') : SmartestStringHelper::toTitleCaseFromVarName($placeholder_name);
 		
 		$groups = $h->getAssetGroupsForPlaceholderType($selected_type, $this->getSite()->getId());
 		
@@ -510,7 +510,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function addContainer($get){
 		
-		$container_name = SmartestStringHelper::toVarName($get['name']);
+		$container_name = SmartestStringHelper::toVarName($this->getRequestParameter('name'));
 		
 		$this->send($container_name, 'name');
 		$this->send($asset_class_types, 'types');
@@ -521,26 +521,26 @@ class Pages extends SmartestSystemApplication{
 		
 		$placeholder = new SmartestPlaceholder;
 		
-		if($post['placeholder_name']){
-		    $name = SmartestStringHelper::toVarName($post['placeholder_name']);
+		if($this->getRequestParameter('placeholder_name')){
+		    $name = SmartestStringHelper::toVarName($this->getRequestParameter('placeholder_name'));
 		}else{
-		    $name = SmartestStringHelper::toVarName($post['placeholder_label']);
+		    $name = SmartestStringHelper::toVarName($this->getRequestParameter('placeholder_label'));
 		}
 		
 		if($placeholder->exists($name, $this->getSite()->getId())){
 	        $this->addUserMessageToNextRequest("A placeholder with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
 	    }else{
 	        
-		    $placeholder->setLabel($post['placeholder_label']);
+		    $placeholder->setLabel($this->getRequestParameter('placeholder_label'));
 		    $placeholder->setName($name);
 		    $placeholder->setSiteId($this->getSite()->getId());
-		    $placeholder->setType($post['placeholder_type']);
+		    $placeholder->setType($this->getRequestParameter('placeholder_type'));
 		    
-		    if($post['placeholder_filegroup'] == 'NONE'){
+		    if($this->getRequestParameter('placeholder_filegroup') == 'NONE'){
 		        $placeholder->setFilterType('SM_ASSETCLASS_FILTERTYPE_NONE');
-		    }else if(is_numeric($post['placeholder_filegroup'])){
+		    }else if(is_numeric($this->getRequestParameter('placeholder_filegroup'))){
 		        $placeholder->setFilterType('SM_ASSETCLASS_FILTERTYPE_ASSETGROUP');
-		        $placeholder->setFilterValue($post['placeholder_filegroup']);
+		        $placeholder->setFilterValue($this->getRequestParameter('placeholder_filegroup'));
 		    }
 		    
 		    $placeholder->save();
@@ -552,10 +552,10 @@ class Pages extends SmartestSystemApplication{
 	
 	public function insertContainer($get, $post){
 		
-		if($post['container_name']){
-		    $name = SmartestStringHelper::toVarName($post['container_name']);
+		if($this->getRequestParameter('container_name')){
+		    $name = SmartestStringHelper::toVarName($this->getRequestParameter('container_name'));
 		}else{
-		    $name = SmartestStringHelper::toVarName($post['container_label']);
+		    $name = SmartestStringHelper::toVarName($this->getRequestParameter('container_label'));
 		}
 		
 		$container = new SmartestContainer;
@@ -563,7 +563,7 @@ class Pages extends SmartestSystemApplication{
 		if($container->exists($name, $this->getSite()->getId())){
 	        $this->addUserMessageToNextRequest("A container with the name \"".$name."\" already exists.", SmartestUserMessage::WARNING);
 	    }else{
-		    $container->setLabel($post['container_label']);
+		    $container->setLabel($this->getRequestParameter('container_label'));
 		    $container->setName($name);
 		    $container->setSiteId($this->getSite()->getId());
 		    $container->setType('SM_ASSETCLASS_CONTAINER');
@@ -585,7 +585,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function editPlaceholder($get){
 	    
-	    $placeholder_id = (int) $get['placeholder_id'];
+	    $placeholder_id = (int) $this->getRequestParameter('placeholder_id');
 	    $placeholder = new SmartestPlaceholder;
 	    
 	    if($placeholder->find($placeholder_id)){
@@ -604,12 +604,12 @@ class Pages extends SmartestSystemApplication{
 	
 	public function placeholderDefinitions($get){
 	    
-	    $placeholder_id = (int) $get['placeholder_id'];
+	    $placeholder_id = (int) $this->getRequestParameter('placeholder_id');
 	    $placeholder = new SmartestPlaceholder;
 	    
 	    if($placeholder->find($placeholder_id)){
 	        
-	        $mode = (isset($get['mode']) && $get['mode'] == 'live') ? "live" : "draft";
+	        $mode = ($this->getRequestParameter('mode') && $this->getRequestParameter('mode') == 'live') ? "live" : "draft";
 	        
 	        $draft_mode = ($mode == "draft");
 	        
@@ -625,20 +625,20 @@ class Pages extends SmartestSystemApplication{
 	
 	public function updatePlaceholder($get, $post){
 	    
-	    $placeholder_id = (int) $post['placeholder_id'];
+	    $placeholder_id = (int) $this->getRequestParameter('placeholder_id');
 	    $placeholder = new SmartestPlaceholder;
 	    
 	    if($placeholder->find($placeholder_id)){
 	        
-	        $placeholder->setLabel($post['placeholder_label']);
+	        $placeholder->setLabel($this->getRequestParameter('placeholder_label'));
 	        
-	        if(isset($post['placeholder_filter'])){
-	            if($post['placeholder_filter'] == 'NONE'){
+	        if($this->getRequestParameter('placeholder_filter')){
+	            if($this->getRequestParameter('placeholder_filter') == 'NONE'){
 	                $placeholder->setFilterType('SM_ASSETCLASS_FILTERTYPE_NONE');
 	                $placeholder->setFilterValue('');
 	            }else{
 	                $placeholder->setFilterType('SM_ASSETCLASS_FILTERTYPE_ASSETGROUP');
-	                $placeholder->setFilterValue($post['placeholder_filter']);
+	                $placeholder->setFilterValue($this->getRequestParameter('placeholder_filter'));
 	            }
 	        }
 	        
@@ -658,7 +658,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function movePageUp($get){
 	    
-	    $page_webid = $get['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 	    $page = new SmartestPage();
 	    $page->setDraftMode(true);
 	    
@@ -675,7 +675,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function movePageDown($get){
 	    
-	    $page_webid = $get['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 	    $page = new SmartestPage();
 	    $page->setDraftMode(true);
 	    
@@ -692,16 +692,16 @@ class Pages extends SmartestSystemApplication{
 	
 	function preview($get){
 		
-		// if(!isset($get['from'])){
+		// if(!$this->getRequestParameter('from')){
 		    $this->setFormReturnUri();
 		    $this->setFormReturnDescription('page preview');
 	    // }
 		
 		$content = array();
 		
-		// $page_id = $this->manager->getPageIdFromPageWebId($get['page_id']);
+		// $page_id = $this->manager->getPageIdFromPageWebId($this->getRequestParameter('page_id'));
 		
-		$page_webid = $get['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		$page = new SmartestPage;
 		
 		if($page->hydrate($page_webid)){
@@ -726,9 +726,9 @@ class Pages extends SmartestSystemApplication{
 		        
     		    }else if($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET'){
 		        
-    		        if($get['item_id'] && is_numeric($get['item_id'])){
+    		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		            
-    		            $item_id = $get['item_id'];
+    		            $item_id = $this->getRequestParameter('item_id');
 		            
     		            $item = SmartestCmsItem::retrieveByPk($item_id);
 		            
@@ -849,7 +849,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function pageComments($get){
 	    
-	    $id = $get['page_id'];
+	    $id = $this->getRequestParameter('page_id');
 	    $page = new SmartestPage;
 		
 		if($page->hydrate($id)){
@@ -862,7 +862,7 @@ class Pages extends SmartestSystemApplication{
 	
 	function deletePage($get){
 		
-		$id = $get['page_id'];
+		$id = $this->getRequestParameter('page_id');
 		/* $sql = "UPDATE Pages SET page_deleted='TRUE' WHERE Pages.page_webid='$id'";
 		$id = $this->database->rawQuery($sql);
 		$title = $this->database->specificQuery('page_title', 'page_id', $id, 'Pages'); */
@@ -898,14 +898,13 @@ class Pages extends SmartestSystemApplication{
 	function sitePages($get){
 		
 		$this->requireOpenProject();
-		
 		$this->setFormReturnUri();
 
         $site_id = $this->getSite()->getId();
         
         $pagesTree = $this->getSite()->getPagesTree(true);
         
-        if($get['refresh'] == 1){
+        if($this->getRequestParameter('refresh') == 1){
             SmartestCache::clear('site_pages_tree_'.$site_id, true);
         }
         
@@ -939,20 +938,20 @@ class Pages extends SmartestSystemApplication{
 		
 		$helper = new SmartestPageManagementHelper;
 		
-		if(isset($post['stage']) && is_numeric($post['stage']) && is_object(SmartestPersistentObject::get('__newPage'))){
-			$stage = $post['stage'];
-		}else if(isset($get['stage']) && is_numeric($get['stage']) && is_object(SmartestPersistentObject::get('__newPage'))){
-			$stage = $get['stage'];
+		if($this->getRequestParameter('stage') && is_numeric($this->getRequestParameter('stage')) && is_object(SmartestPersistentObject::get('__newPage'))){
+			$stage = $this->getRequestParameter('stage');
+		}else if($this->getRequestParameter('stage') && is_numeric($this->getRequestParameter('stage')) && is_object(SmartestPersistentObject::get('__newPage'))){
+			$stage = $this->getRequestParameter('stage');
 		}else{
 		    $stage = 1;
 		}
 		
-		/* if(isset($get['site_id']) && is_numeric($get['site_id'])){
+		/* if($this->getRequestParameter('site_id') && is_numeric($this->getRequestParameter('site_id'))){
 			$site = new SmartestSite;
-			$site->hydrate($get['site_id']);
+			$site->hydrate($this->getRequestParameter('site_id'));
 			$site_info = $site->__toArray();
-		}else if(isset($get['page_id'])){
-			$parent_id = $get['page_id'];
+		}else if($this->getRequestParameter('page_id')){
+			$parent_id = $this->getRequestParameter('page_id');
 			$site_id = $this->manager->database->specificQuery("page_site_id", "page_webid", $parent_id, "Pages");
 			$site = new SmartestSite;
 			$site->hydrate($site_id);
@@ -971,8 +970,8 @@ class Pages extends SmartestSystemApplication{
 		    $this->redirect("/smartest");
 		}
 		
-		if(isset($_REQUEST['page_id'])){
-			$page_id = $_REQUEST['page_id'];
+		if($this->getRequestParameter('page_id')){
+			$page_id = $this->getRequestParameter('page_id');
 			$parent = new SmartestPage;
 			$parent->hydrate($page_id);
 			$parent_info = $parent;
@@ -992,9 +991,9 @@ class Pages extends SmartestSystemApplication{
 			
 			case "2":
 			
-			// $type = strtolower(($post['page_type'] == 'ITEMCLASS') ? 'ITEMCLASS' : 'NORMAL');
-			$type = in_array($post['page_type'], array('NORMAL', 'ITEMCLASS', 'LIST', 'TAG')) ? $post['page_type'] : 'NORMAL';
-			$this->send($post['page_parent'], 'page_parent');
+			// $type = strtolower(($this->getRequestParameter('page_type') == 'ITEMCLASS') ? 'ITEMCLASS' : 'NORMAL');
+			$type = in_array($this->getRequestParameter('page_type'), array('NORMAL', 'ITEMCLASS', 'LIST', 'TAG')) ? $this->getRequestParameter('page_type') : 'NORMAL';
+			$this->send($this->getRequestParameter('page_parent'), 'page_parent');
 			
 			$page_presets = $helper->getPagePresets($this->getSite()->getId());
 			
@@ -1053,17 +1052,17 @@ class Pages extends SmartestSystemApplication{
 			
 			// verify the page details
 			
-			SmartestPersistentObject::get('__newPage')->setTitle(strlen($post['page_title']) ? htmlentities($post['page_title'], ENT_COMPAT, 'UTF-8') : 'Untitled Smartest Web Page');
-			SmartestPersistentObject::get('__newPage')->setName(strlen($post['page_title']) ? SmartestStringHelper::toSlug($post['page_title']) : SmartestStringHelper::toSlug('Untitled Smartest Web Page'));
-			SmartestPersistentObject::get('__newPage')->setCacheAsHtml($post['page_cache_as_html']);
-			SmartestPersistentObject::get('__newPage')->setCacheInterval($post['page_cache_interval']);
+			SmartestPersistentObject::get('__newPage')->setTitle(strlen($this->getRequestParameter('page_title')) ? htmlentities($this->getRequestParameter('page_title'), ENT_COMPAT, 'UTF-8') : 'Untitled Smartest Web Page');
+			SmartestPersistentObject::get('__newPage')->setName(strlen($this->getRequestParameter('page_title')) ? SmartestStringHelper::toSlug($this->getRequestParameter('page_title')) : SmartestStringHelper::toSlug('Untitled Smartest Web Page'));
+			SmartestPersistentObject::get('__newPage')->setCacheAsHtml($this->getRequestParameter('page_cache_as_html'));
+			SmartestPersistentObject::get('__newPage')->setCacheInterval($this->getRequestParameter('page_cache_interval'));
 			SmartestPersistentObject::get('__newPage')->setIsPublished('FALSE');
 			SmartestPersistentObject::get('__newPage')->setChangesApproved(0);
-			SmartestPersistentObject::get('__newPage')->setSearchField(htmlentities(strip_tags($post['page_search_field']), ENT_COMPAT, 'UTF-8'));
+			SmartestPersistentObject::get('__newPage')->setSearchField(htmlentities(strip_tags($this->getRequestParameter('page_search_field')), ENT_COMPAT, 'UTF-8'));
 			
-			if(strlen($post['page_url']) && substr($post['page_url'], 0, 18) != 'website/renderPage'){
-			    SmartestPersistentObject::get('__newPage')->addUrl($post['page_url']); 
-			    $url = $post['page_url'];
+			if(strlen($this->getRequestParameter('page_url')) && substr($this->getRequestParameter('page_url'), 0, 18) != 'website/renderPage'){
+			    SmartestPersistentObject::get('__newPage')->addUrl($this->getRequestParameter('page_url')); 
+			    $url = $this->getRequestParameter('page_url');
 		    }else{
 		        
 		        if(SmartestPersistentObject::get('__newPage')->getType() == 'ITEMCLASS'){
@@ -1075,29 +1074,29 @@ class Pages extends SmartestSystemApplication{
 	            
 		    } 
 			
-			SmartestPersistentObject::get('__newPage')->setDraftTemplate($post['page_draft_template']);
-			SmartestPersistentObject::get('__newPage')->setDescription(strip_tags($post['page_description']));
-			SmartestPersistentObject::get('__newPage')->setMetaDescription(strip_tags($post['page_meta_description']));
-			SmartestPersistentObject::get('__newPage')->setKeywords(strip_tags($post['page_keywords']));
+			SmartestPersistentObject::get('__newPage')->setDraftTemplate($this->getRequestParameter('page_draft_template'));
+			SmartestPersistentObject::get('__newPage')->setDescription(strip_tags($this->getRequestParameter('page_description')));
+			SmartestPersistentObject::get('__newPage')->setMetaDescription(strip_tags($this->getRequestParameter('page_meta_description')));
+			SmartestPersistentObject::get('__newPage')->setKeywords(strip_tags($this->getRequestParameter('page_keywords')));
 			
-			if(isset($_REQUEST['page_id'])){
-				SmartestPersistentObject::get('__newPage')->setParent($_REQUEST['page_id']);
+			if($this->getRequestParameter('page_id')){
+				SmartestPersistentObject::get('__newPage')->setParent($this->getRequestParameter('page_id'));
 			}
 			
-			if(isset($post['page_preset'])){
-				SmartestSession::set('__newPage_preset_id', $post['page_preset']);
+			if($this->getRequestParameter('page_preset')){
+				SmartestSession::set('__newPage_preset_id', $this->getRequestParameter('page_preset'));
 			}
 			
-			if(isset($post['page_model'])){
-				SmartestPersistentObject::get('__newPage')->setDatasetId($post['page_model']);
+			if($this->getRequestParameter('page_model')){
+				SmartestPersistentObject::get('__newPage')->setDatasetId($this->getRequestParameter('page_model'));
 				$model = new SmartestModel;
-				$model->hydrate($post['page_model']);
+				$model->hydrate($this->getRequestParameter('page_model'));
 			}
 			
-			if(isset($post['page_tag'])){
-				SmartestPersistentObject::get('__newPage')->setDatasetId($post['page_tag']);
+			if($this->getRequestParameter('page_tag')){
+				SmartestPersistentObject::get('__newPage')->setDatasetId($this->getRequestParameter('page_tag'));
 				$tag = new SmartestTag;
-				$tag->hydrate($post['page_tag']);
+				$tag->hydrate($this->getRequestParameter('page_tag'));
 			}
 			
 			$type_template = strtolower(SmartestPersistentObject::get('__newPage')->getType());
@@ -1109,7 +1108,7 @@ class Pages extends SmartestSystemApplication{
 			if(isset($url) && !$urlObj->hydrateBy('url', $url)){
 			    $newPage['url'] = $url;
 		    }else{
-		        $newPage['url'] = SM_CONTROLLER_DOMAIN.'website/renderPageById?page_id='.SmartestPersistentObject::get('__newPage')->getWebid();
+		        $newPage['url'] = $this->getRequest()->getDomain().'website/renderPageById?page_id='.SmartestPersistentObject::get('__newPage')->getWebid();
 		    }
 			
 			// should the page have a preset?
@@ -1151,9 +1150,9 @@ class Pages extends SmartestSystemApplication{
 			
 			$parent = new SmartestPage;
 			
-			if(isset($get['page_id']) && !isset($site_id)){
+			if($this->getRequestParameter('page_id') && !isset($site_id)){
 			    
-			    $parent_id = $get['page_id'];
+			    $parent_id = $this->getRequestParameter('page_id');
 			    $parent->findBy('webid', $parent_id);
 				
 				$site_id = $parent->getSiteId();
@@ -1214,7 +1213,7 @@ class Pages extends SmartestSystemApplication{
     		    SmartestCache::clear('site_pages_tree_'.$site_id, true);
 	            SmartestPersistentObject::clear('__newPage');
 	    
-	            switch($post['destination']){
+	            switch($this->getRequestParameter('destination')){
 			
         			case "SITEMAP":
         			$this->addUserMessageToNextRequest("Your page was successfully added.", SmartestUserMessage::SUCCESS);
@@ -1258,31 +1257,31 @@ class Pages extends SmartestSystemApplication{
         
         $page = new SmartestPage;
         
-        if($page->hydrate($post['page_id'])){
+        if($page->hydrate($this->getRequestParameter('page_id'))){
             
-            $page->setTitle($post['page_title']);
+            $page->setTitle($this->getRequestParameter('page_title'));
             
-            if(isset($post['page_name']) && strlen($post['page_name']) && $this->getUser()->hasToken('edit_page_name')){
-                $page->setName(SmartestStringHelper::toSlug($post['page_name']));
+            if($this->getRequestParameter('page_name') && strlen($this->getRequestParameter('page_name')) && $this->getUser()->hasToken('edit_page_name')){
+                $page->setName(SmartestStringHelper::toSlug($this->getRequestParameter('page_name')));
             }
             
-            $page->setParent($post['page_parent']);
-            $page->setForceStaticTitle((isset($post['page_force_static_title']) && ($post['page_force_static_title'] == 'true')) ? 1 : 0);
-            $page->setIsSection((isset($post['page_is_section']) && ($post['page_is_section'] == 'true')) ? 1 : 0);
-            $page->setCacheAsHtml($post['page_cache_as_html']);
-            $page->setCacheInterval($post['page_cache_interval']);
-            $page->setIconImage($post['page_icon_image']);
+            $page->setParent($this->getRequestParameter('page_parent'));
+            $page->setForceStaticTitle(($this->getRequestParameter('page_force_static_title') && ($this->getRequestParameter('page_force_static_title') == 'true')) ? 1 : 0);
+            $page->setIsSection(($this->getRequestParameter('page_is_section') && ($this->getRequestParameter('page_is_section') == 'true')) ? 1 : 0);
+            $page->setCacheAsHtml($this->getRequestParameter('page_cache_as_html'));
+            $page->setCacheInterval($this->getRequestParameter('page_cache_interval'));
+            $page->setIconImage($this->getRequestParameter('page_icon_image'));
             
             if($page->getType() == 'NORMAL'){
-                $page->setSearchField(strip_tags($post['page_search_field']));
-                $page->setKeywords(strip_tags($post['page_keywords']));
-                $page->setDescription(strip_tags($post['page_description']));
-                $page->setMetaDescription(strip_tags($post['page_meta_description']));
+                $page->setSearchField(strip_tags($this->getRequestParameter('page_search_field')));
+                $page->setKeywords(strip_tags($this->getRequestParameter('page_keywords')));
+                $page->setDescription(strip_tags($this->getRequestParameter('page_description')));
+                $page->setMetaDescription(strip_tags($this->getRequestParameter('page_meta_description')));
             }
             
             if($page->getType() == 'ITEMCLASS'){
-                if(isset($post['page_parent_data_source']) && strlen($post['page_parent_data_source'])){
-                    $page->setParentMetaPageReferringPropertyId($post['page_parent_data_source']);
+                if($this->getRequestParameter('page_parent_data_source') && strlen($this->getRequestParameter('page_parent_data_source'))){
+                    $page->setParentMetaPageReferringPropertyId($this->getRequestParameter('page_parent_data_source'));
                 }
             }
             
@@ -1291,7 +1290,7 @@ class Pages extends SmartestSystemApplication{
             $this->addUserMessageToNextRequest('The page was successfully updated.', SmartestUserMessage::SUCCESS);
             
         }else{
-            $this->addUserMessageToNextRequest('There was an error updating page ID '.$post['page_id'].'.', SmartestUserMessage::ERROR);
+            $this->addUserMessageToNextRequest('There was an error updating page ID '.$this->getRequestParameter('page_id').'.', SmartestUserMessage::ERROR);
         }
         
 		$this->formForward();
@@ -1302,13 +1301,13 @@ class Pages extends SmartestSystemApplication{
 	    
 	    if($this->getUser()->hasToken('modify_draft_pages')){
 	        
-	        $page_webid = $get['page_id'];
+	        $page_webid = $this->getRequestParameter('page_id');
 	        
 	        $helper = new SmartestPageManagementHelper;
     		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
 
     		if(isset($type_index[$page_webid])){
-    		    if($type_index[$page_webid] == 'ITEMCLASS' && isset($get['item_id']) && is_numeric($get['item_id'])){
+    		    if($type_index[$page_webid] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
     		        $page = new SmartestItemPage;
     		    }else{
     		        $page = new SmartestPage;
@@ -1323,7 +1322,7 @@ class Pages extends SmartestSystemApplication{
 	                $this->send(true, 'show_deleted_warning');
 	            }
 	            
-	            if($page->getType() == 'ITEMCLASS' && (!isset($get['item_id']) || !is_numeric($get['item_id']))){
+	            if($page->getType() == 'ITEMCLASS' && ($this->getRequestParameter('item_id') || !is_numeric($this->getRequestParameter('item_id')))){
 	            
     	            $model = new SmartestModel;
             
@@ -1346,7 +1345,7 @@ class Pages extends SmartestSystemApplication{
 	                $this->send(false, 'require_item_select');
 	                
 	                if($page->getType() == 'ITEMCLASS'){
-        	            if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+        	            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
         	                
         	                $page->setPrincipalItem($item);
         	                $recent_items = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $item->getItem()->getItemclassId());
@@ -1381,18 +1380,16 @@ class Pages extends SmartestSystemApplication{
     		        $this->setFormReturnUri();
     		        $this->setFormReturnDescription('page elements tree');
 		
-            		// $definedAssets = $this->manager->getDefinedPageAssetsList($get['page_id']);
-            		$version = (!empty($get['version']) && $get['version'] == "live") ? "live" : "draft";
+            		$version = ($this->getRequestParameter('version') && $this->getRequestParameter('version') == "live") ? "live" : "draft";
             		$field = ($version == "live") ? "page_live_template" : "page_draft_template";
 		            
 		            if($page->getType() == 'ITEMCLASS'){
-        		        $assetClasses = $this->manager->getPageTemplateAssetClasses($get['page_id'], $version, $item->getId());
+        		        $assetClasses = $this->manager->getPageTemplateAssetClasses($this->getRequestParameter('page_id'), $version, $item->getId());
     		        }else{
-    		            $assetClasses = $this->manager->getPageTemplateAssetClasses($get['page_id'], $version);
+    		            $assetClasses = $this->manager->getPageTemplateAssetClasses($this->getRequestParameter('page_id'), $version);
     		        }
             		
-            		$site_id = $this->database->specificQuery("page_site_id", "page_webid", $get['page_id'], "Pages");
-            		// $templates = $this->manager->getMasterTemplates($site_id);
+            		$site_id = $this->getSite()->getId();
             		$tlh = new SmartestTemplatesLibraryHelper;
             		$templates = $tlh->getMasterTemplates($this->getSite()->getId());
             		
@@ -1405,7 +1402,6 @@ class Pages extends SmartestSystemApplication{
             		}
             		
             		$template_object = $tlh->hydrateMasterTemplateByFileName($template_name, $this->getSite()->getId());
-            		// print_r($template_object);
             		
             		$this->send((!$tlh->getMasterTemplateHasBeenImported($page->getDraftTemplate()) && $version == 'draft'), 'show_template_warning');
     		
@@ -1419,8 +1415,7 @@ class Pages extends SmartestSystemApplication{
 		
             		$mode = 'advanced';
     		
-            		// $sub_template = ($mode == "basic") ? "getPageAssets.basic.tpl" : "getPageAssets.advanced.tpl";
-        		    $sub_template = "getPageAssets.advanced.tpl";
+            		$sub_template = "getPageAssets.advanced.tpl";
 		            
 		            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
             		$this->send($assetClasses["tree"], "assets");
@@ -1452,7 +1447,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $this->setTitle('Page Tags');
 	    
-	    $page_id = $get['page_id'];
+	    $page_id = $this->getRequestParameter('page_id');
 	    $page = new SmartestPage;
 	    
 	    if($page->hydrate($page_id)){
@@ -1520,14 +1515,14 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $page = new SmartestPage;
 	    
-	    if($page->hydrate($post['page_id'])){
+	    if($page->hydrate($this->getRequestParameter('page_id'))){
 	    
 	        $du  = new SmartestDataUtility;
             $tags = $du->getTags();
         
-            if(is_array($post['tags'])){
+            if(is_array($this->getRequestParameter('tags'))){
                 
-                $page_new_tag_ids = array_keys($post['tags']);
+                $page_new_tag_ids = array_keys($this->getRequestParameter('tags'));
                 $page_current_tag_ids = $page->getTagIdsArray();
                 
                 foreach($tags as $t){
@@ -1565,7 +1560,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $page = new SmartestPage;
 	    $page->setDraftMode(true);
-	    $page_webid = $get['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 	    
 	    if($page->hydrate($page_webid)){
 	        
@@ -1620,13 +1615,13 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $page = new SmartestPage;
 	    $page->setDraftMode(true);
-	    $page_webid = $get['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 	    
 	    if($page->hydrate($page_webid)){
 	        
-	        if(isset($get['model_id'])){
+	        if($this->getRequestParameter('model_id')){
 	            
-	            $model_id = (int) $get['model_id'];
+	            $model_id = (int) $this->getRequestParameter('model_id');
 	            $model = new SmartestModel;
 	            
 	            if($model->hydrate($model_id)){
@@ -1669,13 +1664,13 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $page = new SmartestPage;
 	    $page->setDraftMode(true);
-	    $page_webid = $post['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 	    
 	    if($page->hydrate($page_webid)){
 	        
-	        if(isset($post['pages']) && is_array($post['pages'])){
+	        if($this->getRequestParameter('pages') && is_array($this->getRequestParameter('pages'))){
 	            
-	            $new_related_ids = array_keys($post['pages']);
+	            $new_related_ids = array_keys($this->getRequestParameter('pages'));
 	            
 	            if(count($new_related_ids)){
 	            
@@ -1717,17 +1712,17 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $page = new SmartestPage;
 	    $page->setDraftMode(true);
-	    $page_webid = $post['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 	    
 	    if($page->hydrate($page_webid)){
 	        
-	        if(isset($post['items']) && is_array($post['items'])){
+	        if($this->getRequestParameter('items') && is_array($this->getRequestParameter('items'))){
 	            
-	            $new_related_ids = array_keys($post['items']);
+	            $new_related_ids = array_keys($this->getRequestParameter('items'));
 	            
 	            $model = new SmartestModel;
 	            
-	            if($model->hydrate($post['model_id'])){
+	            if($model->hydrate($this->getRequestParameter('model_id'))){
 	            
 	                if(count($new_related_ids)){
 	            
@@ -1768,11 +1763,11 @@ class Pages extends SmartestSystemApplication{
 	
 	public function authors($get){
 	    
-	    if(!isset($get['from'])){
+	    if(!$this->getRequestParameter('from')){
 	        $this->setFormReturnUri();
 	    }
 	    
-	    $page_webid = $get['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 	    
 	    $page = new SmartestPage;
 	    $page->setDraftMode(true);
@@ -1795,19 +1790,19 @@ class Pages extends SmartestSystemApplication{
 	
 	public function updateAuthors($get, $post){
 	    
-	    $page_id = (int) $post['page_id'];
+	    $page_id = (int) $this->getRequestParameter('page_id');
 	    
 	    $page = new SmartestPage;
 	    $page->setDraftMode(true);
 	    
 	    if($page->hydrate($page_id)){
 	        
-	        if(isset($post['users']) && count($post['users'])){
+	        if($this->getRequestParameter('users') && count($this->getRequestParameter('users'))){
 	            
 	            $uhelper = new SmartestUsersHelper;
                 $users = $uhelper->getUsersOnSite($this->getSite()->getId());
             
-                $new_author_ids = array_keys($post['users']);
+                $new_author_ids = array_keys($this->getRequestParameter('users'));
                 $old_author_ids = $page->getAuthorIds();
                 
                 foreach($users as $u){
@@ -1851,22 +1846,22 @@ class Pages extends SmartestSystemApplication{
 	
 		$this->setFormReturnUri();
 		
-		$version = ($get['version'] == "live") ? "live" : "draft";
+		$version = ($this->getRequestParameter('version') == "live") ? "live" : "draft";
 		$field = ($version == "live") ? "page_live_template" : "page_draft_template";
 		
-		$elements = $this->manager->getPageElements($get['page_id'], $version);
+		$elements = $this->manager->getPageElements($this->getRequestParameter('page_id'), $version);
 		
 	}
 	
 	public function layoutPresetForm($get){
 		
-		$page_webid = $get['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		
 		$helper = new SmartestPageManagementHelper;
 		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
 
 		if(isset($type_index[$page_webid])){
-		    if($type_index[$page_webid] == 'ITEMCLASS' && isset($get['item_id']) && is_numeric($get['item_id'])){
+		    if($type_index[$page_webid] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		        $page = new SmartestItemPage;
 		    }else{
 		        $page = new SmartestPage;
@@ -1878,10 +1873,10 @@ class Pages extends SmartestSystemApplication{
 		if($page->hydrate($page_webid)){
 		    
 		    if($page->getType() == 'ITEMCLASS'){
-	            if(isset($get['item_id']) && $item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+	            if($this->getRequestParameter('item_id') && $item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
 	                $page->setPrincipalItem($item);
 	                $this->send($item, 'item');
-	                $item_id = $get['item_id'];
+	                $item_id = $this->getRequestParameter('item_id');
 	            }else{
 	                $item_id = false;
 	            }
@@ -1903,11 +1898,11 @@ class Pages extends SmartestSystemApplication{
 	
 	function createLayoutPreset($get, $post){
 	
-		/* $page_id = $post['page_id'];
+		/* $page_id = $this->getRequestParameter('page_id');
 		$user_id = $_SESSION['user']['user_id'];
-		$plp_name = $post['layoutpresetname'];
+		$plp_name = $this->getRequestParameter('layoutpresetname');
 		$master_template =  $this->database->specificQuery("page_live_template", "page_id", $page_id, "Pages");
-		$assets = $post['asset'];
+		$assets = $this->getRequestParameter('asset');
 		
 		$this->manager->setupLayoutPreset($plp_name, $assets, $master_template, $user_id, $page_id); */
 		
@@ -1915,38 +1910,38 @@ class Pages extends SmartestSystemApplication{
 		
 		$preset = new SmartestPagePreset;
 		
-		$preset->setOrigFromPageId($post['page_id']);
+		$preset->setOrigFromPageId($this->getRequestParameter('page_id'));
 		$preset->setMasterTemplateName($preset->getOriginalPage()->getDraftTemplate());
 		$preset->setCreatedByUserId($this->getUser()->getId());
-		$preset->setLabel($post['preset_name']);
+		$preset->setLabel($this->getRequestParameter('preset_name'));
 		$preset->setSiteId($this->getSite()->getId());
-		$shared = isset($post['preset_shared']) ? 1 : 0;
+		$shared = $this->getRequestParameter('preset_shared') ? 1 : 0;
 		$preset->setShared($shared);
 		
-		if(isset($post['placeholder']) && is_array($post['placeholder'])){
+		if($this->getRequestParameter('placeholder') && is_array($this->getRequestParameter('placeholder'))){
 		    
-		    $num_elements += count($post['placeholder']);
+		    $num_elements += count($this->getRequestParameter('placeholder'));
 		    
-		    foreach($post['placeholder'] as $placeholder_id){
+		    foreach($this->getRequestParameter('placeholder') as $placeholder_id){
 		        $preset->addPlaceholderDefinition($placeholder_id);
 		    }
 		    
 		}
 		
-		if(isset($post['container']) && is_array($post['container'])){
-		    $num_elements += count($post['container']);
+		if($this->getRequestParameter('container') && is_array($this->getRequestParameter('container'))){
+		    $num_elements += count($this->getRequestParameter('container'));
 		    
-		    foreach($post['container'] as $container_id){
+		    foreach($this->getRequestParameter('container') as $container_id){
 		        $preset->addContainerDefinition($container_id);
 		    }
 		    
 		}
 		
-		if(isset($post['field']) && is_array($post['field'])){
+		if($this->getRequestParameter('field') && is_array($this->getRequestParameter('field'))){
 		    
-		    $num_elements += count($post['field']);
+		    $num_elements += count($this->getRequestParameter('field'));
 		    
-		    foreach($post['field'] as $field_id){
+		    foreach($this->getRequestParameter('field') as $field_id){
 		        $preset->addFieldDefinition($field_id);
 		    }
 		    
@@ -1962,8 +1957,8 @@ class Pages extends SmartestSystemApplication{
 	
 	public function defineContainer($get){
 	    
-	    $container_name = $get['assetclass_id'];
-	    $page_webid = $get['page_id'];
+	    $container_name = $this->getRequestParameter('assetclass_id');
+	    $page_webid = $this->getRequestParameter('page_id');
 	    
 	    $this->setTitle('Define Container');
 	    
@@ -1974,13 +1969,13 @@ class Pages extends SmartestSystemApplication{
 		    
 		    if($type_index[$page_webid] == 'ITEMCLASS'){
 		        
-		        if(isset($get['item_id']) && is_numeric($get['item_id'])){
+		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		            
-		            $item_id = (int) $get['item_id'];
+		            $item_id = (int) $this->getRequestParameter('item_id');
 		            
     		        $page = new SmartestItemPage;
 		        
-    		        if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+    		        if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
     	                $page->setPrincipalItem($item);
     	                $this->send($item, 'item');
     	                // rint_r($item['_model']);
@@ -2091,15 +2086,15 @@ class Pages extends SmartestSystemApplication{
 	
 	public function updateContainerDefinition($get, $post){
 	    
-	    $container_id = $post['container_id'];
-	    $page_id = $post['page_id'];
-	    $asset_id = $post['asset_id'];
+	    $container_id = $this->getRequestParameter('container_id');
+	    $page_id = $this->getRequestParameter('page_id');
+	    $asset_id = $this->getRequestParameter('asset_id');
 	    
 	    $helper = new SmartestPageManagementHelper;
 		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
 		
 	    if(isset($type_index[$page_id])){
-		    if($type_index[$page_id] == 'ITEMCLASS' && isset($post['item_id']) && is_numeric($post['item_id'])){
+		    if($type_index[$page_id] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		        $page = new SmartestItemPage;
 		    }else{
 		        $page = new SmartestPage;
@@ -2138,7 +2133,7 @@ class Pages extends SmartestSystemApplication{
 	            $page->setChangesApproved(0);
                 $page->setModified(time()); */
                 
-                if($type_index[$page_id] == 'NORMAL' || (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] != 'THIS')){
+                if($type_index[$page_id] == 'NORMAL' || ($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id')) && $this->getRequestParameter('definition_scope') != 'THIS')){
 	                
 	                if($definition->loadForUpdate($container->getName(), $page, true)){
 	                    
@@ -2157,7 +2152,7 @@ class Pages extends SmartestSystemApplication{
 	                
 	                }
 	            
-	                if($post['definition_scope'] == 'ALL'){
+	                if($this->getRequestParameter('definition_scope') == 'ALL'){
 	                    
 	                    // DELETE ALL PER-ITEM DEFINITIONS
 	                    $pmh = new SmartestPageManagementHelper;
@@ -2167,7 +2162,7 @@ class Pages extends SmartestSystemApplication{
 	                
 	                $definition->save();
 	            
-                }else if($type_index[$page_id] == 'ITEMCLASS' && (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] == 'THIS')){
+                }else if($type_index[$page_id] == 'ITEMCLASS' && ($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id')) && $this->getRequestParameter('definition_scope') == 'THIS')){
                     
                     if($definition->loadForUpdate($container->getName(), $page, true)){ // looks for all-items definition
 	                    
@@ -2177,60 +2172,60 @@ class Pages extends SmartestSystemApplication{
 	                    if($definition->getDraftAssetId() == $asset_id){ 
 	                        
 	                        // if there is already a per-item definitions for this item
-	                        if($item_def->loadForUpdate($container->getName(), $page, false, $post['item_id'])){
+	                        if($item_def->loadForUpdate($container->getName(), $page, false, $this->getRequestParameter('item_id'))){
 	                            
 	                            $item_def->delete();
                                 
 	                        }
 	                        
-	                        $log_message = $this->getUser()->__toString()." set container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." (which is the same as the all-items definition) when displaying item ID ".$post['item_id'].".";
+	                        $log_message = $this->getUser()->__toString()." set container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." (which is the same as the all-items definition) when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                    
 	                    }else{
 	                        
-	                        if($item_def->loadForUpdate($container->getName(), $page, true, $post['item_id'])){
+	                        if($item_def->loadForUpdate($container->getName(), $page, true, $this->getRequestParameter('item_id'))){
 	                            // just update container
 	                            $item_def->setDraftAssetId($asset_id);
-	                            $log_message = $this->getUser()->__toString()." updated container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                            $log_message = $this->getUser()->__toString()." updated container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                        }else{
 	                            $item_def->setDraftAssetId($asset_id);
         	                    $item_def->setAssetclassId($container_id);
-        	                    $item_def->setItemId($post['item_id']);
+        	                    $item_def->setItemId($this->getRequestParameter('item_id'));
         	                    $item_def->setInstanceName('default');
         	                    $item_def->setPageId($page->getId());
-	                            $log_message = $this->getUser()->__toString()." defined container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                            $log_message = $this->getUser()->__toString()." defined container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                        }
 	                        
 	                        $item_def->save();
 	                        
 	                    }
 	                
-	                }else if($definition->loadForUpdate($container->getName(), $page, true, $post['item_id']) && $post['definition_scope'] == 'THIS'){
+	                }else if($definition->loadForUpdate($container->getName(), $page, true, $this->getRequestParameter('item_id')) && $this->getRequestParameter('definition_scope') == 'THIS'){
 	                    
 	                    // all-items definition doesn't exist but per-item for this item does
 	                    $definition->setDraftAssetId($asset_id);
 	                    
-	                    if(is_array($post['params'])){
-    	                    $definition->setDraftRenderData(serialize($post['params']));
+	                    if(is_array($this->getRequestParameter('params'))){
+    	                    $definition->setDraftRenderData(serialize($this->getRequestParameter('params')));
     	                }
     	                
     	                $definition->save();
-    	                $log_message = $this->getUser()->__toString()." updated container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+    	                $log_message = $this->getUser()->__toString()." updated container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                    
 	                }else{
 	                    
 	                    // wasn't already defined for any items at all. Define for this item
 	                    $definition->setDraftAssetId($asset_id);
 	                    $definition->setAssetclassId($container_id);
-	                    if($post['definition_scope'] == 'THIS'){$definition->setItemId($post['item_id']);}
+	                    if($this->getRequestParameter('definition_scope') == 'THIS'){$definition->setItemId($this->getRequestParameter('item_id'));}
 	                    $definition->setInstanceName('default');
 	                    $definition->setPageId($page->getId());
 	                    
-	                    if(is_array($post['params'])){
-    	                    $definition->setDraftRenderData(serialize($post['params']));
+	                    if(is_array($this->getRequestParameter('params'))){
+    	                    $definition->setDraftRenderData(serialize($this->getRequestParameter('params')));
     	                }
     	                
     	                $definition->save();
-    	                $log_message = $this->getUser()->__toString()." defined container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+    	                $log_message = $this->getUser()->__toString()." defined container '".$container->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                    
 	                }
 	                
@@ -2261,8 +2256,8 @@ class Pages extends SmartestSystemApplication{
 	
 	public function definePlaceholder($get){
 	    
-	    $placeholder_name = $get['assetclass_id'];
-	    $page_webid = $get['page_id'];
+	    $placeholder_name = $this->getRequestParameter('assetclass_id');
+	    $page_webid = $this->getRequestParameter('page_id');
 	    
 	    $this->setTitle('Define Placeholder');
 	    
@@ -2273,13 +2268,13 @@ class Pages extends SmartestSystemApplication{
 		    
 		    if($type_index[$page_webid] == 'ITEMCLASS'){
 		        
-		        if(isset($get['item_id']) && is_numeric($get['item_id'])){
+		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		            
-		            $item_id = (int) $get['item_id'];
+		            $item_id = (int) $this->getRequestParameter('item_id');
 		            
     		        $page = new SmartestItemPage;
 		        
-    		        if($item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+    		        if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
     	                $page->setPrincipalItem($item);
     	                $this->send($item, 'item');
     	                $this->send(true, 'show_item_options');
@@ -2377,9 +2372,9 @@ class Pages extends SmartestSystemApplication{
                 
                 $asset = new SmartestAsset;
                 
-                if($get['chosen_asset_id']){
+                if($this->getRequestParameter('chosen_asset_id')){
                     
-                    $chosen_asset_id = (int) $get['chosen_asset_id'];
+                    $chosen_asset_id = (int) $this->getRequestParameter('chosen_asset_id');
                     $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
                     
         	    }else{
@@ -2478,15 +2473,15 @@ class Pages extends SmartestSystemApplication{
 	
 	public function updatePlaceholderDefinition($get, $post){
 	    
-	    $placeholder_id = $post['placeholder_id'];
-	    $page_id = $post['page_id'];
-	    $asset_id = $post['asset_id'];
+	    $placeholder_id = $this->getRequestParameter('placeholder_id');
+	    $page_id = $this->getRequestParameter('page_id');
+	    $asset_id = $this->getRequestParameter('asset_id');
 	    
 	    $helper = new SmartestPageManagementHelper;
 		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
 		
 	    if(isset($type_index[$page_id])){
-		    if($type_index[$page_id] == 'ITEMCLASS' && isset($post['item_id']) && is_numeric($post['item_id'])){
+		    if($type_index[$page_id] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		        $page = new SmartestItemPage;
 		    }else{
 		        $page = new SmartestPage;
@@ -2504,7 +2499,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $definition = new SmartestPlaceholderDefinition;
 	            
-	            if($type_index[$page_id] == 'NORMAL' || (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] != 'THIS')){
+	            if($type_index[$page_id] == 'NORMAL' || ($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id')) && $this->getRequestParameter('definition_scope') != 'THIS')){
 	                
 	                if($definition->loadForUpdate($placeholder->getName(), $page)){
 	                
@@ -2523,11 +2518,11 @@ class Pages extends SmartestSystemApplication{
 	                
 	                }
 	            
-	                if(is_array($post['params'])){
-	                    $definition->setDraftRenderData(serialize($post['params']));
+	                if(is_array($this->getRequestParameter('params'))){
+	                    $definition->setDraftRenderData(serialize($this->getRequestParameter('params')));
 	                }
 	                
-	                if($post['definition_scope'] == 'ALL'){
+	                if($this->getRequestParameter('definition_scope') == 'ALL'){
 	                    
 	                    // DELETE ALL PER-ITEM DEFINITIONS
 	                    $pmh = new SmartestPageManagementHelper;
@@ -2537,7 +2532,7 @@ class Pages extends SmartestSystemApplication{
 	                
 	                $definition->save();
 	            
-                }else if($type_index[$page_id] == 'ITEMCLASS' && (isset($post['item_id']) && is_numeric($post['item_id']) && $post['definition_scope'] == 'THIS')){
+                }else if($type_index[$page_id] == 'ITEMCLASS' && ($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id')) && $this->getRequestParameter('definition_scope') == 'THIS')){
                     
                     if($definition->loadForUpdate($placeholder->getName(), $page)){ // looks for all-items definition
 	                    
@@ -2546,8 +2541,8 @@ class Pages extends SmartestSystemApplication{
 	                    // item chosen is same as all-items definition
 	                    if($definition->getDraftAssetId() == $asset_id){ 
 	                        
-	                        if(is_array($post['params'])){
-	                            $now_prms = $post['params']; // copy needs to be made here because ksort() does not return
+	                        if(is_array($this->getRequestParameter('params'))){
+	                            $now_prms = $this->getRequestParameter('params'); // copy needs to be made here because ksort() does not return
 	                            $ex_prms = $definition->getRenderData(true);
 	                            $default_def_params_hash = md5(serialize($ex_prms));
 	                            $this_item_params_hash = md5(serialize($now_prms));
@@ -2557,11 +2552,11 @@ class Pages extends SmartestSystemApplication{
                             }
 	                        
 	                        // if there is already a per-item definitions for this item
-	                        if($item_def->loadForUpdate($placeholder->getName(), $page, $post['item_id'])){
+	                        if($item_def->loadForUpdate($placeholder->getName(), $page, $this->getRequestParameter('item_id'))){
 	                            
 	                            if($has_params && ($default_def_params_hash != $this_item_params_hash)){
 	                                // don't delete, because display params are different to default.
-	                                $item_def->setDraftRenderData(serialize($post['params']));
+	                                $item_def->setDraftRenderData(serialize($this->getRequestParameter('params')));
 	                                $item_def->save();
 	                            }else{
 	                                $item_def->delete();
@@ -2571,67 +2566,67 @@ class Pages extends SmartestSystemApplication{
 	                            if($has_params && ($default_def_params_hash != $this_item_params_hash)){
 	                                $item_def->setDraftAssetId($asset_id);
         	                        $item_def->setAssetclassId($placeholder_id);
-        	                        $item_def->setItemId($post['item_id']);
+        	                        $item_def->setItemId($this->getRequestParameter('item_id'));
         	                        $item_def->setInstanceName('default');
         	                        $item_def->setPageId($page->getId());
-	                                $item_def->setDraftRenderData(serialize($post['params']));
+	                                $item_def->setDraftRenderData(serialize($this->getRequestParameter('params')));
                                     $item_def->save();
                                 }
                                 
 	                        }
 	                        
-	                        $log_message = $this->getUser()->__toString()." set placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." (which is the same as the all-items definition) when displaying item ID ".$post['item_id'].".";
+	                        $log_message = $this->getUser()->__toString()." set placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." (which is the same as the all-items definition) when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                    
 	                    }else{
 	                        
-	                        if($item_def->loadForUpdate($placeholder->getName(), $page, $post['item_id'])){
+	                        if($item_def->loadForUpdate($placeholder->getName(), $page, $this->getRequestParameter('item_id'))){
 	                            // just update placeholder
 	                            $item_def->setDraftAssetId($asset_id);
-	                            $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                            $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                        }else{
 	                            $item_def->setDraftAssetId($asset_id);
         	                    $item_def->setAssetclassId($placeholder_id);
-        	                    $item_def->setItemId($post['item_id']);
+        	                    $item_def->setItemId($this->getRequestParameter('item_id'));
         	                    $item_def->setInstanceName('default');
         	                    $item_def->setPageId($page->getId());
-	                            $log_message = $this->getUser()->__toString()." defined placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+	                            $log_message = $this->getUser()->__toString()." defined placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                        }
 	                        
-	                        if(is_array($post['params'])){
-        	                    $item_def->setDraftRenderData(serialize($post['params']));
+	                        if(is_array($this->getRequestParameter('params'))){
+        	                    $item_def->setDraftRenderData(serialize($this->getRequestParameter('params')));
         	                }
         	                
         	                $item_def->save();
 	                        
 	                    }
 	                
-	                }else if($definition->loadForUpdate($placeholder->getName(), $page, $post['item_id'])){
+	                }else if($definition->loadForUpdate($placeholder->getName(), $page, $this->getRequestParameter('item_id'))){
 	                    
 	                    // all-items definition doesn't exist but per-item for this item does
 	                    $definition->setDraftAssetId($asset_id);
 	                    
-	                    if(is_array($post['params'])){
-    	                    $definition->setDraftRenderData(serialize($post['params']));
+	                    if(is_array($this->getRequestParameter('params'))){
+    	                    $definition->setDraftRenderData(serialize($this->getRequestParameter('params')));
     	                }
     	                
     	                $definition->save();
-    	                $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+    	                $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                    
 	                }else{
 	                    
 	                    // wasn't already defined for any items at all. Define for this item
 	                    $definition->setDraftAssetId($asset_id);
 	                    $definition->setAssetclassId($placeholder_id);
-	                    $definition->setItemId($post['item_id']);
+	                    $definition->setItemId($this->getRequestParameter('item_id'));
 	                    $definition->setInstanceName('default');
 	                    $definition->setPageId($page->getId());
 	                    
-	                    if(is_array($post['params'])){
-    	                    $definition->setDraftRenderData(serialize($post['params']));
+	                    if(is_array($this->getRequestParameter('params'))){
+    	                    $definition->setDraftRenderData(serialize($this->getRequestParameter('params')));
     	                }
     	                
     	                $definition->save();
-    	                $log_message = $this->getUser()->__toString()." defined placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$post['item_id'].".";
+    	                $log_message = $this->getUser()->__toString()." defined placeholder '".$placeholder->getName()."' on meta-page '".$page->getTitle(true)."' to use asset ID ".$asset_id." when displaying item ID ".$this->getRequestParameter('item_id').".";
 	                    
 	                }
 	                
@@ -2662,9 +2657,9 @@ class Pages extends SmartestSystemApplication{
 	
 	public function undefinePlaceholder($get, $post){
 	    
-	    $placeholder_id = $get['assetclass_id'];
-	    $page_id = $get['page_id'];
-	    $item_id = isset($get['item_id']) ? $get['item_id'] : false;
+	    $placeholder_id = $this->getRequestParameter('assetclass_id');
+	    $page_id = $this->getRequestParameter('page_id');
+	    $item_id = $this->getRequestParameter('item_id') ? $this->getRequestParameter('item_id') : false;
 	    
 	    $this->setTitle('Un-Define Placeholder');
 	    
@@ -2723,9 +2718,9 @@ class Pages extends SmartestSystemApplication{
 	
 	public function undefinePlaceholderOnItemPage($get, $post){
 	    
-	    $placeholder_id = $get['assetclass_id'];
-	    $page_id = $get['page_id'];
-	    $item_id = $get['item_id'];
+	    $placeholder_id = $this->getRequestParameter('assetclass_id');
+	    $page_id = $this->getRequestParameter('page_id');
+	    $item_id = $this->getRequestParameter('item_id');
 	    
 	    $this->setTitle('Un-Define Placeholder');
 	    
@@ -2777,8 +2772,8 @@ class Pages extends SmartestSystemApplication{
 	
 	public function undefineContainer($get, $post){
 	    
-	    $container_id = $get['assetclass_id'];
-	    $page_id = $get['page_id'];
+	    $container_id = $this->getRequestParameter('assetclass_id');
+	    $page_id = $this->getRequestParameter('page_id');
 	    
 	    $page = new SmartestPage;
 	    
@@ -2792,7 +2787,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $definition = new SmartestContainerDefinition;
 	            
-	            if(isset($get['item_id']) && $definition->loadForUpdate($container->getName(), $page, true, $get['item_id'])){
+	            if($this->getRequestParameter('item_id') && $definition->loadForUpdate($container->getName(), $page, true, $this->getRequestParameter('item_id'))){
 	            
 	                $definition->delete();
 	                $this->addUserMessageToNextRequest('The container definition was removed.', SmartestUserMessage::SUCCESS);
@@ -2835,8 +2830,8 @@ class Pages extends SmartestSystemApplication{
 	
 	public function undefineContainerOnItemPage($get, $post){
 	    
-	    $container_id = $get['assetclass_id'];
-	    $page_id = $get['page_id'];
+	    $container_id = $this->getRequestParameter('assetclass_id');
+	    $page_id = $this->getRequestParameter('page_id');
 	    
 	    $page = new SmartestPage;
 	    
@@ -2850,7 +2845,7 @@ class Pages extends SmartestSystemApplication{
 	            
 	            $definition = new SmartestContainerDefinition;
 	            
-	            if(isset($get['item_id']) && $definition->loadForUpdate($container->getName(), $page, true, $get['item_id'])){
+	            if($this->getRequestParameter('item_id') && $definition->loadForUpdate($container->getName(), $page, true, $this->getRequestParameter('item_id'))){
 	            
 	                $definition->delete();
 	                $this->addUserMessageToNextRequest('The container definition was removed.', SmartestUserMessage::SUCCESS);
@@ -2885,8 +2880,8 @@ class Pages extends SmartestSystemApplication{
 	
 	public function editAttachment($get){
 	    
-	    $id = $get['assetclass_id'];
-	    $page_webid = $get['page_id'];
+	    $id = $this->getRequestParameter('assetclass_id');
+	    $page_webid = $this->getRequestParameter('page_id');
 	    $parts = explode('/', $id);
 	    $asset_stringid = $parts[0];
 	    $attachment = $parts[1];
@@ -2907,8 +2902,8 @@ class Pages extends SmartestSystemApplication{
 	
 	public function editFile($get){
 	    
-	    $id = $get['assetclass_id'];
-	    $page_webid = $get['page_id'];
+	    $id = $this->getRequestParameter('assetclass_id');
+	    $page_webid = $this->getRequestParameter('page_id');
 	    $asset = new SmartestAsset;
 	    
 	    if($asset->hydrateBy('stringid', $id, $this->getSite()->getId())){
@@ -2925,8 +2920,8 @@ class Pages extends SmartestSystemApplication{
 	
 	public function editTemplate($get){
 	    
-	    $id = $get['assetclass_id'];
-	    $page_webid = $get['page_id'];
+	    $id = $this->getRequestParameter('assetclass_id');
+	    $page_webid = $this->getRequestParameter('page_id');
 	    $asset = new SmartestTemplateAsset;
 	    
 	    if($asset->findBy('stringid', $id)){
@@ -2964,21 +2959,21 @@ class Pages extends SmartestSystemApplication{
 	
 	public function setDraftAsset($get){
 
-		$this->manager->setDraftAsset($get['page_id'], $get['assetclass_id'], $get['asset_id']);
+		$this->manager->setDraftAsset($this->getRequestParameter('page_id'), $this->getRequestParameter('assetclass_id'), $this->getRequestParameter('asset_id'));
 		$this->formForward();
 		
 	}
 	
 	function setLiveAsset($get){
 		
-		$this->manager->setLiveAsset($get['page_id'], $get['assetclass_id']);
+		$this->manager->setLiveAsset($this->getRequestParameter('page_id'), $this->getRequestParameter('assetclass_id'));
 		
-		$page_pk = $this->manager->database->specificQuery("page_id", "page_webid", $get['page_id'], "Pages");
+		$page_pk = $this->manager->database->specificQuery("page_id", "page_webid", $this->getRequestParameter('page_id'), "Pages");
 		
-		if(is_numeric($get['assetclass_id']) && @$get['assetclass_id']){
-			$assetclass = $this->manager->database->specificQuery("assetclass_name", "assetclass_id", $get['assetclass_id'], "AssetClasses");
+		if(is_numeric($this->getRequestParameter('assetclass_id')) && $this->getRequestParameter('assetclass_id')){
+			$assetclass = $this->manager->database->specificQuery("assetclass_name", "assetclass_id", $this->getRequestParameter('assetclass_id'), "AssetClasses");
 		}else{
-			$assetclass = $get['assetclass_id'];
+			$assetclass = $this->getRequestParameter('assetclass_id');
 		}
 		
 		
@@ -2993,7 +2988,7 @@ class Pages extends SmartestSystemApplication{
 	}
 	
 	/* function publishPageContainersConfirm($get){
-		$page_webid=$get['page_id'];
+		$page_webid=$this->getRequestParameter('page_id');
 		$version="draft";
 		$undefinedContainerClasses=$this->manager->publishPageContainersConfirm($page_webid,$version);
 		$count=count($undefinedContainerClasses);
@@ -3001,14 +2996,14 @@ class Pages extends SmartestSystemApplication{
 	}
 	
 	function publishPageContainers($get){
-		$page_webid=$get['page_id'];
+		$page_webid=$this->getRequestParameter('page_id');
 // 		echo $page_webid;
 		$this->manager->publishPageContainers($page_webid);
 		$this->formForward();
 	}
 	
 	function publishPagePlaceholdersConfirm($get){
-		$page_webid=$get['page_id'];
+		$page_webid=$this->getRequestParameter('page_id');
 		$version="draft";
 		$undefinedPlaceholderClasses=$this->manager->publishPagePlaceholdersConfirm($page_webid,$version);
 		$count=count($undefinedPlaceholderClasses);
@@ -3017,7 +3012,7 @@ class Pages extends SmartestSystemApplication{
 	}
 	
 	function publishPagePlaceholders($get){
-		$page_webid=$get['page_id'];
+		$page_webid=$this->getRequestParameter('page_id');
 		$this->manager->publishPagePlaceholders($page_webid);
 		$this->formForward();
 	} */
@@ -3030,10 +3025,10 @@ class Pages extends SmartestSystemApplication{
 		
 		$helper = new SmartestPageManagementHelper;
 		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
-		$page_webid = $get['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		
 	    if(isset($type_index[$page_webid])){
-		    if($type_index[$page_webid] == 'ITEMCLASS' && isset($get['item_id']) && is_numeric($get['item_id'])){
+		    if($type_index[$page_webid] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		        $page = new SmartestItemPage;
 		    }else{
 		        $page = new SmartestPage;
@@ -3045,11 +3040,11 @@ class Pages extends SmartestSystemApplication{
 		if($page->hydrate($page_webid)){
 		    
 		    if($page->getType() == 'ITEMCLASS'){
-                if(isset($get['item_id']) && $item = SmartestCmsItem::retrieveByPk($get['item_id'])){
+                if($this->getRequestParameter('item_id') && $item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
                     
                     $page->setPrincipalItem($item);
                     $this->send($item, 'item');
-                    $item_id = $get['item_id'];
+                    $item_id = $this->getRequestParameter('item_id');
                     
                     $user_can_publish_item = ($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items');
                     
@@ -3097,8 +3092,8 @@ class Pages extends SmartestSystemApplication{
 	public function publishPage($get, $post){
 	    
 	    $page = new SmartestPage;
-	    $page_webid = $post['page_id'];
-	    if(isset($post['item_id'])){$item_id = $post['item_id'];}else{$item_id = false;}
+	    $page_webid = $this->getRequestParameter('page_id');
+	    if($this->getRequestParameter('item_id')){$item_id = $this->getRequestParameter('item_id');}else{$item_id = false;}
 	    
 	    if($page->hydrate($page_webid)){
 	        
@@ -3109,12 +3104,12 @@ class Pages extends SmartestSystemApplication{
 		        $page->publish($item_id);
 		        SmartestLog::getInstance('site')->log("{$this->getUser()} published page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        
-		        if(isset($post['item_id']) && $item = SmartestCmsItem::retrieveByPk($post['item_id'])){
+		        if($this->getRequestParameter('item_id') && $item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
                     
                     $user_can_publish_item = ($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items');
                     
                     if($user_can_publish_item){
-                        if($post['publish_item'] == 'PUBLISH'){
+                        if($this->getRequestParameter('publish_item') == 'PUBLISH'){
                             $item->publish();
                             $this->addUserMessageToNextRequest('The page and the item '.$item->getName().' have both been successfully published.', SmartestUserMessage::SUCCESS);
                         }else{
@@ -3146,7 +3141,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function unPublishPage($get){
 	    
-	    $page_webid = $get['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 		$page = new SmartestPage;
 		
 		if($page->hydrate($page_webid)){
@@ -3165,11 +3160,11 @@ class Pages extends SmartestSystemApplication{
 		
 		$this->setFormReturnUri();
 		
-		$page_webid = $get['page_id'];
-		$version = ($get['version'] == "live") ? "live" : "draft";
+		$page_webid = $this->getRequestParameter('page_id');
+		$version = ($this->getRequestParameter('version') == "live") ? "live" : "draft";
 		$field = ($version == "live") ? "page_live_template" : "page_draft_template";
-		$site_id = $this->database->specificQuery("page_site_id", "page_webid", $get['page_id'], "Pages");
-		$page = $this->manager->getPage($get['page_id']);
+		$site_id = $this->database->specificQuery("page_site_id", "page_webid", $this->getRequestParameter('page_id'), "Pages");
+		$page = $this->manager->getPage($this->getRequestParameter('page_id'));
 		$pageListNames = $this->manager->getPageLists($page_webid, $version);
  		
  		return array("pageListNames"=>$pageListNames,"page"=>$page,"version"=>$version,"templateMenuField"=>$page[$field],"site_id"=>$site_id);	
@@ -3179,9 +3174,9 @@ class Pages extends SmartestSystemApplication{
         
         $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/ListItems/');
         
-        $list_name = $get['assetclass_id'];
+        $list_name = $this->getRequestParameter('assetclass_id');
         
-        $page_webid = $get['page_id'];
+        $page_webid = $this->getRequestParameter('page_id');
         
         $page = new SmartestPage;
         
@@ -3223,8 +3218,8 @@ class Pages extends SmartestSystemApplication{
             $this->formForward();
         }
         
-		/* $page_id = $this->manager->getPageIdFromPageWebId($get['page_id']);
-		$list_name = $get['list_id'];
+		/* $page_id = $this->manager->getPageIdFromPageWebId($this->getRequestParameter('page_id'));
+		$list_name = $this->getRequestParameter('list_id');
 
 		$page = $this->manager->getPage($page_id);
 		$sets = $this->setsManager->getSets();
@@ -3246,9 +3241,9 @@ class Pages extends SmartestSystemApplication{
 	
 	function saveList($get, $post){
 	    
-	    $list_name = $post['list_name'];
+	    $list_name = $this->getRequestParameter('list_name');
         
-        $page_id = $post['page_id'];
+        $page_id = $this->getRequestParameter('page_id');
         
         $page = new SmartestPage;
         
@@ -3263,44 +3258,44 @@ class Pages extends SmartestSystemApplication{
                 $this->addUserMessageToNextRequest("The list \"".$list_name."\" was updated successfully.", SmartestUserMessage::SUCCESS);
             }else{
                 // this is a new list
-                $list->setName($post['list_name']);
+                $list->setName($this->getRequestParameter('list_name'));
                 $list->setPageId($page->getId());
                 $this->addUserMessageToNextRequest("The list \"".$list_name."\" was defined successfully.", SmartestUserMessage::SUCCESS);
             }
             
-            $list_type = in_array($post['list_type'], array('SM_LIST_ARTICULATED', 'SM_LIST_SIMPLE')) ? $post['list_type'] : 'SM_LIST_SIMPLE';
+            $list_type = in_array($this->getRequestParameter('list_type'), array('SM_LIST_ARTICULATED', 'SM_LIST_SIMPLE')) ? $this->getRequestParameter('list_type') : 'SM_LIST_SIMPLE';
             
             $list->setType($list_type);
-            $list->setMaximumLength((int) $post['list_maximum_length']);
-            $list->setTItle($post['list_title']);
+            $list->setMaximumLength((int) $this->getRequestParameter('list_maximum_length'));
+            $list->setTItle($this->getRequestParameter('list_title'));
             
             if($list_type == 'SM_LIST_ARTICULATED'){
             
                 $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/ListItems/');
             
-                if(is_numeric($post['dataset_id'])){
-                    $list->setDraftSetId($post['dataset_id']);
+                if(is_numeric($this->getRequestParameter('dataset_id'))){
+                    $list->setDraftSetId($this->getRequestParameter('dataset_id'));
                 }
             
-                if(in_array($post['header_template'], $templates)){
-                    $list->setDraftHeaderTemplate($post['header_template']);
+                if(in_array($this->getRequestParameter('header_template'), $templates)){
+                    $list->setDraftHeaderTemplate($this->getRequestParameter('header_template'));
                 }
             
-                if(in_array($post['footer_template'], $templates)){
-                    $list->setDraftFooterTemplate($post['footer_template']);
+                if(in_array($this->getRequestParameter('footer_template'), $templates)){
+                    $list->setDraftFooterTemplate($this->getRequestParameter('footer_template'));
                 }
             
-                if(in_array($post['main_template'], $templates)){
-                    $list->setDraftTemplateFile($post['main_template']);
+                if(in_array($this->getRequestParameter('main_template'), $templates)){
+                    $list->setDraftTemplateFile($this->getRequestParameter('main_template'));
                 }
             
             }else{
                 
-                if(is_numeric($post['dataset_id'])){
-                    $list->setDraftSetId((int) $post['dataset_id']);
+                if(is_numeric($this->getRequestParameter('dataset_id'))){
+                    $list->setDraftSetId((int) $this->getRequestParameter('dataset_id'));
                 }
                 
-                $list->setDraftTemplateFile($post['art_main_template']);
+                $list->setDraftTemplateFile($this->getRequestParameter('art_main_template'));
                 
             }
             
@@ -3331,9 +3326,9 @@ class Pages extends SmartestSystemApplication{
 	
 	public function clearList($get){
 	    
-	    $list_name = $get['assetclass_id'];
+	    $list_name = $this->getRequestParameter('assetclass_id');
         
-        $page_id = $get['page_id'];
+        $page_id = $this->getRequestParameter('page_id');
         
         $page = new SmartestPage;
         
@@ -3364,13 +3359,13 @@ class Pages extends SmartestSystemApplication{
 	
 	/* function insertList($get){
 		
-		$page_webid = $get['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		$page_id=$this->manager->getPageIdfromPageWebId($page_webid);
-		$list_name = $get['list_name'];
-		$set_id = $get['dataset'];
-		$list_template = $get['listtemplate_name'];
-		$header_template = $get['header_template'];
-		$footer_template = $get['footer_template'];
+		$list_name = $this->getRequestParameter('list_name');
+		$set_id = $this->getRequestParameter('dataset');
+		$list_template = $this->getRequestParameter('listtemplate_name');
+		$header_template = $this->getRequestParameter('header_template');
+		$footer_template = $this->getRequestParameter('footer_template');
 		$this->manager->insertList($page_id,$list_name,$set_id,$list_template,$header_template,$footer_template);
 		
 		$this->formForward();
@@ -3378,7 +3373,7 @@ class Pages extends SmartestSystemApplication{
 	} */
 	
 	public function publishListsConfirm($get){
-		$page_webid=$get['page_id'];
+		$page_webid=$this->getRequestParameter('page_id');
 		$version="draft";
 		$undefinedLists=$this->manager->publishListsConfirm($page_webid, $version);
 		$count=count($undefinedLists);
@@ -3386,14 +3381,14 @@ class Pages extends SmartestSystemApplication{
 	}
 	
 	public function publishPageLists($get){
-		$page_webid=$get['page_id'];
+		$page_webid=$this->getRequestParameter('page_id');
 		$this->manager->publishPageLists($page_webid);
 		$this->formForward();
 	}
 	
 	public function addItemSpace($get){
 	    
-	    $new_name = SmartestStringHelper::toVarName($get['name']);
+	    $new_name = SmartestStringHelper::toVarName($this->getRequestParameter('name'));
 	    $item_space = new SmartestItemSpace;
 	    
 	    if($item_space->exists($new_name, $this->getSite()->getId())){
@@ -3420,7 +3415,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function insertItemSpace($get, $post){
 	    
-	    $new_name = SmartestStringHelper::toVarName($post['itemspace_name']);
+	    $new_name = SmartestStringHelper::toVarName($this->getRequestParameter('itemspace_name'));
 	    $item_space = new SmartestItemSpace;
 	    
 	    if(strlen($new_name)){
@@ -3434,14 +3429,14 @@ class Pages extends SmartestSystemApplication{
 	            $item_space->setLabel($new_name);
 	            $item_space->setSiteId($this->getSite()->getId());
 	        
-	            $dataset_id = (int) $post['itemspace_dataset_id'];
+	            $dataset_id = (int) $this->getRequestParameter('itemspace_dataset_id');
 	            $item_space->setDataSetId($dataset_id);
 	        
-	            $use_template = isset($post['itemspace_use_template']);
+	            $use_template = $this->getRequestParameter('itemspace_use_template');
 	            $item_space->setUsesTemplate($use_template);
 	        
 	            if($use_template){
-	                $template_id = (int) $post['itemspace_template_id'];
+	                $template_id = (int) $this->getRequestParameter('itemspace_template_id');
     	            $item_space->setTemplateAssetId($template_id);
 	            }
 	        
@@ -3460,13 +3455,13 @@ class Pages extends SmartestSystemApplication{
 	public function defineItemspace($get){
 	    
 	    $page = new SmartestPage;
-	    $page_webid = $get['page_id'];
+	    $page_webid = $this->getRequestParameter('page_id');
 	    
 	    if($page->hydrate($page_webid)){
 	        
 	        $page->setDraftMode(true);
 	        
-	        $name = SmartestStringHelper::toVarName($get['assetclass_id']);
+	        $name = SmartestStringHelper::toVarName($this->getRequestParameter('assetclass_id'));
 	    
     	    $item_space = new SmartestItemSpace;
             
@@ -3504,13 +3499,13 @@ class Pages extends SmartestSystemApplication{
 	public function updateItemspaceDefinition($get, $post){
 	    
 	    $page = new SmartestPage;
-	    $page_id = $post['page_id'];
+	    $page_id = $this->getRequestParameter('page_id');
 	    
 	    if($page->hydrate($page_id)){
 	        
 	        $page->setDraftMode(true);
 	        
-	        $name = SmartestStringHelper::toVarName($post['itemspace_name']);
+	        $name = SmartestStringHelper::toVarName($this->getRequestParameter('itemspace_name'));
 	    
     	    $item_space = new SmartestItemSpace;
         
@@ -3523,7 +3518,7 @@ class Pages extends SmartestSystemApplication{
                     $definition->setPageId($page->getId());
                 }
                 
-                $definition->setDraftItemId($post['item_id']);
+                $definition->setDraftItemId($this->getRequestParameter('item_id'));
                 
                 $this->addUserMessageToNextRequest("The itemspace ID was successfully updated", SmartestUserMessage::SUCCESS);
                 $definition->save();
@@ -3546,7 +3541,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $item = new SmartestItem;
 	    
-	    if($item->findBy('slug', $get['assetclass_id'], $this->getSite()->getId())){
+	    if($item->findBy('slug', $this->getRequestParameter('assetclass_id'), $this->getSite()->getId())){
 	        
 	        $this->redirect('/datamanager/openItem?item_id='.$item->getId());
 	        
@@ -3556,7 +3551,7 @@ class Pages extends SmartestSystemApplication{
 	
 	public function addPageUrl($get){
 	    
-	    $page_webid=$get['page_id'];
+	    $page_webid=$this->getRequestParameter('page_id');
 	    
 	    $page = new SmartestPage;
 	    
@@ -3564,7 +3559,7 @@ class Pages extends SmartestSystemApplication{
 		    
 		    $page->setDraftMode(true);
 		    
-		    $ishomepage = $get['ishomepage'];
+		    $ishomepage = $this->getRequestParameter('ishomepage');
 		    $page_id = $page->getId();
 		    $page_info = $page->__toArray();
 		    $page_info['site'] = $page->getSite()->__toArray();
@@ -3581,23 +3576,23 @@ class Pages extends SmartestSystemApplication{
 		
 		$url = new SmartestPageUrl;
 		
-		if($url->existsOnSite($post['page_url'], $this->getSite()->getId())){
+		if($url->existsOnSite($this->getRequestParameter('page_url'), $this->getSite()->getId())){
 		    $this->addUserMessageToNextRequest("That URL already exists for another page.", SmartestUserMessage::WARNING);
 		}else{
 		    
 		    $page = new SmartestPage;
 		    
-		    if($page->hydrate($post['page_id'])){
+		    if($page->hydrate($this->getRequestParameter('page_id'))){
 		        // $page->setDraftMode(true);
-		        // $page->addUrl($post['page_url']);
+		        // $page->addUrl($this->getRequestParameter('page_url'));
 		        // $page->save();
 		        $url = new SmartestPageUrl;
-		        $url->setUrl(SmartestStringHelper::sanitize($post['page_url']));
+		        $url->setUrl(SmartestStringHelper::sanitize($this->getRequestParameter('page_url')));
 		        $url->setPageId($page->getId());
-		        $url->setType(isset($post['forward_to_default']) ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
+		        $url->setType($this->getRequestParameter('forward_to_default') ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
 		        $url->setIsDefault(0);
 		        $url->save();
-		        SmartestLog::getInstance('site')->log("{$this->getUser()} added URL '{$post['page_url']}' to page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
+		        SmartestLog::getInstance('site')->log("{$this->getUser()} added URL '{$this->getRequestParameter('page_url')}' to page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        $this->addUserMessageToNextRequest("The new URL was successully added.", SmartestUserMessage::SUCCESS);
 		    }else{
 		        $this->addUserMessageToNextRequest("The page ID was not recognized.", SmartestUserMessage::ERROR);
@@ -3607,9 +3602,9 @@ class Pages extends SmartestSystemApplication{
 		
 		$this->formForward();
 		
-		/* $page_webid=$post['page_webid'];
+		/* $page_webid=$this->getRequestParameter('page_webid');
 		$page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
-		$page_url=$post['page_url'];
+		$page_url=$this->getRequestParameter('page_url');
 		$url_count = $this->manager->checkUrl($page_url);
 		
 		if($url_count > 0){
@@ -3622,12 +3617,12 @@ class Pages extends SmartestSystemApplication{
 	
 	public function editPageUrl($get){
 		
-		$page_webid = $get['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		
 		$page = new SmartestPage;
 		$url = new SmartestPageUrl;
 		
-		if($url->find($get['url_id'])){
+		if($url->find($this->getRequestParameter('url_id'))){
 		    
 		    $this->send($url, "url");
 		
@@ -3650,14 +3645,14 @@ class Pages extends SmartestSystemApplication{
 	
 	public function updatePageUrl($get,$post){
 		
-		$page_webid = $post['page_webid'];
-		$page_url = $post['page_url'];
-		$url_id = $post['url_id'];
+		$page_webid = $this->getRequestParameter('page_webid');
+		$page_url = $this->getRequestParameter('page_url');
+		$url_id = $this->getRequestParameter('url_id');
 		
 		$url = new SmartestPageUrl;
 		$url->hydrate($url_id);
 		
-		if(isset($post['forward_to_default']) && $post['forward_to_default'] == 1){
+		if($this->getRequestParameter('forward_to_default') && $this->getRequestParameter('forward_to_default') == 1){
 		    
 		    if($url->getIsDefault()){
 		        $url->setType('SM_PAGEURL_NORMAL');
@@ -3686,7 +3681,7 @@ class Pages extends SmartestSystemApplication{
 		$url = new SmartestPageUrl;
 		$p = new SmartestPage;
 		
-		if($url->hydrate($get['url'])){
+		if($url->hydrate($this->getRequestParameter('url'))){
 		    
 		    $p->hydrate($url->getPageId());
 		    
@@ -3708,11 +3703,11 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $page = new SmartestPage;
 	    
-	    if($page->hydrate($get['page_id'])){
+	    if($page->hydrate($this->getRequestParameter('page_id'))){
 	        
 	        $page->setDraftMode(true);
 	        
-	        $result = $page->setDefaultUrl($get['url']);
+	        $result = $page->setDefaultUrl($this->getRequestParameter('url'));
 	        
 	        if(!$result){
 	            if($url == (int) $url){
@@ -3732,17 +3727,17 @@ class Pages extends SmartestSystemApplication{
 	
 	public function editField($get){
 		// This is a hack. Sorry.
-		$this->redirect(SM_CONTROLLER_DOMAIN.'metadata/defineFieldOnPage?page_id='.$get['page_id'].'&assetclass_id='.$get['assetclass_id']);
+		$this->redirect($this->getRequest()->getDomain().'metadata/defineFieldOnPage?page_id='.$this->getRequestParameter('page_id').'&assetclass_id='.$this->getRequestParameter('assetclass_id'));
 	}
 	
 	public function setLiveProperty($get){
 		// This is a hack. Sorry.
-		$this->redirect(SM_CONTROLLER_DOMAIN.'metadata/setLiveProperty?page_id='.$get['page_id'].'&assetclass_id='.$get['assetclass_id']);
+		$this->redirect($this->getRequest()->getDomain().'metadata/setLiveProperty?page_id='.$this->getRequestParameter('page_id').'&assetclass_id='.$this->getRequestParameter('assetclass_id'));
 	}
 	
 	public function undefinePageProperty($get){
 		// This is a hack. Sorry.
-		$this->redirect(SM_CONTROLLER_DOMAIN.'metadata/undefinePageProperty?page_id='.$get['page_id'].'&assetclass_id='.$get['assetclass_id']);
+		$this->redirect($this->getRequest()->getDomain().'metadata/undefinePageProperty?page_id='.$this->getRequestParameter('page_id').'&assetclass_id='.$this->getRequestParameter('assetclass_id'));
 	}
 	
 	public function pageGroups(){

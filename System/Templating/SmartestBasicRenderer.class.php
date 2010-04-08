@@ -8,7 +8,7 @@ class SmartestBasicRenderer extends SmartestEngine{
     public function __construct($pid){
         
         parent::__construct($pid);
-        $this->assign('domain', SM_CONTROLLER_DOMAIN);
+        $this->assign('domain', $this->_request_data->g('domain'));
         
         $this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/WebPageBuilder/";
 	    $this->left_delimiter = '<'.'?sm:';

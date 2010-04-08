@@ -103,5 +103,97 @@ class SmartestSystemHelper{
 			return $smartest_classes;
 		}
 	}
+	
+	public function checkRequiredExtensionsLoaded(){
+		
+		$extensions = get_loaded_extensions();
+		
+		$dependencies = array(
+		    "dom",
+		    "json",
+			"curl",
+			"xmlreader",
+			"xml",
+			"mysql",
+		);
+		
+		foreach($dependencies as $dep){	
+		    $missing_extensions = array();
+			if(!in_array($dep, $extensions)){
+			    $missing_extensions[] = $dep;
+				// $this->error("The PHP extension \"".$dep."\" is not installed or failed to load.", SM_ERROR_PHP);
+			}
+		}
+		
+		if(count($missing_extensions)){
+		    $message = "Smartest cannot function without the following missing PHP extensions: ".implode(', ', $missing_extensions);
+		    throw new SmartestException($message);
+		}
+		
+	}
+	
+	public function checkRequiredFilesExist(){
+		
+		$needed_files = array(
+			"Main Controller XML" => SM_ROOT_DIR."Configuration/controller.xml",
+			"Database Configuration File" => SM_ROOT_DIR."Configuration/database.ini"
+		);
+		
+		$errors = array();
+		
+		foreach($needed_files as $label=>$file){
+			if(!is_file($file) || !is_readable($file)){
+				$errors[] = array("label"=>$label, "file"=>$file);
+			}
+		}
+		
+		if(count($errors) > 0){
+			$this->missingFiles = $errors;
+			
+			foreach($this->missingFiles as $missing_file){
+				// $this->error("The required file \"".$missing_file['file']."\" doesn't exist or isn't readable.", SM_ERROR_FILES);
+				throw new SmartestException("The required file \"".$missing_file['file']."\" doesn't exist or isn't readable.", SM_ERROR_FILES);
+			}
+			
+			return false;
+		}else{
+			return true;
+		}
+	}
+	
+	public function checkWritablePermissions(){
+		
+		$system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml');
+		$writable_files = $system_data->g('system')->g('writable_locations')->g('always')->getParameters();
+		
+		$errors = array();
+		
+		foreach($writable_files as $label=>$file){
+			if(!is_writable($file)){
+				$errors[] = SM_ROOT_DIR.$file;
+			}
+		}
+		
+		if(count($errors) > 0){
+			$this->unwritableFiles = $errors;
+			
+			foreach($this->unwritableFiles as $unwritable_file){
+			    
+				if(is_file($unwritable_file)){
+					// $this->error("The file \"".$unwritable_file."\" needs to be writable.", SM_ERROR_PERMISSIONS);
+					throw new SmartestException("The file \"".$unwritable_file."\" needs to be writable.", SM_ERROR_PERMISSIONS);
+				}else{
+					// $this->error("The directory \"".$unwritable_file."\" needs to be writable.", SM_ERROR_PERMISSIONS);
+					throw new SmartestException("The directory \"".$unwritable_file."\" needs to be writable.", SM_ERROR_PERMISSIONS);
+				}
+				
+			}
+			
+			return false;
+		}else{
+			return true;
+		}
+		
+	}
     
 }

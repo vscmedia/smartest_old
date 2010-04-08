@@ -1,0 +1,15 @@
+module:
+  class: Pages
+  shortname: websitemanager
+  identifier: com.smartest.Pages
+  longname: Page Manager
+  default_action: sitePages
+  routes:
+    pages:
+      action: sitePages
+      url: /smartest/pages
+    preview:
+      action: preview
+      url: /smartest/page/:page_id/preview
+  meta:
+    system: true

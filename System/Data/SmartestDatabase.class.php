@@ -25,7 +25,7 @@ class SmartestDatabase{
                 }
                 
                 $dbc[$connection_name] = $object;
-                // return $object;
+                
             }else{
                 SmartestCache::clear('dbc_'.$connection_name, true);
                 throw new SmartestException("Database connection '".$connection_name."' does not have a valid class, e.g. SmartestMysql", SM_ERROR_CONFIG);

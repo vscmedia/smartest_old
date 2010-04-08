@@ -23,7 +23,7 @@ class SmartestImageAsset extends SmartestAsset{
             // $markup = htmlentities(stripslashes($this->getTextFragment()->getContent()));
             
             if($this->getImage()){
-                $markup = '<img src="'.SM_CONTROLLER_DOMAIN.'Resources/Images/'.$this->getImage()->getFileName().'" alt="" />';
+                $markup = '<img src="'.$this->_request_data->g('domain').'Resources/Images/'.$this->getImage()->getFileName().'" alt="" />';
             }else{
                 $markup = 'image file missing: '.$this->getUrl();
             }

@@ -6,6 +6,13 @@ class SmartestFilter{
     protected $_directory;
     protected $_name;
     protected $_filter_chain;
+    protected $_request_data;
+    
+    public function __construct(){
+        // $e = new Exception;
+        // print_r($e->getTrace());
+        $this->_request_data = SmartestPersistentObject::get('request_data');
+    }
     
     public function getName(){
         return $this->_name;
@@ -41,6 +48,10 @@ class SmartestFilter{
     
     public function getDraftMode(){
         return $this->_filter_chain->getDraftMode();
+    }
+    
+    public function getRequestData(){
+        return $this->_request_data;
     }
     
     public function execute($html){

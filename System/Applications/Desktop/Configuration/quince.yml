@@ -1,0 +1,18 @@
+module:
+  class: Desktop
+  shortname: desktop
+  identifier: com.smartest.Desktop
+  longname: Desktop
+  default_action: startpage
+  aliases:
+    - {url: /smartest/settings, action: editSite}
+    - {url: /smartest/desktop, action: startpage}
+  routes:
+    home:
+      action: startPage
+      url: /smartest
+    todo:
+      action: todoList
+      url: /smartest/todo
+  meta:
+    system: true

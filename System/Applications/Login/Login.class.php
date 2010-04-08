@@ -2,11 +2,11 @@
 
 class Login extends SmartestSystemApplication{
 	
-	function startPage(){
+	/* function startPage(){
 		$this->setTitle("Start Page");
 	}
 	
-	/* function preferences(){
+	function preferences(){
 	
 		$sql = "SELECT * FROM User, UserGroup WHERE User.user_group = UserGroup.usergroup_id";    
 		$users = $this->manager->database->rawQuery($sql);
@@ -20,7 +20,7 @@ class Login extends SmartestSystemApplication{
 		}    
 	} */
 	
-	function loginScreen($get){
+	public function loginScreen($get){
 		
 		if($this->getUser() && $this->getUser()->isAuthenticated()){
 		    $this->redirect('/smartest');
@@ -51,7 +51,7 @@ class Login extends SmartestSystemApplication{
 		
 	}
 	
-	function doAuth($get, $post){
+	public function doAuth($get, $post){
 		
 		if(array_key_exists('service', $post) && strlen($post['service'])){
 		    $service = $post['service'];
@@ -61,10 +61,10 @@ class Login extends SmartestSystemApplication{
 		
 		if($user = $this->_auth->newLogin($post['user'], $post['passwd'], $service)){
 		    
-		    SmartestPersistentObject::set('user', $user);
+		    SmartestSession::set('user', $user);
 		    
 		    if(strlen($post['from']) && $post['from']{0} == '/'){
-			    $this->redirect(SM_CONTROLLER_DOMAIN.substr($post['from'], 1).'?'.$post['refer']);
+			    $this->redirect($this->getRequest()->getDomain().substr($post['from'], 1).'?'.$post['refer']);
 			}else{
 			    $this->redirect("/smartest");
 			}
@@ -74,7 +74,7 @@ class Login extends SmartestSystemApplication{
 		}
 	}
 	
-	function doLogOut(){
+	public function doLogOut(){
 		$this->_auth->logout();
 		$this->redirect("/smartest/login?reason=logout");
 	}

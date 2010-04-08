@@ -6,17 +6,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	protected $_site;
 	protected $_page;
 	
-	protected function __moduleConstruct(){
-		
-		
-		
-	}
-	
 	protected function lookupSiteDomain(){
-	    
-	    // look up site by domain
-	    
-	    // $h = new SmartestWebPagePreparationHelper;
 	    
 	    try{
 	    
@@ -311,6 +301,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
     		}
 		
     		define("SM_OVERHEAD_TIME", $overhead_time_taken);
+    		SmartestPersistentObject::get('timing_data')->setParameter('overhead_time', microtime(true));
 	    
     	    $html = $ph->fetch($draft_mode);
 	    

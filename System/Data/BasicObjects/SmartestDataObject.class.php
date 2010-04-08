@@ -16,10 +16,17 @@ class SmartestDataObject implements ArrayAccess{
 	protected $database;
 	protected $_last_query = '';
 	protected $_dbTableHelper;
+	protected $_request;
 	
 	public function __construct(){
 		
 		$this->database = SmartestPersistentObject::get('db:main');
+		
+		if(SmartestPersistentObject::get('controller')){
+		    $this->_request = SmartestPersistentObject::get('controller')->getCurrentRequest();
+		}
+		
+		// if($this->_request_data){var_dump($this->_request_data->getCurrentRequest());}
 		
 		if(method_exists($this, '__objectConstruct')){
 			$this->__objectConstruct();
@@ -622,7 +629,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	protected function getSite(){
 	    
-	    return SmartestPersistentObject::get('current_open_project');
+	    return SmartestSession::get('current_open_project');
 	    
 	}
 	

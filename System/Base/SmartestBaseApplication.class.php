@@ -13,14 +13,11 @@
 
 // DO NOT EDIT! This file may be overwritten when Smartest is upgraded
 
-class SmartestBaseApplication extends SmartestBaseProcess{
+class SmartestBaseApplication extends QuinceBase{
 
 	public $manager;
-	public $domain;
-	public $module;
 	public $_auth;
 	
-	protected $database;
 	protected $_errorStack;
 	protected $_settings;
 	protected $_resultIndex;
@@ -35,55 +32,131 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 	
 	private $_user_loaded_classes;
 	
-	final public function __construct(){
-	
-		$this->database = SmartestPersistentObject::get('db:main');
-		$this->_errorStack =& SmartestPersistentObject::get('errors:stack');
-		$this->domain = SM_CONTROLLER_DOMAIN;
-		$this->module = SM_CONTROLLER_MODULE;
+	public function __moduleConstruct(){
+	    
+	    $this->_errorStack =& SmartestPersistentObject::get('errors:stack');
 		$this->_resultIndex = 0;
 		$this->userTokenHelper = new SmartestUsersHelper();
 		$this->settings = new SmartestParameterHolder("Application settings");
 		
-		SmartestSession::set('user:currentApp', SM_CONTROLLER_MODULE);
-		SmartestSession::set('user:currentAction', SM_CONTROLLER_METHOD);
+		SmartestSession::set('user:currentApp', $this->getRequest()->getModule());
+		SmartestSession::set('user:currentAction', $this->getRequest()->getAction());
 		
 		$this->_cached_application_preferences = new SmartestParameterHolder('Cached application-level preferences');
 		$this->_cached_global_preferences = new SmartestParameterHolder('Cached global preferences');
 		
-		// Applications can come bundled with their own template plugins
-		if(is_dir(SM_CONTROLLER_MODULE_DIR.'Library/Templating/Plugins/')){
-		    $this->getPresentationLayer()->addPluginDirectory(SM_CONTROLLER_MODULE_DIR.'Library/Templating/Plugins/');
-		}
+		$this->_loadApplicationSpecificResources();
+		$this->_prepareManagers();
+		$this->_assignTemplateValues();
 		
-		if(is_dir(SM_CONTROLLER_MODULE_DIR.'Library/Data/ExtendedObjects/')){
-		    SmartestDataObjectHelper::loadExtendedObjects(SM_CONTROLLER_MODULE_DIR.'Library/Data/ExtendedObjects/');
+		/* echo "Hello";
+		print_r($this->getPresentationLayer()->getPluginDirectories()); */
+	    
+	}
+	
+	public function __pre(){
+	    
+	    $this->_callOptionalConstructors();
+	    $this->_loadApplicationSpecificTemplatePlugins();
+	    
+	    if(SmartestSession::get('user:isAuthenticated')){
+		    $this->send($this->getUser(), '_user');
+	    }
+	    
+	    if(SmartestSession::hasData('current_open_project')){
+		    
+		    $this->getPresentationLayer()->assign("sm_currentSite", SmartestSession::get('current_open_project'));
+		    
+		    if(SmartestSession::get('current_open_project') instanceof SmartestSite){
+    	        $this->getPresentationLayer()->assign('show_left_nav_options', true);
+    	    }else{
+    	        $this->getPresentationLayer()->assign('show_left_nav_options', false);
+    	    }
+		    
 		}
-		
-		// load user-defined application-wide settings
+        
+        $this->getPresentationLayer()->assign("domain", $this->getRequest()->getDomain());
+	    $this->getPresentationLayer()->assign("section", $this->getRequest()->getModule()); // deprecated
+	    $this->getPresentationLayer()->assign("module", $this->getRequest()->getModule());
+	    $this->getPresentationLayer()->assign("module_dir", $this->getRequest()->getMeta('_module_dir'));
+	    $this->getPresentationLayer()->assign("action", $this->getRequest()->getAction());
+	    $this->getPresentationLayer()->assign("method", $this->getRequest()->getAction()); // deprecated
+	    $this->getPresentationLayer()->assign("metas", $this->getRequest()->getMetas());
+	    
+	}
+	
+	private function _callOptionalConstructors(){
+	    
+	    // Called by all system applications
+	    if(method_exists($this, "__systemModulePreConstruct")){
+		    $this->__systemModulePreConstruct();
+	    }
+	    
+	    // Called by the individual applications
+	    if(method_exists($this, "__smartestApplicationInit")){
+		    $this->__smartestApplicationInit();
+	    }
+	    
+	}
+	
+	private function _loadSettings(){
+	    
+	    // load user-defined application-wide settings
 		// TODO: add caching here
-		if(is_file(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml")){
+		if(is_file($this->getRequest()->getMeta('_module_dir')."Configuration/settings.yml")){
 			
-			$this->settings->setParameter('settings', SmartestYamlHelper::toParameterHolder(SM_CONTROLLER_MODULE_DIR."Configuration/settings.yml", SM_DEVELOPER_MODE));
-			
-		}
-		
-		if(is_file(SM_CONTROLLER_MODULE_DIR."Configuration/application.yml")){
-			
-			$this->settings->setParameter('application', SmartestYamlHelper::toParameterHolder(SM_CONTROLLER_MODULE_DIR."Configuration/application.yml", SM_DEVELOPER_MODE));
+			$this->settings->setParameter('settings', SmartestYamlHelper::toParameterHolder($this->getRequest()->getMeta('_module_dir')."Configuration/settings.yml", SM_DEVELOPER_MODE));
 			
 		}
 		
-		/////////////// MANAGERS CODE WILL BE DEPRECATED SOON - FUNCTIONALITIES IN MANAGERS ARE BEING MOVED TO HELPERS ////////////////
+		if(is_file($this->getRequest()->getMeta('_module_dir')."Configuration/application.yml")){
+			
+			$this->settings->setParameter('application', SmartestYamlHelper::toParameterHolder($this->getRequest()->getMeta('_module_dir')."Configuration/application.yml", SM_DEVELOPER_MODE));
+			
+		}
+	    
+	}
+	
+	private function _loadApplicationSpecificResources(){
+	    
+	    $this->_loadSettings();
+	    
+	    // echo "boo";
+	    // throw new Exception;
+	    
+	    if(is_dir($this->getRequest()->getMeta('_module_dir').'Library/Data/ExtendedObjects/')){
+		    SmartestDataObjectHelper::loadExtendedObjects($this->getRequest()->getMeta('_module_dir').'Library/Data/ExtendedObjects/');
+		}
+	    
+	}
+	
+	private function _loadApplicationSpecificTemplatePlugins(){
+	    
+	    // Applications can come bundled with their own template plugins
+		if(is_dir($this->getRequest()->getMeta('_module_dir').'Library/Templating/Plugins/')){
+		    $this->getPresentationLayer()->addPluginDirectory($this->getRequest()->getMeta('_module_dir').'Library/Templating/Plugins/');
+		}
+	    
+	}
+	
+    private function _assignTemplateValues(){
+	    
+	    // print_r($this->getPresentationLayer());
+	    
+	}
+	
+	private function _prepareManagers(){
+	    
+	    /////////////// MANAGERS CODE WILL BE DEPRECATED SOON - FUNCTIONALITIES IN MANAGERS ARE BEING MOVED TO HELPERS ////////////////
 		// Detect to see if manager classes exist and initiate them, if configured to do so
-		$managerClassFile = SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php";
-		$managerClass = SM_CONTROLLER_CLASS."Manager";
+		$managerClassFile = SM_ROOT_DIR.'Managers/'.$this->getRequest()->getMeta('_php_class')."Manager.class.php";
+		$managerClass = $this->getRequest()->getMeta('_module_php_class')."Manager";
 		
 		define("SM_MANAGER_CLASS", $managerClass);
 		
-		if(is_file(SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php")){
+		if(is_file(SM_ROOT_DIR.'Managers/'.$managerClass.".class.php")){
 		
-			define("SM_MANAGER_CLASS_FILE", SM_ROOT_DIR.'Managers/'.SM_CONTROLLER_CLASS."Manager.class.php");
+			define("SM_MANAGER_CLASS_FILE", SM_ROOT_DIR.'Managers/'.$managerClass.".class.php");
 			include_once(SM_MANAGER_CLASS_FILE);
 		
 			if(class_exists(SM_MANAGER_CLASS)){
@@ -92,11 +165,9 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 				
 			}
 			
-		}else if(defined("SM_CONTROLLER_MODULE_DIR")){
-		  
-		    if(is_file(SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php")){
+		}else if(is_file($this->getRequest()->getMeta('_module_dir').$managerClass.".class.php")){
 			
-				define("SM_MANAGER_CLASS_FILE", SM_CONTROLLER_MODULE_DIR.SM_CONTROLLER_CLASS."Manager.class.php");
+				define("SM_MANAGER_CLASS_FILE", $this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
 				include_once(SM_MANAGER_CLASS_FILE);
 				
 				if(class_exists(SM_MANAGER_CLASS)){
@@ -105,28 +176,25 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 				
 				}
 			
-			}
 			
 		}
-		
-		$this->send(SM_CONTROLLER_DOMAIN.SM_CONTROLLER_URL, '_here');
-		
-		if(method_exists($this, '__myConstructor')){
-		    $this->__myConstructor();
-		}
-		
-		if(method_exists($this, "__moduleConstruct")){
-		    $this->__moduleConstruct();
-	    }
 	    
-	    if(method_exists($this, "__systemModulePreConstruct")){
-		    $this->__systemModulePreConstruct();
-	    }
-	    
-	    if(SmartestSession::get('user:isAuthenticated')){
-	        $this->send($this->getUser(), '_user');
-	    }
-	    
+	}
+	
+	public function requestParameterIsSet($p){
+	    return $this->getRequest()->hasRequestParameter($p);
+	}
+	
+	public function getRequestParameter($p){
+	    return $this->getRequest()->getRequestParameter($p);
+	}
+	
+	public function setRequestParameter($p, $v){
+	    return $this->getRequest()->setRequestParameter($p, $v);
+	}
+	
+	public function getRequestParameters(){
+	    return $this->getRequest()->getRequestParameters();
 	}
 	
 	final public function __destruct(){
@@ -141,7 +209,7 @@ class SmartestBaseApplication extends SmartestBaseProcess{
 	
 	protected function getUser(){
 	    
-	    return SmartestPersistentObject::get('user');
+	    return SmartestSession::get('user');
 	    
 	}
 	
@@ -268,27 +336,29 @@ class SmartestBaseApplication extends SmartestBaseProcess{
     
     ///// Flow Control //////
     
-    protected function redirect($to="", $exit=false, $http_code=303){
+    /* protected function redirect($to="", $exit=false, $http_code=303){
+		
+		$d = $this->getRequest()->getDomain();
 		
 		if(!$to){
-			$destination = constant('SM_CONTROLLER_DOMAIN');
+			$destination = constant($d);
 		}else if($to{0} == "/"){
-		    if(constant('SM_CONTROLLER_DOMAIN') == '/' || substr($to, 0, strlen(constant('SM_CONTROLLER_DOMAIN'))) == constant('SM_CONTROLLER_DOMAIN')){
+		    if($this->getRequest()->getDomain() == '/' || substr($to, 0, strlen(constant('SM_CONTROLLER_DOMAIN'))) == constant('SM_CONTROLLER_DOMAIN')){
 		        $destination = $to;
 	        }else{
-	            $destination = constant('SM_CONTROLLER_DOMAIN').substr($to, 1);
+	            $destination = $d.substr($to, 1);
 	        }
 		}
 		
 		$r = new SmartestRedirectException($destination);
 		$r->redirect($http_code, $exit);
 		
-		/* header("location:".$destination);
+		// header("location:".$destination);
 		if($exit){
 		    exit;
-		} */
+		}
 		
-	}
+	} */
     
     ///// Check for Libraries /////
     

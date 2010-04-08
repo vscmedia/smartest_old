@@ -6,6 +6,7 @@ class CmsFrontEndManager{
 	
 	public function __construct(){
 		$this->database = SmartestPersistentObject::get('db:main');
+		$this->_request_data = SmartestPersistentObject::get('request_data');
 	}
 	
 	public function getSiteByDomain($domain, $url=''){
@@ -57,7 +58,7 @@ class CmsFrontEndManager{
 			        SmartestLog::getInstance('system')->log("PageUrl ID ".$page[0]['pageurl_id']." cannot simultaneously be a forward and a default URL.");
 			        return $p;
 			    }else{
-			        throw new SmartestRedirectException(SM_CONTROLLER_DOMAIN.$p->getDefaultUrl());
+			        throw new SmartestRedirectException($this->_request_data->g('domain').$p->getDefaultUrl());
 		        }
 			    
 			}else{
@@ -78,7 +79,7 @@ class CmsFrontEndManager{
     		$page = $this->database->queryToArray($sql);
     		
     		if(count($page) > 0){
-    			throw new SmartestRedirectException(SM_CONTROLLER_DOMAIN.$new_url);
+    			throw new SmartestRedirectException($this->_request_data->g('domain').$new_url);
     		}
     		
 		}

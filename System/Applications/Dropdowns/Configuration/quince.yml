@@ -1,0 +1,13 @@
+module:
+  class: Dropdowns
+  shortname: dropdowns
+  identifier: com.smartest.MetaData.DropdownMenus
+  longname: Dropdown menu builder
+  default_action: startPage
+  routes:
+    home:
+      action: startPage
+      url: /smartest/dropdowns
+  meta:
+    system: true
+    author: Marcus Gilroy-Ware

@@ -17,25 +17,24 @@ class SmartestEngine extends Smarty{
 	protected $_included_scripts = array();
 	protected $_included_stylesheets = array();
 	protected $_series = array();
+	protected $_request_data;
+	protected $_request;
 	
 	public function __construct($process_id){
 	    
 	    parent::Smarty();
 		
-		/* if(!$process_id){
-		    $process_id = '_main';
-		}else{
-		    echo $process_id;
-		} */
-		
 		$this->_process_id = $process_id;
 		$this->_context = SM_CONTEXT_GENERAL;
 		
 		$this->controller = SmartestPersistentObject::get('controller');
-		$this->section = $this->controller->getModuleName();
+		// $this->_request_data = SmartestPersistentObject::get('controller')->getCurrentRequest();
+		$this->_request_data = SmartestPersistentObject::get('request_data');
+		
+		/* $this->section = $this->controller->getModuleName();
 		$this->method  = $this->controller->getMethodName();
 		$this->domain  = $this->controller->getDomain();
-		$this->get     = $this->controller->getRequestVariables();
+		$this->get     = $this->controller->getRequestVariables(); */
 		
 		$this->templateHelper = new SmartestTemplateHelper;
 		$this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/Shared/";
@@ -99,6 +98,10 @@ class SmartestEngine extends Smarty{
 	
     public function getUserAgent(){
 	    return SmartestPersistentObject::get('userAgent');
+	}
+	
+	public function getRequestData(){
+	    return $this->_request_data;
 	}
 	
 	public function getContext(){
@@ -194,7 +197,7 @@ class SmartestEngine extends Smarty{
 	
 	public function addPluginDirectory($directory){
 	    
-	    $directory = realpath($directory);
+	    $directory = realpath($directory).'/';
 	    
 	    if(is_dir($directory)){
 	        if(SmartestFileSystemHelper::isSafeFileName($directory)){
@@ -205,6 +208,12 @@ class SmartestEngine extends Smarty{
 	    }else{
 	        throw new SmartestException("Tried to add non-existent plugin directory: ".$directory, SM_ERROR_USER);
 	    }
+	}
+	
+	public function getPluginDirectories(){
+	    
+	    return $this->plugins_dir;
+	    
 	}
 	
 	public function initNumberSeriesByName($series_name){

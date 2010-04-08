@@ -1,0 +1,17 @@
+module:
+  class: Items
+  shortname: datamanager
+  identifier: com.smartest.DataManager.Items
+  longname: Items Manager
+  default_action: getItemClasses
+  routes:
+    models:
+      action: getItemClasses
+      url: /smartest/models
+    browse_model:
+      action: getItemClassMembers
+      url: /smartest/model/:plural_name
+      params:
+        use_plural_name: true
+  meta:
+    system: true

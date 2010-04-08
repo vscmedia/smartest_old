@@ -1280,7 +1280,7 @@ class Assets extends SmartestSystemApplication{
         	    
         	    if(!$todo->isSelfAssigned()){
         	        
-        	        $message = 'Hi '.$user.",\n\n".$this->getUser()." has added a new task to your to-do list. Please visit ".SM_CONTROLLER_DOMAIN."smartest/todo for more information.\n\nYours truly,\nThe Smartest Web Content Management Platform";
+        	        $message = 'Hi '.$user.",\n\n".$this->getUser()." has added a new task to your to-do list. Please visit ".$this->getRequest()->getDomain()."smartest/todo for more information.\n\nYours truly,\nThe Smartest Web Content Management Platform";
         	        $user->sendEmail('New To-do Assigned', $message);
         	        
         	    }

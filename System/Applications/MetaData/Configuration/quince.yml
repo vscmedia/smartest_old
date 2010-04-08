@@ -1,0 +1,19 @@
+module:
+  class: MetaData
+  shortname: metadata
+  identifier: com.smartest.MetaData
+  longname: Metadata Manager
+  default_action: startPage
+  routes:
+    home:
+      action: startPage
+      url: /smartest/metadata
+    fields:
+      action: listFields
+      url: /smartest/fields
+    tags:
+      action: listTags
+      url: /smartest/tags
+  meta:
+    system: true
+    author: Marcus Gilroy-Ware

@@ -1,0 +1,15 @@
+quince:
+  request_class: QuinceRequest
+# This can be 'throw', 'return', 'die', 'ignore'. Default is 'throw'
+  exception_handling: throw
+  default_module: website
+  cache_dir: System/Cache/Controller/
+  use_checking: true
+  use_namespaces: true
+  default_content_type: text/html
+  default_charset: UTF-8
+  modules:
+    config: Configuration/quince.yml
+    storage:
+      - System/Applications/
+      - Applications/

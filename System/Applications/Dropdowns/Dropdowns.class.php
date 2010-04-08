@@ -3,15 +3,6 @@
 class Dropdowns extends SmartestSystemApplication{
   
 
-	// ModuleBase already has a constructor, so if you want your class to have a constructor,
-	// put it here called __moduleConstruct() and SmartestApplication will call it.
-	protected function __moduleConstruct(){
-	    
-	}
-	
-	// no other requirements at all.
-	// define your methods as normal and have fun...
-	
 	public function startPage($get){
 	    $this->setFormReturnUri();
 	    $dropdowns = $this->manager->getDropdowns();      

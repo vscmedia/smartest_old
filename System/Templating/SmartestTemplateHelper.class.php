@@ -12,7 +12,7 @@ class SmartestTemplateHelper{
 	
 	function __construct(){
 		$this->database    = SmartestPersistentObject::get('db:main');
-		$this->get         = SmartestPersistentObject::get('controller')->getRequestVariables();
+		// $this->get         = SmartestPersistentObject::get('controller')->getRequestVariables();
 		$this->errorStack  = SmartestPersistentObject::get('errors:stack');
 		// $this->setsManager = new SetsManager();
 	}

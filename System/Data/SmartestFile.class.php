@@ -11,9 +11,10 @@ class SmartestFile implements ArrayAccess{
     
     protected $_original_file_path;
     protected $_current_file_path;
+    protected $_request_data;
     
     public function __construct(){
-        
+        $this->_request_data = SmartestPersistentObject::get('request_data');
     }
     
     public function loadFile($file_path){
@@ -77,7 +78,7 @@ class SmartestFile implements ArrayAccess{
     
     public function getWebUrl(){
         if($this->isPublic() || $this->isImage()){
-            return SM_CONTROLLER_DOMAIN.$this->getPublicPath();
+            return $this->_request_data->g('domain').$this->getPublicPath();
         }
     }
     

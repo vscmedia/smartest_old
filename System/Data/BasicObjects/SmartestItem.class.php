@@ -1023,7 +1023,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	    $info = $this->getTypeInfo();
 	    
-	    return SM_CONTROLLER_DOMAIN.'Resources/Icons/package_small.png';
+	    return $this->_request->getDomain().'Resources/Icons/package_small.png';
 	    
 	}
 	
@@ -1041,7 +1041,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	
 	public function getActionUrl(){
 	    
-	    return SM_CONTROLLER_DOMAIN.'datamanager/openItem?item_id='.$this->getId();
+	    return $this->_request->getDomain().'datamanager/openItem?item_id='.$this->getId();
 	    
 	}
 	

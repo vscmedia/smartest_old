@@ -2126,9 +2126,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	public function getSmallIcon(){
 	    
 	    if($this->getType() == 'ITEMCLASS'){
-	        return SM_CONTROLLER_DOMAIN.'Resources/Icons/page_gear.png';
+	        return $this->_request->getDomain().'Resources/Icons/page_gear.png';
         }else{
-            return SM_CONTROLLER_DOMAIN.'Resources/Icons/page.png';
+            return $this->_request->getDomain().'Resources/Icons/page.png';
         }
 	    
 	}
@@ -2147,7 +2147,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	
 	public function getActionUrl(){
 	    
-	    return SM_CONTROLLER_DOMAIN.'websitemanager/openPage?page_id='.$this->getId();
+	    return $this->_request->getDomain().'websitemanager/openPage?page_id='.$this->getId();
 	    
 	}
 

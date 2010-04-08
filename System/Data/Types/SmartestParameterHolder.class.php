@@ -47,6 +47,10 @@ class SmartestParameterHolder implements ArrayAccess{
         return $this->_data;
     }
     
+    public function d(){ // D for Data
+        return $this->getParameters();
+    }
+    
     public function toArray(){
         $a = array();
         foreach($this->_data as $k=>$v){
@@ -57,6 +61,10 @@ class SmartestParameterHolder implements ArrayAccess{
             }
         }
         return $a;
+    }
+    
+    public function a(){
+        return $this->toArray();
     }
     
     public function hasParameter($n){
@@ -70,6 +78,10 @@ class SmartestParameterHolder implements ArrayAccess{
     public function setParameter($n, $v){
         $this->_data[$n] = $v;
         return true;
+    }
+    
+    public function s($n, $v){
+        return $this->setParameter($n, $v);
     }
     
     public function clearParameter($n){
@@ -88,13 +100,25 @@ class SmartestParameterHolder implements ArrayAccess{
     public function getSimpleObject(){
         $o = new stdClass;
         foreach($this->_data as $n => $v){
-            $o->$n = $v;
+            if($v instanceof SmartestParameterHolder){
+                $o->$n = $v->getSimpleObject();
+            }else{
+                $o->$n = stripslashes($v);
+            }
         }
         return $o;
     }
     
+    public function o(){
+        return $this->getSimpleObject();
+    }
+    
     public function toJson(){
         return json_encode($this->getSimpleObject());
+    }
+    
+    public function j(){
+        return $this->toJson();
     }
     
     public function offsetGet($offset){

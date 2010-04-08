@@ -17,7 +17,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 			$this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
 		}else{
 			$this->userLoggedIn = false;
-			SmartestPersistentObject::set('user:isAuthenticated', false);
+			SmartestSession::set('user:isAuthenticated', false);
 		}		
 	}
 

@@ -12,6 +12,7 @@ class SmartestCmsLink extends SmartestHelper{
     protected $_destination;
     protected $_markup_attributes;
     protected $_render_data;
+    protected $_request;
     
     const PAGE = 1;
     const METAPAGE = 2;
@@ -28,6 +29,7 @@ class SmartestCmsLink extends SmartestHelper{
     public function __construct($destination_properties, $markup_attributes){
         
         $this->database = SmartestPersistentObject::get('db:main');
+        $this->_request = SmartestPersistentObject::get('controller')->getCurrentRequest();
         
         if(is_array($destination_properties)){
             $ph = new SmartestParameterHolder("Link destination properties: ".$destination_properties['to']);
@@ -490,10 +492,10 @@ class SmartestCmsLink extends SmartestHelper{
             case SM_LINK_TYPE_PAGE:
             
             if($draft_mode){
-                return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_destination->getWebId();
+                return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId();
             }else{
                 if($this->_destination->getIsPublishedAsBoolean()){
-                    return SM_CONTROLLER_DOMAIN.$this->_destination->getDefaultUrl();
+                    return $this->_request->getDomain().$this->_destination->getDefaultUrl();
                 }else{
                     return '#';
                 }
@@ -504,10 +506,10 @@ class SmartestCmsLink extends SmartestHelper{
             case SM_LINK_TYPE_METAPAGE:
     
             if($draft_mode){
-                return SM_CONTROLLER_DOMAIN.'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
+                return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
             }else{
                 if($this->_destination->getIsPublishedAsBoolean() && $this->_destination->getPrincipalItem()->isPublished()){
-                    $template_url = SM_CONTROLLER_DOMAIN.$this->_destination->getDefaultUrl();
+                    $template_url = $this->_request->getDomain().$this->_destination->getDefaultUrl();
                     $url = str_replace(':id', $this->_destination->getPrincipalItem()->getId(), $template_url);
                     $url = str_replace(':long_id', $this->_destination->getPrincipalItem()->getWebid(), $url);
                     $url = str_replace(':name', $this->_destination->getPrincipalItem()->getSlug(), $url);
@@ -528,7 +530,7 @@ class SmartestCmsLink extends SmartestHelper{
             break;
     
             case SM_LINK_TYPE_DOWNLOAD:
-            return SM_CONTROLLER_DOMAIN.'download/'.$this->_destination->getUrl().'?key='.$this->_destination->getWebid();
+            return $this->_request->getDomain().'download/'.$this->_destination->getUrl().'?key='.$this->_destination->getWebid();
             break;
             
             case SM_LINK_TYPE_EXTERNAL:

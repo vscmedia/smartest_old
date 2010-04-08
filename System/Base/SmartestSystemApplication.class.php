@@ -28,12 +28,6 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		$this->_languages = $language_options['languages'];
 		$this->send($this->_languages, '_languages');
 	    
-	    if($this->getSite() instanceof SmartestSite){
-	        $this->send(true, 'show_left_nav_options');
-	    }else{
-	        $this->send(false, 'show_left_nav_options');
-	    }
-	    
 	    $this->send($this->getFormReturnUri(), 'sm_cancel_uri');
 	    
     }
@@ -81,12 +75,12 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	
 	protected function getSite(){
 	    
-	    return SmartestPersistentObject::get('current_open_project');
+	    return SmartestSession::get('current_open_project');
 	    
 	}
 	
 	protected function requireOpenProject($message=''){
-	    if(!SmartestPersistentObject::get('current_open_project') instanceof SmartestSite){
+	    if(!SmartestSession::get('current_open_project') instanceof SmartestSite){
 	        $user_message = strlen($message) ? $message : 'You need to open a site before you can access that screen.';
 	        $this->addUserMessageToNextRequest($user_message, SmartestUserMessage::INFO);
 	        $this->redirect('/smartest');
@@ -105,17 +99,19 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	// You can pass it a URI, or if not, it will use the current request URI
 	protected function setFormReturnUri($uri=''){
 	    
+	    $d = $this->getRequest()->getDomain();
+	    
 	    if(strlen($uri)){
 	        
 	        $uri_parts = explode("?", $uri);
 	        
 	        $fn = $uri_parts[0];
 	        
-	        if(substr($fn, 0, strlen(constant('SM_CONTROLLER_DOMAIN'))) != constant('SM_CONTROLLER_DOMAIN')){
+	        if(substr($fn, 0, strlen($d)) != $d){
 	            if($fn{0} == '/'){
-	                $request_filename = constant('SM_CONTROLLER_DOMAIN').$fn;
+	                $request_filename = $d.$fn;
 	            }else{
-	                $request_filename = constant('SM_CONTROLLER_DOMAIN').'/'.$fn;
+	                $request_filename = $d.'/'.$fn;
 	            }
 	        }else{
 	            $request_filename = $fn;

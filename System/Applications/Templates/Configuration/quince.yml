@@ -1,0 +1,13 @@
+module:
+  class: Templates
+  shortname: templates
+  identifier: com.smartest.FileManager.Templates
+  longname: Templates repository 
+  default_action: startPage
+  routes:
+    home:
+      action: startPage
+      url: /smartest/templates
+  meta:
+    system: true
+    author: Marcus Gilroy-Ware

@@ -1,0 +1,16 @@
+module:
+  class: Login
+  shortname: loginscreen
+  identifier: com.smartest.LoginScreen
+  longname: Log-in screen
+  default_action: loginScreen
+  routes:
+    login:
+      action: loginScreen
+      url: /smartest/login
+    logout:
+      action: doLogOut
+      url: /smartest/logout
+  meta:
+    system: true
+    author: Marcus Gilroy-Ware

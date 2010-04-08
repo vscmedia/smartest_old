@@ -329,6 +329,12 @@ ul.re-orderable-list li div.buttons{
     float:right;
 }
 
+div._new-desktop-column-inner h4{
+    border:0;
+    background-color:#fff;
+    padding:0px!important;
+}
+
 /******** Top Nav *******/
 
 /* ul.top-nav-buttons li{

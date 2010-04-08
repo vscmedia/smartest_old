@@ -62,7 +62,7 @@ class SmartestInit{
 		self::setIncludePaths();
 	    
 	    require SM_ROOT_DIR.'System/Base/constants.php';
-		require SM_ROOT_DIR.'System/Response/SmartestResponse.class.php';
+		require SM_ROOT_DIR.'System/Response/SmartestResponse-new.class.php';
         
         // as the Donny Hathaway song says, $everything is everything
 		$everything = new SmartestResponse;

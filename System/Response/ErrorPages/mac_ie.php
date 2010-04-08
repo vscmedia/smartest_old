@@ -5,6 +5,6 @@
 	<title>Internet Explorer for Macintosh Not Supported</title>
 </head>
 <body style="background-color:#fff;text-align:center;margin:0px;margin-top:50px;">
-<img src="<?php echo constant('SM_CONTROLLER_DOMAIN'); ?>Resources/System/Images/MacIE.gif" alt="Sorry! Internet Explorer for Macintosh is not supported." border="0" />
+<img src="<?php echo SmartestPersistentObject::get('request_data')->g('domain'); ?>Resources/System/Images/MacIE.gif" alt="Sorry! Internet Explorer for Macintosh is not supported." border="0" />
 </body>
 </html>
