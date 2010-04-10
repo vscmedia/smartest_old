@@ -823,31 +823,55 @@ class Quince{
 	    
 	    // Calculate the domain
 	    // $hdp = explode('/', getcwd());
-	    $hdp = explode('/', $test_url);
-        array_shift($hdp);
-        array_pop($hdp);
+	    // $hdp = explode('/', $test_url);
+        // array_shift($hdp);
+        // array_pop($hdp);
         // print_r($hdp);
-        $reverse = array_reverse($hdp);
-        $possible_dir = implode('/', $hdp).'/';
+        // $reverse = array_reverse($hdp);
+        // $possible_dir = implode('/', $hdp).'/';
+        
         // echo $possible_dir;
+        
         // array_shift($hdp);
         
-        $cwd = getcwd();
-        $dr = realpath($_SERVER["DOCUMENT_ROOT"]);
-        // echo $dr;
-        $f = strpos($dr, $cwd);
+        // $cwd = getcwd();
         
-        if(is_dir($dr.$possible_dir)){
+        // echo $dr.'/'.$possible_dir.' ';
+        // echo $dr;
+        // $f = strpos($dr, $cwd);
+        
+        $dr = realpath($_SERVER["DOCUMENT_ROOT"]).'/';
+        $hdp = explode('/', $test_url);
+        array_shift($hdp);
+        array_pop($hdp);
+        $possible_dir = implode('/', $hdp).'/';
+        
+        while(!is_dir($dr.$possible_dir)){
+            array_pop($hdp);
+            $possible_dir = implode('/', $hdp).'/';
+        }
+        
+        if($possible_dir == '/'){
+            $r->setDomain('/');
+            $r->setRequestString(substr($url, 1));
+        }else{
             $r->setDomain('/'.$possible_dir);
-            $r->setRequestString(substr($url, strlen($possible_dir)));
+            $r->setRequestString(substr($url, strlen($possible_dir)+1));
+        }
+        
+        return $r;
+        
+        /* if(is_dir($dr.$possible_dir)){
+            $r->setDomain('/'.$possible_dir);
+            $r->setRequestString(substr($url, strlen($possible_dir)+1));
         }else{
             $r->setDomain('/');
             $r->setRequestString(substr($url, 1));
-        }
+        } */
         
         // print_r($r);
         
-        return $r;
+        
         
         /* echo $dr.' * ';
         echo $test_url;
