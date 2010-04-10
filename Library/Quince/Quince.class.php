@@ -795,26 +795,109 @@ class Quince{
 	}
     
     public function processRequest($url){
-	    // throw new Exception;
+	    
 	    $r = new $this->_request_class;
 	    
 	    // MultiViews support: look for URLS like index.php/module/action
 		$fc_filename = basename($_SERVER['SCRIPT_FILENAME']).'/';
 		$fc_filename_len = strlen($fc_filename);
 		
-	    $ulength = strlen($url.'/');
+	    // $ulength = strlen($url.'/');
 	    
+	    // echo getcwd().' ';
+	    // echo $_SERVER["DOCUMENT_ROOT"].'/ ';
+	    // echo $url;
+	    
+	    /* 
 	    // If the end of the url and the file path are the same
 	    if(substr(getcwd().'/', $ulength*-1, $ulength) == $url.'/'){
 	        $r->setRequestString('');
 	        $r->setDomain($url.'/');
 	        return $r;
 	    }
+	    */
+	    
+	    // TAKE ALL THE BITS OF THE REQUEST_URI THAT AREN'T IN THE DOCUMENT_ROOT AND MAKE THEM THE DOMAIN
+	    
+	    $test_url = $url{(strlen($url)-1)} == '/' ? substr($url, 0, -1) : $url;
 	    
 	    // Calculate the domain
-	    $hdp = explode('/', getcwd());
+	    // $hdp = explode('/', getcwd());
+	    $hdp = explode('/', $test_url);
         array_shift($hdp);
-        $hdp = array_reverse($hdp);
+        array_pop($hdp);
+        // print_r($hdp);
+        $reverse = array_reverse($hdp);
+        $possible_dir = implode('/', $hdp).'/';
+        // echo $possible_dir;
+        // array_shift($hdp);
+        
+        $cwd = getcwd();
+        $dr = realpath($_SERVER["DOCUMENT_ROOT"]);
+        // echo $dr;
+        $f = strpos($dr, $cwd);
+        
+        if(is_dir($dr.$possible_dir)){
+            $r->setDomain('/'.$possible_dir);
+            $r->setRequestString(substr($url, strlen($possible_dir)));
+        }else{
+            $r->setDomain('/');
+            $r->setRequestString(substr($url, 1));
+        }
+        
+        // print_r($r);
+        
+        return $r;
+        
+        /* echo $dr.' * ';
+        echo $test_url;
+        
+        if($f === false){
+            throw new QuinceException("Domain could not be calculated: Document root not found in current working directory");
+        }else{
+            if($f > 0){
+                $docroot = substr($cwd, 0, $f).$_SERVER["DOCUMENT_ROOT"];
+            }else{
+                $docroot = $_SERVER["DOCUMENT_ROOT"];
+            }
+        } */
+        
+        /* if(){
+            
+        } */
+        
+        /* if(strlen($cwd) == strlen($docroot)){
+            
+            $r->setRequestString('');
+	        $r->setDomain($url.'/');
+	        return $r;
+	        
+        }else if(strlen($cwd) > strlen($docroot)){
+            
+            $possible_domain = substr($cwd, strlen($docroot));
+            $start = strlen($possible_domain)+1;
+            
+            if(substr($_SERVER['REQUEST_URI'], 0, $start) == $possible_domain.'/'){
+                $r->setDomain($possible_domain.'/');
+                $r->setRequestString(substr($url, $start));
+                return $r;
+            }
+            
+        } */
+        
+        // echo $cwd.' '.$docroot;
+        
+        // $num_folders = count($hdp);
+        
+        /* for($i=0;$i<$num_folders;$i++){
+            $try_path = '/'.implode('/', $hdp).'/';
+            // echo $try_path.' ';
+            $substr_start = strlen($try_path)*-1;
+            // print_r($hdp);
+            $request = array_pop($hdp).'/'.$request;
+            // echo $request;
+            
+        }
         
         $argnum = 1;
         $count = (count($hdp)-1);
@@ -846,7 +929,7 @@ class Quince{
                 
                 return $r;
             }
-        }
+        } */
         
         return $r;
 	}
