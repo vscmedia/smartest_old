@@ -2,7 +2,6 @@
 
 class CmsFrontEnd extends SmartestSystemApplication{
 
-	public $url;
 	protected $_site;
 	protected $_page;
 	
@@ -35,16 +34,16 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
 		if($this->lookupSiteDomain()){
 		
-		    if(strlen($this->url)){
+		    if(strlen($this->getRequest()->getRequestString())){
 		        
 		        try{
 		        
-		            if($this->_page = $this->manager->getNormalPageByUrl($this->url, $this->_site->getId())){
+		            if($this->_page = $this->manager->getNormalPageByUrl($this->getRequest()->getRequestString(), $this->_site->getId())){
 
         		        // we are viewing a static page
         		        $this->renderPage();
 
-        		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->url, $this->_site->getId())){
+        		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->getRequest()->getRequestString(), $this->_site->getId())){
 
         		        // we are viewing a meta-page (based on an item from a data set)
         		        $this->renderPage();
