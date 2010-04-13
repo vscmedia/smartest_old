@@ -133,7 +133,9 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	        // do nothing
 	    }else{
 		    SmartestSession::set("form:return:location", $request_filename);
-		    SmartestSession::set("form:return:vars", $request_vars);
+		    $vars = new SmartestParameterHolder("Form failure request variables");
+            $vars->loadArray($request_vars);
+		    SmartestSession::set("form:return:vars", $vars);
 	    }
         
 	}
@@ -146,9 +148,9 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 			$form_return_uri = "/smartest";
 		}
 		
-		if(SmartestSession::hasData("form:return:vars") && is_array(SmartestSession::get("form:return:vars")) && count(SmartestSession::get("form:return:vars"))){
+		if(SmartestSession::hasData("form:return:vars") && (SmartestSession::get("form:return:vars") instanceof SmartestParameterHolder) && SmartestSession::get("form:return:vars")->hasData()){
 		    
-			$form_return_uri .= "?".SmartestStringHelper::toQueryString(SmartestSession::get("form:return:vars"), $escape);
+			$form_return_uri .= "?".SmartestStringHelper::toQueryString(SmartestSession::get("form:return:vars")->getParameters(), $escape);
 			
 		}
 		
@@ -163,6 +165,18 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	protected function setFormReturnDescription($rd){
 	    return SmartestSession::set("form:return:description", $rd);
 	}
+	
+	protected function setFormReturnVar($var, $value){
+    	SmartestSession::get('form:return_vars')->setParameter($var, $value);
+    }
+
+    protected function getFormReturnVar($var){
+        return SmartestSession::get('form:return:vars')->getParameter($var);
+    }
+
+    protected function hasFormReturnVar($var){
+        return SmartestSession::get('form:return:vars')->hasParameter($var);
+    }
 	
 	/* protected function setFormCompleteUri(){
 		$_SESSION["_FORM_RETURN"] = reset(explode("?", $_SERVER["REQUEST_URI"]));

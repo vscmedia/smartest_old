@@ -1711,10 +1711,10 @@ class Items extends SmartestSystemApplication{
 	
 	public function publishItem($get, $post){
 	    
-	    if($this->getRequestParameter('item_id')){
+	    if(isset($_POST['item_id'])){
 	    
-	        // actually publish the item, or at least try
-	        $item_id = $this->getRequestParameter('item_id');
+	          // actually publish the item, or at least try
+	          $item_id = $this->getRequestParameter('item_id');
             $item = SmartestCmsItem::retrieveByPk($item_id);
         
             if(is_object($item)){
@@ -1784,8 +1784,12 @@ class Items extends SmartestSystemApplication{
                 $this->addUserMessageToNextRequest('The Item ID was not recognised.', SmartestUserMessage::ERROR);
             
             }
-        
-            $this->formForward();
+            
+            if($this->hasFormReturnVar('item_id')){
+                $this->redirect('/datamanager/editItem?item_id='.$item_id);
+            }else{
+                $this->formForward();
+            }
         
         }else{
             
@@ -1823,7 +1827,11 @@ class Items extends SmartestSystemApplication{
     	                $this->addUserMessageToNextRequest('You don\'t have permission to publish items.', SmartestUserMessage::ACCESS_DENIED);
     	            }
     	            
-    	            $this->formForward();
+    	            if($this->hasFormReturnVar('item_id')){
+                      $this->redirect('/datamanager/editItem?item_id='.$item_id);
+                  }else{
+    	                $this->formForward();
+    	            }
 	            
     	        }
 	    

@@ -177,9 +177,9 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     
     public function publish(){
         
-        if(is_object(SmartestPersistentObject::get('user'))){
+        if(is_object(SmartestSession::get('user'))){
             
-            $user = SmartestPersistentObject::get('user');
+            $user = SmartestSession::get('user');
             
             if($user->hasToken('publish_approved_items') || $user->hasToken('publish_all_items')){
                 $this->_properties['content'] = $this->_properties['draft_content'];
