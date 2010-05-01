@@ -54,7 +54,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 		    if(is_numeric($id)){
     			// numeric_id
     			$field = 'page_id';
-    		}else if(preg_match('/[a-zA-Z0-9]{32}/', $id)){
+    		}else if(preg_match('/[a-zA-Z0-9\$-]{32}/', $id)){
     			// 'webid'
     			$field = 'page_webid';
     		}else if(preg_match('/[a-zA-Z0-9_-]+/', $id)){
@@ -815,8 +815,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	
 	public function getPageChildrenForWeb($sections_only=false){
 	    
+	    $special_page_ids = array();
+	    
 	    if($this->getParentSite()->getTagPageId()){
-	        $special_page_ids = array($this->getParentSite()->getTagPageId());
+	        $special_page_ids[] = $this->getParentSite()->getTagPageId();
 	    }
         
         // these values should not be the same as the ids of the other special pages, 

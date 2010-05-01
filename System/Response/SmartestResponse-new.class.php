@@ -333,6 +333,8 @@ class SmartestResponse{
 	        $this->_error_stack->recordError(new SmartestException('Quince error: '.$e->getMessage()), false);
 	    }
 	    
+	    // print_r($this->_controller->getCurrentRequest());
+	    
 	    $this->_error_stack->display();
 	    
 	    SmartestPersistentObject::set('controller', $this->_controller);
@@ -543,6 +545,8 @@ class SmartestResponse{
 	
 	public function finish(){
 	    
+	    $cth = 'Content-Type: '.$this->_controller->getCurrentRequest()->getContentType().'; charset='.$this->_controller->getCurrentRequest()->getCharSet();
+	    header($cth);
 	    echo $this->fetch();
 	    exit;
 	    

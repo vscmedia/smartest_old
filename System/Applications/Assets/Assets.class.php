@@ -1070,7 +1070,7 @@ class Assets extends SmartestSystemApplication{
 		$asset_id = $get['asset_id'];
 
 		/* if(!isset($get['from'])){
-		    $this->setFormReturnUri();
+		    // $this->setFormReturnUri();
 		} */
 
 		$asset = new SmartestAsset;
@@ -1471,6 +1471,8 @@ class Assets extends SmartestSystemApplication{
 		}
 		
 	    // $this->formForward();
+	    
+	    // echo $post['_submit_action'];
 	    
 	    if($post['_submit_action'] == "continue" && $success){
 	        if(isset($post['editor']) && $post['editor'] == 'source'){

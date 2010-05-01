@@ -28,7 +28,7 @@ class Dropdowns extends SmartestSystemApplication{
     	        $dropdown->setLabel($label);
     	        $dropdown->save();
     	        $this->addUserMessageToNextRequest('Your new dropdown menu was saved successfully.', SmartestUserMessage::SUCCESS);
-    	        $this->redirect('/dropdowns/editDropDown?dropdown_id='.$dropdown->getId());
+    	        $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
     	    }else{
     	        $this->addUserMessageToNextRequest('A dropdown menu with that name already exists.', SmartestUserMessage::INFO);
     	        $this->redirect('/dropdowns/addDropDown');

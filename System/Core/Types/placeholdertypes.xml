@@ -12,6 +12,7 @@
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
+    <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
   </type>
   
   <type id="SM_ASSETCLASS_TEXT">
@@ -21,12 +22,12 @@
     <accept>SM_ASSETTYPE_SL_TEXT</accept>
   </type>
   
-  <type id="SM_ASSETCLASS_SHOCKWAVE_FLASH">
-    <label>Adobe Flash content</label>
-    <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
+  <type id="SM_ASSETCLASS_MARKUP">
+    <label>Markup fragments</label>
+    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
   </type>
   
-  <type id="SM_ASSETCLASS_HOMEPAGE_SPLASH">
+   <type id="SM_ASSETCLASS_HOMEPAGE_SPLASH">
     <label>Homepage splash (high-impact, high compatibility)</label>
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
@@ -35,6 +36,28 @@
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
     <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
+    <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_VECTOR_GRAPHIC">
+    <label>Vector graphics</label>
+    <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
+    <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_JAVASCRIPT">
+    <label>Javascript</label>
+    <accept>SM_ASSETTYPE_JAVASCRIPT</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_STYLESHEET">
+    <label>CSS Stylesheet</label>
+    <accept>SM_ASSETTYPE_STYLESHEET</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_SHOCKWAVE_FLASH">
+    <label>Adobe Flash content</label>
+    <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
   </type>
   
   <type id="SM_ASSETCLASS_MOVIE">
@@ -48,11 +71,6 @@
   <type id="SM_ASSETCLASS_SOUND">
     <label>Audio files</label>
     <accept>SM_ASSETTYPE_MP3</accept>
-  </type>
-  
-  <type id="SM_ASSETCLASS_MARKUP">
-    <label>Markup fragments</label>
-    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
   </type>
   
   <type id="SM_ASSETCLASS_DOWNLOAD">

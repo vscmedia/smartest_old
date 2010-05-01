@@ -2,10 +2,6 @@
 
 class MetaData extends SmartestSystemApplication{
 
-	function __moduleConstruct(){
-		
-	}
-	
 	public function startPage(){
 	    
 	}

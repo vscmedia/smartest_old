@@ -41,7 +41,7 @@ VSC.Effect.DisplayProgressively = Class.create({
         
         var myID = this.id;
         instances[myID] = this;
-        this.executer = setInterval(function(){instances[myID].showNextElement()}, 300);
+        this.executer = setInterval(function(){instances[myID].showNextElement()}, this.interval);
         
     },
     
@@ -85,10 +85,13 @@ VSC.Effect.DisplayProgressively = Class.create({
 
 VSC.Effect.DisplayLettersProgressively = Class.create({
     
-    initialize: function(element, vertical){
+    initialize: function(element, vertical, params){
     
         // capture the original string
         this.originalContents = element.innerHTML;
+        
+        this.interval = params && params.interval ? params.interval : 0.08;
+        this.duration = params && params.duration ? params.duration : 0.5;
         
         this.element = element;
     
@@ -107,11 +110,11 @@ VSC.Effect.DisplayLettersProgressively = Class.create({
         
             if(spanIndex < spans.length){
                 spans[spanIndex].id = element.id+'-letter-'+spanIndex;
-                new Effect.Appear(spans[spanIndex].id, {duration:0.5});
+                new Effect.Appear(spans[spanIndex].id, {duration: 0.4});
                 spanIndex++;
             }
         
-        },  0.08);
+        }, this.interval);
     
     }
     

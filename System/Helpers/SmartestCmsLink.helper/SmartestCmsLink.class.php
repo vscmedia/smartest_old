@@ -217,7 +217,7 @@ class SmartestCmsLink extends SmartestHelper{
         if(defined('SM_CMS_PAGE_SITE_ID')){
             $site_id = SM_CMS_PAGE_SITE_ID;
         }else if(SmartestSession::hasData('current_open_project')){
-            $site_id = SmartestPersistentObject::get('current_open_project')->getId();
+            $site_id = SmartestSession::get('current_open_project')->getId();
         }
         
         switch($this->getType()){

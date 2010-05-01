@@ -307,7 +307,10 @@ class CmsFrontEnd extends SmartestSystemApplication{
     	    $fc = new SmartestFilterChain("WebPageBuilder");
     	    $fc->setDraftMode($draft_mode);
 	        $html = $fc->execute($html);
-	    
+	        
+	        $cth = 'Content-Type: '.$this->getRequest()->getContentType().'; charset='.$this->getRequest()->getCharSet();
+	        
+    	    header($cth);
 	        echo $html;
 	        exit;
 	    
