@@ -628,7 +628,6 @@ class Templates extends SmartestSystemApplication{
 	            $file_is_writable = is_writable(SM_ROOT_DIR.$location.$template->getUrl());
         		$title = 'Edit '.$type['label'];
         		$this->send($type, 'type_info');
-        		// var_dump($template->getIsConvertable());
         		$this->send($template->IsConvertable(), 'is_convertable');
 	        }else{
 	            $this->addUserMessage("The template ID was not recognized");

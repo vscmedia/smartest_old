@@ -9,12 +9,13 @@
 <div id="instruction">You are editing the draft property values of this item</div>
 
 <div id="sets" class="special-box">
-     Sets: {if count($sets)}{foreach from=$sets item="set"}<a href="{$domain}sets/previewSet?set_id={$set.id}">{$set.label}</a> (<a href="{$domain}sets/transferSingleItem?item_id={$item.id}&amp;set_id={$set.id}&amp;transferAction=remove">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
+     Sets: {if count($sets)}{foreach from=$sets item="set"}<a href="{$domain}sets/previewSet?set_id={$set.id}">{$set.label}</a> (<a href="{$domain}sets/transferSingleItem?item_id={$item.id}&amp;set_id={$set.id}&amp;transferAction=remove&amp;returnTo=editItem">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
  {if count($possible_sets)}
          <div>
            <form action="{$domain}sets/transferSingleItem" method="post">
              <input type="hidden" name="item_id" value="{$item.id}" />
              <input type="hidden" name="transferAction" value="add" />
+             <input type="hidden" name="returnTo" value="editItem" />
              Add this item to set:
              <select name="set_id">
  {foreach from=$possible_sets item="possible_set"}

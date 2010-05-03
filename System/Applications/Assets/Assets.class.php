@@ -94,7 +94,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $a = new SmartestAsset;
 	    
-	    if($a->hydrate((int) $get['asset_id'])){
+	    if($a->hydrate((int) $this->getRequestParameter('asset_id'))){
 	        
 	        if($a->getIsArchived() == 1){
 	            $a->setIsArchived(0);
@@ -172,8 +172,8 @@ class Assets extends SmartestSystemApplication{
 	    $h = new SmartestAssetsLibraryHelper;
 	    $location_types = $h->getTypeCodesByStorageLocation();
 	    
-	    if(isset($post['new_files']) && is_array($post['new_files'])){
-	        $new_files = $post['new_files'];
+	    if($this->getRequestParameter('new_files') && is_array($this->getRequestParameter('new_files'))){
+	        $new_files = $this->getRequestParameter('new_files');
 	    }else{
 	        $new_files = array();
 	    }
@@ -222,8 +222,8 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $this->requireOpenProject();
 	    
-	    if(isset($post['new_files']) && is_array($post['new_files'])){
-	        $new_files = $post['new_files'];
+	    if($this->getRequestParameter('new_files') && is_array($this->getRequestParameter('new_files'))){
+	        $new_files = $this->getRequestParameter('new_files');
 	    }else{
 	        $new_files = array();
 	    }
@@ -296,7 +296,7 @@ class Assets extends SmartestSystemApplication{
 		
 		$this->requireOpenProject();
 		
-		$asset_type = SmartestStringHelper::toConstantName($get['asset_type']);
+		$asset_type = SmartestStringHelper::toConstantName($this->getRequestParameter('asset_type'));
 		
 		$types_array = SmartestDataUtility::getAssetTypes();
 		
@@ -378,7 +378,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    if($this->getUser()->hasToken('create_assets')){
 	    
-	        $asset_type = $post['asset_type'];
+	        $asset_type = $this->getRequestParameter('asset_type');
 	    
     	    $everything_ok = true;
 	    
@@ -391,11 +391,11 @@ class Assets extends SmartestSystemApplication{
     		    $asset = new SmartestAsset;
     		    $asset->setType($asset_type);
     		    $asset->setSiteId($this->getSite()->getId());
-    		    $shared = isset($post['asset_shared']) ? 1 : 0;
+    		    $shared = $this->getRequestParameter('asset_shared') ? 1 : 0;
     		    $asset->setShared($shared);
     		    $asset->setUserId($this->getUser()->getId());
     		    $asset->setCreated(time());
-    		    $asset->setLanguage(strtolower(substr($post['asset_language'], 0, 3))); // ISO-6639-3 language codes are only ever three letters long
+    		    $asset->setLanguage(strtolower(substr($this->getRequestParameter('asset_language'), 0, 3))); // ISO-6639-3 language codes are only ever three letters long
 		    
     		    $suffixes = array();
 		    
@@ -405,33 +405,33 @@ class Assets extends SmartestSystemApplication{
     		        }
     		    }
 		    
-    		    if($post['input_mode'] == 'direct'){
+    		    if($this->getRequestParameter('input_mode') == 'direct'){
 		        
     		        // create filename
-    		        if(isset($post['new_filename']) && strlen($post['new_filename'])){
+    		        if($this->getRequestParameter('new_filename') && strlen($this->getRequestParameter('new_filename'))){
 		            
-    		            if(in_array(SmartestStringHelper::getDotSuffix($post['new_filename']), $suffixes)){
-    		                $filename = $post['new_filename'];
-    		                $string_id = SmartestStringHelper::toVarName($post['new_filename']);
+    		            if(in_array(SmartestStringHelper::getDotSuffix($this->getRequestParameter('new_filename')), $suffixes)){
+    		                $filename = $this->getRequestParameter('new_filename');
+    		                $string_id = SmartestStringHelper::toVarName($this->getRequestParameter('new_filename'));
     		            }else{
-    		                $filename = SmartestStringHelper::toVarName($post['new_filename']).'.'.$suffixes[0];
-    		                $string_id = SmartestStringHelper::toVarName($post['new_filename']);
+    		                $filename = SmartestStringHelper::toVarName($this->getRequestParameter('new_filename')).'.'.$suffixes[0];
+    		                $string_id = SmartestStringHelper::toVarName($this->getRequestParameter('new_filename'));
     		            }
 		            
-    		            if(isset($post['string_id']) && strlen($post['string_id'])){
+    		            if($this->getRequestParameter('string_id') && strlen($this->getRequestParameter('string_id'))){
 
-        		            $string_id = SmartestStringHelper::toVarName($post['string_id']);
+        		            $string_id = SmartestStringHelper::toVarName($this->getRequestParameter('string_id'));
 
         		        }
 		            
-    		        }else if(isset($post['string_id']) && strlen($post['string_id'])){
+    		        }else if($this->getRequestParameter('string_id') && strlen($this->getRequestParameter('string_id'))){
 		            
-    		            if(in_array(SmartestStringHelper::getDotSuffix($post['string_id']), $suffixes)){
-    		                $filename = $post['string_id'];
-    		                $string_id = SmartestStringHelper::toVarName($post['string_id']);
+    		            if(in_array(SmartestStringHelper::getDotSuffix($this->getRequestParameter('string_id')), $suffixes)){
+    		                $filename = $this->getRequestParameter('string_id');
+    		                $string_id = SmartestStringHelper::toVarName($this->getRequestParameter('string_id'));
     		            }else{
-    		                $filename = SmartestStringHelper::toVarName($post['string_id']).'.'.$suffixes[0];
-    		                $string_id = SmartestStringHelper::toVarName($post['string_id']);
+    		                $filename = SmartestStringHelper::toVarName($this->getRequestParameter('string_id')).'.'.$suffixes[0];
+    		                $string_id = SmartestStringHelper::toVarName($this->getRequestParameter('string_id'));
     		            }
 		            
 		            
@@ -443,7 +443,7 @@ class Assets extends SmartestSystemApplication{
 		        
     		        $asset->setStringid($string_id, $this->getSite()->getId());
 		        
-    		        $content = $post['content'];
+    		        $content = $this->getRequestParameter('content');
 		        
     		        $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.md5(microtime(true)).'.tmp';
     		        SmartestFileSystemHelper::save($new_temp_file, $content, true);
@@ -552,8 +552,8 @@ class Assets extends SmartestSystemApplication{
 		    
     		    $asset->setWebid(SmartestStringHelper::random(32));
 		    
-    		    if(isset($post['params']) && is_array($post['params'])){
-    		        $param_values = serialize($post['params']);
+    		    if($this->getRequestParameter('params') && is_array($this->getRequestParameter('params'))){
+    		        $param_values = serialize($this->getRequestParameter('params'));
     		        $asset->setParameterDefaults($param_values);
     	        }
 		    
@@ -562,11 +562,11 @@ class Assets extends SmartestSystemApplication{
     		        $this->getUser()->addRecentlyEditedAssetById($asset->getId(), $this->getSite()->getId());
     		        $asset->save();
     		        
-    		        if(strlen($post['initial_group_id']) && is_numeric($post['initial_group_id'])){
+    		        if(strlen($this->getRequestParameter('initial_group_id')) && is_numeric($this->getRequestParameter('initial_group_id'))){
     		            $group = new SmartestAssetGroup;
     		            
-    		            if($group->find($post['initial_group_id'])){
-    		                $asset->addToGroupById($post['initial_group_id'], true);
+    		            if($group->find($this->getRequestParameter('initial_group_id'))){
+    		                $asset->addToGroupById($this->getRequestParameter('initial_group_id'), true);
     		                $message = sprintf("The file was successfully saved as '%s' and added to group '%s'.", $asset->getUrl(), $group->getLabel());
     		                $status = SmartestUserMessage::SUCCESS;
     		            }else{
@@ -624,16 +624,16 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $alh = new SmartestAssetsLibraryHelper;
 	    
-	    $code = $get['asset_type'];
+	    $code = $this->getRequestParameter('asset_type');
 	    
 	    $types_array = SmartestDataUtility::getAssetTypes();
 		
 		if(in_array($code, array_keys($types_array))){
 		    
-		    $groups = $alh->getAssetGroupsThatAcceptType($get['asset_type'], $this->getSite()->getId());
+		    $groups = $alh->getAssetGroupsThatAcceptType($this->getRequestParameter('asset_type'), $this->getSite()->getId());
 
     	    $this->send($groups, 'groups');
-    	    $this->send($get['asset_type'], 'type_code');
+    	    $this->send($this->getRequestParameter('asset_type'), 'type_code');
     	    $this->send($types_array[$code], 'type');
 		    
 		}else{
@@ -647,8 +647,8 @@ class Assets extends SmartestSystemApplication{
 	    $asset_types = SmartestDataUtility::getAssetTypes();
 	    $placeholder_types = SmartestDataUtility::getAssetClassTypes(true);
 	    
-	    if($get['filter_type']){
-	        $this->send($get['filter_type'], 'filter_type');
+	    if($this->getRequestParameter('filter_type')){
+	        $this->send($this->getRequestParameter('filter_type'), 'filter_type');
 	    }
 	    
 	    $this->send($asset_types, 'asset_types');
@@ -658,12 +658,12 @@ class Assets extends SmartestSystemApplication{
 	
 	public function newAssetGroupFromPlaceholder($get){
 	    
-	    $placeholder_id = (int) $get['placeholder_id'];
+	    $placeholder_id = (int) $this->getRequestParameter('placeholder_id');
 	    $placeholder = new SmartestPlaceholder;
 	    
 	    if($placeholder->find($placeholder_id)){
 	        
-	        $mode = (isset($get['mode']) && $get['mode'] == 'live') ? "live" : "draft";
+	        $mode = ($this->getRequestParameter('mode') && $this->getRequestParameter('mode') == 'live') ? "live" : "draft";
 	        
 	        $draft_mode = ($mode == "draft");
 	        
@@ -682,13 +682,13 @@ class Assets extends SmartestSystemApplication{
 	    $this->requireOpenProject();
 	    
 	    $set = new SmartestAssetGroup;
-	    $set->setLabel($post['asset_group_label']);
-	    $set->setName(SmartestStringHelper::toVarName($post['asset_group_label']));
+	    $set->setLabel($this->getRequestParameter('asset_group_label'));
+	    $set->setName(SmartestStringHelper::toVarName($this->getRequestParameter('asset_group_label')));
 	    
-	    if($post['asset_group_type'] == 'ALL'){
+	    if($this->getRequestParameter('asset_group_type') == 'ALL'){
 	        $set->setFilterType('SM_SET_FILTERTYPE_NONE');
 	    }else{
-	        switch(substr($post['asset_group_type'], 0, 1)){
+	        switch(substr($this->getRequestParameter('asset_group_type'), 0, 1)){
 	            case 'A':
 	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETTYPE');
 	            break;
@@ -698,7 +698,7 @@ class Assets extends SmartestSystemApplication{
 	        }
 	    }
 	    
-	    $set->setFilterValue(($post['asset_group_type'] == 'ALL') ? null : substr($post['asset_group_type'], 2));
+	    $set->setFilterValue(($this->getRequestParameter('asset_group_type') == 'ALL') ? null : substr($this->getRequestParameter('asset_group_type'), 2));
 	    $set->setSiteId($this->getSite()->getId());
 	    $set->setShared(0);
 	    $set->save();
@@ -709,16 +709,16 @@ class Assets extends SmartestSystemApplication{
 	
 	public function createNewAssetGroupFromPlaceholder($get, $post){
 	    
-	    $placeholder_id = (int) $post['placeholder_id'];
+	    $placeholder_id = (int) $this->getRequestParameter('placeholder_id');
 	    $placeholder = new SmartestPlaceholder;
 	    
 	    if($placeholder->find($placeholder_id)){
 	        
-	        if(isset($post['asset_ids']) && is_array($post['asset_ids'])){
+	        if($this->getRequestParameter('asset_ids') && is_array($this->getRequestParameter('asset_ids'))){
 	        
 	            $set = new SmartestAssetGroup;
-    	        $set->setLabel($post['asset_group_label']);
-    	        $set->setName(SmartestStringHelper::toVarName($post['asset_group_label']));
+    	        $set->setLabel($this->getRequestParameter('asset_group_label'));
+    	        $set->setName(SmartestStringHelper::toVarName($this->getRequestParameter('asset_group_label')));
     	        $set->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
     	        $set->setSiteId($this->getSite()->getId());
     	        $set->setShared(0);
@@ -726,11 +726,11 @@ class Assets extends SmartestSystemApplication{
     	        $set->save();
     	        header("HTTP/1.1 201 Created");
 	        
-	            foreach($post['asset_ids'] as $asset_id){
+	            foreach($this->getRequestParameter('asset_ids') as $asset_id){
 	                $set->addAssetById($asset_id, false);
 	            }
 	            
-	            $this->addUserMessageToNextRequest("A group was successfully created and ".count($post['asset_ids'])." files were added to it.", SmartestUserMessage::SUCCESS);
+	            $this->addUserMessageToNextRequest("A group was successfully created and ".count($this->getRequestParameter('asset_ids'))." files were added to it.", SmartestUserMessage::SUCCESS);
 	            $this->redirect("/assets/browseAssetGroup?group_id=".$set->getId());
 	            
             }else{
@@ -749,7 +749,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function browseAssetGroup($get){
 	    
-	    $group_id = $get['group_id'];
+	    $group_id = $this->getRequestParameter('group_id');
 	    $mode = isset($get["mode"]) ? (int) $get["mode"] : 1;
 	    
 	    $this->setFormReturnUri();
@@ -772,7 +772,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $group = new SmartestAssetGroup;
 	    
-	    if($group->find($get['group_id'])){
+	    if($group->find($this->getRequestParameter('group_id'))){
 	        
 	        $this->send($group, 'group');
 	        $this->send($this->getUser()->hasToken('edit_file_group_name'), 'allow_name_edit');
@@ -797,20 +797,20 @@ class Assets extends SmartestSystemApplication{
 	public function updateAssetGroup($get, $post){
 	    
 	    $group = new SmartestAssetGroup;
-	    $group_id = (int) $post['group_id'];
+	    $group_id = (int) $this->getRequestParameter('group_id');
 	    
 	    if($group->find($group_id)){
 	        
-	        $group->setLabel($post['group_label']);
+	        $group->setLabel($this->getRequestParameter('group_label'));
 	        
 	        if($this->getUser()->hasToken('edit_file_group_name')){
-	            $group->setName(SmartestStringHelper::toVarName($post['group_name']));
+	            $group->setName(SmartestStringHelper::toVarName($this->getRequestParameter('group_name')));
 	        }
 	        
 	        if($group->isUsedForPlaceholders()){
                 $group->setShared(1);
             }else{
-                $shared = (isset($post['group_shared']) && $post['group_shared']) ? 1 : 0;
+                $shared = ($this->getRequestParameter('group_shared') && $this->getRequestParameter('group_shared')) ? 1 : 0;
                 $group->setShared($shared);
             }
             
@@ -830,7 +830,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function editAssetGroupContents($get){
 	    
-	    $group_id = $get['group_id'];
+	    $group_id = $this->getRequestParameter('group_id');
 	    
 	    $this->setFormReturnUri();
 	    
@@ -848,7 +848,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function transferSingleAsset($get, $post){
 	    
-	    if($post['group_id']){
+	    if($this->getRequestParameter('group_id')){
 	        $request = $post;
 	    }else{
 	        $request = $get;
@@ -882,15 +882,15 @@ class Assets extends SmartestSystemApplication{
 	
 	public function transferAssets($get, $post){
 	    
-	    $group_id = $post['group_id'];
+	    $group_id = $this->getRequestParameter('group_id');
 	    
 	    $group = new SmartestAssetGroup;
 	    
 	    if($group->find($group_id)){
 	        
-	        if($post['transferAction'] == 'add'){
+	        if($this->getRequestParameter('transferAction') == 'add'){
 	            
-	            $asset_ids = (isset($post['available_assets']) && is_array($post['available_assets'])) ? $post['available_assets'] : array();
+	            $asset_ids = ($this->getRequestParameter('available_assets') && is_array($this->getRequestParameter('available_assets'))) ? $this->getRequestParameter('available_assets') : array();
 	            
 	            foreach($asset_ids as $aid){
 	            
@@ -900,7 +900,7 @@ class Assets extends SmartestSystemApplication{
 	            
 	        }else{
 	            
-	            $asset_ids = (isset($post['used_assets']) && is_array($post['used_assets'])) ? $post['used_assets'] : array();
+	            $asset_ids = ($this->getRequestParameter('used_assets') && is_array($this->getRequestParameter('used_assets'))) ? $this->getRequestParameter('used_assets') : array();
 	            
 	            foreach($asset_ids as $aid){
 	            
@@ -922,7 +922,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function assetInfo($get){
 	    
-	    $asset_id = $get['asset_id'];
+	    $asset_id = $this->getRequestParameter('asset_id');
 	    
 	    $asset = new SmartestAsset;
 
@@ -959,9 +959,9 @@ class Assets extends SmartestSystemApplication{
     
     public function editAsset($get, $post){
 
-		$asset_id = $get['asset_id'];
+		$asset_id = $this->getRequestParameter('asset_id');
 
-		if(!isset($get['from'])){
+		if(!$this->getRequestParameter('from')){
 		    // $this->setFormReturnUri();
 		}
 
@@ -1067,9 +1067,9 @@ class Assets extends SmartestSystemApplication{
 	
 	function editTextFragmentSource($get, $post){
 
-		$asset_id = $get['asset_id'];
+		$asset_id = $this->getRequestParameter('asset_id');
 
-		/* if(!isset($get['from'])){
+		/* if(!$this->getRequestParameter('from')){
 		    // $this->setFormReturnUri();
 		} */
 
@@ -1132,7 +1132,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function approveAsset($get){
 	    
-	    $asset_id = $get['asset_id'];
+	    $asset_id = $this->getRequestParameter('asset_id');
 	    
 	    if($this->getUser()->hasToken('approve_assets')){
 	        $asset = new SmartestAsset;
@@ -1162,7 +1162,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function publishTextAsset($get){
 	    
-	    $asset_id = $get['asset_id'];
+	    $asset_id = $this->getRequestParameter('asset_id');
         
         // if($this->getUser()->hasToken('publish_text_assets') || $this->getUser()->hasToken('publish_all_assets')){
         
@@ -1213,7 +1213,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function addTodoItem($get){
 	    
-	    $asset_id = (int) $get['asset_id'];
+	    $asset_id = (int) $this->getRequestParameter('asset_id');
 	    $asset = new SmartestAsset;
 	    
 	    if($asset->hydrate($asset_id)){
@@ -1239,24 +1239,24 @@ class Assets extends SmartestSystemApplication{
 	
 	public function insertTodoItem($get, $post){
 	    
-	    $asset_id = (int) $post['asset_id'];
+	    $asset_id = (int) $this->getRequestParameter('asset_id');
 	    
 	    $asset = new SmartestAsset;
 	    
 	    if($asset->hydrate($asset_id)){
 	        
 	        $user = new SmartestUser;
-	        $user_id = (int) $post['todoitem_receiving_user_id'];
+	        $user_id = (int) $this->getRequestParameter('todoitem_receiving_user_id');
 	        
 	        if($user->hydrate($user_id)){
 	            
 	            // $user->assignTodo('SM_TODOITEMTYPE_EDIT_ITEM', $item_id, $this->getUser()->getId(), SmartestStringHelper::sanitize())
 	            
-	            $todo_type = SmartestStringHelper::sanitize($post['todoitem_type']);
+	            $todo_type = SmartestStringHelper::sanitize($this->getRequestParameter('todoitem_type'));
 	            
 	            $type = SmartestTodoListHelper::getType($todo_type);
                 
-                $message = SmartestStringHelper::sanitize($post['todoitem_description']);
+                $message = SmartestStringHelper::sanitize($this->getRequestParameter('todoitem_description'));
                 
         	    if(isset($message{1})){
         	        $input_message = SmartestStringHelper::sanitize($message);
@@ -1264,8 +1264,8 @@ class Assets extends SmartestSystemApplication{
         	        $input_message = $type->getDescription();
         	    }
         	    
-        	    $priority = (int) $post['todoitem_priority'];
-        	    $size     = (int) $post['todoitem_size'];
+        	    $priority = (int) $this->getRequestParameter('todoitem_priority');
+        	    $size     = (int) $this->getRequestParameter('todoitem_size');
 	            
 	            $todo = new SmartestTodoItem;
 	            $todo->setReceivingUserId($user->getId());
@@ -1306,7 +1306,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $this->setTitle("Preview File");
 	    $asset = new SmartestRenderableAsset;
-	    $asset_id = (int) $get['asset_id'];
+	    $asset_id = (int) $this->getRequestParameter('asset_id');
 	    
 	    if(!defined('SM_CMS_PAGE_SITE_ID')){
 	        define('SM_CMS_PAGE_SITE_ID', $this->getSite()->getId());
@@ -1383,9 +1383,9 @@ class Assets extends SmartestSystemApplication{
 	
 	function textFragmentElements($get){
 	    
-	    $asset_id = $get['asset_id'];
+	    $asset_id = $this->getRequestParameter('asset_id');
 
-		/* if(!isset($get['from'])){
+		/* if(!$this->getRequestParameter('from')){
 		    $this->setFormReturnUri();
 		} */
 
@@ -1438,7 +1438,7 @@ class Assets extends SmartestSystemApplication{
 
 	public function updateAsset($get, $post){
         
-        $asset_id = $post['asset_id'];
+        $asset_id = $this->getRequestParameter('asset_id');
 
 		$asset = new SmartestAsset;
 
@@ -1446,13 +1446,13 @@ class Assets extends SmartestSystemApplication{
             
             if($asset->getUserId() == $this->getUser()->getId() || $this->getUser()->hasToken('modify_assets')){
             
-		        $param_values = serialize($post['params']);
+		        $param_values = serialize($this->getRequestParameter('params'));
     		    $asset->setParameterDefaults($param_values);
 
-    		    $content = $post['asset_content'];
+    		    $content = $this->getRequestParameter('asset_content');
     		    $content = SmartestStringHelper::unProtectSmartestTags($content);
     		    $asset->setContent($content);
-    	        $asset->setLanguage(strtolower(substr($post['asset_language'], 0, 3)));
+    	        $asset->setLanguage(strtolower(substr($this->getRequestParameter('asset_language'), 0, 3)));
     	        $asset->setModified(time());
                 $asset->save();
                 
@@ -1472,14 +1472,12 @@ class Assets extends SmartestSystemApplication{
 		
 	    // $this->formForward();
 	    
-	    // echo $post['_submit_action'];
-	    
-	    if($post['_submit_action'] == "continue" && $success){
-	        if(isset($post['editor']) && $post['editor'] == 'source'){
+	    if($this->getRequestParameter('_submit_action') == "continue" && $success){
+	        if($this->getRequestParameter('editor') && $this->getRequestParameter('editor') == 'source'){
 	            $this->redirect("/assets/editTextFragmentSource?asset_id=".$asset->getId());
 	        }else{
 	            $this->redirect("/assets/editAsset?asset_type=".$asset->getType()."&asset_id=".$asset->getId());
-            }
+		}
 	    }else{
 	        // $this->addUserMessageToNextRequest($message, $message_type);
 	        $this->formForward();
@@ -1489,8 +1487,8 @@ class Assets extends SmartestSystemApplication{
 	
 	public function defineAttachment($get){
 	    
-	    $asset_id = $get['asset_id'];
-        $attachment_name = SmartestStringHelper::toVarName($get['attachment']);
+	    $asset_id = $this->getRequestParameter('asset_id');
+        $attachment_name = SmartestStringHelper::toVarName($this->getRequestParameter('attachment'));
         $this->send($attachment_name, 'attachment_name');
         
 		$asset = new SmartestAsset;
@@ -1566,8 +1564,8 @@ class Assets extends SmartestSystemApplication{
 	
 	public function updateAttachmentDefinition($get, $post){
 	    
-	    $textfragment_id = $post['textfragment_id'];
-	    $attachment_name = SmartestStringHelper::toVarName($post['attachment_name']);
+	    $textfragment_id = $this->getRequestParameter('textfragment_id');
+	    $attachment_name = SmartestStringHelper::toVarName($this->getRequestParameter('attachment_name'));
 	    
 	    $tf = new SmartestTextFragment;
 	    
@@ -1579,15 +1577,15 @@ class Assets extends SmartestSystemApplication{
 	            $current_def->setTextFragmentId($textfragment_id);
 	        }
 	        
-	        $current_def->setAttachedAssetId((int) $post['attached_file_id']);
+	        $current_def->setAttachedAssetId((int) $this->getRequestParameter('attached_file_id'));
 	        $current_def->setAttachmentName($attachment_name);
-	        $current_def->setZoomFromThumbnail(isset($post['attached_file_zoom']));
-	        $current_def->setThumbnailRelativeSize((int) $post['thumbnail_relative_size']);
-	        $current_def->setCaption(htmlentities($post['attached_file_caption']));
-	        $current_def->setAlignment(SmartestStringHelper::toVarName($post['attached_file_alignment']));
-	        $current_def->setCaptionAlignment(SmartestStringHelper::toVarName($post['attached_file_caption_alignment']));
-	        $current_def->setFloat(isset($post['attached_file_float']));
-	        $current_def->setBorder(isset($post['attached_file_border']));
+	        $current_def->setZoomFromThumbnail($this->getRequestParameter('attached_file_zoom'));
+	        $current_def->setThumbnailRelativeSize((int) $this->getRequestParameter('thumbnail_relative_size'));
+	        $current_def->setCaption(htmlentities($this->getRequestParameter('attached_file_caption')));
+	        $current_def->setAlignment(SmartestStringHelper::toVarName($this->getRequestParameter('attached_file_alignment')));
+	        $current_def->setCaptionAlignment(SmartestStringHelper::toVarName($this->getRequestParameter('attached_file_caption_alignment')));
+	        $current_def->setFloat($this->getRequestParameter('attached_file_float'));
+	        $current_def->setBorder($this->getRequestParameter('attached_file_border'));
 	        
 	        $current_def->save();
 	        
@@ -1602,7 +1600,7 @@ class Assets extends SmartestSystemApplication{
 
 	public function deleteAssetConfirm($get){
 
-		$asset_id = $get['asset_id'];
+		$asset_id = $this->getRequestParameter('asset_id');
 
 		$asset = new SmartestAsset;
 
@@ -1629,7 +1627,7 @@ class Assets extends SmartestSystemApplication{
 
 	function deleteAsset($get, $post){
 
-		$asset_id = $post['asset_id'];
+		$asset_id = $this->getRequestParameter('asset_id');
 
 	    $asset = new SmartestAsset;
 
@@ -1660,8 +1658,8 @@ class Assets extends SmartestSystemApplication{
 
 	function duplicateAsset($get){
 
-		/*$assettype_code=$get['assettype_code'];
-		$asset_id=$this->manager->getNumericAssetId($get['asset_id']);
+		/*$assettype_code=$this->getRequestParameter('assettype_code');
+		$asset_id=$this->manager->getNumericAssetId($this->getRequestParameter('asset_id'));
 		$stringid=$this->manager->getStringId($asset_id);
 		$name=$this->manager->getUniqueStringId($stringid);
 		$assettypeid=$this->manager->getAssetTypeId($assettype_code);
@@ -1715,7 +1713,7 @@ class Assets extends SmartestSystemApplication{
 
 	function downloadAsset($get){
 
-		$asset_id = $get['asset_id'];
+		$asset_id = $this->getRequestParameter('asset_id');
 
 		// echo $asset_id;
 		$asset = new SmartestAsset;
@@ -1764,7 +1762,7 @@ class Assets extends SmartestSystemApplication{
 	
 	public function comments($get){
 	    
-	    $asset_id = $get['asset_id'];
+	    $asset_id = $this->getRequestParameter('asset_id');
 
 		// echo $asset_id;
 		$asset = new SmartestAsset;
@@ -1811,14 +1809,14 @@ class Assets extends SmartestSystemApplication{
 	
 	public function attachCommentToAsset($get, $post){
 	    
-	    $asset_id = $post['asset_id'];
+	    $asset_id = $this->getRequestParameter('asset_id');
 
 		// echo $asset_id;
 		$asset = new SmartestAsset;
 
 		if($asset->hydrate($asset_id)){
 
-		    $asset->addComment($post['comment_content'], $this->getUser()->getId());
+		    $asset->addComment($this->getRequestParameter('comment_content'), $this->getUser()->getId());
 		    $this->formForward();
 		    // $this->redirect('/assets/comments?asset_id='.$asset->getId());
 

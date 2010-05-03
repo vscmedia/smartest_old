@@ -334,18 +334,20 @@ class Sets extends SmartestSystemApplication{
 	        $request = $get;
 	    }
 	    
-	    $set_id = $request['set_id'];
+	    // $set_id = $request['set_id'];
+	    $set_id = $this->getRequestParameter('set_id');
 	    
 	    $set = new SmartestCmsItemSet;
 	    
 	    if($set->find($set_id)){
 	        
-	        $item_id = (int) $request['item_id'];
+	        // $item_id = (int) $request['item_id'];
+	        $item_id = $this->getRequestParameter('item_id');
 	        $item = new SmartestItem;
 	        
 	        if($item->find($item_id)){
 	            // TODO: Check that the asset is the right type for this group
-	            if($request['transferAction'] == 'add'){
+	            if($this->getRequestParameter('transferAction') == 'add'){
 	                $set->addItems(array($item_id));
                 }else{
                     $set->removeItems(array($item_id));
@@ -359,7 +361,11 @@ class Sets extends SmartestSystemApplication{
 	        $this->addUserMessageToNextRequest("The set ID was not recognized.", SmartestUserMessage::ERROR);
 	    }
 	    
-	    $this->formForward();
+	    if($this->hasFormReturnVar('item_id') || $this->getRequestParameter('returnTo') == 'editItem'){
+            $this->redirect('/datamanager/editItem?item_id='.$item_id);
+        }else{
+            $this->formForward();
+        }
 	    
 	}
 	

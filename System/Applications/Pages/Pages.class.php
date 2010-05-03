@@ -262,7 +262,7 @@ class Pages extends SmartestSystemApplication{
             
             $page->setDraftMode(true);
     	    
-    	    if(($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET') && ($this->getRequestParameter('item_id') || !is_numeric($this->getRequestParameter('item_id')))){
+    	    if(($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET') && (!$this->getRequestParameter('item_id') || !is_numeric($this->getRequestParameter('item_id')))){
             
                 $this->send(true, 'allow_edit');
             
@@ -304,8 +304,7 @@ class Pages extends SmartestSystemApplication{
             		}
 		        
     		        $parent_pages = $page->getOkParentPages();
-    		        // prinT_r($parent_pages);
-        		
+    		        
             		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
             		    $allow_release = true;
             		}else{
@@ -315,8 +314,7 @@ class Pages extends SmartestSystemApplication{
             		$this->send($allow_release, 'allow_release');
             		$this->send($this->getUser()->hasToken('edit_page_name'), 'allow_edit_page_name');
             		$this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
-		            // $pageUrls = $page->getUrlsAsArrays();
-		        
+		            
     		        $available_icons = $page->getAvailableIconImageFilenames();
     		        
     		        $this->send($available_icons, 'available_icons');
@@ -333,7 +331,7 @@ class Pages extends SmartestSystemApplication{
                                 $parent_indicator_properties = $model->getForeignKeyPropertiesForModelId($page->getParentPage(false)->getDatasetId(), (int) $this->getRequestParameter('item_id'));
                             
                                 $this->send(true, 'show_parent_meta_page_property_control');
-                                $this->send($model->__toArray(), 'model');
+                                $this->send($model, 'model');
                                 
                                 if($page->getParentPage(false)->getDatasetId() == $page->getDatasetId()){
                                     
@@ -401,7 +399,7 @@ class Pages extends SmartestSystemApplication{
                                     $property_array = $parent_indicator_properties[0]->__toArray();
                                     
                                     if($parent_indicator_properties[0] instanceof SmartestItemPropertyValueHolder){
-                                        // $property_array['value'] = $parent_indicator_properties[0]->getData(true)->__toArray();
+                                        
                                         $foreign_item = new SmartestItem;
                                         
                                         if($foreign_item->hydrate($parent_indicator_properties[0]->getData()->getDraftContent())){
@@ -1322,7 +1320,7 @@ class Pages extends SmartestSystemApplication{
 	                $this->send(true, 'show_deleted_warning');
 	            }
 	            
-	            if($page->getType() == 'ITEMCLASS' && ($this->getRequestParameter('item_id') || !is_numeric($this->getRequestParameter('item_id')))){
+	            if($page->getType() == 'ITEMCLASS' && (!$this->getRequestParameter('item_id') || !is_numeric($this->getRequestParameter('item_id')))){
 	            
     	            $model = new SmartestModel;
             

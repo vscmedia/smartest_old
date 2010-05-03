@@ -8,6 +8,7 @@ class QuinceAction{
     protected $_methods;
     protected $_action;
     protected $_class;
+    protected $_module_info;
     
     public function __construct($use_checking=true){
         $this->_use_checking = $use_checking;
@@ -19,53 +20,53 @@ class QuinceAction{
     
     public function prepareActionObject(){
         
-        if($m = QuinceUtilities::cacheGet('module_config_'.$this->_request->getModule())){
+        if($this->_module_info = QuinceUtilities::cacheGet('module_config_'.$this->_request->getModule())){
 	        
 	        if(!$this->_request->getAction()){
-	            $this->_request->setAction($m['default_action']);
+	            $this->_request->setAction($this->_module_info['default_action']);
 	        }
 	        
 	        // Set the class and action names, accounting for any modifications from the namespace
-            if($this->_request->getNamespace() != 'default' || isset($m['namespaces']['default'])){
-                if(isset($m['namespaces'][$this->_request->getNamespace()]['affect'])){
-                    $affect = $m['namespaces'][$this->_request->getNamespace()]['affect'];
-                    $this->_class = ($affect == 'class') ? $this->_request->getNamespace().'_'.$m['class'] : $m['class'];
+            if($this->_request->getNamespace() != 'default' || isset($this->_module_info['namespaces']['default'])){
+                if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['affect'])){
+                    $affect = $this->_module_info['namespaces'][$this->_request->getNamespace()]['affect'];
+                    $this->_class = ($affect == 'class') ? $this->_request->getNamespace().'_'.$this->_module_info['class'] : $this->_module_info['class'];
                     $this->_action = ($affect == 'action') ? $this->_request->getNamespace().'_'.$this->_request->getAction() : $this->_request->getAction();
-                    $default_action = ($affect == 'action') ? $this->_request->getNamespace().'_'.$m['default_action'] : $m['default_action'];
+                    $default_action = ($affect == 'action') ? $this->_request->getNamespace().'_'.$this->_module_info['default_action'] : $this->_module_info['default_action'];
                 }else{
-                    $this->_class = $m['class'];
+                    $this->_class = $this->_module_info['class'];
                     $this->_action = $this->_request->getAction();
-                    $default_action = $m['default_action'];
+                    $default_action = $this->_module_info['default_action'];
                 }
             }else{
-                $this->_class = $m['class'];
+                $this->_class = $this->_module_info['class'];
                 $this->_action = $this->_request->getAction();
-                $default_action = $m['default_action'];
+                $default_action = $this->_module_info['default_action'];
             }
 
-            $this->_class = $m['class'];
+            $this->_class = $this->_module_info['class'];
             $this->_action = $this->_request->getAction();
 	        
 	        // Make sure the actual class file exists
-	        if(!$this->_use_checking || ($this->_use_checking && is_file($m['directory'].$this->_class.'.class.php'))){
+	        if(!$this->_use_checking || ($this->_use_checking && is_file($this->_module_info['directory'].$this->_class.'.class.php'))){
 	            
 	            if(!class_exists($this->_class)){
-	                include($m['directory'].$this->_class.'.class.php');
+	                include($this->_module_info['directory'].$this->_class.'.class.php');
                 }
                 
                 // Check that the module's class exists by seeing whether, once the file has been included, the class is defined
                 if(!$this->_use_checking || ($this->_use_checking && class_exists($this->_class))){
 	                
 	                // set up charsets and content types
-                    if($this->_request->getNamespace() == 'default' && !isset($m['namespaces']['default'])){
+                    if($this->_request->getNamespace() == 'default' && !isset($this->_module_info['namespaces']['default'])){
                         $this->_request->setCharset(Quince::$default_charset);
                         $this->_request->setContentType(Quince::$default_content_type);
                     }else{
-                        if(isset($m['namespaces'][$this->_request->getNamespace()])){
+                        if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()])){
                             $this->_request->setCharset(Quince::$default_charset);
                             $this->_request->setContentType(Quince::$default_content_type);
-                            if(isset($m['namespaces'][$this->_request->getNamespace()]['charset']) && $m['namespaces'][$this->_request->getNamespace()]['charset']) $this->_request->setCharset($m['namespaces'][$this->_request->getNamespace()]['charset']);
-                            if(isset($m['namespaces'][$this->_request->getNamespace()]['content_type']) && $m['namespaces'][$this->_request->getNamespace()]['content_type']) $this->_request->setContentType($m['namespaces'][$this->_request->getNamespace()]['content_type']);
+                            if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['charset']) && $this->_module_info['namespaces'][$this->_request->getNamespace()]['charset']) $this->_request->setCharset($this->_module_info['namespaces'][$this->_request->getNamespace()]['charset']);
+                            if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['content_type']) && $this->_module_info['namespaces'][$this->_request->getNamespace()]['content_type']) $this->_request->setContentType($this->_module_info['namespaces'][$this->_request->getNamespace()]['content_type']);
                         }else{
                             $this->_request->setCharset(Quince::$default_charset);
                             $this->_request->setContentType(Quince::$default_content_type);
@@ -73,16 +74,16 @@ class QuinceAction{
                     }
 
                     // pass on extra info in the module config
-                    $this->_request->setMetas($m['meta']);
-                    if(isset($m['namespaces'][$this->_request->getNamespace()]['meta']) && is_array($m['namespaces'][$this->_request->getNamespace()]['meta'])){
-                        foreach($m['namespaces'][$this->_request->getNamespace()]['meta'] as $k => $v){
+                    $this->_request->setMetas($this->_module_info['meta']);
+                    if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['meta']) && is_array($this->_module_info['namespaces'][$this->_request->getNamespace()]['meta'])){
+                        foreach($this->_module_info['namespaces'][$this->_request->getNamespace()]['meta'] as $k => $v){
                             $this->_request->setMeta($k, $v);
                         }
                     }
 
-                    $this->_request->setMeta('_module_longname', $m['longname']);
-                    $this->_request->setMeta('_module_identifier', $m['identifier']);
-                    $this->_request->setMeta('_module_dir', $m['directory']);
+                    $this->_request->setMeta('_module_longname', $this->_module_info['longname']);
+                    $this->_request->setMeta('_module_identifier', $this->_module_info['identifier']);
+                    $this->_request->setMeta('_module_dir', $this->_module_info['directory']);
                     $this->_request->setMeta('_module_php_class', $this->_class);
 	                
 	                // Check that the method is implemented, but only if use checking is enabled
@@ -115,7 +116,7 @@ class QuinceAction{
 	                throw new QuinceException("File ".$this->_class.".class.php does not contain required class: ".$this->_class);
 	            }
 	        }else{
-	            throw new QuinceException("Module '{$this->_request->getModule()}' does not contain required class file: ".$m['directory'].$this->_class.'.class.php');
+	            throw new QuinceException("Module '{$this->_request->getModule()}' does not contain required class file: ".$this->_module_info['directory'].$this->_class.'.class.php');
 	        }
 	        
 	    }else{
@@ -130,7 +131,16 @@ class QuinceAction{
         if($this->_use_checking){
         
             if(!is_callable(array($this->_action_object, $this->_action))){
-                throw new QuinceException("Method '".$this->_action."' of class '".$this->_class."' is either private or protected, and cannot be called.");
+                if($this->_action == $this->_module_info['default_action']){
+                    throw new QuinceException("Method '".$this->_action."' of class '".$this->_class."' is either private or protected, and cannot be called.");
+                }else{
+                    if(is_callable(array($this->_action_object, $this->_module_info['default_action']))){
+                        // the current action is not the default action
+                        $this->_action = $this->_module_info['default_action'];
+                    }else{
+                        throw new QuinceException("Method '".$this->_action."' of class '".$this->_class."' is either private or protected, and cannot be called. The module's default action was not callable either");
+                    }
+                }
             }
         
         }
@@ -178,7 +188,7 @@ class QuinceRequest{
     protected $_result = null;
     protected $_user_action_object = null;
     
-    final public function getModificationsEnabled($m){
+    final public function getModificationsEnabled(){
         return $this->_modifications_allowed;
     }
     
