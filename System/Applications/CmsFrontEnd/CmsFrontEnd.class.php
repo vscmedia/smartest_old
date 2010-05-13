@@ -5,6 +5,12 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	protected $_site;
 	protected $_page;
 	
+	protected function __smartestApplicationInit(){
+	    
+	    $this->manager = new CmsFrontEndManager;
+	    
+	}
+	
 	protected function lookupSiteDomain(){
 	    
 	    try{
@@ -327,7 +333,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	    if($this->lookupSiteDomain()){
 	        
-	        $draft_mode = (SM_CONTROLLER_METHOD == 'renderEditableDraftPage');
+	        $draft_mode = ($this->getRequest()->getAction() == 'renderEditableDraftPage');
 	        
 	        $error_page_id = $this->_site->getErrorPageId();
 	        $this->_page = new SmartestPage;

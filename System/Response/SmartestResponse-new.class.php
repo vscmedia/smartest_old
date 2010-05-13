@@ -390,7 +390,7 @@ class SmartestResponse{
 	    if($this->isSystemClass()){
 		    $templateLayerContext = 'InterfaceBuilder';
 		}else{
-		    $templateLayerContext = 'Normal';
+		    $templateLayerContext = 'UserAppBuilder';
 		}
 		
 		$smarty_manager = new SmartyManager($templateLayerContext);
@@ -493,8 +493,6 @@ class SmartestResponse{
 		
 		$rcn = $sd['system']['reserved_classes'];
 		
-		// if(in_array($this->_controller->getCurrentRequest()->getClass(), $rcn)){
-		// print_r($this->_controller->getCurrentRequest());
 		if($this->_controller->getCurrentRequest()->getMeta('system')){
 			
 			if(!defined("SM_SYSTEM_IS_BACKEND_MODULE")){

@@ -1129,6 +1129,7 @@ class Quince{
 	    // Catch forwards
 	    }catch(QuinceForwardException $e){
 	        if($this->_num_forwards < 10){
+	            
                 $this->_current_request->setModule($e->getModule());
                 $this->_current_request->setAction($e->getAction());
                 ++$this->_num_forwards;

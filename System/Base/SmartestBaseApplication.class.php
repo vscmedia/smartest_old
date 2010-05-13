@@ -167,17 +167,18 @@ class SmartestBaseApplication extends QuinceBase{
 			
 		}else if(is_file($this->getRequest()->getMeta('_module_dir').$managerClass.".class.php")){
 			
-				define("SM_MANAGER_CLASS_FILE", $this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
-				include_once(SM_MANAGER_CLASS_FILE);
-				
-				if(class_exists(SM_MANAGER_CLASS)){
-				
-					$this->manager = new $managerClass($this->database);
-				
-				}
+			define("SM_MANAGER_CLASS_FILE", $this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
+			include_once(SM_MANAGER_CLASS_FILE);
 			
+			if(class_exists(SM_MANAGER_CLASS)){
+			
+				$this->manager = new $managerClass($this->database);
+			
+			}
 			
 		}
+		
+		//echo SM_MANAGER_CLASS;
 	    
 	}
 	
@@ -203,6 +204,16 @@ class SmartestBaseApplication extends QuinceBase{
 			$this->__moduleDestruct();
 		}
 		
+	}
+	
+	public function requireSiteByDomain($domain){
+	    
+	    if(2 == 3){
+	        
+	    }else{
+	        $this->forward('website', 'renderPage');
+	    }
+	    
 	}
 	
 	///// Authentication Stuff /////

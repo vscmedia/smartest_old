@@ -77,6 +77,8 @@ class SmartyManager{
 		    $smartyObj = new SmartestWebPageBuilder('_main');
 		}else if($this->context == 'BasicRenderer'){
     	    $smartyObj = new SmartestBasicRenderer($pid);
+    	}else if($this->context == 'UserAppBuilder'){
+    	    $smartyObj = new SmartestBasicRenderer('_main');
     	}else{
 		    $smartyObj = new SmartestEngine('_main');
 		}
