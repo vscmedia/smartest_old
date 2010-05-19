@@ -240,9 +240,12 @@ class SmartestDataObject implements ArrayAccess{
 	public function __toJson(){
 	    
 	    $obj = $this->__toSimpleObject();
-	    
 	    return json_encode($obj);
 	    
+	}
+	
+	public function stdObjectOrScalar(){
+	    return $this->__toSimpleObject();
 	}
 	
 	public function getOriginalDbRecord(){

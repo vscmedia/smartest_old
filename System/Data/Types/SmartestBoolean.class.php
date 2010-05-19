@@ -20,6 +20,10 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess{
         return $this->_value ? 'TRUE' : 'FALSE';
     }
     
+    public function stdObjectOrScalar(){
+        return $this->_value;
+    }
+    
     public function offsetExists($offset){
         return in_array($offset, array('value', 'storedValue', 'int', 'bool', 'string', 'cssdisplayblock', 'cssdisplayinline', 'english'));
     }

@@ -29,6 +29,7 @@ class SmartestBaseApplication extends QuinceBase{
 	protected $_cached_application_preferences = array();
 	protected $_cached_global_preferences = array();
 	protected $_preferences_helper;
+	protected $_site;
 	
 	private $_user_loaded_classes;
 	
@@ -48,6 +49,12 @@ class SmartestBaseApplication extends QuinceBase{
 		$this->_loadApplicationSpecificResources();
 		$this->_prepareManagers();
 		$this->_assignTemplateValues();
+		
+		$this->lookupSiteDomain();
+		
+		// var_dump();
+		
+		// var_dump(get_class($this).' ');
 		
 		/* echo "Hello";
 		print_r($this->getPresentationLayer()->getPluginDirectories()); */
@@ -74,14 +81,48 @@ class SmartestBaseApplication extends QuinceBase{
     	    }
 		    
 		}
-        
-        $this->getPresentationLayer()->assign("domain", $this->getRequest()->getDomain());
+		
+		// var_dump(get_class($this).' ');
+		
+		$this->getPresentationLayer()->assign("domain", $this->getRequest()->getDomain());
 	    $this->getPresentationLayer()->assign("section", $this->getRequest()->getModule()); // deprecated
 	    $this->getPresentationLayer()->assign("module", $this->getRequest()->getModule());
 	    $this->getPresentationLayer()->assign("module_dir", $this->getRequest()->getMeta('_module_dir'));
 	    $this->getPresentationLayer()->assign("action", $this->getRequest()->getAction());
 	    $this->getPresentationLayer()->assign("method", $this->getRequest()->getAction()); // deprecated
 	    $this->getPresentationLayer()->assign("metas", $this->getRequest()->getMetas());
+	    
+	}
+	
+	public function lookupSiteDomain(){
+	    
+	    // $e = new Exception;
+	    // print_r($e->getTrace());
+	    
+	    if((!$this->isSystemApplication()) || $this->isWebsitePage()){
+		    
+		    $rh = new SmartestRequestUrlHelper;
+		    
+		    try{
+                
+                if($this->_site = $rh->getSiteByDomain($_SERVER['HTTP_HOST'], $this->url)){
+                    
+                    // print_r($this->_site);
+                    
+        		    if(is_object($this->_site)){
+        		        define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+        		        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
+        		    }
+
+        		    return true;
+
+        	    }
+
+            }catch(SmartestRedirectException $e){
+                $e->redirect();
+            }
+		    
+		}
 	    
 	}
 	
@@ -206,10 +247,23 @@ class SmartestBaseApplication extends QuinceBase{
 		
 	}
 	
+	final public function isSystemApplication(){
+	    
+	    // echo $this->getRequest()->getModule();
+	    return ((bool) $this->getRequest()->getMeta('system') ? true : false) && ($this instanceof SmartestSystemApplication);
+	    
+	}
+	
+	final public function isWebsitePage(){
+	    
+	    return in_array($this->getRequest()->getAction(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage', 'searchDomain'));
+	    
+	}
+	
 	public function requireSiteByDomain($domain){
 	    
-	    if(2 == 3){
-	        
+	    if($this->getSite()->getDomain() == $domain){
+	        return true;
 	    }else{
 	        $this->forward('website', 'renderPage');
 	    }
@@ -311,6 +365,10 @@ class SmartestBaseApplication extends QuinceBase{
         }else{
             return '0';
         }
+    }
+    
+    protected function getSite(){
+        return $this->_site;
     }
     
     public function getApplicationPreference($preference_name){

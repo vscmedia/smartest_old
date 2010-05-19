@@ -36,72 +36,84 @@ class SmartestQueryResultSet{
 	public function sort($field, $direction='ASC'){
 	    
 	    if(count($this->_item_ids)){
-	    
-	        $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemProperties, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model_id."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id";
-	    
-    	    if(!in_array($field, array(SmartestCmsItem::ID, SmartestCmsItem::NAME, SmartestCmsItem::NUM_COMMENTS, SmartestCmsItem::NUM_HITS))){
-    	        $sql .= " AND ItemPropertyValues.itempropertyvalue_property_id=ItemProperties.itemproperty_id AND ItemPropertyValues.itempropertyvalue_property_id='".$field."'";
-    	    }
-	    
-    	    $sql .= " AND Items.item_id IN (";
-	    
-    	    $i = 0;
-	    
-    	    foreach($this->_item_ids as $id){
 	        
-    	        if($i > 0){
-    	            $sql .= ',';
-    	        }
-	        
-    	        $sql .= $id;
-	        
-    	        $i++;
-    	    }
+	            $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemProperties, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model_id."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id";
 	    
-    	    $sql .= ') ORDER BY ';
+        	    if(!in_array($field, array(SmartestCmsItem::ID, SmartestCmsItem::NAME, SmartestCmsItem::NUM_COMMENTS, SmartestCmsItem::NUM_HITS, SmartestQuery::RANDOM))){
+        	        $sql .= " AND ItemPropertyValues.itempropertyvalue_property_id=ItemProperties.itemproperty_id AND ItemPropertyValues.itempropertyvalue_property_id='".$field."'";
+        	    }
 	    
-    		if($field == SmartestCmsItem::ID){
-		
-    		    $sql .= "Items.item_id ";
-		
-    		}else if($field == SmartestCmsItem::NAME){
-		    
-    		    $sql .= "Items.item_name ";
-    		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_name ";
-		
-    		}else if($field == SmartestCmsItem::NUM_COMMENTS){
+        	    $sql .= " AND Items.item_id IN (";
+	    
+        	    $i = 0;
+	    
+        	    foreach($this->_item_ids as $id){
+	        
+        	        if($i > 0){
+        	            $sql .= ',';
+        	        }
+	        
+        	        $sql .= $id;
+	        
+        	        $i++;
+        	    }
+	    
+        	    if($field == SmartestQuery::RANDOM){
 
-        		$sql .= "Items.item_num_comments ";
-        		    
-        	}else if($field == SmartestCmsItem::NUM_HITS){
+    	            // echo "test";
+    	            $sql .= ') ORDER BY RAND()';
 
-        		$sql .= "Items.item_num_hits ";
-        		    
-            }else{
+    	        }else{
+    	            
+    	            $sql .= ') ORDER BY ';
+	    
+        		    if($field == SmartestCmsItem::ID){
+		
+            		    $sql .= "Items.item_id ";
+		
+            		}else if($field == SmartestCmsItem::NAME){
 		    
-    		    if($this->_is_draft){
-    		        $sql .= "ItemPropertyValues.itempropertyvalue_draft_content ";
-    		    }else{
-    		        $sql .= "ItemPropertyValues.itempropertyvalue_content ";
+            		    $sql .= "Items.item_name ";
+            		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_name ";
+		
+            		}else if($field == SmartestCmsItem::NUM_COMMENTS){
+
+                		$sql .= "Items.item_num_comments ";
+        		    
+                	}else if($field == SmartestCmsItem::NUM_HITS){
+
+                		$sql .= "Items.item_num_hits ";
+        		    
+                    }else{
+		    
+            		    if($this->_is_draft){
+            		        $sql .= "ItemPropertyValues.itempropertyvalue_draft_content ";
+            		    }else{
+            		        $sql .= "ItemPropertyValues.itempropertyvalue_content ";
+            		    }
+            		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_property_id='$property_id' AND ".$value_field.' ';
+		    
+            		}
+        		
+            		$sql .= $direction;
+        		
     		    }
-    		    // $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_property_id='$property_id' AND ".$value_field.' ';
+        		
+        		$result = $this->database->queryToArray($sql);
+		
+    		    $ids = array();
+		
+    		    foreach($result as $record){
+    		        $ids[] = $record['itempropertyvalue_item_id'];
+    		    }
+		
+    		    $this->_item_ids = $ids;
+		
+    		    $this->_items_retrieval_attempted = false;
 		    
-    		}
-		    
-		    $sql .= $direction;
-		    $result = $this->database->queryToArray($sql);
+	        }
 		
-		    $ids = array();
-		
-		    foreach($result as $record){
-		        $ids[] = $record['itempropertyvalue_item_id'];
-		    }
-		
-		    $this->_item_ids = $ids;
-		
-		    $this->_items_retrieval_attempted = false;
-		
-	    }
+	    
 		
 	}
 	

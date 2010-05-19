@@ -97,12 +97,12 @@
   <div class="edit-form-row">
     <div class="form-section-label">Cache How Often?</div>
     	<select name="page_cache_interval" style="width:300px">
-    	  <option value="PERMANENT"{if $page.cache_as_html=='PERMANENT'} selected="selected"{/if}>Stay Cached Until Re-Published</option>
-    	  <option value="MONTHLY"{if $page.cache_as_html=='MONTHLY'} selected="selected"{/if}>Every Month</option>
-    	  <option value="DAILY"{if $page.cache_as_html=='DAILY'} selected="selected"{/if}>Every Day</option>
-    	  <option value="HOURLY"{if $page.cache_as_html=='HOURLY'} selected="selected"{/if}>Every Hour</option>
-    	  <option value="MINUTE"{if $page.cache_as_html=='MINUTE'} selected="selected"{/if}>Every Minute</option>
-    	  <option value="SECOND"{if $page.cache_as_html=='SECOND'} selected="selected"{/if}>Every Second</option>
+    	  <option value="PERMANENT"{if $page.cache_interval=='PERMANENT'} selected="selected"{/if}>Stay Cached Until Re-Published</option>
+    	  <option value="MONTHLY"{if $page.cache_interval=='MONTHLY'} selected="selected"{/if}>Every Month</option>
+    	  <option value="DAILY"{if $page.cache_interval=='DAILY'} selected="selected"{/if}>Every Day</option>
+    	  <option value="HOURLY"{if $page.cache_interval=='HOURLY'} selected="selected"{/if}>Every Hour</option>
+    	  <option value="MINUTE"{if $page.cache_interval=='MINUTE'} selected="selected"{/if}>Every Minute</option>
+    	  <option value="SECOND"{if $page.cache_interval=='SECOND'} selected="selected"{/if}>Every Second</option>
     	</select>
   </div>
   {/if}

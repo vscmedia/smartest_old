@@ -1,6 +1,6 @@
 <?php
 
-class CmsFrontEndManager{
+class SmartestRequestUrlHelper{
 
 	private $database;
 	

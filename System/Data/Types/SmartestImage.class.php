@@ -16,6 +16,14 @@ class SmartestImage extends SmartestFile{
     const GIF = 'gif';
     const PNG = 'png';
     
+    const LANDSCAPE = 'ls';
+    const SQUARE = 'ls';
+    const PORTRAIT = 'pr';
+    
+    public function __construct(){
+        parent::__construct();
+    }
+    
     public function getFullPath(){
         // return $this->_directory.$this->_file_name;
         return $this->_current_file_path;
@@ -57,14 +65,69 @@ class SmartestImage extends SmartestFile{
         return $this->_image_type;
     }
     
-    /* public function setFilename($filename){
+    public function getOrientation(){
+        if($this->getHeight() == $this->getWidth()){
+            return self::SQUARE;
+        }else if($this->getHeight() > $this->getWidth()){
+            return self::PORTRAIT;
+        }else{
+            return self::LANDSCAPE;
+        }
+    }
+    
+    public function isSquare(){
+        return $this->getOrientation() == self::SQUARE;
+    }
+    
+    public function isPortrait(){
+        return $this->getOrientation() == self::PORTRAIT;
+    }
+    
+    public function isLandscape(){
+        return $this->getOrientation() == self::LANDSCAPE;
+    }
+    
+    public function getSquareVersion($side){
+        
+        $url = 'Resources/System/Cache/Images/'.$this->getSquareVersionFilename($side);
+        $full_path = SM_ROOT_DIR.'Public/'.$url;
+        
+        if(file_exists($full_path)){
+            
+            $thumbnail = new SmartestImage;
+            $thumbnail->loadFile($full_path);
+            return $thumbnail;
+            
+        }else{
+            
+            if($this->isLandscape()){
+                $shortside = $this->getHeight();
+                $vcopystart = 0;
+                $hcopystart = ($this->getWidth() - $this->getHeight())/2;
+            }else{
+                $shortside = $this->getWidth();
+                $hcopystart = 0;
+                $vcopystart = ($this->getHeight() - $this->getWidth())/2;
+            }
+            
+            $this->_thumbnail_resource = ImageCreateTrueColor($side, $side);
+            imagecopyresampled($this->_thumbnail_resource, $this->getResource(), 0,0, $hcopystart, $vcopystart, $side, $side, $shortside, $shortside);
+            
+            $thumbnail = new SmartestImage;
+            
+            if(imagepng($this->_thumbnail_resource, $full_path, 0)){
+                $this->clearThumbnailResource();
+                $thumbnail->loadFile($full_path);
+                return $thumbnail;
+            }
+            
+        }
         
     }
     
-    public function getThumbnail($max_width, $max_height, $refresh=false, $round_corners=false){
-        // $proposed_thumbnail_filename = SmartestStringHelper::removeDotSuffix($this->_current_file_path).'_'.$max_width.'_'.$max_height.'.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
-        
-    } */
+    public function getSquareVersionFilename($side){
+        return SmartestStringHelper::toVarName(basename($this->_current_file_path)).'_sqthumb_'.$side.'.png';
+    }
     
     public function getResizedVersionFromMaxLongSide($max_long_side){
         
@@ -243,6 +306,34 @@ class SmartestImage extends SmartestFile{
 	    }
 	    
 	    return parent::offsetGet($offset);
+	    
+	}
+	
+	public function send(){
+	    
+	    $suffix = strtoupper(SmartestStringHelper::getDotSuffix($this->_current_file_path));
+        
+        switch($suffix){
+
+            case "JPG":
+            case "JPEG":
+            header("Content-type: image/jpeg");
+            imagejpeg($this->getResource());
+            break;
+
+            case "PNG":
+            header("Content-type: image/png");
+            imagepng($this->getResource());
+            break;
+
+            case "GIF":
+            header("Content-type: image/gif");
+            imagegif($this->getResource());
+            break;
+            
+        }
+        
+        exit;
 	    
 	}
     

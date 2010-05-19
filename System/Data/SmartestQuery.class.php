@@ -38,6 +38,8 @@ class SmartestQuery{
 	const NOTTAGGEDWITH = 9;
 	const NOT_TAGGED_WITH = 9;
 	
+	const RANDOM = -1024;
+	
 	public function __construct($model_id, $site_id=''){
 		
 		$this->database =& SmartestPersistentObject::get('db:main');
@@ -156,7 +158,7 @@ class SmartestQuery{
 		
 	}
 	
-	public function doSelect($mode=9){
+	public function doSelect($mode=9, $limit=''){
 		
 	    // var_dump($draft);
 	    
@@ -293,6 +295,10 @@ class SmartestQuery{
 				    
 				    if($this->getSiteId()){
 				        $sql .= " AND (Items.item_site_id='".$this->getSiteId()."' OR Items.item_shared='1')";
+				    }
+				    
+				    if(is_numeric($limit)){
+				        $sql .= ' LIMIT '.$limit;
 				    }
 				    
 				    $result = $this->database->queryToArray($sql);

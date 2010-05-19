@@ -135,9 +135,7 @@ class SmartestCmsItem implements ArrayAccess{
 	}
 	
 	function __call($name, $args){
-		
-		throw new SmartestException("Call to undefined function: ".get_class($this).'->'.$name.'()');
-		
+		  throw new SmartestException("Call to undefined function: ".get_class($this).'->'.$name.'()');
 	}
 	
 	function getPropertyVarNames(){
@@ -153,9 +151,7 @@ class SmartestCmsItem implements ArrayAccess{
 	}
 	
 	public function offsetExists($offset){
-	    
 	    return ($this->_item->offsetExists($offset) || isset($this->_varnames_lookup[$offset]) || in_array($offset, array('_workflow_status', '_model', '_properties')));
-	    
 	}
 	
 	public function offsetGet($offset){
@@ -648,6 +644,30 @@ class SmartestCmsItem implements ArrayAccess{
 		ksort($result);
 		
 		return $result;
+	}
+	
+	public function __toSimpleObject($simple=false){
+	    
+	    $obj = new stdClass;
+	    $obj->name = $this->getName();
+	    $obj->id = $this->getId();
+	    $obj->slug = $this->getSlug();
+	    
+	    if(!$simple){
+	        foreach($this->getProperties() as $p){
+	            $vn = $p->getVarname();
+	            $obj->$vn = $p->getData()->getContent()->stdObjectOrScalar();
+	        }
+	    }
+	    
+	    return $obj;
+	    
+	}
+	
+	public function __toJson($simple=false){
+	    
+	    return json_encode($this->__toSimpleObject($simple));
+	    
 	}
 	
 	public function getProperties($numeric_keys=false){

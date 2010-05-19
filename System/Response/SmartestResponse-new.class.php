@@ -525,7 +525,13 @@ class SmartestResponse{
 			$this->_smarty->assign("sm_intended_interface", $this->_ui_template);
 		}
 		
-		$this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/_default.tpl';
+		if(!$default_tpl = $this->_controller->getCurrentRequest()->getMeta('template')){
+		    $default_tpl = '_default.tpl';
+		}
+		
+		// var_dump($default_tpl);
+		
+		$this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$default_tpl;
 		
 		if(!is_file($this->_main_template)){
 			$this->_smarty->assign("sm_main_interface", $this->_main_template);

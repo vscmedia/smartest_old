@@ -2,16 +2,16 @@
 
 class CmsFrontEnd extends SmartestSystemApplication{
 
-	protected $_site;
 	protected $_page;
 	
 	protected function __smartestApplicationInit(){
 	    
-	    $this->manager = new CmsFrontEndManager;
+	    $this->manager = new SmartestRequestUrlHelper;
+	    // print_r($this->_site);
 	    
 	}
 	
-	protected function lookupSiteDomain(){
+	/* protected function lookupSiteDomain(){
 	    
 	    try{
 	    
@@ -30,7 +30,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
             $e->redirect();
         }
 	    
-	}
+	} */
 	
 	public function getPage(){
 	    return $this->_page;

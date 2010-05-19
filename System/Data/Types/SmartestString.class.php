@@ -16,6 +16,10 @@ class SmartestString implements SmartestBasicType, ArrayAccess{
         return $this->_string;
     }
     
+    public function stdObjectOrScalar(){
+        return $this->_string;
+    }
+    
     public function setValue($v){
         $this->_string = $v;
     }

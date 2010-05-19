@@ -589,11 +589,12 @@ class QuinceRouter{
         if(isset(Quince::$routes[$k])){
             
             $route = Quince::$routes[$k];
-            $params = $route['params'];
+            $params = (isset($route['params']) && is_array($route['params'])) ? $route['params'] : array();
         
             if(strlen($matches[3])){
                 $new_params = array();
                 parse_str($matches[4], $new_params);
+                // print_r($new_params);
                 $params = array_merge($params, $new_params);
             }
         

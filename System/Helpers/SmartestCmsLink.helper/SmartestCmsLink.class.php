@@ -263,7 +263,7 @@ class SmartestCmsLink extends SmartestHelper{
                     }
                 
                 }else{
-                    echo $sql;
+                    
                     return $this->error("The requested page was not found. (Link destination: ".$this->_destination_properties->getParameter('destination').')');
                 }
             
