@@ -283,6 +283,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi{
     	            $data_source = $this->getDataSourceSiteId();
 	            
     	            $site_id = $this->getCurrentSiteId();
+    	            // echo $site_id;
                 
     	            if($data_source){
     	                if(is_numeric($data_source)){

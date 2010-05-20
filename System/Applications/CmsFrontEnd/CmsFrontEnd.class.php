@@ -8,6 +8,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	    $this->manager = new SmartestRequestUrlHelper;
 	    // print_r($this->_site);
+	    // define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
 	    
 	}
 	
@@ -39,7 +40,10 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	public function renderPageFromUrl(){
 		
 		if($this->lookupSiteDomain()){
-		
+		    
+		    define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+		    define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
+		    
 		    if(strlen($this->getRequest()->getRequestString())){
 		        
 		        try{
@@ -89,9 +93,10 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function renderPageFromId($get){
 		
-		
-		
 		if($this->lookupSiteDomain()){
+		    
+		    define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+		    define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
 		    
 		    if(isset($get['tag_name'])){
 		        
@@ -158,12 +163,14 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){
 	        
 	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
+	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
 	        $this->_page->setDraftMode(true);
 	        $this->renderPage(true);
 	        
 	    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], true)){
 	        
 	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
+	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
 	        $this->_page->setDraftMode(true);
 	        $this->renderPage(true);
 	        

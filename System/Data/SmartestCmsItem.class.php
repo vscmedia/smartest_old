@@ -77,6 +77,7 @@ class SmartestCmsItem implements ArrayAccess{
 	protected $_lookups_built = false;
 	protected $_save_errors = array();
 	protected $_draft_mode = false;
+	protected $_request;
 	
 	/** 
 	* Description
@@ -102,6 +103,7 @@ class SmartestCmsItem implements ArrayAccess{
 		
 		$this->generateModel();
 		// $this->generatePropertiesLookup();
+		$this->_request = SmartestPersistentObject::get('controller')->getCurrentRequest();
 		
 	}
 	
@@ -316,6 +318,10 @@ class SmartestCmsItem implements ArrayAccess{
 	        
 	    }
 	    
+	}
+	
+	public function getRequest(){
+	    return $this->_request;
 	}
 	
 	public function setSiteId($id){

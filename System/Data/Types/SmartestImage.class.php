@@ -29,6 +29,16 @@ class SmartestImage extends SmartestFile{
         return $this->_current_file_path;
     }
     
+    public function getWebPath(){
+        if($this->isPublic()){
+            return $this->_request_data->g('domain').substr($this->getFullPath(), strlen(SM_ROOT_DIR.'Public/'));
+        }
+    }
+    
+    public function isPublic(){
+        return substr($this->getFullPath(), 0, strlen(SM_ROOT_DIR.'Public/')) == SM_ROOT_DIR.'Public/';
+    }
+    
     public function getResource(){
       
        $suffix = strtoupper(SmartestStringHelper::getDotSuffix($this->_current_file_path));

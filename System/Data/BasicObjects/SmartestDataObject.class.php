@@ -631,14 +631,16 @@ class SmartestDataObject implements ArrayAccess{
 	}
 	
 	protected function getSite(){
-	    
 	    return SmartestSession::get('current_open_project');
-	    
+	}
+	
+	public function getRequest(){
+	    return $this->_request;
 	}
 	
 	protected function getCurrentSiteId(){
 	    
-	    if(SM_CONTROLLER_MODULE == 'website'){
+	    if($this->getRequest()->getModule() == 'website'){
             $site_id = constant('SM_CMS_PAGE_SITE_ID');
         }else if(is_object($this->getSite())){
             // make sure the site object exists

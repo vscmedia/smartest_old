@@ -10,10 +10,10 @@
   <input type="hidden" name="dropdown_id" id="item_id_input" value="" />
 </form>
 
-<ul class="{if $content.count > 10}options-list{else}options-grid{/if}" id="{if $content.count > 10}options_list{else}options_grid{/if}">
+<ul class="{if $count > 10}options-list{else}options-grid{/if}" id="{if $count > 10}options_list{else}options_grid{/if}">
 {foreach from=$dropdowns key=key item=dropdown}
   <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/dropdownInfo?dropdown_id={$dropdown.dropdown_id}'">
-    <a class="option" id="item_{$dropdown.dropdown_id}" onclick="setSelectedItem('{$dropdown.dropdown_id}');" >
+    <a class="option" id="item_{$dropdown.id}" onclick="setSelectedItem('{$dropdown.id}');" >
       <img border="0" src="{$domain}Resources/Icons/package.png" />{$dropdown.dropdown_label}</a></li>
 {/foreach}
 </ul>

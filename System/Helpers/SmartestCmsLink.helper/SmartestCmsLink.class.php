@@ -255,6 +255,8 @@ class SmartestCmsLink extends SmartestHelper{
                     $sql = "SELECT * FROM Items WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND item_site_id='".$site_id."' AND item_itemclass_id='{$d->getDatasetId()}' AND item_deleted != '1'";
                     $result = $this->database->queryToArray($sql);
                     
+                    // echo $sql;
+                    
                     if(count($result)){
                         $d->setPrincipalItem(SmartestCmsItem::retrieveByPk($result[0]['item_id']));
                         $this->_destination = $d;

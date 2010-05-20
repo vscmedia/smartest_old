@@ -2,11 +2,23 @@
 
 class Dropdowns extends SmartestSystemApplication{
   
-
-	public function startPage($get){
+    public function startPage($get){
 	    $this->setFormReturnUri();
-	    $dropdowns = $this->manager->getDropdowns();      
-	    return array("dropdowns"=> $dropdowns,"count"=>count($dropdowns));	
+	    
+	    $database = SmartestDatabase::getInstance('SMARTEST');
+	    $results = $database->queryToArray("SELECT * FROM DropDowns"); 
+	    
+	    $dropdowns = array();
+	    
+	    foreach($results as $r){
+	        $d = new SmartestDropdown;
+	        $d->hydrate($r);
+	        $dropdowns[] = $d;
+	    }
+	    
+	    $this->send($dropdowns, 'dropdowns');
+	    $this->send(count($dropdowns), 'count');
+	    	
 	}
 
 	public function addDropDown($get){ 
@@ -45,7 +57,7 @@ class Dropdowns extends SmartestSystemApplication{
 
 	public function dropdownInfo($get){
 	    
-	    $dropdown_id = (int) $get['dropdown_id'];
+	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    $dropdown = new SmartestDropdown;
 	    
 	    if($dropdown->find($dropdown_id)){
@@ -61,7 +73,7 @@ class Dropdowns extends SmartestSystemApplication{
 	
 	public function editValues($get){
 	    
-	    $dropdown_id = (int) $get['dropdown_id'];
+	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    $dropdown = new SmartestDropdown;
 	    
 	    if($dropdown->find($dropdown_id)){
@@ -76,7 +88,7 @@ class Dropdowns extends SmartestSystemApplication{
 
 	public function updateDropDown($get, $post){ 
 	    
-	    $dropdown_id = (int) $post['dropdown_id'];
+	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    $dropdown = new SmartestDropdown;
 	    
 	    if($dropdown->find($dropdown_id)){
@@ -108,7 +120,7 @@ class Dropdowns extends SmartestSystemApplication{
 	public function dropdownValues($get){ 
 	    
 	    $this->setFormReturnUri();
-	    $dropdown_id = $get['dropdown_id'];
+	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    
 	    $dropdown = new SmartestDropdown;
 	    
@@ -127,7 +139,7 @@ class Dropdowns extends SmartestSystemApplication{
 
 	public function addDropDownValue($get){ 
 	    
-	    $dropdown_id = (int) $get['dropdown_id'];
+	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    $dropdown = new SmartestDropdown;
 	    
 	    if($dropdown->find($dropdown_id)){
@@ -143,7 +155,7 @@ class Dropdowns extends SmartestSystemApplication{
 	    $label = $post['dropdownvalue_label'];
 	    $value = SmartestStringHelper::toVarName($post['dropdownvalue_value']);
 	    
-	    $dropdown_id = (int) $post['dropdown_id'];
+	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    $dropdown = new SmartestDropdown;
 	    
 	    if($dropdown->find($dropdown_id)){
@@ -171,7 +183,8 @@ class Dropdowns extends SmartestSystemApplication{
 
 	public function editDropDownValue($get){ 
 	    
-	    $dropdown_value_id=$get['dropdown_value_id'];
+	    // $dropdown_value_id=$get['dropdown_value_id'];
+	    $dropdown_value_id = (int) $this->getRequestParameter('dropdown_value_id');
 	    
 	    $option = new SmartestDropdownOption;
 	    
@@ -192,7 +205,7 @@ class Dropdowns extends SmartestSystemApplication{
 
 	public function updateDropDownValue($get, $post){ 
 	    
-	    $id = (int) $post['dropdown_value_id'];
+	    $id = (int) $this->getRequestParameter('dropdown_value_id');
 	    
 	    $option = new SmartestDropdownOption;
 	    
@@ -210,7 +223,7 @@ class Dropdowns extends SmartestSystemApplication{
 	
 	public function deleteDropDownValue($get){ 
 	    
-	    $id = (int) $get['dropdown_value_id'];
+	    $id = (int) $this->getRequestParameter('dropdown_value_id');
 	    
 	    $option = new SmartestDropdownOption;
 	    
@@ -227,14 +240,15 @@ class Dropdowns extends SmartestSystemApplication{
 	
 	public function moveDropDownValueUp($get, $post){
 	    
-	    $dropdown_id = $get['dropdown_id'];
+	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    $dropdown = new SmartestDropdown;
 	    
 	    if($dropdown->find($dropdown_id)){
 	        
 	        $dropdown->fixOrderIndices();
 	        
-	        $option_id = $get['dropdown_value_id'];
+	        // $option_id = $get['dropdown_value_id'];
+	        $option_id = (int) $this->getRequestParameter('dropdown_value_id');
     	    $option = new SmartestDropdownOption;
 
     	    if($option->find($option_id)){
@@ -254,14 +268,15 @@ class Dropdowns extends SmartestSystemApplication{
 	
 	public function moveDropDownValueDown($get, $post){
 	    
-	    $dropdown_id = $get['dropdown_id'];
+	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    $dropdown = new SmartestDropdown;
 	    
 	    if($dropdown->find($dropdown_id)){
 	        
 	        $dropdown->fixOrderIndices();
 	        
-	        $option_id = $get['dropdown_value_id'];
+	        // $option_id = $get['dropdown_value_id'];
+	        $option_id = (int) $this->getRequestParameter('dropdown_value_id');
     	    $option = new SmartestDropdownOption;
 
     	    if($option->find($option_id)){
