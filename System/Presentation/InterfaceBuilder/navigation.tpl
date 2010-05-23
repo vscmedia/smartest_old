@@ -10,7 +10,7 @@
     {else}
     <li class="site-top-level{if $section == "desktop" && $method != 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}smartest' >Your websites</a></li>
     {/if}
-    <li class="break top-level{if $section == "desktop" && $method == 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}desktop/aboutSmartest'>About Smartest</a></li>
+    <li class="break top-level{if $section == "desktop" && $method == 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}smartest/about'>About Smartest</a></li>
     <li class="top-level off"><a href='{$domain}smartest/logout'>Sign out</a></li>
   </ul>
 </div>

@@ -512,11 +512,19 @@ class SmartestResponse{
 	
 	protected function initializeTemplates(){
 		
+		if($subfolder = $this->_controller->getCurrentRequest()->getMeta('presentation_subfolder')){
+		    if(!SmartestStringHelper::endsWith($subfolder, '/')){
+		        $subfolder .= '/';
+		    }
+		}else{
+		    $subfolder = '';
+		}
+		
 		define('SM_CONTROLLER_MODULE_PRES_DIR', $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/');
 		$sc = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
 		define('SM_SYSTEM_SYS_TEMPLATES_DIR', $sc['system']['places']['templates_dir']);
 		
-		$this->_ui_template = (strlen($this->_controller->getCurrentRequest()->getAction())) ? $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$this->_controller->getCurrentRequest()->getAction().".tpl" : null;
+		$this->_ui_template = (strlen($this->_controller->getCurrentRequest()->getAction())) ? $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$subfolder.$this->_controller->getCurrentRequest()->getAction().".tpl" : null;
 			
 		if(is_file($this->_ui_template)){
 			$this->_smarty->assign("sm_interface", $this->_ui_template);
@@ -529,9 +537,7 @@ class SmartestResponse{
 		    $default_tpl = '_default.tpl';
 		}
 		
-		// var_dump($default_tpl);
-		
-		$this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$default_tpl;
+		$this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$subfolder.$default_tpl;
 		
 		if(!is_file($this->_main_template)){
 			$this->_smarty->assign("sm_main_interface", $this->_main_template);

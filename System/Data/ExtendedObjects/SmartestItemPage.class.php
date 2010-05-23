@@ -15,7 +15,7 @@ class SmartestItemPage extends SmartestPage{
             
             $this->_dataset = new SmartestCmsItemSet;
             
-            if($this->_dataset->hydrate($this->getDatasetId())){
+            if($this->_dataset->find($this->getDatasetId())){
                 $this->_dataset->getMembers();
             }
         }

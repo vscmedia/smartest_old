@@ -123,5 +123,23 @@
 </div>
 
 <div id="actions-area">
-  
+    
+    <ul class="actions-list" id="non-specific-actions">
+      <li><b>Model Options</b></li>
+      {if $allow_create_new}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/add.png" /> Add a new {$model.name}</a></li>{/if}
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/releaseUserHeldItems?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/lock_open.png" /> Release all {$model.plural_name}</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editModel?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/information.png" /> Model info</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/pencil.png" /> Edit model properties</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/addSet?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png" /> Create a new set from this model</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder_old.png" /> View data sets for this model</a></li>
+    {* <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/importData?class_id={$itemBaseValues.itemclass_id}';"><img border="0" src="{$domain}Resources/Icons/page_code.png" /> Import data from CSV</a></li> *}
+    </ul>
+    
+    <ul class="actions-list" id="non-specific-actions">
+      <li><span style="color:#999">Recently edited {$model.plural_name|strtolower}</span></li>
+      {foreach from=$recent_items item="recent_item"}
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_item.action_url}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label|summary:"28"}</a></li>
+      {/foreach}
+    </ul>
+    
 </div>

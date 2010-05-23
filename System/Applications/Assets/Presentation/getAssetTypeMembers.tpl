@@ -13,9 +13,35 @@
 <div class="special-box">There are no {$type_label|strtolower} files yet. <a href="{$domain}{$section}/addAsset?asset_type={$type_code}">Click here</a> to add one.</div>
 {else}
 <div class="special-box">
+{if $type.editable && $type.storage.type == "database"}
+  <form id="full-text-search-form" method="get" action="">
+    <div class="special-box-key">Text search: </div><input type="text" name="query" id="assets-search-query-box" style="width:250px" />
+    
+    <div id="autocomplete_choices" class="autocomplete"></div>
+
+      <script type="text/javascript">
+{literal}
+        function getSelectionId(text, li) {
+            var bits = li.id.split('-');
+            window.location=sm_domain+'assets/editAsset?asset_id='+bits[1];
+        }
+{/literal}
+
+        new Ajax.Autocompleter("assets-search-query-box", "autocomplete_choices", "/ajax:smartest/assets/{$type_code}/full_text_search", {literal}{
+            paramName: "query", 
+            minChars: 3,
+            delay: 50,
+            width: 300,
+            afterUpdateElement : getSelectionId
+        });
+
+        {/literal}
+      </script>
+  </form>
+{/if}
   <form id="mode-form" method="get" action="">
     <input type="hidden" name="asset_type" value="{$type_code}" />
-    Show: <select name="mode" onchange="$('mode-form').submit();">
+    <div class="special-box-key">{if $type.editable && $type.storage.type == "database"}Or show{else}Only show{/if}: </div><select name="mode" onchange="$('mode-form').submit();">
       <option value="1"{if $mode == 1} selected="selected"{/if}>{$type_label} files not in archive</option>
       <option value="0"{if $mode == 0} selected="selected"{/if}>All {$type_label} files</option>
       <option value="2"{if $mode == 2} selected="selected"{/if}>Archived {$type_label} files</option>
@@ -36,9 +62,9 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
     <a href="{dud_link}" class="option" id="item_{$asset.id}" onclick="setSelectedItem('{$asset.id}', 'Template', '{$sidebartype}');" ondblclick="workWithItem('editAsset');">
 
 {if in_array($type_code, array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'))}
-    <img border="0" src="{$domain}Resources/Images/ImageAssetThumbnails/{$asset.url}" />{$asset.url}</a>
+    <img border="0" src="{$domain}Resources/Images/ImageAssetThumbnails/{$asset.url}" />{$asset.label}</a>
 {else}
-    <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$asset.stringid}</a>
+    <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$asset.label}</a>
 {/if}
 
 </li>

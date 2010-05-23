@@ -180,6 +180,21 @@ div.buttons-bar{
 	text-align:right;
 }
 
+div.special-box-key{
+    width:100px;
+    float:left;
+    padding-top:3px;
+}
+
+div.special-box select{
+    width:250px;
+}
+
+form.float{
+    float:left;
+    display:inline;
+}
+
 div#footer{
 	text-align:center;
 	float:left;

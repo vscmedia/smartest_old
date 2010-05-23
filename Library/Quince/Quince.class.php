@@ -26,25 +26,46 @@ class QuinceAction{
 	            $this->_request->setAction($this->_module_info['default_action']);
 	        }
 	        
+	        $class_modified_by_namespace = false;
+	        $action_modified_by_namespace = false;
+	        
 	        // Set the class and action names, accounting for any modifications from the namespace
             if($this->_request->getNamespace() != 'default' || isset($this->_module_info['namespaces']['default'])){
-                if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['affect'])){
+                /* if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['affect'])){
                     $affect = $this->_module_info['namespaces'][$this->_request->getNamespace()]['affect'];
                     $this->_class = ($affect == 'class') ? $this->_request->getNamespace().'_'.$this->_module_info['class'] : $this->_module_info['class'];
                     $this->_action = ($affect == 'action') ? $this->_request->getNamespace().'_'.$this->_request->getAction() : $this->_request->getAction();
-                    $default_action = ($affect == 'action') ? $this->_request->getNamespace().'_'.$this->_module_info['default_action'] : $this->_module_info['default_action'];
+                    // $default_action = ($affect == 'action') ? $this->_request->getNamespace().'_'.$this->_module_info['default_action'] : $this->_module_info['default_action'];
+                    
                 }else{
                     $this->_class = $this->_module_info['class'];
                     $this->_action = $this->_request->getAction();
                     $default_action = $this->_module_info['default_action'];
+                } */
+                // echo "test";
+                
+                if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['class'])){
+                    $this->_class = $this->_module_info['namespaces'][$this->_request->getNamespace()]['class'];
+                    $class_modified_by_namespace = true;
+                }else{
+                    $this->_class = $this->_module_info['class'];
                 }
+                
+                if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['action_prefix'])){
+                    $this->_action = $this->_module_info['namespaces'][$this->_request->getNamespace()]['action_prefix'].'_'.$this->_request->getAction();
+                    $action_modified_by_namespace = true;
+                }else{
+                    $this->_action = $this->_request->getAction();
+                }
+                
+                // echo $this->_class;
             }else{
                 $this->_class = $this->_module_info['class'];
                 $this->_action = $this->_request->getAction();
                 $default_action = $this->_module_info['default_action'];
             }
 
-            $this->_class = $this->_module_info['class'];
+            // $this->_class = $this->_module_info['class'];
             $this->_action = $this->_request->getAction();
 	        
 	        // Make sure the actual class file exists
@@ -116,7 +137,11 @@ class QuinceAction{
 	                throw new QuinceException("File ".$this->_class.".class.php does not contain required class: ".$this->_class);
 	            }
 	        }else{
-	            throw new QuinceException("Module '{$this->_request->getModule()}' does not contain required class file: ".$this->_module_info['directory'].$this->_class.'.class.php');
+	            if($class_modified_by_namespace){
+	                throw new QuinceException("Module '{$this->_request->getModule()}' does not contain class file required by this namespace: ".$this->_module_info['directory'].$this->_class.'.class.php');
+	            }else{
+	                throw new QuinceException("Module '{$this->_request->getModule()}' does not contain required class file: ".$this->_module_info['directory'].$this->_class.'.class.php');
+                }
 	        }
 	        
 	    }else{
@@ -606,7 +631,7 @@ class QuinceRouter{
             }
         
             if(isset($route['url'])){
-            
+                // var_dump($this->_request);
                 if($namespace == 'default'){
                     $url = $this->_request->getDomain().substr($route['url'], 1);
                 }else{
@@ -809,9 +834,7 @@ class Quince{
 	    
 	    $r = new $this->_request_class;
 	    
-	    // MultiViews support: look for URLS like index.php/module/action
-		$fc_filename = basename($_SERVER['SCRIPT_FILENAME']).'/';
-		$fc_filename_len = strlen($fc_filename);
+	    
 		
 	    // $ulength = strlen($url.'/');
 	    
@@ -833,34 +856,32 @@ class Quince{
 	    $test_url = $url{(strlen($url)-1)} == '/' ? substr($url, 0, -1) : $url;
 	    
 	    // Calculate the domain
-	    // $hdp = explode('/', getcwd());
-	    // $hdp = explode('/', $test_url);
-        // array_shift($hdp);
-        // array_pop($hdp);
-        // print_r($hdp);
-        // $reverse = array_reverse($hdp);
-        // $possible_dir = implode('/', $hdp).'/';
-        
-        // echo $possible_dir;
-        
-        // array_shift($hdp);
-        
-        // $cwd = getcwd();
-        
-        // echo $dr.'/'.$possible_dir.' ';
-        // echo $dr;
-        // $f = strpos($dr, $cwd);
-        
-        $dr = realpath($_SERVER["DOCUMENT_ROOT"]).'/';
+	    $dr = realpath($_SERVER["DOCUMENT_ROOT"]).'/';
+	    
+	    // echo $test_url;
+	    
         $hdp = explode('/', $test_url);
         array_shift($hdp);
         array_pop($hdp);
         $possible_dir = implode('/', $hdp).'/';
         
+        // MultiViews support: look for URLS like index.php/module/action
+		$fc_filename = basename($_SERVER['SCRIPT_FILENAME']);
+		$fc_filename_len = strlen($fc_filename)+1;
+		
+		// echo $possible_dir;
+        // echo substr($possible_dir, 0, $fc_filename_len+1);
+        
         while(!is_dir($dr.$possible_dir)){
             array_pop($hdp);
             $possible_dir = implode('/', $hdp).'/';
+            // echo $possible_dir.' ';
         }
+		
+		if(substr($possible_dir, 0, $fc_filename_len) == '/'.$fc_filename){
+		    $possible_dir .= $fc_filename.'/';
+		    $url = substr($url, $fc_filename_len);
+		}
         
         if($possible_dir == '/'){
             $r->setDomain('/');
@@ -967,6 +988,38 @@ class Quince{
         } */
         
         return $r;
+	}
+	
+	public function getUrlFor($route_name){
+	    
+	    if(preg_match('/^@(\w+):(\w+)(\?(.*))?$/', $route_name, $matches)){
+            
+            $r = new QuinceRouter;
+            $r->setRequest($this->_current_request);
+            
+            if($r->routeExists($matches[1].':'.$matches[2])){
+                return $r->fetchRouteUrl($to, $matches);
+            }else{
+                throw new QuinceException("Supplied route '".$matches[1].':'.$matches[2]."' does not exist.");
+            }
+            
+		}else if(preg_match('/^@(\w+)(\?(.*))?$/', $route_name, $matches)){
+		    
+            $r = new QuinceRouter;
+            $r->setRequest($this->_current_request);
+            
+            if($r->routeExists($this->_current_request->getModule().':'.$matches[1])){
+                return $r->fetchRouteUrl('@'.$this->_current_request->getModule().':'.$matches[1].$matches[2]);
+            }else{
+                throw new QuinceException("Supplied route '".$this->_current_request->getModule().':'.$matches[1]."' does not exist.");
+            }
+            
+		}else{
+		    
+		    throw new QuinceException("Supplied route '".$route_name."' was invalid.");
+		    
+		}
+	    
 	}
 	
 	public function getNewModulesList(){

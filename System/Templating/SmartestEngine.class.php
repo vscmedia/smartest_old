@@ -44,6 +44,8 @@ class SmartestEngine extends Smarty{
         $this->left_delimiter = '{';
 		$this->right_delimiter = '}';
 		
+		$this->assign('request_parameters', $this->_request_data->getParameter('request_parameters'));
+		
 	}
 	
 	public function startChildProcess($pid, $type=''){
@@ -71,6 +73,7 @@ class SmartestEngine extends Smarty{
 		$cp->assign('class', $this->_tpl_vars['class']);
 		$cp->assign('sm_admin_email', $this->_tpl_vars['sm_admin_email']);
 		$cp->assign('sm_user_agent', $this->_tpl_vars['sm_user_agent']);
+		$cp->assign('request_parameters', $this->_request_data->getParameter('request_parameters'));
 		
 		$this->_child_processes[$pid] = $cp;
         return $cp;
@@ -102,6 +105,18 @@ class SmartestEngine extends Smarty{
 	
 	public function getRequestData(){
 	    return $this->_request_data;
+	}
+	
+	public function getController(){
+	    return $this->controller;
+	}
+	
+	public function getUrlFor($route_name){
+	    try{
+	        return $this->controller->getUrlFor($route_name);
+        }catch(QuinceException $e){
+            $this->raiseError($e->getMessage());
+        }
 	}
 	
 	public function getContext(){

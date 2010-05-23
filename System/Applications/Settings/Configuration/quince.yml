@@ -1,0 +1,12 @@
+module:
+  class: Settings
+  shortname: settings
+  identifier: com.smartest.Settings
+  longname: Settings
+  default_action: startPage
+  meta:
+    system: true
+  routes:
+    models:
+      action: listUsers
+      url: /smartest/users

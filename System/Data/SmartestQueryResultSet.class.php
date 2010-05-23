@@ -182,42 +182,41 @@ class SmartestQueryResultSet{
 	
 	}
 	
-	public function getItems($limit=null){
-	    
-	    // echo $limit;
-	    
-	    if(!$this->_items_retrieval_attempted){
+	public function getItems($limit=null, $start=null){
 	        
-	        $cardinality = 0;
-	        
-	        $this->_items = array();
-	        
-	        if(($limit && is_numeric($limit) && $cardinality <= $limit) || !$limit){
-	        
-	            foreach($this->_item_ids as $id){
-	            
-    	            $obj = new $this->_model_class;
-	                
-	                if($this->_is_draft){
-	                    $obj->setDraftMode(true);
-	                }
-	                
-    	            if($obj->hydrate($id, $this->_is_draft)){
-    	                $this->_items[] = $obj;
-                    }
-    	        }
-	        
-    	        $cardinality++;
-	        
+        $cardinality = 0;
+        
+        $this->_items = array();
+        
+        $ids = $this->_item_ids;
+        
+        if($start > 1){
+		    $key = $start-1;
+		    $ids = array_slice($ids, $key);
+		}
+		
+		if($limit > 0){
+		    $ids = array_slice($ids, 0, $limit);
+		}
+		
+		foreach($ids as $id){
+            
+            $obj = new $this->_model_class;
+        
+            if($this->_is_draft){
+                $obj->setDraftMode(true);
             }
-	        
-	        $this->_items_retrieval_attempted = true;
-	    
+        
+            if($obj->find($id, $this->_is_draft)){
+                $this->_items[] = $obj;
+            }
+            
         }
         
-        // print_r($this->_items);
+        $this->_items_retrieval_attempted = true;
         
         return $this->_items;
+        
 	}
 
 }

@@ -148,27 +148,23 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	        $this->_data_set = new SmartestCmsItemSet;
 	    
     	    if($draft){
-    	        $this->_data_set->hydrate($this->getDraftSetId());
+    	        $this->_data_set->find($this->getDraftSetId());
     	    }else{
-    	        $this->_data_set->hydrate($this->getLiveSetId());
+    	        $this->_data_set->find($this->getLiveSetId());
     	    }
 	        
 	        $mode = $draft ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT;
 	        
-	        $has_limit = (bool) $this->getMaximumLength();
+	        // $has_limit = (bool) $this->getMaximumLength();
 	        $limit = $has_limit ? (int) $this->getMaximumLength() : null;
 	        
-	        // var_dump($limit);
+	        // if($has_limit){
+	        //    $this->_list_items = array_slice($this->_data_set->getMembers($mode, $limit), 0, $limit);
+            // }else{
+                $this->_list_items = $this->_data_set->getMembers($mode, $limit);
+            //}
 	        
-	        if($has_limit){
-	            $this->_list_items = array_slice($this->_data_set->getMembers($mode, false, $limit), 0, $limit);
-            }else{
-                $this->_list_items = $this->_data_set->getMembers($mode, false, $limit);
-            }
-	        
-	        // var_dump($this->_data_set->getLabel());
-    	    
-    	    $this->_fetch_attempted = true;
+	        $this->_fetch_attempted = true;
 	    
 	    }
 	    

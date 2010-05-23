@@ -30,7 +30,7 @@ var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'pa
     <input type="hidden" name="version" value="{$version}" />
     {if $page.type == 'ITEMCLASS' && $item.id}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
     
-    Viewing mode:
+    <div class="special-box-key">Viewing mode:</div>
     <select name="version" onchange="document.getElementById('viewSelect').submit();">
       <option value="draft"{if $version == "draft"} selected="selected"{/if}>Draft</option>
       <option value="live"{if $version == "live"} selected="selected"{/if}>Live</option>
@@ -49,7 +49,7 @@ var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'pa
   	  
 {if $version == "draft"}
     <span>
-      Page Template:
+      <div class="special-box-key">Page Template:</div>
       <select name="template_name" onchange="$('templateSelect').submit();">
         <option value="">Not Selected</option>
 {foreach from=$templates item="t"}
@@ -58,7 +58,7 @@ var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'pa
       </select>
     </span>
 {else}
-    <span>Page template: {if strlen($templateMenuField)}{$templateMenuField}{else}<em style="color:#666">None yet specified</em>{/if}</span>
+    <div class="special-box-key">Page template: </div>{if strlen($templateMenuField)}<strong>{$templateMenuField}</strong>{else}<em style="color:#666">None yet specified</em>{/if}</span>
 {/if}
 
   </form>

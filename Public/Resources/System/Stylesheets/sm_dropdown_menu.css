@@ -81,3 +81,38 @@ div.js-menu ul li span{
     margin:0px;
     display:block;
 }
+
+/*** Autocomplete version ***/
+
+div.autocomplete {
+  position:absolute;
+  width:250px;
+  background-color:white;
+  border:1px solid #888;
+  margin:0;
+  padding:0;
+}
+
+div.autocomplete ul {
+    list-style-type:none;
+    margin:0;
+    padding:5px 0 5px 0;
+}
+
+div.autocomplete ul li{
+    font-size:11px;
+    text-align:left;
+    display:block;
+    margin:0;
+    padding:3px;
+    height:15px;
+    cursor:pointer;
+}
+
+div.autocomplete ul li span.informal{
+    font-size:11px;
+    color:#aaa;
+}
+
+div.autocomplete ul li.selected { color:#fff; background-color: #555;}
+div.autocomplete ul li.selected span.informal{ color:#ccc; }

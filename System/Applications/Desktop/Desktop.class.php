@@ -418,7 +418,7 @@ class Desktop extends SmartestSystemApplication{
             
         }
         
-        $this->redirect('/desktop/aboutSmartest');
+        $this->redirect('/smartest/about');
         
     }
     

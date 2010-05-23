@@ -848,36 +848,40 @@ class Assets extends SmartestSystemApplication{
 	
 	public function transferSingleAsset($get, $post){
 	    
-	    if($this->getRequestParameter('group_id')){
+	    /* if($this->getRequestParameter('group_id')){
 	        $request = $post;
 	    }else{
 	        $request = $get;
-	    }
+	    } */
 	    
-	    $group_id = $request['group_id'];
+	    $group_id = $this->getRequestParameter('group_id');
 	    
 	    $group = new SmartestAssetGroup;
 	    
 	    if($group->find($group_id)){
 	        
-	        $asset_id = (int) $request['asset_id'];
+	        $asset_id = (int) $this->getRequestParameter('asset_id');
 	        $asset = new SmartestAsset;
 	        
 	        if($asset->find($asset_id)){
 	            // TODO: Check that the asset is the right type for this group
-	            if($request['transferAction'] == 'add'){
+	            if($this->getRequestParameter('transferAction') == 'add'){
 	                $group->addAssetById($asset_id);
                 }else{
                     $group->removeAssetById($asset_id);
                 }
 	        }
 	        
+	        if($this->getRequestParameter('from') == 'edit'){
+                $this->redirect('/assets/editAsset?asset_id='.$asset->getId());
+    	    }else{
+    	        $this->formForward();
+    	    }
+	        
 	    }else{
 	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
 	    }
-	    
-	    $this->formForward();
-	    
 	}
 	
 	public function transferAssets($get, $post){
@@ -952,8 +956,31 @@ class Assets extends SmartestSystemApplication{
 		    }
 		    
 		    $this->send($data, 'asset'); 
+		    $this->send($asset->getPossibleOwners(), 'potential_owners');
 		    
 		}
+	    
+	}
+	
+	public function updateAssetInfo(){
+	    
+	    $asset = new SmartestAsset;
+	    // echo $this->getRequestParameter('asset_id');
+	    
+	    if($asset->find($this->getRequestParameter('asset_id'))){
+	        
+	        $asset->setLabel($this->getRequestParameter('asset_label'));
+	        $asset->setUserId($this->getRequestParameter('asset_user_id'));
+	        $asset->setShared($this->getRequestParameter('asset_shared') ? 1 : 0);
+	        $asset->save();
+	        
+	        $this->addUserMessageToNextRequest("The asset has been updated.", SmartestUserMessage::SUCCESS);
+	        $this->formForward();
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The asset ID was not recognized", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	    }
 	    
 	}
     

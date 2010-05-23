@@ -88,7 +88,8 @@ class Pages extends SmartestSystemApplication{
 			            $page->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
         			    $this->getUser()->addRecentlyEditedPageById($page->getId(), $this->getSite()->getId());
 		            
-			            $this->redirect('/'.$this->getRequest()->getModule().'/editPage?page_id='.$page->getWebid());
+			            // $this->redirect('/'.$this->getRequest()->getModule().'/editPage?page_id='.$page->getWebid());
+			            $this->redirect('@websitemanager:basic_info?page_id='.$page->getWebid());
     			        
     		        }
 		        

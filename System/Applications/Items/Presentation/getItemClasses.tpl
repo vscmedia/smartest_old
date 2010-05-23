@@ -6,6 +6,34 @@
 
 {if empty($models)}
 <div class="special-box">No models yet. Click <a href="{$domain}{$section}/addItemClass?createmetapage=true">here</a> to create one.</div>
+{else}
+  
+  <div class="special-box">
+      <form action="" method="get" id="items-search-form">
+        Search for an item: <input type="text" name="query" id="items-search-name" style="width:250px" />
+      </form>
+  </div>
+  
+  <div id="autocomplete_choices" class="autocomplete"></div>
+  
+  <script type="text/javascript">
+    {literal}
+    
+    function getSelectionId(text, li) {
+        var bits = li.id.split('-');
+        window.location=sm_domain+'datamanager/openItem?item_id='+bits[1];
+    }
+    
+    new Ajax.Autocompleter("items-search-name", "autocomplete_choices", "/ajax:datamanager/simpleItemTextSearch", {
+        paramName: "query", 
+        minChars: 2,
+        delay: 50,
+        width: 300,
+        afterUpdateElement : getSelectionId
+    });
+    
+    {/literal}
+  </script>
 {/if}
 
 <form id="pageViewForm" method="get" action="">

@@ -4,6 +4,8 @@ module:
   identifier: com.smartest.DataManager.Items
   longname: Items Manager
   default_action: getItemClasses
+  aliases:
+    - {url: /smartest/data, action: getItemClasses}
   routes:
     models:
       action: getItemClasses
@@ -15,3 +17,9 @@ module:
         use_plural_name: true
   meta:
     system: true
+  namespaces:
+    ajax:
+      class: ItemsAjax
+      meta:
+        template: _blank.tpl
+        presentation_subfolder: Ajax/

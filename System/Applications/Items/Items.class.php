@@ -1,13 +1,13 @@
 <?php
 
-require_once SM_ROOT_DIR.'Managers/SchemasManager.class.php';
+// require_once SM_ROOT_DIR.'Managers/SchemasManager.class.php';
 // require_once SM_ROOT_DIR.'System/Applications/Assets/AssetsManager.class.php';
 
 class Items extends SmartestSystemApplication{
 
-	private $SchemasManager;
+	// private $SchemasManager;
   
-	public function __smartestApplicationInit(){
+	protected function __smartestApplicationInit(){
 	    $this->database = SmartestPersistentObject::get('db:main'); /* usage of the $this->database variable should be phased out in main classes */
 		// $this->SchemasManager = new SchemasManager();
 		// $this->AssetsManager = new AssetsManager();
@@ -38,7 +38,8 @@ class Items extends SmartestSystemApplication{
 	
 	public function getItemClassSets($get){
 	    
-	    $this->redirect('/sets/getItemClassSets?class_id='.$this->getRequestParameter('class_id'));
+	    // $this->redirect('/sets/getItemClassSets?class_id='.$this->getRequestParameter('class_id'));
+	    $this->redirect('@sets:model_sets?class_id='.$this->getRequestParameter('class_id'));
 	    
 	}
 
@@ -467,7 +468,7 @@ class Items extends SmartestSystemApplication{
                 
                 }else{
                     $this->addUserMessageToNextRequest('You don\'t have permssion to edit items', SmartestUserMessage::ACCESS_DENIED);
-                    $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItemclassId());
+                    $this->redirect('/'.$this->getRequest()->getModule().'/getItemClassMembers?class_id='.$item->getItemclassId());
                 }
     	    }
         }
@@ -1097,6 +1098,12 @@ class Items extends SmartestSystemApplication{
 	        
 	        $this->send($model->getAvailableDescriptionProperties(), 'description_properties');
 	        
+	        $recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $model_id);
+  	        $this->send($recent, 'recent_items');
+  	        
+  	        $allow_create_new = $this->getUser()->hasToken('add_items');
+  	        $this->send($allow_create_new, 'allow_create_new');
+	        
 	    }else{
 	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
 	        $this->redirect('/smartest/models');
@@ -1280,7 +1287,7 @@ class Items extends SmartestSystemApplication{
 	        if($item->getItem()->getIsHeld() && $item->getItem()->getHeldBy() != $this->getUser()->getId() && !$this->getUser()->hasToken('edit_held_items')){
 	            $this->addUserMessageToNextRequest('The item is already being edited.', SmartestUserMessage::ACCESS_DENIED);
 	            SmartestLog::getInstance('site')->log('Suspicious activity: '.$this->getUser()->__toString().' tried to edit '.strtolower($item->getModel()->getName()).' \''.$item->getName().'\' via direct URL entry.');
-    		    $this->redirect('/'.SM_CONTROLLER_MODULE.'/getItemClassMembers?class_id='.$item->getItem()->getItemclassId());
+    		    $this->redirect('/'.$this->getRequest()->getModule().'/getItemClassMembers?class_id='.$item->getItem()->getItemclassId());
 	        }
 		    
 		    $this->send($item->getModel()->getMetaPages(), 'metapages');
@@ -2153,7 +2160,7 @@ class Items extends SmartestSystemApplication{
         		        $du->flushModelsCache();
         		    }
         		    
-        		    $this->redirect("/".SM_CONTROLLER_MODULE."/addPropertyToClass?class_id=".$model->getId());
+        		    $this->redirect("/".$this->getRequest()->getModule()."/addPropertyToClass?class_id=".$model->getId());
     		    
 		        }
 		    

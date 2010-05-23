@@ -211,6 +211,18 @@ class SmartestDataObject implements ArrayAccess{
 		return $this->_table_name;
 	}
 	
+	public function getRawTableColumns(){
+	    return $this->_dbTableHelper->getColumnNames($this->getTableName());
+	}
+	
+	public function getFields(){
+	    return array_keys($this->_properties);
+	}
+	
+	public function fieldExists($field){
+	    return in_array($field, $this->getFields());
+	}
+	
 	public function getUnprefixedFields(){
 	    return array_keys($this->_no_prefix);
 	}
@@ -516,10 +528,12 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
 	    
-	    if(is_numeric($site_id) && array_key_exists('site_id', $this->_properties)){
-	        if(isset($this->_properties['site_id'])){
-	            $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
-	        }
+	    if(is_numeric($site_id) && isset($this->_properties['site_id'])){
+            if(isset($this->_properties['shared'])){
+                $sql .= " AND (".$this->_table_prefix."site_id='".$site_id."' OR ".$this->_table_prefix."shared='1')";
+            }else{
+                $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
+            }
 	    }
 	    
 	    return $sql;

@@ -116,6 +116,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
             case "action_url":
             return $this->getActionUrl();
             
+            case "site":
+            return $this->getSite();
+            
         }
         
         return parent::offsetGet($offset);
@@ -660,6 +663,12 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	    }
 	}
 	
+	public function getPossibleOwners(){
+	    
+	    return $this->getSite()->getUsersThatHaveAccess();
+	    
+	}
+	
 	public function getGroupMemberships($refresh=false, $mode=1, $approved_only=false){
         
         $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP');
@@ -811,13 +820,11 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
 	
 	public function getLargeIcon(){
 	    
-	    
-	    
 	}
 	
 	public function getLabel(){
 	    
-	    return $this->getUrl();
+	    return parent::getLabel() ? $this->_properties['label'] : $this->getStringId();
 	    
 	}
 	

@@ -13,10 +13,6 @@
 
 class Settings extends SmartestSystemApplication{
 
-	function __moduleConstruct(){
-				
-	}
-	
 	function startPage(){
 		
 	}
@@ -25,7 +21,7 @@ class Settings extends SmartestSystemApplication{
 		
 		// latest
 		$contents = file_get_contents("http://update.visudo.net/smartest");
-		$unserializer = &new XML_Unserializer(); 
+		$unserializer = new XML_Unserializer(); 
 		$status = $unserializer->unserialize($contents); 		
 		
 		if (PEAR::isError($status)) { 
@@ -36,7 +32,7 @@ class Settings extends SmartestSystemApplication{
 
 		//current
 		$contents = file_get_contents("System/CoreInfo/package.xml");
-		$unserializer = &new XML_Unserializer(); 
+		$unserializer = new XML_Unserializer(); 
 		$status = $unserializer->unserialize($contents); 		
 		
 		if (PEAR::isError($status)) { 
@@ -130,16 +126,22 @@ class Settings extends SmartestSystemApplication{
     function listUsers(){
 		
 		$this->setFormReturnUri();
-		$users = $this->database->queryToArray("SELECT * FROM Users WHERE username != 'smartest'");
-		return (array("users"=>$users, "count"=>count($users)));
+		$database = SmartestDatabase::getInstance('SMARTEST');
+		$users = $database->queryToArray("SELECT * FROM Users WHERE username != 'smartest'");
+		$this->send($users, 'users');
+		$this->send(count($users), 'count');
+		// return (array("users"=>$users, "count"=>count($users)));
 		
 	}
 	
 	function listRoles(){
 	    
 	    $this->setFormReturnUri();
-		$roles = $this->database->queryToArray("SELECT * FROM Roles");
-		return (array("roles"=>$roles, "count"=>count($roles)));
+	    $database = SmartestDatabase::getInstance('SMARTEST');
+		$roles = $database->queryToArray("SELECT * FROM Roles");
+		$this->send($roles, 'roles');
+		$this->send(count($roles), 'count');
+		// return (array("roles"=>$roles, "count"=>count($roles)));
 	    
 	}
 	
@@ -242,10 +244,10 @@ class Settings extends SmartestSystemApplication{
 		// $database = $_SESSION['database'];
 		$user = new SmartestUser;
 		
-		if($user->hydrate($get['user_id'])){
+		if($user->hydrate($this->getRequestParameter('user_id'))){
 		    // $user = $this->database->queryToArray("SELECT * FROM Users WHERE user_id=".$get['user_id']);
             // return array("userdetails"=>$user->__toArray());
-            $this->send($user->__toArray(), 'user');
+            $this->send($user, 'user');
         }else{
             $this->addUserMessageToNextRequest("The User ID was not recognised.");
             $this->formForward();
@@ -268,7 +270,6 @@ class Settings extends SmartestSystemApplication{
     	        
     	        $this->addUserMessageToNextRequest("The user '".$user->getUsername()."' was successfully deleted.", SmartestUserMessage::SUCCESS);
 		        $user->delete();
-		        
 		
 	        }else{
 	            
@@ -324,30 +325,20 @@ class Settings extends SmartestSystemApplication{
     	        // $h = new SmartestUsersHelper;
         	    // $utokens = $this->manager->getUserPermissions($user_id, $site_id); // print_r($utokens);
         	    // $tokens = $h->getUserPermissions();
-        	    // print_r($user);
         	    $utokens = $user->getTokensOnSite($site_id, true);
         	    
         	    // $t = $user->getTokenCodes();
-        	    // print_r($utokens);
-    		    
-    		    $tokens = $user->getAvailableTokens($site_id);
+        	    $tokens = $user->getAvailableTokens($site_id);
     		    
     		    // $tokens_old = $this->manager->getAvailablePermissions($user_id, $site_id);
     		    // $tokens = SmartestUsersHelper::getTokenData();
     		    
-    		    /* print_r($tokens);
-    		    print_r($tokens_old); */
-    		    
-		        $this->send($user, 'user');
+    		    $this->send($user, 'user');
     		    $this->send($utokens, 'utokens');
     		    $this->send($tokens, 'tokens');
     		    $this->send($permission_editable_sites, 'sites');
     		    $this->send($site_id, 'site_id');
     		    $this->send($allow_global, 'allow_global');
-		    
-        	    // return array("user_id"=>$user_id, "utokens"=>$utokens,"tokens"=>$tokens);
-        	    
-        	    // header("Location: /");
     	
     	    }else{
     	        $this->addUserMessageToNextRequest("The user ID was not recognised");

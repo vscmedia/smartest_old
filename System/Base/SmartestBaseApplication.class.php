@@ -256,7 +256,14 @@ class SmartestBaseApplication extends QuinceBase{
 	public function requireSiteByDomain($domain){
 	    
 	    if($this->getSite()->getDomain() == $domain){
+	        
+	        if(!defined('SM_CMS_PAGE_SITE_ID')){
+	            define('SM_CMS_PAGE_SITE_ID', $this->getSite()->getId());
+    	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->getSite()->getUniqueId());
+	        }
+	        
 	        return true;
+	        
 	    }else{
 	        $this->forward('website', 'renderPage');
 	    }

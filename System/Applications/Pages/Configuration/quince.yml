@@ -4,6 +4,8 @@ module:
   identifier: com.smartest.Pages
   longname: Page Manager
   default_action: sitePages
+  aliases:
+    - {url: /smartest/page/:page_id, action: editPage}
   routes:
     pages:
       action: sitePages
@@ -11,5 +13,11 @@ module:
     preview:
       action: preview
       url: /smartest/page/:page_id/preview
+    basic_info:
+      action: editPage
+      url: /smartest/page/:page_id/basic
+    assets_tree:
+      action: pageAssets
+      url: /smartest/page/:page_id/tree
   meta:
     system: true

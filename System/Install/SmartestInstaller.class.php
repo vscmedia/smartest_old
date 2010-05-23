@@ -125,7 +125,7 @@ class SmartestInstaller{
         
     }
     
-    public function createQuinceControllerFile($domain, $force = false){
+    /* public function createQuinceControllerFile($domain, $force = false){
         
         if($force || !file_exists(SM_ROOT_DIR.'Configuration/controller.xml')){
             
@@ -142,7 +142,7 @@ class SmartestInstaller{
             }
         }
         
-    }
+    } */
     
     public function removePermissionsScript(){
         

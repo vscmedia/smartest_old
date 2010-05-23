@@ -8,6 +8,15 @@ module:
     home:
       action: getAssetTypes
       url: /smartest/assets
+    ajax_full_text_search:
+      action: fullTextSearchResults
+      url: /smartest/assets/:asset_type/full_text_search
   meta:
     system: true
     author: Marcus Gilroy-Ware
+  namespaces:
+    ajax:
+      class: AssetsAjax
+      meta:
+        template: _blank.tpl
+        presentation_subfolder: Ajax/

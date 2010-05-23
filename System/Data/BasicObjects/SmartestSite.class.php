@@ -348,5 +348,21 @@ class SmartestSite extends SmartestBaseSite{
         /* $d = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
         $structure = */
     }
+    
+    public function getUsersThatHaveAccess(){
+        
+        $sql = "SELECT Users.* FROM Users, UsersTokensLookup WHERE UsersTokensLookup.utlookup_token_id='21' AND UsersTokensLookup.utlookup_user_id=Users.user_id AND (UsersTokensLookup.utlookup_site_id='".$this->getId()."' OR UsersTokensLookup.utlookup_is_global=1) ORDER BY Users.user_firstname";
+        $result = $this->database->queryToArray($sql);
+        $users = array();
+        
+        foreach($result as $r){
+            $u = new SmartestSystemUser;
+            $u->hydrate($r);
+            $users[] = $u;
+        }
+        
+        return $users;
+        
+    }
 	
 }

@@ -1,7 +1,7 @@
 <div id="work-area">
   
   {load_interface file="edit_asset_tabs.tpl"}
-  <h3>Edit file: {$asset.url}</h3>
+  <h3>Edit file: {$asset.label}</h3>
   
   {if $asset.deleted}<div class="warning">Warning: This {$asset.type_info.label} is currently in the trash.</div>{/if}
   
@@ -14,12 +14,15 @@
   <div class="instruction">You are editing {$asset.type_info.label}: <code>{$asset.type_info.storage.location}</code><strong><code>{$asset.url}</code></strong></div>
   
   <div id="groups" class="special-box">
-    File groups: {if count($groups)}{foreach from=$groups item="group"}<a href="{$domain}{$section}/browseAssetGroup?group_id={$group.id}">{$group.label}</a> (<a href="{$domain}{$section}/transferSingleAsset?asset_id={$asset.id}&amp;group_id={$group.id}&amp;transferAction=remove">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
+    File groups: {if count($groups)}{foreach from=$groups item="group"}<a href="{$domain}{$section}/browseAssetGroup?group_id={$group.id}">{$group.label}</a> (<a href="{$domain}{$section}/transferSingleAsset?asset_id={$asset.id}&amp;group_id={$group.id}&amp;transferAction=remove&amp;from=edit">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
 {if count($possible_groups)}
         <div>
           <form action="{$domain}{$section}/transferSingleAsset" method="post">
+            
             <input type="hidden" name="asset_id" value="{$asset.id}" />
             <input type="hidden" name="transferAction" value="add" />
+            <input type="hidden" name="from" value="edit" />
+            
             Add this file to group:
             <select name="group_id">
 {foreach from=$possible_groups item="possible_group"}
