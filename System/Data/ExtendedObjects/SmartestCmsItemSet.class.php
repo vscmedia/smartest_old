@@ -247,6 +247,15 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi{
 	    
 	}
 	
+	public function getPage($mode=9, $page_num=1, $page_size=10, $query_data=''){
+	    
+	    $start = ($page_num-1) * $page_size + 1;
+        $limit = $page_size;
+        
+        return $this->getMembersPaged($mode, $limit, $start, $query_data);
+	    
+	}
+	
 	public function getMembersPaged($mode=9, $limit=0, $start=1, $query_data=''){
 	    
 	    // if static
@@ -391,6 +400,17 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi{
 	public function getRawDynamicSetMembers($mode=9, $query_data=''){
 	    
 	    return $this->getRawDynamicSetResultSet($mode, $query_data)->getItems();
+	    
+	}
+	
+	public function getRandom($limit, $mode=9, $query_data=''){
+	    if($this->getType() == 'STATIC'){
+	        
+	    }else if($this->getType() == 'DYNAMIC'){
+	        $r = $this->getRawDynamicSetResultSet($mode, $query_data);
+	        $r->sort(SmartestQuery::RANDOM);
+	        return $r->getItems($limit);
+	    }
 	    
 	}
 	

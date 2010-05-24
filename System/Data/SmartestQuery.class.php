@@ -203,14 +203,16 @@ class SmartestQuery{
         				$tag = new SmartestTag;
         				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
         				
-        				if($tag->hydrateBy('name', $tag_name)){
+        				// echo $tag_name;
+        				
+        				if($tag->findBy('name', $tag_name)){
         				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->_model->getId());
         				    $sql .= "AND Items.item_id IN ('".implode("', '", $ids)."')";
         				}else{
         				    if(SM_DEVELOPER_MODE){
         				        // throw new SmartestException('Unknown tag: \''.$tag_name.'\' in SmartestQuery::doSelect()');
         				    }
-        				    
+        				    // echo "tag not found";
         				    // $sql .= "AND Items.item_id ='x'";
         				}
 				        

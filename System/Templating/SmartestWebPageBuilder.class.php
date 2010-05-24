@@ -748,7 +748,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         		    
         		    
         		}else{
-        		    echo $set->getLastQuery();
         		    $items = array();
         		}
 

@@ -182,6 +182,44 @@ class SmartestQueryResultSet{
 	
 	}
 	
+	public function getCardinality(){
+	    return count($this->_item_ids);
+	}
+	
+	public function getNumPages($page_size){
+	    
+	    $cardinality = $this->getCardinality();
+	    
+	    if($page_size > $cardinality){
+	        return 1;
+	    }else{
+	        
+	        $num_pages = 1;
+	        $c = $cardinality;
+	        
+	        while($c > $page_size){
+	            ++$num_pages;
+	            $c = $c - $page_size;
+	        }
+	        
+	        return $num_pages;
+	        
+	    }
+	    
+	}
+	
+	public function getPage($page_num, $page_size){
+	    
+	    $start = ($page_num-1) * $page_size + 1;
+	    
+	    if($start > $this->getCardinality()){
+	        return array();
+	    }else{
+	        return $this->getItems($page_size, $start);
+	    }
+	    
+	}
+	
 	public function getItems($limit=null, $start=null){
 	        
         $cardinality = 0;
