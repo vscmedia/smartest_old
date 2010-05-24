@@ -26,7 +26,7 @@ class SmartestGenericListedObject implements ArrayAccess{
                 $this->_properties['url'] = $this->_internal_object->getUrl();
                 $this->_properties['title'] = $this->_internal_object->getItem()->getName();
                 
-                if($this->_internal_object->getIsPublished()){
+                if($this->_internal_object->getItem()->getIsPublished()){
                     $this->_properties['date'] = $this->_internal_object->getItem()->getLastPublished();
                 }else{
                     $this->_properties['date'] = $this->_internal_object->getItem()->getCreated();

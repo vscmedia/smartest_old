@@ -249,7 +249,7 @@ class SmartestBaseApplication extends QuinceBase{
 	
 	final public function isWebsitePage(){
 	    
-	    return in_array($this->getRequest()->getAction(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage', 'searchDomain'));
+	    return in_array($this->getRequest()->getAction(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage', 'searchDomain', 'renderSiteTagSimpleRssFeed'));
 	    
 	}
 	
@@ -265,6 +265,7 @@ class SmartestBaseApplication extends QuinceBase{
 	        return true;
 	        
 	    }else{
+	        // This forces a not found page
 	        $this->forward('website', 'renderPage');
 	    }
 	    

@@ -112,117 +112,86 @@ class SmartestSite extends SmartestBaseSite{
 	public function getSearchResults($query){
 	    
 	    $search_query_words = preg_split('/[^\w]+/', $query);
+	    $h = new SmartestCmsItemsHelper;
 	    
 	    $pages = array();
-	    $pages_sql = "SELECT * FROM Pages WHERE page_site_id='".$this->getId()."' AND page_deleted != 'TRUE' AND page_id !='".$this->getSearchPageId()."' AND page_id !='".$this->getTagPageId()."' AND page_type='NORMAL'";
+	    $pages_sql = "SELECT Pages.* FROM Pages WHERE page_site_id='".$this->getId()."' AND page_deleted != 'TRUE' AND page_id !='".$this->getSearchPageId()."' AND page_id !='".$this->getTagPageId()."' AND page_type='NORMAL' AND page_is_published='TRUE'";
+	    $items_sql = "SELECT Items.item_id FROM Items WHERE item_site_id='".$this->getId()."' AND item_deleted=0 AND item_public='TRUE'";
 	    
 	    if(count($search_query_words) > 0){
 	        $pages_sql .= ' AND ';
-	    }
-	    
-	    foreach($search_query_words as $key=>$word){
-	        
-	        if($key > 0){
-	            $pages_sql .= "OR ";
-	        }
-	        
-	        $pages_sql .= "(page_search_field LIKE '%".$word."%' OR page_title LIKE '%".$word."%') ";
-	        
-        }
-        
-        if(count($search_query_words)){
-            $pages_result = $this->database->queryToArray($pages_sql);
-        }else{
-            $pages_result = array();
-        }
-        
-        foreach($pages_result as $array){
-            $page = new SmartestPage;
-            $page->hydrate($array);
-            $pages[] = $page;
-        }
-        
-        $items = array();
-	    $items_sql = "SELECT * FROM Items WHERE item_site_id='".$this->getId()."' AND item_deleted=0 AND item_public='TRUE'";
-	    
-	    if(count($search_query_words) > 0){
 	        $items_sql .= ' AND ';
 	    }
 	    
 	    foreach($search_query_words as $key=>$word){
 	        
 	        if($key > 0){
+	            $pages_sql .= "OR ";
 	            $items_sql .= "OR ";
 	        }
 	        
+	        $pages_sql .= "(page_search_field LIKE '%".$word."%' OR page_title LIKE '%".$word."%') ";
 	        $items_sql .= "(item_search_field LIKE '%".$word."%' OR item_name LIKE '%".$word."%') ";
 	        
         }
         
-        // echo $items_sql;
-        
         if(count($search_query_words)){
+            
+            $pages_result = $this->database->queryToArray($pages_sql);
+            
+            foreach($pages_result as $array){
+                $page = new SmartestPage;
+                $page->hydrate($array);
+                $pages[] = $page;
+            }
+            
             $items_result = $this->database->queryToArray($items_sql);
+            $ids = array();
+
+            foreach($items_result as $array){
+                $ids[] = $array['item_id'];
+            }
+            
+            $items = $h->hydrateMixedListFromIdsArray($ids);
+            
+            $master_array = array();
+            
+            foreach($pages as $p){
+
+                $key = $p->getDate();
+
+                if(in_array($key, array_keys($master_array))){
+                    while(in_array($key, array_keys($master_array))){
+                        $key++;
+                    }
+                }
+
+                $master_array[$key] = $p;
+
+            }
+
+            foreach($items as $i){
+
+                $key = $i->getDate();
+
+                if(in_array($key, array_keys($master_array))){
+                    while(in_array($key, array_keys($master_array))){
+                        $key++;
+                    }
+                }
+
+                $master_array[$key] = $i;
+
+            }
+
+            ksort($master_array);
+
+            return $master_array;
+            
         }else{
-            $items_result = array();
+            // no search terms were entered so no serch results come back
+            return array();
         }
-        
-        foreach($items_result as $array){
-            $item = new SmartestItem;
-            $item->hydrate($array);
-            $items[] = $item;
-        }
-        
-        $master_array = array();
-        
-        foreach($pages as $p){
-            
-            if($draft){
-                $key = $p->getCreated();
-            }else{
-                $key = $p->getLastPublished();
-            }
-            
-            if(in_array($key, array_keys($master_array))){
-                // $master_array[$key] = $i;
-                while(in_array($key, array_keys($master_array))){
-                    $key++;
-                }
-            }
-            
-            $master_array[$key] = $p;
-            
-        }
-        
-        foreach($items as $i){
-            
-            if($draft){
-                $key = $i->getCreated();
-            }else{
-                $key = $i->getLastPublished();
-            }
-            
-            if(in_array($key, array_keys($master_array))){
-                // $master_array[$key] = $i;
-                while(in_array($key, array_keys($master_array))){
-                    $key++;
-                }
-            }
-            
-            $master_array[$key] = $i;
-            
-        }
-        
-        ksort($master_array);
-        
-        $final_list = array();
-        
-        foreach($master_array as $thing){
-            $generic_object = new SmartestGenericListedObject($thing);
-            $final_list[] = $generic_object;
-        }
-        
-        return $final_list;
 	    
 	}
 	

@@ -8,7 +8,7 @@
 * It is also used
 */
 
-class SmartestCmsItem implements ArrayAccess{
+class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 	
 	/** 
 	* Description
@@ -207,6 +207,18 @@ class SmartestCmsItem implements ArrayAccess{
 	            
 	            case 'num_comments':
 	            return $this->getItem()->getNumApprovedPublicComments();
+	            break;
+	            
+	            case 'url':
+	            return $this->getUrl();
+	            break;
+	            
+	            case 'description':
+	            return $this->getDescription();
+	            break;
+	            
+	            case 'date':
+	            return $this->getDate();
 	            break;
 	            
 	            case 'is_published':
@@ -492,12 +504,48 @@ class SmartestCmsItem implements ArrayAccess{
 	    return $this->_came_from_database;
 	}
 	
+	// Raw data from an SQL query that retrieves both Items and ItemPropertyValues can be passed to the item via this function
+	public function hydrateFromRawDbRecord($record){
+	    if($this->isHydrated()){
+	        throw new SmartestException("Tried to hydrate an already-hydrated SmartestCmsItem object.");
+	    }else{
+	        
+	        $item = new SmartestItem;
+	        $item->hydrate(reset($record));
+	        $this->_item = $item;
+	        
+	        if($this->_model_built){
+	            foreach($this->_properties as &$p){
+	                // $p is an itempropertyvalueholder object
+	                $p->hydrateValueFromIpvArray($record[$p->getId()]);
+	            }
+	        }
+	    }
+	}
+	
 	public function getId(){
 		return $this->getItem()->getId();
 	}
 	
 	public function getName(){
 		return $this->getItem()->getName();
+	}
+	
+	// needed for compliance with SmartestGenericListedObject
+	public function getTitle(){
+	    return $this->getName();
+	}
+	
+	public function getDate(){
+	    if($this->getDraftMode()){
+            return $this->getItem()->getCreated();
+        }else{
+            return $this->getItem()->getLastPublished();
+        }
+	}
+	
+	public function getDescription(){
+	    return $this->getDescriptionFieldContents();
 	}
 	
 	public function getSlug(){
@@ -520,7 +568,7 @@ class SmartestCmsItem implements ArrayAccess{
 		return $this->_item;
 	}
 	
-	public function getUrl(){
+	public function getLinkContents(){
 	    
 	    if($this->getMetapageId()){
 	        $page_id = $this->getMetapageId();
@@ -530,8 +578,21 @@ class SmartestCmsItem implements ArrayAccess{
 	        return null;
 	    }
 	    
+	    return 'metapage:id='.$page_id.':id='.$this->getId();
+	    
+	}
+	
+	public function getLinkObject(){
+	    
+	    $link = SmartestCmsLinkHelper::createLink($this->getLinkContents(), array());
+	    return $link;
+	    
+	}
+	
+	public function getUrl(){
+	    
 	    // $link = SmartestCmsLinkHelper::createLink('metapage:id='.$page_id.':id='.$this->getId(), 'Raw Link Params: '.'metapage:id='.$page_id.':id='.$this->getId());
-	    SmartestCmsLinkHelper::createLink('metapage:id='.$page_id.':id='.$this->getId(), array());
+	    $link = $this->getLinkObject();
 	    
 	    if($link->hasError()){
 	        return '#';
@@ -582,7 +643,7 @@ class SmartestCmsItem implements ArrayAccess{
 	        if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
 	            $asset = new SmartestAsset;
 	            
-	            if($asset->hydrate($this->getPropertyValueByNumericKey($property->getId()))){
+	            if($asset = $this->getPropertyValueByNumericKey($property->getId())){
 	                // get asset content
 	                return $asset->getContent();
 	            }else{
@@ -591,11 +652,15 @@ class SmartestCmsItem implements ArrayAccess{
 	            }
 	            
 	        }else{
-	            return $this->getPropertyValueByNumericKey();
+	            return $this->getPropertyValueByNumericKey($property->getId());
 	        }
 	        
 	    }else{
-	        throw new SmartestException(sprintf("Specified model description property with ID %s is not an object.", $property_id));
+	        if($this->getModel()->getDefaultDescriptionPropertyId()){
+	            throw new SmartestException(sprintf("Specified model description property with ID '%s' is not an object.", $property_id));
+            }else{
+                SmartestLog::getInstance('system')->log("Model '".$this->getModel()->getName().'\' does not have a description property, so no description can be given in content mixture.');
+            }
 	    }
 	    
 	}

@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
+class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, SmartestGenericListedObject{
 
 	protected $_save_url = true;
 	protected $_fields_retrieval_attempted = false;
@@ -589,6 +589,30 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	    }
 	    
 	    return $filenames;
+	}
+	
+	public function getSlug(){
+	    return $this->getName();
+	}
+	
+	public function getDate(){
+	    if($this->getDraftMode()){
+            return $this->getCreated();
+        }else{
+            return $this->getLastPublished();
+        }
+	}
+	
+	public function getLinkContents(){
+	    if($this->getType() == 'ITEMCLASS'){
+	        if(is_object($this->getSimpleItem())){
+	            return 'metapage:'.$this->getName().':id='.$this->getSimpleItem()->getId();
+            }else{
+                return 'page:'.$this->getName();
+            }
+	    }else{
+	        return 'page:'.$this->getName();
+        }
 	}
 	
 	public function getDefaultUrl(){
@@ -1185,6 +1209,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	        case "fallback_url":
 	        return "website/renderPageFromId?page_id=".$this->getWebid();
 	        
+	        case 'date':
+            return $this->getDate();
+            break;
+	        
 	        case "urls":
 	        return $this->getUrls();
 	        
@@ -1195,17 +1223,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject{
 	        return $this->_properties['title'];
 	        
 	        case "link_contents":
-	        
-	        if($this->getType() == 'ITEMCLASS'){
-    	        if(is_object($this->getSimpleItem())){
-    	            return 'metapage:'.$this->getName().':id='.$this->getSimpleItem()->getId();
-                }else{
-                    return 'page:'.$this->getName();
-                }
-    	    }else{
-    	        return 'page:'.$this->getName();
-            }
-            
+	        return $this->getLinkContents();
 	        break;
 	        
 	        case "link_code":

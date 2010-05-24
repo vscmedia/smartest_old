@@ -26,6 +26,12 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		    
 		}
 		
+		/* if(!defined('SM_CMS_PAGE_SITE_ID')){
+            define('SM_CMS_PAGE_SITE_ID', $page->getSiteId());
+        } */
+        
+        // var_dump(constant('SM_CMS_PAGE_SITE_ID'));
+		
 		if(!defined('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN')){
 		    define('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN', true);
 		}
@@ -38,6 +44,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     
     public function assignPage($page){
         $this->page = $page;
+        if(!defined('SM_CMS_PAGE_SITE_ID')){
+            define('SM_CMS_PAGE_SITE_ID', $page->getSiteId());
+        }
     }
     
     public function setPageRenderingData($data){
@@ -99,6 +108,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	    $this->setDraftMode($draft_mode);
 	    
 	    $GLOBALS['CURRENT_PAGE'] = $page;
+	    
+	    if(!defined('SM_CMS_PAGE_SITE_ID')){
+            define('SM_CMS_PAGE_SITE_ID', $page->getSiteId());
+        }
 	    
 	    $this->prepareForRender();
 	    

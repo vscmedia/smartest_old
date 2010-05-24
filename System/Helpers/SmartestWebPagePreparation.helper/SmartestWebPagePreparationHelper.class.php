@@ -43,7 +43,7 @@ class SmartestWebPagePreparationHelper{
     
     public function cachedPagesAllowed(){
         
-        return (file_exists(SM_ROOT_DIR.'System/Cache/Pages/'.$this->_page->getCacheFileName()) && $this->_page->getCacheAsHtml() == "TRUE" && $this->_page->getDraftMode() == false && SM_CONTROLLER_METHOD != 'searchDomain');
+        return (file_exists(SM_ROOT_DIR.'System/Cache/Pages/'.$this->_page->getCacheFileName()) && $this->_page->getCacheAsHtml() == "TRUE" && $this->_page->getDraftMode() == false && $this->_request->getAction() != 'searchDomain');
         
     }
     

@@ -39,6 +39,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function renderPageFromUrl(){
 		
+		// var_dump($this->lookupSiteDomain());
+		
 		if($this->lookupSiteDomain()){
 		    
 		    define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
@@ -98,14 +100,14 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		    define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
 		    define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
 		    
-		    if(isset($get['tag_name'])){
+		    if($this->getRequestParameter('tag_name')){
 		        
 		        // Page is a list of tagged content, not a real page.
 		        
-		        $tag_identifier = SmartestStringHelper::toSlug($get['tag_name']);
+		        $tag_identifier = SmartestStringHelper::toSlug($this->getRequestParameter('tag_name'));
         	    $tag = new SmartestTag;
 
-        	    if($tag->hydrateBy('name', $tag_identifier)){
+        	    if($tag->findBy('name', $tag_identifier)){
         	        
         	        $tag_page_id = $this->_site->getTagPageId();
         	        
@@ -122,14 +124,14 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        
 		    }else{
     		    
-    		    $page_webid = $get['page_id'];
+    		    $page_webid = $this->getRequestParameter('page_id');
     		    
     		    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, false, $this->_site->getDomain())){
 		        
 		            // we are viewing a static page
 		            $this->renderPage();
 		        
-		        }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], false, $this->_site->getDomain())){
+		        }else if($this->getRequestParameter('item_id') && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $this->getRequestParameter('item_id'), false, $this->_site->getDomain())){
 		        
 		            // we are viewing a meta-page (based on an item from a data set)
 		            $this->renderPage();
@@ -187,18 +189,20 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	public function searchDomain($get){
 	    
 	    if($this->lookupSiteDomain()){
+	        
+	        define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+		    define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
             
-            // search pages and stuff
+            // search pages and all items
             $search_page_id = $this->_site->getSearchPageId();
 	        
             $p = new SmartestSearchPage;
-            $p->hydrate($search_page_id);
-            $p->setSearchQuery($get['q']);
             
-            $this->_page = $p;
-            $this->renderPage();
-            
-            return Quince::NODISPLAY;
+            if($p->find($search_page_id)){
+                $p->setSearchQuery($this->getRequestParameter('q'));
+                $this->_page = $p;
+                $this->renderPage();
+            }
             
         }else{
 
@@ -226,26 +230,30 @@ class CmsFrontEnd extends SmartestSystemApplication{
         
 	} */
 	
-	public function renderSiteTagSimpleRssFeed($get){
+	public function renderSiteTagSimpleRssFeed(){
+	    
+	    // var_dump($this->_site);
 	    
 	    if($this->lookupSiteDomain()){
-	    
-	        $tag_identifier = SmartestStringHelper::toSlug($get['tag_name']);
+	        
+	        define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+		    define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
+	        
+	        $tag_identifier = SmartestStringHelper::toSlug($this->getRequestParameter('tag_name'));
     	    $tag = new SmartestTag;
 	    
-    	    if($tag->hydrateBy('name', $tag_identifier)){
+    	    if($tag->findBy('name', $tag_identifier)){
     	        
     	        $objects = $tag->getObjectsOnSite($this->_site->getId(), true);
     	        
     	        $rss = new SmartestRssOutputHelper($objects);
-    	        $rss->setTitle($this->_site->getName()." - Tagged Content: ".$tag->getLabel());
+    	        $rss->setTitle($this->_site->getName()." | ".$tag->getLabel());
     	        $rss->send();
     	        
     	    }else{
+    	        // echo "page not found";
     	        $this->renderNotFoundPage();
     	    }
-    	    
-    	    return Quince::NODISPLAY;
 	    
 	    }else{
         	    

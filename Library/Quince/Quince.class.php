@@ -376,6 +376,10 @@ class QuinceRequest{
         $this->_user_action_object = $o;
     }
     
+    public function getUrlProtocol(){
+        return isset($_SERVER['HTTPS']) ? "https://" : "http://";
+    }
+    
 }
 
 // This class should be extended by the modules' main classes

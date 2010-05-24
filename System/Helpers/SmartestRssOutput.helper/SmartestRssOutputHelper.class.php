@@ -11,13 +11,12 @@ class SmartestRssOutputHelper{
     protected $_title;
     protected $_author;
     protected $_data_array = array();
+    protected $_request;
     
     public function __construct($data){
         if(is_array($data)){
             $this->_items = $data;
-            if(count($data)){
-                
-            }
+            $this->_request = SmartestPersistentObject::get('controller')->getCurrentRequest();
         }else{
             // do nothing
         }
@@ -94,7 +93,7 @@ class SmartestRssOutputHelper{
     public function addItems(){
         
         foreach($this->_items as $object){
-        
+            
             $channel = $this->_domObject->getElementsByTagName('channel')->item(0);
 	        $item = $this->_domObject->createElement("item");
 	        
@@ -111,7 +110,7 @@ class SmartestRssOutputHelper{
 	        $pubDate->appendChild($pubDate_text);
 	        
 	        $link = $this->_domObject->createElement("link");
-	        $link_text = $this->_domObject->createTextNode(QUINCE_URL_PROTOCOL.$_SERVER['HTTP_HOST'].$object->getUrl());
+	        $link_text = $this->_domObject->createTextNode($this->_request->getUrlProtocol().$_SERVER['HTTP_HOST'].$object->getUrl());
 	        $link->appendChild($link_text);
 	        
 	        $item->appendChild($title);
