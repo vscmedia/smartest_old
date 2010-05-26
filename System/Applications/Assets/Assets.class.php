@@ -787,6 +787,8 @@ class Assets extends SmartestSystemApplication{
 	            $this->send(true, 'allow_shared_toggle');
 	        }
 	        
+	        // $group->allowNonShared();
+	        
 	    }else{
 	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
 	        $this->formForward();
@@ -838,7 +840,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    if($group->find($group_id)){
 	        
-	        $this->send($group->getOptions(), 'non_members');
+	        $this->send($group->getOptions($this->getSite()->getId()), 'non_members');
 	        $this->send($group->getMembers(0, $this->getSite()->getId(), false), 'members');
 	        $this->send($group, 'group');
 	        

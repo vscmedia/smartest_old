@@ -152,15 +152,37 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
                                 // if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
 
         	                        $alh = new SmartestAssetsLibraryHelper;
-        	                        $assets = $alh->getAssetClassOptions($filter, $this->getSiteId(), 1);
-        	                        $this->_possible_values = $assets;
+        	                        $this->_possible_values = $alh->getAssetClassOptions($filter, $site_id, 1);
+        	                        // $this->_possible_values = $assets;
 
         	                    // }
 
                             }else{
                                 
+                                // var_dump($site_id);
+                                
+                                $alh = new SmartestAssetsLibraryHelper;
+                                $this->_possible_values = $alh->getAssetsByTypeCode($filter, $site_id, 1);
+                                
                                 // Assets are limited to a particular asset type, but not a placeholder type
                                 // echo "test";
+                                
+                                // $sql = $this->getForeignKeySelectSql($info, $site_id);
+        	                    // echo $sql;
+        	                    
+        	                    /* $result = $this->database->queryToArray($sql);
+        	                    $options = array();
+        	                    $class = $info['filter']['entitysource']['class'];
+        	                    
+        	                    foreach($result as $raw_array){
+	                        
+        	                        $option = new $class;
+        	                        $option->hydrate($raw_array);
+        	                        $options[] = $option;
+                        
+        	                    }
+	                    
+        	                    $this->_possible_values = $options; */
                                 
                             }
                             
@@ -178,33 +200,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	                        
 	                        if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE' || !isset($info['filter']['optionsettype'][$this->getOptionSetType()])){
 	                
-        	                    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE 1=1";
-        	                    
-        	                    if($filter && $info['filter']['entitysource']['matchfield']){
-        	                        $sql .= " AND ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";
-        	                    }
-	                    
-        	                    if($site_id && $info['filter']['entitysource']['sitefield']){
-        	                        if($info['filter']['entitysource']['sharedfield']){
-        	                            $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
-    	                            }else{
-    	                                $sql .= " AND ".$info['filter']['entitysource']['sitefield']."='".$site_id."'";
-    	                            }
-        	                    }
-    	                    
-        	                    if(isset($info['filter']['condition'])){
-	                            
-    	                            foreach($info['filter']['condition'] as $condition){
-    	                                $sql .= ' AND '.$this->convertFieldCondition($condition);
-    	                            }
-	                            
-                                }
-	                    
-        	                    if(isset($info['filter']['entitysource']['sortfield'])){
-        	                        $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
-        	                    }
-        	                    
-        	                    // echo $sql;
+        	                    $sql = $this->getForeignKeySelectSql($info, $site_id);
                                 
                                 $result = $this->database->queryToArray($sql);
         	                    $options = array();
@@ -291,6 +287,38 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    }
 	    
 	    return $arrays;
+	    
+	}
+	
+	public function getForeignKeySelectSql($info, $site_id=null){
+	    
+	    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE 1=1";
+        
+        if($filter && $info['filter']['entitysource']['matchfield']){
+            $sql .= " AND ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";
+        }
+
+        if($site_id && $info['filter']['entitysource']['sitefield']){
+            if($info['filter']['entitysource']['sharedfield']){
+                $sql .= " AND (".$info['filter']['entitysource']['sitefield']."='".$site_id."' OR ".$info['filter']['entitysource']['sharedfield']."='1')";
+            }else{
+                $sql .= " AND ".$info['filter']['entitysource']['sitefield']."='".$site_id."'";
+            }
+        }
+    
+        if(isset($info['filter']['condition'])){
+        
+            foreach($info['filter']['condition'] as $condition){
+                $sql .= ' AND '.$this->convertFieldCondition($condition);
+            }
+        
+        }
+
+        if(isset($info['filter']['entitysource']['sortfield'])){
+            $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
+        }
+        
+        return $sql;
 	    
 	}
 	

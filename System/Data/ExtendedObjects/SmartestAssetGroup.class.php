@@ -110,18 +110,18 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
         
     }
     
-    public function getOptions(){
+    public function getOptions($site_id=''){
         
         $member_ids = $this->getMemberIds();
         $alh = new SmartestAssetsLibraryHelper;
         
         // only gets non-archived assets
         if($this->getFilterType() == 'SM_SET_FILTERTYPE_NONE'){
-            $options = $alh->getAssets($this->getSiteId(), 1, $member_ids, true); 
+            $options = $alh->getAssets($site_id, 1, $member_ids, true); 
         }else if($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETCLASS'){
-            $options = $alh->getAssetClassOptions($this->getFiltervalue(), $this->getSiteId(), 1, $member_ids);
+            $options = $alh->getAssetClassOptions($this->getFiltervalue(), $site_id, 1, $member_ids);
         }else if($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETTYPE'){
-            $options = $alh->getAssetsByTypeCode($this->getFiltervalue(), $this->getSiteId(), 1, $member_ids);
+            $options = $alh->getAssetsByTypeCode($this->getFiltervalue(), $site_id, 1, $member_ids);
         }
         
         return $options;
@@ -224,6 +224,13 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
     
     public function isUsedForPlaceholders(){
         return (bool) count($this->getPlaceholdersWhereUsed());
+    }
+    
+    public function allowNonShared(){
+        
+        $sql = "SELECT ItemClasses.*, ItemProperties.*, Sets.set_id FROM Sets, ItemProperties, ItemClasses WHERE ItemClasses.itemclass_shared='1' AND ItemProperties.itemproperty_itemclass_id=ItemClasses.itemclass_id AND Sets.set_type='SM_SET_ASSETGROUP' AND ItemProperties.itemproperty_option_set_type='SM_PROPERTY_FILTERTYPE_ASSETGROUP' AND ItemProperties.itemproperty_option_set_id=Sets.set_id AND Sets.set_id='".$this->getId()."'";
+        echo $sql;
+        
     }
     
     public function offsetGet($offset){

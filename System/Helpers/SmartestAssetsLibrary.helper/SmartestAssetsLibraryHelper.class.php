@@ -378,7 +378,7 @@ class SmartestAssetsLibraryHelper{
 	        $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared='1')";
 	    }
 	    
-	    $sql .= " AND asset_type IN ('".implode("', '", $attachable_type_codes)."') ORDER BY asset_stringid";
+	    $sql .= " AND asset_type IN ('".implode("', '", $attachable_type_codes)."') ORDER BY asset_label, asset_url";
 	    
 	    $result = $this->database->queryToArray($sql);
 	    
@@ -427,7 +427,7 @@ class SmartestAssetsLibraryHelper{
 	    }
 	    
 	    if(is_numeric($site_id)){
-		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_stringid";
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_url";
 		}
 		
 		$result = $this->database->queryToArray($sql);
@@ -474,7 +474,7 @@ class SmartestAssetsLibraryHelper{
 	    }
 	    
 	    if(is_numeric($site_id)){
-		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_stringid";
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_url";
 		}
 		
 		$result = $this->database->queryToArray($sql);
