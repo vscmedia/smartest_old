@@ -1,6 +1,6 @@
 <?php
 
-class SmartestManyToManyQueryForeignTableConstraintGroup{
+class SmartestManyToManyQueryForeignTableConstraintGroup implements SmartestManyToManyQueryForeignTableConstraintApi{
     
     protected $_constraints = array();
     protected $_operator = 'OR';
@@ -26,6 +26,7 @@ class SmartestManyToManyQueryForeignTableConstraintGroup{
             }
             
             $sql .= $c->getSql();
+            ++$i;
         }
         
         $sql .= ')';

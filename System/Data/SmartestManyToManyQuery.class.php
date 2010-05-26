@@ -164,6 +164,20 @@ class SmartestManyToManyQuery{
         $this->_foreignTableConstraints[] = $c;
     }
     
+    public function addForeignTableOrConstraints(){
+        
+        $constraints = func_get_args();
+        $group = new SmartestManyToManyQueryForeignTableConstraintGroup;
+        
+        foreach($constraints as $c){
+            $operator = isset($c['operator']) ? $c['operator'] : 0;
+            $group->addConstraint($c['field'], $c['value'], $operator);
+        }
+        
+        $this->_foreignTableConstraints[] = $group;
+        
+    }
+    
     public function clearForeignTableConstraints(){
         $this->_foreignTableConstraints = array();
     }

@@ -1,6 +1,6 @@
 <?php
 
-class SmartestManyToManyQueryForeignTableConstraint{
+class SmartestManyToManyQueryForeignTableConstraint implements SmartestManyToManyQueryForeignTableConstraintApi{
     
     protected $_field;
     protected $_value;

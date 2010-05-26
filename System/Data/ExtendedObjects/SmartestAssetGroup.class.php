@@ -40,7 +40,10 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
 	    }
 	    
 	    if(is_numeric($site_id)){
-	        $q->addForeignTableOrConstraints(array('field'=>'Assets.asset_site_id', 'value'=>$site_id));
+	        $q->addForeignTableOrConstraints(
+	            array('field'=>'Assets.asset_site_id', 'value'=>$site_id),
+	            array('field'=>'Assets.asset_shared', 'value'=>'1')
+	        );
 	    }
 	    
 	    $q->addSortField(SM_MTM_SORT_GROUP_ORDER);
@@ -48,6 +51,8 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
 	    if($approved_only){
 	        $q->addForeignTableConstraint('Asset.asset_is_approved', 'TRUE');
 	    }
+	    
+	    $q->addSortField('Assets.asset_label');
     
         $result = $q->retrieve(true);
         
@@ -55,13 +60,13 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
         
     }
     
-    public function getMemberIds($refresh=false, $mode=1){
+    public function getMemberIds($mode=1, $site_id='', $refresh=false){
         
         if($refresh || !count($this->_member_ids)){
         
             $ids = array();
         
-            foreach($this->getMemberShips($refresh, $mode) as $m){
+            foreach($this->getMemberShips($mode) as $m){
                 $ids[] = $m->getAssetId();
             }
             
@@ -178,7 +183,7 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
         
         $id = (int) $id;
         
-        if(in_array($id, $this->getMemberIds())){
+        if(in_array($id, $this->getMemberIds(0, null))){
             
             $sql = "DELETE FROM ManyToManyLookups WHERE mtmlookup_type='SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP' AND mtmlookup_entity_1_foreignkey='".$id."' AND mtmlookup_entity_2_foreignkey='".$this->getId()."' LIMIT 1";
             $this->database->rawQuery($sql);
