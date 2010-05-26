@@ -28,4 +28,8 @@ class SmartestManyToManyQueryForeignTableConstraint{
         return $this->_operator;
     }
     
+    public function getSql(){
+        return $this->getField().SmartestManyToManyHelper::convertOperatorConstant($this->getOperator(), $this->getValue());
+    }
+    
 }

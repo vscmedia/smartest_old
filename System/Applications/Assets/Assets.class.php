@@ -759,10 +759,10 @@ class Assets extends SmartestSystemApplication{
 	    
 	    if($group->find($group_id)){
 	        
-	        $this->send($group->getMembers(false, $mode), 'assets');
+	        $this->send($group->getMembers($mode, $this->getSite()->getId(), false), 'assets');
 	        $this->send($group, 'group');
 	        $this->send($mode, 'mode');
-	        $this->send(count($group->getMembers(false, $mode)), 'num_assets');
+	        $this->send(count($group->getMembers($mode, $this->getSite()->getId(), false)), 'num_assets');
 	        
 	    }
 	    
@@ -839,7 +839,7 @@ class Assets extends SmartestSystemApplication{
 	    if($group->find($group_id)){
 	        
 	        $this->send($group->getOptions(), 'non_members');
-	        $this->send($group->getMembers(), 'members');
+	        $this->send($group->getMembers(0, $this->getSite()->getId(), false), 'members');
 	        $this->send($group, 'group');
 	        
 	    }

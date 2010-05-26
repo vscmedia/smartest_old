@@ -529,7 +529,7 @@ class SmartestAssetsLibraryHelper{
 	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
 	    
 	    if(is_numeric($site_id)){
-	        $sql .= " AND set_site_id='".$site_id."'";
+	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared=1)";
 	    }
 	    
 	    $sql .= " ORDER BY set_name";

@@ -83,6 +83,8 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	
 	public function getPossibleValues(){
 	    
+	    // echo "test";
+	    
 	    if($this->_possible_values_retrieval_attempted){
 	    
 	        return $this->_possible_values;
@@ -94,41 +96,32 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	            $info = $this->getTypeInfo();
 	            $filter = $this->getForeignKeyFilter();
 	            // echo $filter.' ';
+	            // echo $this->getOptionSetType();
 	            
 	            if($info['filter']['entitysource']['type'] == 'db'){
 	                
-	                if($this->getDatatype() == 'SM_DATATYPE_ASSET' && substr($filter, 0, 13) == 'SM_ASSETCLASS'){
+	                if($this->getDatatype() == 'SM_DATATYPE_ASSET'){
 	                    
-	                    if(is_object($this->getSite())){
-    	                    $site_id = $this->getSite()->getId();
-    	                }
-	                    
-	                    if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
-	                        
-	                        $alh = new SmartestAssetsLibraryHelper;
-	                        $assets = $alh->getAssetClassOptions($filter, $this->getSiteId(), 1);
-	                        $this->_possible_values = $assets;
-	                        
-	                    }else if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_ASSETGROUP'){
+	                    if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_ASSETGROUP'){
 	                        
 	                        $group = new SmartestAssetGroup;
-	                        
+                        
 	                        if($group->find($this->getOptionSetId())){
 	                            
-	                            if(!$group->getShared() && $group->getSiteId() != $this->getCurrentSiteId()){
-	                                $group->setShared(1);
-	                                $group->save();
-	                            }
-	                            
-	                            $assets = $group->getMembers();
-	                            $this->_possible_values = $assets;
 	                            $this->_option_set = $group;
 	                            
-	                        }else{
-	                            
-	                            // the nominated set no longer exists, so get rid of the reference to it and just load all files
-	                            
-	                            SmartestLog::getInstance('system')->log("The file group of ID ".$this->getFilterValue()." that is used as a filter for item property {$this->getName()} can no longer be found. This property has been set back to allow all files of the appropriate type.");
+	                            if(!$group->getShared() && $group->getSiteId() != $this->getCurrentSiteId()){
+                                    $group->setShared(1);
+                                    $group->save();
+                                }
+                                
+                                $this->_possible_values = $this->_option_set->getMembers(1, $this->getCurrentSiteId(), false);
+                            
+                            }else{
+                                
+                                // the nominated group no longer exists, so get rid of the reference to it and just load all files
+                                
+                                SmartestLog::getInstance('system')->log("The file group of ID ".$this->getFilterValue()." that is used as a filter for item property {$this->getName()} can no longer be found. This property has been set back to allow all files of the appropriate type.");
                                 $prop = $this->copy();
 
                                 $this->_properties['option_set_id'] = '';
@@ -137,16 +130,43 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
                                 $prop->seOptionSetId('');
                                 $prop->seOptionSetType('SM_PROPERTY_FILTERTYPE_NONE');
                                 $prop->save();
-	                            
-	                            $alh = new SmartestAssetsLibraryHelper;
+                                
+                                $alh = new SmartestAssetsLibraryHelper;
     	                        $assets = $alh->getAssetClassOptions($filter, $this->getSiteId(), 1);
     	                        $this->_possible_values = $assets;
-    	                        
-	                        }
-	                        
-	                    }
+                                
+                            }
+                        
+                        }else{
+                            
+                            // Assets are limited by type, but not by a specific group
+                            
+                            if(is_object($this->getSite())){
+        	                    $site_id = $this->getSite()->getId();
+        	                }
+                            
+                            if(substr($filter, 0, 13) == 'SM_ASSETCLASS'){
+                                
+                                // Assets are limited to a placeholder type, so multiple asset types
+                                
+                                // if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
+
+        	                        $alh = new SmartestAssetsLibraryHelper;
+        	                        $assets = $alh->getAssetClassOptions($filter, $this->getSiteId(), 1);
+        	                        $this->_possible_values = $assets;
+
+        	                    // }
+
+                            }else{
+                                
+                                // Assets are limited to a particular asset type, but not a placeholder type
+                                // echo "test";
+                                
+                            }
+                            
+                        }
 	                    
-	                }else{
+	                }else{ // Values are DB based, but not assets
 	                
     	                if(is_object($this->getSite())){
     	                    $site_id = $this->getSite()->getId();

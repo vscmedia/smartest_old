@@ -109,5 +109,42 @@ class SmartestManyToManyHelper{
         $l->save();
         
     }
+    
+    public static function convertOperatorConstant($c, $value){
+        switch($c){
+
+		    case 0:
+			return " ='".$value."'";
+			break;
+
+			case 1:
+			return " != '".$value."'";
+			break;
+
+			case 2:
+			return " LIKE '%".$value."%'";
+			break;
+
+			case 3:
+			return " NOT LIKE '%".$value."%'";
+			break;
+
+			case 4:
+			return " LIKE '".$value."%'";
+			break;
+
+			case 5:
+			return " LIKE '%".$value."'";
+			break;
+		
+			case 6:
+			return " > '".$value."'";
+			break;
+		
+			case 7:
+			return " < '".$value."'";
+			break;
+        }
+    }
         
 }

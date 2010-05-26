@@ -242,7 +242,7 @@ class SmartestManyToManyQuery{
             // observe foreign table constraints
             if(count($this->_foreignTableConstraints)){
                 foreach($this->_foreignTableConstraints as $ftc){
-                    $qf = ' AND '.$ftc->getField().''.$this->convertOperatorConstant($ftc->getOperator(), $ftc->getValue());
+                    $qf = ' AND '.$ftc->getSql();
                     $query .= $qf;
                 }
             }
@@ -294,7 +294,7 @@ class SmartestManyToManyQuery{
             // observe foreign table constraints
             if(count($this->_foreignTableConstraints)){
                 foreach($this->_foreignTableConstraints as $ftc){
-                    $qf = ' AND '.$ftc->getField().''.$this->convertOperatorConstant($ftc->getOperator(), $ftc->getValue());
+                    $qf = ' AND '.$ftc->getSql();
                     $query .= $qf;
                 }
             }
@@ -401,43 +401,6 @@ class SmartestManyToManyQuery{
         
         return $objects;
         
-    }
-    
-    protected function convertOperatorConstant($c, $value){
-        switch($c){
-
-		    case 0:
-			return "='".$value."'";
-			break;
-
-			case 1:
-			return " != '".$value."'";
-			break;
-
-			case 2:
-			return " LIKE '%".$value."%'";
-			break;
-
-			case 3:
-			return " NOT LIKE '%".$value."%'";
-			break;
-
-			case 4:
-			return " LIKE '".$value."%'";
-			break;
-
-			case 5:
-			return " LIKE '%".$value."'";
-			break;
-		
-			case 6:
-			return " > '".$value."'";
-			break;
-		
-			case 7:
-			return " < '".$value."'";
-			break;
-        }
     }
     
 }

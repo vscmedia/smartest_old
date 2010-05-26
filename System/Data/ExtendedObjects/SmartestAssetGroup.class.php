@@ -6,11 +6,11 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
         $this->_membership_type = 'SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP';
     }
     
-    public function getMembers($refresh=false, $mode=1){
+    public function getMembers($mode=1, $site_id='', $refresh=false){
         
         if($refresh || !count($this->_members)){
         
-            $memberships = $this->getMemberShips($refresh, $mode);
+            $memberships = $this->getMemberShips($mode, $site_id, $refresh);
 	        
 	        $assets = array();
 	        
@@ -26,7 +26,7 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
         
     }
     
-    public function getMemberships($refresh=false, $mode=1, $approved_only=false){
+    public function getMemberships($mode=1, $site_id='', $refresh=false, $approved_only=false){
         
         $q = new SmartestManyToManyQuery($this->_membership_type);
         $q->setTargetEntityByIndex(1);
@@ -37,6 +37,10 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
 	        $q->addForeignTableConstraint('Assets.asset_is_archived', '0');
 	    }else if($mode == 2){
 	        $q->addForeignTableConstraint('Assets.asset_is_archived', '1');
+	    }
+	    
+	    if(is_numeric($site_id)){
+	        $q->addForeignTableOrConstraints(array('field'=>'Assets.asset_site_id', 'value'=>$site_id));
 	    }
 	    
 	    $q->addSortField(SM_MTM_SORT_GROUP_ORDER);
