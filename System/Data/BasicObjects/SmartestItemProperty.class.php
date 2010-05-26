@@ -83,8 +83,6 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	
 	public function getPossibleValues(){
 	    
-	    // echo "test";
-	    
 	    if($this->_possible_values_retrieval_attempted){
 	    
 	        return $this->_possible_values;
@@ -95,8 +93,6 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	            
 	            $info = $this->getTypeInfo();
 	            $filter = $this->getForeignKeyFilter();
-	            // echo $filter.' ';
-	            // echo $this->getOptionSetType();
 	            
 	            if($info['filter']['entitysource']['type'] == 'db'){
 	                
@@ -153,36 +149,13 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 
         	                        $alh = new SmartestAssetsLibraryHelper;
         	                        $this->_possible_values = $alh->getAssetClassOptions($filter, $site_id, 1);
-        	                        // $this->_possible_values = $assets;
 
         	                    // }
 
                             }else{
                                 
-                                // var_dump($site_id);
-                                
                                 $alh = new SmartestAssetsLibraryHelper;
                                 $this->_possible_values = $alh->getAssetsByTypeCode($filter, $site_id, 1);
-                                
-                                // Assets are limited to a particular asset type, but not a placeholder type
-                                // echo "test";
-                                
-                                // $sql = $this->getForeignKeySelectSql($info, $site_id);
-        	                    // echo $sql;
-        	                    
-        	                    /* $result = $this->database->queryToArray($sql);
-        	                    $options = array();
-        	                    $class = $info['filter']['entitysource']['class'];
-        	                    
-        	                    foreach($result as $raw_array){
-	                        
-        	                        $option = new $class;
-        	                        $option->hydrate($raw_array);
-        	                        $options[] = $option;
-                        
-        	                    }
-	                    
-        	                    $this->_possible_values = $options; */
                                 
                             }
                             
@@ -200,7 +173,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	                        
 	                        if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE' || !isset($info['filter']['optionsettype'][$this->getOptionSetType()])){
 	                
-        	                    $sql = $this->getForeignKeySelectSql($info, $site_id);
+        	                    $sql = $this->getForeignKeySelectSql($info, $filter, $site_id);
                                 
                                 $result = $this->database->queryToArray($sql);
         	                    $options = array();
@@ -290,7 +263,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    
 	}
 	
-	public function getForeignKeySelectSql($info, $site_id=null){
+	public function getForeignKeySelectSql($info, $filter, $site_id=null){
 	    
 	    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE 1=1";
         
