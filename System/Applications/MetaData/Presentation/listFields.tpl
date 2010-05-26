@@ -10,7 +10,7 @@
 
 <ul class="options-grid" id="tree-root">
        {foreach from=$fields item="element" }
-    <li >
+    <li>
        <a id="item_{$element.pageproperty_id}" class="option" href="#" onclick="setSelectedItem('{$element.pageproperty_id}','{$element.pageproperty_name}');" ondblclick="workWithItem('viewPageFieldDefinitions')">		 
         <img border="0" src="{$domain}Resources/Icons/page_code.png" />
         {$element.pageproperty_name}

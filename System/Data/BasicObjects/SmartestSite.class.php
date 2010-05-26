@@ -185,6 +185,8 @@ class SmartestSite extends SmartestBaseSite{
             }
 
             ksort($master_array);
+            
+            // print_r($this->database->getDebugInfo());
 
             return $master_array;
             

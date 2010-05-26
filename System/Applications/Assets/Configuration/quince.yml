@@ -4,10 +4,15 @@ module:
   identifier: com.smartest.FileManager
   longname: Files repository 
   default_action: getAssetTypes
+  aliases:
+    - {url: /smartest/files, action: getAssetTypes}
   routes:
     home:
       action: getAssetTypes
       url: /smartest/assets
+    groups:
+      action: assetGroups
+      url: /smartest/assets/groups
     ajax_full_text_search:
       action: fullTextSearchResults
       url: /smartest/assets/:asset_type/full_text_search

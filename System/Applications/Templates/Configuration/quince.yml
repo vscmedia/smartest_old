@@ -8,6 +8,9 @@ module:
     home:
       action: startPage
       url: /smartest/templates
+    template_type:
+      action: listByType
+      url: /smartest/templates/:type
   meta:
     system: true
     author: Marcus Gilroy-Ware

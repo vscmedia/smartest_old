@@ -4,15 +4,25 @@ module:
   identifier: com.smartest.CmsFrontEnd
   longname: Page renderer
   default_action: renderPageFromUrl
-  aliases:
-    - {url: /search, action: searchDomain}
   routes:
     tag_page:
       url: /tags/:tag_name.html
       action: renderPageFromId
-      params: {tag: true}
+      params:
+        tag: true
     tag_feed:
       url: /tags/:tag_name/feed
       action: renderSiteTagSimpleRssFeed
+    search_all:
+      url: /search
+      action: searchDomain
+    search_model:
+      url: /search/:model_plural_name
+      action: searchDomain
+      params:
+        model_specific: true
+    feed:
+      url: /feeds/:set_name/rss
+      action: getDataSetRssFeed
   meta:
     system: true

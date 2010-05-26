@@ -30,7 +30,7 @@
         	<ul class="options-list" id="options">
 
 {foreach from=$dropdown.options key=key item="option"}
-         	  <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/editDropDownValue?drop_down={$dropdown_details.id}&amp;drop_down_value_id={$option.id}'">
+         	  <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/editDropDownValue?drop_down={$dropdown.id}&amp;dropdown_value_id={$option.id}'">
          	    <a class="option" id="item_{$option.id}" onclick="setSelectedItem('{$option.id}', '', 'value');" >
                   <img border="0" src="{$domain}Resources/Icons/package.png"> {$option.label}</a></li>
 {/foreach}

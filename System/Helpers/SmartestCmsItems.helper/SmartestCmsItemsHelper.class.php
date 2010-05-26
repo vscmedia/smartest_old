@@ -50,6 +50,8 @@ class SmartestCmsItemsHelper{
             
         }
         
+        // print_r($this->database->getDebugInfo());
+        
         return $items;
         
     }

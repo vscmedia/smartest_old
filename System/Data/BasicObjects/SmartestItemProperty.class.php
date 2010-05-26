@@ -115,6 +115,11 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	                        
 	                        if($group->find($this->getOptionSetId())){
 	                            
+	                            if(!$group->getShared() && $group->getSiteId() != $this->getCurrentSiteId()){
+	                                $group->setShared(1);
+	                                $group->save();
+	                            }
+	                            
 	                            $assets = $group->getMembers();
 	                            $this->_possible_values = $assets;
 	                            $this->_option_set = $group;

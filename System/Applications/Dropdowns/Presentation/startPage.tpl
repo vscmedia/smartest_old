@@ -12,7 +12,7 @@
 
 <ul class="{if $count > 10}options-list{else}options-grid{/if}" id="{if $count > 10}options_list{else}options_grid{/if}">
 {foreach from=$dropdowns key=key item=dropdown}
-  <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/dropdownInfo?dropdown_id={$dropdown.dropdown_id}'">
+  <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/editValues?dropdown_id={$dropdown.id}'">
     <a class="option" id="item_{$dropdown.id}" onclick="setSelectedItem('{$dropdown.id}');" >
       <img border="0" src="{$domain}Resources/Icons/package.png" />{$dropdown.dropdown_label}</a></li>
 {/foreach}

@@ -21,9 +21,14 @@ class MetaData extends SmartestSystemApplication{
 		
 		$site_id = $this->getSite()->getId();
 		
-		$sql = "SELECT * FROM PageProperties WHERE pageproperty_site_id ='$site_id' ";
-		$fields = $this->database->queryToArray($sql);
-		return array("fields"=>$fields, "site_id"=>$site_id);
+		$sql = "SELECT * FROM PageProperties WHERE pageproperty_site_id ='$site_id'";
+		$database = SmartestDatabase::getInstance('SMARTEST');
+		$fields = $database->queryToArray($sql);
+		
+		$this->send($fields, 'fields');
+		$this->send($site_id, 'site_id');
+		
+		// return array("fields"=>$fields, "site_id"=>$site_id);
 		
 	}
 	
