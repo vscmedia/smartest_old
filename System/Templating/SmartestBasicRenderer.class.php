@@ -179,6 +179,8 @@ class SmartestBasicRenderer extends SmartestEngine{
                         }
                     }
                     
+                    $content = str_replace('{sm}', $this->renderSmartestCreditButton(), $content);
+                    
                 }else{
                     
                     ob_start();
@@ -244,5 +246,12 @@ class SmartestBasicRenderer extends SmartestEngine{
         return $html;
         
     }
+    
+    public function renderSmartestCreditButton(){
+	    
+	    $target = $this->getDraftMode() ? ' target="_blank"' : '';
+	    return "<a href=\"http://sma.rte.st/?ref=scb\" title=\"Powered by Smartest\"".$target."><img src=\"".$this->_request_data->g('domain')."Resources/System/Images/smartest_credit_button.png\" alt=\"Powered by Smartest\" style=\"border:0px\" /></a>";
+	    
+	}
     
 }
