@@ -408,6 +408,9 @@ class SmartestResponse{
 		
 		SmartestPersistentObject::set('presentationLayer', $this->_smarty);
 		
+		$cth = 'Content-Type: '.$this->_controller->getCurrentRequest()->getContentType().'; charset='.$this->_controller->getCurrentRequest()->getCharSet();
+	    header($cth);
+		
 		// Push controller and execute the user action
 		try{
 		    $this->_controller->dispatch(Quince::CURRENT_URL, false);
@@ -545,7 +548,7 @@ class SmartestResponse{
 			$this->_main_template = SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_templateNotFound.tpl";
 		}
 		
-		$this->_smarty->assign("template", $this->_main_template);
+		// $this->_smarty->assign("template", $this->_main_template);
 		$this->_smarty->assign("sm_app_templates_dir", SM_SYSTEM_APP_TEMPLATES_DIR);
 		$this->_smarty->assign("sm_navigation", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/navigation.tpl");
 		$this->_smarty->assign("sm_header", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/header.tpl");
@@ -556,8 +559,6 @@ class SmartestResponse{
 	
 	public function finish(){
 	    
-	    $cth = 'Content-Type: '.$this->_controller->getCurrentRequest()->getContentType().'; charset='.$this->_controller->getCurrentRequest()->getCharSet();
-	    header($cth);
 	    echo $this->fetch();
 	    exit;
 	    

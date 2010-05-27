@@ -50,7 +50,7 @@ function toggleParamsHolder(){
       <select name="chosen_asset_id" onchange="$('file_chooser').submit()">
         {if !$valid_definition}<option value="">None Selected</option>{/if}
         {foreach from=$assets item="available_asset"}
-          <option value="{$available_asset.id}"{if $available_asset.id==$asset.id} selected="selected"{/if}>{if $available_asset.id==$live_asset_id}* {/if}{if $available_asset.url}{$available_asset.url}{else}{$available_asset.stringid}{/if}</option>
+          <option value="{$available_asset.id}"{if $available_asset.id==$asset.id} selected="selected"{/if}>{if $available_asset.id==$live_asset_id}* {/if}{$available_asset.label}</option>
         {/foreach}
       </select>
       

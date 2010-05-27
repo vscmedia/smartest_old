@@ -6,11 +6,11 @@ class Templates extends SmartestSystemApplication{
 
 	private $AssetsManager;
 	
-	function __moduleConstruct(){
+	/* function __moduleConstruct(){
 	    
 		$this->AssetsManager = new AssetsManager();
 		
-	}
+	} */
 	
 	public function startPage(){          	
 		
