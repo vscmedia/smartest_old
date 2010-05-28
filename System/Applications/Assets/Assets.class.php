@@ -392,6 +392,7 @@ class Assets extends SmartestSystemApplication{
     		    $asset->setType($asset_type);
     		    $asset->setSiteId($this->getSite()->getId());
     		    $shared = $this->getRequestParameter('asset_shared') ? 1 : 0;
+		    $asset->setLabel($this->getRequestParameter('string_id'));
     		    $asset->setShared($shared);
     		    $asset->setUserId($this->getUser()->getId());
     		    $asset->setCreated(time());
