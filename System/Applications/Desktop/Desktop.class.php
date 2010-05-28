@@ -152,14 +152,14 @@ class Desktop extends SmartestSystemApplication{
 	    
 	    try{
 	        $site = $sch->createNewSite($p);
+	        $this->openSite(array('site_id'=>$site->getId()));
+	        $this->getUser()->reloadTokens();
+	        $this->addUserMessageToNextRequest("The site has successfully been created. You must now log out and back in again to start editing.", SmartestUserMessage::SUCCESS);
 	    }catch(SmartestException $e){
-	        
+	        throw $e;
 	    }
 	    
-	    $this->openSite(array('site_id'=>$site->getId()));
-	    $this->getUser()->reloadTokens();
-		$this->addUserMessageToNextRequest("The site has successfully been created. You must now log out and back in again to start editing.", SmartestUserMessage::SUCCESS);
-		$this->redirect("/smartest");
+	    $this->redirect("/smartest");
 	    
 	}
 	

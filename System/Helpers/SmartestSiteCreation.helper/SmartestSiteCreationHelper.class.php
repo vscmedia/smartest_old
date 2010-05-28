@@ -6,8 +6,8 @@ class SmartestSiteCreationHelper{
         
         if($initial_user instanceof SmartestUser){
             $u = $initial_user;
-        }else if(SmartestPersistentObject::get('user') instanceof SmartestUser){
-            $u = SmartestPersistentObject::get('user');
+        }else if(SmartestSession::get('user') instanceof SmartestUser){
+            $u = SmartestSession::get('user');
         }else{
             SmartestLog::getInstance('system')->log("Could not create new site without valid user. None given.", SM_LOG_ERROR);
             throw new SmartestException("Tried to create site without logged in user or valid user object");

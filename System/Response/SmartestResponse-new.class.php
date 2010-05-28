@@ -190,13 +190,13 @@ class SmartestResponse{
         }
         
         try{
-		    $sh->checkWritablePermissions();
+		    $sh->checkRequiredFilesExist();
 		}catch(SmartestException $e){
 		    $this->_error_stack->recordError($e, false);
 		}
-		
-		try{
-		    $sh->checkRequiredFilesExist();
+        
+        try{
+		    $sh->checkWritablePermissions();
 		}catch(SmartestException $e){
 		    $this->_error_stack->recordError($e, false);
 		}
@@ -416,6 +416,8 @@ class SmartestResponse{
 		    $this->_controller->dispatch(Quince::CURRENT_URL, false);
 		}catch(QuinceException $e){
 		    $this->errorFromException(new SmartestException('Quince error: '.$e->getMessage()));
+		}catch(SmartestException $e){
+		    $this->errorFromException($e);
 		}
 		
 		SmartestPersistentObject::get('timing_data')->setParameter('overhead_time', microtime(true));

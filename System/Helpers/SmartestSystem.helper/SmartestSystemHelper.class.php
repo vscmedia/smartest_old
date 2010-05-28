@@ -135,7 +135,7 @@ class SmartestSystemHelper{
 	public function checkRequiredFilesExist(){
 		
 		$needed_files = array(
-			"Main Controller XML" => SM_ROOT_DIR."Configuration/controller.xml",
+			"System Information File" => SM_ROOT_DIR."System/Core/Info/system.yml",
 			"Database Configuration File" => SM_ROOT_DIR."Configuration/database.ini"
 		);
 		
