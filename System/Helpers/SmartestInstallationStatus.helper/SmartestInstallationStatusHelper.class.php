@@ -193,6 +193,7 @@ class SmartestInstallationStatusHelper{
                 	    if(!is_file($site_dir.'Configuration/site.yml')){file_put_contents($site_dir.'Configuration/site.yml', '');}
                 	    if(!is_dir($site_dir.'Library')){mkdir($site_dir.'Library');}
                 	    if(!is_dir($site_dir.'Library/Actions')){mkdir($site_dir.'Library/Actions');}
+                	    if(!is_dir($site_dir.'Library/Actions')){mkdir($site_dir.'Library/ObjectModel');}
                 	    $actions_class_name = SmartestStringHelper::toCamelCase($sitename).'Actions';
                 	    $class_file_contents = file_get_contents(SM_ROOT_DIR.'System/Base/ClassTemplates/SiteActions.class.php.txt');
                 	    $class_file_contents = str_replace('__TIMESTAMP__', time('Y-m-d h:i:s'), $class_file_contents);

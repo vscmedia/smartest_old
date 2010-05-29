@@ -14,7 +14,9 @@ class SmartestInstaller{
     protected $_exception;
     
     public function __construct(){
-        
+        if(!ini_get('date.timezone')){
+            date_default_timezone_set('Europe/London');
+        }
     }
     
     public function getStage(SmartestNotInstalledException $e){
