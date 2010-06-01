@@ -36,6 +36,11 @@
 
 <div class="menubar">
   <a href="{dud_link}" onclick="actionsMenu.toggleVisibility();" class="js-menu-activator" id="actions-menu-activator">Actions</a> {*<a href="javascript:showPreview()">Show</a>*}
+{if !empty($stylesheets)}
+  {foreach from=$stylesheets item="stylesheet"}
+  <a href="{$stylesheet.action_url}"><img src="{$stylesheet.small_icon}" />&nbsp;{$stylesheet.label}</a>
+  {/foreach}
+{/if}
 </div>
 
 <div id="preview-actions-menu" class="js-menu" style="display:none">
@@ -54,7 +59,7 @@
 </div>
 
 <div id="preview-slow" style="padding-top:50px;text-align:center;display:none">
-    <p>Sorry for the wait. Just a bit longer...</p>
+    <p>Sorry for the wait. Just a bit longer... <a href="javascript:showPreview()">Show now</a></p>
     <p><img src="{$domain}Resources/System/Images/smartest_working.gif" /></p>
 </div>
 

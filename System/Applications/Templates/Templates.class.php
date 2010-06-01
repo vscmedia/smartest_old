@@ -629,6 +629,7 @@ class Templates extends SmartestSystemApplication{
         		$title = 'Edit '.$type['label'];
         		$this->send($type, 'type_info');
         		$this->send($template->IsConvertable(), 'is_convertable');
+        		$this->send($template->getImportedStylesheets(), 'stylesheets');
 	        }else{
 	            $this->addUserMessage("The template ID was not recognized");
 	            $show_form = false;
@@ -666,6 +667,7 @@ class Templates extends SmartestSystemApplication{
         	            $this->send('file', 'edit_type');
              	        $show_form = true;
              	        $this->send(false, 'is_convertable');
+             	        $this->send(array(), 'stylesheets');
      	            }else{
      	                $show_form = false;
      	                $this->send(false, 'is_convertable');

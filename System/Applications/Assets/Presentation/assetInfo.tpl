@@ -58,7 +58,7 @@
     </table>
   
     <div class="buttons-bar" style="margin-top:5px">
-      <input type="submit" value="Save changes" />
+      {save_buttons}
     </div>
 
   </form>

@@ -62,4 +62,14 @@
     {if $template_type == "SM_LIST_ITEM_TEMPLATE"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/listItemTemplates'">Back to list item temnplates</a></li>{/if}
     {if $template_type == "SM_PAGE_MASTER_TEMPLATE"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/masterTemplates'">Back to master temnplates</a></li>{/if}
   </ul>
+  
+{if !empty($stylesheets)}
+  <ul class="actions-list" id="non-specific-actions">
+    <li><b>Stylesheets in this template</b></li>
+{foreach from=$stylesheets item="stylesheet"}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}assets/editAsset?asset_id={$stylesheet.id}'"><img src="{$stylesheet.small_icon}" border="0" alt="" /> {$stylesheet.label}</a></li>
+{/foreach}
+  </ul>
+{/if}
+  
 </div>

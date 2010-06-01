@@ -935,7 +935,7 @@ class Assets extends SmartestSystemApplication{
 
 		if($asset->find($asset_id)){
 		    
-		    $this->setFormReturnUri();
+		    // $this->setFormReturnUri();
 		    
 		    $data = $asset;
 		    
@@ -978,7 +978,13 @@ class Assets extends SmartestSystemApplication{
 	        $asset->save();
 	        
 	        $this->addUserMessageToNextRequest("The asset has been updated.", SmartestUserMessage::SUCCESS);
-	        $this->formForward();
+	        
+	        if($this->getRequestParameter('_submit_action') == "continue"){
+    	        $this->redirect("/assets/assetInfo?asset_id=".$asset->getId());
+    	    }else{
+    	        // $this->addUserMessageToNextRequest($message, $message_type);
+    	        $this->formForward();
+    	    }
 	        
 	    }else{
 	        $this->addUserMessageToNextRequest("The asset ID was not recognized", SmartestUserMessage::ERROR);
@@ -1084,6 +1090,9 @@ class Assets extends SmartestSystemApplication{
     			
     			$this->send($asset->getGroups(), 'groups');
     		    $this->send($asset->getPossibleGroups(), 'possible_groups');
+    		    
+    		    $recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId(), $assettype_code);
+      	        $this->send($recent, 'recent_assets');
 
 
 		    }else{
@@ -1507,7 +1516,7 @@ class Assets extends SmartestSystemApplication{
 	            $this->redirect("/assets/editTextFragmentSource?asset_id=".$asset->getId());
 	        }else{
 	            $this->redirect("/assets/editAsset?asset_type=".$asset->getType()."&asset_id=".$asset->getId());
-		}
+		    }
 	    }else{
 	        // $this->addUserMessageToNextRequest($message, $message_type);
 	        $this->formForward();

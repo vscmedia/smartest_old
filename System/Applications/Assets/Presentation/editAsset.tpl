@@ -50,4 +50,11 @@
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getAssetTypeMembers?asset_type={$asset_type.id}'"><img src="{$domain}Resources/Icons/folder_old.png" alt=""/> View all {$asset_type.label} files</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/assets'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all files by type</a></li>
   </ul>
+  
+  <ul class="actions-list" id="non-specific-actions">
+    <li><span style="color:#999">Recent {$asset.type_info.label|strtolower} files</span></li>
+    {foreach from=$recent_assets item="recent_asset"}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_asset.action_url}'"><img border="0" src="{$recent_asset.small_icon}" /> {$recent_asset.label|summary:"30"}</a></li>
+    {/foreach}
+  </ul>
 </div>

@@ -650,5 +650,24 @@ class SmartestTemplateAsset extends SmartestAsset{
 	    return $ph;
 	    
 	}
+	
+	public function getImportedStylesheets(){
+	    
+	    $regex = '/<link rel="stylesheet" href="([^"]+(Resources\/Stylesheets\/([^"]+)))"/mi';
+	    $result = preg_match_all($regex, $this->getContent(), $matches);
+	    $stylesheets = array();
+	    
+	    foreach($matches[3] as $m){
+	        if(is_file(SM_ROOT_DIR.'Public/Resources/Stylesheets/'.$m)){
+	            $a = new SmartestAsset;
+	            if($a->findBy('url', $m)){
+	                $stylesheets[] = $a;
+	            }
+	        }
+	    }
+	    
+	    return $stylesheets;
+	    
+	}
     
 }

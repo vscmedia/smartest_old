@@ -165,6 +165,13 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    $this->_draft_mode = (bool) $mode;
 	}
 	
+	public function getMasterTemplate(){
+	    $template = new SmartestTemplateAsset;
+	    $filename = $this->getDraftMode() ? $this->getDraftTemplate() : $this->getLiveTemplate();
+	    $template->findBy('url', $filename);
+	    return $template;
+	}
+	
 	public function addUrl($url_string, $is_forward=false){
 	    if(!in_array($url_string, $this->_new_urls)){
 	        $this->_new_urls[] = $url_string;
