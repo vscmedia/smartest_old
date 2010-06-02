@@ -99,6 +99,8 @@ function viewLivePage(){
 <ul class="invisible-actions-list" id="itemspace-specific-actions" style="display:none">
   <li><b>Itemspace Options</b></li>
   <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('defineItemspace');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Define This Itemspace</a></li>
+  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('editItemspace');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This Itemspace</a></li>
+  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('clearItemspaceDefinition');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear This Itemspace</a></li>
 </ul>
 
 <ul class="invisible-actions-list" id="item-specific-actions" style="display:none">

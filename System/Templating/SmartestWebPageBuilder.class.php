@@ -531,7 +531,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             
             if($list->hasRepeatingTemplate($this->getDraftMode())){
                 
-                $data = $list->getItems($this->getDraftMode());
+                $limit = $list->getMaximumLength() > 0 ? $list->getMaximumLength() : null;
+                $data = $list->getItems($this->getDraftMode(), $limit);
+                // var_dump($limit);
                 
                 if($list->getType() == 'SM_LIST_ARTICULATED'){
                 

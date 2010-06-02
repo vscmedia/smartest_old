@@ -3453,6 +3453,59 @@ class Pages extends SmartestSystemApplication{
         
 	}
 	
+	public function editItemspace(){
+	    
+	    $item_space = new SmartestItemSpace;
+	    $name = SmartestStringHelper::toVarName($this->getRequestParameter('assetclass_id'));
+	    
+	    if($item_space->exists($name, $this->getSite()->getId())){
+	        
+	        // print_r($item_space);
+	        $this->send($item_space, 'itemspace');
+	        
+	        $alh = new SmartestAssetsLibraryHelper;
+            $this->send($alh->getAssetsByTypeCode("SM_ASSETTYPE_ITEMSPACE_TEMPLATE", $this->getSite()->getId()), 'templates');
+            
+            $du = new SmartestDataUtility;
+	        $sets = $du->getDataSets(false, $this->getSite()->getId());
+	        $this->send($sets, 'sets');
+            
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The itemspace ID wasn't recognized", SmartestUserMessage::ERROR);
+            $this->formForward();
+	    }
+	    
+	}
+	
+	public function updateItemspace(){
+	    
+	    $item_space = new SmartestItemSpace;
+	    $id = SmartestStringHelper::toVarName($this->getRequestParameter('itemspace_id'));
+	    
+	    if($item_space->find($id)){
+	        if(strlen($this->getRequestParameter('itemspace_label'))){
+	            $item_space->setLabel($this->getRequestParameter('itemspace_label'));
+	        }
+	        if($this->getRequestParameter('itemspace_template_id') == "NONE"){
+	            $item_space->setUsesTemplate(false);
+	        }else if(is_numeric($this->getRequestParameter('itemspace_template_id'))){
+	            $item_space->setUsesTemplate(true);
+	            $item_space->setTemplateAssetId($this->getRequestParameter('itemspace_template_id'));
+	        }
+	        if(is_numeric($this->getRequestParameter('itemspace_dataset_id'))){
+	            $item_space->setDataSetId($this->getRequestParameter('itemspace_dataset_id'));
+	        }
+	        $item_space->save();
+	        $this->addUserMessageToNextRequest('The itemspace was sucessfully updated.', SmartestUserMessage::SUCCESS);
+	        $this->formForward();
+	    }else{
+            $this->addUserMessageToNextRequest("The itemspace ID wasn't recognized", SmartestUserMessage::ERROR);
+            $this->formForward();
+        }
+	    
+	}
+	
 	public function defineItemspace($get){
 	    
 	    $page = new SmartestPage;
@@ -3494,6 +3547,50 @@ class Pages extends SmartestSystemApplication{
             $this->formForward();
             
         }
+	    
+	}
+	
+	public function clearItemspaceDefinition($get, $post){
+	    
+	    $page = new SmartestPage;
+	    $page_id = $this->getRequestParameter('page_id');
+	    
+	    if($page->hydrate($page_id)){
+	        
+	        $page->setDraftMode(true);
+	        
+	        $name = SmartestStringHelper::toVarName($this->getRequestParameter('assetclass_id'));
+	    
+    	    $item_space = new SmartestItemSpace;
+        
+            if($exists = $item_space->exists($name, $this->getSite()->getId())){
+            
+                $definition = new SmartestItemSpaceDefinition;
+            
+                if($definition->load($name, $page, true)){
+                    // $definition->setItemSpaceId($item_space->getId());
+                    // $definition->setPageId($page->getId());
+                    $definition->delete();
+                    $this->addUserMessageToNextRequest("The itemspace was successfully cleared", SmartestUserMessage::SUCCESS);
+                }else{
+                    $this->addUserMessageToNextRequest("The itemspace wasn't defined in the first place", SmartestUserMessage::INFO);
+                }
+                
+                // $definition->setDraftItemId($this->getRequestParameter('item_id'));
+                
+                $definition->save();
+                
+            }else{
+                $this->addUserMessageToNextRequest("The itemspace ID wasn't recognized", SmartestUserMessage::ERROR);
+            }
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("The page ID wasn't recognized", SmartestUserMessage::ERROR);
+            
+        }
+        
+        $this->formForward();
 	    
 	}
 	

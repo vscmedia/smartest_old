@@ -25,6 +25,12 @@ class SmartestItemSpace extends SmartestAssetClass{
         }
 	}
 	
+	public function getParameters(){
+	    $data = new SmartestParameterHolder('Itemspace metas');
+	    $data->loadArray(parent::getInfo());
+	    return $data;
+	}
+	
 	public function getDataSet(){
 	    
 	    if(!$this->_data_set){
@@ -91,6 +97,17 @@ class SmartestItemSpace extends SmartestAssetClass{
 	    }
 	    
 	    parent::save();
+	    
+	}
+	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        case "params":
+	        return $this->getParameters();
+	        default:
+	        return parent::offsetGet($offset);
+	    }
 	    
 	}
     

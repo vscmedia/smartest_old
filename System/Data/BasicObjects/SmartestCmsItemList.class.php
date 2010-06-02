@@ -141,7 +141,7 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	    
 	}
 	
-	public function getItems($draft=false){
+	public function getItems($draft=false, $limit=null){
 	    
 	    if(!$this->_fetch_attempted){
 	    
@@ -156,13 +156,14 @@ class SmartestCmsItemList extends SmartestBaseCmsItemList{
 	        $mode = $draft ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT;
 	        
 	        // $has_limit = (bool) $this->getMaximumLength();
-	        $limit = $has_limit ? (int) $this->getMaximumLength() : null;
+	        // $limit = $has_limit ? (int) $this->getMaximumLength() : null;
+	        // var_dump($limit);
 	        
 	        // if($has_limit){
 	        //    $this->_list_items = array_slice($this->_data_set->getMembers($mode, $limit), 0, $limit);
             // }else{
-                $this->_list_items = $this->_data_set->getMembers($mode, $limit);
-            //}
+                $this->_list_items = $this->_data_set->getMembersPaged($mode, $limit);
+            // }
 	        
 	        $this->_fetch_attempted = true;
 	    
