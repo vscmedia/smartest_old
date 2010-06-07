@@ -68,7 +68,7 @@ View as:
     
     <ul class="actions-list">
       <li><b>Sets Options</b></li>
-      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px" /> Edit this set</a></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/pencil.png" style="width:16px;height:18px" /> Edit this set</a></li>
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/deleteSetConfirm?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_delete.png" style="width:16px;height:18px" /> Delete this set</a></li>
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editStaticSetOrder?set_id={$set.id}';" ><img border="0" src="{$domain}Resources/Icons/arrow_switch.png"> Change order</a></li>
       {if $model.id}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px" /> Back to sets</a></li>{else}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/folder.png" style="width:16px;height:18px"> Back to sets</a></li>{/if}

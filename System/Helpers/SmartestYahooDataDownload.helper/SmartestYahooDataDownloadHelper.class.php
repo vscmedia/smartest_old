@@ -33,8 +33,10 @@ class SmartestYahooDataDownloadHelper extends SmartestHelper{
         
         $flags_array = $this->parseFlags($flags);
         
-        foreach($d as $k=>$v){
-            $data->setParameter($flags_array[$k], $v);
+        if(is_array($d)){
+            foreach($d as $k=>$v){
+                $data->setParameter($flags_array[$k], $v);
+            }
         }
         
         return $data;

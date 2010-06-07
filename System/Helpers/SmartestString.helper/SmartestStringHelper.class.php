@@ -293,6 +293,12 @@ class SmartestStringHelper extends SmartestHelper{
 	  
 	}
 	
+	public static function toTitleCaseFromFileName($string){
+	  
+	    return self::toTitleCase(preg_replace('/[-_]/', ' ', $string));
+	  
+	}
+	
 	public static function toHexUrlEncoded($string){
 	    
 	    for ($c = 0; $c < strlen($string); $c++) {

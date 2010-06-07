@@ -24,10 +24,10 @@ function executeTransfer(){
 </script>
 
 <div id="work-area">
+    
+{load_interface file="edit_user_tabs.tpl"}
 
 <h3><a href="{$domain}{$section}">Settings</a> &gt; <a href="{$domain}{$section}/users">Users</a> &gt; Edit User Tokens</h3>
-
-
 
 <form action="{$domain}{$section}/transferTokens" method="post" name="transferForm">
   <input type="hidden" id="transferAction" name="transferAction" value="" /> 

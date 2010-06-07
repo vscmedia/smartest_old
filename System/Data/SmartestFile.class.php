@@ -23,9 +23,9 @@ class SmartestFile implements ArrayAccess{
             
             $this->_original_file_path = realpath($file_path);
             $this->_current_file_path = realpath($file_path);
+            return true;
             
         }else{
-            // throw new SmartestException($file_path.' does not exist or is not a valid file.');
             SmartestLog::getInstance('system')->log('SmartestFile->loadFile(): '.$file_path.' does not exist or is not a valid file.');
             return false;
         }
@@ -41,6 +41,10 @@ class SmartestFile implements ArrayAccess{
     
     public function getSmartestPath(){
         return substr($this->getPath(), strlen(SM_ROOT_DIR));
+    }
+    
+    public function getShortHash(){
+        return substr(md5(basename($this->getPath())), 0, 8);
     }
     
     public function getFileName(){

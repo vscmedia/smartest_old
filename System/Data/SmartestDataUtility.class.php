@@ -490,7 +490,7 @@ class SmartestDataUtility{
 	    return $types;
 	}
 	
-	static function getAssetTypesXmlData(){
+	/* static function getAssetTypesXmlData(){
 	    
 	    $file_path = SM_ROOT_DIR.'System/Core/Types/assettypes.xml';
 	    
@@ -518,7 +518,7 @@ class SmartestDataUtility{
         
         return $data;
         
-	}
+	} */
 	
 	static function getAssetTypes(){
 	    

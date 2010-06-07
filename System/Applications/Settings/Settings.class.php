@@ -194,7 +194,8 @@ class Settings extends SmartestSystemApplication{
         
         if($user->hydrateBy('username', $username)){
             
-            $this->addUserMessageToNextRequest("The username you entered is already is use.");
+            $this->addUserMessage("The username you entered is already is use.", SmartestUserMessage::WARNING);
+            $this->forward('settings', 'addUser');
             
         }else{
         
@@ -209,7 +210,7 @@ class Settings extends SmartestSystemApplication{
     		    $website = 'http://'.$website;
     		}
 		
-    		$user->setUsername($username);
+    		$user->setUsername(strtolower($username));
     		$user->setPassword($hash);
     		$user->setFirstname($firstname);
     		$user->setLastname($lastname);

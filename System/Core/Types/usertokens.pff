@@ -44,3 +44,4 @@ id:type:scope:code:category:description
 39:p:s:edit_held_items:SM_USERTOKEN_ITEMS:Edit items that are currently held by another user
 40:p:s:edit_containers_in_preview:SM_USERTOKEN_PAGES:Change the values of containers from the page preview screen
 41:p:s:delete_models:SM_USERTOKEN_ITEMS:Permanently delete models and all their items
+42:p:s:delete_pages:SM_USERTOKEN_PAGES:Delete pages

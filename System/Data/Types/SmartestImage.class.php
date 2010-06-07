@@ -319,6 +319,17 @@ class SmartestImage extends SmartestFile{
 	    
 	}
 	
+	public function render(){
+	    
+	    $sm = new SmartyManager('BasicRenderer');
+        $r = $sm->initialize($this->getShortHash());
+        $r->assignImage($this);
+        $content = $r->renderImage($this->_render_data);
+	    
+	    return $content;
+	    
+	}
+	
 	public function send(){
 	    
 	    $suffix = strtoupper(SmartestStringHelper::getDotSuffix($this->_current_file_path));

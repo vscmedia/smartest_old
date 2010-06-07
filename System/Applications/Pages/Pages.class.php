@@ -868,29 +868,37 @@ class Pages extends SmartestSystemApplication{
 		$id = $this->database->rawQuery($sql);
 		$title = $this->database->specificQuery('page_title', 'page_id', $id, 'Pages'); */
 		
-		$page = new SmartestPage;
+		if($this->getUser()->hasToken('delete_pages')){
 		
-		if($page->hydrate($id)){
+		    $page = new SmartestPage;
+		
+    		if($page->hydrate($id)){
 		    
-		    // retrieve site id for cache deletion
-		    $site_id = $page->getSiteId();
+    		    // retrieve site id for cache deletion
+    		    $site_id = $page->getSiteId();
 		    
-		    // set the page to deleted and save
-		    $page->setDeleted('TRUE');
-		    $page->save();
+    		    // set the page to deleted and save
+    		    $page->setDeleted('TRUE');
+    		    $page->save();
 		    
-		    // clear cache
-		    SmartestCache::clear('site_pages_tree_'.$site_id, true);
+    		    // clear cache
+    		    SmartestCache::clear('site_pages_tree_'.$site_id, true);
 		    
-		    // make sure user is notified
-		    $this->addUserMessageToNextRequest("The page has been successfully moved to the trash.", SmartestUserMessage::SUCCESS);
+    		    // make sure user is notified
+    		    $this->addUserMessageToNextRequest("The page has been successfully moved to the trash.", SmartestUserMessage::SUCCESS);
 		    
-		    // log deletion
-    		SmartestLog::getInstance('site')->log("Page '".$title."' was deleted by user '".$this->getUser()->getUsername()."'", SmartestLog::USER_ACTION);
+    		    // log deletion
+        		SmartestLog::getInstance('site')->log("Page '".$title."' was deleted by user '".$this->getUser()->getUsername()."'", SmartestLog::USER_ACTION);
 		    
-		}else{
-		    $this->addUserMessageToNextRequest("There was an error deleting the page.", SmartestUserMessage::ERROR);
-		}
+    		}else{
+    		    $this->addUserMessageToNextRequest("The page ID was not recognized.", SmartestUserMessage::ERROR);
+    		}
+		
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("You don't have sufficient permissions to delete pages.", SmartestUserMessage::ACCESS_DENIED);
+	        
+	    }
 		
 		// forward
 		$this->formForward();

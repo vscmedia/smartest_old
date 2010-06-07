@@ -1,4 +1,7 @@
 <div id="work-area">
+    
+    {load_interface file="cms_elements_tabs.tpl"}
+    
   <h3>Placeholders</h3>
   
   <form id="pageViewForm" method="get" action="">

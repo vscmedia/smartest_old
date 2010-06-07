@@ -19,8 +19,10 @@ function viewPage(){
 </script>
 
 <div id="work-area">
+    
+    {load_interface file="cms_elements_tabs.tpl"}
 
-<h3>Site Hierarchy</h3>
+<h3>Pages</h3>
 <a name="top"></a>
 <div class="instruction">Double click a page to edit or click once and choose from the options on the right.</div>
 
@@ -137,7 +139,6 @@ function viewPage(){
     <li><b>Site Options</b></li>
     {* <li class="permanent-action"><a href="{$domain}{$section}/editSite" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit site parameters</a></li> *}
     <li class="permanent-action"><a href="{$domain}websitemanager/releaseCurrentUserHeldPages" class="right-nav-link"><img src="{$domain}Resources/Icons/lock_open.png" border="0" alt=""> Release all pages</a></li>
-    <li class="permanent-action"><a href="{$domain}websitemanager/placeholders" class="right-nav-link"><img src="{$domain}Resources/Icons/published_placeholder.gif" border="0" alt=""> Placeholders</a></li>
     <li class="permanent-action"><a href="{$domain}websitemanager/clearPagesCache" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt=""> Clear cached pages</a></li>
     <li class="permanent-action"><a href="{$domain}desktop/closeCurrentSite" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Finish working with this site</a></li>
 </ul>

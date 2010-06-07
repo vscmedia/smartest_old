@@ -7,7 +7,7 @@ class Sets extends SmartestSystemApplication{
 
 	var $itemsManager;
 	
-	function __moduleConstruct(){
+	function __smartestApplicationInit(){
 		$this->itemsManager = new ItemsHelper();
 		$this->SchemasManager = new SchemasManager();	
 	}
@@ -50,9 +50,34 @@ class Sets extends SmartestSystemApplication{
 	    
 	}
 	
-	function deleteSet($get){
-		$set_id = mysql_real_escape_string($get['set_id']);
-		return $this->manager->deleteSet($set_id);		
+	public function deleteSetConfirm(){
+	    
+	    $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($this->getRequestParameter('set_id'))){
+	        $this->send($set, 'set');
+	    }else{
+	        $this->addUserMessageToNextRequest("The set ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	    }
+	    
+	}
+	
+	function deleteSet(){
+	    
+	    $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($this->getRequestParameter('set_id'))){
+	        $set->delete();
+	        $this->addUserMessageToNextRequest("The set was successfully deleted.", SmartestUserMessage::SUCCESS);
+	        $this->formForward();
+	    }else{
+	        $this->addUserMessageToNextRequest("The set ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	    }
+	    
+		// $set_id = mysql_real_escape_string($get['set_id']);
+		// return $this->manager->deleteSet($set_id);		
 	}
 	
 	function addSet($get){		
@@ -80,7 +105,7 @@ class Sets extends SmartestSystemApplication{
     		    $this->send(true, 'allow_choose_model');
 	        }
 		}else{
-		    $models = $du->getModels();
+		    $models = $du->getModels(false, $this->getSite()->getId());
 		    $this->send($models, 'models');
 		    $this->send(true, 'allow_choose_model');
 		}

@@ -189,7 +189,7 @@ class Assets extends SmartestSystemApplication{
 	        $files_array[$i] = array();
 	        $types = $h->getPossibleTypesBySuffix(SmartestStringHelper::getDotSuffix($f));
 	        $files_array[$i]['filename'] = basename($f);
-	        $files_array[$i]['suggested_name'] = SmartestStringHelper::toTitleCaseFromVarName(SmartestStringHelper::removeDotSuffix($files_array[$i]['filename']));
+	        $files_array[$i]['suggested_name'] = SmartestStringHelper::toTitleCaseFromFileName(SmartestStringHelper::removeDotSuffix($files_array[$i]['filename']));
 	        $files_array[$i]['current_directory'] = dirname($f).'/';
 	        
 	        if(count($types)){

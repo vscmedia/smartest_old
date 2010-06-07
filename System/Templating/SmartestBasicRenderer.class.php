@@ -3,6 +3,7 @@
 class SmartestBasicRenderer extends SmartestEngine{
     
     protected $_asset; // used when rendering an Asset
+    protected $_image; // used when rendering a plain old image
     protected $draft_mode = false;
     
     public function __construct($pid){
@@ -27,6 +28,12 @@ class SmartestBasicRenderer extends SmartestEngine{
     public function assignAsset(SmartestAsset $asset){
         
         $this->_asset = $asset;
+        
+    }
+    
+    public function assignImage(SmartestImage $image){
+        
+        $this->_image = $image;
         
     }
     
@@ -103,17 +110,6 @@ class SmartestBasicRenderer extends SmartestEngine{
         }
         
         if(file_exists($render_template)){
-            
-            if($this->_asset->isImage()){
-		        
-		        if(!$render_data['width']){
-                    $render_data['width'] = $this->_asset->getWidth();
-                }
-                
-                if(!$render_data['height']){
-                    $render_data['height'] = $this->_asset->getHeight();
-                }
-            }
             
             if(isset($params['style']) && strlen($params['style'])){
                 $render_data['style'] = $params['style'];
@@ -244,6 +240,33 @@ class SmartestBasicRenderer extends SmartestEngine{
         $this->killChildProcess($child->getProcessId());
         
         return $html;
+        
+    }
+    
+    public function renderImage($render_data='', $path='none'){
+        
+        // if($this->_asset->isImage()){
+	        
+	        if(!$render_data['width']){
+                $render_data['width'] = $this->_image->getWidth();
+            }
+            
+            if(!$render_data['height']){
+                $render_data['height'] = $this->_image->getHeight();
+            }
+            
+        // }
+        
+        /* if(isset($params['style']) && strlen($params['style'])){
+            $render_data['style'] = $params['style'];
+        } */
+        
+        $render_template = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/display.image.tpl';
+        
+        ob_start();
+        $this->run($render_template, array('asset_info'=>$this->_asset, 'render_data'=>$render_data));
+        $content = ob_get_contents();
+        ob_end_clean();
         
     }
     

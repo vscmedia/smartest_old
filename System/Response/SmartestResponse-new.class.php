@@ -489,15 +489,18 @@ class SmartestResponse{
 	
 	public function isWebsitePage(){
 	    
-	    return in_array($this->_controller->getCurrentRequest()->getAction(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage', 'searchDomain'));
+	    $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+		$websiteMethodNames = $sd['system']['content_interaction_methods'];
+		$method = $this->_controller->getCurrentRequest()->getModule().'/'.$this->_controller->getCurrentRequest()->getAction();
+		return in_array($method, $websiteMethodNames);
 	    
 	}
 	
 	protected function isSystemClass(){
 		
-		$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+		// $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
 		
-		$rcn = $sd['system']['reserved_classes'];
+		// $rcn = $sd['system']['reserved_classes'];
 		
 		if($this->_controller->getCurrentRequest()->getMeta('system')){
 			
