@@ -380,7 +380,9 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	public function submitItemComment($get, $post){
 	    
     	if($this->lookupSiteDomain()){
-	    
+	        
+	        define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+	        
     	    $item = new SmartestItem;
 	    
     	    if($item->find((int) $post['item_id'])){
