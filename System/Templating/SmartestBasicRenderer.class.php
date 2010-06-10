@@ -179,6 +179,18 @@ class SmartestBasicRenderer extends SmartestEngine{
                     
                 }else{
                     
+                    if($this->_asset->isImage()){
+                    
+                        if(!$render_data['width']){
+                            $render_data['width'] = $this->_asset->getImage()->getWidth();
+                        }
+
+                        if(!$render_data['height']){
+                            $render_data['height'] = $this->_asset->getImage()->getHeight();
+                        }
+                    
+                    }
+                    
                     ob_start();
                     $this->run($render_template, array('asset_info'=>$this->_asset, 'render_data'=>$render_data));
                     $content = ob_get_contents();
