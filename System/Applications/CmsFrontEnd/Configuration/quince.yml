@@ -29,3 +29,9 @@ module:
       action: getDataSetRssFeed
   meta:
     system: true
+  namespaces:
+    info:
+      class: CmsFrontEndAjax
+      meta:
+        template: blank.tpl
+      content_type: text/json
