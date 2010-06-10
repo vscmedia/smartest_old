@@ -270,7 +270,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        
 	        $database = SmartestDatabase::getInstance('SMARTEST');
 	        
-	        $asset_url = $this->getRequestParameter('url');
+	        $asset_url = urldecode($this->getRequestParameter('url'));
 	        $asset_webid = $this->getRequestParameter('key');
 	        
 	        $sql = "SELECT * FROM Assets WHERE asset_site_id='".$this->_site->getId()."' AND asset_url='".$asset_url."' AND asset_webid='".$asset_webid."'";
