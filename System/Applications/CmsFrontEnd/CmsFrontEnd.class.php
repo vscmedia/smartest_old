@@ -268,10 +268,10 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	    if($this->lookupSiteDomain()){
 	        
-	        $database = SmartestPersistentObject::get('db:main');
+	        $database = SmartestDatabase::getInstance('SMARTEST');
 	        
-	        $asset_url = urldecode($get['url'].'.'.$get['suffix']);
-	        $asset_webid = $get['key'];
+	        $asset_url = $this->getRequestParameter('url');
+	        $asset_webid = $this->getRequestParameter('key');
 	        
 	        $sql = "SELECT * FROM Assets WHERE asset_site_id='".$this->_site->getId()."' AND asset_url='".$asset_url."' AND asset_webid='".$asset_webid."'";
 	        $result = $database->queryToArray($sql);

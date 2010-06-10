@@ -21,6 +21,9 @@ module:
       action: searchDomain
       params:
         model_specific: true
+    download_file:
+      url: /download/:url
+      action: downloadAsset
     feed:
       url: /feeds/:set_name/rss
       action: getDataSetRssFeed

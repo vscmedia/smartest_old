@@ -251,9 +251,9 @@ class SmartestBaseApplication extends QuinceBase{
 	    
 	    // return in_array($this->getRequest()->getAction(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage', 'searchDomain', 'renderSiteTagSimpleRssFeed', 'submitItemComment', 'submitPageComment'));
 	    $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
-		$websiteMethodNames = $sd['system']['content_interaction_methods'];
-		$method = $this->getRequest()->getModule().'/'.$this->getRequest()->getAction();
-		return in_array($method, $websiteMethodNames);
+	    $websiteMethodNames = $sd['system']['content_interaction_methods'];
+	    $method = $this->getRequest()->getModule().'/'.$this->getRequest()->getAction();
+	    return in_array($method, $websiteMethodNames);
 	    
 	}
 	
