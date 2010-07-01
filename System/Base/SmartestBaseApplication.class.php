@@ -43,6 +43,7 @@ class SmartestBaseApplication extends QuinceBase{
 		SmartestSession::set('user:currentApp', $this->getRequest()->getModule());
 		SmartestSession::set('user:currentAction', $this->getRequest()->getAction());
 		
+		$this->_preferences_helper = SmartestPersistentObject::get('prefs_helper');
 		$this->_cached_application_preferences = new SmartestParameterHolder('Cached application-level preferences');
 		$this->_cached_global_preferences = new SmartestParameterHolder('Cached global preferences');
 		
@@ -51,13 +52,6 @@ class SmartestBaseApplication extends QuinceBase{
 		$this->_assignTemplateValues();
 		
 		$this->lookupSiteDomain();
-		
-		// var_dump();
-		
-		// var_dump(get_class($this).' ');
-		
-		/* echo "Hello";
-		print_r($this->getPresentationLayer()->getPluginDirectories()); */
 	    
 	}
 	
@@ -81,8 +75,6 @@ class SmartestBaseApplication extends QuinceBase{
     	    }
 		    
 		}
-		
-		// var_dump(get_class($this).' ');
 		
 		$this->getPresentationLayer()->assign("domain", $this->getRequest()->getDomain());
 	    $this->getPresentationLayer()->assign("section", $this->getRequest()->getModule()); // deprecated
@@ -154,9 +146,6 @@ class SmartestBaseApplication extends QuinceBase{
 	private function _loadApplicationSpecificResources(){
 	    
 	    $this->_loadSettings();
-	    
-	    // echo "boo";
-	    // throw new Exception;
 	    
 	    if(is_dir($this->getRequest()->getMeta('_module_dir').'Library/Data/ExtendedObjects/')){
 		    SmartestDataObjectHelper::loadExtendedObjects($this->getRequest()->getMeta('_module_dir').'Library/Data/ExtendedObjects/');
@@ -385,35 +374,59 @@ class SmartestBaseApplication extends QuinceBase{
         return $this->_site;
     }
     
-    public function getApplicationPreference($preference_name){
+    protected function getApplicationPreference($preference_name){
         
-        if($this->_cached_application_preferences->hasParameter($preference_name)){
-            return $this->_cached_application_preferences->getParameter($preference_name);
+        $name = SmartestStringHelper::toVarName($preference_name);
+        
+        if($this->_cached_application_preferences->hasParameter($name)){
+            return $this->_cached_application_preferences->getParameter($name);
         }else{
-            $value = $this->_preferences_helper->getApplicationPreference($preference_name, $this->_application_id, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+            $value = $this->_preferences_helper->getApplicationPreference($name, $this->getRequest()->getMeta('_module_identifier'), $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+            $this->_cached_application_preferences->setParameter($name, $value);
+            return $value;
         }
         
     }
     
-    public function setApplicationPreference($preference_name, $preference_value){
+    protected function setApplicationPreference($preference_name, $preference_value){
         
-        $this->_preferences_helper->setApplicationPreference($preference_name, $preference_value, $this->_application_id, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        $name = SmartestStringHelper::toVarName($preference_name);
+        return $this->_preferences_helper->setApplicationPreference($name, $preference_value, $this->getRequest()->getMeta('_module_identifier'), $this->getUserIdOrZero(), $this->getSiteIdOrZero());
         
     }
     
-    public function getGlobalPreference($preference_name){
+    protected function getGlobalPreference($preference_name){
         
-        if($this->_cached_application_preferences->hasParameter($preference_name)){
-            return $this->_cached_application_preferences->getParameter($preference_name);
+        $name = SmartestStringHelper::toVarName($preference_name);
+        
+        if($this->_cached_application_preferences->hasParameter($name)){
+            return $this->_cached_application_preferences->getParameter($name);
         }else{
-            $value = $this->_preferences_helper->getApplicationPreference($preference_name, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+            $value = $this->_preferences_helper->getGlobalPreference($name, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+            $this->_cached_application_preferences->setParameter($name, $value);
+            return $value;
         }
         
     }
     
-    public function setGlobalPreference($preference_name, $preference_value){
+    protected function setGlobalPreference($preference_name, $preference_value){
         
-        $this->_preferences_helper->setGlobalPreference($preference_name, $preference_value, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        $name = SmartestStringHelper::toVarName($preference_name);
+        return $this->_preferences_helper->setGlobalPreference($name, $preference_value, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        
+    }
+    
+    public function preferences(){
+        
+        if(!is_file($this->getRequest()->getMeta('_module_dir').'Configuration/preferences.yml')){
+            $this->formForward();
+        }
+        
+    }
+    
+    public function updatePreferences(){
+        
+        $this->formForward();
         
     }
     

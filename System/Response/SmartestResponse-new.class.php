@@ -328,6 +328,9 @@ class SmartestResponse{
 	    // Start Application Controller
 	    $this->_controller = new Quince(SM_ROOT_DIR, 'Configuration/quince.yml');
 	    
+	    $ph = new SmartestPreferencesHelper;
+	    SmartestPersistentObject::set('prefs_helper', $ph);
+	    
 	    try{
 	        $this->_controller->prepare();
 	    }catch(QuinceException $e){

@@ -5,14 +5,18 @@ module:
   longname: Files repository 
   default_action: getAssetTypes
   aliases:
-    - {url: /smartest/files, action: getAssetTypes}
+    - {url: /smartest/assets, action: startPage}
+    - {url: /smartest/assets/groups, action: assetGroups}
   routes:
     home:
+      action: startPage
+      url: /smartest/files
+    types:
       action: getAssetTypes
-      url: /smartest/assets
+      url: /smartest/files/types
     groups:
       action: assetGroups
-      url: /smartest/assets/groups
+      url: /smartest/files/groups
     ajax_full_text_search:
       action: fullTextSearchResults
       url: /smartest/assets/:asset_type/full_text_search

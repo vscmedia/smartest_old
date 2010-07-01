@@ -12,12 +12,16 @@
 
 // phpinfo();
 
-require_once 'XML/Serializer.php';
+// require_once 'XML/Serializer.php';
 
 class Assets extends SmartestSystemApplication{
 	
-	public function getAssetClasses($get){
-		
+	public function startPage(){
+	    if($this->getApplicationPreference('startpage_view') == 'groups'){
+	        $this->forward('assets', 'assetGroups');
+	    }else{
+	        $this->forward('assets', 'getAssetTypes');
+	    }
 	}
 	
 	public function getAssetTypes(){
@@ -25,8 +29,10 @@ class Assets extends SmartestSystemApplication{
 	    $this->requireOpenProject();
 	    
 	    $h = new SmartestAssetsLibraryHelper;
+	    
+	    $this->setApplicationPreference('startpage_view', 'types');
 		
-		$this->setTitle("Files");
+		$this->setTitle("Files by type");
 		$this->setFormReturnUri(); // set the url of the page to be return to
 		$this->setFormReturnDescription('file types');
 		
@@ -611,6 +617,9 @@ class Assets extends SmartestSystemApplication{
 	public function assetGroups(){
 	    
 	    $this->requireOpenProject();
+	    
+	    $this->setApplicationPreference('startpage_view', 'groups');
+	    $this->setTitle("File groups");
 	    
 	    $alh = new SmartestAssetsLibraryHelper;
 	    $groups = $alh->getAssetGroups($this->getSite()->getId());

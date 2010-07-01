@@ -1039,6 +1039,12 @@ class Quince{
         
 	}
 	
+	public function getAllModulesById(){
+	    
+	    return self::$modules;
+	    
+	}
+	
 	protected function scanModules(){
 	    
 	    // first, find modules.
@@ -1086,7 +1092,7 @@ class Quince{
                     
                     $conf = QuinceUtilities::fetchModuleConfig($cf);
                     $conf['directory'] = $m;
-                    $modules[] = $conf;
+                    $modules[$conf['identifier']] = $conf;
                     
                     if(!isset($module_names[$conf['shortname']])){
                     
@@ -1129,9 +1135,6 @@ class Quince{
                             $aliases = array_merge($aliases, $fake_route_aliases);
                             
                         }
-                        
-                        
-                        
                     }
                 }
             }
@@ -1169,6 +1172,8 @@ class Quince{
             self::$raw_aliases = QuinceUtilities::cacheGet('all_aliases');
             self::$alias_shortcuts = QuinceUtilities::cacheGet('alias_url_shortcuts');
             self::$routes = QuinceUtilities::cacheGet('routes');
+            
+            // print_r(self::$modules);
             
             $this->module_shortnames = QuinceUtilities::cacheGet('module_shortnames');
         }
