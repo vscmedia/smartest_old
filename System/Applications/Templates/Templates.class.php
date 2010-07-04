@@ -22,6 +22,8 @@ class Templates extends SmartestSystemApplication{
 		$this->send($types, 'types');
 		$this->setFormReturnDescription('template types');
 		
+		$this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId()), 'recently_edited');
+		
 	}
 
 	/* public function containerTemplates(){
@@ -55,25 +57,30 @@ class Templates extends SmartestSystemApplication{
 	        switch($type_code){
 	            
 	            case "SM_ASSETTYPE_MASTER_TEMPLATE":
+	            $this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId(), 'SM_ASSETTYPE_MASTER_TEMPLATE'), 'recently_edited');
 	            $templates = $h->getMasterTemplates($this->getSite()->getId());
 	            break;
 	            
 	            case "SM_ASSETTYPE_CONTAINER_TEMPLATE":
 	            $alh = new SmartestAssetsLibraryHelper;
+	            $this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId(), 'SM_ASSETTYPE_CONTAINER_TEMPLATE'), 'recently_edited');
 	            $templates = $alh->getAssetsByTypeCode("SM_ASSETTYPE_CONTAINER_TEMPLATE", $this->getSite()->getId());
 	            break;
 	            
 	            case "SM_ASSETTYPE_ITEMSPACE_TEMPLATE":
 	            $alh = new SmartestAssetsLibraryHelper;
+	            $this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId(), 'SM_ASSETTYPE_ITEMSPACE_TEMPLATE'), 'recently_edited');
 	            $templates = $alh->getAssetsByTypeCode("SM_ASSETTYPE_ITEMSPACE_TEMPLATE", $this->getSite()->getId());
 	            break;
 	            
 	            case "SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE":
 	            $alh = new SmartestAssetsLibraryHelper;
+	            $this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId(), 'SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE'), 'recently_edited');
 	            $templates = $alh->getAssetsByTypeCode("SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE", $this->getSite()->getId());
 	            break;
 	            
 	            case "SM_ASSETTYPE_ART_LIST_TEMPLATE":
+	            $this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId(), 'SM_ASSETTYPE_ART_LIST_TEMPLATE'), 'recently_edited');
 	            $templates = $h->getArticulatedListTemplates($this->getSite()->getId());
 	            break;
 	            
@@ -631,6 +638,10 @@ class Templates extends SmartestSystemApplication{
         		$this->send($type, 'type_info');
         		$this->send($template->IsConvertable(), 'is_convertable');
         		$this->send($template->getImportedStylesheets(), 'stylesheets');
+        		$template->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
+        		$this->getUser()->addRecentlyEditedTemplateById($template_id, $this->getSIte()->getId());
+        		$this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId(), $template->getType()), 'recently_edited');
+        		
 	        }else{
 	            $this->addUserMessage("The template ID was not recognized");
 	            $show_form = false;

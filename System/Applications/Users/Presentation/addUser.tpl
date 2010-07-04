@@ -1,8 +1,8 @@
-<script language="javascript">
+<script type="text/javascript">
 
 {literal}
 
-function check(){
+  /* function check(){
   
   var editForm = document.getElementById('addUser');
   
@@ -32,9 +32,27 @@ function check(){
     return false;
   }
   
-  return true;
-
-}
+  return true; */
+  
+  var firstName, firstNameEntered, lastName, lastNameEntered, usernameSuggested;
+  
+  function finishFirstName(){
+      if(!firstNameEntered){
+          firstNameEntered = true;
+          firstName = $('ifn').value;
+      }
+  }
+  
+  function finishLastName(){
+      if(firstNameEntered && !lastNameEntered){
+          lastNameEntered = true;
+          lastName = $('iln').value;
+          if(!usernameSuggested){
+              $('username').value = firstName.toLowerCase()+'.'+lastName.toLowerCase();
+              usernameSuggested = true;
+          }
+      }
+  }
 
 {/literal}
 
@@ -44,26 +62,55 @@ function check(){
 
 <h3 id="user">Add new User</h3>
 
-<form id="addUser" name="addUser" action="{$domain}{$section}/addUserAction" method="post" style="margin:0px">
-
-  <div class="edit-form-row">
-    <div class="form-section-label">Username </div>
-    <input type="text" style="width:150px" name="username" /><span class="form-hint">letters, numbers and underscores only please</span>
-  </div>
-  
-  <div class="edit-form-row">
-    <div class="form-section-label">Password </div>
-    <input type="password" style="width:150px" name="password" />
-  </div>
+<form id="addUser" name="addUser" action="{$domain}{$section}/insertUser" method="post" style="margin:0px">
   
   <div class="edit-form-row">
     <div class="form-section-label">First name </div>
-    <input type="text" name="user_firstname" />
+    <input type="text" name="user_firstname" id="ifn" />
+    {literal}<script type="text/javascript">
+      $('ifn').observe('blur', function(event){
+        if(!firstNameEntered){
+            firstNameEntered = true;
+            firstName = $('ifn').value;
+        }
+      });
+    </script>{/literal}
   </div>
   
   <div class="edit-form-row">
     <div class="form-section-label">Last name </div>
-    <input type="text" name="user_lastname" />
+    <input type="text" name="user_lastname" id="iln" />
+    {literal}<script type="text/javascript">
+      $('iln').observe('blur', function(event){
+        if(firstNameEntered && !lastNameEntered){
+            lastNameEntered = true;
+            lastName = $('iln').value;
+            if(!usernameSuggested){
+                $('username').value = firstName.toUserName()+'.'+lastName.toUserName();
+                usernameSuggested = true;
+            }
+        }
+      });
+    </script>{/literal}
+  </div>
+
+  <div class="edit-form-row">
+    <div class="form-section-label">Username </div>
+    <input type="text" style="width:200px" name="username" id="username" /><span class="form-hint">letters, numbers and underscores only please</span>
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Password </div>
+    <input type="password" style="width:200px" name="password" />
+  </div>
+  
+  <div class="edit-form-row">
+    <div class="form-section-label">Role </div>
+    <select name="user_role">
+      {foreach from=$roles item="role"}
+      <option value="{if $role.type == 'nondb'}system:{/if}{$role.id}">{$role.label}</option>
+      {/foreach}
+    </select>
   </div>
   
   <div class="edit-form-row">
@@ -158,6 +205,6 @@ function check(){
   <ul class="actions-list">
      <li><b>Users &amp; Tokens</b></li>
      {* <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addRole'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add Role</a></li> *}
-     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/listUsers'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Go back to users</a></li>
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Go back to users</a></li>
   </ul>
 </div>

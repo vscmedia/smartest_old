@@ -6,6 +6,7 @@ class SmartestUserToken_New implements ArrayAccess{
     protected $_code;
     protected $_type;
     protected $_scope;
+    protected $_category;
     protected $_description;
     
     const PERMISSION = 32;
@@ -20,6 +21,7 @@ class SmartestUserToken_New implements ArrayAccess{
         $this->_code = $data['code'];
         $this->_type = $data['type'];
         $this->_scope = $data['scope'];
+        $this->_category = $data['category'];
         $this->_description = $data['description'];
         
     }

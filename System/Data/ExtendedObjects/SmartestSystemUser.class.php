@@ -278,11 +278,10 @@ class SmartestSystemUser extends SmartestUser{
 	    $h = new SmartestUsersHelper;
 	    
 	    if($token_id = $h->getTokenId($token_code)){
-	        
-	       $this->addTokenById($token_id, $site_id);
+	        $this->addTokenById($token_id, $site_id);
 		    
 		}else{
-		    SmartestLog::getInstance('system')->log("Tried to hydrate a non-existent user token.", SM_LOG_WARNING);
+		    SmartestLog::getInstance('system')->log("Tried to hydrate a non-existent user token: '".$token_code."'.", SM_LOG_WARNING);
 		}
 		
 		$this->reloadTokens();
@@ -697,6 +696,75 @@ class SmartestSystemUser extends SmartestUser{
 	    $q->setTargetEntityByIndex(1);
         $q->addQualifyingEntityByIndex(2, $this->getId());
         $q->addQualifyingEntityByIndex(3, (int) $site_id);
+        
+        $q->delete();
+	    
+	}
+	
+	public function addRecentlyEditedTemplateById($asset_id, $site_id, $force=false){
+	    
+	    if(!$force){
+	        
+	        $ra = $this->getRecentlyEditedTemplates($site_id);
+	        $recent_asset_ids = array();
+	        
+	        foreach($ra as $asset){
+	            $recent_asset_ids[] = $asset->getId();
+	        }
+	    }
+	    
+	    if($force || !in_array($asset_id, $recent_asset_ids)){
+	        $l = new SmartestManyToManyLookup;
+	        $l->setType('SM_MTMLOOKUP_RECENTLY_EDITED_TEMPLATES');
+	        $l->setEntityForeignKeyValue(1, (int) $asset_id);
+	        $l->setEntityForeignKeyValue(2, $this->getId());
+	        $l->setEntityForeignKeyValue(3, (int) $site_id);
+	        $l->save();
+        }
+	    
+	}
+	
+	public function getRecentlyEditedTemplates($site_id, $type=''){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RECENTLY_EDITED_TEMPLATES');
+	    
+	    $q->setTargetEntityByIndex(1);
+        $q->addQualifyingEntityByIndex(2, $this->getId());
+        $q->addQualifyingEntityByIndex(3, (int) $site_id);
+        
+        $q->addForeignTableConstraint('Assets.asset_deleted', 0);
+        
+        if(strlen($type)){
+            $q->addForeignTableConstraint('Assets.asset_type', $type);
+        }else{
+            $h = new SmartestTemplatesLibraryHelper;
+            $q->addForeignTableConstraint('Assets.asset_type', $h->getTypeCodes(), SmartestQuery::IN);
+        }
+        
+        $q->addSortField('ManyToManyLookups.mtmlookup_id');
+        $q->setSortDirection('DESC');
+        $q->setLimit(5);
+        
+        $assets = $q->retrieve();
+        
+        return $assets;
+	    
+	}
+	
+	public function clearRecentlyEditedTemplates($site_id, $type=''){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RECENTLY_EDITED_TEMPLATES');
+	    
+	    $q->setTargetEntityByIndex(1);
+        $q->addQualifyingEntityByIndex(2, $this->getId());
+        $q->addQualifyingEntityByIndex(3, (int) $site_id);
+        
+        if(strlen($type)){
+            $q->addForeignTableConstraint('Assets.asset_type', $type);
+        }else{
+            $h = new SmartestTemplatesLibraryHelper;
+            $q->addForeignTableConstraint('Assets.asset_type', $h->getTypeCodes(), SmartestQuery::IN);
+        }
         
         $q->delete();
 	    

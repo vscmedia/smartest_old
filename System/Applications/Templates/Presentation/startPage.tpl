@@ -32,4 +32,11 @@
     <li class="permanent-action"><a href="#" onclick="window.location='{$domain}templates/addTemplate'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" /> Add a new template</a></li>
   </ul>
   
+  <ul class="actions-list" id="non-specific-actions">
+    <li><b>Recently edited templates</b></li>
+    {foreach from=$recently_edited item="recent_template"}
+  	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_template.action_url}'"><img border="0" src="{$recent_template.small_icon}" /> {$recent_template.label|summary:"30"}</a></li>
+    {/foreach}
+  </ul>
+  
 </div>

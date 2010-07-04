@@ -67,8 +67,16 @@ class SmartestTemplateAsset extends SmartestAsset{
     public function offsetGet($offset){
         
         switch($offset){
+            
             case "status":
             return "imported";
+            
+            case "action_url":
+            return $this->getRequest()->getDomain()."templates/editTemplate?template=".$this->getId();
+            
+            case "label":
+            return $this->getUrl();
+            
         }
         
         return parent::offsetGet($offset);
@@ -667,6 +675,23 @@ class SmartestTemplateAsset extends SmartestAsset{
 	    }
 	    
 	    return $stylesheets;
+	    
+	}
+	
+	public function clearRecentlyEditedInstances($site_id, $user_id=''){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RECENTLY_EDITED_TEMPLATES');
+	    
+	    $q->setTargetEntityByIndex(1);
+	    
+        $q->addQualifyingEntityByIndex(1, $this->getId());
+        $q->addQualifyingEntityByIndex(3, (int) $site_id);
+        
+        if(is_numeric($user_id)){
+            $q->addQualifyingEntityByIndex(2, $user_id);
+        }
+        
+        $q->delete();
 	    
 	}
     

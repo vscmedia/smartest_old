@@ -5,9 +5,32 @@ var lastRow;
 var lastRowColor;
 var lastItemCategory;
 
-function trim(myString){
-	return myString.replace("/^[\s_\.'\"-]+|[\s_\.'\"-]+$/", '');
+String.prototype.trim = function(){
+	return this.replace("/^[\s_\.'\"-]+|[\s_\.'\"-]+$/", '');
 }
+
+String.prototype.toVarName = function(){ 
+	var replaceString = this.replace(/[\s_,\.@-]+/g, '_');
+	replaceString = replaceString.replace(/[\'\"]+/g, '');
+	var trimmed = replaceString.trim();
+	var lc = trimmed.toLowerCase();
+	return lc;
+};
+
+String.prototype.toSlug = function(){ 
+	var replaceString = this.replace(/[\s_,\.@-]+/g, '-');
+	replaceString = replaceString.replace(/[\'\"]+/g, '');
+	var trimmed = replaceString.trim();
+	var lc = trimmed.toLowerCase();
+	return lc;
+};
+
+String.prototype.toUserName = function(){ 
+	var replaceString = this.trim();
+	// replaceString = replaceString.replace('-', '');
+	replaceString = replaceString.replace(/[^\w\._]+/g, '');
+	return replaceString.toLowerCase();
+};
 
 function toVarName(myString){ 
 	var replaceString = myString.replace(/[\s_,\.@-]+/g, '_');

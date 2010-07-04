@@ -144,6 +144,14 @@ class SmartestManyToManyHelper{
 			case 7:
 			return " < '".$value."'";
 			break;
+			
+			case 256:
+			if(!is_array($value)){
+			    $value = array($value);
+			}
+			return " IN ('".implode("', '", $value)."')";
+			break;
+			
         }
     }
         

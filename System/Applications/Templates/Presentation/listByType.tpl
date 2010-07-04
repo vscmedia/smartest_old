@@ -31,7 +31,7 @@ Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
 
 <ul class="actions-list" id="imported-template-specific-actions" style="display:none">
     
-  <li><b>Selected Template:</b></li>
+  <li><b>Selected template:</b></li>
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="workWithItem('editTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this template</a></li>
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="workWithItem('templateInfo');" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About this template</a></li>
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('duplicateTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate this template</a></li>
@@ -41,7 +41,7 @@ Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
 
 <ul class="actions-list" id="unimported-template-specific-actions" style="display:none">
     
-  <li><b>Unimported Template:</b></li>
+  <li><b>Unimported template:</b></li>
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('importSingleTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Import this template</a></li>
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('editTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit as-is</a></li>
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage && confirm('Really delete this template?')){ workWithItem('deleteTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete this template</a></li>
@@ -50,9 +50,16 @@ Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
-  <li><b>Template Options</b></li>
+  <li><b>Template options</b></li>
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addTemplate?type={$type.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add another {$type.label|lower}</a></li>
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/templates';" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" border="0" alt="" style="width:16px;height:16px" /> Back to template types</a></li>
+</ul>
+
+<ul class="actions-list" id="non-specific-actions">
+  <li><b>Recent {$type.label|strtolower}s</b></li>
+  {foreach from=$recently_edited item="recent_template"}
+	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_template.action_url}'"><img border="0" src="{$recent_template.small_icon}" /> {$recent_template.label|summary:"30"}</a></li>
+  {/foreach}
 </ul>
 
 </div>

@@ -1,0 +1,12 @@
+module:
+  class: HelpViewer
+  shortname: help
+  identifier: com.smartest.HelpViewer
+  longname: Help Viewer
+  default_action: startPage
+  meta:
+    system: true
+  routes:
+    home:
+      action: startPage
+      url: /smartest/help

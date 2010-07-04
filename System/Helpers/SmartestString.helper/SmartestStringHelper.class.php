@@ -148,6 +148,16 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
+	public static function toUsername($normal_string, $clean_non_ascii=false){
+	
+		$page_name = self::toAscii(strtolower($normal_string));
+		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");
+		// $page_name = str_replace("-", "", $page_name);
+		$page_name = preg_replace("/[^\w\._]+/", "", $page_name);
+		return $page_name;
+	
+	}
+	
 	public static function toValidDomain($normal_string, $clean_non_ascii=false){
 	
 		$page_name = strtolower($normal_string);

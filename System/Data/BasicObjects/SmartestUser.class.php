@@ -88,7 +88,8 @@ class SmartestUser extends SmartestBaseUser{
 	
 	// must have a length of between 4 and 40
 	public function setUsername($username){
-		if(strlen($username) > 3 && strlen($username) < 41 && preg_match('/^[a-zA-Z0-9_-]+$/', $username)){
+		if(strlen($username) > 3 && strlen($username) < 41){
+		    $username = SmartestStringHelper::toUsername($username);
 			$this->_properties['username'] = $username;
 			$this->_modified_properties['username'] = $username;
 		}

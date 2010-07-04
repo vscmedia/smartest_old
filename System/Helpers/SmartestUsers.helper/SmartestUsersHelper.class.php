@@ -4,7 +4,7 @@ SmartestHelper::register('Users');
 
 class SmartestUsersHelper extends SmartestHelper{
     
-    var $database;
+    protected $database;
     
     public function __construct(){
 		$this->database = SmartestPersistentObject::get('db:main');
@@ -14,6 +14,39 @@ class SmartestUsersHelper extends SmartestHelper{
         
         $tokens = SmartestPffrHelper::getContentsFast(SM_ROOT_DIR.'System/Core/Types/usertokens.pff');
         return $tokens;
+        
+    }
+    
+    public function getTokens(){
+        
+        $data = self::getTokenData();
+        $tokens = array();
+        
+        foreach($data as $rt){
+            $t = new SmartestUserToken_New($rt);
+            $tokens[$rt['id']] = $t;
+        }
+        
+        return $tokens;
+        
+    }
+    
+    public function getUsers(){
+        
+    }
+    
+    public function getSystemUsers(){
+        
+        $raw_users = $this->database->queryToArray("SELECT * FROM Users WHERE username != 'smartest' ORDER BY user_firstname");
+        $users = array();
+        
+        foreach($raw_users as $ru){
+            $u = new SmartestSystemUser;
+            $u->hydrate($ru);
+            $users[] = $u;
+        }
+        
+        return $users;
         
     }
     
@@ -103,11 +136,15 @@ class SmartestUsersHelper extends SmartestHelper{
         
     }
     
-    public function getRoles(){
+    public function getRoles($include_system_roles=true){
         
         $result = $this->database->queryToArray("SELECT * FROM Roles");
 	    
-	    $roles = array();
+	    if($include_system_roles){
+	        $roles = $this->getSystemRoles();
+	    }else{
+	        $roles = array();
+	    }
 	    
 	    foreach($result as $role_array){
 	        $role = new SmartestRole;
@@ -119,7 +156,24 @@ class SmartestUsersHelper extends SmartestHelper{
         
     }
     
-    public function getRolesAsArrays(){
+    public function getSystemRoles(){
+        
+        $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/roles.yml');
+        $raw_roles = $data['roles'];
+        $roles = array();
+        
+        foreach($raw_roles as $k=>$rr){
+            $r = new SmartestNonDbRole;
+            $r->hydrate($rr);
+            $r->setId($k);
+            $roles[$k] = $r;
+        }
+        
+        return $roles;
+        
+    }
+    
+    /* public function getRolesAsArrays(){
         
         $roles = $this->getRoles();
         $arrays = array();
@@ -130,10 +184,10 @@ class SmartestUsersHelper extends SmartestHelper{
         
         return $arrays;
         
-    }
+    } */
     
     // older code, prior to SmartestApplication->getUser()->hasToken()
-    public function getUserHasToken($token, $db=false){
+    /* public function getUserHasToken($token, $db=false){
     	if($db==true){
 			
 			$sql = "SELECT * FROM UsersTokensLookup, UserTokens WHERE UsersTokensLookup.utlookup_user_id='".$_SESSION["user"]["user_id"]."' AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id AND UserTokens.token_code=$token";
@@ -150,11 +204,11 @@ class SmartestUsersHelper extends SmartestHelper{
 		}
 		
 		return $has_token;
-    }
+    } */
 
-    public function getUserTokens($db=false){  
+    /* public function getUserTokens(){  
     		
-    		if($db==true){
+    	/* if($db==true){
 			
 			$sql = "SELECT UserTokens.token_code FROM UsersTokensLookup,UserTokens WHERE UsersTokensLookup.utlookup_user_id='".$_SESSION["user"]["user_id"]."' AND UsersTokensLookup.utlookup_token_id=UserTokens.token_id";
 			$result = $this->database->queryToArray($sql);
@@ -168,5 +222,5 @@ class SmartestUsersHelper extends SmartestHelper{
 		}
 		
 		return $tokens;
-    }
+    } */
 }

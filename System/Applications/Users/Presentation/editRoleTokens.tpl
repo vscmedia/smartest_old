@@ -25,9 +25,11 @@ function executeTransfer(){
 
 <div id="work-area">
 
-<h3><a href="{$domain}{$section}">Settings</a> &gt; <a href="{$domain}{$section}/users">Users</a> &gt; Edit Role Tokens</h3>
+<h3><a href="{$domain}smartest/users">Users</a> &gt; Edit Role Tokens</h3>
 
 <div class="instruction">Modifying Role: <b>{$role.label}</b></div>
+
+<div class="special-box">Note: Modifying this role will not affect users created with it.</div>
 
 <form action="{$domain}{$section}/transferTokensToRole" method="post" name="transferForm">
   <input type="hidden" id="transferAction" name="transferAction" value="" /> 
@@ -39,7 +41,7 @@ function executeTransfer(){
     <td valign="top">
       Permissions not granted:<br />
       <select name="tokens[]" size="2" multiple style="width:300px;height:200px;" onclick="setMode('add')">
-        {foreach from=$tokens key="key" item="values"}
+        {foreach from=$utokens key="key" item="values"}
         <option value="{$values.token_id}" >{$values.token_description}</option>
         {/foreach}
       </select>
@@ -53,7 +55,7 @@ function executeTransfer(){
     <td valign="top">
       Permissions granted:<br />
       <select name="sel_tokens[]"  id='sel_roles' size="4" multiple style="width:300px;height:200px" onclick="setMode('remove')" >	
-        {foreach from=$utokens key="key" item="value"}
+        {foreach from=$tokens key="key" item="value"}
         <option value="{$value.token_id}"  >{$value.token_description}</option>
         {/foreach}
       </select>

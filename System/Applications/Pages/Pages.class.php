@@ -576,6 +576,7 @@ class Pages extends SmartestSystemApplication{
     public function placeholders(){
 	    
 	    $this->setFormReturnUri();
+	    $this->setFormReturnDescription('placeholders');
 	    
 	    $placeholders = $this->getSite()->getPlaceholders();
 	    $this->send($placeholders, 'placeholders');

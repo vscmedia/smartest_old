@@ -27,4 +27,8 @@ class SmartestPffrHelper{
         
     }
     
+    public function fastLoad($file){
+        return self::getContentsFast($file);
+    }
+    
 }

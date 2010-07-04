@@ -39,7 +39,7 @@ return true;
 
 {load_interface file="edit_user_tabs.tpl"}
 
-<h3 id="user">Edit User: {$user.username}</h3>
+<h3 id="user">{if $user.id == $_user.id}Your profile{else}Edit user: {$user.fullname}{/if}</h3>
 
 <form id="updatuserdetails" name="updatuserdetails" action="{$domain}{$section}/updateUser" method="post">
 
@@ -87,7 +87,7 @@ return true;
  </tr>
 </table>
 
-<h3>Update User's Password :</h3>
+<h3 style="margin-top:10px">{if $user.id == $_user.id}Your password{else}Update user's password{/if}</h3>
 
 <div class="instruction">(If you would like to change the user's password type a new one twice below. Otherwise leave this blank.)</div>
   
@@ -113,19 +113,17 @@ return true;
   </tr> *}
 </table>
 
-<div class="edit-form-row">
   <div class="buttons-bar">
     <input type="button" value="Cancel" onclick="cancelForm();" />
     <input type="submit" value="Save" />
   </div>
-</div>
 
 </div>
 <div id="actions-area">
   <ul class="actions-list">
      <li><b>Users &amp; Tokens</b></li>
-     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/listUsers'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Go back to users</a></li>
-     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/editUserTokens?user_id={$user.id}'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Edit tokens</a></li>
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Go back to users</a></li>
+     {if $show_tokens_edit_tab}<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/editUserTokens?user_id={$user.id}'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Edit this user's permissions</a></li>{/if}
   </ul>
 </div>
 </form>

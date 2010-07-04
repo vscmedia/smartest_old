@@ -71,5 +71,14 @@
 {/foreach}
   </ul>
 {/if}
+
+{if !empty($recently_edited)}
+<ul class="actions-list" id="non-specific-actions">
+  <li><b>Recently edited</b></li>
+  {foreach from=$recently_edited item="recent_template"}
+	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_template.action_url}'"><img border="0" src="{$recent_template.small_icon}" /> {$recent_template.label|summary:"30"}</a></li>
+  {/foreach}
+</ul>
+{/if}
   
 </div>

@@ -38,6 +38,8 @@ class SmartestQuery{
 	const NOTTAGGEDWITH = 9;
 	const NOT_TAGGED_WITH = 9;
 	
+	const IN = 256;
+	
 	const RANDOM = -1024;
 	
 	public function __construct($model_id, $site_id=''){

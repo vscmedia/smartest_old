@@ -27,7 +27,7 @@ function executeTransfer(){
     
 {load_interface file="edit_user_tabs.tpl"}
 
-<h3><a href="{$domain}{$section}">Settings</a> &gt; <a href="{$domain}{$section}/users">Users</a> &gt; Edit User Tokens</h3>
+<h3>Permission Tokens</h3>
 
 <form action="{$domain}{$section}/transferTokens" method="post" name="transferForm">
   <input type="hidden" id="transferAction" name="transferAction" value="" /> 
@@ -86,9 +86,9 @@ function executeTransfer(){
 <div id="actions-area">
   <ul class="actions-list">
      <li><b>Users &amp; Tokens</b></li>
-     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addUser'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add User</a></li>
-     {* <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addRole'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add Role</a></li> *}
-     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/listUsers'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> List Users</a></li>
-     {* <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/listRoles'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> List Roles</a></li> *}
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users/add'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add User</a></li>
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/user_roles/add'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add Role</a></li>
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> List Users</a></li>
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/user_roles'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> List Roles</a></li>
   </ul>
 </div>

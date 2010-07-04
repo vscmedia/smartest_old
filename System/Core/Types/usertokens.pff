@@ -1,8 +1,8 @@
 # Smartest User Tokens / Last updated in reveision 286 by Marcus
 id:type:scope:code:category:description
-0:p:s:root_permission:SM_USERTOKEN_SYSTEM:ROOT! Carry out any action on any site.
+0:p:s:root_permission:SM_USERTOKEN_SYSTEM:{{ROOT!}} Carry out any action on any site.
 # Number 1 was formerly "create_remove_settings" for adding and removing system settings themselves
-1:u:s:unused_1:SM_USERTOKEN_UNUSED:[Unused] (1)
+# 1:u:s:unused_1:SM_USERTOKEN_UNUSED:[Unused] (1)
 2:p:s:modify_system_settings:SM_USERTOKEN_SYSTEM:Edit values of system settings
 3:p:s:add_new_pages:SM_USERTOKEN_PAGES:Add pages to the sitemap
 4:p:s:remove_pages:SM_USERTOKEN_PAGES:Remove pages from the sitemap

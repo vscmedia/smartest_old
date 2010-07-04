@@ -1,0 +1,16 @@
+roles:
+  admin:
+    label: System Administrator
+    tokens:
+      - root_permission
+  contributor:
+    label: Contributor
+    tokens:
+      - add_items
+      - delete_items
+      - modify_page_properties
+      - modify_draft_pages
+      - modify_items
+      - site_access
+      - modify_assets
+      - create_assets # users can always delete assets that they have created

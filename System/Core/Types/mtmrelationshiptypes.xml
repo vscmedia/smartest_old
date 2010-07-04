@@ -105,4 +105,17 @@
     <entity table="Sites" class="SmartestSite" foreignkey="site_id" index="3" required="true" />
   </type>
   
+  <type id="SM_MTMLOOKUP_RECENTLY_EDITED_TEMPLATES" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Recently edited templates.</label>
+    <entity table="Assets" class="SmartestTemplateAsset" foreignkey="asset_id" index="1" required="true" />
+    <entity table="Users" class="SmartestUser" foreignkey="user_id" index="2" required="true" />
+    <entity table="Sites" class="SmartestSite" foreignkey="site_id" index="3" required="true" />
+  </type>
+  
+  <type id="SM_MTMLOOKUP_USER_INITIAL_ROLE" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Maps users to the roles they were created with.</label>
+    <entity table="Users" class="SmartestSystemUser" foreignkey="user_id" index="1" required="true" />
+    <entity table="Roles" class="SmartestRole" foreignkey="role_id" index="2" required="true" />
+  </type>
+  
 </relationshiptypes>
