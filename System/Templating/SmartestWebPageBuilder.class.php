@@ -639,7 +639,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 			        }
 
     			}else{
-    		        $to = 'page:webid='.$page->getWebid();
+    			    $to = 'page:webid='.$page->getWebid();
     		    }
                 
                 /* if($page->getType() == 'ITEMCLASS' && !$page instanceof SmartestItemPage){
