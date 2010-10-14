@@ -70,6 +70,7 @@ type:
     captionable: true
     parsable: false
     uploadable: true
+    supports_exif: true
     storage:
       type: file
       location: Public/Resources/Images/

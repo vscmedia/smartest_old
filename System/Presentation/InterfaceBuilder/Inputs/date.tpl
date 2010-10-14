@@ -1,6 +1,6 @@
 <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
-<select name="item[{$property.id}][M]">
-	<option value="00"{if $value.M == "00"} selected="selected"{/if}>-- Month --</option>
+<select name="item[{$property.id}][M]" style="width:75px">
+	<option value="00"{if $value.M == "00"} selected="selected"{/if}>Month</option>
 	<option value="01"{if $value.M == "01"} selected="selected"{/if}>January</option>
 	<option value="02"{if $value.M == "02"} selected="selected"{/if}>February</option>
 	<option value="03"{if $value.M == "03"} selected="selected"{/if}>March</option>
@@ -13,9 +13,9 @@
 	<option value="10"{if $value.M == "10"} selected="selected"{/if}>October</option>
 	<option value="11"{if $value.M == "11"} selected="selected"{/if}>November</option>
 	<option value="12"{if $value.M == "12"} selected="selected"{/if}>December</option>
-</select><br />
-<select name="item[{$property.id}][D]">
-	<option value="00"{if $value.D == "00"} selected="selected"{/if}>-- Day --</option>
+</select>
+<select name="item[{$property.id}][D]" style="width:35px">
+	<option value="00"{if $value.D == "00"} selected="selected"{/if}>Day</option>
 	<option value="01"{if $value.D == "01"} selected="selected"{/if}>1st</option>
 	<option value="02"{if $value.D == "02"} selected="selected"{/if}>2nd</option>
 	<option value="03"{if $value.D == "03"} selected="selected"{/if}>3rd</option>
@@ -47,5 +47,5 @@
 	<option value="29"{if $value.D == "29"} selected="selected"{/if}>29th</option>
 	<option value="30"{if $value.D == "30"} selected="selected"{/if}>30th</option>
 	<option value="31"{if $value.D == "31"} selected="selected"{/if}>31st</option>
-</select><br />
+</select>
 Year: <input type="text" name="item[{$property.id}][Y]" size="5" maxlength="4" value="{if $value.Y}{$value.Y}{else}{$default_year}{/if}" />

@@ -14,13 +14,25 @@ class SmartestAssetsLibraryHelper{
         $this->database = SmartestPersistentObject::get('db:main');
     }
     
-    public function getTypes(){
+    public function getTypes($exclude_categories=''){
         
         if(!$this->types){
             $this->types = SmartestDataUtility::getAssetTypes();
         }
         
-        return $this->types;
+        if(!is_array($exclude_categories)){
+    		    $exclude_categories = array();
+    		}
+    		
+    		$types = $this->types;
+    		
+    		foreach($types as $k=>$t){
+    		    if(in_array($t['category'], $exclude_categories)){
+    		        unset($types[$k]);
+    		    }
+    		}
+    		
+        return $types;
     }
     
     public function getSelectedTypes($type_codes=''){
@@ -180,6 +192,22 @@ class SmartestAssetsLibraryHelper{
         }else{
             return self::ASSET_TYPE_UNKNOWN;
         }
+        
+    }
+    
+    public function getUnWritableStorageLocations(){
+        
+        $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+        $locations = $data['system']['writable_locations']['files_repo'];
+        $problem_locations = array();
+        
+        foreach($locations as $l){
+            if(!is_writable(SM_ROOT_DIR.$l)){
+                $problem_locations[] = $l;
+            }
+        }
+        
+        return $problem_locations;
         
     }
     

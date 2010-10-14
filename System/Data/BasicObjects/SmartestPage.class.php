@@ -1280,6 +1280,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 
             case "action_url":
             return $this->getActionUrl();
+            
+            case "modified":
+            return new SmartestDateTime($this->_properties['modified']);
 	        
 	    }
 	    

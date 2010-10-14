@@ -7,7 +7,7 @@ class SmartestAssetClassesHelper{
     
     public function __construct(){
         
-        $this->database = SmartestPersistentObject::get('db:main');
+        $this->database = SmartestDatabase::getInstance('SMARTEST');
         
     }
     

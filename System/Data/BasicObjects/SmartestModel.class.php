@@ -54,12 +54,17 @@ class SmartestModel extends SmartestBaseModel{
 	public function delete($remove=false){
 	    
 	    if($remove){
-	    
+	        
 	        // Delete properties and property values
     	    foreach($this->getProperties() as $p){
     	        $p->delete(false);
     	    }
-	    
+	        
+	        // TODO: FS#360 delete references
+	        // Delete items, now bereft of any property values
+	        // $sql = "DELETE FROM ManyToManyLookups WHERE (Items.item_id=ManyToManyLookups.mtmlookup_entity_1_foreignkey AND ManyToManyLookups.mtmlookup_type='".SM_MTMLOOKUP_RECENTLY_EDITED_ITEMS."')item_itemclass_id='".$this->getId()."'";
+    	    // $this->database->rawQuery($sql);
+	        
     	    // Delete items, now bereft of any property values
     	    $sql = "DELETE FROM Items WHERE item_itemclass_id='".$this->getId()."'";
     	    $this->database->rawQuery($sql);
@@ -157,12 +162,16 @@ class SmartestModel extends SmartestBaseModel{
 		return $ids;
 	}
 	
-	public function getPropertyNames(){
+	public function getPropertyNames($use_ids_as_keys=false){
 		
 		$propertynames = array();
 		
 		foreach($this->_model_properties as $mp){
-			$propertynames[] = $mp->getName();
+		    if($use_ids_as_keys){
+		        $propertynames[$mp->getId()] = $mp->getName();
+		    }else{
+			    $propertynames[] = $mp->getName();
+		    }
 		}
 		
 		return $propertynames;
@@ -234,6 +243,8 @@ class SmartestModel extends SmartestBaseModel{
             
         }
         
+        // echo $sql;
+        
         if(strlen($query)){
             
             $words = explode(' ', $query);
@@ -280,9 +291,23 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
-    public function getItemIds($site_id=''){
+    public function getItemIds($site_id='', $mode=9){
         
         $sql = "SELECT item_id FROM Items WHERE item_itemclass_id='".$this->_properties['id']."' AND item_deleted != 1";
+        
+        if($mode > 5){
+            $sql .= " AND Items.item_public='TRUE'";
+        }
+        
+        if(in_array($mode, array(1,4,7,10))){
+	    
+	        $sql .= " AND Items.item_is_archived='1'";
+	    
+        }else if(in_array($mode, array(2,5,8,11))){
+            
+            $sql .= " AND Items.item_is_archived='0'";
+            
+        }
         
         if(is_numeric($site_id)){
             $sql .= " AND item_site_id='".$site_id."'";
@@ -298,6 +323,10 @@ class SmartestModel extends SmartestBaseModel{
         }
         
         return $items;
+        
+    }
+    
+    public function getItems($site_id='', $mode=9){
         
     }
     
@@ -333,6 +362,10 @@ class SmartestModel extends SmartestBaseModel{
         
         return $arrays;
         
+    }
+    
+    public function hasPropertyWithId($id){
+        return in_array($id, $this->getPropertyIds());
     }
     
     public function hasDefaultDescriptionPropertyId(){

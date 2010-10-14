@@ -183,7 +183,7 @@ class SmartestRequestUrlHelper{
 	
 	public function getItemClassPageByUrl($url, $site_id){
 		
-		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url FROM Pages, PageUrls WHERE (Pages.page_type='ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_DATASET') AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
+		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url, PageUrls.pageurl_type, PageUrls.pageurl_page_id, PageUrls.pageurl_item_id FROM Pages, PageUrls WHERE (Pages.page_type='ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_DATASET') AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		
 		$dataset_pages = $this->database->queryToArray($sql);
 		
@@ -194,78 +194,130 @@ class SmartestRequestUrlHelper{
 			// loop through dataset pages and urls and check the urls against the current one
 			foreach($dataset_pages as $page_record){
 			    
-			    $page_url_regexp = $this->convertPageUrlToRegExp($page_record["pageurl_url"]);
-			    
-			    // if the stored url being checked matches the current one
-			    if(preg_match($page_url_regexp, $url, $matches)){
+			    // Before doing anything intensive like regexes, check for more straightforward cases
+			    if($page_record['pageurl_type'] == 'SM_PAGEURL_SINGLE_ITEM' && $page_record['pageurl_url'] == $url){
+			        
+			        // load up page and exit
+			        $page = new SmartestItemPage;
+			        
+			        if($page->find($page_record['pageurl_page_id'])){
+			        
+			            $page->setIdentifyingFieldName("id");
+    				    $page->setIdentifyingFieldValue($page_record['pageurl_item_id']);
+    			        $page->setUrlNameValuePair("id", $page_record['pageurl_item_id']);
+			        
+    			        if($page->isAcceptableItem()){
+    		                $page->assignPrincipalItem();
+    		                return $page;
+    		            }
+		            
+	                }
+			        
+			    }else if($page_record['pageurl_type'] == 'SM_PAGEURL_ITEM_FORWARD' && $page_record['pageurl_url'] == $url){
+			        
+			        // load up page and forward
+			        $page = new SmartestItemPage;
+			        
+			        if($page->find($page_record['pageurl_page_id'])){
+			        
+			            $page->setIdentifyingFieldName("id");
+    				    $page->setIdentifyingFieldValue($page_record['pageurl_item_id']);
+    			        $page->setUrlNameValuePair("id", $page_record['pageurl_item_id']);
+			        
+    			        if($page->isAcceptableItem()){
+    		                $page->assignPrincipalItem();
+    		                throw new SmartestRedirectException($page->getPrincipalItem()->getUrl());
+    		            }
+		            
+	                }
+			        
+			    }else if($page_record['pageurl_type'] == 'SM_PAGEURL_NORMAL' || $page_record['pageurl_type'] == 'SM_PAGEURL_INTERNAL_FORWARD'){
+			        
+			        $page_url_regexp = $this->convertPageUrlToRegExp($page_record["pageurl_url"]);
+			        
+			        // echo $page_url_regexp;
+			        
+    			    // if the stored url being checked matches the current one
+    			    if(preg_match($page_url_regexp, $url, $matches)){
 				    
-				    // create the page object
-				    $page = new SmartestItemPage;
+    				    // create the page object
+    				    $page = new SmartestItemPage;
 				    
-				    // hydrate it
-				    if($page->hydrate($page_record['page_id'])){
+    				    // hydrate it
+    				    if($page->hydrate($page_record['page_id'])){
 				        
-				        // $template_url_parts = explode("/", $page_record["pageurl_url"]);
-				        $template_url_parts = preg_split("/[\.\/]/", $page_record["pageurl_url"]);
+    				        // $template_url_parts = explode("/", $page_record["pageurl_url"]);
+    				        $template_url_parts = preg_split("/[\.\/]/", $page_record["pageurl_url"]);
 				        
-				        $actual_url_parts = $matches;
+    				        $actual_url_parts = $matches;
     					
-    					array_shift($actual_url_parts);
+        					array_shift($actual_url_parts);
     					
-    					$i = 0;
+        					$i = 0;
 
-    					foreach($template_url_parts as $key => $url_placeholder){
+        					foreach($template_url_parts as $key => $url_placeholder){
     					    
-    					    // if($i = count($template_url_parts) - 1){
-    					    //     $regex = '/^(\$|:)([\w_]+)(\.\w+)?/';
-    					    // }else{
-    					        $regex = '/^(\$|:)([\w_]+)/';
-    					    // }
+        					    // if($i = count($template_url_parts) - 1){
+        					    //     $regex = '/^(\$|:)([\w_]+)(\.\w+)?/';
+        					    // }else{
+        					        $regex = '/^(\$|:)([\w_]+)/';
+        					    // }
     					    
-    						if(preg_match($regex, $url_placeholder, $url_var_matches)){
+        						if(preg_match($regex, $url_placeholder, $url_var_matches)){
     							
-    							if($url_placeholder == ":id"){
-    							    $page->setIdentifyingFieldName("id");
-    							    $page->setIdentifyingFieldValue($actual_url_parts[$i]);
-    							}else if($url_placeholder == ":name"){
-    							    $page->setIdentifyingFieldName("slug");
-    							    $page->setIdentifyingFieldValue($actual_url_parts[$i]);
-    							}else if($url_placeholder == ":long_id"){
-        							$page->setIdentifyingFieldName("webid");
-        							$page->setIdentifyingFieldValue($actual_url_parts[$i]);
-        						}
+        							if($url_placeholder == ":id"){
+        							    $page->setIdentifyingFieldName("id");
+        							    $page->setIdentifyingFieldValue($actual_url_parts[$i]);
+        							}else if($url_placeholder == ":name"){
+        							    $page->setIdentifyingFieldName("slug");
+        							    $page->setIdentifyingFieldValue($actual_url_parts[$i]);
+        							}else if($url_placeholder == ":long_id"){
+            							$page->setIdentifyingFieldName("webid");
+            							$page->setIdentifyingFieldValue($actual_url_parts[$i]);
+            						}
         						
-        						$page->setUrlNameValuePair($url_var_matches[2], $actual_url_parts[$i]);
+            						$page->setUrlNameValuePair($url_var_matches[2], $actual_url_parts[$i]);
 
-        						$i++;
+            						$i++;
     							
-    						}
+        						}
     						
-    					}
+        					}
     					
-    					if($page->isAcceptableItem()){
-    					    // the item id was ok. get the item
-    					    $page->assignPrincipalItem();
-    					    return $page;
-    					}else{
-    					    // the item was not in the set, so I guess it's a 404
-    					    return false;
-    					}
+        					if($page->isAcceptableItem()){
+        					    
+        					    $page->assignPrincipalItem();
+        					    
+        					    if($page_record['pageurl_type'] == 'SM_PAGEURL_INTERNAL_FORWARD'){
+        					        // var_dump($page->getPrincipalItem());
+        					        throw new SmartestRedirectException($page->getPrincipalItem()->getUrl());
+        					    }else{
+        					        // the item id was ok. get the item
+        					        return $page;
+    					        }
+    					        
+        					}else{
+        					    // echo "item not acceptable";
+        					    // the item was not in the set, so I guess it's a 404
+        					    return false;
+        					}
     					
-    					if(!$page->getIdentifyingFieldName()){
-    					    // error 404
-    					    return false;
-    					}
+        					if(!$page->getIdentifyingFieldName()){
+        					    // error 404
+        					    return false;
+        					}
 				        
-				    }else{
-				        // the page id attached to the stored page url doesn't exist or couldn't be hydrated
-				        // 404
-				        return false;
-				    }
+    				    }else{
+    				        // the page id attached to the stored page url doesn't exist or couldn't be hydrated
+    				        // 404
+    				        return false;
+    				    }
 					
-				} 
+    				}
+				
+			    }
 	
-			} 
+			} // End of the foreach
 			
 			return false;
 		}else{

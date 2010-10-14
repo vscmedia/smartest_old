@@ -1,6 +1,6 @@
 <?php
 
-class SmartestParameterHolder implements ArrayAccess{
+class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countable, SmartestBasicType{
     
     protected $_data = array();
     protected $_name;
@@ -29,6 +29,18 @@ class SmartestParameterHolder implements ArrayAccess{
     
     public function absorb(SmartestParameterHolder $d){
         $this->loadArray($d->getParameters());
+    }
+    
+    public function setValue($value){
+        if(is_array($value)){
+            $this->_data = $value;
+        }else{
+            throw new SmartestException("SmartestArray::setValue() expects an array; ".gettype($value)." given.");
+        }
+    }
+    
+    public function getValue(){
+        return $this->getData();
     }
     
     public function __toString(){
@@ -76,6 +88,7 @@ class SmartestParameterHolder implements ArrayAccess{
     }
     
     public function setParameter($n, $v){
+        // var_dump($n);
         $this->_data[$n] = $v;
         return true;
     }
@@ -132,6 +145,8 @@ class SmartestParameterHolder implements ArrayAccess{
             return end($this->_data);
             case "_json":
             return $this->toJson();
+            case "_keys":
+            return array_keys($this->_data);
         }
         
         return $this->getParameter($offset);
@@ -151,6 +166,14 @@ class SmartestParameterHolder implements ArrayAccess{
         if(!$this->_read_only){
             return $this->clearParameter($offset);
         }
+    }
+    
+    public function &getIterator(){
+        return new ArrayIterator($this->_data);
+    }
+    
+    public function count(){
+        return count($this->_data);
     }
     
 }

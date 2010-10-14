@@ -107,6 +107,7 @@ class SmartestManyToManyHelper{
         }
         
         $l->save();
+        return $l->getId();
         
     }
     

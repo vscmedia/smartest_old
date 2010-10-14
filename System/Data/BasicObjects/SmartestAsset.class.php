@@ -1,6 +1,6 @@
 <?php
 
-class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
+class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject, SmartestStorableValue{
     
     protected $_allowed_types = array();
     protected $_draft_mode = false;
@@ -134,6 +134,24 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject{
         }
         
 	}
+	
+	// The next two methods are for the SmartestStorableValue interface
+    public function getStorableFormat(){
+        return $this->_properties['id'];
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        if(is_numeric($v)){
+            return $this->find($v);
+        }
+    }
+    
+    public function hydrateFromFormData($v){
+        // var_dump($this->find($v));
+        if(is_numeric($v)){
+            return $this->find($v);
+        }
+    }
 	
 	public function getSite(){
 	    

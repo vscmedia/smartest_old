@@ -185,11 +185,11 @@ div#main-interface-container{
 	color:#555;
 }
 
-div#work-area{
+div#work-area, div#work-area-full{
 	font-size:12px;
 }
 
-div#work-area h3{
+div#work-area h3, div#work-area-full h3{
     color:#555;
     font-size:1.4em;
     letter-spacing: 1px;
@@ -201,18 +201,24 @@ div#work-area h3{
     background-repeat:repeat-x;
 }
 
-div#work-area h3 a{
+div#work-area h3 a, div#work-area-full h3 a{
 	color:#555;
 }
 
-div#work-area h4{
+div#work-area h4, div#work-area-full h4{
     color:#555;
     font-size:1.2em;
     letter-spacing: 1px;
     font-weight:normal;
     font-family:"helvetica neue",helvetica,arial,sans-serif;
-    background-color:#eee;
-	border:1px solid #ccc;
+    /* background-color:#eee;
+	border:1px solid #ccc; */
+}
+
+div#work-area div.edit-form-row h4{
+    font-size:14px;
+    font-weight:bold;
+    font-family: lucida grande,verdana,sans-serif;
 }
 
 div#actions-area{
@@ -291,8 +297,6 @@ div.warning{
     font-size:12px;
     border:3px solid #EB9A38;
     background-color:#F5C564;
-    padding:5px;
-    margin:10px 0 10px 0;
 }
 
 div.warning a{
@@ -333,6 +337,47 @@ div._new-desktop-column-inner h4{
     border:0;
     background-color:#fff;
     padding:0px!important;
+}
+
+div._new-desktop-column-inner h4{
+    border:0;
+    background-color:#fff;
+    padding:0px!important;
+}
+
+ul._new-desktop-options-list{
+    border:1px solid #ddd;
+}
+
+ul._new-desktop-options-list li{
+    
+}
+
+ul._new-desktop-options-list li.divider{
+    height:8px;
+}
+
+ul._new-desktop-options-list li a{
+    
+}
+
+ul._new-desktop-square-buttons{
+    border-top:1px solid #ddd;
+    border-left:1px solid #ddd;
+}
+
+ul._new-desktop-square-buttons li{
+    border-bottom:1px solid #ddd;
+    border-right:1px solid #ddd;
+}
+
+ul._new-desktop-square-buttons li a{
+    color:#444;
+}
+
+ul._new-desktop-square-buttons li a:hover{
+    text-decoration:none;
+    background-color:#f0f0f0;
 }
 
 /******** Top Nav *******/

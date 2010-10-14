@@ -1,6 +1,6 @@
 <?php
 
-class SmartestBoolean implements SmartestBasicType, ArrayAccess{
+class SmartestBoolean implements SmartestBasicType, ArrayAccess, SmartestStorableValue, SmartestSubmittableValue{
     
     protected $_value;
     
@@ -18,6 +18,25 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess{
     
     public function __toString(){
         return $this->_value ? 'TRUE' : 'FALSE';
+    }
+    
+    // The next three methods are for the SmartestStorableValue interface
+    public function getStorableFormat(){
+        return $this->__toString();
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        $this->setValue($v);
+        return true;
+    }
+    
+    public function hydrateFromFormData($v){
+        $this->setValue($v);
+        return true;
+    }
+    
+    public function getHtmlFormFormat(){
+        return $this->_value;
     }
     
     public function stdObjectOrScalar(){

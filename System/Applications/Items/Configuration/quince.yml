@@ -23,3 +23,10 @@ module:
       meta:
         template: _blank.tpl
         presentation_subfolder: Ajax/
+    ipv:
+      class: ItemPropertyValueEditor
+      meta:
+        presentation_subfolder: ItemPropertyValueEditorUtil/
+        template: _default.tpl
+    test:
+      class: ItemsFunctionalityTest

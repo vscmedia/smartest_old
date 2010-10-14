@@ -1,6 +1,6 @@
 <?php
 
-class SmartestString implements SmartestBasicType, ArrayAccess{
+class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorableValue, SmartestSubmittableValue{
 	
 	protected $_string;
 	
@@ -21,11 +21,26 @@ class SmartestString implements SmartestBasicType, ArrayAccess{
     }
     
     public function setValue($v){
-        $this->_string = $v;
+        $this->_string = (string) $v;
     }
     
     public function getValue(){
         return $this->_string;
+    }
+    
+    // The next two methods are for the SmartestStorableValue interface
+    public function getStorableFormat(){
+        return $this->_string;
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        $this->setValue($v);
+        return true;
+    }
+    
+    public function hydrateFromFormData($v){
+        $this->setValue($v);
+        return true;
     }
     
     public function toSlug(){

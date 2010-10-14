@@ -3,7 +3,7 @@
   
   <div class="instruction">How should this {$asset_type.label} look on {$model.name} '{$item.name}'</div>
   
-  <form action="{$domain}{$section}/updateItemPropertyValueAssetData" method="post">
+  <form action="{$domain}ipv:{$section}/updateAssetData" method="post">
   
   <input type="hidden" name="item_id" value="{$item.id}" />
   <input type="hidden" name="property_id" value="{$property.id}" />

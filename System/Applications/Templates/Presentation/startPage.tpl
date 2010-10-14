@@ -2,6 +2,17 @@
 
 <h3>Your Templates</h3>
 
+{if count($locations)}
+  <div class="warning">
+      <p>For smooth operation of the templates repository, the following locations need to be made writable:</p>
+      <ul>
+{foreach from=$locations item="l"}
+        <li><code>{$l}</code></li>
+{/foreach}        
+      </ul>
+  </div>
+{/if}
+
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" id="item_id_input" name="type" value="" />
 </form>

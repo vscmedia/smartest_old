@@ -7,6 +7,7 @@ class SmartestManyToManyEntity{
     protected $_entityIndex;
     protected $_class = '';
     protected $_required = false;
+    protected $_default_sort = null;
     
     public function __construct($table, $foreignKey, $entityIndex, $class, $required=false){
         
@@ -53,6 +54,18 @@ class SmartestManyToManyEntity{
     
     public function isRequired(){
         return $this->_required;
+    }
+    
+    public function hasDefaultSort(){
+        return (bool) $this->_default_sort;
+    }
+    
+    public function getDefaultSort(){
+        return $this->_default_sort;
+    }
+    
+    public function setDefaultSort($sort){
+        $this->_default_sort = $this->_table.'.'.$sort;
     }
     
 }

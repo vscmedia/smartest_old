@@ -594,7 +594,7 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 	}
 	
-	public static function toCommaSeparatedList($array){
+	public static function toCommaSeparatedList($array, $grammatical=true){
 	    
 	    if(is_array($array)){
 	        
@@ -605,7 +605,7 @@ class SmartestStringHelper extends SmartestHelper{
 	        foreach(array_values($array) as $key => $word){
 	            
 	            if($key > 0){
-	                if($key == $last_index){
+	                if($key == $last_index && $grammatical){
 	                    $string .= ' and ';
 	                }else{
 	                    $string .= ', ';

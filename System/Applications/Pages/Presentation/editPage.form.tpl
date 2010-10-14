@@ -132,7 +132,7 @@
   		      {if $page.is_published == "TRUE"}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}</div></td>
   	    <td>
   		    <input type="button" name="edit" value="Edit" onclick="window.location='{$domain}{$section}/editPageUrl?url_id={$pageurl.id}'" />
-  		    <input type="button" name="mkdefault" value="Make Default" onclick="window.location='{$domain}{$section}/setPageDefaultUrl?page_id={$page.webid}&amp;url={$pageurl.id}'"{if $pageurl.is_default == 1 || $pageurl.type == 'SM_PAGEURL_INTERNAL_FORWARD'} disabled="disabled"{/if} />
+  		    <input type="button" name="mkdefault" value="Make Default" onclick="window.location='{$domain}{$section}/setPageDefaultUrl?page_id={$page.webid}&amp;url={$pageurl.id}'"{if $pageurl.is_default == 1 || $pageurl.type == 'SM_PAGEURL_INTERNAL_FORWARD' || $pageurl.type == 'SM_PAGEURL_ITEM_FORWARD'} disabled="disabled"{/if} />
   		    {if count($page.urls) > 1 || $ishomepage == "true"}<input type="button" name="delete" value="Delete" onclick="if(confirm('Are you sure you want to delete this URL?')) window.location='{$domain}{$section}/deletePageUrl?page_id={$page.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage};'"/>{/if}</td></tr> 
       {/foreach}
       
@@ -148,7 +148,7 @@
   	  
   	</table>
 	
-  	<a href="{$domain}{$section}/addPageUrl?page_id={$page.webid}&amp;ishomepage={$ishomepage}">{if count($page.urls)}Add Another Url{else}Give This Page A Nicer Url{/if}</a><br />
+  	<a href="{$domain}{$section}/addPageUrl?page_id={$page.webid}{if $page.type != "NORMAL"}&amp;item_id={$item.id}{/if}">{if count($page.urls)}Add Another Url{else}Give This Page A Nicer Url{/if}</a><br />
   	<img src="{$domain}Resources/Images/spacer.gif" width="1" height="10" />
   </div>
   

@@ -76,7 +76,7 @@ class SmartestItemPage extends SmartestPage{
 	    
 	    if(!count($this->_urls)){
 		
-		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id ='".$this->_properties['id']."'";
+		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id ='".$this->_properties['id']."' AND (pageurl_type IN ('SM_PAGEURL_NORMAL', 'SM_PAGEURL_INTERNAL_FORWARD') OR (pageurl_type IN ('SM_PAGEURL_SINGLE_ITEM', 'SM_PAGEURL_ITEM_FORWARD') AND pageurl_item_id='".$this->_simple_item->getId()."'))";
 		    $pageUrls = $this->database->queryToArray($sql);
 		
 		    foreach($pageUrls as $key => $url){

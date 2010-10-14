@@ -230,6 +230,22 @@ class SmartestTemplatesLibraryHelper{
         
     }
     
+    public function getUnWritableStorageLocations(){
+        
+        $data = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+        $locations = $data['system']['writable_locations']['templates_repo'];
+        $problem_locations = array();
+        
+        foreach($locations as $l){
+            if(!is_writable(SM_ROOT_DIR.$l)){
+                $problem_locations[] = $l;
+            }
+        }
+        
+        return $problem_locations;
+        
+    }
+    
     public function getMasterTemplateHasBeenImported($template_filename){
         
         if(is_file(SM_ROOT_DIR.'Presentation/Masters/'.$template_filename)){

@@ -4,6 +4,10 @@
 
 <div class="instruction">{$type.description}</div>
 
+{if !$dir_is_writable}
+<div class="warning">The directory <code>{$type.storage.location}</code> needs to be writable before you can add more of these files via Smartest.</div>
+{/if}
+
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="type" value="{$type.template_type}" />
   <input type="hidden" name="asset_type" value="{$type.id}" />
@@ -51,7 +55,7 @@ Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Template options</b></li>
-	<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addTemplate?type={$type.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add another {$type.label|lower}</a></li>
+	{if $dir_is_writable}<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addTemplate?type={$type.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add another {$type.label|lower}</a></li>{/if}
 	<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/templates';" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" border="0" alt="" style="width:16px;height:16px" /> Back to template types</a></li>
 </ul>
 

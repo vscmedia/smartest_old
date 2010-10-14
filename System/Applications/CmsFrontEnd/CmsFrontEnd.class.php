@@ -400,4 +400,20 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	}
 	
+	public function buildXmlSitemap(){
+	    if($this->lookupSiteDomain()){
+	        header('Content-type: application/xml');
+	        $this->send($this->_site->getPagesList(false, false, true), 'pages');
+	        $this->send($this->_site, 'site');
+        }
+	}
+	
+	public function buildRobotsTxtFile(){
+	    header('Content-type: text/plain');
+	}
+	
+	public function systemStatusAsXml(){
+	    header('Content-type: application/xml');
+	}
+	
 }

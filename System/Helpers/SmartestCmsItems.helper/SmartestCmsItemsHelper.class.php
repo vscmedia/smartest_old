@@ -31,11 +31,9 @@ class SmartestCmsItemsHelper{
         
         $results = $this->getSquareDbDataFromIdsArray($ids);
         $items = array();
-        // print_r($results);
         
         foreach($results as $item_id => $result){
             
-            // print_r($result['item_itemclass_id']);
             $first = reset($result);
             $model_id = $first['item_itemclass_id'];
             
@@ -50,15 +48,16 @@ class SmartestCmsItemsHelper{
             
         }
         
-        // print_r($this->database->getDebugInfo());
-        
         return $items;
         
     }
     
-    public function hydrateUniformListFromIdsArray($ids){
+    public function hydrateUniformListFromIdsArray($ids, $model_id){
         
-        if($model = $this->getModelFromId($result['item_itemclass_id'])){
+        $results = $this->getSquareDbDataFromIdsArray($ids, $model_id);
+        $items = array();
+        
+        if($model = $this->getModelFromId($model_id)){
             
             $class_name = $model->getClassName();
             
@@ -76,24 +75,29 @@ class SmartestCmsItemsHelper{
         
     }
     
-    public function getRawDbDataFromIdsArray($ids){
+    public function getRawDbDataFromIdsArray($ids, $model_id=''){
         
         // $items_sql = "SELECT * FROM Items WHERE Items.item_id IN ('".implode("','", $ids)."')";
         $sql = "SELECT * FROM Items, ItemPropertyValues WHERE Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND ItemPropertyValues.itempropertyvalue_item_id IN ('".implode("','", $ids)."')";
         // echo $sql;
+        
+        if(is_numeric($model_id)){
+            $sql .= " AND Items.item_itemclass_id='".$model_id."'";
+        }
+        
         // $results = $this->database->queryToArray($sql);
         return $this->database->queryToArray($sql);
         
     }
     
-    public function getSquareDbDataFromIdsArray($ids){
+    public function getSquareDbDataFromIdsArray($ids, $model_id=''){
         
         $included_item_ids = array();
         // echo count($this->getRawDbDataFromIdsArray($ids));
         
         $items = array();
         
-        foreach($this->getRawDbDataFromIdsArray($ids) as $result){
+        foreach($this->getRawDbDataFromIdsArray($ids, $model_id) as $result){
             
             $items[$result['item_id']][$result['itempropertyvalue_property_id']] = $result;
             

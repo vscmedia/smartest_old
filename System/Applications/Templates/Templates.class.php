@@ -19,7 +19,10 @@ class Templates extends SmartestSystemApplication{
 		
 		$h = new SmartestTemplatesLibraryHelper;
 		$types = $h->getTypes();
+		$locations = $h->getUnWritableStorageLocations();
 		$this->send($types, 'types');
+		$this->send($locations, 'locations');
+		
 		$this->setFormReturnDescription('template types');
 		
 		$this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId()), 'recently_edited');
@@ -51,6 +54,8 @@ class Templates extends SmartestSystemApplication{
 	    if(in_array($type_code, $h->getTypeCodes())){
 	        
 	        $type = $types[$type_code];
+	        // echo ;
+	        $this->send(is_writable(SM_ROOT_DIR.$type['storage']['location']), 'dir_is_writable');
 	        $this->send($type, 'type');
 	        $this->send(true, 'show_list');
 	        

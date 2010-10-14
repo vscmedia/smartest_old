@@ -284,6 +284,7 @@ class Pages extends SmartestSystemApplication{
     	        if($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET'){
     	            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
     	                $page->setPrincipalItem($item);
+    	                $this->send($item, 'item');
     	            }
 	            }
     	        
@@ -324,7 +325,7 @@ class Pages extends SmartestSystemApplication{
                 
                         $model = new SmartestModel;
                         
-                        if($model->hydrate($page->getDatasetId())){
+                        if($model->find($page->getDatasetId())){
                             $editorContent['model_name'] = $model->getName();
                             
                             if($page->getParent() && ($type_index[$page->getParent()] == 'ITEMCLASS' || $type_index[$page->getParent()] == 'SM_PAGETYPE_ITEMCLASS' || $type_index[$page->getParent()] == 'SM_PAGETYPE_DATASET')){
@@ -3666,12 +3667,35 @@ class Pages extends SmartestSystemApplication{
 		    
 		    $page->setDraftMode(true);
 		    
-		    $ishomepage = $this->getRequestParameter('ishomepage');
+		    $page_type = $page->getType();
+		    $is_valid_item = false;
+		    
+		    if($page_type == 'ITEMCLASS' || $page_type == 'SM_PAGETYPE_ITEMCLASS' || $page_type == 'SM_PAGETYPE_DATASET'){
+		        
+		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+		            
+		            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+		                
+		                if($page->getDatasetId() == $item->getModel()->getId()){
+		                    $this->send($item, 'item');
+		                    $is_valid_item = true;
+	                    }
+		                
+		            }
+		            
+		        }
+		        
+		    }
+		    
+		    // $ishomepage = $this->getRequestParameter('ishomepage');
 		    $page_id = $page->getId();
-		    $page_info = $page->__toArray();
-		    $page_info['site'] = $page->getSite()->__toArray();
+		    $page_info = $page;
+		    $site = $page->getSite();
+		    $this->send($is_valid_item, 'is_valid_item');
+		    // $page_info['site'] = $page->getSite();
 		    
 		    $this->send($page_info, "pageInfo");
+		    $this->send($site, "site");
 		    $this->send($page->isHomePage(), "ishomepage");
 		
 	    }
@@ -3694,10 +3718,49 @@ class Pages extends SmartestSystemApplication{
 		        // $page->addUrl($this->getRequestParameter('page_url'));
 		        // $page->save();
 		        $url = new SmartestPageUrl;
-		        $url->setUrl(SmartestStringHelper::sanitize($this->getRequestParameter('page_url')));
 		        $url->setPageId($page->getId());
-		        $url->setType($this->getRequestParameter('forward_to_default') ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
 		        $url->setIsDefault(0);
+		        
+		        $page_type = $page->getType();
+
+    		    if($page_type == 'ITEMCLASS' || $page_type == 'SM_PAGETYPE_ITEMCLASS' || $page_type == 'SM_PAGETYPE_DATASET'){
+
+    		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+
+    		            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+
+    		                if($page->getDatasetId() == $item->getModel()->getId()){
+    		                    
+    		                    $url_string = SmartestStringHelper::sanitize($this->getRequestParameter('page_url'));
+    		                    
+    		                    if($this->getRequestParameter('page_url_type') == 'SINGLE_ITEM'){
+    		                        $url_string = str_replace(':name', $item->getSlug(), $url_string);
+    		                        $url_string = str_replace(':id', $item->getId(), $url_string);
+    		                        $url_string = str_replace(':webid', $item->getWebid(), $url_string);
+    		                        $url->setType($this->getRequestParameter('forward_to_default') ? 'SM_PAGEURL_ITEM_FORWARD' : 'SM_PAGEURL_SINGLE_ITEM');
+		                        }else{
+		                            $url_string = str_replace($item->getSlug(), ':name', $url_string);
+    		                        $url_string = str_replace($item->getId(), ':id', $url_string);
+    		                        $url_string = str_replace($item->getWebid(), ':webid', $url_string);
+		                            $url->setType($this->getRequestParameter('forward_to_default') ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
+		                        }
+		                        
+		                        $url->setItemId($item->getId());
+		                        $url->setUrl($url_string);
+    		                    
+    	                    }
+
+    		            }
+
+    		        }
+
+    		    }else{
+		            
+		            $url->setUrl(SmartestStringHelper::sanitize($this->getRequestParameter('page_url')));
+		            $url->setType($this->getRequestParameter('forward_to_default') ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
+		        
+	            }
+	               
 		        $url->save();
 		        SmartestLog::getInstance('site')->log("{$this->getUser()} added URL '{$this->getRequestParameter('page_url')}' to page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        $this->addUserMessageToNextRequest("The new URL was successully added.", SmartestUserMessage::SUCCESS);
@@ -3757,19 +3820,38 @@ class Pages extends SmartestSystemApplication{
 		$url_id = $this->getRequestParameter('url_id');
 		
 		$url = new SmartestPageUrl;
-		$url->hydrate($url_id);
+		$url->find($url_id);
 		
 		if($this->getRequestParameter('forward_to_default') && $this->getRequestParameter('forward_to_default') == 1){
 		    
-		    if($url->getIsDefault()){
-		        $url->setType('SM_PAGEURL_NORMAL');
-		        $this->addUserMessageToNextRequest("The default URL cannot also be an internal forward");
+		    // echo $url->getType();
+		    
+		    if(in_array($url->getType(), array('SM_PAGEURL_ITEM_FORWARD', 'SM_PAGEURL_SINGLE_ITEM'))){
+		        
+		        if($url->getIsDefault()){
+		            $url->setType('SM_PAGEURL_SINGLE_ITEM');
+		            $this->addUserMessageToNextRequest("The default URL cannot also be an internal forward");
+		        }else{
+		            $url->setType('SM_PAGEURL_ITEM_FORWARD');
+		        }
+		        
 		    }else{
-		        $url->setType('SM_PAGEURL_INTERNAL_FORWARD');
-		    }
+		    
+		        if($url->getIsDefault()){
+		            $url->setType('SM_PAGEURL_NORMAL');
+		            $this->addUserMessageToNextRequest("The default URL cannot also be an internal forward");
+		        }else{
+		            $url->setType('SM_PAGEURL_INTERNAL_FORWARD');
+		        }
+		    
+	        }
 		    
 		}else{
-		    $url->setType('SM_PAGEURL_NORMAL');
+		    if(in_array($url->getType(), array('SM_PAGEURL_ITEM_FORWARD', 'SM_PAGEURL_SINGLE_ITEM'))){
+		        $url->setType('SM_PAGEURL_SINGLE_ITEM');
+	        }else{
+	            $url->setType('SM_PAGEURL_NORMAL');
+	        }
 		}
 		
 		$url->setUrl($page_url);

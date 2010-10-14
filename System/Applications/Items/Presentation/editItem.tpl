@@ -42,7 +42,17 @@
 
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} short name (Used in links and URLS)</div>
-  {if $allow_edit_item_slug}<input type="text" name="item_slug" value="{$item.slug}" /><span class="form-hint">Numbers, lowercase letters and hyphens only, please</span>{else}{$item.slug}{/if}
+  {if $allow_edit_item_slug}
+  {if $item.public == "TRUE" && count($metapages)}<div class="warning">Warning: This {$item._model.name|strtolower} is live. Editing this value may cause links to it to break.</div>{/if}
+  <input type="text" name="item_slug" value="{$item.slug}" /><span class="form-hint">Numbers, lowercase letters and hyphens only, please</span>
+  {else}
+  {$item.slug}
+  {/if}
+</div>
+
+<div class="edit-form-row">
+  <div class="form-section-label">Created</div>
+  {$item.created}
 </div>
 
 <div class="edit-form-row">
@@ -56,7 +66,8 @@
 
 {foreach from=$item._editable_properties key="pid" item="property"}
 <div class="edit-form-row">
-  {item_field property=$property value=$item[$pid]}
+  <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
+  {item_field property=$property value=$item[$pid]} {* <a href="{$domain}test:datamanager/ipv?item_id={$item.id}&amp;property_id={$property.id}">Test</a> *}
 </div>
 {/foreach}
 
@@ -117,6 +128,7 @@
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassMembers?class_id={$item._model.id}';" class="right-nav-link">Back to {$item._model.plural_name}</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$item._model.id}';" class="right-nav-link">New {$item._model.name}</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/addSet?class_id={$item._model.id}';" class="right-nav-link">Create a new set of {$item._model.plural_name}</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$item._model.id}';" class="right-nav-link">Edit the properties of this model</a></li>
   </ul>
   
 </div>

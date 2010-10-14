@@ -1,8 +1,9 @@
 <?php
 
-class SmartestDropdownOption extends SmartestBaseDropdownOption{
+class SmartestDropdownOption extends SmartestBaseDropdownOption implements SmartestStorableValue{
     
     protected $_dropdown = null;
+    protected $_value_object;
     
     public function __toString(){
         
@@ -17,6 +18,21 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption{
         
         if(count($result)){
             $this->hydrate($result[0]);
+            return true;
+        }
+    }
+    
+    public function searchForMatchingValue($value){
+        
+        $sql = "SELECT * FROM DropDownValues WHERE dropdownvalue_value='".$value."'";
+        $result = $this->database->queryToArray($sql);
+        
+        if(count($result)){
+            $this->hydrate($result[0]);
+            return true;
+        }else{
+            SmartestLog::getInstance("system")->log("Dropdown option with value of '".$value."' is missing.");
+            return false;
         }
     }
     
@@ -36,12 +52,40 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption{
         
     }
     
+    public function getStorableFormat(){
+        return serialize(array('dropdown_id'=>$this->getDropdownId(), 'value'=>$this->getValue()));
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        $d = unserialize($v);
+        
+        if(is_array($d)){
+            return $this->hydrateByValueWithDropdownId($d['value'], $d['dropdown_id']);
+        }else{
+            return $this->searchForMatchingValue($v);
+        }
+    }
+    
+    public function getValueObject(){
+        return new SmartestString($this->_properties['value']);
+    }
+    
+    public function hydrateFromFormData($v){
+        return $this->searchForMatchingValue($v);
+    }
+    
     public function offsetGet($offset){
         
         switch($offset){
             
             case "html":
             return '<option value="'.$this->_properties['value'].'">'.$this->_properties['label'].'</option>';
+            
+            case "value":
+            return $this->getValueObject();
+            
+            case "label":
+            return new SmartestString($this->_properties['label']);
             
             case "dropdown":
             return $this->getDropdown();

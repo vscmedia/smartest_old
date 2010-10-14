@@ -2,6 +2,17 @@
 
 <h3>Files repository</h3>
 
+{if count($locations)}
+<div class="warning">
+    <p>For smooth operation of the files repository, the following locations need to be made writable:</p>
+    <ul>
+{foreach from=$locations item="l"}
+      <li><code>{$l}</code></li>
+{/foreach}        
+    </ul>
+</div>
+{/if}
+
 {load_interface file="file_browse_tabs.tpl"}
 
 <div class="text" style="margin-bottom:10px">Double click an icon below to see files of that type.</div>

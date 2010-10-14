@@ -26,13 +26,14 @@ function setVarName(){
     <input type="hidden" name="continue" value="{$continue}" />
     
     <div class="edit-form-row">
-      <div class="form-section-label">Property Type</div>
+      <div class="form-section-label">Type of property</div>
       <select name="itemproperty_datatype" id='itemproperty_datatype' onchange="$('type_chooser').submit()">
-  	    <option value="">Select a type</option>
-  	    {foreach from=$data_types item="data_type"}
+        <option value="">Choose a type</option>
+{foreach from=$data_types item="data_type"}
   	    <option value="{$data_type.id}"{if $data_type.id==$property.datatype} selected="selected"{/if}>{$data_type.label}</option>
-  	    {/foreach}
+{/foreach}
       </select>
+      {if $show_full_form}<p style="margin:10px;font-size:11px;margin:3px 0 0 0">{$type_description}</p>{/if}
     </div>
     
   </form>
@@ -45,7 +46,7 @@ function setVarName(){
     <input type="hidden" name="itemproperty_datatype" value="{$property.datatype}" />
 
     <div class="edit-form-row">
-      <div class="form-section-label">Property Name</div>
+      <div class="form-section-label">Name</div>
       <input type="text" value="" name="itemproperty_name" id="itemproperty_name" />
       <span class="form-hint">Property names must be three chars or longer and start with a letter.</span>
     </div>
@@ -57,7 +58,7 @@ function setVarName(){
 {/if}
     
     <div class="edit-form-row">
-      <div class="form-section-label">Property Required:</div>
+      <div class="form-section-label">Requirement</div>
       <input type="checkbox" name="itemproperty_required" id="is-required" value="TRUE" /><label for="is-required">Check if this property is required</label>
     </div>
     

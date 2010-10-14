@@ -36,10 +36,12 @@ class Assets extends SmartestSystemApplication{
 		$this->setFormReturnUri(); // set the url of the page to be return to
 		$this->setFormReturnDescription('file types');
 		
-		$assetTypes_old = $this->manager->getAssetTypes();
+		// $assetTypes_old = $this->manager->getAssetTypes();
 		$assetTypes = $h->getTypesByCategory(array('templates'));
+		$locations = $h->getUnWritableStorageLocations();
 		
 		$this->send($assetTypes, "assetTypeCats");
+		$this->send($locations, 'locations');
 		
 		$recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId());
         $this->send($recent, 'recent_assets');
@@ -302,78 +304,115 @@ class Assets extends SmartestSystemApplication{
 		
 		$this->requireOpenProject();
 		
-		$asset_type = SmartestStringHelper::toConstantName($this->getRequestParameter('asset_type'));
+		if($this->getRequestParameter('asset_type')){
 		
-		$types_array = SmartestDataUtility::getAssetTypes();
+		    $asset_type = SmartestStringHelper::toConstantName($this->getRequestParameter('asset_type'));
 		
-		if(in_array($asset_type, array_keys($types_array))){
+    		$types_array = SmartestDataUtility::getAssetTypes();
+		
+    		if(in_array($asset_type, array_keys($types_array))){
 		    
-		    $type = $types_array[$asset_type];
-		    $this->setTitle("Add a new ".$type['label']);
-		    $this->send($type['id'], 'type_code');
-		    $this->send($type, 'new_asset_type_info');
+    		    $type = $types_array[$asset_type];
+    		    $this->setTitle("Add a new ".$type['label']);
+    		    $this->send($type['id'], 'type_code');
+    		    $this->send($type, 'new_asset_type_info');
 		    
-		    $alh = new SmartestAssetsLibraryHelper;
-		    $possible_groups = $alh->getAssetGroupsThatAcceptType($asset_type, $this->getSite()->getId());
-		    $this->send($possible_groups, 'possible_groups');
+    		    $alh = new SmartestAssetsLibraryHelper;
+    		    $possible_groups = $alh->getAssetGroupsThatAcceptType($asset_type, $this->getSite()->getId());
+    		    $this->send($possible_groups, 'possible_groups');
 		    
-		    if(isset($type['param'])){
+    		    if(isset($type['param'])){
 
-    	        $raw_xml_params = $type['param'];
+        	        $raw_xml_params = $type['param'];
 
-    	        foreach($raw_xml_params as $rxp){
-    	            if(isset($rxp['default'])){
-    	                $params[$rxp['name']] = $rxp['default'];
-                    }else{
-                        $params[$rxp['name']] = '';
-                    }
-    	        }
+        	        foreach($raw_xml_params as $rxp){
+        	            if(isset($rxp['default'])){
+        	                $params[$rxp['name']] = $rxp['default'];
+                        }else{
+                            $params[$rxp['name']] = '';
+                        }
+        	        }
     	        
-    	    }else{
-    	        $params = array();
-    	    }
+        	    }else{
+        	        $params = array();
+        	    }
 		    
-		    $suffixes = array();
+    		    $suffixes = array();
 		    
-		    $this->send($params, 'params');
+    		    $this->send($params, 'params');
 		    
-		    if(is_array($type['suffix'])){
-		        foreach($type['suffix'] as $s){
-		            $suffixes[] = $s['_content'];
-		        }
-		    }
+    		    if(is_array($type['suffix'])){
+    		        foreach($type['suffix'] as $s){
+    		            $suffixes[] = $s['_content'];
+    		        }
+    		    }
 		    
-		    if($type['storage']['type'] == 'database' || $type['category'] == "browser_instructions"){
-		        $starting_mode = 'direct';
-		    }else{
-		        $starting_mode = 'upload';
-		    }
+    		    if($type['storage']['type'] == 'database' || $type['category'] == "browser_instructions"){
+    		        $starting_mode = 'direct';
+    		    }else{
+    		        $starting_mode = 'upload';
+    		    }
 		    
-		    if($type['category'] != 'image'){
-		        $form_include = "add.".strtolower(substr($asset_type, 13)).".tpl";
+    		    if($type['category'] != 'image'){
+    		        $form_include = "add.".strtolower(substr($asset_type, 13)).".tpl";
+    	        }else{
+    	            $form_include = "add.image.tpl";
+    	        }
+	        
+    	        if($type['storage']['type'] != 'database'){
+    	            $path = SM_ROOT_DIR.$type['storage']['location'];
+    	            $allow_save = is_writable($path);
+    	            $this->send($allow_save, 'allow_save');
+    	            $this->send($path, 'path');
+                }else{
+                    $this->send(true, 'allow_save');
+                }
+	        
+    	        $this->send($starting_mode, 'starting_mode');
+    	        $this->send(json_encode($suffixes), 'suffixes');
+	        
+    		}else{
+    		    $this->send($asset_type, 'wanted_type');
+    		    $this->setTitle("Asset Type Not Recognized.");
+    		    $form_include = "add.default.tpl";
+    		}
+    		
+    		$this->send($form_include, 'form_include');
+		
+	    }else{
+	        
+	        if($this->getRequestParameter('placeholder_id')){
+	            
+	            // asset is being created with a view to use it in a placeholder
+	            $placeholder = new SmartestPlaceholder;
+	            
+	            if($property->find($this->getRequestParameter('placeholder_id'))){
+	                
+	            }else{
+	                $this->addUserMessageToNextRequest("The placeholder ID was not recognised", SmartestUserMessage::ERROR);
+	                $this->redirect('/smartest/files');
+	            }
+	            
+	            
+	        }else if($this->getRequestParameter('property_id')){
+	            
+	            // asset is being created with a view to use it in a property
+	            $property = new SmartestItemProperty;
+	            
+	            if($property->find($this->getRequestParameter('property_id'))){
+	                
+	            }else{
+	                $this->addUserMessageToNextRequest("The placeholder ID was not recognised", SmartestUserMessage::ERROR);
+	                $this->redirect('/smartest/files');
+	            }
+	            
 	        }else{
-	            $form_include = "add.image.tpl";
+	            
+	            // asset is being created, but person simply isn't sure what type of asset they'd like to create
+	            
 	        }
 	        
-	        if($type['storage']['type'] != 'database'){
-	            $path = SM_ROOT_DIR.$type['storage']['location'];
-	            $allow_save = is_writable($path);
-	            $this->send($allow_save, 'allow_save');
-	            $this->send($path, 'path');
-            }else{
-                $this->send(true, 'allow_save');
-            }
-	        
-	        $this->send($starting_mode, 'starting_mode');
-	        $this->send(json_encode($suffixes), 'suffixes');
-	        
-		}else{
-		    $this->send($asset_type, 'wanted_type');
-		    $this->setTitle("Asset Type Not Recognized.");
-		    $form_include = "add.default.tpl";
-		}
-		
-		$this->send($form_include, 'form_include');
+	    }
 		
 	}
 	
@@ -623,8 +662,10 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $alh = new SmartestAssetsLibraryHelper;
 	    $groups = $alh->getAssetGroups($this->getSite()->getId());
+	    $locations = $alh->getUnWritableStorageLocations();
 	    
 	    $this->send($groups, 'groups');
+	    $this->send($locations, 'locations');
 	    
 	}
 	
@@ -957,6 +998,20 @@ class Assets extends SmartestSystemApplication{
 		        $this->send(true, 'allow_source_edit');
 		    }else{
 		        $this->send(false, 'allow_source_edit');
+		    }
+		    
+		    // var_dump(SmartestStringHelper::toRealBool($data['type_info']['supports_exif']));
+		    
+		    if(isset($data['type_info']['supports_exif']) && SmartestStringHelper::toRealBool($data['type_info']['supports_exif'])){
+		        // echo "hello";
+		        if($exif_data = $asset->getImage()->getExifData()){
+		            // var_dump($exif_data);
+		            $this->send(true, 'show_exif_panel');
+	            }else{
+	                $this->send(false, 'show_exif_panel');
+	            }
+		    }else{
+		        $this->send(false, 'show_exif_panel');
 		    }
 		    
 		    if(isset($data['type_info']['parsable']) && SmartestStringHelper::toRealBool($data['type_info']['parsable'])){

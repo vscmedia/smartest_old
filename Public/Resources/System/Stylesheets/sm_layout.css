@@ -61,25 +61,32 @@ div#main-interface{
 }
 
 div#work-area{
-	margin:0px;
-	margin-top:45px;
-	padding-right:220px;
-	padding-left:175px;
+	margin:45px 0 0 0;
+	padding:0 220px 0 175px;
 }
 
-div#work-area h3{
+div#work-area-full{
+	margin:45px 0 0 0;
+	padding:0 10px 0 175px;
+}
+
+div#work-area h3, div#work-area-full h3{
 	margin:0px;
 	margin-bottom:10px;
     padding:9px;
 }
 
-div#work-area h4{
+div#work-area h4, div#work-area-full h4{
 	margin:0px;
 	margin-bottom:7px;
     padding:5px;
 }
 
-div#work-area textarea#tpl_textArea{
+div#work-area div.edit-form-row h4{
+    padding:5px 0 2px 0;
+}
+
+div#work-area textarea#tpl_textArea, div#work-area-full textarea#tpl_textArea{
 	height:400px;
 	width:100%;
 	padding:0;
@@ -190,6 +197,20 @@ div.special-box select{
     width:250px;
 }
 
+div.warning{
+    padding:5px;
+    margin:10px 0 10px 0;
+}
+
+div.warning p{
+    margin:0 0 5px 0;
+}
+
+div.warning ul{
+    margin:0px;
+    padding:0 0 0 20px;
+}
+
 form.float{
     float:left;
     display:inline;
@@ -216,4 +237,37 @@ div._new-desktop-column.last div._new-desktop-column-inner{
     padding:0;
     margin:0!important;
     border-right:none!important;
+}
+
+ul._new-desktop-options-list{
+    list-style-type:none;
+    padding:0px;
+    margin:0 0 15px 0;
+}
+
+ul._new-desktop-options-list li.divider{
+    border:0px!important;
+}
+
+ul._new-desktop-options-list li a{
+    padding:3px;
+    display:block;
+}
+
+ul._new-desktop-square-buttons{
+    list-style-type:none;
+    padding:0px;
+    margin:0 0 15px 0;
+}
+
+ul._new-desktop-square-buttons li{
+    text-align:center;
+    width:33%;
+    float:left;
+}
+
+ul._new-desktop-square-buttons li a{
+    display:block;
+    padding:40px 5px 0 5px;
+    height:55px;
 }

@@ -71,6 +71,16 @@ class SmartestDropdown extends SmartestBaseDropdown{
         
     }
     
+    public function getDatatype(){
+        
+        if(array_key_exists('datatype', $this->_properties)){
+            return $this->_properties['datatype'];
+        }else{
+            return 'SM_DATATYPE_SL_TEXT';
+        }
+        
+    }
+    
     public function fixOrderIndices(){
         
         $new_index = 0;

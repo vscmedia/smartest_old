@@ -48,6 +48,16 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
         }
     }
     
+    public function getRawValue($draft){
+        
+        if($draft){
+            return $this->_properties['draft_content'];
+        }else{
+            return $this->_properties['content'];
+        }
+        
+    }
+    
     protected function getValueObject($draft=false){
         
         if(!$this->_value_object){
@@ -62,13 +72,13 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                 if(!class_exists($class)){
                     throw new SmartestException("Class ".$class." required for handling properties of type ".$t['id']." does not exist.");
                 }
-            
+                
                 if($draft){
                     $raw_data = $this->_properties['draft_content'];
                 }else{
                     $raw_data = $this->_properties['content'];
                 }
-            
+                
                 if($t['valuetype'] == 'foreignkey'){
                 
                     // these first two options are both hacks, but will be fixed in the future
@@ -86,30 +96,80 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                         $obj->setDraftMode($draft);
                     }
                 
-                    if($class == 'SmartestRenderableAsset'){
-                        $obj->setAdditionalRenderData($this->getInfo);
-                    }
-                
                     if($class == 'SmartestDropdownOption'){
-                        $obj->hydrateByValueWithDropdownId($raw_data, $this->getProperty()->getForeignKeyFilter());
+                        // $obj->hydrateByValueWithDropdownId($raw_data, $this->getProperty()->getForeignKeyFilter());
+                        $obj->hydrateFromStorableFormat($raw_data);
                     }else{
                         // get the asset, dropdown menu option or what have you
                         if($obj instanceof SmartestCmsItem){
-                        
                             // only bother trying to hydrate the SmartestCmsItem subclass if we have an actual foreign key to use:
-                            if(strlen($raw_data)){
-                                $obj->hydrate($raw_data);
+                            if(strlen($raw_data) && is_numeric($raw_data)){
+                                $obj->find($raw_data);
                             }
-                        
                         }else{
-                            $obj->find($raw_data);
+                            if($this->getProperty()->isManyToMany()){
+                                // $obj->hydrateFromStorableFormat($raw_data);
+                                // if($obj instanceof SmartestManyToManyItemPropertyValueHolder){
+                                    // $obj->fetchManyToManyObjects($this->getId());
+                                    // print_r($obj);
+                                // }else{
+                                //     throw new SmartestException("Many to many data types that are used as item proerty values must implement interface SmartestManyToManyItemPropertyValueHolder");
+                                // }
+                            }else{
+                                $obj->find($raw_data);
+                            }
                         }
                     }
+                    
+                    if($class == 'SmartestRenderableAsset'){
+                        $obj->setAdditionalRenderData($this->getInfo());
+                    }
                 
+                }else if($t['valuetype'] == 'manytomany'){
+                    
+                    /* $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_ITEM_SELECTION_PROPERTY');
+                    $q->setTargetEntityByIndex(1);
+                    $q->addQualifyingEntityByIndex(2, $this->getId());
+                    $q->setDraftMode($draft);
+                    $items = $q->retrieve();
+                    
+                    $obj = new SmartestCmsItemsCollection;
+                    $obj->setValue($items);
+                    
+                    return $obj; */
+                    
+                    if($draft){
+                        $mode = constant('SM_MTMLOOKUPMODE_DRAFT');
+                    }else{
+                        $mode = constant('SM_MTMLOOKUPMODE_PUBLIC');
+                    }
+                    
+                    $r = new SmartestManyToManyMappedRelationship($this->getProperty()->getManyToManyRelationshipType());
+                    $r->setCentralEntityObjectId($this->getId());
+                    $r->setCentralEntityByIndex($this->getProperty()->getManyToManyRelationshipItemEntityIndex());
+                    $r->setTargetEntityByIndex($this->getProperty()->getManyToManyRelationshipMappedObjectEntityIndex());
+                    
+                    $obj = new $class;
+                    $obj->hydrateFromStoredIdsArray($r->getIds($mode));
+                    return $obj;
+                    
+                    // return new SmartestCmsItemsCollection;
+                    
+                    // print_r($ids);
+                    
+                    // echo "retrieving";
+                    
+                    /* if($draft){
+                        $q->restrictToStatus('SM_MTMLOOKUPSTATUS_DRAFT');
+                    }else{
+                        $q->restrictToStatus('SM_MTMLOOKUPSTATUS_LIVE');
+                    } */
+                    
                 }else{
                     // get a SmartestBasicType object
                     $obj = new $class;
-                    $obj->setValue($raw_data);
+                    // $obj->setValue($raw_data);
+                    $obj->hydrateFromStorableFormat($raw_data);
                 }
             
                 $this->_value_object = $obj;
@@ -182,23 +242,39 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
             $user = SmartestSession::get('user');
             
             if($user->hasToken('publish_approved_items') || $user->hasToken('publish_all_items')){
-                $this->_properties['content'] = $this->_properties['draft_content'];
-                $this->_modified_properties['content'] = addslashes($this->_properties['draft_content']);
-                $this->_properties['live_info'] = $this->_properties['draft_info'];
-                $this->_modified_properties['live_info'] = str_replace("'", "\\'", $this->_properties['draft_info']);
-                $this->save();
+                
+                if($this->getProperty()->isManyToMany()){
+                    
+                    // publish many-to-many relationship
+                    $r = new SmartestManyToManyMappedRelationship($this->getProperty()->getManyToManyRelationshipType());
+                    $r->setCentralEntityObjectId($this->getId());
+                    $r->setCentralEntityByIndex($this->getProperty()->getManyToManyRelationshipItemEntityIndex());
+                    $r->setTargetEntityByIndex($this->getProperty()->getManyToManyRelationshipMappedObjectEntityIndex());
+                    $r->publish();
+                    
+                }else{
+                    
+                    $this->_properties['content'] = $this->_properties['draft_content'];
+                    $this->_modified_properties['content'] = addslashes($this->_properties['draft_content']);
+                    $this->_properties['live_info'] = $this->_properties['draft_info'];
+                    $this->_modified_properties['live_info'] = str_replace("'", "\\'", $this->_properties['draft_info']);
+                    $this->save();
+                    
+                    if($this->getProperty()->getDatatype() == 'SM_DATATYPE_ASSET'){
+
+                        $asset = new SmartestAsset;
+                        $asset->hydrate($this->_properties['content']);
+
+                        if($asset->isEditable() && $asset->isParsable()){
+                            $asset->getTextFragment()->publish();
+                        }
+
+                    }
+                    
+                }
             }
             
-            if($this->getProperty()->getDatatype() == 'SM_DATATYPE_ASSET'){
-                
-                $asset = new SmartestAsset;
-                $asset->hydrate($this->_properties['content']);
-                
-                if($asset->isEditable() && $asset->isParsable()){
-                    $asset->getTextFragment()->publish();
-                }
-                
-            }
+            
             
         }
     }
@@ -269,20 +345,76 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
 	protected function _setInfo($serialized_data){
 	    $this->setField('draft_info', $serialized_data);
 	}
+	
+	/* public function prepareDataForStorage($data){
+	    if(is_object($data)){
+	        
+	    }
+	} */
     
-    public function setContent($data){
+    public function setContent($data, $save=true){
         
-        $filtered_data = $this->filterNewContent($data);
+        if(is_object($data)){
+            $filtered_data = $data->getStorableFormat();
+        }else{
+            if($value_obj = SmartestDataUtility::objectizeFromRawFormData($data, $this->getProperty()->getDatatype())){
+                if($this->getProperty()->isManyToMany()){
+                    
+                }else{
+                    $filtered_data = $value_obj->getStorableFormat();
+                }
+            }else{
+                SmartestLog::getInstance('system')->log("Could not set content of SmartestItemPropertyValue object, because a value object was not given and none could be created.");
+            }
+        }
         
-        $this->_properties['draft_content'] = $filtered_data;
-        $this->_modified_properties['draft_content'] = addslashes($filtered_data);
-        
-        if(isset($this->_properties['item_id']) && is_numeric($this->_properties['item_id'])){
-            // $this->save();
+        if($this->getProperty()->isManyToMany()){
+            
+            // add ids to many to many table at draft status if they aren't already there
+            $r = new SmartestManyToManyMappedRelationship($this->getProperty()->getManyToManyRelationshipType());
+            $r->setCentralEntityObjectId($this->getId());
+            $r->setCentralEntityByIndex($this->getProperty()->getManyToManyRelationshipItemEntityIndex());
+            $r->setTargetEntityByIndex($this->getProperty()->getManyToManyRelationshipMappedObjectEntityIndex());
+            $r->updateTo($data);
+            
+        }else{
+            $this->_properties['draft_content'] = $data;
+            $this->_modified_properties['draft_content'] = addslashes($filtered_data);
+
+            if(isset($this->_properties['item_id']) && is_numeric($this->_properties['item_id']) && $save){
+                $this->save();
+            }
         }
         
         return true;
     }
+    
+    public function getUpdateSql(){
+	    
+	    $sql = "UPDATE ".$this->_table_name." SET ";
+	
+		$i = 0;
+	
+		foreach($this->_modified_properties as $name => $value){
+		
+			if($i > 0){
+				$sql .= ', ';
+			}
+		
+			if(!isset($this->_no_prefix[$name])){
+				$sql .= $this->_table_prefix.$name."='".$value."'";
+			}else{
+				$sql .= $name."='".$value."'";
+			}
+		
+			$i++;
+		}
+
+		$sql .= " WHERE ".$this->_table_prefix."property_id='".$this->_properties['property_id']."' AND ".$this->_table_prefix."item_id='".$this->_properties['item_id']."'";
+		
+		return $sql;
+	    
+	}
     
     public function setDraftContent($data){
         return $this->setContent($data);

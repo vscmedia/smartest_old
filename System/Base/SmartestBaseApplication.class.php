@@ -98,9 +98,9 @@ class SmartestBaseApplication extends QuinceBase{
 		    try{
                 
                 if($this->_site = $rh->getSiteByDomain($_SERVER['HTTP_HOST'], $this->url)){
-                    
                     return true;
-
+        	    }else{
+        	        return false;
         	    }
 
             }catch(SmartestRedirectException $e){
@@ -205,19 +205,19 @@ class SmartestBaseApplication extends QuinceBase{
 	    
 	}
 	
-	public function requestParameterIsSet($p){
+	protected function requestParameterIsSet($p){
 	    return $this->getRequest()->hasRequestParameter($p);
 	}
 	
-	public function getRequestParameter($p){
+	protected function getRequestParameter($p){
 	    return $this->getRequest()->getRequestParameter($p);
 	}
 	
-	public function setRequestParameter($p, $v){
+	protected function setRequestParameter($p, $v){
 	    return $this->getRequest()->setRequestParameter($p, $v);
 	}
 	
-	public function getRequestParameters(){
+	protected function getRequestParameters(){
 	    return $this->getRequest()->getRequestParameters();
 	}
 	
@@ -399,11 +399,11 @@ class SmartestBaseApplication extends QuinceBase{
         
         $name = SmartestStringHelper::toVarName($preference_name);
         
-        if($this->_cached_application_preferences->hasParameter($name)){
-            return $this->_cached_application_preferences->getParameter($name);
+        if($this->_cached_global_preferences->hasParameter($name)){
+            return $this->_cached_global_preferences->getParameter($name);
         }else{
             $value = $this->_preferences_helper->getGlobalPreference($name, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
-            $this->_cached_application_preferences->setParameter($name, $value);
+            $this->_cached_global_preferences->setParameter($name, $value);
             return $value;
         }
         

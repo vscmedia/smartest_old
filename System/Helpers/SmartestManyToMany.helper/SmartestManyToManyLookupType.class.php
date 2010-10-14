@@ -8,6 +8,7 @@ class SmartestManyToManyLookupType{
     protected $_entities = array();
     protected $_usesInstances = false;
     protected $_network = null;
+    protected $_phased = false;
     
     public function __construct($type){
         
@@ -24,12 +25,15 @@ class SmartestManyToManyLookupType{
         if(is_array($entities) && $type['method'] != 'SM_MTMLOOKUPMETHOD_NETWORK'){
             foreach($entities as $e){
                 $this->_entities[$e['index']] = new SmartestManyToManyEntity($e['table'], $e['foreignkey'], $e['index'], $e['class'], SmartestStringHelper::toRealBool($e['required']));
+                if(isset($e['defaultsort'])) $this->_entities[$e['index']]->setDefaultSort($e['defaultsort']);
             }
         }
         
         if($type['method'] == 'SM_MTMLOOKUPMETHOD_NETWORK' && isset($type['network'])){
             $this->_network = new SmartestManyToManyNetwork($type['network']['table'], $type['network']['foreignkey'], $type['network']['class']);
         }
+        
+        $this->_phased = (isset($type['phased']) && $type['phased'] == "true");
         
     }
     
@@ -53,6 +57,10 @@ class SmartestManyToManyLookupType{
         return $this->_usesInstances;
     }
     
+    public function isPhased(){
+        return $this->_phased;
+    }
+    
     public function getNumberOfEntities(){
         return count($this->_entities);
     }
@@ -66,6 +74,18 @@ class SmartestManyToManyLookupType{
     public function getNetwork(){
         if($this->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
             return $this->_network;
+        }
+    }
+    
+    public function hasSpecifiedLookupClassname(){
+        return isset($type['lookupclass']);
+    }
+    
+    public function getLookupClassname(){
+        if($this->hasSpecifiedLookupClassname()){
+            return $type['lookupclass'];
+        }else{
+            return 'SmartestManyToManyLookup';
         }
     }
     

@@ -34,6 +34,27 @@
     </div>
 
 {/if}
+
+{if $property.datatype == 'SM_DATATYPE_CMS_ITEM' || $property.datatype == 'SM_DATATYPE_CMS_ITEM_SELECTION'}
+
+    <div class="edit-form-row">
+        <div class="form-section-label">Restrict selection to a data set?</div>
+        <input type="hidden" name="itemproperty_filter_type" value="DATA_SET" />
+        <select name="itemproperty_filter">
+          <option value="NONE">No restriction</option>
+{foreach from=$possible_sets item="set"}
+          <option value="{$set.id}"{if $set.id == $property.option_set_id} selected="selected"{/if}>{$set.label}</option>
+{/foreach}
+
+        </select>
+    </div>
+
+{/if}
+
+  <div class="edit-form-row">
+    <div class="form-section-label">Default value</div>
+    {item_field property=$property value=$property.default_value}
+  </div>
     
     <div class="edit-form-row">
         <div class="form-section-label">Required</div>

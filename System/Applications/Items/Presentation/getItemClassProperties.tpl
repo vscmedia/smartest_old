@@ -95,4 +95,11 @@ function viewPage(){
     <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/package_add.png" border="0" alt="" /> Add a new {$model.name|strtolower}</a></li>
 </ul>
 
+<ul class="actions-list" id="non-specific-actions">
+  <li><span style="color:#999">Recently edited {$model.plural_name|strtolower}</span></li>
+  {foreach from=$recent_items item="recent_item"}
+  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_item.action_url}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label|summary:"28"}</a></li>
+  {/foreach}
+</ul>
+
 </div>

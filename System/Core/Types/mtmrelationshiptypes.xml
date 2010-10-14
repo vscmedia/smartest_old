@@ -118,4 +118,11 @@
     <entity table="Roles" class="SmartestRole" foreignkey="role_id" index="2" required="true" />
   </type>
   
+  <type id="SM_MTMLOOKUP_ITEM_SELECTION_PROPERTY" return="class:SmartestItemPropertyValueItemConnection" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Many-to-many item properties</label>
+    <entity table="Items" class="SmartestItem" foreignkey="item_id" index="1" required="true" defaultsort="item_slug" />
+    <entity table="ItemPropertyValues" class="SmartestItemPropertyValue" foreignkey="itempropertyvalue_id" index="2" required="true" />
+    <phased>true</phased>
+  </type>
+  
 </relationshiptypes>

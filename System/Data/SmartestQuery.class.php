@@ -205,17 +205,12 @@ class SmartestQuery{
         				$tag = new SmartestTag;
         				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
         				
-        				// echo $tag_name;
-        				
         				if($tag->findBy('name', $tag_name)){
         				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->_model->getId());
         				    $sql .= "AND Items.item_id IN ('".implode("', '", $ids)."')";
         				}else{
-        				    if(SM_DEVELOPER_MODE){
-        				        // throw new SmartestException('Unknown tag: \''.$tag_name.'\' in SmartestQuery::doSelect()');
-        				    }
+        				    SmartestLog::getInstance('system')->log("The tag '".$condition['value']."' was used as a query condition but does not exist.");
         				    // echo "tag not found";
-        				    // $sql .= "AND Items.item_id ='x'";
         				}
 				        
 				    }else if($condition['operator'] == self::NOT_TAGGED_WITH){

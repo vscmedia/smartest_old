@@ -1,0 +1,1 @@
+<input type="text" class="color" name="item[{$property.id}]" value="{$value}" />

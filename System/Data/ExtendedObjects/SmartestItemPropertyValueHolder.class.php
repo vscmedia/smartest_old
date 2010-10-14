@@ -39,6 +39,7 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	    throw new SmartestException('Cannot save temporary SmartestItemPropertyValueHolder object. Modification or insertion of properties should use SmartestItemProperty, values should use SmartestItemPropertyValueHolder.');
 	}
 	
+	// returns a SmartestItemPropertyValue object
 	public function getData(){
 	    
 	    if(!$this->_value instanceof SmartestItemPropertyValue){
@@ -61,7 +62,8 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	                $this->_value->setItemId($this->_contextual_item_id);
 	                
 	                if($this->getId()){
-
+                        
+                        // Creates a value object when none is found
         	            $this->_value->setPropertyId($this->getId());
         	            $this->_value->setDraftContent($this->getDefaultValue());
         	            

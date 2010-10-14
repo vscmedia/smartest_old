@@ -1,6 +1,6 @@
 <?php
 
-class SmartestUrl implements SmartestBasicType, ArrayAccess{
+class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestStorableValue, SmartestSubmittableValue{
     
     protected $_value;
     
@@ -22,17 +22,32 @@ class SmartestUrl implements SmartestBasicType, ArrayAccess{
         return $this->_value;
     }
     
+    // The next three methods are for the SmartestStorableValue interface
+    public function getStorableFormat(){
+        return $this->_value;
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        $this->setValue($v);
+        return true;
+    }
+    
+    public function hydrateFromFormData($v){
+        $this->setValue($v);
+        return true;
+    }
+    
     public function offsetExists($offset){
-        return in_array($offset, array('host', 'request', 'protocol'));
+        return in_array($offset, array('_host', '_request', '_protocol'));
     }
     
     public function offsetGet($offset){
         switch($offset){
-            case "host":
+            case "_host":
             return $this->getValue();
-            case 'request':
+            case '_request':
             return $this->getValue();
-            case 'protocol':
+            case '_protocol':
             return $this->getValue();
         }
     }

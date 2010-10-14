@@ -33,6 +33,7 @@
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/scriptaculous/lib/prototype.js"></script>
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/scriptaculous/src/effects.js"></script>
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/scriptaculous/src/controls.js"></script>
+    <script type="text/javascript" src="{$domain}Resources/System/Javascript/jscolor/jscolor.js"></script>
                                                                                                   
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/interface.js"></script>
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/treeview.js"></script>

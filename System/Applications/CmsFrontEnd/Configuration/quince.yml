@@ -27,6 +27,12 @@ module:
     feed:
       url: /feeds/:set_name/rss
       action: getDataSetRssFeed
+#    sitemap:
+#      url: /sitemap.xml
+#      action: buildXmlSitemap
+#    robots_file:
+#      url: /robots.txt
+#      action: buildRobotsTxtFile
   meta:
     system: true
   namespaces:

@@ -8,7 +8,7 @@
 * It is also used
 */
 
-class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
+class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, SmartestStorableValue{
 	
 	/** 
 	* Description
@@ -152,6 +152,23 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 	    return $this->_draft_mode;
 	}
 	
+	// The next three methods are for the SmartestStorableValue interface
+    public function getStorableFormat(){
+        return $this->_item->getId();
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        if(is_numeric($v)){
+            return $this->find($v);
+        }
+    }
+    
+    public function hydrateFromFormData($v){
+        // var_dump($v);
+        $r = $this->find((int) $v);
+        return $r;
+    }
+	
 	public function offsetExists($offset){
 	    return ($this->_item->offsetExists($offset) || isset($this->_varnames_lookup[$offset]) || in_array($offset, array('_workflow_status', '_model', '_properties')));
 	}
@@ -219,6 +236,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 	            
 	            case 'date':
 	            return $this->getDate();
+	            break;
+	            
+	            case 'created':
+	            return new SmartestDateTime($this->getItem()->getCreated());
 	            break;
 	            
 	            case 'is_published':
@@ -427,7 +448,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 			    $properties_result = SmartestCache::load('model_properties_'.$this->_model_id, true);
 		    }else{
 			    // gotta get that from the database too
-			    $properties_sql = "SELECT itemproperty_id, itemproperty_name, itemproperty_varname FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_model_id."' AND itemproperty_varname !='hydrate'";
+			    $properties_sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_model_id."' AND itemproperty_varname !='hydrate'";
 			    $properties_result = $this->database->queryToArray($sql);
 			    SmartestCache::save('model_properties_'.$this->_model_id, $result, -1, true);
 		    }
@@ -444,7 +465,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 			    $this->_properties[$property['itemproperty_id']]->setContextualItemId($this->_item->getId());
 		    }
 		    
-            $values_sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_item_id='$id'";
+		    $values_sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_item_id='$id'";
 		    $result = $this->database->queryToArray($values_sql);
 		    
 		    // then loop through properties again, making sure all are given either a ipv from the last db query, or given a new one if none was found.
@@ -458,15 +479,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
                 // if the property object does not exist, create and hydrate it
                 
                 if(!isset($this->_properties[$ipv->getPropertyId()]) || !is_object($this->_properties[$ipv->getPropertyId()])){
-                    
-			        $this->_properties[$ipv->getPropertyId()] = new SmartestItemPropertyValueHolder;
-		            
+                    $this->_properties[$ipv->getPropertyId()] = new SmartestItemPropertyValueHolder;
 			    }
 			    
 			    if(!$this->_properties[$ipv->getPropertyId()]->hasData()){
-			        
-		            $this->_properties[$ipv->getPropertyId()]->hydrateValueFromIpvObject($ipv);
-		            
+			        $this->_properties[$ipv->getPropertyId()]->hydrateValueFromIpvObject($ipv);
 	            }
 			    
 			    // give the property the current item id, so that it knows which ItemPropertyValue record to retrieve in any future operations (though it isn't needed in this one)
@@ -584,7 +601,9 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 	
 	public function getLinkObject(){
 	    
+	    // echo $this->getLinkContents();
 	    $link = SmartestCmsLinkHelper::createLink($this->getLinkContents(), array());
+	    // print_r($link);
 	    return $link;
 	    
 	}
@@ -819,13 +838,38 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 	}
 	
 	public function getPropertyValueByNumericKey($key){
-	    // print_r(array_keys($this->_properties));
+	    
 	    if(array_key_exists($key, $this->_properties)){
+	        
 	        if($this->getDraftMode()){
-	            return $this->_properties[$key]->getData()->getDraftContent();
+	            $raw_value = $this->_properties[$key]->getData()->getDraftContent();
             }else{
-                return $this->_properties[$key]->getData()->getContent();
+                $raw_value = $this->_properties[$key]->getData()->getContent();
             }
+            
+            if(is_object($raw_value)){
+                return $raw_value;
+            }else if($value_ob = SmartestDataUtility::objectize($raw_value, $this->_properties[$key]->getDatatype())){
+                return $value_obj;
+            }
+            
+	    }else{
+	        return null;
+	    }
+	}
+	
+	public function getPropertyRawValueByNumericKey($key){
+	    
+	    if(array_key_exists($key, $this->_properties)){
+	        
+	        if($this->getDraftMode()){
+	            $raw_value = $this->_properties[$key]->getData()->getRawValue(true);
+            }else{
+                $raw_value = $this->_properties[$key]->getData()->getRawValue(false);
+            }
+            
+            return $raw_value;
+            
 	    }else{
 	        return null;
 	    }
@@ -833,11 +877,26 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 	
 	public function getPropertyValueByVarName($varname){
 	    if(array_key_exists($varname, $this->_varnames_lookup)){
-	        if($this->getDraftMode()){
+	        /* if($this->getDraftMode()){
 	            return $this->_properties[$this->_varnames_lookup[$varname]]->getData()->getDraftContent();
             }else{
                 return $this->_properties[$this->_varnames_lookup[$varname]]->getData()->getContent();
+            } */
+            
+            if($this->getDraftMode()){
+	            $raw_value = $this->_properties[$this->_varnames_lookup[$varname]]->getData()->getDraftContent();
+            }else{
+                $raw_value = $this->_properties[$this->_varnames_lookup[$varname]]->getData()->getContent();
             }
+            
+            // print_r($raw_value);
+            if(is_object($raw_value)){
+                return $raw_value;
+            }else if($value_ob = SmartestDataUtility::objectize($raw_value, $this->_properties[$this->_varnames_lookup[$varname]]->getDatatype())){
+                // echo $value_obj;
+                return $value_obj;
+            }
+            
 	    }else{
 	        return null;
 	    }
@@ -855,7 +914,19 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
 	            $this->_properties[$key]->getData()->setItemId($this->getId());
 	        }
 	        
+	        // var_dump(get_class($this->_properties[$key]->getData()));
+	        
 	        return $this->_properties[$key]->getData()->setContent($value);
+	        
+	        // echo $this->_properties[$key]->getDatatype();
+	        
+	        /* if($value_obj = SmartestDataUtility::objectizeFromRawFormData($value, $this->_properties[$key]->getDatatype())){
+	            // echo $value_obj->getStorableFormat().' ';
+	            // echo $value_obj;
+	            return $this->_properties[$key]->getData()->setContent($value_obj->getStorableFormat());
+            }else{
+                // echo "failed";
+            } */
 	        
 	    }else{
 	        return null;
@@ -924,8 +995,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject{
         }else{
             // raise error - the item had no name
             $this->_save_errors[] = '_name';
-            throw new SmartestException("Item saved without a name");
+            throw new SmartestException("Item saved without a name", SM_ERROR_USER);
         }
+        
+        // print_r($this->database->getDebugInfo());
 
         if(count($this->_save_errors)){
             return false;

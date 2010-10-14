@@ -3,7 +3,7 @@
 class SmartestImage extends SmartestFile{
     
     protected $_resource;
-    protected $_image_type;
+    protected $_image_type = null;
     protected $_width;
     protected $_height;
     protected $_thumbnail_resource;
@@ -43,22 +43,18 @@ class SmartestImage extends SmartestFile{
       
        $suffix = strtoupper(SmartestStringHelper::getDotSuffix($this->_current_file_path));
 
-        switch($suffix){
+        switch($this->getImageType()){
 
-            case "JPG":
-            case "JPEG":
+            case self::JPG:
             $resource = imagecreatefromjpeg($this->_current_file_path);
-            $this->_image_type = self::JPEG;
             break;
 
-            case "PNG":
+            case self::PNG:
             $resource = imagecreatefrompng($this->_current_file_path);
-            $this->_image_type = self::PNG;
             break;
 
-            case "GIF":
+            case self::GIF:
             $resource = imagecreatefromgif($this->_current_file_path);
-            $this->_image_type = self::GIF;
             break;
         }
 
@@ -72,6 +68,29 @@ class SmartestImage extends SmartestFile{
     }
     
     public function getImageType(){
+        
+        if(!$this->_image_type){
+        
+            $suffix = strtoupper(SmartestStringHelper::getDotSuffix($this->_current_file_path));
+
+            switch($suffix){
+
+                case "JPG":
+                case "JPEG":
+                $this->_image_type = self::JPEG;
+                break;
+
+                case "PNG":
+                $this->_image_type = self::PNG;
+                break;
+
+                case "GIF":
+                $this->_image_type = self::GIF;
+                break;
+            }
+        
+        }
+        
         return $this->_image_type;
     }
     
@@ -276,29 +295,39 @@ class SmartestImage extends SmartestFile{
 		}
 	}
 	
-	public function getExifData() { // retrieves EXIF data from the file
+	public function getExifData($section='ANY_TAG') { // retrieves EXIF data from the file
 		
 		if(function_exists('exif_read_data')){
+		    
+		    if($this->getImageType() == self::JPG){
+			    
+			    $exif = @exif_read_data($this->getFullPath(), $section, true); // there is an EXIF bug here that causes an error. the error must be suppressed.
+			    
+			    if($exif===false){
+    				return null;
+    			}else{
+				
+    				$exifData = array();
+				
+    				foreach ($exif as $key => $section) {
+    					foreach ($section as $name => $val) {
+    						$exifData[$key][$name] = $val;
+    					}
+    				}
+				
+    				return $exifData;
+    			}
 			
-			$exif = @exif_read_data($this->getFullPath(), "IFD0", true); // there is an EXIF bug here that causes an error. the error must be suppressed.
-			
-			if($exif===false ){
-				return null;
-			}else{
-				
-				$exifData = array();
-				
-				foreach ($exif as $key => $section) {
-					foreach ($section as $name => $val) {
-						$exifData[$key][$name] = $val;
-					}
-				}
-				
-				return $exifData;
-			}
+		    }else{
+		        
+		        SmartestLog::getInstance('system')->log("SmartestImage::getExifData() can only be used on JPEG images. ".strtoupper($this->getImageType()).' image given.');
+    			return null;
+		        
+		    }
 			
 		}else{
 			// $this->error("File could not be found.", "getExifData");
+			SmartestLog::getInstance('system')->log("SmartestImage::getExifData() failed because PHP couldn't find the exif_read_data() function.");
 			return null;
 		}
 	}

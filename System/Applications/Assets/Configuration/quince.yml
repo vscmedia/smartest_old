@@ -17,6 +17,15 @@ module:
     groups:
       action: assetGroups
       url: /smartest/files/groups
+    new_file:
+      action: addAsset
+      url: /smartest/file/new
+    edit_file:
+      action: editAsset
+      url: /smartest/file/:asset_id/edit
+    file_info:
+      action: assetInfo
+      url: /smartest/file/:asset_id
     ajax_full_text_search:
       action: fullTextSearchResults
       url: /smartest/assets/:asset_type/full_text_search

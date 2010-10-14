@@ -17,6 +17,7 @@ class SmartestManyToManyQuery{
     protected $_central_node_id; // only used in networks
     protected $_query = null;
     protected $database;
+    protected $_draft_mode = false;
     
     public function __construct($type){
         
@@ -41,7 +42,7 @@ class SmartestManyToManyQuery{
             
         }else{
             
-            throw new SmartestException('The provided many-to-many relationship type:'.$type.' was invalid');
+            throw new SmartestException('The provided many-to-many relationship type:'.$type.' was invalid', SM_ERROR_USER);
             
         }
     }
@@ -53,14 +54,18 @@ class SmartestManyToManyQuery{
     public function setTargetEntityByIndex($target_entity_index){
         
         if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
-            throw new SmartestException('You cannot set the target entity of a network method many-to-many relationship type:'.$type.'.');
+            throw new SmartestException('You cannot set the target entity of a network method many-to-many relationship type:'.$this->_type->getMethod().'.', SM_ERROR_USER);
         }
         
-        if(!in_array($target_entity_index, $this->_qualifyingEntityIndices)){
+        if(in_array($target_entity_index, $this->_qualifyingEntityIndices)){
+            throw new SmartestException("Supplied target entity ID cannot also be a qualifying entity ID", SM_ERROR_USER);
+        }else{
             if(is_numeric($target_entity_index) && ceil($target_entity_index) > 0 && ceil($target_entity_index) < 5){
                 $this->_targetEntityIndex = $target_entity_index;
                 $e = new SmartestManyToManyTargetEntity($this->_type->getEntityByIndex($target_entity_index));
                 $this->_targetEntity = $e;
+            }else{
+                throw new SmartestException("Supplied target entity ID is not a number or is out of range", SM_ERROR_USER);
             }
         }
         
@@ -75,12 +80,18 @@ class SmartestManyToManyQuery{
     public function getSortFieldsForQuery(){
         
         if(empty($this->_sortFields)){
-            if($this->_type->getMethod() != 'SM_MTMLOOKUPMETHOD_NETWORK'){
+            if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
+                
+            }else{
                 // $this->_sortField = $this->getTargetEntity()->getEntity()->getForeignKeyField();
                 if($this->_type->usesInstances()){
                     return 'ManyToManyLookups.mtmlookup_instance_name';
                 }else{
-                    return $this->getTargetEntity()->getEntity()->getForeignKeyField();
+                    if($this->getTargetEntity()->getEntity()->hasDefaultSort()){
+                        return $this->getTargetEntity()->getEntity()->getDefaultSort();
+                    }else{
+                        return $this->getTargetEntity()->getEntity()->getForeignKeyField();
+                    }
                 }
             }
         }else{
@@ -239,7 +250,7 @@ class SmartestManyToManyQuery{
         
     }
     
-    public function buildQuery(){
+    public function buildQuery($lookups_only=false, $all_phases=false){
         
         // SELECT Assets.* FROM Assets, TextFragments, ManyToManyLookups WHERE Assets.asset_id=ManyToManyLookups.mtmlookup_entity_1_foreignkey, TextFragments.textfragment_id=ManyToManyLookups.mtmlookup_entity_2_foreignkey
         
@@ -249,7 +260,13 @@ class SmartestManyToManyQuery{
             
             // What to select
             $query = "SELECT ";
-            $query .= $this->_type->getNetwork()->getTable().'.*, ManyToManyLookups.* FROM ';
+            
+            if($lookups_only){
+                $query .= 'ManyToManyLookups.* FROM ';
+            }else{
+                $query .= $this->_type->getNetwork()->getTable().'.*, ManyToManyLookups.* FROM ';
+            }
+            
             $query .= $this->_type->getNetwork()->getTable().", ManyToManyLookups WHERE mtmlookup_type='".$this->_type->getId()."'";
             $query .= " AND ((mtmlookup_entity_1_foreignkey='".$this->_central_node_id."' AND mtmlookup_entity_2_foreignkey=".$this->_type->getNetwork()->getForeignKeyField()." AND mtmlookup_entity_2_foreignkey!='".$this->_central_node_id."') OR (mtmlookup_entity_2_foreignkey='".$this->_central_node_id."' AND mtmlookup_entity_1_foreignkey=".$this->_type->getNetwork()->getForeignKeyField()." AND mtmlookup_entity_1_foreignkey!='".$this->_central_node_id."'))";
             
@@ -267,7 +284,12 @@ class SmartestManyToManyQuery{
             
             // What to select
             $query = "SELECT ";
-            $query .= $this->_targetEntity->getEntity()->getTable().'.*, ManyToManyLookups.* FROM ';
+            
+            if($lookups_only){
+                $query .= 'ManyToManyLookups.* FROM ';
+            }else{
+                $query .= $this->_targetEntity->getEntity()->getTable().'.*, ManyToManyLookups.* FROM ';
+            }
 
             // Names of tables to select from in query
             $tablenames = array();
@@ -283,6 +305,18 @@ class SmartestManyToManyQuery{
 
             // filter out other lookup types
             $query .= 'ManyToManyLookups.mtmlookup_type=\''.$this->_type->getId().'\' AND ';
+            
+            if($this->_type->isPhased()){
+                if($all_phases){
+                    
+                }else{
+                    if($this->_draft_mode){
+                        $query .= "(ManyToManyLookups.mtmlookup_status_flag='SM_MTMLOOKUPSTATUS_DRAFT' OR ManyToManyLookups.mtmlookup_status_flag='SM_MTMLOOKUPSTATUS_LIVE') AND ";
+                    }else{
+                        $query .= "(ManyToManyLookups.mtmlookup_status_flag='SM_MTMLOOKUPSTATUS_OLD' OR ManyToManyLookups.mtmlookup_status_flag='SM_MTMLOOKUPSTATUS_LIVE') AND ";
+                    }
+                }
+            }
             
             // Now, the WHERE clause. This is where it gets interesting!
             // For now, this won't support MTM relationships between entities in the same table - much of that functionality is covered in the 'network' type (see above)
@@ -329,7 +363,6 @@ class SmartestManyToManyQuery{
         }
         
         $this->_query = $query;
-        
         return $query;
         
     }
@@ -360,6 +393,16 @@ class SmartestManyToManyQuery{
         
     }
     
+    public function getLookupClassName(){
+        
+        if($this->getTargetEntity()->getEntity()->hasSpecifiedLookupClass()){
+            return $this->getTargetEntity()->getEntity()->getSpecifiedLookupClass();
+        }else{
+            return 'SmartestManyToManyLookup';
+        }
+        
+    }
+    
     public function delete(){
         
         $query = $this->buildQuery();
@@ -380,7 +423,7 @@ class SmartestManyToManyQuery{
         
     }
     
-    public function retrieve($use_numeric_indices=false){
+    public function retrieve($use_numeric_indices=false, $all_phases=false){
         
         $result = $this->database->queryToArray($this->buildQuery());
         $objects = array();
@@ -414,6 +457,50 @@ class SmartestManyToManyQuery{
         }
         
         return $objects;
+        
+    }
+    
+    public function retrieveLookups($all_phases=false){
+        
+        $result = $this->database->queryToArray($this->buildQuery(true, $all_phases));
+        $objects = array();
+        $object_type = $this->_type->getLookupClassname();
+        
+        foreach($result as $r){
+            
+            $o = new $object_type;
+            $o->hydrate($r);
+            
+            if($use_numeric_indices){
+                
+                $objects[] = $o;
+                
+            }else{
+            
+                if($this->_type->usesInstances()){
+                    $key = $r['mtmlookup_instance_name'];
+                }else{
+                    $k = 'mtmlookup_entity_'.$this->getTargetEntity()->getEntity()->getEntityIndex().'_foreignkey';
+                    $key = $r[$k];
+                }
+            
+                $objects[$key] = $o;
+            
+            }
+            
+        }
+        
+        return $objects;
+        
+    }
+    
+    public function setDraftMode($mode){
+        
+        /* if($status == 'SM_MTMLOOKUPSTATUS_LIVE' || $status == 'SM_MTMLOOKUPSTATUS_DRAFT' || $status == 'SM_MTMLOOKUPSTATUS_OLD'){
+            $this->_status = $status;
+        } */
+        
+        $this->_draft_mode = (bool) $mode;
         
     }
     

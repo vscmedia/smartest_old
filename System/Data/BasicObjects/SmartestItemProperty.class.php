@@ -70,15 +70,13 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	}
 	
 	public function isForeignKey(){
-	    
 	    $info = $this->getTypeInfo();
-	    
-	    if($info['valuetype'] == 'foreignkey'){
-	        return true;
-	    }else{
-	        return false;
-	    }
-	    
+	    return $info['valuetype'] == 'foreignkey';
+	}
+	
+	public function isManyToMany(){
+	    $info = $this->getTypeInfo();
+	    return $info['valuetype'] == 'manytomany';
 	}
 	
 	public function getPossibleValues(){
@@ -89,7 +87,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    
         }else{
             
-            if($this->isForeignKey()){
+            if($this->isForeignKey() || $this->isManyToMany()){
 	            
 	            $info = $this->getTypeInfo();
 	            $filter = $this->getForeignKeyFilter();
@@ -106,6 +104,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	                            
 	                            $this->_option_set = $group;
 	                            
+	                            // Force groups that have been selected as a filter to be available to this site by making them shared
 	                            if(!$group->getShared() && $group->getSiteId() != $this->getCurrentSiteId()){
                                     $group->setShared(1);
                                     $group->save();
@@ -160,6 +159,26 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
                             }
                             
                         }
+	                
+	                }else if($this->getDatatype() == 'SM_DATATYPE_CMS_ITEM' || $this->getDatatype() == 'SM_DATATYPE_CMS_ITEM_SELECTION'){
+	                    
+	                    if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
+	                        $model = new SmartestModel;
+	                        if($model->find($filter)){
+	                            $this->_possible_values = $model->getSimpleItems($this->getCurrentSiteId(), SM_STATUS_CURRENT);
+	                        }else{
+	                            // Model id not recognized
+	                        }
+	                    }else if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_DATASET'){
+	                        $set = new SmartestCmsItemSet;
+	                        if($set->find($this->getOptionSetId())){
+	                            $this->_possible_values = $set->getSimpleMembers(SM_QUERY_ALL_DRAFT_CURRENT);
+	                        }else{
+	                            // Set Id not recognized
+	                        }
+	                    }
+	                    
+	                    // echo "hello";
 	                    
 	                }else{ // Values are DB based, but not assets
 	                
@@ -318,6 +337,29 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    
 	}
 	
+	public function getPossibleDataSets($site_id){
+	    
+	    $groups = array();
+	    
+	    if($this->isForeignKey() || $this->isManyToMany()){
+            
+            $info = $this->getTypeInfo();
+            $filter = $this->getForeignKeyFilter();
+            
+            $model = new SmartestModel;
+            
+            if(is_numeric($filter) && $model->find($filter)){
+                $sets = $model->getDataSets($site_id);
+            }else{
+                $sets = array();
+            }
+            
+        }
+	    
+	    return $sets;
+	    
+	}
+	
 	public function convertFieldCondition($condition){
 	    
 	    $sql = $condition['field'];
@@ -352,11 +394,60 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	public function offsetGet($offset){
 	    
 	    switch($offset){
+	        case "_type_info":
+	        $p = new SmartestParameterHolder('Data type info for property: '.$this->getName());
+	        $p->loadArray($this->getTypeInfo());
+	        return $p;
 	        case "_options":
 	        return $this->getPossibleValues();
 	    }
 	    
 	    return parent::offsetGet($offset);
+	    
+	}
+	
+	public function getManyToManyRelationshipType(){
+	    
+	    if($this->isManyToMany()){
+	        $info = $this->getTypeInfo();
+	        if(isset($info['manytomany']['relationshipcode'])){
+	            return $info['manytomany']['relationshipcode'];
+            }else{
+                throw new SmartestException("Datatype ".$info['id']." is identified as a many-to-many relationship but does not specify a many-to-many relationship type code.", SM_ERROR_CONFIG);
+            }
+	    }else{
+	        throw new SmartestException("SmartestItemProperty::getManyToManyRelationshipType() can only be called on many-to-many properties.", SM_ERROR_USER);
+	    }
+	    
+	}
+	
+	public function getManyToManyRelationshipItemEntityIndex(){
+	    
+	    if($this->isManyToMany()){
+	        $info = $this->getTypeInfo();
+	        if(isset($info['manytomany']['ipventityindex'])){
+	            return $info['manytomany']['ipventityindex'];
+            }else{
+                throw new SmartestException("Datatype ".$info['id']." is identified as a many-to-many relationship but does not specify which entity represents the item property value record.", SM_ERROR_CONFIG);
+            }
+	    }else{
+	        throw new SmartestException("SmartestItemProperty::getManyToManyRelationshipType() can only be called on many-to-many properties.", SM_ERROR_USER);
+	    }
+	    
+	}
+	
+	public function getManyToManyRelationshipMappedObjectEntityIndex(){
+	    
+	    if($this->isManyToMany()){
+	        $info = $this->getTypeInfo();
+	        if(isset($info['manytomany']['mappedentityindex'])){
+	            return $info['manytomany']['mappedentityindex'];
+            }else{
+                throw new SmartestException("Datatype ".$info['id']." is identified as a many-to-many relationship but does not specify which entity represents the mapped objects.", SM_ERROR_CONFIG);
+            }
+	    }else{
+	        throw new SmartestException("SmartestItemProperty::getManyToManyRelationshipType() can only be called on many-to-many properties.", SM_ERROR_USER);
+	    }
 	    
 	}
 	

@@ -50,6 +50,10 @@ class SmartestResponse{
 	private $_main_template;
 	private $_ui_template;
 	
+	// Preferences management
+	protected $_cached_global_preferences;
+	protected $_preferences_helper;
+	
 	public function __construct(){
 	    
 	    $this->_error_stack = new SmartestErrorStack();
@@ -79,7 +83,13 @@ class SmartestResponse{
 
         );
         
-        SmartestDataUtility::loadTypeObjects();
+        SmartestDataUtility::loadBasicTypes();
+        
+        SmartestFileSystemHelper::include_group(
+
+        	'System/Data/ExtendedTypes/SmartestCmsItemsCollection.class.php'
+
+        );
         
         SmartestFileSystemHelper::include_group(
             'System/Response/SmartestLog.class.php',
@@ -98,16 +108,11 @@ class SmartestResponse{
 	    
 	    SmartestFileSystemHelper::include_group(
 
-//        	'System/Data/DataQuery.class.php',
         	'System/Data/SmartestQuery.class.php',
         	'System/Data/SmartestQueryResultSet.class.php',
         	'System/Data/SmartestManyToManyQuery.class.php',
         	'System/Data/SmartestObjectModelHelper.class.php',
-//        	'System/Data/SmartestGenericListedObject.class.php',
-//         	'System/Data/SmartestSystemUiObject.interface.php',
         	'Library/Quince/Quince.class.php',
-//        	'Library/Quince/QuinceException.class.php',
-//        	'Library/Quince/QuinceBase.interface.php',
         	'System/Templating/SmartestEngine.class.php',
         	'System/Templating/SmartestInterfaceBuilder.class.php',
         	'System/Templating/SmartyManager.class.php',
@@ -172,10 +177,24 @@ class SmartestResponse{
             $this->error("This version of PHP is too old to run Smartest. You need to have version ".$sd['system']['info']['minimum_php_version'].' or later.');
         }
         
+        try{
+    	    $this->_preferences_helper = new SmartestPreferencesHelper;
+    	    $this->_cached_global_preferences = new SmartestParameterHolder('Cached global preferences');
+  	    }catch(SmartestException $e){
+  	        $this->errorFromException($e);
+  	    }
+  	    
+    	$this->_error_stack->display();
+        
         if(version_compare(PHP_VERSION, '5.3.0') >= 0){
             if(!ini_get('date.timezone')){
-                date_default_timezone_set($sd['system']['info']['default_timezone']);
-                SmartestLog::getInstance('system')->log("Default timezone must be set for PHP Version 5.3.0 and later. Was automatically set to ".$sd['system']['info']['default_timezone'].' (in system.yml). Update your php.ini file to make this notice go away.', SmartestLog::WARNING);
+                if($tz = $this->getGlobalPreference('default_timezone')){
+                    date_default_timezone_set($tz);
+                }else{
+                    date_default_timezone_set($sd['system']['info']['default_timezone']);
+                    $this->setGlobalPreference('default_timezone', $sd['system']['info']['default_timezone']);
+                    SmartestLog::getInstance('system')->log("Default timezone must be set for PHP Version 5.3.0 and later. This value was not found in php.ini. New system preference Was automatically set to ".$sd['system']['info']['default_timezone'].' (taken from system.yml).', SmartestLog::WARNING);
+                }
             }
         }
 		
@@ -242,86 +261,42 @@ class SmartestResponse{
 	    
 	}
 	
-	/* private function checkRequiredExtensionsLoaded(){
-		
-		$extensions = get_loaded_extensions();
-		
-		$dependencies = array(
-		    "dom",
-		    "json",
-			"curl",
-			"xmlreader",
-			"xml",
-			"mysql",
-		);
-		
-		foreach($dependencies as $dep){	
-			if(!in_array($dep, $extensions)){
-				$this->error("The PHP extension \"".$dep."\" is not installed or failed to load.", SM_ERROR_PHP);
-			}
-		}
-		
-	}
+	protected function getUserIdOrZero(){
+        if(is_object(SmartestSession::get('user'))){
+            return SmartestSession::get('user')->getId();
+        }else{
+            return '0';
+        }
+    }
+    
+    protected function getSiteIdOrZero(){
+        if(is_object(SmartestSession::get('current_open_project'))){
+            return SmartestSession::get('current_open_project')->getId();
+        }else{
+            return '0';
+        }
+    }
 	
-	function checkRequiredFilesExist(){
-		
-		$needed_files = array(
-			"Main Controller XML" => SM_ROOT_DIR."Configuration/controller.xml",
-			"Database Configuration File" => SM_ROOT_DIR."Configuration/database.ini"
-		);
-		
-		$errors = array();
-		
-		foreach($needed_files as $label=>$file){
-			if(!is_file($file) || !is_readable($file)){
-				$errors[] = array("label"=>$label, "file"=>$file);
-			}
-		}
-		
-		if(count($errors) > 0){
-			$this->missingFiles = $errors;
-			
-			foreach($this->missingFiles as $missing_file){
-				$this->error("The required file \"".$missing_file['file']."\" doesn't exist or isn't readable.", SM_ERROR_FILES);
-			}
-			
-			return false;
-		}else{
-			return true;
-		}
-	}
-	
-	function checkWritablePermissions(){
-		
-		$system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml');
-		$writable_files = $system_data->g('system')->g('writable_locations')->g('always')->getParameters();
-		
-		$errors = array();
-		
-		foreach($writable_files as $label=>$file){
-			if(!is_writable($file)){
-				$errors[] = SM_ROOT_DIR.$file;
-			}
-		}
-		
-		if(count($errors) > 0){
-			$this->unwritableFiles = $errors;
-			
-			foreach($this->unwritableFiles as $unwritable_file){
-				if(is_file($unwritable_file)){
-					$this->error("The file \"".$unwritable_file."\" needs to be writable.", SM_ERROR_PERMISSIONS);
-				}else{
-					$this->error("The directory \"".$unwritable_file."\" needs to be writable.", SM_ERROR_PERMISSIONS);
-				}
-				
-			}
-			
-			return false;
-		}else{
-			return true;
-		}
-		
-	} */
+	protected function getGlobalPreference($preference_name){
+        
+        $name = SmartestStringHelper::toVarName($preference_name);
+        
+        if($this->_cached_global_preferences->hasParameter($name)){
+            return $this->_cached_global_preferences->getParameter($name);
+        }else{
+            $value = $this->_preferences_helper->getGlobalPreference($name, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+            $this->_cached_global_preferences->setParameter($name, $value);
+            return $value;
+        }
+        
+    }
+    
+    protected function setGlobalPreference($preference_name, $preference_value){
+        
+        $name = SmartestStringHelper::toVarName($preference_name);
+        return $this->_preferences_helper->setGlobalPreference($name, $preference_value, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        
+    }
 	
 	public function build(){
 	    
@@ -541,7 +516,11 @@ class SmartestResponse{
 		if(is_file($this->_ui_template)){
 			$this->_smarty->assign("sm_interface", $this->_ui_template);
 		}else{
-			$this->_smarty->assign("sm_interface", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_subTemplateNotFound.tpl");
+		    if($this->_controller->getCurrentRequest()->getAction() == "preferences"){
+			    $this->_smarty->assign("sm_interface", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_prefsTemplateNotFound.tpl");
+		    }else{
+		        $this->_smarty->assign("sm_interface", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_subTemplateNotFound.tpl");
+		    }
 			$this->_smarty->assign("sm_intended_interface", $this->_ui_template);
 		}
 		

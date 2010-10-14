@@ -6,7 +6,7 @@ module:
   default_action: startpage
   aliases:
     - {url: /smartest/settings, action: editSite}
-    - {url: /smartest/desktop, action: startpage}
+    - {url: /smartest/_start, action: newDesktop}
     - {url: /smartest/about, action: aboutSmartest}
   routes:
     home:

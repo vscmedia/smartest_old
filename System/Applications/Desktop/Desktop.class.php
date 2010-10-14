@@ -35,7 +35,30 @@ class Desktop extends SmartestSystemApplication{
         
         if($this->getSite() instanceof SmartestSite){
             
+            $du = new SmartestDataUtility;
+            $alh = new SmartestAssetsLibraryHelper;
+            $tlh = new SmartestTemplatesLibraryHelper;
+            $ach = new SmartestAssetClassesHelper;
             
+            $models = $du->getModels(false, $this->getSite()->getId());
+            
+            $re = new SmartestParameterHolder("Recently edited things");
+            $re->setParameter('files', $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId()));
+            $re->setParameter('pages', $this->getUser()->getRecentlyEditedPages($this->getSite()->getId()));
+            $re->setParameter('templates', $this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId()));
+            $ri = new SmartestParameterHolder("Recently edited items");
+            
+            $this->send($models, 'models');
+            $this->send($alh->getTypes(array('templates')), 'file_types');
+            $this->send($tlh->getTypes(), 'template_types');
+            $this->send($ach->getTypes(), 'placeholder_types');
+            
+            foreach($models as $m){
+                $ri->setParameter($m->getId(), $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $m->getId()));
+            }
+            
+            $re->setParameter('items', $ri);
+            $this->send($re, 'recently_edited');
             
         }
         

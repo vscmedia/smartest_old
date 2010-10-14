@@ -1,2 +1,2 @@
 name:site_specific:user_specific:description
-system_timezone:0:0:System timezone
+default_timezone:0:0:System timezone

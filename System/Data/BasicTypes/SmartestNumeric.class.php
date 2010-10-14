@@ -2,7 +2,7 @@
 
 // A class that combines Integer and Double/Float type values. There is no need to separate these in Smartest's case.
 
-class SmartestNumeric implements SmartestBasicType, ArrayAccess{
+class SmartestNumeric implements SmartestBasicType, ArrayAccess, SmartestStorableValue, SmartestSubmittableValue{
 
     protected $_value;
 	
@@ -40,6 +40,21 @@ class SmartestNumeric implements SmartestBasicType, ArrayAccess{
         
     }
     
+    // The next three methods are for the SmartestStorableValue interface
+    public function getStorableFormat(){
+        return $this->_value;
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        $this->setValue($v);
+        return true;
+    }
+    
+    public function hydrateFromFormData($v){
+        $this->setValue($v);
+        return true;
+    }
+    
     public function offsetExists($offset){
         return false;
     }
@@ -49,7 +64,6 @@ class SmartestNumeric implements SmartestBasicType, ArrayAccess{
     }
     
     public function offsetSet($offset, $value){}
-    
     public function offsetUnset($offset){}
 
 }

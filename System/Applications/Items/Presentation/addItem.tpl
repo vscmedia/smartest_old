@@ -17,6 +17,7 @@
 {foreach from=$properties key="pid" item="property"}
 
 <div class="edit-form-row">
+  <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
   {item_field property=$property}
 </div>
 

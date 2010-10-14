@@ -7,7 +7,7 @@
  * @author Marcus Gilroy-Ware
  **/
  
-class SmartestFile implements ArrayAccess{
+class SmartestFile implements ArrayAccess, SmartestStorableValue{
     
     protected $_original_file_path;
     protected $_current_file_path;
@@ -29,6 +29,19 @@ class SmartestFile implements ArrayAccess{
             SmartestLog::getInstance('system')->log('SmartestFile->loadFile(): '.$file_path.' does not exist or is not a valid file.');
             return false;
         }
+    }
+    
+    // The next three methods are for the SmartestStorableValue interface
+    public function getStorableFormat(){
+        return $this->_current_file_path;
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        return $this->loadFile($v);
+    }
+    
+    public function hydrateFromFormData($v){
+        return $this->loadFile($v);
     }
     
     public function exists(){
@@ -151,16 +164,8 @@ class SmartestFile implements ArrayAccess{
         
     }
     
-    public function offsetExists($offset){
-        
-    }
-    
-    public function offsetSet($offset, $value){
-        
-    }
-    
-    public function offsetUnset($offset){
-        
-    }
+    public function offsetExists($offset){}
+    public function offsetSet($offset, $value){}
+    public function offsetUnset($offset){}
 
 }

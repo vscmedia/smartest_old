@@ -76,16 +76,16 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        case "link_contents":
 	        
 	        if($this->getMetapageId()){
-    	        
     	        return 'metapage:id='.$this->getMetapageId().':id='.$this->getId();
-                
     	    }else{
-    	        
     	        return '#';
-    	        
     	    }
             
 	        break;
+	        
+	        case 'created':
+            return new SmartestDateTime($this->getCreated());
+            break;
 	        
 	        case "class":
 	        return $this->getModel()->getClassName();

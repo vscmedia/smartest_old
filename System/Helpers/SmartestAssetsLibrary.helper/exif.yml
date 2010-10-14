@@ -1,0 +1,131 @@
+exif:
+  FILE:
+    FileType:
+      type: select
+      values:
+        0:
+        1:
+        2:
+  COMPUTED:
+    Thumbnail.FileType:
+      type: select
+      label: Thumbnail filetype
+      values:
+        0:
+        1:
+        2:
+    IsColor: {type: bool, label: Is color image}
+    ByteOrderMotorola: {type: bool, label: Motorola byte order}
+  IFD0:
+    Orientation:
+      type: select
+      values:
+        1: Top left
+        2: Top right
+        3: Bottom right
+        4: Bottom left
+        5: Left top
+        6: Right top
+        7: Right bottom
+        8: Left bottom
+    ResolutionUnit:
+      type: select
+      label: Resolution unit
+      values:
+        2: Inches
+        3: Centimeters
+    DateTime: {type: time, label: Created on}
+  THUMBNAIL:
+    Compression:
+      type: select
+      label: Compression type
+      values:
+        1: No compression
+        2: CCITT modified Huffman RLE
+        3: CCITT Group 3 fax encoding
+        4: CCITT Group 4 fax encoding
+        5: LZW
+        6: Old style JPEG
+        7: New style JPEG
+        8: "Deflate ('Adobe-style')"
+        9: "Defined by TIFF-F and TIFF-FX standard (RFC 2301) as ITU-T Rec. T.82 coding, using ITU-T Rec. T.85"
+        10: "Defined by TIFF-F and TIFF-FX standard (RFC 2301) as ITU-T Rec. T.82 coding, using ITU-T Rec. T.43"
+    Orientation:
+      type: select
+      values:
+        1: Top left
+        2: Top right
+        3: Bottom right
+        4: Bottom left
+        5: Left top
+        6: Right top
+        7: Right bottom
+        8: Left bottom
+    ResolutionUnit:
+      type: select
+      label: Resolution unit
+      values:
+        2: Inches
+        3: Centimeters
+    JPEGInterchangeFormat:
+      type: select
+      label: JPEG Interchange format
+      values:
+        0: 
+        1:
+  EXIF:
+    ExposureProgram:
+      type: select
+      label: Exposure program
+      values:
+        0: 
+        1:
+    DateTimeOriginal: {type: time, label: Created on}
+    DateTimeDigitized: {type: time, label: Digitized on}
+    MeteringMode:
+      type: select
+      label: Metering mode
+      values:
+        0: 
+        1:
+    Flash:
+      type: select
+      label: Flash
+      values:
+        0: 
+        1:
+    ColorSpace:
+      type: select
+      label: Color space
+      values:
+        1: sRGB
+        FFFF.H: Uncalibrated
+    SensingMethod:
+      type: select
+      label: Sensing method
+      values:
+        1: Not defined
+        2: One-chip color area sensor
+        3: Two-chip color area sensor
+        4: Three-chip color area sensor
+        5: Color sequential area sensor
+        7: Trilinear sensor
+        8: Color sequential linear sensor
+    ExposureMode:
+      type: select
+      label: Exposure mode
+      values:
+        0: 
+        1:
+    WhiteBalance:
+      type: select
+      label: White balance
+      values:
+        0: 
+        1:
+    Sharpness:
+      type: select
+      label: Sharpness mode
+      values:
+        0: 
+        1:
