@@ -65,7 +65,11 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
                         
                         // Creates a value object when none is found
         	            $this->_value->setPropertyId($this->getId());
-        	            $this->_value->setDraftContent($this->getDefaultValue());
+        	            if(!$this->isManyToMany()){
+        	                $this->_value->setDraftContent($this->getDefaultValue());
+    	                }
+    	                
+    	                $this->_value->save();
         	            
         	        }
 	            
