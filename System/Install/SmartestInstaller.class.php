@@ -118,7 +118,7 @@ class SmartestInstaller{
             
             if (file_put_contents(SM_ROOT_DIR.'Public/.htaccess', $fc)){
                 SmartestLog::getInstance('installer')->log('Created file ./Public/.htaccess', SM_LOG_DEBUG);
-                SmartestSystemSettingHelper::save('htaccess_rewrite_base', $domain);
+                SmartestSystemSettingHelper::save('htaccess_rewrite_base', $rewritebase);
                 return true;
             }else{
                 SmartestLog::getInstance('installer')->log('Couldn\'t create file ./Public/.htaccess. Permissions should have been sorted by this stage, but check them anyway.', SM_LOG_WARNING);

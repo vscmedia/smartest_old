@@ -214,10 +214,10 @@ class SmartestInstallationStatusHelper{
                             }
                         }
                         
-                        $cd = SmartestSystemSettingHelper::load('controller_domain');
+                        $cd = SmartestSystemSettingHelper::load('htaccess_rewrite_base');
                         
                         if(strlen($cd) && $cd != '/'){
-                            $location = '/'.$cd.'smartest/login';
+                            $location = $cd.'smartest/login';
                         }else{
                             $location = '/smartest/login';
                         }
