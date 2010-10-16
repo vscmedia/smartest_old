@@ -55,12 +55,17 @@ class SmartestLogType extends SmartestParameterHolder{
 	}
     
     public function getFormatProcessed(){
+        if(!ini_get('date.timezone')){
+            date_default_timezone_set('Europe/London');
+        }
         $format = str_replace('%TIMESTAMP%', date('Y-m-d H:i:s'), $this->getFormat());
         return $format;
     }
     
     public function getLogFile(){
-        
+        if(!ini_get('date.timezone')){
+            date_default_timezone_set('Europe/London');
+        }
         $file = SM_ROOT_DIR.$this->getParameter('file');
         $file = str_replace('%DAY%', date('Ymd'), $file);
         $file = str_replace('%SITEID%', $this->getCurrentSiteId(), $file);
