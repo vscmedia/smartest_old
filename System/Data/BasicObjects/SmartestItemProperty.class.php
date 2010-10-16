@@ -6,6 +6,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	protected $_possible_values = array();
 	protected $_possible_values_retrieval_attempted = false;
 	protected $_option_set;
+	protected $_model;
 	
 	protected function __objectConstruct(){
 		
@@ -400,9 +401,25 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	        return $p;
 	        case "_options":
 	        return $this->getPossibleValues();
+	        case "_model":
+	        return $this->getModel();
 	    }
 	    
 	    return parent::offsetGet($offset);
+	    
+	}
+	
+	public function getModel(){
+	    
+	    if(!$this->_model){
+	        
+	        $model = new SmartestModel;
+	        $model->find($this->getItemclassId());
+	        $this->_model = $model;
+	        
+	    }
+	    
+	    return $this->_model;
 	    
 	}
 	
@@ -448,6 +465,34 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    }else{
 	        throw new SmartestException("SmartestItemProperty::getManyToManyRelationshipType() can only be called on many-to-many properties.", SM_ERROR_USER);
 	    }
+	    
+	}
+	
+	public function usesAssets(){
+	    
+	    $info = $this->getTypeInfo();
+	    return ($info['id'] == 'SM_DATATYPE_ASSET');
+	    
+	}
+	
+	public function getPossibleFileTypes(){
+	    
+	    $alh = new SmartestAssetsLibraryHelper;
+	    $filter = $this->getForeignKeyFilter();
+	    
+	    if(substr($filter, 0, 13) == 'SM_ASSETCLASS'){
+            
+            $types = $alh->getTypesByPlaceholderType($filter);
+
+        }else{
+            
+            $t = $alh->getTypes($filter);
+            // print_r($t);
+            $types = array($t[$filter]);
+            
+        }
+        
+        return $types;
 	    
 	}
 	

@@ -303,24 +303,25 @@ class Assets extends SmartestSystemApplication{
 	public function addAsset($get){
 		
 		$this->requireOpenProject();
+		$alh = new SmartestAssetsLibraryHelper;
 		
-		if($this->getRequestParameter('asset_type')){
-		
-		    $asset_type = SmartestStringHelper::toConstantName($this->getRequestParameter('asset_type'));
-		
-    		$types_array = SmartestDataUtility::getAssetTypes();
-		
+        if($this->getRequestParameter('asset_type')){
+            
+            $this->send(false, 'require_type_selection');
+            
+            $asset_type = SmartestStringHelper::toConstantName($this->getRequestParameter('asset_type'));
+    	    $types_array = $alh->getTypes(array('templates'));
+
     		if(in_array($asset_type, array_keys($types_array))){
-		    
+
     		    $type = $types_array[$asset_type];
     		    $this->setTitle("Add a new ".$type['label']);
     		    $this->send($type['id'], 'type_code');
     		    $this->send($type, 'new_asset_type_info');
-		    
-    		    $alh = new SmartestAssetsLibraryHelper;
+
     		    $possible_groups = $alh->getAssetGroupsThatAcceptType($asset_type, $this->getSite()->getId());
     		    $this->send($possible_groups, 'possible_groups');
-		    
+
     		    if(isset($type['param'])){
 
         	        $raw_xml_params = $type['param'];
@@ -332,33 +333,33 @@ class Assets extends SmartestSystemApplication{
                             $params[$rxp['name']] = '';
                         }
         	        }
-    	        
+
         	    }else{
         	        $params = array();
         	    }
-		    
+
     		    $suffixes = array();
-		    
+
     		    $this->send($params, 'params');
-		    
+
     		    if(is_array($type['suffix'])){
     		        foreach($type['suffix'] as $s){
     		            $suffixes[] = $s['_content'];
     		        }
     		    }
-		    
+
     		    if($type['storage']['type'] == 'database' || $type['category'] == "browser_instructions"){
     		        $starting_mode = 'direct';
     		    }else{
     		        $starting_mode = 'upload';
     		    }
-		    
+
     		    if($type['category'] != 'image'){
     		        $form_include = "add.".strtolower(substr($asset_type, 13)).".tpl";
     	        }else{
     	            $form_include = "add.image.tpl";
     	        }
-	        
+
     	        if($type['storage']['type'] != 'database'){
     	            $path = SM_ROOT_DIR.$type['storage']['location'];
     	            $allow_save = is_writable($path);
@@ -367,55 +368,200 @@ class Assets extends SmartestSystemApplication{
                 }else{
                     $this->send(true, 'allow_save');
                 }
-	        
+
     	        $this->send($starting_mode, 'starting_mode');
     	        $this->send(json_encode($suffixes), 'suffixes');
-	        
+
     		}else{
     		    $this->send($asset_type, 'wanted_type');
-    		    $this->setTitle("Asset Type Not Recognized.");
+    		    $this->setTitle("File type not recognized");
     		    $form_include = "add.default.tpl";
     		}
-    		
+
     		$this->send($form_include, 'form_include');
-		
-	    }else{
-	        
-	        if($this->getRequestParameter('placeholder_id')){
-	            
-	            // asset is being created with a view to use it in a placeholder
-	            $placeholder = new SmartestPlaceholder;
-	            
-	            if($property->find($this->getRequestParameter('placeholder_id'))){
-	                
-	            }else{
-	                $this->addUserMessageToNextRequest("The placeholder ID was not recognised", SmartestUserMessage::ERROR);
-	                $this->redirect('/smartest/files');
-	            }
-	            
-	            
-	        }else if($this->getRequestParameter('property_id')){
-	            
-	            // asset is being created with a view to use it in a property
-	            $property = new SmartestItemProperty;
-	            
-	            if($property->find($this->getRequestParameter('property_id'))){
-	                
-	            }else{
-	                $this->addUserMessageToNextRequest("The placeholder ID was not recognised", SmartestUserMessage::ERROR);
-	                $this->redirect('/smartest/files');
-	            }
-	            
-	        }else{
-	            
-	            // asset is being created, but person simply isn't sure what type of asset they'd like to create
-	            
-	        }
-	        
-	    }
+            
+        }else{
+            $types = $alh->getTypes(array('templates'));
+            $this->send(true, 'require_type_selection');
+            $this->setTitle("Choose file type");
+        }
+        
+        if($this->getRequestParameter('for') == 'placeholder'){
+            
+            if($this->getRequestParameter('placeholder_id') && $this->getRequestParameter('page_id')){
+            
+                $page = new SmartestPage;
+            
+                if($page->find($this->getRequestParameter('page_id'))){
+            
+                    $placeholder = new SmartestPlaceholder;
+            
+                    if($placeholder->find($this->getRequestParameter('placeholder_id'))){
+                        
+                        if(!$this->getRequestParameter('asset_type')){
+                            $types = $placeholder->getPossibleFileTypes();
+                            if(count($types) == 1){
+                                $fwd = '/smartest/file/new?for=placeholder&asset_type='.$types[0]['id'].'&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId();
+                                if($this->getRequestParameter('item_id')) $fwd .= '&item_id='.$this->getRequestParameter('item_id');
+                                $this->redirect($fwd);
+                            }
+                        }
+                        
+                        $this->send($placeholder, 'placeholder');
+                        $this->send($page, 'page');
+                        $this->send('placeholder', 'for');
+                    
+                    }else{
+                        $this->addUserMessageToNextRequest("The placeholder ID was not recognised.", SmartestUserMessage::ERROR);
+                        $this->redirect('/smartest/files');
+                    }
+            
+                }else{
+                
+                    $this->addUserMessageToNextRequest("The page ID was not recognised.", SmartestUserMessage::ERROR);
+                    $this->redirect('/smartest/pages');
+                
+                }
+        
+            }else{
+            
+                $this->addUserMessageToNextRequest("Both page and placeholder IDs must be provided.", SmartestUserMessage::ERROR);
+                $this->redirect('/smartest/pages');
+            
+            }
+            
+        }else if($this->getRequestParameter('for') == 'ipv'){
+            
+            if($this->getRequestParameter('property_id')){
+
+                $property = new SmartestItemProperty;
+
+                if($property->find($this->getRequestParameter('property_id'))){
+                    
+                    if($property->usesAssets()){
+                        if(!$this->getRequestParameter('asset_type')){
+                            $types = $property->getPossibleFileTypes();
+                            if(count($types) == 1){
+                                $fwd = '/smartest/file/new?for=ipv&asset_type='.$types[0]['id'].'&property_id='.$property->getId();
+                                if($this->getRequestParameter('item_id')) $fwd .= '&item_id='.$this->getRequestParameter('item_id');
+                                $this->redirect($fwd);
+                            }
+                        }
+                    }
+                    
+                    $this->send('ipv', 'for');
+                    $this->send($property, 'property');
+                    
+                    if($this->getRequestParameter('item_id')){
+                        if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+                            $this->send($item, 'item');
+                            $this->send($property->getName().' - '.$item->getName(), 'suggested_name');
+                        }else{
+                            $this->addUserMessageToNextRequest("The ".strtolower($property->getModel()->getName())." ID was not recognised.", SmartestUserMessage::ERROR);
+                            $this->redirect('/datamanager/getItemclassMembers?class_id='.$property->getItemclassId());
+                        }
+                    }
+
+                }else{
+                    $this->addUserMessageToNextRequest("The property ID was not recognised.", SmartestUserMessage::ERROR);
+                    $this->redirect('/smartest/files');
+                }
+
+            }else{
+
+                $this->addUserMessageToNextRequest("A property ID was not provided.", SmartestUserMessage::ERROR);
+                $this->redirect('/smartest/models');
+
+            }
+            
+        }
+        
+        $this->send($types, 'types');
 		
 	}
 	
+	public function startNewFileCreationForPlaceholderDefinition(){
+	    
+	    if($this->getRequestParameter('placeholder_id') && $this->getRequestParameter('page_id')){
+            
+            $page = new SmartestPage;
+            
+            if($page->find($this->getRequestParameter('page_id'))){
+            
+                $placeholder = new SmartestPlaceholder;
+            
+                if($placeholder->find($this->getRequestParameter('placeholder_id'))){
+                    
+                    if(!$this->getRequestParameter('asset_type')){
+                        
+                        $types = $placeholder->getPossibleFileTypes();
+                        $this->send($types, 'types');
+                        
+                        if(count($types) == 1){
+                            $this->redirect('/smartest/file/new?for=placeholder&asset_type='.$types[0]['id'].'&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId());
+                        }else{
+                            $this->redirect('/smartest/file/new?for=placeholder&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId());
+                        }
+                    }
+                    
+                }else{
+                    $this->addUserMessageToNextRequest("The placeholder ID was not recognised.", SmartestUserMessage::ERROR);
+                    $this->redirect('/smartest/files');
+                }
+            
+            }else{
+                
+                $this->addUserMessageToNextRequest("The page ID was not recognised.", SmartestUserMessage::ERROR);
+                $this->redirect('/smartest/pages');
+                
+            }
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("Both page and placeholder IDs must be provided.", SmartestUserMessage::ERROR);
+            $this->redirect('/smartest/pages');
+            
+        }
+	    
+	}
+	
+	public function startNewFileCreationForItemPropertyValue(){
+	    
+	    if($this->getRequestParameter('property_id')){
+	    
+            $property = new SmartestItemProperty;
+    
+            if($property->find($this->getRequestParameter('property_id')) && $property->usesAssets()){
+            
+                $types = $property->getPossibleFileTypes();
+                $this->send($types, 'types');
+                //print_r($types);
+            
+                if(count($types) == 1){
+                    $url = '/smartest/file/new?for=ipv&asset_type='.$types[0]['id'].'&property_id='.$property->getId();
+                }else{
+                    $url = '/smartest/file/new?for=ipv&property_id='.$property->getId();
+                }
+                
+                if($this->getRequestParameter('item_id')){
+                    $url .= '&item_id='.$this->getRequestParameter('item_id');
+                }
+                
+                $this->redirect($url);
+            
+            }else{
+                $this->addUserMessageToNextRequest("The property ID was not recognised or was the wrong type.", SmartestUserMessage::ERROR);
+                $this->redirect('/smartest/files');
+            }
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("A property ID was not provided.", SmartestUserMessage::ERROR);
+            $this->redirect('/smartest/models');
+            
+        }
+	    
+	}
 	
 	public function saveNewAsset($get, $post){
 	    
@@ -437,7 +583,7 @@ class Assets extends SmartestSystemApplication{
     		    $asset->setType($asset_type);
     		    $asset->setSiteId($this->getSite()->getId());
     		    $shared = $this->getRequestParameter('asset_shared') ? 1 : 0;
-		    $asset->setLabel($this->getRequestParameter('string_id'));
+		        $asset->setLabel($this->getRequestParameter('string_id'));
     		    $asset->setShared($shared);
     		    $asset->setUserId($this->getUser()->getId());
     		    $asset->setCreated(time());
@@ -604,6 +750,7 @@ class Assets extends SmartestSystemApplication{
     	        }
 		    
     		    if($everything_ok){
+    		        
     		        $asset->setCreated(time());
     		        $this->getUser()->addRecentlyEditedAssetById($asset->getId(), $this->getSite()->getId());
     		        $asset->save();
@@ -626,14 +773,155 @@ class Assets extends SmartestSystemApplication{
     		            header("HTTP/1.1 201 Created");
     		        }
     		        
+    		        $this->getUser()->addRecentlyEditedAssetById($asset->getId(), $this->getSite()->getId());
     		        $this->addUserMessageToNextRequest($message, $status);
     		        SmartestLog::getInstance('site')->log($this->getUser().' created file: '.$asset->getUrl(), SmartestLog::USER_ACTION);
+    		        
+    		        // If the file was being added for a particular usage
+    		        if($this->getRequestParameter('for')){
+    		            if($this->getRequestParameter('for') == 'placeholder'){
+    		                if($this->getRequestParameter('placeholder_id') && $this->getRequestParameter('page_id')){
+
+                                $page = new SmartestPage;
+
+                                if($page->find($this->getRequestParameter('page_id'))){
+
+                                    $placeholder = new SmartestPlaceholder;
+
+                                    if($placeholder->find($this->getRequestParameter('placeholder_id'))){
+                                        
+                                        // check type
+                                        $types = $placeholder->getPossibleFileTypeCodes();
+                                        if(in_array($asset->getTYpe(), $types)){
+                                        
+                                            // load or create placeholder definition
+                                            $definition = new SmartestPlaceholderDefinition;
+                                        
+                                            if($definition->loadForUpdate($placeholder->getName(), $page, $this->getRequestParameter('item_id'))){
+
+                        	                    // update placeholder
+                        	                    $definition->setDraftAssetId($asset->getId());
+                        	                    $log_message = $this->getUser()->__toString()." updated placeholder '".$placeholder->getName()."' on page '".$page->getTitle(true)."' to use asset ID ".$asset->getId().".";
+
+                        	                }else{
+
+                        	                    // wasn't already defined
+                        	                    $definition->setDraftAssetId($asset->getId());
+                        	                    $definition->setAssetclassId($placeholder->getId());
+                        	                    $definition->setInstanceName('default');
+                        	                    $definition->setPageId($page->getId());
+                    	                    
+                        	                    if($this->getRequestParameter('item_id')){
+                        	                        $definition->setItemId($this->getRequestParameter('item_id'));
+                        	                    }
+                    	                    
+                        	                    $log_message = $this->getUser()->__toString()." defined placeholder '".$placeholder->getName()."' on page '".$page->getTitle(true)."' with asset ID ".$asset->getId().".";
+
+                        	                }
+                    	                
+                        	                $definition->save();
+                        	                
+                        	                if($placeholder->getFilterType() == 'SM_ASSETCLASS_FILTERTYPE_ASSETGROUP'){
+                    	                        // add file to placeholder's group
+                    	                        $group = new SmartestAssetGroup;
+
+                                                if($group->find($placeholder->getFilterValue())){
+                                                    $asset->addToGroupById($group->getId(), true);
+                                                }
+                                                
+                    	                    }
+                                        
+                                        }else{
+                                            
+                                            $this->addUserMessageToNextRequest("The new file was not the right type to use with this placeholder.", SmartestUserMessage::ERROR);
+                                            
+                                        }
+                                        
+                                        // forward back to placeholder def screen
+                                        $this->redirect('/websitemanager/definePlaceholder?assetclass_id='.$placeholder->getName().'&page_id='.$page->getWebid());
+
+                                    }else{
+                                        $this->addUserMessageToNextRequest("The placeholder ID was not recognised.", SmartestUserMessage::ERROR);
+                                    }
+
+                                }else{
+
+                                    $this->addUserMessageToNextRequest("The page ID was not recognised.", SmartestUserMessage::ERROR);
+
+                                }
+
+                            }else{
+
+                                $this->addUserMessageToNextRequest("Both page and placeholder IDs must be provided in order to add a new file as a placeholder definition.", SmartestUserMessage::ERROR);
+
+                            }
+                            
+    		            }else if($this->getRequestParameter('for') == 'ipv'){
+    		                
+    		                if($this->getRequestParameter('property_id')){
+    		                    
+    		                    $property = new SmartestItemProperty;
+
+                                if($property->find($this->getRequestParameter('property_id'))){
+
+                                    if($property->usesAssets()){
+                                        
+                                        if($this->getRequestParameter('item_id')){
+                                            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+                                                $item->setPropertyValueByNumericKey($property->getId(), $asset->getId());
+                                                $item->save();
+                                            }else{
+                                                $this->addUserMessageToNextRequest("The item ID was not recognised.", SmartestUserMessage::ERROR);
+                                            }
+                                        }else{
+                                            $item = SmartestCmsItem::createNewByModelId($property->getItemclassId());
+                                            $item->setName($asset->getLabel());
+                                            $item->addAuthorById($this->getUser()->getId());
+                                            $item->getItem()->setCreateByAuthorId($this->getUser()->getId());
+                                            $item->getItem()->setCreated(time());
+                                            $item->getItem()->setLanguage($asset->getLanguage());
+                                            $item->save();
+                                            $item->setPropertyValueByNumericKey($property->getId(), $asset->getId());
+                                            $item->save();
+                                        }
+                                        
+                                        if($property->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_ASSETGROUP'){
+                                            
+                                            $group = new SmartestAssetGroup;
+                                            
+                                            if($group->find($property->getOptionSetId())){
+                                                $asset->addToGroupById($group->getId(), true);
+                                            }else{
+                                                // Log: property specifies group that does not exist
+                                            }
+                                        }
+                                        
+                                        // forward back to item edit screen
+                                        $this->redirect('/datamanager/openItem?item_id='.$item->getId());
+                                        
+                                    }else{
+                                        $this->addUserMessageToNextRequest("The property does not store assets.", SmartestUserMessage::ERROR);
+                                    }
+                                    
+                                }else{
+                                    $this->addUserMessageToNextRequest("The property ID was not recognised.", SmartestUserMessage::ERROR);
+                                }
+    		                    
+    		                }else{
+                                $this->addUserMessageToNextRequest("A property ID was not provided.", SmartestUserMessage::ERROR);
+                            }
+    		                
+    		            }
+    		            
+    		        }else{
+    		            $this->formForward();
+    		        }
+    		        
     		    }else{
     		        $this->addUserMessageToNextRequest("There was an error creating the new file.", SmartestUserMessage::ERROR);
     		        SmartestLog::getInstance('site')->log("There was an error creating the new file.", SmartestLog::ERROR);
+    		        $this->formForward();
     		    }
-		    
-    		    $this->formForward();
 		    
     		}else{
 		    

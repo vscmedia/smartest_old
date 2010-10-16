@@ -47,25 +47,21 @@
     </type>
     
     <type id="SM_DATATYPE_RGB_COLOR" valuetype="string">
-      
         <label>Color</label>
         <description>A 24-bit RGB color</description>
         <usage>field,itemproperty</usage>
         <class>SmartestRgbColor</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.rgb_color.tpl" />
-        
     </type>
     
     <type id="SM_DATATYPE_TIMESTAMP" valuetype="string">
-        
         <label>Timestamp</label>
         <description>An exact point in time - year, month, day, hour, minute, and second.</description>
         <usage>field,itemproperty,feed</usage>
         <class>SmartestDateTime</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.timestamp.tpl" />
-        
     </type>
     
     <type id="SM_DATATYPE_DATE" valuetype="string">

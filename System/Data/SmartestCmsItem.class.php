@@ -548,6 +548,14 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		return $this->getItem()->getName();
 	}
 	
+	public function setName($name){
+		return $this->getItem()->setName($name);
+	}
+	
+	public function setLanguage($lang_code){
+		return $this->getItem()->setLanguage($lang_code);
+	}
+	
 	// needed for compliance with SmartestGenericListedObject
 	public function getTitle(){
 	    return $this->getName();
@@ -971,6 +979,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    
 	    if($this->_item->getName()){
 	        
+	        if(!$this->_item->getItemclassId()){
+	            $this->_item->setItemclassId($this->_model_id);
+	        }
+	        
 	        $this->_item->save();
             
             foreach($this->getModel()->getProperties() as $prop){
@@ -998,8 +1010,6 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             throw new SmartestException("Item saved without a name", SM_ERROR_USER);
         }
         
-        // print_r($this->database->getDebugInfo());
-
         if(count($this->_save_errors)){
             return false;
         }else{
@@ -1119,6 +1129,23 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
         }else{
             return null;
         }
+    }
+    
+    public static function createNewByModelId($id){
+        
+        $m = new SmartestModel;
+        
+        if($m->find($id)){
+            $class_name = $m->getClassName();
+            if(class_exists($class_name)){
+                return new $class_name;
+            }else{
+                // error - model's class name does not exist
+            }
+        }else{
+            // error - model not found
+        }
+        
     }
     
     protected function getDataStore(){

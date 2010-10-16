@@ -89,22 +89,34 @@
       
       {if count($metapages)}
       <div class="edit-form-row">
-        <div class="form-section-label">Default Meta-Page</div>
+        <div class="form-section-label">Default meta-page</div>
         <select name="itemclass_default_metapage_id">
           <option value="NONE">No default</option>
           {foreach from=$metapages item="page"}
-          <option value="{$page.id}"{if $model.default_metapage_id==$page.id} selected="selected"{/if}>{$page.title}</option>
+          <option value="{$page.id}"{if $model.default_metapage_id == $page.id} selected="selected"{/if}>{$page.title}</option>
           {/foreach}
         </select>
       </div>
       {/if}
       
+      {if count($available_primary_properties)}
       <div class="edit-form-row">
-        <div class="form-section-label">Description Property</div>
+          <div class="form-section-label">Primary property</div>
+          <select name="itemclass_primary_property_id">
+            <option value="NONE">None</option>
+            {foreach from=$available_primary_properties item="property"}
+            <option value="{$property.id}"{if $model.primary_property_id == $property.id} selected="selected"{/if}>{$property.name}</option>
+            {/foreach}
+          </select>
+        </div>
+      {/if}
+      
+      <div class="edit-form-row">
+        <div class="form-section-label">Default description property</div>
         <select name="itemclass_default_description_property_id">
           {if !$model.default_description_property_id}<option value="0"></option>{/if}
           {foreach from=$description_properties item="property"}
-          <option value="{$property.id}"{if $model.default_description_property_id==$property.id} selected="selected"{/if}>{$property.name}</option>
+          <option value="{$property.id}"{if $model.default_description_property_id == $property.id} selected="selected"{/if}>{$property.name}</option>
           {/foreach}
         </select>
       </div>

@@ -80,7 +80,7 @@ class Items extends SmartestSystemApplication{
 		}
 	} */
 	
-	function getItemClassMembers($get, $post){
+	public function getItemClassMembers($get, $post){
   	    
   	    $this->setFormReturnUri();
   	    
@@ -271,7 +271,7 @@ class Items extends SmartestSystemApplication{
     		return $this->manager->deleteItemClassProperty($itemproperty_id);
 	} */
 	
-	function deleteProperty($get){
+	public function deleteProperty($get){
 	    // $itemproperty_id = mysql_real_escape_string($this->getRequestParameter('itemproperty_id'));
     	// return $this->manager->deleteItemClassProperty($itemproperty_id);
     	$property = new SmartestItemProperty;
@@ -286,7 +286,7 @@ class Items extends SmartestSystemApplication{
 	    }
 	}
 	
-	function deleteItem($get){
+	public function deleteItem($get){
 		// $item_id = mysql_real_escape_string($this->getRequestParameter('item_id'));
 		if(is_numeric($this->getRequestParameter('item_id'))){
 		    
@@ -324,7 +324,7 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
-	function deleteItemClass($get){
+	public function deleteItemClass($get){
 		
 		if($this->getUser()->hasToken('delete_models')){
 		    
@@ -343,7 +343,7 @@ class Items extends SmartestSystemApplication{
 		    $this->addUserMessageToNextRequest("You do not have permission to delete models");
 		}
 		
-		// $this->formForward();
+		$this->formForward();
 		
 	}
 	
@@ -1106,6 +1106,8 @@ class Items extends SmartestSystemApplication{
   	        
   	        $allow_create_new = $this->getUser()->hasToken('add_items');
   	        $this->send($allow_create_new, 'allow_create_new');
+  	        
+  	        $this->send($model->getAvailablePrimaryProperties(), 'available_primary_properties');
 	        
 	    }else{
 	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
@@ -1141,11 +1143,16 @@ class Items extends SmartestSystemApplication{
                 }
             }
             
-            if($this->getRequestParameter('itemclass_default_description_property_id') && is_numeric($this->getRequestParameter('itemclass_default_description_property_id'))){
+            if(is_numeric($this->getRequestParameter('itemclass_default_description_property_id')) && $this->getRequestParameter('itemclass_default_description_property_id') > 1){
                 $model->setDefaultDescriptionPropertyId($this->getRequestParameter('itemclass_default_description_property_id'));
-            }else{
-                $this->addUserMessageToNextRequest("The default description property you entered was invalid.", SmartestUserMessage::WARNING);
-                $error = true;
+            }
+            
+            if($this->getRequestParameter('itemclass_primary_property_id')){
+                if(is_numeric($this->getRequestParameter('itemclass_primary_property_id'))){
+                    $model->setPrimaryPropertyId($this->getRequestParameter('itemclass_primary_property_id'));
+                }else if($this->getRequestParameter('itemclass_primary_property_id') == 'NONE'){
+                    $model->setPrimaryPropertyId('');
+                }
             }
             
             if($model->isUsedOnMultipleSites()){
@@ -1794,8 +1801,12 @@ class Items extends SmartestSystemApplication{
             $model_id = $this->getRequestParameter('class_id');
             $model = new SmartestModel;
             
-            if($model->hydrate($model_id)){
-        
+            if($model->find($model_id)){
+                
+                if($model->hasPrimaryProperty() && $model->getPrimaryProperty()->getDatatype() == 'SM_DATATYPE_ASSET'){
+                    $this->redirect('/smartest/file/new?for=ipv&property_id='.$model->getPrimaryPropertyId());
+                }
+                
                 // $model_array = $model->__toArrayLikeCmsItemArray();
                 // $this->send($model_array, 'item');
                 $this->send($model->getProperties(), 'properties');

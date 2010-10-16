@@ -5,7 +5,7 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">Name this file</div>
-    <input type="text" name="string_id" />
+    <input type="text" name="string_id" value="{$suggested_name}" />
   </div>
   
   <div style="width:100%" id="text_window">

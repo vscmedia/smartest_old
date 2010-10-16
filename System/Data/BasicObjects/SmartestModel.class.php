@@ -46,6 +46,33 @@ class SmartestModel extends SmartestBaseModel{
 	    
 	}
 	
+	public function getAvailablePrimaryProperties(){
+	    
+	    $properties = array();
+	    
+	    // TODO: Make other property types usable as primary (define-first) properties
+	    
+	    foreach($this->getProperties() as $p){
+	        if($p->getDatatype() == 'SM_DATATYPE_ASSET'){
+	            $properties[] = $p;
+	        }
+	    }
+	    
+	    return $properties;
+	    
+	}
+	
+	public function hasPrimaryProperty(){
+	    return (bool) $this->getPrimaryPropertyId();
+	}
+	
+	public function getPrimaryProperty(){
+	    $property = new SmartestItemProperty;
+	    if($property->find($this->getPrimaryPropertyId())){
+	        return $property;
+	    }
+	}
+	
 	public function refresh(){
 	    SmartestCache::clear('model_properties_'.$this->_properties['id'], true);
         SmartestObjectModelHelper::buildAutoClassFile($this->_properties['id'], SmartestStringHelper::toCamelCase($this->getName()));
