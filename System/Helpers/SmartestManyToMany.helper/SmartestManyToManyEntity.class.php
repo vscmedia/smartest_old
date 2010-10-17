@@ -20,11 +20,11 @@ class SmartestManyToManyEntity{
             if($dbth->tableHasColumn($this->_table, $foreignKey)){
                 $this->_foreignKey = $foreignKey;
             }else{
-                throw new SmartestException('The column \''.$foreignKey.'\' does not exist in table \''.$table.'\'');
+                // throw new SmartestException('The column \''.$foreignKey.'\' does not exist in table \''.$table.'\'');
             }
             
         }else{
-            throw new SmartestException('The table \''.$table.'\' does not exist.');
+            // throw new SmartestException('The table \''.$table.'\' does not exist.');
         }
         
         $this->_entityIndex = $entityIndex;

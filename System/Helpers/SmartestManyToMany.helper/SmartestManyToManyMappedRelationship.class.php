@@ -18,9 +18,11 @@ class SmartestManyToManyMappedRelationship{
         
         $this->_helper = new SmartestManyToManyHelper;
         $this->database = SmartestDatabase::getInstance('SMARTEST');
-        
+        // echo $type_code;
+        // var_dump($this->_helper->isValidType($type_code));
         if($this->_helper->isValidType($type_code)){
             $this->_type = $this->_helper->buildTypeObject($type_code);
+            // print_r($this->_type);
         }else{
             throw new SmartestException('The provided many-to-many relationship type:'.$type_code.' was invalid', SM_ERROR_USER);
         }

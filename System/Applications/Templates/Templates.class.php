@@ -948,7 +948,7 @@ class Templates extends SmartestSystemApplication{
 		    // $this->send($asset->getPossibleGroups(), 'possible_groups');
 		    
 		    $this->send($template->getTypeInfo(), 'asset_type');
-		    $this->send($template, 'asset'); 
+		    $this->send($template, 'template'); 
 		    
 		}
 	    

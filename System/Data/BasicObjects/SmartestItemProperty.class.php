@@ -95,7 +95,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	            
 	            if($info['filter']['entitysource']['type'] == 'db'){
 	                
-	                if($this->getDatatype() == 'SM_DATATYPE_ASSET'){
+	                if($this->getDatatype() == 'SM_DATATYPE_ASSET' || $this->getDatatype() == 'SM_DATATYPE_ASSET_SELECTION'){
 	                    
 	                    if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_ASSETGROUP'){
 	                        
@@ -140,8 +140,8 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
                             if(is_object($this->getSite())){
         	                    $site_id = $this->getSite()->getId();
         	                }
-                            
-                            if(substr($filter, 0, 13) == 'SM_ASSETCLASS'){
+        	                
+        	                if(substr($filter, 0, 13) == 'SM_ASSETCLASS'){
                                 
                                 // Assets are limited to a placeholder type, so multiple asset types
                                 
@@ -149,6 +149,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 
         	                        $alh = new SmartestAssetsLibraryHelper;
         	                        $this->_possible_values = $alh->getAssetClassOptions($filter, $site_id, 1);
+        	                        // echo count($this->_possible_values);
 
         	                    // }
 
@@ -178,8 +179,6 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	                            // Set Id not recognized
 	                        }
 	                    }
-	                    
-	                    // echo "hello";
 	                    
 	                }else{ // Values are DB based, but not assets
 	                

@@ -1,5 +1,7 @@
 <div id="work-area">
 
+{load_interface file="template_edit_tabs.tpl"}
+
 <h3>{$interface_title}</h3>
 
 {if $show_form}

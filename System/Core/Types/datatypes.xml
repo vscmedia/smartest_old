@@ -246,4 +246,31 @@
         
     </type>
     
+    <type id="SM_DATATYPE_ASSET_SELECTION" valuetype="manytomany">
+        
+        <label>Selection of files</label>
+        <description>Choice of one or more files.</description>
+        <usage>itemproperty</usage>
+        <long>false</long>
+        <manytomany relationshipcode="SM_MTMLOOKUP_ASSET_SELECTION_PROPERTY" ipventityindex="2" mappedentityindex="1" />
+        
+        <filter>
+          <typesource type="smartest:assettypes" label="File Type" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.assettypes.tpl" />
+          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" label="File" />
+          <optionsettype id="SM_PROPERTY_FILTERTYPE_ASSETGROUP" class="SmartestAssetGroup" table="Sets" sitefield="set_site_id">
+            <condition field="set_type" value="SM_SET_ASSETGROUP" operator="EQUAL" />
+          </optionsettype>
+          <!--Conditions only apply to filtering when no group is in use-->
+          <condition field="asset_deleted" value="1" operator="NOT_EQUAL" />
+          <condition field="asset_is_archived" value="1" operator="NOT_EQUAL" />
+        </filter>
+        
+        <render template="System/Presentation/WebPageBuilder/property.cms_item.tpl" />
+        
+        <menu value="id" display="name" />
+        
+        <class>SmartestAssetsCollection</class>
+        
+    </type>
+    
 </datatypes>

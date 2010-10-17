@@ -87,7 +87,8 @@ class SmartestResponse{
         
         SmartestFileSystemHelper::include_group(
 
-        	'System/Data/ExtendedTypes/SmartestCmsItemsCollection.class.php'
+        	'System/Data/ExtendedTypes/SmartestCmsItemsCollection.class.php',
+        	'System/Data/ExtendedTypes/SmartestAssetsCollection.class.php'
 
         );
         

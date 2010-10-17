@@ -119,8 +119,15 @@
   </type>
   
   <type id="SM_MTMLOOKUP_ITEM_SELECTION_PROPERTY" return="class:SmartestItemPropertyValueItemConnection" method="SM_MTMLOOKUPMETHOD_MAP">
-    <label>Many-to-many item properties</label>
+    <label>Many-to-many cms item properties</label>
     <entity table="Items" class="SmartestItem" foreignkey="item_id" index="1" required="true" defaultsort="item_slug" />
+    <entity table="ItemPropertyValues" class="SmartestItemPropertyValue" foreignkey="itempropertyvalue_id" index="2" required="true" />
+    <phased>true</phased>
+  </type>
+  
+  <type id="SM_MTMLOOKUP_ASSET_SELECTION_PROPERTY" return="class:SmartestManyToManyLookup" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Many-to-many item-asset properties</label>
+    <entity table="Assets" class="SmartestRenderableAsset" foreignkey="asset_id" index="1" required="true" defaultsort="asset_label" />
     <entity table="ItemPropertyValues" class="SmartestItemPropertyValue" foreignkey="itempropertyvalue_id" index="2" required="true" />
     <phased>true</phased>
   </type>

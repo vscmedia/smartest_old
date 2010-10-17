@@ -23,10 +23,12 @@ class SmartestManyToManyLookupType{
         $entities = $type['entity'];
         
         if(is_array($entities) && $type['method'] != 'SM_MTMLOOKUPMETHOD_NETWORK'){
+            
             foreach($entities as $e){
                 $this->_entities[$e['index']] = new SmartestManyToManyEntity($e['table'], $e['foreignkey'], $e['index'], $e['class'], SmartestStringHelper::toRealBool($e['required']));
                 if(isset($e['defaultsort'])) $this->_entities[$e['index']]->setDefaultSort($e['defaultsort']);
             }
+            
         }
         
         if($type['method'] == 'SM_MTMLOOKUPMETHOD_NETWORK' && isset($type['network'])){

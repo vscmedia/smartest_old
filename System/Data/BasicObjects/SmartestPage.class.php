@@ -17,6 +17,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	protected $_level = 0;
 	
 	protected $_fields = array();
+	protected $_field_definitions = array();
 	protected $_containers = array();
 	protected $_placeholders = array();
 	protected $_itemspaces = array();
@@ -92,10 +93,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		        
 		    }
 	    }
-	}
-	
-	public function getPreset(){
-	    
 	}
 	
 	public function save(){
@@ -332,15 +329,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		}
 		
 		// finally, request the page to force the system to build and cache the new copy
-		if(!defined('SM_CMS_PAGE_SITE_ID')){define('SM_CMS_PAGE_SITE_ID', $this->getSiteId());}
-		$ph = new SmartestWebPagePreparationHelper($this);
-	    
-	    /* $overhead_finish_time = microtime(true);
-		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
-		
-		define("SM_OVERHEAD_TIME", $overhead_time_taken);
-	    
-	    $html = $ph->fetch(); */
+		/* if(!defined('SM_CMS_PAGE_SITE_ID')){define('SM_CMS_PAGE_SITE_ID', $this->getSiteId());}
+		$ph = new SmartestWebPagePreparationHelper($this); */
 		
 	}
 	
@@ -944,16 +934,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function getPageFields(){
 	    
-	    // if(!$this->_fields_retrieval_attempted){
-	    
 	    $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->_properties['site_id']."'";
 	    $result = $this->database->queryToArray($sql);
         
-        // print_r($result);
-        // var_dump($this->_properties['site_id']);
-        // echo $sql;
-        
-	    foreach($result as $p){
+        foreach($result as $p){
 	        $property = new SmartestPageField;
 	        $property->hydrate($p);
 	        $this->_fields[$property->getId()] = $property;
@@ -962,15 +946,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    $sql = "SELECT * FROM `PagePropertyValues` WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
 	    $result = $this->database->queryToArray($sql);
         
-        // echo $sql;
-        // print_r($result);
-        
-        // print_r($this->_fields);
-        
         foreach($result as $pfda){
-            // $property = new SmartestPageFieldDefinition;
-            // $property->hydrate($pfda);
-            // print_r($pfda);
             $fid = $pfda['pagepropertyvalue_pageproperty_id'];
             
             if(is_object($this->_fields[$fid])){
@@ -979,13 +955,62 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             }
         }
         
-        // print_r($this->_fields);
-        
         $this->_fields_retrieval_attempted = true;
-	    
-        // }
         
         return $this->_fields;
+	    
+	}
+	
+	public function getPageFieldDefinitions(){
+	    
+	    if(!count($this->_field_definitiones)){
+	    
+    	    $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->_properties['site_id']."'";
+    	    $result = $this->database->queryToArray($sql);
+    	    $fields = array();
+        
+            foreach($result as $p){
+    	        $property = new SmartestPageField;
+    	        $property->hydrate($p);
+    	        $fields[$property->getId()] = $property;
+    	    }
+	    
+    	    $definitions = new SmartestParameterHolder("Page field definitions for page '".$this->_properties['title']."'");
+	    
+    	    $sql = "SELECT * FROM `PagePropertyValues` WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
+    	    $result = $this->database->queryToArray($sql);
+	    
+    	    foreach($result as $pfda){
+    	        if(isset($fields[$pfda['pagepropertyvalue_pageproperty_id']])){
+    	            if($this->getDraftMode()){
+    	                $value = SmartestDataUtility::objectize($pfda['pagepropertyvalue_draft_value'], $fields[$pfda['pagepropertyvalue_pageproperty_id']]->getType());
+                    }else{
+                        $value = SmartestDataUtility::objectize($pfda['pagepropertyvalue_live_value'], $fields[$pfda['pagepropertyvalue_pageproperty_id']]->getType());
+                    }
+                    $definitions->setParameter($fields[$pfda['pagepropertyvalue_pageproperty_id']]->getName(), $value);
+    	        }
+    	    }
+	    
+    	    $this->_field_definitiones = $definitions;
+        
+        }
+	    
+	    return $this->_field_definitiones;
+    
+	    /* 
+        
+        foreach($result as $pfda){
+            $fid = $pfda['pagepropertyvalue_pageproperty_name'];
+            
+            if(is_object($this->_fields[$fid])){
+                $this->_fields[$fid]->setContextualPageId($this->_properties['id']);
+                $this->_fields[$fid]->hydrateValueFromPpdArray($pfda);
+            }
+        }
+        
+        $this->_fields_retrieval_attempted = true;
+        
+        return $this->_fields; */
 	    
 	}
 	
@@ -1031,6 +1056,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        
 	    }
 	    
+	    // print_r($array);
 	    return $array;
 	    
 	}
@@ -1072,28 +1098,23 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function fetchRenderingData(){
 	    
-	    $data = new SmartestParameterHolder('Page Rendering Data');
+	    $data = new SmartestParameterHolder('Page Rendering Data for page');
 	    
-	    // $data['page'] = $this;
 	    $data->setParameter('page', $this);
-	    // $data['tags'] = $this->getTags();
 	    $data->setParameter('tags', $this->getTags());
 	    
 	    if($this instanceof SmartestItemPage){
 	        if($this->getPrincipalItem()){
 	            
-	            // $data['principal_item'] = $this->getPrincipalItem();
 	            $data->setParameter('principal_item', $this->getPrincipalItem());
 	            
 	            // $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
 	            // $data['data_set'] = $this->getDataSet()->__toArray();
 	            
-	            // $data['is_item'] = true;
 	            $data->setParameter('is_item', true);
 	            
             }else{
                 
-                // $data['principal_item'] = array();
                 $data->setParameter('principal_item', array());
                 
                 /* if($this->getDataSet() instanceof SmartestCmsItemSet){
@@ -1104,27 +1125,19 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
                     $data['data_set'] = array();
                 } */
                 
-                // $data['is_item'] = true;
                 $data->setParameter('is_item', true);
             }
 	    }else{
-	        // $data['is_item'] = false;
 	        $data->setParameter('is_item', false);
 	    }
 	    
 	    $du = new SmartestDataUtility;
 	    $tags = $du->getTags();
 	    
-	    // $data['all_tags'] = $tags;
 	    $data->setParameter('all_tags', $tags);
-	    
-	    // $data['authors'] = array_values($this->getAuthors());
 	    $data->setParameter('authors', array_values($this->getAuthors()));
-	    
-	    // $data['fields'] = $this->getPageFieldValuesAsAssociativeArray();
-	    $data->setParameter('fields', $this->getPageFieldValuesAsAssociativeArray());
-	    
-	    // $data['navigation'] = $this->getNavigationStructure();
+	    // $data->setParameter('fields', $this->getPageFieldValuesAsAssociativeArray());
+	    $data->setParameter('fields', $this->getPageFieldDefinitions());
 	    $data->setParameter('navigation', $this->getNavigationStructure());
 	    
 	    return $data;
@@ -1245,6 +1258,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        case "sibling_level_pages":
 	        return $this->getParentPage()->getPageChildrenForWeb();
 	        
+	        case "parent":
+			return $this->getParentPage();
+	        
 	        case "parent_level_pages":
 			return $this->getGrandParentPage()->getPageChildrenForWeb();
 	        
@@ -1284,6 +1300,12 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             case "modified":
             return new SmartestDateTime($this->_properties['modified']);
 	        
+	    }
+	    
+	    // var_dump($this->getDraftMode());
+	    
+	    if($this->getPageFieldDefinitions()->hasParameter($offset)){
+	        return $this->getPageFieldDefinitions()->getParameter($offset);
 	    }
 	    
 	    return parent::offsetGet($offset);

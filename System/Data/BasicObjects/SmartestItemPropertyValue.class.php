@@ -127,17 +127,6 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                 
                 }else if($t['valuetype'] == 'manytomany'){
                     
-                    /* $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_ITEM_SELECTION_PROPERTY');
-                    $q->setTargetEntityByIndex(1);
-                    $q->addQualifyingEntityByIndex(2, $this->getId());
-                    $q->setDraftMode($draft);
-                    $items = $q->retrieve();
-                    
-                    $obj = new SmartestCmsItemsCollection;
-                    $obj->setValue($items);
-                    
-                    return $obj; */
-                    
                     if($draft){
                         $mode = constant('SM_MTMLOOKUPMODE_DRAFT');
                     }else{
@@ -153,22 +142,9 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     $obj->hydrateFromStoredIdsArray($r->getIds($mode));
                     return $obj;
                     
-                    // return new SmartestCmsItemsCollection;
-                    
-                    // print_r($ids);
-                    
-                    // echo "retrieving";
-                    
-                    /* if($draft){
-                        $q->restrictToStatus('SM_MTMLOOKUPSTATUS_DRAFT');
-                    }else{
-                        $q->restrictToStatus('SM_MTMLOOKUPSTATUS_LIVE');
-                    } */
-                    
                 }else{
                     // get a SmartestBasicType object
                     $obj = new $class;
-                    // $obj->setValue($raw_data);
                     $obj->hydrateFromStorableFormat($raw_data);
                 }
             

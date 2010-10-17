@@ -8,9 +8,9 @@ class SmartestImageAsset extends SmartestAsset{
         return $this->_image->getThumbnail($max_width, $max_height, $round_corners=false);
     }
     
-    public function __toString(){
-        return $this->_image->__toString();
-    }
+    /* public function __toString(){
+        return $this->getImage()->__toString();
+    } */
     
     public function renderAsMarkup(){
 

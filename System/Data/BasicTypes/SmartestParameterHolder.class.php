@@ -59,6 +59,10 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
         return $this->_data;
     }
     
+    public function getParameterNames(){
+        return array_keys($this->_data);
+    }
+    
     public function d(){ // D for Data
         return $this->getParameters();
     }
