@@ -4,23 +4,14 @@
 
 class SmartestSystemApplication extends SmartestBaseApplication{
     
-    protected $_userMessages = array();
+    // protected $_userMessages = array();
     protected $_languages = array();
     protected $_smartest_request_info = null;
     
     public function __systemModulePreConstruct(){
         
         // transfer messages left over from the last request.
-		
-		if(SmartestSession::get('user:isAuthenticated')){
-		    
-		    if(SmartestCache::hasData('user:messages:nextRequest:'.$this->getUser()->getId(), true) && is_array(SmartestCache::load('user:messages:nextRequest:'.$this->getUser()->getId(), true))){
-		        $this->_userMessages = SmartestCache::load('user:messages:nextRequest:'.$this->getUser()->getId(), true);
-		    }
-		    
-		    SmartestCache::save('user:messages:nextRequest:'.$this->getUser()->getId(), array(), -1, true);
-		    
-	    }
+		$this->transferUserMessages();
 	    
 	    $this->_smartest_request_info = new SmartestParameterHolder("Request information");
 	    
@@ -32,11 +23,28 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    
     }
     
+    final protected function transferUserMessages(){
+        
+        if(SmartestSession::get('user:isAuthenticated')){
+		    
+		    if(SmartestCache::hasData('user:messages:nextRequest:'.$this->getUser()->getId(), true)){
+		        $msgs = SmartestCache::load('user:messages:nextRequest:'.$this->getUser()->getId(), true);
+		        if(is_array($msgs) && count($msgs)){
+		            SmartestResponse::$user_messages = SmartestCache::load('user:messages:nextRequest:'.$this->getUser()->getId(), true);
+	            }
+		    }
+		    
+		    SmartestCache::save('user:messages:nextRequest:'.$this->getUser()->getId(), array(), -1, true);
+		    
+	    }
+	    
+    }
+    
     ///// Communicate with the user /////
 	
 	final public function addUserMessage($message, $type=1){
 		$message = new SmartestUserMessage($message, $type);
-		$this->_userMessages[] = $message;
+		SmartestResponse::$user_messages[] = $message;
 	}
 	
 	final protected function addUserMessageToNextRequest($message, $type=1){
@@ -57,7 +65,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	}
 	
 	final public function getUserMessages(){
-	    return $this->_userMessages;
+	    return SmartestResponse::$user_messages;
 	}
 	
 	protected function setTitle($interface_title){

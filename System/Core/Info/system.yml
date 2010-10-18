@@ -1,8 +1,8 @@
 system:
   info:
-    version: "0.3.9"
-    revision: 389
-    build: 133
+    version: "0.4"
+    revision: 390
+    build: 134
     minimum_php_version: 5.2
     minimum_database_version: 16
     default_timezone: Europe/London

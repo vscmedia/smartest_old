@@ -54,6 +54,9 @@ class SmartestResponse{
 	protected $_cached_global_preferences;
 	protected $_preferences_helper;
 	
+	// User messages holder - must be ousite controller object
+	public static $user_messages = array();
+	
 	public function __construct(){
 	    
 	    $this->_error_stack = new SmartestErrorStack();
@@ -431,10 +434,7 @@ class SmartestResponse{
 		SmartestPersistentObject::set('request_data', $rp);
 		// var_dump(SmartestPersistentObject::get('request_data'));
 		
-		// Pass user messages to Smarty
-	    if($this->_controller->getCurrentRequest()->getUserActionObject() instanceof SmartestSystemApplication){
-		    $this->_smarty->assign('sm_messages', $this->_controller->getCurrentRequest()->getUserActionObject()->getUserMessages());
-	    }
+		
 	    
 	}
 	
@@ -546,6 +546,12 @@ class SmartestResponse{
 	}
 	
 	public function finish(){
+	    
+	    // Pass user messages to Smarty
+	    if($this->_controller->getCurrentRequest()->getUserActionObject() instanceof SmartestSystemApplication){
+		    // $this->_smarty->assign('sm_messages', $this->_controller->getCurrentRequest()->getUserActionObject()->getUserMessages());
+		    $this->_smarty->assign('sm_messages', self::$user_messages);
+	    }
 	    
 	    echo $this->fetch();
 	    exit;
