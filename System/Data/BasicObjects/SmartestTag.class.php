@@ -153,13 +153,14 @@ class SmartestTag extends SmartestBaseTag{
     
     public function getItems($site_id=''){
         
-        if(!$site_id || !is_numeric($site_id)){
-            $site_id = 'all';
-        }
-        
         if(!$this->_item_lookup_attempted){
         
-            $sql = "SELECT Items.item_id FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK'";
+            $sql = "SELECT Items.item_id FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK' AND Items.item_public='TRUE' AND Items.item_deleted='0'";
+            
+            if($site_id && is_numeric($site_id)){
+                $sql .= ' AND Items.item_site_id=\''.$site_id.'\'';
+            }
+            
             $result = $this->database->queryToArray($sql);
             
             $ids = array();
@@ -171,17 +172,6 @@ class SmartestTag extends SmartestBaseTag{
             $h = new SmartestCmsItemsHelper;
             $items = $h->hydrateMixedListFromIdsArray($ids);
         
-            /* $items = array();
-        
-            foreach($result as $item_array){
-                
-                $item = SmartestCmsItem::retrieveByPk($item_array['item_id']);
-                
-                if(is_object($item) && $item->getModel()->hasDefaultDescriptionPropertyId()){
-                    $items[] = $item;
-                }
-            } */
-            
             $this->_item_lookup_attempted = true;
             $this->_items = $items;
         
@@ -226,12 +216,6 @@ class SmartestTag extends SmartestBaseTag{
         
         foreach($pages as $p){
             
-            /* if($draft){
-                $key = $p->getCreated();
-            }else{
-                $key = $p->getLastPublished();
-            } */
-            
             $key = $p->getDate();
             
             if(in_array($key, array_keys($master_array))){
@@ -246,16 +230,12 @@ class SmartestTag extends SmartestBaseTag{
         
         foreach($items as $i){
             
-            /* if($draft){
-                $key = $i->getCreated();
-            }else{
-                $key = $i->getLastPublished();
-            } */
-            
             $key = $i->getDate();
+            if($key instanceof SmartestDateTime){
+                $key = $key->getUnixFormat();
+            }
             
             if(in_array($key, array_keys($master_array))){
-                // $master_array[$key] = $i;
                 while(in_array($key, array_keys($master_array))){
                     $key++;
                 }
@@ -266,13 +246,6 @@ class SmartestTag extends SmartestBaseTag{
         }
         
         krsort($master_array);
-        
-        /* $final_list = array();
-        
-        foreach($master_array as $thing){
-            $generic_object = new SmartestGenericListedObject($thing);
-            $final_list[] = $generic_object;
-        } */
         
         return $master_array;
         
