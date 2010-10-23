@@ -1,6 +1,6 @@
 <?php
 
-class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
+class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, SmartestStorableValue, SmartestSubmittableValue{
     
     public function __objectConstruct(){
         $this->_membership_type = 'SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP';
@@ -244,6 +244,24 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi{
         
         return parent::offsetGet($offset);
         
+    }
+    
+    // The next two methods are for the SmartestStorableValue interface
+    public function getStorableFormat(){
+        return $this->_properties['id'];
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        if(is_numeric($v)){
+            return $this->find($v);
+        }
+    }
+    
+    public function hydrateFromFormData($v){
+        // var_dump($this->find($v));
+        if(is_numeric($v)){
+            return $this->find($v);
+        }
     }
 
 }

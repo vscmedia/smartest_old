@@ -1,6 +1,6 @@
 <?php
 
-class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject, SmartestStorableValue{
+class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject, SmartestStorableValue, SmartestSubmittableValue{
     
     protected $_allowed_types = array();
     protected $_draft_mode = false;

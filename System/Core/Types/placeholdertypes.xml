@@ -31,6 +31,16 @@
     <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
   </type>
   
+  <type id="SM_ASSETCLASS_MAIN_FEATURE">
+    <label>Main feature - article text, movie, audio or SVG graphic</label>
+    <setfrompreview>true</setfrompreview>
+    <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
+    <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
+    <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_MP3</accept>
+  </type>
+  
    <type id="SM_ASSETCLASS_HOMEPAGE_SPLASH">
     <label>Homepage splash (high-impact, high compatibility)</label>
     <setfrompreview>true</setfrompreview>
@@ -44,12 +54,12 @@
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
   </type>
   
-  <type id="SM_ASSETCLASS_VECTOR_GRAPHIC">
+  <!--<type id="SM_ASSETCLASS_VECTOR_GRAPHIC">
     <label>Vector graphics</label>
     <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
-  </type>
+  </type>-->
   
   <type id="SM_ASSETCLASS_JAVASCRIPT">
     <label>Javascript</label>
