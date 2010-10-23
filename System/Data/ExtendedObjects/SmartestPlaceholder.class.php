@@ -121,6 +121,14 @@ class SmartestPlaceholder extends SmartestAssetClass{
 	    
 	}
 	
+	public function isEditableFromPreview(){
+	    
+	    $type = $this->getTypeInfo();
+	    return (isset($type['setfrompreview']) && SmartestStringHelper::toRealBool($type['setfrompreview'])) ? true : false;
+	    // print_r($type);
+	    
+	}
+	
 	public function acceptsImages(){
 	    
 	    $type = $this->getTypeInfo();

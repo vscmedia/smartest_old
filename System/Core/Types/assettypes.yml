@@ -195,6 +195,7 @@ type:
     class: SmartestAsset
     parsable: false
     uploadable: true
+    show_preview_edit_link: false
     storage:
       type: file
       location: Public/Resources/Stylesheets/

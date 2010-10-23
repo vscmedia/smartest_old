@@ -92,10 +92,6 @@ class SmartestBasicRenderer extends SmartestEngine{
     
     public function renderAsset($render_data='', $path='none'){
         
-        // print_r($render_data);
-        
-        // print_r($this->_asset);
-        
         $asset_type_info = $this->_asset->getTypeInfo();
         $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
         
@@ -199,7 +195,9 @@ class SmartestBasicRenderer extends SmartestEngine{
                 }
             }
             
-            if($this->_request_data->g('action') == "renderEditableDraftPage" && $path == 'none'){
+            $show_preview_edit_link = (!isset($asset_type_info['show_preview_edit_link']) || SmartestStringHelper::toRealBool($asset_type_info['show_preview_edit_link']));
+            
+            if($this->_request_data->g('action') == "renderEditableDraftPage" && $path == 'none' && $show_preview_edit_link){
 			    
 			    if(isset($asset_type_info['editable']) && SmartestStringHelper::toRealBool($asset_type_info['editable'])){
 			        $edit_link .= "<a title=\"Click to edit file: ".$this->_asset->getUrl()." (".$this->_asset->getType().")\" href=\"".$this->_request_data->g('domain')."assets/editAsset?asset_id=".$this->_asset->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";

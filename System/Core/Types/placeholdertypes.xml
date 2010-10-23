@@ -5,10 +5,12 @@
   <type id="SM_ASSETCLASS_RICH_TEXT">
     <label>Formatted text files</label>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+    <setfrompreview>true</setfrompreview>
   </type>
   
   <type id="SM_ASSETCLASS_STATIC_IMAGE">
     <label>Images in any format</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
@@ -17,6 +19,7 @@
   
   <type id="SM_ASSETCLASS_TEXT">
     <label>Any text, formatted or unformatted</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
     <accept>SM_ASSETTYPE_PLAIN_TEXT</accept>
     <accept>SM_ASSETTYPE_SL_TEXT</accept>
@@ -24,11 +27,13 @@
   
   <type id="SM_ASSETCLASS_MARKUP">
     <label>Markup fragments</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
   </type>
   
    <type id="SM_ASSETCLASS_HOMEPAGE_SPLASH">
     <label>Homepage splash (high-impact, high compatibility)</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
     <accept>SM_ASSETTYPE_FLASH_VIDEO</accept>
@@ -41,27 +46,32 @@
   
   <type id="SM_ASSETCLASS_VECTOR_GRAPHIC">
     <label>Vector graphics</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
   </type>
   
   <type id="SM_ASSETCLASS_JAVASCRIPT">
     <label>Javascript</label>
+    <setfrompreview>false</setfrompreview>
     <accept>SM_ASSETTYPE_JAVASCRIPT</accept>
   </type>
   
   <type id="SM_ASSETCLASS_STYLESHEET">
     <label>CSS Stylesheet</label>
+    <setfrompreview>false</setfrompreview>
     <accept>SM_ASSETTYPE_STYLESHEET</accept>
   </type>
   
   <type id="SM_ASSETCLASS_SHOCKWAVE_FLASH">
     <label>Adobe Flash content</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
   </type>
   
   <type id="SM_ASSETCLASS_MOVIE">
     <label>Movies in any format</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
     <accept>SM_ASSETTYPE_MPEG_MOVIE</accept>
     <accept>SM_ASSETTYPE_FLASH_VIDEO</accept>
@@ -70,11 +80,13 @@
   
   <type id="SM_ASSETCLASS_SOUND">
     <label>Audio files</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_MP3</accept>
   </type>
   
   <type id="SM_ASSETCLASS_DOWNLOAD">
     <label>Files that usually need to be downloaded</label>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_PDF</accept>
     <accept>SM_ASSETTYPE_MS_WORD</accept>
     <accept>SM_ASSETTYPE_MS_EXCEL</accept>
@@ -83,6 +95,8 @@
   
   <type id="SM_ASSETCLASS_EXP1">
     <label>Exp1</label>
+    <hide>true</hide>
+    <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_CONTAINER_TEMPLATE</accept>

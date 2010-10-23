@@ -358,17 +358,23 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             if(isset($params['showcontrol']) && SmartestStringHelper::isFalse($params['showcontrol'])){
                 
             }else{
-            
-                if($this->_request_data->g('action') == "renderEditableDraftPage"){
-                    if($this->getPage() instanceOf SmartestItemPage){
-                        $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid().'&amp;item_id='.$this->getPage()->getSimpleItem()->getId();
-                    }else{
-                        $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid();
-                    }
-			        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
-		        }else{
-			        $edit_link = "<!--edit link-->";
-		        }
+                
+                $show_edit_link = isset($params['showeditbutton']) ? (SmartestStringHelper::toRealBool($params['showeditbutton']) && $this->_request_data->g('action') == "renderEditableDraftPage") : ($placeholder->getPlaceholder()->isEditableFromPreview() && $this->_request_data->g('action') == "renderEditableDraftPage");
+                
+                if($show_edit_link){
+                
+                    if($this->_request_data->g('action') == "renderEditableDraftPage"){
+                        if($this->getPage() instanceOf SmartestItemPage){
+                            $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid().'&amp;item_id='.$this->getPage()->getSimpleItem()->getId();
+                        }else{
+                            $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid();
+                        }
+    			        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
+    		        }else{
+    			        $edit_link = "<!--edit link-->";
+    		        }
+		        
+	            }
 		    
 		    }
             
@@ -383,17 +389,24 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 if(isset($params['showcontrol']) && SmartestStringHelper::isFalse($params['showcontrol'])){
                     
                 }else{
-                
+                    
                     if($ph->hydrateBy('name', $placeholder_name)){
                         
-                        if($this->getPage() instanceOf SmartestItemPage){
-                            $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid().'&amp;item_id='.$this->getPage()->getSimpleItem()->getId();
-                        }else{
-                            $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid();
+                        $show_edit_link = isset($params['showeditbutton']) ? (SmartestStringHelper::toRealBool($params['showeditbutton']) && $this->_request_data->g('action') == "renderEditableDraftPage") : ($ph->isEditableFromPreview() && $this->_request_data->g('action') == "renderEditableDraftPage");
+                        
+                        if($show_edit_link){
+                        
+                            if($this->getPage() instanceOf SmartestItemPage){
+                                $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid().'&amp;item_id='.$this->getPage()->getSimpleItem()->getId();
+                            }else{
+                                $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid();
+                            }
+                        
+                            $edit_link = "<a title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
+                            return $edit_link;
+                        
                         }
                         
-                        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
-                        return $edit_link;
                     }
                 
                 }
