@@ -1375,9 +1375,11 @@ class Items extends SmartestSystemApplication{
 			            $item->getItem()->setSlug(SmartestStringHelper::toSlug($this->getRequestParameter('item_slug')), $this->getSite()->getId());
 		            }
 		        }else{
-		            $this->addUserMessage("You cannot leave the item's short name empty. Changes were not saved.", SmartestUserMessage::WARNING);
-		            $this->setRequestParameter('item_id', $item->getId());
-		            $this->forward('datamanager', 'editItem');
+		            if($allow_edit_item_slug){
+		                $this->addUserMessage("You cannot leave the item's short name empty. Changes were not saved.", SmartestUserMessage::WARNING);
+		                $this->setRequestParameter('item_id', $item->getId());
+		                $this->forward('datamanager', 'editItem');
+	                }
 		        }
         		
         		$item->getItem()->save();
