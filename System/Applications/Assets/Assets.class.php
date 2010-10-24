@@ -880,6 +880,7 @@ class Assets extends SmartestSystemApplication{
                                             $item->getItem()->setCreateByAuthorId($this->getUser()->getId());
                                             $item->getItem()->setCreated(time());
                                             $item->getItem()->setLanguage($asset->getLanguage());
+                                            $item->getItem()->setSiteId($this->getSite()->getId());
                                             $item->save();
                                             $item->setPropertyValueByNumericKey($property->getId(), $asset->getId());
                                             $item->save();
@@ -951,6 +952,9 @@ class Assets extends SmartestSystemApplication{
 	    $alh = new SmartestAssetsLibraryHelper;
 	    $groups = $alh->getAssetGroups($this->getSite()->getId());
 	    $locations = $alh->getUnWritableStorageLocations();
+	    
+	    $this->setFormReturnUri();
+	    $this->setFormReturnDescription('file groups');
 	    
 	    $this->send($groups, 'groups');
 	    $this->send($locations, 'locations');
@@ -1042,6 +1046,7 @@ class Assets extends SmartestSystemApplication{
 	    $set->setShared(0);
 	    $set->save();
 	    
+	    header("HTTP/1.1 201 Created");
 	    $this->redirect('/assets/editAssetGroupContents?group_id='.$set->getId());
 	    
 	}
@@ -1086,10 +1091,57 @@ class Assets extends SmartestSystemApplication{
         
 	}
 	
+	public function deleteAssetGroup(){
+	    
+	    if($this->getUser()->hasToken('delete_asset_groups')){
+	        
+	        $group = new SmartestAssetGroup;
+	        
+	        if($group->find($this->getRequestParameter('group_id'))){
+	            $group->delete();
+	            $this->addUserMessageToNextRequest("The file group was deleted", SmartestUserMessage::SUCCESS);
+	        }else{
+	            $this->addUserMessageToNextRequest("The group ID wasn't recognized.", SmartestUserMessage::ERROR);
+	        }
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("You don't have permission to delete file groups", SmartestUserMessage::ACCESS_DENIED);
+	        
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
+	public function deleteAssetGroupConfirm(){
+	    
+	    if($this->getUser()->hasToken('delete_asset_groups')){
+	        
+	        $group = new SmartestAssetGroup;
+	        
+	        if($group->find($this->getRequestParameter('group_id'))){
+	            $this->send($group, 'group');
+	        }else{
+	            $this->addUserMessageToNextRequest("The group ID wasn't recognized.", SmartestUserMessage::ERROR);
+	            $this->formForward();
+	        }
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("You don't have permission to delete file groups", SmartestUserMessage::ACCESS_DENIED);
+	        $this->formForward();
+	        
+	    }
+	    
+	    
+	    
+	}
+	
 	public function browseAssetGroup($get){
 	    
 	    $group_id = $this->getRequestParameter('group_id');
-	    $mode = isset($get["mode"]) ? (int) $get["mode"] : 1;
+	    $mode = $this->getRequestParameter("mode", 1);
 	    
 	    $this->setFormReturnUri();
 	    $this->setFormReturnDescription('file group');
@@ -1115,6 +1167,20 @@ class Assets extends SmartestSystemApplication{
 	        
 	        $this->send($group, 'group');
 	        $this->send($this->getUser()->hasToken('edit_file_group_name'), 'allow_name_edit');
+	        
+	        $is_empty = count($group->getMemberships()) == 0;
+	        
+	        $this->send($is_empty, 'allow_type_change');
+	        
+	        if($is_empty){
+	        
+    	        $asset_types = SmartestDataUtility::getAssetTypes();
+        	    $placeholder_types = SmartestDataUtility::getAssetClassTypes(true);
+
+        	    $this->send($asset_types, 'asset_types');
+        	    $this->send($placeholder_types, 'placeholder_types');
+    	    
+	        }
 	        
 	        if($group->isUsableForPlaceholders()){
 	            if($group->isUsedForPlaceholders()){
@@ -1153,6 +1219,25 @@ class Assets extends SmartestSystemApplication{
             }else{
                 $shared = ($this->getRequestParameter('group_shared') && $this->getRequestParameter('group_shared')) ? 1 : 0;
                 $group->setShared($shared);
+            }
+            
+            if(count($group->getMemberships()) == 0){
+                
+                if($this->getRequestParameter('asset_group_type') == 'ALL'){
+        	        $group->setFilterType('SM_SET_FILTERTYPE_NONE');
+        	    }else{
+        	        switch(substr($this->getRequestParameter('asset_group_type'), 0, 1)){
+        	            case 'A':
+        	            $group->setFilterType('SM_SET_FILTERTYPE_ASSETTYPE');
+        	            break;
+        	            case 'P':
+        	            $group->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
+        	            break;
+        	        }
+        	    }
+        	    
+        	    $group->setFilterValue(substr($this->getRequestParameter('asset_group_type'), 2));
+                
             }
             
             $group->save();

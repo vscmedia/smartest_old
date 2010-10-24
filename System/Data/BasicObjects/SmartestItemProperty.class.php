@@ -325,7 +325,8 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
             
             if(substr($filter, 0, 13) == 'SM_ASSETCLASS'){
                 $alh = new SmartestAssetsLibraryHelper;
-                $groups = $alh->getPlaceholderAssetGroupsByType($filter, $site_id);
+                // $groups = $alh->getPlaceholderAssetGroupsByType($filter, $site_id);
+                $groups = $alh->getAssetGroupsByPlaceholderType($filter, $site_id);
             }else{
                 $alh = new SmartestAssetsLibraryHelper;
                 $groups = $alh->getTypeSpecificAssetGroupsByType($filter, $site_id);

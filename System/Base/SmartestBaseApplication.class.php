@@ -200,8 +200,6 @@ class SmartestBaseApplication extends QuinceBase{
 			}
 			
 		}
-		
-		//echo SM_MANAGER_CLASS;
 	    
 	}
 	
@@ -209,8 +207,8 @@ class SmartestBaseApplication extends QuinceBase{
 	    return $this->getRequest()->hasRequestParameter($p);
 	}
 	
-	protected function getRequestParameter($p){
-	    return $this->getRequest()->getRequestParameter($p);
+	protected function getRequestParameter($p, $default=''){
+	    return $this->getRequest()->getRequestParameter($p, $default);
 	}
 	
 	protected function setRequestParameter($p, $v){

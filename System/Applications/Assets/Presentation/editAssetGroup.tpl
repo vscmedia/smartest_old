@@ -20,10 +20,32 @@
         {if $allow_name_edit}<input type="text" name="group_name" value="{$group.name}" /><span class="form-hint">letters, numbers and underscored only, please.</span>{else}{$group.name}{/if}
       </div>
       
+      {if $allow_type_change}
+      <div class="edit-form-row">
+        <div class="form-section-label">Which files can go in this group?</div>
+        <select name="asset_group_type">
+          <option value="ALL">Any type of file</option>
+
+          <optgroup label="Placeholder types">
+{foreach from=$placeholder_types item="type"}
+            <option value="P:{$type.id}"{if $group.filter_value == $type.id} selected="selected"{/if}>{$type.label}</option>
+{/foreach}
+          </optgroup>
+
+          <optgroup label="Specific file types">
+{foreach from=$asset_types item="type"}
+            <option value="A:{$type.id}"{if $group.filter_value == $type.id} selected="selected"{/if}>{$type.label}</option>
+{/foreach}
+          </optgroup>
+
+        </select>
+      </div>
+      {else}
       <div class="edit-form-row">
         <div class="form-section-label">Accepted file types</div>
         {$group.type_labels_list} <span class="form-hint">({$group.filter_value})</span>
       </div>
+      {/if}
     
       <div class="edit-form-row">
         <div class="form-section-label">Shared</div>

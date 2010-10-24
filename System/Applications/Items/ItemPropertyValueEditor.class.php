@@ -64,6 +64,7 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
                             $item->setPropertyValueByNumericKey($property->getId(), $ids);
                             $item->save();
                             $this->addUserMessageToNextRequest("The attached items for this property were successfully updated.", SmartestUserMessage::SUCCESS);
+                            $this->redirect('/datamanager/editItem?item_id='.$item->getId());
                         
                         }else{
                             
@@ -163,6 +164,7 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
                             $item->setPropertyValueByNumericKey($property->getId(), $ids);
                             $item->save();
                             $this->addUserMessageToNextRequest("The attached files for this property were successfully updated.", SmartestUserMessage::SUCCESS);
+                            $this->redirect('/datamanager/editItem?item_id='.$item->getId());
                         
                         }else{
                             

@@ -17,7 +17,7 @@
         <div class="form-section-label">Label</div>
         <input type="text" name="placeholder_label" value="{$placeholder.label}" />
       </div>
-      
+
 {if count($possible_groups)}
       <div class="edit-form-row">
         <div class="form-section-label">Restrict definitions to members of a file group?</div>

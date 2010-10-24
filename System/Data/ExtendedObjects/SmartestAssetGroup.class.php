@@ -6,6 +6,18 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         $this->_membership_type = 'SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP';
     }
     
+    public function delete(){
+        
+        // delete memberships
+        $q = new SmartestManyToManyQuery($this->_membership_type);
+        $q->setTargetEntityByIndex(1);
+        $q->addQualifyingEntityByIndex(2, $this->getId());
+	    $q->delete();
+	    
+	    parent::delete();
+        
+    }
+    
     public function getMembers($mode=1, $site_id='', $refresh=false){
         
         if($refresh || !count($this->_members)){

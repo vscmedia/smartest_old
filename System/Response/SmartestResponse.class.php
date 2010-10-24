@@ -316,8 +316,6 @@ class SmartestResponse{
 	        $this->_error_stack->recordError(new SmartestException('Quince error: '.$e->getMessage()), false);
 	    }
 	    
-	    // print_r($this->_controller->getCurrentRequest());
-	    
 	    $this->_error_stack->display();
 	    
 	    SmartestPersistentObject::set('controller', $this->_controller);
@@ -429,10 +427,7 @@ class SmartestResponse{
 		$rp->setParameter('application', $module);
 		
 		SmartestPersistentObject::set('request_data', $rp);
-		
-		// echo "hello";
-		SmartestPersistentObject::set('request_data', $rp);
-		// var_dump(SmartestPersistentObject::get('request_data'));
+		// SmartestPersistentObject::set('request_data', $rp);
 		
 		
 	    
@@ -476,10 +471,6 @@ class SmartestResponse{
 	}
 	
 	protected function isSystemClass(){
-		
-		// $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
-		
-		// $rcn = $sd['system']['reserved_classes'];
 		
 		if($this->_controller->getCurrentRequest()->getMeta('system')){
 			
@@ -549,7 +540,6 @@ class SmartestResponse{
 	    
 	    // Pass user messages to Smarty
 	    if($this->_controller->getCurrentRequest()->getUserActionObject() instanceof SmartestSystemApplication){
-		    // $this->_smarty->assign('sm_messages', $this->_controller->getCurrentRequest()->getUserActionObject()->getUserMessages());
 		    $this->_smarty->assign('sm_messages', self::$user_messages);
 	    }
 	    

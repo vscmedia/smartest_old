@@ -84,7 +84,7 @@ class Items extends SmartestSystemApplication{
   	    
   	    $this->setFormReturnUri();
   	    
-  	    if($this->getRequestParameter('mode')){
+  	    if(is_numeric($this->getRequestParameter('mode'))){
   	        $mode = (int) $this->getRequestParameter('mode');
   	    }else{
   	        $mode = SM_STATUS_CURRENT;
@@ -272,11 +272,17 @@ class Items extends SmartestSystemApplication{
 	} */
 	
 	public function deleteProperty($get){
-	    // $itemproperty_id = mysql_real_escape_string($this->getRequestParameter('itemproperty_id'));
-    	// return $this->manager->deleteItemClassProperty($itemproperty_id);
-    	$property = new SmartestItemProperty;
+	    
+	    $property = new SmartestItemProperty;
     	
     	if($property->find($this->getRequestParameter('itemproperty_id'))){
+    	    
+    	    $model = new SmartestModel;
+    	    
+    	    if($model->find($property->getItemclassId()) && $model->getPrimaryPropertyId() == $property->getId()){
+    	        $model->setPrimaryPropertyId('');
+    	        $model->save();
+    	    }
     	    
     	    $property->delete();
 	        
@@ -1348,22 +1354,31 @@ class Items extends SmartestSystemApplication{
 		
     		if(is_object($item)){
 		        
-		        $allow_edit_item_slug = $this->getUser()->hasToken('edit_item_name');
-		        
 		        // update name
     		    if (strlen($this->getRequestParameter('item_name'))){
 			        $item->getItem()->setName(SmartestStringHelper::sanitize($this->getRequestParameter('item_name')));
+		        }else{
+		            $this->addUserMessage("You cannot leave the item's name empty. Changes were not saved.", SmartestUserMessage::WARNING);
+		            $this->setRequestParameter('item_id', $item->getId());
+		            $this->forward('datamanager', 'editItem');
 		        }
 		        
-		        if (strlen($this->getRequestParameter('item_slug')) && $allow_edit_item_slug){
-			        $item->getItem()->setSlug(SmartestStringHelper::toSlug($this->getRequestParameter('item_slug')), $this->getSite()->getId());
-		        }
+		        $allow_edit_item_slug = $this->getUser()->hasToken('edit_item_name');
 		        
 		        $item->getItem()->setLanguage(SmartestStringHelper::sanitize($this->getRequestParameter('item_language')));
-		        
 		        $item->getItem()->setSearchField(SmartestStringHelper::sanitize($this->getRequestParameter('item_search_field')));
 		        $item->getItem()->setMetapageId($this->getRequestParameter('item_metapage_id'));
         		$item->getItem()->setModified(time());
+		        
+		        if(strlen($this->getRequestParameter('item_slug'))){
+		            if($allow_edit_item_slug){
+			            $item->getItem()->setSlug(SmartestStringHelper::toSlug($this->getRequestParameter('item_slug')), $this->getSite()->getId());
+		            }
+		        }else{
+		            $this->addUserMessage("You cannot leave the item's short name empty. Changes were not saved.", SmartestUserMessage::WARNING);
+		            $this->setRequestParameter('item_id', $item->getId());
+		            $this->forward('datamanager', 'editItem');
+		        }
         		
         		$item->getItem()->save();
 		

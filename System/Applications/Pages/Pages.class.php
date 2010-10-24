@@ -593,6 +593,8 @@ class Pages extends SmartestSystemApplication{
 	        
 	        $this->send($placeholder, 'placeholder');
 	        $this->send($placeholder->getPossibleFileGroups($this->getSite()->getId()), 'possible_groups');
+	        $definitions = $placeholder->getDefinitions(true, $this->getSite()->getId());
+	        $this->send((count($definitions) == 0), 'allow_type_change');
 	        
 	    }else{
 	        

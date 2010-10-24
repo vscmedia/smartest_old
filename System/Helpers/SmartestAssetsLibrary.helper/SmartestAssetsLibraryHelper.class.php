@@ -768,5 +768,34 @@ class SmartestAssetsLibraryHelper{
 	    return $groups;
 	    
 	}
+	
+	public function getAssetGroupsByPlaceholderType($placeholder_type, $site_id=''){
+	    
+	    $ach = new SmartestAssetClassesHelper;
+	    $types = $ach->getAssetTypeCodesFromAssetClassType($placeholder_type);
+	    
+	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND set_site_id='".$site_id."'";
+	    }
+	    
+	    $sql .= " AND ((set_filter_type='SM_SET_FILTERTYPE_ASSETCLASS' AND set_filter_value='".$placeholder_type."') OR (set_filter_type='SM_SET_FILTERTYPE_ASSETTYPE' AND set_filter_value IN ('".implode("', '", $types)."')))";
+	    
+	    $sql .= " ORDER BY set_name";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $groups = array();
+	    
+	    foreach($result as $r){
+	        $g = new SmartestAssetGroup;
+	        $g->hydrate($r);
+	        $groups[] = $g;
+	    }
+	    
+	    return $groups;
+	    
+	}
     
 }

@@ -270,8 +270,6 @@ class SmartestModel extends SmartestBaseModel{
             
         }
         
-        // echo $sql;
-        
         if(strlen($query)){
             
             $words = explode(' ', $query);

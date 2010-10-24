@@ -316,8 +316,8 @@ class QuinceRequest{
         return isset($this->_request_params[$n]);
     }
     
-    final public function getRequestParameter($n){
-        return isset($this->_request_params[$n]) ? $this->_request_params[$n] : null;
+    final public function getRequestParameter($n, $default=''){
+        return isset($this->_request_params[$n]) ? $this->_request_params[$n] : $default;
     }
     
     final public function setRequestParameter($n, $v){
