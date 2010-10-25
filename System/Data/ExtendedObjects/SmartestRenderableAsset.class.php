@@ -1,6 +1,6 @@
 <?php
 
-class SmartestRenderableAsset extends SmartestAsset{
+class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModedObject{
     
     protected $_render_data;
     protected $_draft_mode = false;

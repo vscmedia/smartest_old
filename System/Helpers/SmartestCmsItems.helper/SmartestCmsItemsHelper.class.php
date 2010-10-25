@@ -27,7 +27,7 @@ class SmartestCmsItemsHelper{
         
     }
     
-    public function hydrateMixedListFromIdsArray($ids){
+    public function hydrateMixedListFromIdsArray($ids, $draft_mode=false){
         
         $results = $this->getSquareDbDataFromIdsArray($ids);
         $items = array();
@@ -42,6 +42,7 @@ class SmartestCmsItemsHelper{
                 $class_name = $model->getClassName();
                 $item = new $class_name();
                 $item->hydrateFromRawDbRecord($result);
+                $item->setDraftMode($draft_mode);
                 $items[] = $item;
                 
             }

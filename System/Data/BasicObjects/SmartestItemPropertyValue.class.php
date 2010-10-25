@@ -92,7 +92,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                 
                     $obj = new $class;
                 
-                    if(method_exists($obj, 'setDraftMode')){
+                    if($obj instanceof SmartestDualModedObject)){
                         $obj->setDraftMode($draft);
                     }
                 
@@ -108,13 +108,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                             }
                         }else{
                             if($this->getProperty()->isManyToMany()){
-                                // $obj->hydrateFromStorableFormat($raw_data);
-                                // if($obj instanceof SmartestManyToManyItemPropertyValueHolder){
-                                    // $obj->fetchManyToManyObjects($this->getId());
-                                    // print_r($obj);
-                                // }else{
-                                //     throw new SmartestException("Many to many data types that are used as item proerty values must implement interface SmartestManyToManyItemPropertyValueHolder");
-                                // }
+                                // Do nothing
                             }else{
                                 $obj->find($raw_data);
                             }
@@ -139,7 +133,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     $r->setTargetEntityByIndex($this->getProperty()->getManyToManyRelationshipMappedObjectEntityIndex());
                     
                     $obj = new $class;
-                    $obj->hydrateFromStoredIdsArray($r->getIds($mode));
+                    $obj->hydrateFromStoredIdsArray($r->getIds($mode), $draft);
                     return $obj;
                     
                 }else{
