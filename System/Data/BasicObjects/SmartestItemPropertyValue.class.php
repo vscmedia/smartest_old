@@ -92,7 +92,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                 
                     $obj = new $class;
                 
-                    if($obj instanceof SmartestDualModedObject)){
+                    if($obj instanceof SmartestDualModedObject){
                         $obj->setDraftMode($draft);
                     }
                 
