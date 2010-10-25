@@ -46,11 +46,11 @@ class SmartestCmsItemsCollection extends SmartestArray implements SmartestSubmit
         }
     }
     
-    public function hydrateFromStoredIdsArray($ids){
+    public function hydrateFromStoredIdsArray($ids, $draft_mode=false){
         if(parent::hydrateFromFormData($ids)){
             
             $h = new SmartestCmsItemsHelper;
-            $data = $h->hydrateMixedListFromIdsArray($ids);
+            $data = $h->hydrateMixedListFromIdsArray($ids, $draft_mode);
             
             if(is_array($data)){
                 $this->_data = $data;
@@ -70,6 +70,7 @@ class SmartestCmsItemsCollection extends SmartestArray implements SmartestSubmit
             $last_key = count($this->_data) - 1;
         
             foreach($this->_data as $k=>$item){
+                
                 // is there room in the string
                 $name = $item->getName();
                 $len = strlen($name);
@@ -91,8 +92,6 @@ class SmartestCmsItemsCollection extends SmartestArray implements SmartestSubmit
                     $remaining_space = $remaining_space - 5;
                 }
             
-                // echo $remaining_space.':'.$len.' ';
-            
                 if($len <= $remaining_space){
                     if($k > 0 && $k < $last_key){
                         $string .= ', ';
@@ -107,9 +106,6 @@ class SmartestCmsItemsCollection extends SmartestArray implements SmartestSubmit
                     $string .= ' and '.$num_left.' more...';
                     break;
                 }
-            
-                  // if there are still more after this one, then buffer space is needed
-                    // amount of buffer space depends on how many digits this figure is
             }
             
             return $string;

@@ -26,7 +26,7 @@ class SmartestAssetsCollection extends SmartestArray implements SmartestSubmitta
         return $this->hydrateFromStoredIdsArray($v);
     }
     
-    public function hydrateFromStoredIdsArray($ids){
+    public function hydrateFromStoredIdsArray($ids, $draft_mode=false){
         if(parent::hydrateFromFormData($ids)){
             
             // $h = new SmartestCmsItemsHelper;

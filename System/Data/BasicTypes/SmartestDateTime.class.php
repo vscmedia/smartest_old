@@ -151,6 +151,12 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
 	        case 'mysql_day':
 	        return date('Y-m-d', $this->_value);
 	        
+	        case 'day_only':
+	        return date($this->_day_format, $this->_value);
+	        
+	        case 'time_only':
+	        return date($this->_time_format, $this->_value);
+	        
 	        default:
 	        return date($offset, $this->_value);
 	        

@@ -130,7 +130,7 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	    $this->_draft_mode = (bool) $m;
 	}
 	
-	public function getDraftMode($m){
+	public function getDraftMode(){
 	    return $this->_draft_mode;
 	}
 	

@@ -2,6 +2,6 @@
 
 interface SmartestManyToManyItemPropertyValue{
 
-    public function hydrateFromStoredIdsArray($ids);
+    public function hydrateFromStoredIdsArray($ids, $draft_mode=false);
 
 }

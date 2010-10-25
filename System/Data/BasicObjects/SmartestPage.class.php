@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, SmartestGenericListedObject{
+class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, SmartestGenericListedObject, SmartestDualModedObject{
 
 	protected $_save_url = true;
 	protected $_fields_retrieval_attempted = false;

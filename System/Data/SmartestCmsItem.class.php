@@ -8,7 +8,7 @@
 * It is also used
 */
 
-class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, SmartestStorableValue{
+class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, SmartestStorableValue, SmartestDualModedObject{
 	
 	/** 
 	* Description
@@ -604,9 +604,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	
 	public function getLinkObject(){
 	    
-	    // echo $this->getLinkContents();
 	    $link = SmartestCmsLinkHelper::createLink($this->getLinkContents(), array());
-	    // print_r($link);
 	    return $link;
 	    
 	}
@@ -617,6 +615,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    $link = $this->getLinkObject();
 	    
 	    if($link->hasError()){
+	        echo $link->getError();
 	        return '#';
 	    }else{
 	        return $link->getUrl();
