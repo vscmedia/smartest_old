@@ -1,0 +1,5 @@
+help:
+  tokens:
+    title: Permission tokens
+    keywords: security
+    content: tokens.tpl

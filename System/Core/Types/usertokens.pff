@@ -1,8 +1,8 @@
-# Smartest User Tokens / Last updated in reveision 286 by Marcus
+# Smartest User Tokens / Last updated in reveision 402 by Marcus
 id:type:scope:code:category:description
 0:p:s:root_permission:SM_USERTOKEN_SYSTEM:{{ROOT!}} Carry out any action on any site.
 # Number 1 was formerly "create_remove_settings" for adding and removing system settings themselves
-# 1:u:s:unused_1:SM_USERTOKEN_UNUSED:[Unused] (1)
+1:p:s:author_credit:SM_USERTOKEN_USERS:Be credited as an author of a page or item
 2:p:s:modify_system_settings:SM_USERTOKEN_SYSTEM:Edit values of system settings
 3:p:s:add_new_pages:SM_USERTOKEN_PAGES:Add pages to the sitemap
 4:p:s:remove_pages:SM_USERTOKEN_PAGES:Remove pages from the sitemap
@@ -44,4 +44,4 @@ id:type:scope:code:category:description
 39:p:s:edit_held_items:SM_USERTOKEN_ITEMS:Edit items that are currently held by another user
 40:p:s:edit_containers_in_preview:SM_USERTOKEN_PAGES:Change the values of containers from the page preview screen
 41:p:s:delete_models:SM_USERTOKEN_ITEMS:Permanently delete models and all their items
-42:p:s:delete_pages:SM_USERTOKEN_PAGES:Delete pages
+# 42:p:s:delete_pages:SM_USERTOKEN_PAGES:Delete pages - was added in error. Will eventually be re-purposed.

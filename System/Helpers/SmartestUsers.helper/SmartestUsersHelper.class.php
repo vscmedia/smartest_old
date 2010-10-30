@@ -136,6 +136,25 @@ class SmartestUsersHelper extends SmartestHelper{
         
     }
     
+    public function getCreditableUsersOnSite($site_id){
+        
+        $site_id = (int) $site_id;
+        $sql = "SELECT DISTINCT Users.* FROM `Users`, `UsersTokensLookup` WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND (UsersTokensLookup.utlookup_token_id=1 OR UsersTokensLookup.utlookup_token_id=0) AND (UsersTokensLookup.utlookup_site_id='".$site_id."' OR UsersTokensLookup.utlookup_is_global='1')";
+        $result = $this->database->queryToArray($sql);
+        $users = array();
+        
+        foreach($result as $record){
+            
+            $u = new SmartestUser;
+            $u->hydrate($record);
+            $users[] = $u;
+            
+        }
+        
+        return $users;
+        
+    }
+    
     public function getRoles($include_system_roles=true){
         
         $result = $this->database->queryToArray("SELECT * FROM Roles");
@@ -170,6 +189,52 @@ class SmartestUsersHelper extends SmartestHelper{
         }
         
         return $roles;
+        
+    }
+    
+    public function distributeAuthorCreditTokenFromPage(SmartestPage $page){
+        $author_ids = $page->getAuthorIds();
+        $this->addTokenToMultipleUsersByUserIdsArray('author_credit', $author_ids, $page->getSiteId());
+    }
+    
+    public function distributeAuthorCreditTokenFromItem(SmartestItem $item, $site_id=null){
+        $author_ids = $item->getAuthorIds();
+        $this->addTokenToMultipleUsersByUserIdsArray('author_credit', $author_ids, $site_id);
+    }
+    
+    public function addTokenToMultipleUsersByUserIdsArray($token_code, $ids, $site_id=null){
+        
+        $token_id = $this->getTokenId($token_code);
+        
+        foreach($this->getUsersArrayFromIdsArray($ids, true) as $user){
+            $user->addTokenById($token_id, $site_id, true);
+        }
+        
+    }
+    
+    public function getUsersArrayFromIdsArray($ids, $create_system_users=false){
+        
+        $users = array();
+        
+        if(count($ids)){
+            
+            $sql = "SELECT * FROM Users WHERE user_id IN (".implode(', ', $ids).")";
+            $result = $this->database->queryToArray($sql);
+            
+            foreach($result as $u){
+                
+                if($create_system_users){
+                    $user = new SmartestSystemUser;
+                }else{
+                    $user = new SmartestUser;
+                }
+                
+                $user->hydrate($u);
+                $users[] = $user;
+            }
+        }
+        
+        return $users;
         
     }
     

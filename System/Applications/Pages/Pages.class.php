@@ -254,8 +254,8 @@ class Pages extends SmartestSystemApplication{
 		}else{
 		    $page = new SmartestPage;
 		}
-    	
-    	if($page->hydrate($page_webid)){
+		
+		if($page->hydrate($page_webid)){
     	    
     	    if($page->getDeleted() == 'TRUE'){
                 $this->send(true, 'show_deleted_warning');
@@ -278,6 +278,9 @@ class Pages extends SmartestSystemApplication{
                     $this->send('Please choose an item to continue editing.', 'chooser_message');
                     $this->send('websitemanager/editPage', 'continue_action');
                 }
+                
+                $editable = $page->isEditableByUserId($this->getUser()->getId());
+        		$this->send($editable, 'page_is_editable');
             
             }else{
     	        
@@ -315,7 +318,8 @@ class Pages extends SmartestSystemApplication{
         		
             		$this->send($allow_release, 'allow_release');
             		$this->send($this->getUser()->hasToken('edit_page_name'), 'allow_edit_page_name');
-            		$this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+            		$editable = $page->isEditableByUserId($this->getUser()->getId());
+            		$this->send($editable, 'page_is_editable');
 		            
     		        $available_icons = $page->getAvailableIconImageFilenames();
     		        
@@ -459,7 +463,7 @@ class Pages extends SmartestSystemApplication{
 	    
         }else{
             $this->addUserMessageToNextRequest('The page ID was not recognized.', SmartestUserMessage::ERROR);
-            $this->redirect("/smartest");
+            $this->redirect("/smartest/pages");
         }
 		
 	}
@@ -702,8 +706,6 @@ class Pages extends SmartestSystemApplication{
 		
 		$content = array();
 		
-		// $page_id = $this->manager->getPageIdFromPageWebId($this->getRequestParameter('page_id'));
-		
 		$page_webid = $this->getRequestParameter('page_id');
 		$page = new SmartestPage;
 		
@@ -872,7 +874,7 @@ class Pages extends SmartestSystemApplication{
 		$id = $this->database->rawQuery($sql);
 		$title = $this->database->specificQuery('page_title', 'page_id', $id, 'Pages'); */
 		
-		if($this->getUser()->hasToken('delete_pages')){
+		if($this->getUser()->hasToken('remove_pages')){
 		
 		    $page = new SmartestPage;
 		
@@ -1335,6 +1337,9 @@ class Pages extends SmartestSystemApplication{
 	                $this->send(true, 'show_deleted_warning');
 	            }
 	            
+	            $editable = $page->isEditableByUserId($this->getUser()->getId());
+        		$this->send($editable, 'page_is_editable');
+	            
 	            if($page->getType() == 'ITEMCLASS' && (!$this->getRequestParameter('item_id') || !is_numeric($this->getRequestParameter('item_id')))){
 	            
     	            $model = new SmartestModel;
@@ -1788,12 +1793,15 @@ class Pages extends SmartestSystemApplication{
 	    if($page->hydrate($page_webid)){
 	        
 	        $uhelper = new SmartestUsersHelper;
-	        $users = $uhelper->getUsersOnSiteAsArrays($this->getSite()->getId());
+	        // $users = $uhelper->getUsersOnSiteAsArrays($this->getSite()->getId());
+	        $uhelper->distributeAuthorCreditTokenFromPage($page);
+	        $users = $uhelper->getCreditableUsersOnSite($this->getSite()->getId());
 	        $this->send($users, 'users');
 	        $author_ids = $page->getAuthorIds();
 	        $this->send($author_ids, 'author_ids');
 	        $this->send($page, 'page');
 	        $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+	        $this->send($this->getUser()->hasToken('modify_user_permissions'), 'provide_tokens_link');
 	        
 	    }else{
             $this->addUserMessage('The page ID was not recognized', SmartestUserMessage::ERROR);

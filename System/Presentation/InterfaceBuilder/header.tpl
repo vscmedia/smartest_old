@@ -9,6 +9,7 @@
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     
+    <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_help.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_style.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_layout.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_admin_menu.css" />
@@ -19,6 +20,7 @@
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_columns.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_tabs.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_buttons.css" />
+    
     
     <script type="text/javascript" language="javascript">
 
@@ -37,6 +39,10 @@
                                                                                                   
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/interface.js"></script>
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/treeview.js"></script>
+    <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/help.js"></script>
+    <script type="text/javascript">
+      var help = new Smartest.HelpViewer();
+    </script>
     
     <style type="text/css">
       img{ldelim} behavior:url({$domain}Resources/System/Javascript/iepngfix/iepngfix.htc); {rdelim}
@@ -51,4 +57,16 @@
     
     <div id="user-info">
       Signed in as: <strong>{$_user.firstname} {$_user.lastname}</strong>{* if $show_left_nav_options} | <a href="{$domain}smartest/todo" id="sm-signout-link">To-do list</a>{/if *} | <a href="{$domain}smartest/logout" id="sm-signout-link">Sign Out</a>&nbsp;&nbsp;
+    </div>
+    
+    <div id="help" style="display:none">
+      <div id="help-viewer">
+        <div id="help-title-bar">
+          Smartest Help Viewer
+          <a id="help-closer" href="#" onclick="help.hideViewer();">Done</a>
+        </div>
+        <div id="help-updater">
+          
+        </div>
+      </div>
     </div>

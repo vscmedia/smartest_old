@@ -287,7 +287,7 @@ class SmartestSystemUser extends SmartestUser{
 		$this->reloadTokens();
 	}
 	
-	public function addTokenById($token_id, $site_id){
+	public function addTokenById($token_id, $site_id, $avoid_duplicates=false){
 	    
 	    $utl = new SmartestUserTokenLookup;
 		$utl->setUserId($this->getId());
@@ -298,10 +298,21 @@ class SmartestSystemUser extends SmartestUser{
 	        $utl->setIsGlobal(1);
 	        
 	        // Remove any non-global assignments of the same token
-	        $sql = "DELETE FROM UsersTokensLookup WHERE utlookup_token_id='".$token_id."' AND utlookup_is_global != '1' AND utlookup_user_id='".$this->getId()."'";
+	        if($avoid_duplicates){
+	            $sql = "DELETE FROM UsersTokensLookup WHERE utlookup_token_id='".$token_id."' AND utlookup_user_id='".$this->getId()."'";
+            }else{
+                $sql = "DELETE FROM UsersTokensLookup WHERE utlookup_token_id='".$token_id."' AND utlookup_is_global != '1' AND utlookup_user_id='".$this->getId()."'";
+            }
+            
 	        $this->database->rawQuery($sql);
 	        
-	    }else{
+	    }else if(is_numeric($site_id)){
+	        
+	        if($avoid_duplicates){
+	            $sql = "DELETE FROM UsersTokensLookup WHERE utlookup_token_id='".$token_id."' AND utlookup_is_global != '1' AND utlookup_site_id='".$site_id."' AND utlookup_user_id='".$this->getId()."'";
+	            $this->database->rawQuery($sql);
+            }
+            
 	        $utl->setSiteId($site_id);
 	    }
 	    

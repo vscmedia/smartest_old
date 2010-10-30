@@ -6,6 +6,7 @@ roles:
   contributor:
     label: Contributor
     tokens:
+      - author_credit
       - add_items
       - delete_items
       - modify_page_properties

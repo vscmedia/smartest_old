@@ -1,0 +1,5 @@
+help:
+  sets:
+    title: Organizing your items into sets
+    keywords: categorisation, organisation
+    content: sets.tpl

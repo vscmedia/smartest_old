@@ -871,11 +871,13 @@ class Items extends SmartestSystemApplication{
 	    if($item->hydrate($item_id)){
 	        
 	        $uhelper = new SmartestUsersHelper;
-	        $users = $uhelper->getUsersOnSiteAsArrays($this->getSite()->getId());
+	        $uhelper->distributeAuthorCreditTokenFromItem($item, $this->getSite()->getId());
+	        $users = $uhelper->getCreditableUsersOnSite($this->getSite()->getId());
 	        $this->send($users, 'users');
 	        $author_ids = $item->getAuthorIds();
 	        $this->send($author_ids, 'author_ids');
 	        $this->send($item, 'item');
+	        $this->send($this->getUser()->hasToken('modify_user_permissions'), 'provide_tokens_link');
 	        
 	        if($this->getRequestParameter('page_id')){
 		        
@@ -1862,7 +1864,9 @@ class Items extends SmartestSystemApplication{
                     $item->setSiteId($this->getSite()->getId());
                 
                     if($success = $item->save()){
-                        $item->addAuthorById($this->getUser()->getId());
+                        if($this->getUser()->hasToken('author_credit')){
+                            $item->addAuthorById($this->getUser()->getId());
+                        }
                         $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.", SmartestUserMessage::SUCCESS);
                         $this->redirect("/datamanager/openItem?item_id=".$item->getId());
                     }else{
