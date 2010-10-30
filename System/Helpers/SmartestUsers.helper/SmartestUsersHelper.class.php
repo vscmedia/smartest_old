@@ -37,7 +37,7 @@ class SmartestUsersHelper extends SmartestHelper{
     
     public function getSystemUsers(){
         
-        $raw_users = $this->database->queryToArray("SELECT * FROM Users WHERE username != 'smartest' ORDER BY user_firstname");
+        $raw_users = $this->database->queryToArray("SELECT Users.*, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname FROM Users WHERE username != 'smartest' ORDER BY user_fullname");
         $users = array();
         
         foreach($raw_users as $ru){
@@ -67,14 +67,16 @@ class SmartestUsersHelper extends SmartestHelper{
     public function getUsersThatHaveToken($token, $site_id=''){
         
 	    if(is_array($token)){
-	        $sql = "SELECT DISTINCT Users.* FROM Users, UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id IN ('".implode("', '", $token)."')";
+	        $sql = "SELECT DISTINCT Users.*, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname FROM Users, UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id IN ('".implode("', '", $token)."')";
         }else{                                                                                                                   
-	        $sql = 'SELECT DISTINCT Users.* FROM Users, UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id='.$token."'";
+	        $sql = 'SELECT DISTINCT Users.*, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname FROM Users, UsersTokensLookup WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id='.$token."'";
 	    }
 	    
         if(is_numeric($site_id)){
             $sql .= " AND UsersTokensLookup.utlookup_site_id='".$site_id."'";
         }
+        
+        $sql .= " ORDER BY user_fullname";
         
         $result = $this->database->queryToArray($sql);
         $users = array();
