@@ -1821,7 +1821,7 @@ class Pages extends SmartestSystemApplication{
 	        if($this->getRequestParameter('users') && count($this->getRequestParameter('users'))){
 	            
 	            $uhelper = new SmartestUsersHelper;
-                $users = $uhelper->getUsersOnSite($this->getSite()->getId());
+                $users = $uhelper->getCreditableUsersOnSite($this->getSite()->getId());
             
                 $new_author_ids = array_keys($this->getRequestParameter('users'));
                 $old_author_ids = $page->getAuthorIds();

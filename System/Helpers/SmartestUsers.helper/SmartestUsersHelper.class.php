@@ -107,7 +107,7 @@ class SmartestUsersHelper extends SmartestHelper{
     public function getUsersOnSite($site_id){
         
         $site_id = (int) $site_id;
-        $sql = "SELECT Users.* FROM `Users`, `UsersTokensLookup` WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=21 AND (UsersTokensLookup.utlookup_site_id='".$site_id."' OR UsersTokensLookup.utlookup_is_global='1')";
+        $sql = "SELECT Users.* FROM `Users`, `UsersTokensLookup`, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND UsersTokensLookup.utlookup_token_id=21 AND (UsersTokensLookup.utlookup_site_id='".$site_id."' OR UsersTokensLookup.utlookup_is_global='1') ORDER BY user_fullname";
         $result = $this->database->queryToArray($sql);
         $users = array();
         
@@ -139,7 +139,7 @@ class SmartestUsersHelper extends SmartestHelper{
     public function getCreditableUsersOnSite($site_id){
         
         $site_id = (int) $site_id;
-        $sql = "SELECT DISTINCT Users.* FROM `Users`, `UsersTokensLookup` WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND (UsersTokensLookup.utlookup_token_id=1 OR UsersTokensLookup.utlookup_token_id=0) AND (UsersTokensLookup.utlookup_site_id='".$site_id."' OR UsersTokensLookup.utlookup_is_global='1')";
+        $sql = "SELECT DISTINCT Users.*, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname FROM `Users`, `UsersTokensLookup` WHERE UsersTokensLookup.utlookup_user_id=Users.user_id AND (UsersTokensLookup.utlookup_token_id=1 OR UsersTokensLookup.utlookup_token_id=0) AND (UsersTokensLookup.utlookup_site_id='".$site_id."' OR UsersTokensLookup.utlookup_is_global='1') ORDER BY user_fullname";
         $result = $this->database->queryToArray($sql);
         $users = array();
         
