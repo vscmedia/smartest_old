@@ -1045,6 +1045,18 @@ class Quince{
 	    
 	}
 	
+	public function getAllModulesByShortName(){
+	    
+	    $mdls = array();
+	    
+	    foreach(self::$modules as $m){
+	        $mdls[$m['shortname']] = $m;
+	    }
+	    
+	    return $mdls;
+	    
+	}
+	
 	protected function scanModules(){
 	    
 	    // first, find modules.
