@@ -1001,12 +1001,18 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	public function setSlug($slug, $site_id=''){
 	    
 	    if($this->_properties['id']){
-	       $sql = "SELECT item_slug FROM Items WHERE (item_site_id='".$this->getSiteId()."' OR item_shared='1') AND item_id != '".$this->getId()."'"; 
+	       $sql = "SELECT item_slug FROM Items WHERE (item_site_id='".$this->getSiteId()."' OR item_shared='1') AND item_id != '".$this->getId()."' AND item_itemclass_id='".$this->_properties['itemclass_id']."'"; 
 	    }else{
 	        if($site_id){
 	            $sql = "SELECT item_slug FROM Items WHERE (item_site_id='".$site_id."' OR item_shared='1')"; 
+	            if($this->_properties['itemclass_id']){
+	                $sql .= " AND item_itemclass_id='".$this->_properties['itemclass_id']."'";
+	            }
 	        }else{
-	            $sql = "SELECT item_slug FROM Items"; 
+	            $sql = "SELECT item_slug FROM Items";
+	            if($this->_properties['itemclass_id']){
+	                $sql .= " WHERE item_itemclass_id='".$this->_properties['itemclass_id']."'";
+	            }
 	        }
 	    }
 	    
