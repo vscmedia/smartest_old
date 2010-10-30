@@ -1607,7 +1607,7 @@ class Pages extends SmartestSystemApplication{
     	        $related_pages = $page->getRelatedPages();
 	        
     	        $du = new SmartestDataUtility;
-    	        $models = $du->getModelsAsArrays();
+    	        $models = $du->getModels(false, $this->getSite()->getId());
 	        
     	        foreach($models as &$m){
     	            $m['related_items'] = $page->getRelatedItemsAsArrays($m['id']);

@@ -653,7 +653,7 @@ class Items extends SmartestSystemApplication{
 	        
 	        $du = new SmartestDataUtility;
 	        $models = $du->getModels(false, $this->getSite()->getId());
-        
+	        
 	        foreach($models as $key=>$m){
 	            if($m['id'] == $model->getId()){
 	                unset($models[$key]);

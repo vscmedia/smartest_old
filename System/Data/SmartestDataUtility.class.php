@@ -30,8 +30,8 @@ class SmartestDataUtility{
 	    }else{
 	        $cache_name = 'models_query';
 	    }
-		
-		if(!SmartestCache::hasData($cache_name, true) || $force_regenerate || $simple){
+	    
+	    if(!SmartestCache::hasData($cache_name, true) || $force_regenerate || $simple){
 		
 		    if($simple){
     			$sql = "SELECT itemclass_id FROM ItemClasses";
