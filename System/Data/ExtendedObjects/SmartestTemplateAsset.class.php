@@ -233,7 +233,7 @@ class SmartestTemplateAsset extends SmartestAsset{
 		                $asset = new SmartestAsset();
 		                
 		                // Left off here!!!!
-		                if($asset->hydrate($asset)){
+		                if($asset->find($asset_id)){
 
         				    $child = $asset->getArrayForElementsTree($level);
 

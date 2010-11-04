@@ -257,5 +257,22 @@ class SmartestTemplatesLibraryHelper{
 	    }
         
     }
+    
+    public function getTemplateIsImported($file_url, $type_code=null){
+        
+        $sql = "SELECT asset_id FROM Assets WHERE asset_url='".$file_url."'";
+        
+        if($type_code){
+            $sql .= " AND asset_type='".$type_code."'";
+        }else{
+            $sql .= " AND asset_type IN ('".implode("', '", $this->getTypeCodes())."')";
+        }
+        
+        $sql .= " AND asset_deleted=0";
+        
+        $result = $this->database->queryToArray($sql);
+	    return (bool) count($result);
+        
+    }
 
 }
