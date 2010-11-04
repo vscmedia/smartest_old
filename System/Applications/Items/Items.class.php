@@ -1378,9 +1378,15 @@ class Items extends SmartestSystemApplication{
 		            }
 		        }else{
 		            if($allow_edit_item_slug){
-		                $this->addUserMessage("You cannot leave the item's short name empty. Changes were not saved.", SmartestUserMessage::WARNING);
-		                $this->setRequestParameter('item_id', $item->getId());
-		                $this->forward('datamanager', 'editItem');
+		                if(strlen($item->getItem()->getSlug())){
+		                    // the 'slug' is being changed from something to nothing, which obviously we don't want.
+		                    $this->addUserMessage("You cannot leave the item's short name empty. Changes were not saved.", SmartestUserMessage::WARNING);
+		                    $this->setRequestParameter('item_id', $item->getId());
+		                    $this->forward('datamanager', 'editItem');
+	                    }else{
+	                        // there was nothing there to begin with, so just quietly generate one
+	                        $item->getItem()->setSlug(SmartestStringHelper::toSlug($item->getItem()->getName()), true);
+	                    }
 	                }
 		        }
         		
