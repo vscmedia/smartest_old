@@ -1146,7 +1146,7 @@ class Items extends SmartestSystemApplication{
                 if($this->getRequestParameter('itemclass_plural_name') && strlen($this->getRequestParameter('itemclass_plural_name'))){
                     $model->setPluralName($this->getRequestParameter('itemclass_plural_name'));
                 }else{
-                    $this->addUserMessageToNextRequest("The plural name you entered was invalid.", SmartestUserMessage::WARNING);
+                    $this->addUserMessage("The plural name you entered was invalid.", SmartestUserMessage::WARNING);
                     $error = true;
                 }
             }
@@ -1176,7 +1176,7 @@ class Items extends SmartestSystemApplication{
                     if($model->setShared($shared)){
                         
                     }else{
-                        $this->addUserMessageToNextRequest("The model's class file could not be moved.", SmartestUserMessage::WARNING);
+                        $this->addUserMessage("The model's class file could not be moved.", SmartestUserMessage::WARNING);
                         $error = true;
                     }
                     
@@ -1193,7 +1193,10 @@ class Items extends SmartestSystemApplication{
                 }
             }
             
-            if(!$error){
+            if($error){
+                $this->setRequestParameter('class_id', $model->getId());
+                $this->forward('datamanager', 'editModel');
+            }else{
                 $this->addUserMessageToNextRequest("The model has been successfully updated.", SmartestUserMessage::SUCCESS);
                 $model->save();
             }

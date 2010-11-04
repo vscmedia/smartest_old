@@ -43,16 +43,16 @@ class Users extends SmartestSystemApplication{
         if($user->findBy('username', $username)){
             
             $this->addUserMessage("The username you entered is already is use.", SmartestUserMessage::WARNING);
-            $this->forward('settings', 'addUser');
+            $this->forward('users', 'addUser');
             
         }else{
         
-		    $password = $post['password'];
-    		$firstname = $post['user_firstname'];
-    		$lastname = $post['user_lastname'];
-    		$email = $post['user_email'];
-    		$website = $post['user_website'];
-    		$hash = md5($post['password']);
+		    $password = $this->getRequestParameter('password');
+    		$firstname = $this->getRequestParameter('user_firstname');
+    		$lastname = $this->getRequestParameter('user_lastname');
+    		$email = $this->getRequestParameter('user_email');
+    		$website = $this->getRequestParameter('user_website');
+    		$hash = md5($this->getRequestParameter('password'));
     		
     		if(!SmartestStringHelper::isValidExternalUri($website)){
     		    $website = 'http://'.$website;
