@@ -8,9 +8,11 @@ type:
     class: SmartestTextAsset
     source_editable: true
     editable: true
-    uploadable: true
     parsable: true
     icon: style.png
+    input_options:
+      - SM_ASSETINPUTTYPE_DIRECT_INPUT
+    input_panel: add.rich_text.tpl
     render:
       template: System/Presentation/WebPageBuilder/display.rich_text.tpl
     storage:
@@ -26,10 +28,12 @@ type:
     description: "Plain, static unformatted text."
     class: SmartestTextAsset
     source_editable: false
-    uploadable: true
     parsable: false
     editable: true
     icon: page_white_text.png
+    input_options:
+      - SM_ASSETINPUTTYPE_DIRECT_INPUT
+    input_panel: add.plain_text.tpl
     render:
       template: System/Presentation/WebPageBuilder/display.plain_text.tpl
     suffix:
@@ -48,8 +52,10 @@ type:
     parsable: true
     editable: true
     attachable: true
-    uploadable: true
     icon: layout.png
+    input_options:
+      - SM_ASSETINPUTTYPE_DIRECT_INPUT
+    input_panel: add.html_fragment.tpl
     render:
       template: System/Presentation/WebPageBuilder/display.rich_text.tpl
     storage:
@@ -69,7 +75,6 @@ type:
     attachable: true
     captionable: true
     parsable: false
-    uploadable: true
     supports_exif: true
     storage:
       type: file
@@ -77,6 +82,9 @@ type:
       system_location: Public/Resources/System/Images/
     render:
       template: System/Presentation/WebPageBuilder/display.image.tpl
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     suffix:
       - {mime: image/jpeg, _content: jpg}
       - {mime: image/jpeg, _content: jpeg}
@@ -98,13 +106,15 @@ type:
     attachable: true
     captionable: true
     parsable: false
-    uploadable: true
     storage:
       type: file
       location: Public/Resources/Images/
       system_location: Public/Resources/System/Images/
     render:
       template: System/Presentation/WebPageBuilder/display.image.tpl
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     suffix:
       - {mime: image/png, _content: png}
     param:
@@ -125,13 +135,15 @@ type:
     attachable: true
     captionable: true
     parsable: false
-    uploadable: true
     storage:
       type: file
       location: Public/Resources/Images/
       system_location: Public/Resources/System/Images/
     render:
       template: System/Presentation/WebPageBuilder/display.image.tpl
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     suffix:
       - {mime: image/gif, _content: gif}
     param:
@@ -152,13 +164,16 @@ type:
     icon: picture.png
     attachable: true
     captionable: true
-    uploadable: true
     storage:
       type: file
       location: Public/Resources/Images/
       system_location: Public/Resources/System/Images/
     render:
       template: System/Presentation/WebPageBuilder/display.svg.tpl
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
+#      - SM_ASSETINPUTTYPE_DIRECT_INPUT
     suffix:
       - {mime: image/svg+xml, _content: svg}
     param:
@@ -176,7 +191,11 @@ type:
     class: SmartestAsset
     icon: script.png
     parsable: false
-    uploadable: true
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_DIRECT_INPUT
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
+    input_panel: System/Applications/Assets/Presentation/add.javascript.tpl
     storage:
       type: file
       location: Public/Resources/Javascript/
@@ -194,8 +213,12 @@ type:
     editable: true
     class: SmartestAsset
     parsable: false
-    uploadable: true
     show_preview_edit_link: false
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_DIRECT_INPUT
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
+    input_panel: add.stylesheet.tpl
     storage:
       type: file
       location: Public/Resources/Stylesheets/
@@ -213,7 +236,8 @@ type:
     description: A movie saved in any of Apple's proprietary QuickTime formats
     class: SmartestAsset
     parsable: false
-    uploadable: false
+    input_options:
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage:
       type: file
       location: Public/Resources/Assets/
@@ -228,6 +252,70 @@ type:
       - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: false}
       - {name: auto_start, label: "Auto start", type: SM_DATATYPE_BOOLEAN, required: false}
       - {name: show_controller, label: "Show controller", type: SM_DATATYPE_BOOLEAN, required: false}
+
+  SM_ASSETTYPE_MP3:
+    id: SM_ASSETTYPE_MP3
+    category: embedded
+    label: MP3 Audio
+    description: A sound file in MPEG Layer-3 formt
+    class: SmartestAsset
+    parsable: false
+    icon: music.png
+    input_options:
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
+    storage:
+      type: file
+      location: Public/Resources/Assets/
+      system_location: Public/Resources/System/Assets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.mp3_audio.tpl
+    suffix:
+      - {mime: audio/mpeg, _content: mp3}
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      
+  SM_ASSETTYPE_YOUTUBE_CLIP:
+    id: SM_ASSETTYPE_YOUTUBE_CLIP
+    category: embedded
+    label: Youtube clip
+    description: Exterally hosted video on YouTube
+    class: SmartestExternallyHostedVideoAsset
+    parsable: false
+    input_options:
+      - SM_ASSETINPUTTYPE_URL_INPUT
+    url_translation:
+      format: "^https?:\/\/(www\.)?youtube\.com\/watch\?v=([\w]+).*"
+      id_position: 2
+    storage:
+      type: external_translated
+    render:
+      template: System/Presentation/WebPageBuilder/display.youtube.tpl
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: auto_start, label: "Auto start", type: SM_DATATYPE_BOOLEAN, required: false}
+
+  SM_ASSETTYPE_VIMEO_CLIP:
+    id: SM_ASSETTYPE_VIMEO_CLIP
+    category: embedded
+    label: Vimeo clip
+    description: Exterally hosted video on Vimeo
+    class: SmartestExternallyHostedVideoAsset
+    parsable: false
+    input_options:
+      - SM_ASSETINPUTTYPE_URL_INPUT
+    url_translation:
+      format: "https?:\/\/vimeo\.com\/(\d+)"
+      id_position: 1
+    storage:
+      type: external_translated
+    render:
+      template: System/Presentation/WebPageBuilder/display.vimeo.tpl
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: colour, label: "Highlight Color", type: SM_DATATYPE_RGB_COLOR, required: false}
+      - {name: auto_start, label: "Auto start", type: SM_DATATYPE_BOOLEAN, required: false}
       
   SM_ASSETTYPE_MPEG_MOVIE:
     id: SM_ASSETTYPE_MPEG_MOVIE
@@ -236,7 +324,8 @@ type:
     description: A movie saved in any MPEG format
     class: SmartestAsset
     parsable: false
-    uploadable: false
+    input_options:
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage:
       type: file
       location: Public/Resources/Assets/
@@ -259,8 +348,9 @@ type:
     description: A file in Flash Video format
     class: SmartestAsset
     parsable: false
-    uploadable: false
     icon: page_white_flash.png
+    input_options:
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage:
       type: file
       location: Public/Resources/Assets/
@@ -273,26 +363,6 @@ type:
       - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
       - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: false}
       
-  SM_ASSETTYPE_MP3:
-    id: SM_ASSETTYPE_MP3
-    category: embedded
-    label: MP3 Audio
-    description: A sound file in MPEG Layer-3 formt
-    class: SmartestAsset
-    parsable: false
-    uploadable: false
-    icon: music.png
-    storage:
-      type: file
-      location: Public/Resources/Assets/
-      system_location: Public/Resources/System/Assets/
-    render:
-      template: System/Presentation/WebPageBuilder/display.mp3_audio.tpl
-    suffix:
-      - {mime: audio/mpeg, _content: mp3}
-    param:
-      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
-      
   SM_ASSETTYPE_SHOCKWAVE_FLASH:
     id: SM_ASSETTYPE_SHOCKWAVE_FLASH
     category: embedded
@@ -301,8 +371,9 @@ type:
     icon: page_white_flash.png
     class: SmartestAsset
     parsable: false
-    uploadable: true
     captionable: true
+    input_options:
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage: 
       type: file
       location: Public/Resources/Assets/
@@ -327,7 +398,8 @@ type:
     class: SmartestAsset
     parsable: false
     captionable: true
-    uploadable: false
+    input_options:
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage: 
       type: file
       location: Public/Resources/Assets/
@@ -354,7 +426,9 @@ type:
     class: SmartestAsset
     parsable: false
     icon: page_white_acrobat.png
-    uploadable: true
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage: 
       type: file
       location: Documents/Downloads/
@@ -370,7 +444,8 @@ type:
     description: An archived folder or document
     class: SmartestAsset
     parsable: false
-    uploadable: false
+    input_options:
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage: 
       type: file
       location: Documents/Downloads/
@@ -390,7 +465,9 @@ type:
     class: SmartestAsset
     parsable: false
     icon: page_word.png
-    uploadable: true
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage: 
       type: file
       location: Documents/Downloads/
@@ -407,7 +484,9 @@ type:
     class: SmartestAsset
     parsable: false
     icon: page_excel.png
-    uploadable: true
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage: 
       type: file
       location: Documents/Downloads/
@@ -423,8 +502,10 @@ type:
     description: A document in Microsoft Powerpoint format
     class: SmartestAsset
     parsable: false
-    uploadable: true
     icon: page_white_powerpoint.png
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
     storage: 
       type: file
       location: Documents/Downloads/

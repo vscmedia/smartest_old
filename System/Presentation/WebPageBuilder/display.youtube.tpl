@@ -1,0 +1,1 @@
+<iframe title="YouTube video player" class="youtube-player" type="text/html" width="<?sm:$render_data.width:?>" height="<?sm:$render_data.height:?>" src="http://www.youtube.com/embed/<?sm:$render_data.remote_id:?>?rel=0" frameborder="0"></iframe>

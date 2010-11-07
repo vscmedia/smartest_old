@@ -3,6 +3,7 @@
 class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestStorableValue, SmartestSubmittableValue{
     
     protected $_value;
+    protected $_curl_handle;
     
     public function __construct($v=''){
         if(strlen($v)){
@@ -55,5 +56,29 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
     public function offsetSet($offset, $value){}
     
     public function offsetUnset($offset){}
+    
+    public function getCurlHandle(){
+        if(!$this->_curl_handle){
+            $this->_curl_handle = curl_init($this->_value);
+        }
+        return $this->_curl_handle;
+    }
+    
+    public function getCurlInfo(){
+        $p = new SmartestParameterHolder("Curl Info for ".$this->_value);
+        ob_start();
+        $this->getCurlHandle();
+        curl_exec($this->_curl_handle);
+        ob_end_clean();
+        $info = curl_getinfo($this->_curl_handle);
+        curl_close($this->_curl_handle);
+        $p->loadArray($info);
+        return $p;
+    }
+    
+    public function getHttpStatusCode(){
+        $info = $this->getCurlInfo();
+        return $info->g('http_code');
+    }
     
 }

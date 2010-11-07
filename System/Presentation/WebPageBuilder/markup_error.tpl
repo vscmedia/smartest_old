@@ -1,1 +1,1 @@
-<br /><b>WARNING</b>: <?sm:$_error_text:?>
+<br /><span class="smartest-preview-warning"><strong>WARNING</strong>: <?sm:$_error_text:?></span>

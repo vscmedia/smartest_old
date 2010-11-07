@@ -344,6 +344,31 @@ class SmartestAssetsLibraryHelper{
         }
     }
     
+    public function getAllSuffixesForType($type_code){
+        
+        $types = $this->getTypes();
+        
+        if(isset($types[$type_code])){
+            
+            $type = $types[$type_code];
+            $suffixes = array();
+            
+            if(is_array($type['suffix'])){
+    	        foreach($type['suffix'] as $s){
+    	            $suffixes[] = $s['_content'];
+    	        }
+    	    }
+    	    
+    	    return $suffixes;
+    	    
+        }else{
+            
+            throw new SmartestException("Unknown asset type code: ".$type_code);
+            
+        }
+        
+    }
+    
     public function getTypeCodeBySuffix($suffix){
         
         $suffix = strtolower($suffix);
@@ -795,6 +820,141 @@ class SmartestAssetsLibraryHelper{
 	    }
 	    
 	    return $groups;
+	    
+	}
+	
+	public function getSuffixTestRegex($type_code){
+	    
+	    $types = $this->getTypes();
+	    
+	    if(isset($types[$type_code])){
+	        
+	        $type = $types[$type_code];
+	        $suffixes = array();
+	        
+	        foreach($type['suffix'] as $s){
+	            $suffixes[] = $s['_content'];
+	        }
+	        
+	        if(count($suffixes) > 1){
+	            $regex = '/\.('.implode('|', $suffixes).')$/';
+            }else{
+                $regex = '/\.'.$suffixes[0].'$/';
+            }
+            
+            return $regex;
+	        
+	    }
+	    
+	}
+	
+	public function getUnimportedFilesByType($type_code){
+	    
+	    $types = $this->getTypes();
+	    
+	    if(isset($types[$type_code])){
+	        
+	        $type = $types[$type_code];
+	        
+	        if($type['storage']['type'] == "file"){
+	            
+	            $dir = SM_ROOT_DIR.$type['storage']['location'];
+	            $files = SmartestFileSystemHelper::load($dir);
+	            $regex = $this->getSuffixTestRegex($type_code);
+	            $imported = $this->getImportedFilenamesByType($type_code);
+	            
+	            $unimported = array();
+	            
+	            foreach($files as $f){
+	                if(!in_array($f, $imported) && preg_match($regex, $f)){
+	                    $unimported[] = $f;
+	                }
+	            }
+	            
+	            return $unimported;
+	            
+	        }
+	        
+	    }
+	    
+	}
+	
+	public function getAssetRecordExistsWithFilename($asset_url, $asset_type){
+	    
+	    $sql = "SELECT * FROM Assets WHERE asset_url='".$asset_url."' AND asset_type='".$asset_type."'";
+	    return (bool) count($this->database->queryToArray($sql));
+	    
+	}
+	
+	public function getImportedFilenamesByType($type_code, $append_dir=false){
+	    
+	    $types = $this->getTypes();
+	    
+	    if(isset($types[$type_code])){
+	        
+	        $type = $types[$type_code];
+	        $sql = "SELECT Assets.asset_url FROM Assets WHERE asset_type='".$type_code."'";
+	        $result = $this->database->queryToArray($sql);
+	        $names = array();
+	        
+	        if($append_dir && $type['storage']['type'] == 'file'){
+	            foreach($result as $n){
+	                $names[] = SM_ROOT_DIR.$type['storage']['location'].$n['asset_url'];
+	            }
+	        }else{
+	            foreach($result as $n){
+	                $names[] = $n['asset_url'];
+	            }    
+	        }
+	        
+	        return $names;
+	        
+	    }
+	    
+	}
+	
+	public function getInputTypes(){
+	    
+	    $rt = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Types/assetinputtypes.yml');
+	    $all_types = $rt['types'];
+	    return $all_types;
+	    
+	}
+	
+	public function getInputTypeCodes(){
+	    
+	    $all_types = $this->getInputTypes();
+	    return array_keys($all_types);
+	    
+	}
+	
+	public function getInputTypeCodesForAssetType($type_code){
+	    
+	    $types = $this->getTypes();
+	    
+	    if(isset($types[$type_code])){
+	        
+	        $codes = $types[$type_code]['input_options'];
+            return $codes;
+	        
+	    }else{
+	        
+	        return array();
+	        
+	    }
+	    
+	}
+	
+	public function getInputTypesForAssetType($type_code){
+	    
+	    $types = array();
+	    $all_types = $this->getInputTypes();
+	    
+	    foreach($this->getInputTypeCodesForAssetType($type_code) as $code){
+	        $types[$code] = $all_types[$code];
+	    }
+	    
+	    return $types;
 	    
 	}
     

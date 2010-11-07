@@ -23,8 +23,9 @@
   
     <div class="edit-form-row">
       <div class="buttons-bar">
-        <input type="submit" value="Save Changes" />
-        <input type="button" onclick="cancelForm();" value="Done" />
+        {* <input type="submit" value="Save Changes" />
+        <input type="button" onclick="cancelForm();" value="Done" /> *}
+        {save_buttons}
       </div>
     </div>
   

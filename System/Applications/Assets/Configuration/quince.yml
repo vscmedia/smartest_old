@@ -20,6 +20,9 @@ module:
     new_file:
       action: addAsset
       url: /smartest/file/new
+    save_new_file:
+      action: saveNewAsset
+      url: /smartest/file/new/save
     edit_file:
       action: editAsset
       url: /smartest/file/:asset_id/edit

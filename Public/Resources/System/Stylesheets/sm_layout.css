@@ -87,7 +87,7 @@ div#work-area div.edit-form-row h4{
 }
 
 div#work-area textarea#tpl_textArea, div#work-area-full textarea#tpl_textArea{
-	height:400px;
+	height:300px;
 	width:100%;
 	padding:0;
 	margin:0;
@@ -95,7 +95,7 @@ div#work-area textarea#tpl_textArea, div#work-area-full textarea#tpl_textArea{
 }
 
 div.textarea-holder{
-    height:414px;
+    height:314px;
 }
 
 div#actions-area{

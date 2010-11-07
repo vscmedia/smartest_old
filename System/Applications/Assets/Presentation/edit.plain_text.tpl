@@ -21,7 +21,7 @@
     {/foreach}
     
     <div id="textarea-holder" style="width:100%">
-        <textarea name="asset_content" id="tpl_textArea" wrap="virtual" style="width:100%;padding:0">{$textfragment_content}</textarea>
+        <textarea name="asset_content" id="tpl_textArea" wrap="virtual" style="width:100%;padding:0;font-family:monospace">{$textfragment_content}</textarea>
         <div class="buttons-bar">
             {save_buttons}
         </div>

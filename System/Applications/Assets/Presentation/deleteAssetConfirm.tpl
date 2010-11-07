@@ -10,7 +10,7 @@
 	
 	<!-- Asset can be deleted if permissions are ok -->
 	
-	<div class="instruction">Are you sure you want to delete this asset?</div>
+	<div class="instruction">Are you sure you want to delete this file?</div>
 	
 	<div class="buttons-bar">
 	  <input type="button" value="Cancel" onclick="cancelForm()" />

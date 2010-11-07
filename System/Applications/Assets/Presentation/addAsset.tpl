@@ -64,7 +64,7 @@ function validateUploadSuffix(){
 
 <div id="work-area">
   
-  <h3>Create a new {$new_asset_type_info.label|strtolower} file</h3>
+  <h3>Add a new {$new_asset_type_info.label|strtolower} file to the repository</h3>
   
   {if $require_type_selection}
   
@@ -78,11 +78,13 @@ function validateUploadSuffix(){
 {/foreach}
         </select>
       </div>
+      
     {if $for}
       {if $for=='placeholder'}
         <input type="hidden" name="for" value="placeholder" />
         <input type="hidden" name="placeholder_id" value="{$placeholder.id}" />
         <input type="hidden" name="page_id" value="{$page.id}" />
+        {if $item_id}<input type="hidden" name="item_id" value="{$item_id}" />{/if}
       {else if $for=='ipv'}
         <input type="hidden" name="for" value="ipv" />
         <input type="hidden" name="property_id" value="{$property.id}" />
@@ -97,41 +99,49 @@ function validateUploadSuffix(){
   {else}
   
     {if $allow_save}
-  
-  <form action="{$domain}{$section}/saveNewAsset" method="post" name="newAsset" enctype="multipart/form-data">
+      
+    <form action="{$domain}smartest/file/new/save" method="post" enctype="multipart/form-data">  
     
-    <input type="hidden" name="asset_type" value="{$type_code}" />
-    <input type="hidden" name="MAX_FILE_SIZE" value="8000000" />
-    <input type="hidden" name="input_mode" id="input_mode" value="{$starting_mode}" />
-    
-    {if $for=='placeholder'}
-      <input type="hidden" name="for" value="placeholder" />
-      <input type="hidden" name="placeholder_id" value="{$placeholder.id}" />
-      <input type="hidden" name="page_id" value="{$page.id}" />
-    {elseif $for=='ipv'}
-      <input type="hidden" name="for" value="ipv" />
-      <input type="hidden" name="property_id" value="{$property.id}" />
-      {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
-    {/if}
-    
+      {if $for=='placeholder'}
+        <input type="hidden" name="for" value="placeholder" />
+        <input type="hidden" name="placeholder_id" value="{$placeholder.id}" />
+        <input type="hidden" name="page_id" value="{$page.id}" />
+        {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
+      {elseif $for=='ipv'}
+        <input type="hidden" name="for" value="ipv" />
+        <input type="hidden" name="property_id" value="{$property.id}" />
+        {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
+      {/if}
+      
+      <input type="hidden" name="input_method" value="{$input_method}">
+      <input type="hidden" name="asset_type" value="{$new_asset_type_info.id}">
+      
+{if count($input_methods) > 1}
+    <ul class="tabset">
+{foreach from=$input_methods key="input_method_code" item="input_method_tab"}
+      <li{if $input_method_code == $input_method} class="current"{/if}><a href="{$domain}smartest/file/new?asset_type={$type_code}&amp;input_method={$input_method_code}{if $for}&amp;for={$for}{/if}{if $for == "placeholder"}&amp;placeholder_id={$placeholder.id}&amp;page_id={$page.id}{/if}{if $for == "ipv"}&amp;property_id={$property.id}{/if}{if $item_id}&amp;item_id={$item_id}{/if}">{$input_method_tab.label}</a></li>
+{/foreach}
+    </ul>
+{/if}
+
       {if count($possible_groups)}
       <div id="groups" class="special-box">
-    
-            <div>
-              Add this file to group:
-                <select name="initial_group_id">
-                  <option value="">None (for now)</option>
+
+        <div>
+          Add this file to group:
+            <select name="initial_group_id">
+              <option value="">None</option>
 {foreach from=$possible_groups item="possible_group"}
-                  <option value="{$possible_group.id}">{$possible_group.label}</option>
+              <option value="{$possible_group.id}">{$possible_group.label}</option>
 {/foreach}
-                </select>
-            </div>
-    
+            </select>
+        </div>
+
       </div>
       {/if}
       
       {if $for=='placeholder'}
-        <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be used to define placeholder '{$placeholder.label}'.</div>
+        <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be used to define placeholder '{$placeholder.label}' on page '{$page.title}'.</div>
       {elseif $for=='ipv'}
         {if $item}
           <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be used to define property '{$property.name}' of {$property._model.name|strtolower} '{$item.name}'.</div>
@@ -139,44 +149,30 @@ function validateUploadSuffix(){
           <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be used as the value for property '{$property.name}' for a new {$property._model.name|strtolower}.</div>
         {/if}
       {/if}
-    
-      {load_interface file=$form_include}
-    
-      {if !empty($params)}<a id="params-holder-toggle-link" href="javascript:toggleParamsHolder()">Show Parameters</a>{/if}
-    
-    <div id="params-holder" style="display:none">
-{foreach from=$params key="parameter_name" item="parameter_value"}
-    <div class="edit-form-row">
-      <div class="form-section-label">{$parameter_name}</div>
-      <input type="text" name="params[{$parameter_name}]" />
-    </div>
-{/foreach}
-    </div>
-    
+      
+      <div class="edit-form-row">
+        <div class="form-section-label">Name this file</div>
+        <input type="text" name="asset_label" value="{$suggested_name}" />
+      </div>
+      
+    {load_interface file="$interface_file"}
+      
     <div class="edit-form-row">
       <div class="form-section-label">Language</div>
       <select name="asset_language">
-        <option value="">{$lang.label}</option>
 {foreach from=$_languages item="lang" key="langcode"}
         <option value="{$langcode}">{$lang.label}</option>
 {/foreach}
       </select>
     </div>
-    
+
     <div class="edit-form-row">
-      <div class="form-section-label">Share this asset with other sites?</div>
-      <input type="checkbox" name="asset_shared" /> Check here to allow all sites to use this file.
+      <div class="form-section-label">Share this file?</div>
+      <input type="checkbox" name="asset_shared" id="asset_shared" /><label for="asset_shared">Check here to allow all your sites to use this file.</label>
     </div>
-    
-    <div class="edit-form-row">
-      <div class="buttons-bar">
-        <input type="button" value="Cancel" onclick="cancelForm();">
-        <input type="submit" value="Save" />
-      </div>
-    </div>
-    
-  </form>
-  
+
+<div class="buttons-bar"><input type="submit" value="Save"></div>
+</form>
     {else}
   
   <div class="warning">

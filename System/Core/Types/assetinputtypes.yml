@@ -1,0 +1,13 @@
+types:
+  SM_ASSETINPUTTYPE_DIRECT_INPUT:
+    label: Create the file now
+    template: AssetInputs/direct_input.tpl
+  SM_ASSETINPUTTYPE_FTP_UPLOAD:
+    label: Choose a file on the server
+    template: AssetInputs/ftp_upload.tpl
+  SM_ASSETINPUTTYPE_BROWSER_UPLOAD:
+    label: Upload via your browser
+    template: AssetInputs/browser_upload.tpl
+  SM_ASSETINPUTTYPE_URL_INPUT:
+    label: Paste in a URL
+    template: AssetInputs/url_input.tpl

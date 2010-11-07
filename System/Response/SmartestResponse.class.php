@@ -82,7 +82,8 @@ class SmartestResponse{
         	'System/Data/SmartestFile.class.php',
         	'System/Base/Exceptions/SmartestWebPageBuilderException.class.php',
         	'System/Base/Exceptions/SmartestInterfaceBuilderException.class.php',
-        	'System/Base/Exceptions/SmartestRedirectException.class.php'
+        	'System/Base/Exceptions/SmartestRedirectException.class.php',
+        	'System/Base/Exceptions/SmartestAssetCreationException.class.php'
 
         );
         

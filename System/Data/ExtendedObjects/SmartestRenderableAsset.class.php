@@ -102,10 +102,23 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	    }
 	}
 	
+	public function extractId(){
+	    $regex = "/".$this->_type_info['url_translation']['format']."/i";
+	    preg_match($regex, $this->getUrl(), $matches);
+	    // print_r($matches);
+	    $position = isset($this->_type_info['url_translation']['id_position']) ? $this->_type_info['url_translation']['id_position'] : 1;
+	    return $matches[$position];
+	}
+	
 	public function render($draft_mode='unset'){
 	    
 	    if($draft_mode === 'unset'){
 	        $draft_mode = $this->_draft_mode;
+	    }
+	    
+	    if($this->_type_info['storage']['type'] == 'external_translated'){
+	        $this->_render_data->setParameter('remote_id', $this->extractId());
+	        // print_r($this->_render_data->getParameters());
 	    }
 	    
 	    if($this->getId()){
@@ -120,7 +133,7 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	    
 	    }else{
             if($draft_mode){
-                return '<em>[No file selected for this value]</em>';
+                return '<span class="smartest-preview-hint">[No file selected for this value]</span>';
             }
         }
 	    

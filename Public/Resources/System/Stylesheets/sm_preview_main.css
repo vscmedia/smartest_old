@@ -35,3 +35,13 @@ div.smartest_preview_top_bar a{
 body>div.smartest_preview_top_bar{
 	position:fixed;
 }
+
+span.smartest-preview-hint{
+    font-style:italic;
+    color:#999
+}
+
+span.smartest-preview-warning{
+    font-style:italic;
+    color:#F4842A;
+}
