@@ -84,11 +84,11 @@ function validateUploadSuffix(){
         <input type="hidden" name="for" value="placeholder" />
         <input type="hidden" name="placeholder_id" value="{$placeholder.id}" />
         <input type="hidden" name="page_id" value="{$page.id}" />
-        {if $item_id}<input type="hidden" name="item_id" value="{$item_id}" />{/if}
+        {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
       {else if $for=='ipv'}
         <input type="hidden" name="for" value="ipv" />
         <input type="hidden" name="property_id" value="{$property.id}" />
-        {if $item_id}<input type="hidden" name="item_id" value="{$item_id}" />{/if}
+        {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
       {/if}
     {/if}
     

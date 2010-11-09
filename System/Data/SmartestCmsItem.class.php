@@ -187,7 +187,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    }else if(isset($this->_varnames_lookup[$offset])){
 	        
 	        // echo $this->_varnames_lookup[$offset];
-	        $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset]);
+	        $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset], true);
 	        return $v;
 	        
 	    }else{
@@ -839,7 +839,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    }
 	}
 	
-	public function getPropertyValueByNumericKey($key){
+	public function getPropertyValueByNumericKey($key, $for_template_layer=false){
 	    
 	    if(array_key_exists($key, $this->_properties)){
 	        
@@ -850,10 +850,12 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             }
             
             if(is_object($raw_value)){
-                return $raw_value;
+                $r = $raw_value;
             }else if($value_ob = SmartestDataUtility::objectize($raw_value, $this->_properties[$key]->getDatatype())){
-                return $value_obj;
+                $r = $value_obj;
             }
+            
+            return $r;
             
 	    }else{
 	        return null;

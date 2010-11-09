@@ -32,8 +32,9 @@
 
 <input type="hidden" name="class_id" value="{$item._model.id}" />
 <input type="hidden" name="item_id" value="{$item.id}" />
+{if $request_parameters.page_id}<input type="hidden" name="page_id" value="{$request_parameters.page_id}" />{/if}
 
-{if $smarty.get.from}<input type="hidden" name="from" value="{$smarty.get.from}" />{/if}
+{if $request_parameters.from}<input type="hidden" name="from" value="{$smarty.get.from}" />{/if}
 
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} name</div>

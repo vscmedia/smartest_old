@@ -24,11 +24,13 @@ class SmartestModel extends SmartestBaseModel{
 	        if(SmartestCache::hasData('model_properties_'.$this->_properties['id'], true)){
     		    $result = SmartestCache::load('model_properties_'.$this->_properties['id'], true);
     	    }else{
-    		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_properties['id']."' ORDER BY itemproperty_id ASC";
+    		    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_properties['id']."' ORDER BY itemproperty_order_index ASC";
     		    $result = $this->database->queryToArray($sql);
     		    SmartestCache::save('model_properties_'.$this->_properties['id'], $result, -1, true);
     	    }
 		
+		    // print_r($result);
+		    
     		foreach($result as $db_property){
     			$property = new SmartestItemProperty;
     			$property->hydrate($db_property);

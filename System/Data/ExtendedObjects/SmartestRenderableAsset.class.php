@@ -118,7 +118,6 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	    
 	    if($this->_type_info['storage']['type'] == 'external_translated'){
 	        $this->_render_data->setParameter('remote_id', $this->extractId());
-	        // print_r($this->_render_data->getParameters());
 	    }
 	    
 	    if($this->getId()){
@@ -179,6 +178,9 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
             
             case "link_contents":
             return 'image:'.$this->getUrl();
+            
+            case "is_defined":
+            return (bool) $this->getId();
         
         }
         

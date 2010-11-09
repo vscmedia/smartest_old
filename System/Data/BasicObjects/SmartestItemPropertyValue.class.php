@@ -116,7 +116,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     }
                     
                     if($class == 'SmartestRenderableAsset'){
-                        $obj->setAdditionalRenderData($this->getInfo());
+                        $obj->setAdditionalRenderData($this->getInfo($draft));
                     }
                 
                 }else if($t['valuetype'] == 'manytomany'){

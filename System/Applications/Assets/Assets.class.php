@@ -358,7 +358,7 @@ class Assets extends SmartestSystemApplication{
                 $this->send($template, 'interface_file');
                 
                 // Can a new file be saved?
-                if($type['storage']['type'] != 'database'){
+                if($type['storage']['type'] != 'database' && $type['storage']['type'] != 'external_translated'){
     	            $path = SM_ROOT_DIR.$type['storage']['location'];
     	            $allow_save = is_writable($path);
     	            $this->send($allow_save, 'allow_save');

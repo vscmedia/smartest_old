@@ -310,6 +310,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    if($this->getTextFragment()){
 	        // save the text fragment in the database
 	        $this->getTextFragment()->setContent($content);
+	        $this->_save_textfragment_on_save = true;
 	    }else if($this->usesLocalFile() && $this->isEditable()){
 	        // save the file to its desired location
 	        SmartestFileSystemHelper::save($this->getFullPathOnDisk(), $content, true);

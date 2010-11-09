@@ -37,8 +37,32 @@
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
     <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
+    <accept>SM_ASSETTYPE_YOUTUBE_CLIP</accept>
+    <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
     <accept>SM_ASSETTYPE_MP3</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_MAIN_FEATURE_NOTEXT">
+    <label>Same as a 'main feature' - but does not allow text</label>
+    <setfrompreview>true</setfrompreview>
+    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
+    <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
+    <accept>SM_ASSETTYPE_YOUTUBE_CLIP</accept>
+    <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
+    <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_MP3</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_MOVIE">
+    <label>A movie in any format</label>
+    <setfrompreview>true</setfrompreview>
+    <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
+    <accept>SM_ASSETTYPE_FLASH_VIDEO</accept>
+    <accept>SM_ASSETTYPE_YOUTUBE_CLIP</accept>
+    <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
+    <accept>SM_ASSETTYPE_MPEG_MOVIE</accept>
+    <accept>SM_ASSETTYPE_WMV</accept>
   </type>
   
    <type id="SM_ASSETCLASS_HOMEPAGE_SPLASH">

@@ -1,8 +1,8 @@
 system:
   info:
     version: "0.4.2"
-    revision: 411
-    build: "4,22"
+    revision: 412
+    build: "4,23"
     minimum_php_version: 5.2
     minimum_database_version: 16
     default_timezone: Europe/London
@@ -70,6 +70,7 @@ system:
       - System/Cache/TextFragments/Previews/
       - System/Cache/TextFragments/Live/
       - System/Logs/
+      - Public/Resources/System/Cache/Images/
       - Logs/
     files_repo:
       - Documents/
@@ -79,6 +80,7 @@ system:
       - Public/Resources/Stylesheets/
       - Public/Resources/Javascript/
       - System/Temporary/
+      - Public/Resources/System/Cache/
     templates_repo:
       - Presentation/Masters/
       - Presentation/Layouts/

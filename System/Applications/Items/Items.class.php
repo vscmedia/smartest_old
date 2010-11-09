@@ -1425,7 +1425,11 @@ class Items extends SmartestSystemApplication{
         }
 	    
 	    if($this->getRequestParameter('_submit_action') == "continue"){
-	        $this->redirect("/datamanager/editItem?item_id=".$item->getItem()->getId());
+	        if($this->getRequestParameter('page_id')){
+	            $this->redirect("/datamanager/editItem?page_id=".$this->getRequestParameter('page_id')."&item_id=".$item->getItem()->getId());
+            }else{
+                $this->redirect("/datamanager/editItem?item_id=".$item->getItem()->getId());
+            }
 	    }else{
 	        $this->formForward();
 	    }
