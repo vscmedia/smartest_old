@@ -242,6 +242,7 @@ class SmartestBasicRenderer extends SmartestEngine{
         $child = $this->startChildProcess($render_process_id);
         $child->setContext(SM_CONTEXT_HYPERLINK);
         $child->assign('_link_url', $link->getUrl($this->draft_mode));
+        $child->assign('_link_use_span', SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('span')));
         $child->assign('_link_contents', $link->getContent($this->draft_mode));
         $child->assign('_link_parameters', SmartestStringHelper::toAttributeString($link->getMarkupAttributes()->getParameters()));
         $child->assign('_link_show_anchor', !$link->shouldOmitAnchorTag($this->draft_mode));

@@ -1573,8 +1573,8 @@ class Items extends SmartestSystemApplication{
 	    
 	    if(isset($_POST['item_id'])){
 	    
-	          // actually publish the item, or at least try
-	          $item_id = $this->getRequestParameter('item_id');
+	        // actually publish the item, or at least try
+	        $item_id = $this->getRequestParameter('item_id');
             $item = SmartestCmsItem::retrieveByPk($item_id);
         
             if(is_object($item)){
@@ -1645,8 +1645,12 @@ class Items extends SmartestSystemApplication{
             
             }
             
-            if($this->hasFormReturnVar('item_id')){
-                $this->redirect('/datamanager/editItem?item_id='.$item_id);
+            if($this->hasFormReturnVar('item_id') && !$this->getRequestParameter('from')){
+                if($this->getRequestParameter('page_id')){
+                    $this->redirect('/datamanager/editItem?page_id='.$this->getRequestParameter('page_id').'&item_id='.$item_id);
+                }else{
+                    $this->redirect('/datamanager/editItem?item_id='.$item_id);
+                }
             }else{
                 $this->formForward();
             }

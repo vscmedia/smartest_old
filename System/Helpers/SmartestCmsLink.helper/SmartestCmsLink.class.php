@@ -423,6 +423,9 @@ class SmartestCmsLink extends SmartestHelper{
             if(substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
                 $a = new SmartestRenderableAsset;
                 $a->findBy('url', substr($this->_render_data->getParameter('with'), 6));
+                if($this->_render_data->hasParameter('alt')){
+                    $a->setAdditionalRenderData(array('alt_text'=>$this->_render_data->getParameter('alt')));
+                }
                 return $a->render($draft_mode);
             }else{
                 return $this->_render_data->getParameter('with');

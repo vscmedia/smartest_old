@@ -119,7 +119,7 @@ function validateUploadSuffix(){
 {if count($input_methods) > 1}
     <ul class="tabset">
 {foreach from=$input_methods key="input_method_code" item="input_method_tab"}
-      <li{if $input_method_code == $input_method} class="current"{/if}><a href="{$domain}smartest/file/new?asset_type={$type_code}&amp;input_method={$input_method_code}{if $for}&amp;for={$for}{/if}{if $for == "placeholder"}&amp;placeholder_id={$placeholder.id}&amp;page_id={$page.id}{/if}{if $for == "ipv"}&amp;property_id={$property.id}{/if}{if $item_id}&amp;item_id={$item_id}{/if}">{$input_method_tab.label}</a></li>
+      <li{if $input_method_code == $input_method} class="current"{/if}><a href="{$domain}smartest/file/new?asset_type={$type_code}&amp;input_method={$input_method_code}{if $for}&amp;for={$for}{/if}{if $for == "placeholder"}&amp;placeholder_id={$placeholder.id}&amp;page_id={$page.id}{/if}{if $for == "ipv"}&amp;property_id={$property.id}{/if}{if $item.id}&amp;item_id={$item.id}{/if}">{$input_method_tab.label}</a></li>
 {/foreach}
     </ul>
 {/if}

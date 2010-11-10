@@ -498,7 +498,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     
     public function renderField($field_name, $params){
         
-        if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
+        if($this->_page_rendering_data['fields']->hasParameter($field_name)){
     
             $value = $this->_page_rendering_data['fields'][$field_name];
         

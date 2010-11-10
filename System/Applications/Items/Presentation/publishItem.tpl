@@ -7,6 +7,8 @@
   <form action="{$domain}{$section}/publishItem" method="post">
     
     <input type="hidden" name="item_id" value="{$item.id}" />
+    {if $request_parameters.page_id}<input type="hidden" name="page_id" value="{$request_parameters.page_id}" />{/if}
+    {if $request_parameters.from}<input type="hidden" name="from" value="{$request_parameters.from}" />{/if}
     
     {if $show_page_publish_option}<div class="edit-form-row">
       <div class="form-section-label">Re-publish meta-page where this {$item._model.name|strtolower} is viewed?</div>
