@@ -1377,7 +1377,7 @@ class Items extends SmartestSystemApplication{
 		        
 		        if(strlen($this->getRequestParameter('item_slug'))){
 		            if($allow_edit_item_slug){
-			            $item->getItem()->setSlug(SmartestStringHelper::toSlug($this->getRequestParameter('item_slug')), $this->getSite()->getId());
+		                $item->getItem()->setSlug(SmartestStringHelper::toSlug($this->getRequestParameter('item_slug')));
 		            }
 		        }else{
 		            if($allow_edit_item_slug){
@@ -1394,7 +1394,7 @@ class Items extends SmartestSystemApplication{
 		        }
         		
         		$item->getItem()->save();
-		
+        		
         		// loop through properties
 		
 		        $new_values = $this->getRequestParameter('item');

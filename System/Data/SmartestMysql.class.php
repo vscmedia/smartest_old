@@ -242,10 +242,15 @@ class SmartestMysql{
 	        return $return_data;
 	        
 	    }else{
+	        
 	        $r = array();
+	        
 	        foreach($fields as $f){
 	            $r[$f] = array();
 	        }
+	        
+	        return $r;
+	        
 	    }
 	    
 	}
