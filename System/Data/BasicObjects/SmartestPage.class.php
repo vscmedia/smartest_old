@@ -616,36 +616,27 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    
 	    $urls = $this->getUrls();
 	    
-	    // if($this->isTagPage()){
-	        
-	        // echo get_class($this);
-	        // return 'tags/'.$this->_tag->getName().'.html';
-	        
-	    // }else{
-	    
-	        if(count($urls)){
-    	        // If there are actually urls for this page:
-    	        foreach($urls as $u){
-    	            if($u->getIsDefault()){
-    	                return $u->getUrl();
-    	            }
-    	        }
-	        
-    	        return $urls[0]->getUrl();
-	        
-    	    }else{
-    	        // No urls have been defined.
-    	        if($this->isHomePage()){
-    	            // Return "/"
-    	            $url = '';
-    	        }else{
-    	            // Return a dynamic one.
-    	            $url = 'website/renderPageFromId?page_id='.$this->getWebid();
+        if(count($urls)){
+	        // If there are actually urls for this page:
+	        foreach($urls as $u){
+	            if($u->getIsDefault()){
+	                return $u;
 	            }
-    	    }
-	    
-        // }
-	    
+	        }
+    
+	        return $urls[0];
+    
+	    }else{
+	        // No urls have been defined.
+	        if($this->isHomePage()){
+	            // Return "/"
+	            $url = '';
+	        }else{
+	            // Return a dynamic one.
+	            $url = 'website/renderPageFromId?page_id='.$this->getWebid();
+            }
+	    }
+
 	    return $url;
 	}
 	
@@ -1139,6 +1130,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    // $data->setParameter('fields', $this->getPageFieldValuesAsAssociativeArray());
 	    $data->setParameter('fields', $this->getPageFieldDefinitions());
 	    $data->setParameter('navigation', $this->getNavigationStructure());
+	    $data->setParameter('site', $this->getSite());
 	    
 	    return $data;
 	}
@@ -1225,6 +1217,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        
 	        case "url":
 	        return $this->getDefaultUrl();
+	        
+	        case "permalink":
+	        return 'http://'.$this->getSite()->getDomain().$this->_request->getDomain().$this->getDefaultUrl();
 	        
 	        case "fallback_url":
 	        return "website/renderPageFromId?page_id=".$this->getWebid();
