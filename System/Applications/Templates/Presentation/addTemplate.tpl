@@ -96,7 +96,7 @@ function hideUploader(){
   parserfile: 'parsexml.js',
   stylesheet: "{$domain}Resources/System/Javascript/CodeMirror-0.65/css/xmlcolors.css",
   continuousScanning: 500,
-  height: '400px',
+  height: '300px',
   path: "{$domain}Resources/System/Javascript/CodeMirror-0.65/js/"
 {literal}  }); {/literal}
 </script>
