@@ -186,8 +186,8 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        
 	    }else if(isset($this->_varnames_lookup[$offset])){
 	        
-	        // echo $this->_varnames_lookup[$offset];
 	        $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset], true);
+
 	        return $v;
 	        
 	    }else{

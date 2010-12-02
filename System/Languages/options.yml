@@ -4,30 +4,57 @@ languages:
   mul:
     label: Multiple languages
     charset: UTF-8
-  eng:
-    label: English
-    charset: UTF-8
-  fra:
-    label: French
-    charset: UTF-8
-  spa:
-    label: Spanish
-    charset: UTF-8
-  por:
-    label: Portuguese
-    charset: UTF-8
-  nob:
-    label: Norwegian (Bokmål)
+  afr:
+    label: Afrikaans
     charset: UTF-8
   ara:
     label: Arabic
     charset: UTF-8
+  zho:
+    label: Chinese
+    charset: UTF-8
+  nld:
+    label: Dutch
+    charset: UTF-8
+  eng:
+    label: English
+    charset: UTF-8
   fas:
     label: Farsi (Persian)
+    charset: UTF-8
+  fra:
+    label: French
+    charset: UTF-8
+  deu:
+    label: German
+    charset: UTF-8
+  isl:
+    label: Icelandic
     charset: UTF-8
   jpn:
     label: Japanese
     charset: UTF-8
-  zho:
-    label: Chinese
+  nob:
+    label: Norwegian (Bokmål)
+    charset: UTF-8
+  por:
+    label: Portuguese
+    charset: UTF-8
+  rus:
+    label: Russian
+    charset: UTF-8
+  spa:
+    label: Spanish
+    charset: UTF-8
+  swe:
+    label: Swedish
+    charset: UTF-8
+  uzb:
+    label: Uzbek (Generic)
+    charset: UTF-8
+  xho:
+    label: Xhosa
+    charset: UTF-8
+  zul:
+    label: Zulu
     charset: UTF-8

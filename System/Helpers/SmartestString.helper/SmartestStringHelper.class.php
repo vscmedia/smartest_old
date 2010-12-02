@@ -5,7 +5,21 @@ SmartestHelper::register('String');
 define("SM_OPTIONS_MAGIC_QUOTES", (bool) ini_get('magic_quotes_gpc'));
 
 class SmartestStringHelper extends SmartestHelper{
-
+    
+    public static function convertObject($data){
+        if(is_object($data)){
+            if($data instanceof SmartestRenderableAsset){
+                return $data->render();
+            }elseif(method_exists($data, '__toString')){
+                return $data->__toString();
+            }else{
+                throw new SmartestException('Tried to convert non-convertible object to string');
+            }
+        }else{
+            return $data;
+        }
+    }
+    
 	public static function random($size){
 	
 		$possValues = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s"
@@ -130,7 +144,10 @@ class SmartestStringHelper extends SmartestHelper{
     }
     
     public static function stripNewLines($s){
-        return preg_replace("/[\n\r]/m", " ", $s);
+        $s = self::convertObject($s);
+        $s = str_replace("\n", " ", $s);
+        $s = str_replace("\r", " ", $s);
+        return $s;
     }
     
 	public static function toSlug($normal_string, $clean_non_ascii=false){
@@ -190,6 +207,13 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	public static function toConstantName($string, $clean_non_ascii=false){
 		
+		if(is_object($string)){
+		    $was_object = true;
+		    $string = self::convertObject($string);
+		}else{
+		    $was_object = false;
+		}
+		
 		$constant_name = trim($string, " ?!%$#&£*|/\\-");
 		
 		if($clean_non_ascii && !self::isAscii($constant_name)){
@@ -200,10 +224,19 @@ class SmartestStringHelper extends SmartestHelper{
 		$constant_name = preg_replace("/[^\w_]+/", "_", $constant_name);
 		$constant_name = strtoupper($constant_name);
     	
-    	return $constant_name;
+    	return $was_object ? new SmartestString($constant_name) : $constant_name;
+    	
 	}
 	
 	public static function toCamelCase($string, $omitfirst=false){
+	    
+	    if(is_object($string)){
+		    $was_object = true;
+		    $string = self::convertObject($string);
+		}else{
+		    $was_object = false;
+		}
+	    
 		// takes a string, splits it by -, _, or '', and returns it lowercase with the first letter of each 'word' being uppercase
 		$string = self::toSlug($string);
 		$words = preg_split('/[_-]/', $string);
@@ -224,7 +257,7 @@ class SmartestStringHelper extends SmartestHelper{
 			$i++;
 		}
 		
-		return $final;
+		return $was_object ? new SmartestString($final) : $final;
 		
 	}
 	
@@ -279,6 +312,13 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	public static function toTitleCase($string){
 	    
+	    if(is_object($string)){
+		    $was_object = true;
+		    $string = self::convertObject($string);
+		}else{
+		    $was_object = false;
+		}
+	    
         $non_capitalised_words = array('to', 'the', 'and', 'in', 'of', 'with', 'a', 'an');
         $words = explode(' ', $string);
         $new_string = '';
@@ -294,7 +334,8 @@ class SmartestStringHelper extends SmartestHelper{
                 
         }
         
-        return implode(' ', $modified_words);
+        $final = implode(' ', $modified_words);
+        return $was_object ? new SmartestString($final) : $final;
 	}
 	
 	public static function toTitleCaseFromVarName($string){
@@ -363,6 +404,9 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	public static function toRealBool($string){
+	    
+	    $string = self::convertObject($string);
+	    
 	    if($string){
 	        return self::isFalse($string) ? false : true;
         }else{
@@ -371,6 +415,9 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	public static function endsWith($word, $symbol){
+	    
+	    $string = self::convertObject($s);
+	    
 	    if(mb_strlen($word)){
 	        $pos = (mb_strlen($word) - 1);
 	        if($word{$pos} == $symbol){
@@ -449,18 +496,42 @@ class SmartestStringHelper extends SmartestHelper{
 	    return $base.'.'.$suffix;
 	}
 	
+	public static function getFirstParagraph($string){
+	    
+	    $paras = self::getParagraphs($string);
+	    return $paras[0];
+	    
+	}
+	
+	public static function getParagraphs($string){
+	    
+	    $string = str_replace('<br /><br />', "</p>\n<p>", $string);
+	    preg_match_all('/<p[^>]*>(.+?)<\/p>/mi', self::stripNewLines($string), $paragraphs);
+	    
+	    if(count($paragraphs[0])){
+	        return $paragraphs[1];
+	    }else{
+	        return array($string);
+	    }
+	    
+	}
+	
 	public static function toSummary($string, $char_length=300){
+	    
+	    /* $string = str_replace('<br /><br />', "</p>\n<p>", $string);
+	    
 	    // find the end of first paragraph and cut there
 	    preg_match_all('/<p[^>]*>(.+?)<\/p>/mi', self::stripNewLines($string), $paragraphs);
-      
+	    
         if(count($paragraphs[0])){
 	        $first_paragraph = $paragraphs[1][0];
 	    }else{
 	        $first_paragraph = $string;
-	    }
+	    } */
 	    
 	    // strip tags
-	    $final_string = strip_tags($first_paragraph);
+	    // $final_string = strip_tags($first_paragraph);
+	    $final_string = strip_tags(self::getFirstParagraph($string));
 	    
 	    // if it is longer that $char_length, truncate it and add '...'
 	    if(strlen($final_string) > $char_length){
