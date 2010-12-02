@@ -9,6 +9,7 @@
 function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	
 	$dah = new SmartestDataAppearanceHelper;
+	$item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_item";
 	
 	if ($repeat) {
 	
@@ -42,7 +43,7 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	if($item){
 	    
 	    // these instructions are executed right before the item is displayed.
-	    $smartest_engine->assign("repeated_item", $item);
+	    $smartest_engine->assign($item_name, $item);
 	    $smartest_engine->assign("repeated_item_object", $item); // legacy support
 	    $smartest_engine->assign("key", $index);
 	    

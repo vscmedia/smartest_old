@@ -2,5 +2,6 @@
     Smartest Pre-Render Overhead: %OVERHEAD%ms |
     Page Build Time: %BUILDTIME%ms |
     Total time taken: %TOTAL%ms |
-    <a href="#" onclick="document.getElementById('sm_previewBar').style.display = 'none';">Hide</a>
+    <a href="#" onclick="document.getElementById('sm_previewBar').style.display = 'none';">Hide</a> |
+    <a href="#" onclick="window.open('%PREVIEWURL%');">Show in new window</a>
 </div>

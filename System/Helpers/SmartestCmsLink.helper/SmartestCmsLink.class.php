@@ -509,8 +509,8 @@ class SmartestCmsLink extends SmartestHelper{
             break;
 
             case SM_LINK_TYPE_METAPAGE:
-    
-            if($draft_mode){
+            
+            if($draft_mode){ 
                 return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
             }else{
                 if($this->_destination->getIsPublishedAsBoolean() && $this->_destination->getPrincipalItem()->isPublished()){

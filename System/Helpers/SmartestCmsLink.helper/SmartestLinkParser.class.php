@@ -63,7 +63,7 @@ class SmartestLinkParser{
                     if(strpos($l->getParameter('destination'), '=') !== false){
 
                         // if(preg_match('/(name|id|webid)=([\w_-]+)(:(name|id|webid)=([\w_-]+))?/i', $l->getParameter('destination'), $dm)){
-                        if(preg_match('/(meta)?page:((name|id|webid)=)?([\w_-]+)(:((name|id|webid)=)?([\w_-]+))?/i', $l->getParameter('destination'), $dm)){
+                        if(preg_match('/(meta)?page:((name|id|webid)=)?([\w_\$-]+)(:((name|id|webid)=)?([\w_\$-]+))?/i', $l->getParameter('destination'), $dm)){
                             
                             $l->setParameter('format', SM_LINK_FORMAT_AUTO);
                             
@@ -178,7 +178,7 @@ class SmartestLinkParser{
             
             if(strpos($l->getParameter('destination'), '=')){
             
-                if(preg_match('/(meta)?page:((name|id|webid)=)?([\w_-]+)(:((name|id|webid)=)?([\w_-]+))?/i', $l->getParameter('destination'), $m)){
+                if(preg_match('/(meta)?page:((name|id|webid)=)?([\w_\$-]+)(:((name|id|webid)=)?([\w_\$-]+))?/i', $l->getParameter('destination'), $m)){
                     
                     if(strlen($m[2])){
                         $l->setParameter('page_ref_field_name', $m[3]);

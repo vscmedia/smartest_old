@@ -1591,10 +1591,10 @@ class Pages extends SmartestSystemApplication{
                 if($model->hydrate($page->getDatasetId())){
                     $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
                     $this->send($items, 'items');
-                    $this->send($model->__toArray(), 'model');
+                    $this->send($model, 'model');
                     $this->send('Please choose an item to attache related content.', 'chooser_message');
                     $this->send('datamanager/relatedContent', 'continue_action');
-                    $this->send($page->__toArray(), 'page');
+                    $this->send($page, 'page');
                 }else{
                     $this->send(array(), 'items');
                 }
@@ -1610,7 +1610,7 @@ class Pages extends SmartestSystemApplication{
     	        $models = $du->getModels(false, $this->getSite()->getId());
 	        
     	        foreach($models as &$m){
-    	            $m['related_items'] = $page->getRelatedItemsAsArrays($m['id']);
+    	            $m['related_items'] = $page->getRelatedItems($m['id'], true);
     	        }
 	        
     	        $this->send($page, 'page');

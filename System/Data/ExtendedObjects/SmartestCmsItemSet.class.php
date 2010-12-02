@@ -280,13 +280,24 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi{
     		    $ids = array_slice($ids, 0, $limit);
     		}
     		
-    		return $this->getItemsFromIds($ids);
+    		$items = $this->getItemsFromIds($ids);
 	        
   	    }else if($this->getType() == 'DYNAMIC'){
   	        
-            return $this->getRawDynamicSetResultSet($mode)->getItems($limit, $start);
+            $items = $this->getRawDynamicSetResultSet($mode)->getItems($limit, $start);
 	            
   	    }
+  	    
+  	    // $set_items_draft_mode = ($mode > 0 && ($mode < 3 || ($mode > 5 && $mode < 9)));
+  	    $draft = $mode < 6;
+  	    
+  	    if($draft){
+  	        foreach($items as $k=>$item){
+  	            $items[$k]->setDraftMode(true);
+  	        }
+  	    }
+  	    
+  	    return $items;
 	    
 	}
 	

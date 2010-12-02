@@ -522,7 +522,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	    // find the end of first paragraph and cut there
 	    preg_match_all('/<p[^>]*>(.+?)<\/p>/mi', self::stripNewLines($string), $paragraphs);
-	    
+
         if(count($paragraphs[0])){
 	        $first_paragraph = $paragraphs[1][0];
 	    }else{

@@ -498,7 +498,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     
     public function renderField($field_name, $params){
         
-        if($this->_page_rendering_data['fields']->hasParameter($field_name)){
+        // if($this->_page_rendering_data['fields']->hasParameter($field_name)){
     
             $value = $this->_page_rendering_data['fields'][$field_name];
         
@@ -512,11 +512,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     
             return $value;
     
-        }else{
+        /* }else{
         
             return $this->raiseError('Field \''.$field_name.'\' does not exist on this site.');
         
-        }
+        } */
         
     }
     
