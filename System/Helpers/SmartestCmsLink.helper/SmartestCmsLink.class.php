@@ -420,16 +420,26 @@ class SmartestCmsLink extends SmartestHelper{
         
         if($this->_render_data->getParameter('with')){
             // if the with="" attribute is specified
+            
+            if($this->_render_data->getParameter('with') instanceof SmartestImage){
+                return $this->_render_data->getParameter('with')->render();
+            }
+            
             if(substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
+                
                 $a = new SmartestRenderableAsset;
                 $a->findBy('url', substr($this->_render_data->getParameter('with'), 6));
+                
                 if($this->_render_data->hasParameter('alt')){
                     $a->setAdditionalRenderData(array('alt_text'=>$this->_render_data->getParameter('alt')));
                 }
+                
                 return $a->render($draft_mode);
+                
             }else{
                 return $this->_render_data->getParameter('with');
             }
+            
         }else if($this->_destination_properties->getParameter('text') && ($this->_destination_properties->getParameter('text') != SmartestLinkParser::LINK_TARGET_TITLE)){
             // if the text is given in the link via a pipe (|)
             return $this->_destination_properties->getParameter('text');
@@ -561,7 +571,7 @@ class SmartestCmsLink extends SmartestHelper{
         
         if($this->getType() == SM_LINK_TYPE_EXTERNAL){
             
-            if($draft_mode && !$this->_destination_properties->getParameter('newwin')){
+            if($draft_mode && !SmartestStringHelper::toRealBool($this->_destination_properties->getParameter('newwin'))){
                 $this->_markup_attributes->setParameter('target', '_top');
                 $this->_markup_attributes->setParameter('onclick', "return confirm('You will be taken to an external page. Continue?')");
             }else{
@@ -590,6 +600,10 @@ class SmartestCmsLink extends SmartestHelper{
         if(is_array($ama)){
            $additional_markup_attributes = $this->getSeparatedAttributes($ama)->getParameter('html');
            $this->_markup_attributes->loadArray($additional_markup_attributes);
+        }
+        
+        if(($this->getType() == SM_LINK_TYPE_PAGE || $this->getType() == SM_LINK_TYPE_METAPAGE) && !$this->_markup_attributes->hasParameter('title')){
+            $this->_markup_attributes->setParameter('title', $this->_destination->getTitle());
         }
         
         $content = $r->renderLink($this);

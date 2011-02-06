@@ -31,8 +31,8 @@ function smarty_function_asset_select($params, &$smartest_engine){
             $asset->setParameter('required', false);
         }
         
-        $smartest_engine->assign('_input_data', $asset);
-        $smartest_engine->run(SM_ROOT_DIR.'System/Presentation/InterfaceBuilder/Inputs/asset.tpl', array());
+        // $smartest_engine->assign('_input_data', $asset);
+        $smartest_engine->run(SM_ROOT_DIR.'System/Presentation/InterfaceBuilder/Inputs/asset.tpl', $asset);
         
     }else{
         

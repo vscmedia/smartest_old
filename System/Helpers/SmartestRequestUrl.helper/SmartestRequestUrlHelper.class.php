@@ -184,7 +184,6 @@ class SmartestRequestUrlHelper{
 	public function getItemClassPageByUrl($url, $site_id){
 		
 		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url, PageUrls.pageurl_type, PageUrls.pageurl_page_id, PageUrls.pageurl_item_id FROM Pages, PageUrls WHERE (Pages.page_type='ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_DATASET') AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
-		
 		$dataset_pages = $this->database->queryToArray($sql);
 		
 		if(is_array($dataset_pages)){
@@ -205,8 +204,8 @@ class SmartestRequestUrlHelper{
 			            $page->setIdentifyingFieldName("id");
     				    $page->setIdentifyingFieldValue($page_record['pageurl_item_id']);
     			        $page->setUrlNameValuePair("id", $page_record['pageurl_item_id']);
-			        
-    			        if($page->isAcceptableItem()){
+			            
+			            if($page->isAcceptableItem()){
     		                $page->assignPrincipalItem();
     		                return $page;
     		            }
@@ -226,6 +225,7 @@ class SmartestRequestUrlHelper{
 			        
     			        if($page->isAcceptableItem()){
     		                $page->assignPrincipalItem();
+    		                // echo $page->getPrincipalItem()->getUrl();
     		                throw new SmartestRedirectException($page->getPrincipalItem()->getUrl());
     		            }
 		            
@@ -235,9 +235,7 @@ class SmartestRequestUrlHelper{
 			        
 			        $page_url_regexp = $this->convertPageUrlToRegExp($page_record["pageurl_url"]);
 			        
-			        // echo $page_url_regexp;
-			        
-    			    // if the stored url being checked matches the current one
+			        // if the stored url being checked matches the current one
     			    if(preg_match($page_url_regexp, $url, $matches)){
 				    
     				    // create the page object
@@ -315,6 +313,22 @@ class SmartestRequestUrlHelper{
 					
     				}
 				
+			    }else{
+			        
+			        if(substr($url, -1) == '/'){
+        		        $new_url = substr($url, 0, -1);
+        		    }else{
+        		        $new_url = $url.'/';
+        		    }
+        		    
+        		    $sql = "SELECT Pages.* FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='DATASET' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$new_url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
+            		$page = $this->database->queryToArray($sql);
+
+            		if(count($page) > 0){
+            		    $this->_request_data = SmartestPersistentObject::get('request_data');
+            			throw new SmartestRedirectException($this->_request_data->g('domain').$new_url);
+            		}
+			        
 			    }
 	
 			} // End of the foreach

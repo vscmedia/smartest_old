@@ -1425,7 +1425,9 @@ class Assets extends SmartestSystemApplication{
 	}
     
     public function editAsset($get, $post){
-
+        
+        $this->requireOpenProject();
+        
 		$asset_id = $this->getRequestParameter('asset_id');
 
 		if(!$this->getRequestParameter('from')){

@@ -30,7 +30,7 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
 	            $assets[] = $m->getAsset();
 	        }
 	        
-            $this->_members = $assets;
+	        $this->_members = $assets;
         
         }
         
@@ -269,8 +269,13 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         }
     }
     
+    // and two from SmartestSubmittableValue
+    
+    public function renderInput($params){
+        
+    }
+    
     public function hydrateFromFormData($v){
-        // var_dump($this->find($v));
         if(is_numeric($v)){
             return $this->find($v);
         }

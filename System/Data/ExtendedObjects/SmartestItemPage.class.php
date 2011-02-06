@@ -72,13 +72,43 @@ class SmartestItemPage extends SmartestPage{
 	    
 	}
 	
+	public function getDefaultUrl(){
+	    
+	    $urls = $this->getUrls();
+	    
+        if(count($urls)){
+	        // If there are actually urls for this page:
+	        foreach($urls as $u){
+	            if($u->getIsDefault()){
+	                return $u;
+	            }
+	        }
+            
+            print_r($urls);
+	        return $urls[0];
+    
+	    }else{
+	        // No urls have been defined.
+	        if($this->isHomePage()){
+	            // Return "/"
+	            $url = '';
+	        }else{
+	            // Return a dynamic one.
+	            $url = 'website/renderPageFromId?page_id='.$this->getWebid().'&amp;item_id='.$this->_simple_item->getId();
+            }
+            
+            return $url;
+            
+	    }
+	}
+	
 	public function getUrls(){
 	    
 	    if(!count($this->_urls)){
 		
 		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id ='".$this->_properties['id']."' AND (pageurl_type IN ('SM_PAGEURL_NORMAL', 'SM_PAGEURL_INTERNAL_FORWARD') OR (pageurl_type IN ('SM_PAGEURL_SINGLE_ITEM', 'SM_PAGEURL_ITEM_FORWARD') AND pageurl_item_id='".$this->_simple_item->getId()."'))";
 		    $pageUrls = $this->database->queryToArray($sql);
-		
+		    
 		    foreach($pageUrls as $key => $url){
 		        
 		        $urlObj = new SmartestItemPageUrl;

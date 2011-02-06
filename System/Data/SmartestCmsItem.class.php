@@ -186,7 +186,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        
 	    }else if(isset($this->_varnames_lookup[$offset])){
 	        
-	        $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset], true);
+	        $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset], $this->getDraftMode(), true);
 
 	        return $v;
 	        
@@ -839,7 +839,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    }
 	}
 	
-	public function getPropertyValueByNumericKey($key, $for_template_layer=false){
+	public function getPropertyValueByNumericKey($key, $draft=false, $for_template_layer=false){
 	    
 	    if(array_key_exists($key, $this->_properties)){
 	        

@@ -20,7 +20,7 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess, SmartestStorabl
         return $this->_value ? 'TRUE' : 'FALSE';
     }
     
-    // The next three methods are for the SmartestStorableValue interface
+    // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->__toString();
     }
@@ -30,9 +30,14 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess, SmartestStorabl
         return true;
     }
     
+    // And SmartestSubmittableValue
     public function hydrateFromFormData($v){
         $this->setValue($v);
         return true;
+    }
+    
+    public function renderInput($params){
+        
     }
     
     public function getHtmlFormFormat(){

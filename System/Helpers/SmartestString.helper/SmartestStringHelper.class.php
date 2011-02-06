@@ -615,6 +615,8 @@ class SmartestStringHelper extends SmartestHelper{
         
         $string = preg_replace('/([\w_]+)=&(amp;)?quot;([^&]*)&(amp;)?quot;/i', '$1="$3"', $string);
         
+        $string = str_replace('<p><!--NewColumn--></p>', '<!--NewColumn-->', $string);
+        
         $string = str_replace('<p><!--PROTECTED-SMARTEST-TAG:', '<?sm:', $string);
         $string = str_replace(':PROTECTED-SMARTEST-TAG--></p>', ':?>', $string);
         $string = str_replace('<!--PROTECTED-SMARTEST-TAG:', '<?sm:', $string);
@@ -729,6 +731,37 @@ class SmartestStringHelper extends SmartestHelper{
     	    
 	    }else{
 	        return $string;
+	    }
+	    
+	}
+	
+	public static function separateIntoColumns($text){
+	    
+	    $text = str_replace('<p><!--NewColumn--></p>', '<!--NewColumn-->', $text);
+	    $columns = explode('<!--NewColumn-->', $text);
+	    $num_columns = count($columns);
+	    
+	    if($num_columns > 1){
+	        
+	        $newtext = '';
+	        $column_open = "<div class=\"smartest-column\">";
+	        $last_column_open = "<div class=\"smartest-column last\">";
+	        $column_close = "</div>\n";
+	        $i = 1;
+	        
+	        foreach($columns as $c){
+	            if($i<$num_columns){
+	                $newtext .= $column_open.$c.$column_close;
+                }else{
+                    $newtext .= $last_column_open.$c.$column_close;
+                }
+	            ++$i;
+	        }
+	        
+	        return $newtext;
+	        
+	    }else{
+	        return $text;
 	    }
 	    
 	}

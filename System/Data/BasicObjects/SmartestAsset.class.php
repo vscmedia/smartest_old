@@ -148,8 +148,13 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
         }
     }
     
+    // and two from SmartestSubmittableValue
+    
+    public function renderInput($params){
+        
+    }
+    
     public function hydrateFromFormData($v){
-        // var_dump($this->find($v));
         if(is_numeric($v)){
             return $this->find($v);
         }

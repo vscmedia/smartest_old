@@ -32,7 +32,7 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
         return SmartestStringHelper::toCommaSeparatedList(array_slice($this->_data, 0, 10));
     }
     
-    // The next three methods are for the SmartestStorableValue interface
+    // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return serialize($this->_value);
     }
@@ -42,6 +42,7 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
         return true;
     }
     
+    // and these two for the SmartestSubmittableValue interface
     public function hydrateFromFormData($v){
         if(is_array($v)){
             $this->_data = $v;
@@ -49,6 +50,10 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
         }else{
             return false;
         }
+    }
+    
+    public function renderInput($params){
+        return "SmartestArray does not have a direct input.";
     }
     
     public function getHtmlFormFormat(){

@@ -17,7 +17,7 @@ class SmartestImage extends SmartestFile{
     const PNG = 'png';
     
     const LANDSCAPE = 'ls';
-    const SQUARE = 'ls';
+    const SQUARE = 'sq';
     const PORTRAIT = 'pr';
     
     public function __construct(){
@@ -116,6 +116,51 @@ class SmartestImage extends SmartestFile{
         return $this->getOrientation() == self::LANDSCAPE;
     }
     
+    public function resizeAndCrop($width, $height){
+        
+        $url = 'Resources/System/Cache/Images/'.SmartestStringHelper::toVarName(basename($this->_current_file_path)).$width.'x'.$height.'.png';
+        $full_path = SM_ROOT_DIR.'Public/'.$url;
+        
+        if(file_exists($full_path)){
+            
+            $thumbnail = new SmartestImage;
+            $thumbnail->loadFile($full_path);
+            return $thumbnail;
+            
+        }else{
+        
+            $height_diff = $this->getHeight() - $height;
+            $width_diff = $this->getWidth() - $width;
+            
+            if($height_diff/$this->getHeight() > $width_diff/$this->getWidth()){
+                // change in height is proportionally more than change in width, so scale according to width
+                $src_w = $this->getWidth();
+                $src_h = ceil($this->getWidth()/$width*$height);
+                $src_y = ceil(($this->getHeight()-$src_h)/2);
+                $src_x = 0;
+            }else{
+                // change in width is proportionally more than change in height, so scale according to height
+                $src_w = ceil($this->getHeight()/$height*$width);
+                $src_h = $this->getHeight();
+                $src_y = 0;
+                $src_x = ceil(($this->getWidth()-$src_w)/2);
+            }
+            
+            $r = ImageCreateTrueColor($width, $height);
+            imagecopyresampled($r, $this->getResource(), 0,0, $src_x, $src_y, $width, $height, $src_w, $src_h);
+            
+            $newversion = new SmartestImage;
+            
+            if(imagepng($r, $full_path, 0)){
+                imagedestroy($r);
+                $newversion->loadFile($full_path);
+                return $newversion;
+            }
+        
+        }
+        
+    }
+    
     public function getSquareVersion($side){
         
         $url = 'Resources/System/Cache/Images/'.$this->getSquareVersionFilename($side);
@@ -156,6 +201,76 @@ class SmartestImage extends SmartestFile{
     
     public function getSquareVersionFilename($side){
         return SmartestStringHelper::toVarName(basename($this->_current_file_path)).'_sqthumb_'.$side.'.png';
+    }
+    
+    public function restrictToWidth($width){
+        
+        $width = (int) $width;
+        
+        $url = 'Resources/System/Cache/Images/'.$this->getWidthRestrictedVersionFilename($width);
+        $full_path = SM_ROOT_DIR.'Public/'.$url;
+        
+        if(file_exists($full_path)){
+            
+            $newversion = new SmartestImage;
+            $newversion->loadFile($full_path);
+            return $newversion;
+            
+        }else{
+            
+            $new_height = (int) ($width/$this->getWidth()*$this->getHeight());
+            $r = ImageCreateTrueColor($width, $new_height);
+            imagecopyresampled($r, $this->getResource(), 0,0, 0,0, $width, $new_height, $this->getWidth(), $this->getHeight());
+            
+            $newversion = new SmartestImage;
+            
+            if(imagepng($r, $full_path, 0)){
+                imagedestroy($r);
+                $newversion->loadFile($full_path);
+                return $newversion;
+            }
+            
+        }
+        
+    }
+    
+    public function getWidthRestrictedVersionFilename($w){
+        return SmartestStringHelper::toVarName(basename($this->_current_file_path)).'_width_'.$w.'.png';
+    }
+    
+    public function restrictToHeight($height){
+        
+        $width = (int) $width;
+        
+        $url = 'Resources/System/Cache/Images/'.$this->getHeightRestrictedVersionFilename($height);
+        $full_path = SM_ROOT_DIR.'Public/'.$url;
+        
+        if(file_exists($full_path)){
+            
+            $newversion = new SmartestImage;
+            $newversion->loadFile($full_path);
+            return $newversion;
+            
+        }else{
+            
+            $new_width = (int) ($height/$this->getHeight()*$this->getWidth());
+            $r = ImageCreateTrueColor($new_width, $height);
+            imagecopyresampled($r, $this->getResource(), 0,0, 0,0, $new_width, $height, $this->getWidth(), $this->getHeight());
+            
+            $newversion = new SmartestImage;
+            
+            if(imagepng($r, $full_path, 0)){
+                imagedestroy($r);
+                $newversion->loadFile($full_path);
+                return $newversion;
+            }
+            
+        }
+        
+    }
+    
+    public function getHeightRestrictedVersionFilename($h){
+        return SmartestStringHelper::toVarName(basename($this->_current_file_path)).'_height_'.$h.'.png';
     }
     
     public function getResizedVersionFromMaxLongSide($max_long_side){
@@ -334,6 +449,16 @@ class SmartestImage extends SmartestFile{
 	
 	public function offsetGet($offset){
 	    
+	    if(preg_match('/(\d+)x(\d+)/', $offset, $m)){
+	        return $this->resizeAndCrop($m[1], $m[2]);
+	    }elseif(preg_match('/square_(\d+)/', $offset, $m)){
+	        return $this->getSquareVersion($m[1]);
+	    }elseif(preg_match('/width_(\d+)/', $offset, $m)){
+	        return $this->restrictToWidth($m[1]);
+	    }elseif(preg_match('/height_(\d+)/', $offset, $m)){
+	        return $this->restrictToHeight($m[1]);
+	    }
+	    
 	    switch($offset){
 	        
 	        case "width":
@@ -341,6 +466,9 @@ class SmartestImage extends SmartestFile{
 	        
 	        case "height":
 	        return $this->getHeight();
+	        
+	        case "web_path":
+	        return $this->getWebPath();
 	        
 	    }
 	    
@@ -354,7 +482,7 @@ class SmartestImage extends SmartestFile{
         $r = $sm->initialize($this->getShortHash());
         $r->assignImage($this);
         $content = $r->renderImage($this->_render_data);
-	    
+        
 	    return $content;
 	    
 	}

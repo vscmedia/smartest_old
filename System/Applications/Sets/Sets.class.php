@@ -233,7 +233,7 @@ class Sets extends SmartestSystemApplication{
 	        if($set->find($set_id)){
 	            
 	            $set->setLabel($post['set_name']);
-	            $set->setName(SmartestStringHelper::toVarName($post['set_name']));
+	            // $set->setName(SmartestStringHelper::toVarName($post['set_name']));
 	            $set->setSortField($post['set_sort_field']);
 	            $set->setDataSourceSiteId($post['set_data_source_site_id']);
 	            

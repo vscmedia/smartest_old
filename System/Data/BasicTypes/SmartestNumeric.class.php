@@ -40,7 +40,7 @@ class SmartestNumeric implements SmartestBasicType, ArrayAccess, SmartestStorabl
         
     }
     
-    // The next three methods are for the SmartestStorableValue interface
+    // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_value;
     }
@@ -48,6 +48,12 @@ class SmartestNumeric implements SmartestBasicType, ArrayAccess, SmartestStorabl
     public function hydrateFromStorableFormat($v){
         $this->setValue($v);
         return true;
+    }
+    
+    // and two from SmartestSubmittableValue
+    
+    public function renderInput($params){
+        
     }
     
     public function hydrateFromFormData($v){

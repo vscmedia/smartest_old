@@ -63,7 +63,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
         }
     }
     
-    // The next three methods are for the SmartestStorableValue interface
+    // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_value;
     }
@@ -71,6 +71,12 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     public function hydrateFromStorableFormat($v){
         $this->setValue($v);
         return true;
+    }
+    
+    // and two from SmartestSubmittableValue
+    
+    public function renderInput($params){
+        
     }
     
     public function hydrateFromFormData($v){

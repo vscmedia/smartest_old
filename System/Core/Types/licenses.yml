@@ -28,6 +28,6 @@ licenses:
     shortname: cc_by_sa
     url: http://creativecommons.org/licenses/by-sa/3.0/
   public_domain:
-    label: Public Domain
+    label: CC0 / Public Domain
     shortname: public
     url: http://en.wikipedia.org/wiki/Public_domain

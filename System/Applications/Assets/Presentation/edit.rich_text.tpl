@@ -22,6 +22,7 @@
     
     <div id="textarea-holder" style="width:100%">
         <textarea name="asset_content" id="tpl_textArea" wrap="virtual" style="width:100%;padding:0">{$textfragment_content}</textarea>
+        <span id="wordcount"></span>
         <div class="buttons-bar">
             {save_buttons}
         </div>

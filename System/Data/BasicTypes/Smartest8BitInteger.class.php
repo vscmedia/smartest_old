@@ -37,7 +37,7 @@ class Smartest8BitInteger implements SmartestBasicType, SmartestStorableValue, S
         return $this->_value;
     }
     
-    // The next three methods are for the SmartestStorableValue interface
+    // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_value;
     }
@@ -47,9 +47,15 @@ class Smartest8BitInteger implements SmartestBasicType, SmartestStorableValue, S
         return true;
     }
     
+    // The next two are part of SmartestSubmittableValue
+    
     public function hydrateFromFormData($v){
         $this->setValue($v);
         return true;
+    }
+    
+    public function renderInput($params){
+        return "Smartest8BitInteger does not have a direct input.";
     }
     
     public function getHtmlFormFormat(){

@@ -141,11 +141,15 @@ class SmartestEngine extends Smarty{
 	
 	public function run($template, $data){
 	    
-	    if(!is_array($data)){
+	    if(!is_array($data) && !($data instanceof SmartestParameterHolder)){
 	        $data = array('data'=>$data);
 	        if(isset($this->draft_mode) && $this->draft_mode){
-	            echo '<br />NOTICE: $data should be array.';
+	            echo '<br />NOTICE: $data should be and array or SmartestParameterHolder object.';
 	        }
+	    }
+	    
+	    if($data instanceof SmartestParameterHolder){
+	        $data = $data->getParameters();
 	    }
 	    
 	    if(file_exists($template)){

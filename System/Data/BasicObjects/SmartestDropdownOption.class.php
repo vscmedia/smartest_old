@@ -1,6 +1,6 @@
 <?php
 
-class SmartestDropdownOption extends SmartestBaseDropdownOption implements SmartestStorableValue{
+class SmartestDropdownOption extends SmartestBaseDropdownOption implements SmartestStorableValue, SmartestSubmittableValue{
     
     protected $_dropdown = null;
     protected $_value_object;
@@ -53,7 +53,8 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
     }
     
     public function getStorableFormat(){
-        return serialize(array('dropdown_id'=>$this->getDropdownId(), 'value'=>$this->getValue()));
+        // return serialize(array('dropdown_id'=>$this->getDropdownId(), 'value'=>$this->getValue()));
+        return $this->getValue();
     }
     
     public function hydrateFromStorableFormat($v){
@@ -72,6 +73,10 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
     
     public function hydrateFromFormData($v){
         return $this->searchForMatchingValue($v);
+    }
+    
+    public function renderInput($params){
+        
     }
     
     public function offsetGet($offset){

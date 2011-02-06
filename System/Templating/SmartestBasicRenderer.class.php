@@ -173,10 +173,14 @@ class SmartestBasicRenderer extends SmartestEngine{
                     
                     $content = str_replace('{sm}', $this->renderSmartestCreditButton(), $content);
                     
+                    $content = SmartestStringHelper::separateIntoColumns($content);
+                    
                 }else{
                     
                     if($this->_asset->isImage()){
-                    
+                        
+                        $image = $this->_asset->getImage();
+                        
                         if(!$render_data['width']){
                             $render_data['width'] = $this->_asset->getImage()->getWidth();
                         }
@@ -188,7 +192,7 @@ class SmartestBasicRenderer extends SmartestEngine{
                     }
                     
                     ob_start();
-                    $this->run($render_template, array('asset_info'=>$this->_asset, 'render_data'=>$render_data));
+                    $this->run($render_template, array('asset_info'=>$this->_asset, 'render_data'=>$render_data, 'image'=>$image));
                     $content = ob_get_contents();
         	        ob_end_clean();
                     
@@ -243,6 +247,7 @@ class SmartestBasicRenderer extends SmartestEngine{
         $child->setContext(SM_CONTEXT_HYPERLINK);
         $child->assign('_link_url', $link->getUrl($this->draft_mode));
         $child->assign('_link_use_span', SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('span')));
+        $child->assign('_link_span_invisible', !SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('spanvisible')));
         $child->assign('_link_contents', $link->getContent($this->draft_mode));
         $child->assign('_link_parameters', SmartestStringHelper::toAttributeString($link->getMarkupAttributes()->getParameters()));
         $child->assign('_link_show_anchor', !$link->shouldOmitAnchorTag($this->draft_mode));
@@ -275,9 +280,11 @@ class SmartestBasicRenderer extends SmartestEngine{
         $render_template = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/display.image.tpl';
         
         ob_start();
-        $this->run($render_template, array('asset_info'=>$this->_asset, 'render_data'=>$render_data));
+        $this->run($render_template, array('asset_info'=>$this->_asset, 'render_data'=>$render_data, 'image'=>$this->_image));
         $content = ob_get_contents();
         ob_end_clean();
+        
+        return $content;
         
     }
     

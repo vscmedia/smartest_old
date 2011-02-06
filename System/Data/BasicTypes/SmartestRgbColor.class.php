@@ -86,6 +86,12 @@ class SmartestRgbColor implements ArrayAccess, SmartestBasicType, SmartestStorab
         return $this->setValue(substr($v, 1));
     }
     
+    // and two from SmartestSubmittableValue
+    
+    public function renderInput($params){
+        
+    }
+    
     public function hydrateFromFormData($v){
         
         /* $red_p = (int) $v['red'];

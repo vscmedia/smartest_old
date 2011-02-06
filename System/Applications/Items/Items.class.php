@@ -1866,12 +1866,15 @@ class Items extends SmartestSystemApplication{
 		if($model->find((int) $this->getRequestParameter('class_id'))){
 		
 		    $class_name = $model->getClassname();
+		    
+		    if(!class_exists($class_name)){
+		        $model->init();
+		    }
         
             if(class_exists($class_name)){
         
     		    $item = new $class_name;
-        		// $item->setModelId($model->getId());
-		
+        		
         		// provided it has a name, save the item - incomplete or not. incomplete items can be created & saved, but not published.
         		$new_values = $this->getRequestParameter('item');
         		
@@ -2042,6 +2045,8 @@ class Items extends SmartestSystemApplication{
         		    if($shared){
         		        $du->flushModelsCache();
         		    }
+        		    
+        		    $model->init();
         		    
         		    $this->redirect("/".$this->getRequest()->getModule()."/addPropertyToClass?class_id=".$model->getId());
     		    

@@ -168,6 +168,8 @@ class SmartestLinkParser{
                 $l->setParameter('text', self::LINK_TARGET_TITLE);
             }
             
+            // echo $m[2];
+            
             if($m[2]){
                 $l->setParameter('page_ref_field_name', 'name');
                 $l->setParameter('page_ref_field_value', SmartestStringHelper::toSlug($m[3]));
@@ -176,7 +178,7 @@ class SmartestLinkParser{
                 return $l;
             }
             
-            if(strpos($l->getParameter('destination'), '=')){
+            if(strpos($l->getParameter('destination'), '=') !== false){
             
                 if(preg_match('/(meta)?page:((name|id|webid)=)?([\w_\$-]+)(:((name|id|webid)=)?([\w_\$-]+))?/i', $l->getParameter('destination'), $m)){
                     
@@ -209,6 +211,20 @@ class SmartestLinkParser{
                 
                 }
             
+            }else{
+                
+                if(strtolower($l->getParameter('namespace')) == 'page'){
+                    $l->setParameter('page_ref_field_name', 'name');
+                    $l->setParameter('page_ref_field_value', SmartestStringHelper::toSlug($m[3]));
+                }else{
+                    if(!in_array($l->getParameter('namespace'), array('image', 'download', 'tag', 'asset', 'mailto'))){
+                        $l->setParameter('destination', $m[1].SmartestStringHelper::toSlug($m[3]));
+                        $l->setParameter('item_ref_field_name', 'slug');
+                        $l->setParameter('item_ref_field_value', SmartestStringHelper::toSlug($m[3]));
+                        $l->setParameter('format', SM_LINK_FORMAT_USER);
+                    }
+                }
+                
             }
         
         }

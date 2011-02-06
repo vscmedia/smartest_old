@@ -85,6 +85,10 @@ class SmartestCalendarEvent implements SmartestBasicType, ArrayAccess, SmartestS
         }
     }
     
+    public function renderInput($params){
+        
+    }
+    
     public function hydrateFromFormData($v){
         if(is_array($v)){
             if(isset($v['all_day'])){

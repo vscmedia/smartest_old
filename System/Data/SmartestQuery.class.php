@@ -185,25 +185,25 @@ class SmartestQuery{
 				
     				if($condition['field'] == SmartestCmsItem::ID){
 				
-    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_id ";
+    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_id ";
 				
     				}else if($condition['field'] == SmartestCmsItem::NAME){
 				
-    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_name ";
+    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_name ";
 				    
 				    }else if($condition['field'] == SmartestCmsItem::NUM_COMMENTS){
 
-        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_num_comments ";
+        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_num_comments ";
 
                     }else if($condition['field'] == SmartestCmsItem::NUM_HITS){
 
-            			$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_num_hits ";
+            			$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_num_hits ";
 
                     }else if($condition['operator'] == self::TAGGED_WITH){
 				        
 				        $tag_name = SmartestStringHelper::toSlug($condition['value']);
         				$tag = new SmartestTag;
-        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
+        				$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id ";
         				
         				if($tag->findBy('name', $tag_name)){
         				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->_model->getId());
@@ -220,19 +220,19 @@ class SmartestQuery{
         				
         				
         				if($tag->hydrateBy('name', $tag_name)){
-        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' AND Items.item_id ";
+        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_id ";
         				    $ids = $tag->getSimpleItemIds($this->getSiteId(), $allow_draft_items, $this->_model->getId());
         				    $sql .= "NOT IN ('".implode("', '", $ids)."')";
         				}else{
         				    if(SM_DEVELOPER_MODE){
         				        // throw new SmartestException('Unknown tag: \''.$tag_name.'\' in SmartestQuery::doSelect()');
         				    }
-        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted != '1' ";
+        				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id ";
         				}
 				    
     				}else{
 				
-    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_property_id='$property_id' AND Items.item_deleted != '1' AND Items.item_id = ItemPropertyValues.itempropertyvalue_item_id AND ".$value_field.' ';
+    				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_property_id='$property_id' AND Items.item_id = ItemPropertyValues.itempropertyvalue_item_id AND ".$value_field.' ';
 				    
     				}
 				

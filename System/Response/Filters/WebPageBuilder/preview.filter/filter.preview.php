@@ -4,7 +4,13 @@ function smartest_filter_preview($html, $filter){
     
     if($filter->getDraftMode()){
         
+        $request_data = SmartestPersistentObject::get('request_data');
+        
+        $preview_url = '/website/renderEditableDraftPage?page_id='.$request_data->getParameter('request_parameters')->getParameter('page_id');
+        if($request_data->getParameter('request_parameters')->hasParameter('item_id')) $preview_url .= '&amp;item_id='.$request_data->getParameter('request_parameters')->getParameter('item_id');
+        
         $phtml = SmartestFileSystemHelper::load($filter->getDirectory().'previewbar.html.txt');
+        $phtml = str_replace('%PREVIEWURL%', $preview_url, $phtml);
         $phtml = str_replace('%OVERHEAD%', SmartestPersistentObject::get('timing_data')->getParameter('overhead_time_taken'), $phtml);
         $phtml = str_replace('%BUILDTIME%', SmartestPersistentObject::get('timing_data')->getParameter('smarty_time_taken'), $phtml);
         $phtml = str_replace('%TOTAL%', SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken'), $phtml);

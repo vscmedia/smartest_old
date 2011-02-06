@@ -633,7 +633,7 @@ class SmartestDataUtility{
 	        return self::$assetclass_types;
 	    
 	    }else{
-	    
+	        
 	        $data = self::getAssetClassTypesXmlData();
 	    
     	    $raw_types = $data;
@@ -752,6 +752,23 @@ class SmartestDataUtility{
 
 	public static function stripSlashes($value){
 		return is_array($value) ? array_map(array('SmartestDataUtility','stripSlashes'), $value) : utf8_encode(stripslashes($value));
+	}
+	
+	public static function getDataType($type_code){
+	    
+	    $types = self::getDataTypes();
+	    
+	    if(isset(self::$_type_to_class_converter[$type_code])){
+            return self::$_type_to_class_converter[$type_code];
+        }else{
+            if(isset($types[$type_code]) && isset($types[$type_code])){
+                self::$_type_to_class_converter[$type_code] = $types[$type_code];
+    	        return $types[$type_code];
+            }else{
+                return null;
+            }
+        }
+	    
 	}
 	
 	public static function getClassForDataType($as_type){

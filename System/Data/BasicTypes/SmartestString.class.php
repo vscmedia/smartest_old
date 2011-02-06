@@ -38,6 +38,12 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
         return true;
     }
     
+    // and two from SmartestSubmittableValue
+    
+    public function renderInput($params){
+        
+    }
+    
     public function hydrateFromFormData($v){
         $this->setValue($v);
         return true;

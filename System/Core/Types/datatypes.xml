@@ -8,6 +8,7 @@
         <class>SmartestString</class>
         <long>true</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/sl_text.tpl" />
     </type>
     
     <type id="SM_DATATYPE_NUMERIC" valuetype="string">
@@ -17,6 +18,7 @@
         <class>SmartestNumeric</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/numeric.tpl" />
     </type>
     
     <type id="SM_DATATYPE_URL" valuetype="string">
@@ -26,6 +28,7 @@
         <class>SmartestExternalUrl</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.url.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/url.tpl" />
     </type>
     
     <type id="SM_DATATYPE_ML_TEXT" valuetype="string">
@@ -35,6 +38,7 @@
         <class>SmartestString</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/ml_text.tpl" />
     </type>
     
     <type id="SM_DATATYPE_BOOLEAN" valuetype="string">
@@ -44,6 +48,7 @@
         <class>SmartestBoolean</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/default.tpl" />
     </type>
     
     <type id="SM_DATATYPE_RGB_COLOR" valuetype="string">
@@ -53,6 +58,7 @@
         <class>SmartestRgbColor</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.rgb_color.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/default.tpl" />
     </type>
     
     <type id="SM_DATATYPE_TIMESTAMP" valuetype="string">
@@ -62,6 +68,7 @@
         <class>SmartestDateTime</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.timestamp.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/timestamp.tpl" />
     </type>
     
     <type id="SM_DATATYPE_DATE" valuetype="string">
@@ -72,6 +79,7 @@
         <class>SmartestDateTime</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.date.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/date.tpl" />
         
     </type>
     
@@ -83,6 +91,7 @@
         <class>SmartestCalendarEvent</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.calendar_event.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/calendar_event.tpl" />
         
     </type>
     
@@ -99,6 +108,7 @@
         </filter>
         
         <render template="System/Presentation/WebPageBuilder/property.dropdownvalue.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/dropdown_menu.tpl" />
         <menu value="value" display="label" />
         
         <class>SmartestDropdownOption</class>
@@ -126,6 +136,7 @@
         <menu value="id" display="url" />
         
         <render template="System/Presentation/WebPageBuilder/property.asset.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/asset.tpl" />
         
         <class>SmartestRenderableAsset</class>
         
@@ -172,6 +183,7 @@
         <menu value="id" display="url" />
         
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/asset_group.tpl" />
         
         <class>SmartestAssetGroup</class>
         
@@ -194,6 +206,7 @@
         </filter>
         
         <render template="System/Presentation/WebPageBuilder/property.cms_item.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/cms_item.tpl" />
         
         <menu value="id" display="name" />
         
@@ -214,6 +227,7 @@
         </filter>
         
         <render template="System/Presentation/WebPageBuilder/property.cms_item_set.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/property.default.tpl" />
         
         <menu value="id" display="name" />
         
@@ -239,6 +253,7 @@
         </filter>
         
         <render template="System/Presentation/WebPageBuilder/property.cms_item.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/property.default.tpl" />
         
         <menu value="id" display="name" />
         
@@ -266,6 +281,7 @@
         </filter>
         
         <render template="System/Presentation/WebPageBuilder/property.cms_item.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/property.default.tpl" />
         
         <menu value="id" display="name" />
         

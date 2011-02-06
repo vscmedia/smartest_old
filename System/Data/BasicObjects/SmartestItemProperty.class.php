@@ -1,6 +1,6 @@
 <?php
 
-class SmartestItemProperty extends SmartestBaseItemProperty{
+class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestTypedParameter{
 	
 	protected $_type_info;
 	protected $_possible_values = array();
@@ -282,6 +282,14 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	    
 	}
 	
+	public function getDefaultValue(){
+	    if($this->_properties['defaultvalue']){
+	        return SmartestDataUtility::objectize($this->_properties['defaultvalue'], $this->_properties['type']);
+        }else{
+            
+        }
+	}
+	
 	public function getForeignKeySelectSql($info, $filter, $site_id=null){
 	    
 	    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE 1=1";
@@ -403,6 +411,8 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
 	        return $this->getPossibleValues();
 	        case "_model":
 	        return $this->getModel();
+	        case "input_html":
+	        return $this->renderInput();
 	    }
 	    
 	    return parent::offsetGet($offset);
@@ -487,13 +497,39 @@ class SmartestItemProperty extends SmartestBaseItemProperty{
         }else{
             
             $t = $alh->getTypes($filter);
-            // print_r($t);
             $types = array($t[$filter]);
             
         }
         
         return $types;
 	    
+	}
+	
+	public function renderInput($form_name=false, $existing_value=false){
+	    
+	    // if is foreign key, get values
+	    $info = $this->getTypeInfo();
+	    $parameters = new SmartestParameterHolder('Item property input render parameters: '.$this->getName());
+	    $parameters->setParameter('type',  $info['id']);
+	    // $info['id'], $form_name, $existing_value, $values
+	    if(!$form_name){
+	        $form_name = $this->getVarname();
+	    }
+	    $parameters->setParameter('name',  $form_name);
+	    
+	    if(!$existing_value){
+	        $existing_value = $this->getDefaultValue();
+	    }
+	    $parameters->setParameter('value',  $existing_value);
+	    
+	    if($this->isForeignKey()){
+	        $options = $this->getPossibleValues();
+	        $parameters->setParameter('options', $options);
+	    }
+	    
+	    $m = new SmartyManager('InterfaceBuilder');
+	    $renderer = $m->initialize('input');
+	    return $renderer->renderBasicInput($parameters);
 	}
 	
 }

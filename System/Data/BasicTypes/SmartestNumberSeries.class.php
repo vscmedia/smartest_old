@@ -58,6 +58,10 @@ class SmartestNumberSeries implements IteratorAggregate, Countable, SmartestStor
         return true;
     }
     
+    public function renderInput($params){
+        
+    }
+    
     public function hydrateFromFormData($comma_separated_ids){
         $numbers_array = preg_split('/[,\s]+/', $comma_separated_ids);
         $this->_values = array();

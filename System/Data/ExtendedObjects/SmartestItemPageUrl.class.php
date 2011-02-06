@@ -8,9 +8,13 @@ class SmartestItemPageUrl extends SmartestPageUrl{
         $this->_item = $item;
     }
     
+    public function __toString(){
+        return $this->getItemSpecificUrl();
+    }
+    
     public function getItemSpecificUrl(){
         
-        $url = $this->getUrl();
+        $url = ''.$this->getUrl();
         $url = str_replace(':name', $this->_item->getSlug(), $url);
         $url = str_replace(':long_id', $this->_item->getWebId(), $url);
         $url = str_replace(':id', $this->_item->getId(), $url);
@@ -23,6 +27,8 @@ class SmartestItemPageUrl extends SmartestPageUrl{
         switch($offset){
             case "url":
             return $this->getItemSpecificUrl();
+            case "encoded":
+            return urlencode($this->getItemSpecificUrl());
         }
         
         return parent::offsetGet($offset);

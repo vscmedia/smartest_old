@@ -53,11 +53,17 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		            if($this->_page = $this->manager->getNormalPageByUrl($this->getRequest()->getRequestString(), $this->_site->getId())){
 
         		        // we are viewing a static page
+        		        if($this->_page->getLastPublished()){
+        		            header("Last-Modified: ".date('D, j M Y H:i:s e', $this->_page->getLastPublished())); // Tue, 15 Nov 1994 12:45:26 GMT
+        		        }
         		        $this->renderPage();
 
         		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->getRequest()->getRequestString(), $this->_site->getId())){
 
         		        // we are viewing a meta-page (based on an item from a data set)
+        		        /* if($this->_page->getLastPublished()){
+        		            header("Last-Modified: ".date('D, j M Y H:i:s e', $this->_page->getLastPublished())); // Tue, 15 Nov 1994 12:45:26 GMT
+        		        } */
         		        $this->renderPage();
 
         		    }else{
@@ -77,7 +83,9 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        // this is the home page
 		        $this->_page = new SmartestPage;
 		        $this->_page->find($this->_site->getTopPageId());
-		        
+		        if($this->_page->getLastPublished()){
+		            header("Last-Modified: ".date('D, j M Y H:i:s e', $this->_page->getLastPublished())); // Tue, 15 Nov 1994 12:45:26 GMT
+		        }
 		        $this->renderPage();
 		        
 		    }
@@ -324,7 +332,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
     		SmartestPersistentObject::get('timing_data')->setParameter('overhead_time', microtime(true));
 	    
     	    $html = $ph->fetch($draft_mode);
-	    
+	        
+	        ///// START FILTER CHAIN
     	    $fc = new SmartestFilterChain("WebPageBuilder");
     	    $fc->setDraftMode($draft_mode);
 	        $html = $fc->execute($html);

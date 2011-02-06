@@ -45,7 +45,7 @@ class SmartestPlaceholder extends SmartestAssetClass{
             $type = $this->getTypeInfo();
             $helper = new SmartestAssetsLibraryHelper;
             $assets = $helper->getAssetsByTypeCode($type['accept'], $site_id, 1);
-        
+            
         }else if($this->getFilterType() == 'SM_ASSETCLASS_FILTERTYPE_ASSETGROUP'){
             
             $group = new SmartestAssetGroup;

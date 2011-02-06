@@ -4,11 +4,13 @@ class SmartestFilterChain{
     
     protected $_name;
     protected $_draft_mode = false;
+    protected $_data;
     
     public function __construct($chain_name){
         
         if(is_dir(SM_ROOT_DIR.'System/Response/Filters/'.$chain_name.'/')){
             $this->_name = $chain_name;
+            $this->_data = new SmartestParameterHolder("Filter chain data");
         }else{
             throw new SmartestException("The filter chain $chain name does not exist: System/Response/Filters/".$chain_name.'/ could not be found.');
         }
@@ -56,6 +58,14 @@ class SmartestFilterChain{
 		    
 		}
         
+    }
+    
+    public function setParameter($name, $value){
+        return $this->_data->setParameter($name, $value);
+    }
+    
+    public function getParameter($name){
+        return $this->_data->getParameter($name);
     }
     
     public function execute($html){
