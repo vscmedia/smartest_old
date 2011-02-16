@@ -173,14 +173,14 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){
 	        
 	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
-	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
+	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_page->getSite()->getUniqueId());
 	        $this->_page->setDraftMode(true);
 	        $this->renderPage(true);
 	        
 	    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], true)){
 	        
 	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
-	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
+	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_page->getSite()->getUniqueId());
 	        $this->_page->setDraftMode(true);
 	        $this->renderPage(true);
 	        

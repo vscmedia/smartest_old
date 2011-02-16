@@ -66,6 +66,14 @@ class SmartestNumeric implements SmartestBasicType, ArrayAccess, SmartestStorabl
     }
     
     public function offsetGet($offset){
+        
+        switch($offset){
+            case "currency":
+            return number_format($this->_value, 2, '.', ',');
+            case "currency_eur":
+            return number_format($this->_value, 2, ',', '.');
+        }
+        
         return null;
     }
     
