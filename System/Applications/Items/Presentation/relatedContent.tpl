@@ -32,15 +32,15 @@
 
   <a href="{$domain}{$section}/editRelatedContent?item_id={$item.id}" class="arrow-right">Edit...</a><br /><br />
 
-  {foreach from=$models item="related_model"}
+  {foreach from=$models item="related_model" key="key"}
   
   <h4>{$related_model.plural_name}</h4>
   
-  {if empty($related_model.related_items)}
+  {if empty($related_foreign_items[$key])}
     <i>No {$related_model.plural_name|strtolower} are linked to this page.</i><br /><br />
   {else}
     <ul>
-      {foreach from=$related_model.related_items item="related_item"}
+      {foreach from=$related_foreign_items[$key] item="related_item"}
       <li>{$related_item.name}</li>
       {/foreach}
     </ul>

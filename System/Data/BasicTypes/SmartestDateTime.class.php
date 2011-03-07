@@ -139,6 +139,9 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
 	        case 'h':
 	        return date('h', $this->_value);
 	        
+	        case 'H':
+	        return date('H', $this->_value);
+	        
 	        case 's':
 	        return date('s', $this->_value);
 	        

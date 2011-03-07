@@ -487,7 +487,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     public function renderItemEditButton($item_id){
         
         if($this->getDraftMode()){
-            $html = '<a href="'.$this->_request_data->g('domain').'datamanager/openItem?item_id='.$item_id.'" target="_top" title="Edit item ID '.$item_id.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/package_small.png" alt="Edit item ID '.$item_id.'" /></a>';
+            $html = '<a href="'.$this->_request_data->g('domain').'datamanager/openItem?item_id='.$item_id.'&amp;from=pagePreview&amp;page_webid='.$this->page->getWebid().'" target="_top" title="Edit item ID '.$item_id.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/package_small.png" alt="Edit item ID '.$item_id.'" /></a>';
         }else{
             $html = '';
         }

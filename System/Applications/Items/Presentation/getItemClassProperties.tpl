@@ -86,12 +86,12 @@ function viewPage(){
 <ul class="actions-list" id="item-specific-actions" style="display:none">
 	<li><b>Selected item property</b></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('editItemClassProperty'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this property</a></li>
-	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/package_delete.png" border="0" alt="" /> Delete this property</a></li>
+	{if $can_delete_properties}<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this property?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/package_delete.png" border="0" alt="" /> Delete this property</a></li>{/if}
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
-    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addPropertyToClass?class_id={$model.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a property to this model</a></li>
+    {if $can_add_properties}<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addPropertyToClass?class_id={$model.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a property to this model</a></li>{/if}
     <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/package_add.png" border="0" alt="" /> Add a new {$model.name|strtolower}</a></li>
 </ul>
 

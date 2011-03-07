@@ -1,0 +1,1 @@
+<span style="font-size:25px;color:#444">@</span><input type="text" name="{$_input_data.name}" value="{$_input_data.value}" id="{$_input_data.id}" />{if strlen($value)}&nbsp;({link to=$value.url target="_blank" with="Test"}){/if}

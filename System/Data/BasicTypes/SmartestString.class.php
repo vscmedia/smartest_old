@@ -5,11 +5,7 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
 	protected $_string;
 	
     public function __construct($string=''){
-        if(strlen($string)){
-            $this->_string = $string;
-        }else{
-            $this->_string = '';
-        }
+        $this->setValue($v);
     }
     
     public function __toString(){
@@ -21,7 +17,11 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
     }
     
     public function setValue($v){
-        $this->_string = (string) $v;
+        if(strlen($string)){
+            $this->_string = (string) $v;
+        }else{
+            $this->_string = '';
+        }
     }
     
     public function getValue(){
@@ -45,6 +45,7 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
     }
     
     public function hydrateFromFormData($v){
+        echo $v;
         $this->setValue($v);
         return true;
     }

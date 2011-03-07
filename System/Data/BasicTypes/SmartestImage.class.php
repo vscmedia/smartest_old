@@ -118,7 +118,7 @@ class SmartestImage extends SmartestFile{
     
     public function resizeAndCrop($width, $height){
         
-        $url = 'Resources/System/Cache/Images/'.SmartestStringHelper::toVarName(basename($this->_current_file_path)).$width.'x'.$height.'.png';
+        $url = 'Resources/System/Cache/Images/'.SmartestStringHelper::toVarName(basename($this->_current_file_path)).$width.'x'.$height.'.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
         $full_path = SM_ROOT_DIR.'Public/'.$url;
         
         if(file_exists($full_path)){
@@ -151,10 +151,32 @@ class SmartestImage extends SmartestFile{
             
             $newversion = new SmartestImage;
             
-            if(imagepng($r, $full_path, 0)){
-                imagedestroy($r);
-                $newversion->loadFile($full_path);
-                return $newversion;
+            switch($this->getImageType()){
+                
+                case self::JPEG;
+                if(imagejpeg($r, $full_path, 80)){
+                    imagedestroy($r);
+                    $newversion->loadFile($full_path);
+                    return $newversion;
+                }
+                break;
+                
+                case self::GIF;
+                if(imagegif($r, $full_path)){
+                    imagedestroy($r);
+                    $newversion->loadFile($full_path);
+                    return $newversion;
+                }
+                break;
+                
+                case self::PNG;
+                if(imagepng($r, $full_path, 0)){
+                    imagedestroy($r);
+                    $newversion->loadFile($full_path);
+                    return $newversion;
+                }
+                break;
+            
             }
         
         }

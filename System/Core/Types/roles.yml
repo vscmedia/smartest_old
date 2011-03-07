@@ -3,10 +3,25 @@ roles:
     label: System Administrator
     tokens:
       - root_permission
+      - site_access
+  sub_editor:
+    label: Sub-Editor
+    tokens:
+      - add_new_pages
+      - add_items
+      - modify_page_properties
+      - modify_draft_pages
+      - site_access
+      - modify_assets
+      - create_assets
+      - clear_pages_cache
+      - edit_held_pages
+      - edit_held_items
   contributor:
     label: Contributor
     tokens:
       - author_credit
+      - add_new_pages
       - add_items
       - delete_items
       - modify_page_properties

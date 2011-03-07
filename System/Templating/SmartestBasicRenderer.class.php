@@ -181,12 +181,19 @@ class SmartestBasicRenderer extends SmartestEngine{
                         
                         $image = $this->_asset->getImage();
                         
+                        $actual_img_width = $this->_asset->getImage()->getWidth();
+                        $actual_img_height = $this->_asset->getImage()->getHeight();
+                        
+                        if(is_numeric($render_data['width']) && is_numeric($render_data['height']) && ($render_data['width'] != $actual_img_width || $render_data['height'] != $actual_img_height)){
+                            $image = $this->_asset->getImage()->resizeAndCrop($render_data['width'], $render_data['height']);
+                        }
+                        
                         if(!$render_data['width']){
-                            $render_data['width'] = $this->_asset->getImage()->getWidth();
+                            $render_data['width'] = $actual_img_width;
                         }
 
                         if(!$render_data['height']){
-                            $render_data['height'] = $this->_asset->getImage()->getHeight();
+                            $render_data['height'] = $actual_img_height;
                         }
                     
                     }

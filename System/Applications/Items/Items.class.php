@@ -58,6 +58,11 @@ class Items extends SmartestSystemApplication{
 		
 		$this->send($model, 'model');
 		$this->send($definition, 'definition');
+		$create_remove_properties = $this->getUser()->hasToken('create_remove_properties');
+		
+		// At some point these will be separated
+		$this->send($create_remove_properties, 'can_add_properties');
+		$this->send($create_remove_properties, 'can_delete_properties');
 		
 		// Retrieve recently edited
         $recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $itemclassid);
@@ -274,22 +279,31 @@ class Items extends SmartestSystemApplication{
 	public function deleteProperty($get){
 	    
 	    $property = new SmartestItemProperty;
+	    
+	    if($this->getUser()->hasToken('create_remove_properties')){
     	
-    	if($property->find($this->getRequestParameter('itemproperty_id'))){
+    	    if($property->find($this->getRequestParameter('itemproperty_id'))){
     	    
-    	    $model = new SmartestModel;
+        	    $model = new SmartestModel;
     	    
-    	    if($model->find($property->getItemclassId()) && $model->getPrimaryPropertyId() == $property->getId()){
-    	        $model->setPrimaryPropertyId('');
-    	        $model->save();
+        	    if($model->find($property->getItemclassId()) && $model->getPrimaryPropertyId() == $property->getId()){
+        	        $model->setPrimaryPropertyId('');
+        	        $model->save();
+        	    }
+    	    
+        	    $property->delete();
+	        
+    	        $this->addUserMessageToNextRequest("The property has been deleted.", SmartestUserMessage::SUCCESS);
+    	        $this->formForward();
+	        
     	    }
-    	    
-    	    $property->delete();
-	        
-	        $this->addUserMessageToNextRequest("The property has been deleted.", SmartestUserMessage::SUCCESS);
+	    
+        }else{
+            
+            $this->addUserMessageToNextRequest("You don't have permission to delete properties.", SmartestUserMessage::ACCESS_DENIED);
 	        $this->formForward();
-	        
-	    }
+            
+        }
 	}
 	
 	public function deleteItem($get){
@@ -468,9 +482,20 @@ class Items extends SmartestSystemApplication{
             		}
                 
     		        $destination = '/'.$this->getRequest()->getModule().'/editItem?item_id='.$item->getId();
+    		        
+    		        
 		
     	    	    if($this->getRequestParameter('from')){
-            		    $destination .= '&from='.$this->getRequestParameter('from');
+    	    	        if($this->getRequestParameter('page_webid')){
+    	    	            $database = SmartestDatabase::getInstance('SMARTEST');
+    	    	            $sql = "SELECT * FROM Pages WHERE page_type='ITEMCLASS' AND page_dataset_id='".$item->getItemclassId()."' AND page_webid='".$this->getRequestParameter('page_webid')."'";
+    	    	            $result = $database->queryToArray($sql);
+    	    	            if(count($result)){
+    	    	                $destination .= '&page_id='.$this->getRequestParameter('page_webid');
+    	    	            }
+	    	            }else{
+            		        $destination .= '&from='.$this->getRequestParameter('from');
+        		        }
             		}
 		    
                     $this->redirect($destination);
@@ -653,16 +678,18 @@ class Items extends SmartestSystemApplication{
 	        
 	        $du = new SmartestDataUtility;
 	        $models = $du->getModels(false, $this->getSite()->getId());
+	        $related_foreign_items = array();
 	        
 	        foreach($models as $key=>$m){
 	            if($m['id'] == $model->getId()){
 	                unset($models[$key]);
 	            }else{
-	                $models[$key]['related_items'] = $item->getItem()->getRelatedForeignItemsAsArrays(true, $m['id']);
+	                $related_foreign_items[$key] = $item->getItem()->getRelatedForeignItemsAsArrays(true, $m['id']);
                 }
 	        }
 	        
 	        $this->send($models, 'models');
+	        $this->send($related_foreign_items, 'related_foreign_items');
 	        
 	        if($this->getRequestParameter('page_id')){
 		        
