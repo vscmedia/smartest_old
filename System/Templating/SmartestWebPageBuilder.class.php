@@ -127,14 +127,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	    
 	    if(!is_file($template)){
 	        
-	        /* if(is_file($template)){
-	        
-	            $this->assign('required_template', $template);
-	            $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
-	        
-	        } */
-	        
-            if(is_dir($template)){
+	        if(is_dir($template)){
                 
                 // no template is set at all. show "you need to create one" message.
                 $this->assign('required_template', $template);

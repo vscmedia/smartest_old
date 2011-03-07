@@ -65,8 +65,12 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	    switch($offset){
 	        
+	        case "name":
+	        return new SmartestString($this->getName());
+	        break;
+	        
 	        case "title":
-	        return $this->getName();
+	        return new SmartestString($this->getName());
 	        break;
 	        
 	        case "url":

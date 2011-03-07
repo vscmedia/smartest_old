@@ -28,7 +28,7 @@ function smartest_filter_preview($html, $filter){
 		
 		$html = str_replace('</head>', $pcss.'</head>', $html);
 		$html = str_replace($body_tag, $body_tag."\n".$phtml, $html);
-        $html = str_replace('</body>', "<script type=\"text/javascript\">if(parent){parent.showPreview();}</script>\n<!--Page was built in: ".SM_TOTAL_TIME."ms -->\n</body>", $html);
+        $html = str_replace('</body>', "<script type=\"text/javascript\">if(parent.showPreview){parent.showPreview();}</script>\n<!--Page was built in: ".SM_TOTAL_TIME."ms -->\n</body>", $html);
         
     }else{
         
