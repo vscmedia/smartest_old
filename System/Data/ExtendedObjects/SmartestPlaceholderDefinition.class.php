@@ -213,6 +213,7 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         
         switch($offset){
             case "asset":
+            case "file":
             return $this->_asset;
             case "page":
             return $this->_page;

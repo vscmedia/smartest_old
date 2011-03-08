@@ -19,7 +19,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	protected $_fields = array();
 	protected $_field_definitions = array();
 	protected $_containers = array();
-	protected $_placeholders = array();
+	protected $_placeholders;
 	protected $_itemspaces = array();
 	
 	protected $_new_urls = array();
@@ -34,12 +34,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	const NOT_PUBLIC = 103;
 	
 	const HIERARCHY_DEPTH_LIMIT = 32;
-	
-	protected function __objectConstruct(){
-		/* $this->_table_prefix = 'page_';
-		$this->_table_name = 'Pages';
-		$this->addPropertyAlias('WebId', 'webid'); */
-	}
 	
 	public function hydrate($id){
 		// determine what kind of identification is being used
@@ -1294,10 +1288,12 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             
             case "modified":
             return new SmartestDateTime($this->_properties['modified']);
+            
+            case "placeholders":
+            if(!$this->_placeholders) $this->loadAssetClassDefinitions();
+            return $this->_placeholders;
 	        
 	    }
-	    
-	    // var_dump($this->getDraftMode());
 	    
 	    if($this->getPageFieldDefinitions()->hasParameter($offset)){
 	        return $this->getPageFieldDefinitions()->getParameter($offset);
@@ -1340,36 +1336,20 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		
 		//// CODE TO GET LIST OF PAGES THAT ARE ACCEPTABLE AS PARENTS
 		//// FOR THE CURRENT PAGE. I.E. NOT ITSELF OR ANY OF ITS CHILDREN
-		
-		// $site_id = $this->manager->database->specificQuery("page_site_id", "page_id", $page_id, "Pages");
 		$site_id = $this->_properties['site_id'];
 		
 		// FIRST GET A LIST OF ALL PAGES
 		$all_pages = $this->getParentSite()->getPagesList(true);
 		
-		// print_r($all_pages);
-		
-		// echo "\n\n\n<br />\n\n";
-		
-		// 
 		$this->displayPages = array();
 		$this->displayPagesIndex = 0;
 		
 		// THEN GET A LIST OF ALL CHILD PAGES
 		
-		// $sub_pages = $this->getPagesSubTree(1);
-		
 		$sub_pages_list = $this->getSerializedPageTree(1, false, false, '', true);
-		
-		// print_r($sub_pages_list);
-		
-		/* $this->manager->displayPages = array();
-		$this->manager->displayPagesIndex = 0; */
 		
 		$all_page_ids = array();
 		$sub_page_ids = array();
-		
-		// print_r($sub_pages_list);
 		
 		// MAKE A SIMPLE ARRAY OF ALL THE CHILD PAGE IDS
 		foreach($sub_pages_list as $child_page_array){
@@ -1378,8 +1358,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 				// print_r($child_page_array);
 			}
 		}
-		
-		// print_r($sub_page_ids);
 		
 		// REMOVE THOSE PAGES FROM THE MAIN LIST
 		foreach($all_pages as $key=>$page_array){
@@ -1729,7 +1707,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             $sql = "SELECT * FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetIdentifiers.assetidentifier_assetclass_id=AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_item_id IS NULL AND AssetIdentifiers.assetidentifier_page_id='".$this->_properties['id']."' AND AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id";
         }
         
-        // echo $sql;
+        $this->_placeholders = new SmartestParameterHolder("Placeholder definitions for page '".$this->getTitle()."'");
         
         $result = $this->database->queryToArray($sql);
         
@@ -1741,11 +1719,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             }else{
                 $def = new SmartestPlaceholderDefinition;
                 $def->hydrateFromGiantArray($def_array);
-                $this->_placeholders[$def_array['assetclass_name']] = $def;
+                // $this->_placeholders[$def_array['assetclass_name']] = $def;
+                $this->_placeholders->setParameter($def_array['assetclass_name'], $def);
             }
         }
-        
-        // print_r(array_keys($this->_containers));
 	    
 	}
 	
@@ -1775,7 +1752,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function hasPlaceholderDefinition($placeholder_name){
 	    
-	    return array_key_exists($placeholder_name, $this->_placeholders);
+	    // return array_key_exists($placeholder_name, $this->_placeholders);
+	    return $this->_placeholders->hasParameter($placeholder_name);
 	    
 	}
 	
@@ -1884,10 +1862,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function getPlaceholderDefinition($placeholder_name){
 	    
-	    if(array_key_exists($placeholder_name, $this->_placeholders)){
+	    if($this->_placeholders->getParameter($placeholder_name)){
 	        
-	        $placeholder = $this->_placeholders[$placeholder_name];
-	        return $placeholder;
+	        // $placeholder = $this->_placeholders[$placeholder_name];
+	        return $this->_placeholders->getParameter($placeholder_name);
 	        
 	    }else{
 	    
