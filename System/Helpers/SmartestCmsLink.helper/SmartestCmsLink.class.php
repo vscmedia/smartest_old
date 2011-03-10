@@ -545,7 +545,7 @@ class SmartestCmsLink extends SmartestHelper{
             break;
     
             case SM_LINK_TYPE_DOWNLOAD:
-            return $this->_request->getDomain().'download/'.$this->_destination->getUrl().'?key='.$this->_destination->getWebid();
+            return $this->_request->getDomain().'download/'.urlencode($this->_destination->getUrl()).'?key='.$this->_destination->getWebid();
             break;
             
             case SM_LINK_TYPE_EXTERNAL:

@@ -73,7 +73,6 @@ system:
       - Public/Resources/System/Cache/Images/
       - Logs/
     files_repo:
-      - Documents/
       - Documents/Deleted/
       - Public/Resources/Images/
       - Public/Resources/Assets/
