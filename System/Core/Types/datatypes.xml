@@ -36,7 +36,7 @@
         <description>Longer piece of text (255 chars or more) in which no formatting is needed.</description>
         <usage>itemproperty</usage>
         <class>SmartestString</class>
-        <long>false</long>
+        <long>true</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/ml_text.tpl" />
     </type>

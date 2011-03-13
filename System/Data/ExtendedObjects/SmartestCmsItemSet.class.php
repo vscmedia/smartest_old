@@ -1,6 +1,6 @@
 <?php
 
-class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi{
+class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, SmartestStorableValue, SmartestSubmittableValue{
 
     protected $_set_members = array();
     protected $_set_members_simple = array();
@@ -759,6 +759,22 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi{
 	    }
 	    
 	    return parent::offsetGet($offset);
+	    
+	}
+	
+	public function getStorableFormat(){
+	    return $this->getId();
+	}
+	
+	public function hydrateFromStorableFormat($v){
+	    return $this->find($v);
+	}
+	
+	public function hydrateFromFormData($v){
+	    return $this->find($v);
+	}
+	
+	public function renderInput($params){
 	    
 	}
 

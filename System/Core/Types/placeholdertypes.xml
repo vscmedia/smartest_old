@@ -6,6 +6,7 @@
     <label>Formatted text files</label>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
     <setfrompreview>true</setfrompreview>
+    <descriptive>true</descriptive>
   </type>
   
   <type id="SM_ASSETCLASS_STATIC_IMAGE">
@@ -22,7 +23,7 @@
     <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
     <accept>SM_ASSETTYPE_PLAIN_TEXT</accept>
-    <accept>SM_ASSETTYPE_SL_TEXT</accept>
+    <descriptive>true</descriptive>
   </type>
   
   <type id="SM_ASSETCLASS_MARKUP">
@@ -92,6 +93,13 @@
   <type id="SM_ASSETCLASS_STYLESHEET">
     <label>CSS Stylesheet</label>
     <setfrompreview>false</setfrompreview>
+    <accept>SM_ASSETTYPE_STYLESHEET</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_BROWSER_INSTRUCTION">
+    <label>CSS or Javascript</label>
+    <setfrompreview>false</setfrompreview>
+    <accept>SM_ASSETTYPE_JAVASCRIPT</accept>
     <accept>SM_ASSETTYPE_STYLESHEET</accept>
   </type>
   

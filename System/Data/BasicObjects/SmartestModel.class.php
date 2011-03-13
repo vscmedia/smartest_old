@@ -413,18 +413,28 @@ class SmartestModel extends SmartestBaseModel{
             }
         }
         
+        $assetclass_types = SmartestDataUtility::getAssetclassTypes();
+        $text_assetclass_types = array();
+        
+        foreach($assetclass_types as $a){
+            if(isset($a['descriptive']) && SmartestStringHelper::toRealBool($a['descriptive'])){
+                $text_assetclass_types[] = $a['id'];
+            }
+        }
+        
+        $descriptive_filters = array_merge($text_asset_types, $text_assetclass_types);
+        
         foreach($properties as $p){
             
             $info = $p->getTypeInfo();
             
-            if((isset($info['long']) && strtolower($info['long']) != 'false') || ($p->getDatatype() == 'SM_DATATYPE_ASSET' && in_array($p->getForeignKeyFilter(), $text_asset_types))){
+            if((isset($info['long']) && strtolower($info['long']) != 'false') || ($p->getDatatype() == 'SM_DATATYPE_ASSET' && in_array($p->getForeignKeyFilter(), $descriptive_filters))){
                 $ok_properties[] = $p;
             }
         }
         
-        // print_r($ok_properties);
-        
         return $ok_properties;
+        
     }
     
     public function getDefaultMetaPageId($site_id){
