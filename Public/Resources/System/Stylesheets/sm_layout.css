@@ -21,7 +21,7 @@ div#top-strip{
 	top:2px;
 	width:100%;
 	height:38px;
-	z-index:20;
+	/* z-index:100; */
 }
 
 div#top-strip img{
@@ -34,7 +34,7 @@ div#user-info{
 	top:8px;
 	width:100%;
 	height:20px;
-	z-index:22;
+	/* z-index:22; */
 }
 
 div#global-container{
@@ -61,8 +61,8 @@ div#main-interface{
 }
 
 div#work-area{
-	margin:45px 0 0 0;
-	padding:0 220px 0 175px;
+	margin:0px;
+	padding:45px 220px 0 175px;
 }
 
 div#work-area-full{
@@ -185,6 +185,10 @@ div.buttons-bar{
 	margin:0px;
 	padding:4px;
 	text-align:right;
+}
+
+div.special-box, div.warning{
+    clear:both;
 }
 
 div.special-box-key{
