@@ -36,8 +36,10 @@ type:
     input_panel: add.plain_text.tpl
     render:
       template: System/Presentation/WebPageBuilder/display.plain_text.tpl
+    storage:
+      type: database
     suffix:
-      - {mime: text/html, _content: html}
+      - {mime: text/plain, _content: txt}
     param:
       - {name: parse_urls, label: Parse URLs, type: SM_DATATYPE_BOOLEAN, default: true, required: false}
       - {name: convert_double_line_breaks, label: Convert double line breaks to new paragraphs, type: SM_DATATYPE_BOOLEAN, default: true, required: false}

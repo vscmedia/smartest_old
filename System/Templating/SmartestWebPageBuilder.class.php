@@ -35,6 +35,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		if(!defined('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN')){
 		    define('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN', true);
 		}
+		
+		if(!defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS')){
+		    define('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS', true);
+		}
 	    
 	}
 	
@@ -127,7 +131,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	    
 	    if(!is_file($template)){
 	        
-	        if(is_dir($template)){
+	        /* if(is_file($template)){
+	        
+	            $this->assign('required_template', $template);
+	            $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
+	        
+	        } */
+	        
+            if(is_dir($template)){
                 
                 // no template is set at all. show "you need to create one" message.
                 $this->assign('required_template', $template);
@@ -468,7 +479,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         }else{
             
-            echo $this->_context;
             return $this->raiseError("ItemSpace '".$itemspace_name."' used outside page context.");
             
         }
