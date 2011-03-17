@@ -6,12 +6,6 @@ function debug_time(){
     return number_format(microtime(true)*1000, 0, ".", "");
 }
 
-ini_set('session.gc_maxlifetime', 30*60);
-
-// error reporting control
-error_reporting(E_ALL ^ E_NOTICE);
-ini_set("display_errors", 1);
-
 // set the debug level for the controller
 define("SM_CONTROLLER_DEBUG_LEVEL", 0);
 define("SM_DEVELOPER_MODE", true);
@@ -60,6 +54,17 @@ class SmartestInit{
 	    
 	    self::setRootDir();
 		self::setIncludePaths();
+		
+		// ini_set('session.gc_maxlifetime', 30*60);
+
+        // error reporting control
+        error_reporting(E_ALL ^ E_NOTICE);
+        
+        if(is_writable(SM_ROOT_DIR.'System/Logs/')){
+            // If PHP error messages can be logged, they should be.
+            ini_set('display_errors', false);
+            ini_set('error_log', SM_ROOT_DIR.'System/Logs/php_errors_'.date('Ymd').'.log');
+        }
 	    
 	    require SM_ROOT_DIR.'System/Base/constants.php';
 		require SM_ROOT_DIR.'System/Response/SmartestResponse.class.php';
