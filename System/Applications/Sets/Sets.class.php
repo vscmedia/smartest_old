@@ -25,9 +25,9 @@ class Sets extends SmartestSystemApplication{
 	
 	public function getItemClassSets($get){
 	    
-	    if(isset($get['class_id']) && is_numeric($get['class_id'])){
+	    if(is_numeric($this->getRequestParameter('class_id'))){
 	        
-	        $model_id = $get['class_id'];
+	        $model_id = $this->getRequestParameter('class_id');
 	        
 	        $model = new SmartestModel;
 	        
@@ -84,21 +84,26 @@ class Sets extends SmartestSystemApplication{
 
         $du = new SmartestDataUtility;
         
-        
-		// $models = $this->itemsManager->getItemClasses(); 
-		// print_r($models);		
-		$set_name = $get['set_name'];
-		// $properties = null;
+        $set_name = $this->getRequestParameter('set_name');
 		
-		
-		
-		if(isset($get['class_id']) && is_numeric($get['class_id'])){
+		if(is_numeric($this->getRequestParameter('class_id'))){
 		    $model_ids = $du->getModelIds();
-		    if(in_array($get['class_id'], $model_ids)){
+		    if(in_array($this->getRequestParameter('class_id'), $model_ids)){
+		        
 		        $this->send(false, 'allow_choose_model');
 		        $model = new SmartestModel;
-		        $model->find($get['class_id']);
+		        $model->find($this->getRequestParameter('class_id'));
 		        $this->send($model, 'model');
+		        
+		        if($this->getRequestParameter('add_item')){
+		            $item = new SmartestItem;
+		            if($item->find($this->getRequestParameter('add_item'))){
+		                if($item->getItemclassId() == $model->getId()){
+		                    $this->send($item->getId(), 'add_item_id');
+		                }
+		            }
+	            }
+		        
 	        }else{
 	            $models = $du->getModels();
     		    $this->send($models, 'models');
@@ -112,11 +117,11 @@ class Sets extends SmartestSystemApplication{
 		
 		$this->setTitle('Create a new item set');
 		
-		/* if(is_numeric($get['model_id'])){
-			$properties = $this->itemsManager->getItemClassProperties($get['model_id']); 		
+		/* if(is_numeric($this->getRequestParameter('model_id'))){
+			$properties = $this->itemsManager->getItemClassProperties($this->getRequestParameter('model_id')); 		
 		} */
 		
-		// return array("type"=>$get['type'] ,"model_id"=>$get['model_id'] ,"set_name"=>$set_name ,"models"=> $models, "properties"=>$properties);		
+		// return array("type"=>$this->getRequestParameter('type') ,"model_id"=>$this->getRequestParameter('model_id') ,"set_name"=>$set_name ,"models"=> $models, "properties"=>$properties);		
 	}
 	
 	function insertSet($get, $post){
@@ -139,7 +144,14 @@ class Sets extends SmartestSystemApplication{
 	        if($set->getType() == 'DYNAMIC'){
 	            $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to give it some rules.", SmartestUserMessage::SUCCESS);
             }else{
-                $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to decide what goes in there.", SmartestUserMessage::SUCCESS);
+                if($this->getRequestParameter('add_item_id')){
+                    $item_id = (int) $this->getRequestParameter('add_item_id');
+                    // add the item to the set
+                    $set->addItems(array($item_id));
+                    $this->redirect('/datamanager/editItem?item_id='.$item_id);
+                }else{
+                    $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to decide what goes in there.", SmartestUserMessage::SUCCESS);
+                }
             }
             
 	        $this->redirect('/sets/editSet?set_id='.$set->getId());
@@ -154,7 +166,7 @@ class Sets extends SmartestSystemApplication{
 
 	function editSet($get, $post){  
 	
-		$set_id = $get['set_id'];
+		$set_id = $this->getRequestParameter('set_id');
 	    
 	    $set = new SmartestCmsItemSet;
 	    
@@ -303,7 +315,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	    $c = new SmartestDynamicDataSetCondition;
 	    
-	    if($c->hydrate($get['condition_id'])){
+	    if($c->find($this->getRequestParameter('condition_id'))){
 	        $c->delete();
 	    }else{
 	        
@@ -398,7 +410,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	    $set = new SmartestCmsItemSet;
 	    
-	    if($set->find((int) $get['set_id'])){
+	    if($set->find((int) $this->getRequestParameter('set_id'))){
 	        
 	        if($set->getType() == 'DYNAMIC'){
 	            $this->addUserMessageToNextRequest("The set you are trying to change the order of is a dynamic saved query. Try changing its conditions instead.", SM_USER_MESSAGE_WARNING);
@@ -420,7 +432,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	    $set = new SmartestCmsItemSet;
 	    
-	    if($set->find((int) $get['set_id'])){
+	    if($set->find((int) $this->getRequestParameter('set_id'))){
 	        
 	        if($set->getType() == 'DYNAMIC'){
 	            $this->addUserMessageToNextRequest("The set you are trying to change the order of is a dynamic saved query. Try changing its conditions instead.", SM_USER_MESSAGE_WARNING);
@@ -433,11 +445,11 @@ class Sets extends SmartestSystemApplication{
 	        
 	        $lookup = new SmartestSetItemLookup;
 	        
-	        if($lookup->loadForOrderChange($set->getId(), $get['item_id'])){
+	        if($lookup->loadForOrderChange($set->getId(), $this->getRequestParameter('item_id'))){
 	            
 	            $current_position = $lookup->getOrder();
 	            
-	            if($get['direction'] == 'up'){
+	            if($this->getRequestParameter('direction') == 'up'){
 	                
 	                if($current_position > 0){
 	                    
@@ -451,7 +463,7 @@ class Sets extends SmartestSystemApplication{
 	                    }
 	                }
 	                
-	            }else if($get['direction'] == 'down'){
+	            }else if($this->getRequestParameter('direction') == 'down'){
 	                
 	                if($current_position < $last_order_index){
 	                    
@@ -482,15 +494,15 @@ class Sets extends SmartestSystemApplication{
 	
 	public function previewSet($get){     
 	    
-	    if(isset($get['mode'])){
-	        $mode = (int) $get['mode'];
+	    if($this->getRequestParameter('mode')){
+	        $mode = (int) $this->getRequestParameter('mode');
 	    }else{
 	        $mode = SM_QUERY_PUBLIC_DRAFT;
 	    }
 	    
 	    $this->send($mode, 'mode');
 	    
-	    $set_id = $get['set_id'];
+	    $set_id = $this->getRequestParameter('set_id');
 	    $set = new SmartestCmsItemSet;
 	    
 	    if($set->find($set_id)){
@@ -520,7 +532,7 @@ class Sets extends SmartestSystemApplication{
 	
 	function copySet($get){
 		
-		$id=$get['set_id'];	
+		$id=$this->getRequestParameter('set_id');	
 		$set = $this->manager->getSet($id);
 		$set_type = $set['set_type'];
 		$name=mysql_real_escape_string($set['set_name']);		
@@ -628,7 +640,7 @@ class Sets extends SmartestSystemApplication{
 
 	function chooseSchemaForExport($get){
 		
-		$set_id=$get["set_id"];			
+		$set_id=$this->getRequestParameter('set_id');			
 		$set = $this->manager->getSet($set_id);		
 		$schemas=$this->itemsManager->getSchemas();
 		return(array("set"=>$set,"schemas"=>$schemas));
@@ -637,8 +649,8 @@ class Sets extends SmartestSystemApplication{
 
 	function exportDataOptions($get){
 		
-		$set_id=$get["set_id"];
-		$schema_id=$get["schema_id"];
+		$set_id=$this->getRequestParameter('set_id');
+		$schema_id=$this->getRequestParameter('schema_id');
 		$schema_name=$this->SchemasManager->getSchemaName($schema_id);
 		$set = $this->manager->getSet($set_id);	
 		$pairing=$this->manager->getparing($set_id,$schema_id);
@@ -653,10 +665,10 @@ class Sets extends SmartestSystemApplication{
 
 	function exportData($get){
 		
-		$set_id=$get["set_id"];	
-		$schema_id=$get["schema_id"];	
+		$set_id=$this->getRequestParameter('set_id');	
+		$schema_id=$this->getRequestParameter('schema_id');	
 
-		$msg=$get["msg"];	
+		$msg=$this->getRequestParameter('msg');	
 		$set = $this->manager->getSet($set_id);
 		$model_id = $set['itemclass_id'];
 		$definition = $this->itemsManager->getItemClassProperties($model_id);
@@ -710,11 +722,11 @@ class Sets extends SmartestSystemApplication{
 
 	function editExportData($get){
 		
-		$set_id=$get["set_id"];	
-		$schema_id=$get["schema_id"];
-		$pair_id=$get["pair_id"];
-	// 	$name=$get["name"];
-		$msg=$get["msg"];	
+		$set_id=$this->getRequestParameter('set_id');	
+		$schema_id=$this->getRequestParameter('schema_id');
+		$pair_id=$this->getRequestParameter('pair_id');
+	// 	$name=$this->getRequestParameter('name');
+		$msg=$this->getRequestParameter('msg');	
 		$set = $this->manager->getSet($set_id);
 		$model_id = $set['itemclass_id'];
 		$definition = $this->itemsManager->getItemClassProperties($model_id);//print_r($definition);

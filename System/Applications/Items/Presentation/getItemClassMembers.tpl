@@ -66,8 +66,8 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
     <ul class="options-grid" id="options_list">
   {foreach from=$items key="key" item="item"}
 	
-    <li ondblclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}'" class="item {if $item.public=='FALSE'}unpublished{else}published{/if} {if $item.is_archived=='1'}archived{else}available{/if}">
-      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="itemList.setSelectedItem('{$item.id}', 'item', {literal}{{/literal}updateFields: {literal}{{/literal}'item_name_field': '{$item.name|summary:"29"|escape:quotes}', archive_action_name: '{if $item.is_archived}Unarchive{else}Archive{/if}'{literal}}{/literal}{literal}}{/literal});">
+    <li ondblclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}'" class="item {if $item.public=='FALSE'}unpublished{else}published{/if} {if $item.is_archived=='1'}archived{else}current{/if}">
+      <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="itemList.setSelectedItem('{$item.id}', 'item', {literal}{{/literal}updateFields: {literal}{{/literal}item_name_field: '{$item.name|summary:"29"|escape:quotes|trim}', archive_action_name: '{if $item.is_archived}Unarchive{else}Archive{/if}'{literal}}{/literal}{literal}}{/literal});">
         <img src="{$domain}Resources/Icons/item.png" border="0" />{$item.name}</a>{* if $item.public=='FALSE'}&nbsp;(hidden){/if *}</li>
 
   {/foreach}

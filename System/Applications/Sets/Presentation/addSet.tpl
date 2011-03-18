@@ -3,6 +3,7 @@
 <h3><a href="{$domain}smartest/models">Items</a>  {if !$allow_choose_model} &gt; <a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}{$section}/getItemClassSets?class_id={$model.id}">Sets</a>{else} &gt; <a href="{$domain}smartest/sets">Sets</a>{/if} &gt; Create a new set</h3>
   
   <form id="pageViewForm" method="post" action="{$domain}{$section}/insertSet">
+      {if $add_item_id}<input type="hidden" name="add_item_id" value="{$add_item_id}" />{/if}
   
     <div class="edit-form-layout">
     
