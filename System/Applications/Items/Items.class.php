@@ -1243,11 +1243,11 @@ class Items extends SmartestSystemApplication{
                 $model->save();
             }
             
-            // $this->redirect("/datamanager/editModel?class_id=".$model->getId());
+            $this->redirect("/datamanager/editModel?class_id=".$model->getId());
             
 	    }else{
 	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
-	        // $this->redirect("/smartest/models");
+	        $this->redirect("/smartest/models");
 	    }
 	    
 	}

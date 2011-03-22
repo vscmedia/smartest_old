@@ -272,7 +272,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        
 	        $tag = new SmartestTag;
 
-    	    if(!$tag->hydrateBy('name', $tag_name)){
+    	    if(!$tag->findBy('name', $tag_name)){
                 // create tag
     	        $tag->setLabel($tag_identifier);
     	        $tag->setName($tag_name);
