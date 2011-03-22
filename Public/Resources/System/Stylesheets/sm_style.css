@@ -197,6 +197,8 @@ div#work-area h3, div#work-area-full h3{
     font-family:"helvetica neue",helvetica,arial,sans-serif;
     background-color:#d9d8d8;
 	border:1px solid #cbcbcb;
+	border-radius:6px;
+    -moz-border-radius:6px;
 	background-image:url('../Images/interface_title_bg.gif');
     background-repeat:repeat-x;
 }
@@ -224,8 +226,8 @@ div#work-area div.edit-form-row h4{
 div#actions-area{
 	font-size:12px;
 	background-color:#fff;
-	border-left:1px solid #aaa;
-	border-top:1px solid #aaa;
+	border-left:1px solid #ccc;
+	border-top:1px solid #ccc;
 }
 
 ul#item-specific-actions{
@@ -245,7 +247,8 @@ div.form-section-label{
 
 div.edit-form-row{
     border:1px dotted #e8e8e8;
-    -webkit-corner-radius:5px;
+    border-radius:6px;
+    -moz-border-radius:6px;
 }
 
 div.edit-form-row select{
@@ -253,12 +256,14 @@ div.edit-form-row select{
 }
 
 div.edit-form-row input[type="text"], div.edit-form-row input[type="password"]{
-	width:380px;
-	height:18px;
+	width:400px;
+	height:25px;
 	padding:3px;
-	font-size:16px;
+	font-size:18px;
 	color:#666;
 	border:1px solid #ccc;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
 }
 
 div.buttons-bar{
@@ -268,12 +273,15 @@ div.buttons-bar{
 	background-color:#aaa;
 	background-image:url('../Images/admin_button_bar_bg.gif');
 	background-repeat:repeat-x;
+	border-radius:6px;
+    -moz-border-radius:6px;
 }
 
 div.special-box{
     font-size:12px;
     border:3px solid #ccc;
-    border-radius:3px;
+    border-radius:6px;
+    -moz-border-radius:6px;
     background-color:#eee;
     padding:5px;
     margin:10px 0 10px 0;
@@ -297,6 +305,8 @@ div.warning{
     font-size:12px;
     border:3px solid #EB9A38;
     background-color:#F5C564;
+    border-radius:6px;
+    -moz-border-radius:6px;
 }
 
 div.warning a{
@@ -380,50 +390,6 @@ ul._new-desktop-square-buttons li a:hover{
     background-color:#f0f0f0;
 }
 
-/******** Top Nav *******/
-
-/* ul.top-nav-buttons li{
-	display:block;
-	float:left;
-	width:50px;
-	text-align:center;
-	margin:0px;
-	margin-top:10px;
-	margin-left:10px;
-	line-height:1em;
-}
-
-a.top-nav-link{
-	color:#555;
-	text-decoration:none;
-	font-weight:normal;
-	font-size:12px;
-}
-
-a.top-nav-link:hover{
-	color:#555;
-	text-decoration:underline;
-	font-weight:normal;
-}
-
-img.top-nav-icon{
-	width:40px;
-}
-
-a.prefpane-tab{
-	padding:7px;
-	border:1px solid #999;
-	border-bottom: 0px;
-	background-color:#eee;
-}
-
-a.prefpane-tab:hover{
-	padding:7px;
-	border:1px solid #999;
-	border-bottom: 0px;
-	background-color:#fff;
-} */
-
 a.right-nav-link{
 	color:#444;
 	text-decoration:none;
@@ -436,49 +402,14 @@ a.mainpanel-link{
 	text-decoration:none
 }
 
-/* div#horizontal-nav{
-	width:830px;
-	height:25px;
-	border:1px solid #ccc;
-	margin-bottom:10px;
-	background-color:#e5e5e5;
+ul.item_property_actions{
+    list-style-type:none;
 }
 
-div#horizontal-nav a{
-	font-size:12px;
-	color:#333;
-	display:block;
-	float:left;
-	padding:5px;
-	border-right:1px solid #ccc;
-	background-color:#fff;
-} */
-
-/*** Buttons ***/
-
-/* a.button{
-	color:#333;
-	text-decoration:none;
-	background-image:url(/Resources/Images/grey_button_bg.gif);
-	height:22px;
+ul.item_property_actions li a{
+    border: 1px solid #ccc;
 }
 
-a.button img{
-	border:none;
-	display:block;
-	float:left;
+ul.item_property_actions li a:hover{
+    background-color:#eee;
 }
-
-a.button span{
-	display:block;
-	float:left;
-	height:22px;
-	vertical-align:middle;
-}
-
-a.button:hover{
-	color:#333;
-	text-decoration:none;
-	background-image:url(/Resources/Images/grey_button_bg.gif);
-	height:22px;
-} */

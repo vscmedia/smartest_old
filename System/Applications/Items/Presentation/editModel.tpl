@@ -40,14 +40,9 @@
               {else}
                 <span class="form-hint">
                 {if $is_movable}
-                  This model must be shared because 
-                  {if $model.site_id == '0'}
-                    it isn't currently attached to one of your sites
-                  {else}
-                    it is already in use on sites other than this one
-                  {/if}
+                  This model must be shared because it is already in use in more than one website.
                 {else}
-                  This model cannot be unshared because file permissions do not allow the model's class file to be moved
+                  This model cannot be unshared because file permissions do not allow the model's class file to be moved.
                 {/if}
                 </span>
               {/if}
@@ -57,9 +52,9 @@
               {else}
                 <span class="form-hint">
                   {if $is_movable}
-                  This model cannot be shared because other models with conflicting or identical names exist on other sites
+                  This model cannot be shared because other models with conflicting or identical names exist on other sites.
                   {else}
-                  This model cannot be shared because file permissions do not allow the model's class file to be moved
+                  This model cannot be shared because file permissions do not allow the model's class file to be moved.
                   {/if}
                 </span>
               {/if}

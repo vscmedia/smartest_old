@@ -298,7 +298,7 @@ class SmartestBasicRenderer extends SmartestEngine{
     public function renderSmartestCreditButton(){
 	    
 	    $target = $this->getDraftMode() ? ' target="_blank"' : '';
-	    return "<a href=\"http://sma.rte.st/?ref=scb\" title=\"Powered by Smartest\"".$target."><img src=\"".$this->_request_data->g('domain')."Resources/System/Images/smartest_credit_button.png\" alt=\"Powered by Smartest\" style=\"border:0px\" /></a>";
+	    return "<a href=\"http://sma.rte.st/\" title=\"This website is powered by Smartest\"".$target."><img src=\"".$this->_request_data->g('domain')."Resources/System/Images/smartest_credit_button.png\" alt=\"Powered by Smartest - Content Management System Software\" style=\"border:0px\" /></a>";
 	    
 	}
     

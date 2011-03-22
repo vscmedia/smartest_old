@@ -10,10 +10,12 @@ class SmartestNonDbRole implements ArrayAccess{
         
         $this->_label = $data['label'];
         $token_data = SmartestUsersHelper::getTokenData();
-        
+        $h = new SmartestUsersHelper;
+
         if(is_array($data['tokens'])){
             foreach($data['tokens'] as $k=>$t){
-                $t = new SmartestUserToken_new($token_data[$k]);
+                $id = $h->getTokenId($t);
+                $t = new SmartestUserToken_new($token_data[$id]);
                 $this->_tokens[] = $t;
             }
         }

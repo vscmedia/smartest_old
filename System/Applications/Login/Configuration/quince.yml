@@ -8,6 +8,9 @@ module:
     login:
       action: loginScreen
       url: /smartest/login
+    authenticate:
+      action: doAuth
+      url: /smartest/login/check
     logout:
       action: doLogOut
       url: /smartest/logout

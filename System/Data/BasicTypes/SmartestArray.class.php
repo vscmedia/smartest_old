@@ -29,7 +29,11 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
     }
     
     public function __toString(){
-        return SmartestStringHelper::toCommaSeparatedList(array_slice($this->_data, 0, 10));
+        if(count($this->_data)){
+            return SmartestStringHelper::toCommaSeparatedList(array_slice($this->_data, 0, 10));
+        }else{
+            return 'Empty SmartestArray';
+        }
     }
     
     // The next two methods are for the SmartestStorableValue interface
@@ -104,6 +108,8 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
             return reset($this->_data);
             case "_last":
             return end($this->_data);
+            case "_empty":
+            return empty($this->_data);
             
         }
         

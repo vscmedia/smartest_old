@@ -87,7 +87,7 @@
         
         <label>Calendar event</label>
         <description>An event that has a start and end time, or runs all day.</description>
-        <usage>field,itemproperty</usage>
+        <usage>itemproperty</usage>
         <class>SmartestCalendarEvent</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.calendar_event.tpl" />
@@ -148,6 +148,7 @@
         <render template="System/Presentation/WebPageBuilder/property.asset.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/asset.tpl" />
         
+        
         <class>SmartestRenderableAsset</class>
         
     </type>
@@ -186,7 +187,8 @@
         <long>false</long>
         
         <filter>
-          <entitysource type="db" table="Sets" sortfield="set_name" sitefield="set_site_id" class="SmartestAssetGroup" label="Group" />
+          <typesource type="smartest:assettypes" label="File Type" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.assettypes.tpl" />
+          <entitysource type="db" table="Sets" sortfield="set_name" sitefield="set_site_id" sharedfield="set_shared" class="SmartestAssetGroup" label="Group" />
           <condition field="set_type" value="SM_SET_ASSETGROUP" operator="EQUAL" />
         </filter>
         
@@ -233,7 +235,9 @@
         <long>false</long>
         
         <filter>
+          <typesource type="db" table="ItemClasses" matchfield="id" label="Model" class="SmartestModel" sortfield="itemclass_plural_name" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.models.tpl" />
           <entitysource type="db" table="Sets" sitefield="set_site_id" sharedfield="set_shared" class="SmartestCmsItemSet" />
+          <condition field="set_type" value="SM_SET_ASSETGROUP" operator="NOT_EQUAL" />
         </filter>
         
         <render template="System/Presentation/WebPageBuilder/property.cms_item_set.tpl" />

@@ -17,6 +17,8 @@
     margin-left:auto;
     margin-right:auto;
     padding:10px;
+    border-radius:12px;
+    -moz-border-radius:12px;
 }
 
 #help-viewer h1{

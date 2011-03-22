@@ -26,8 +26,6 @@ class SmartestDataObject implements ArrayAccess{
 		    $this->_request = SmartestPersistentObject::get('controller')->getCurrentRequest();
 		}
 		
-		// if($this->_request_data){var_dump($this->_request_data->getCurrentRequest());}
-		
 		if(method_exists($this, '__objectConstruct')){
 			$this->__objectConstruct();
 		}

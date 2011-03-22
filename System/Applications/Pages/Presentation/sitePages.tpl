@@ -137,7 +137,7 @@ function viewPage(){
 
 <ul class="actions-list" id="non-specific-actions">
     <li><b>Site Options</b></li>
-    {* <li class="permanent-action"><a href="{$domain}{$section}/editSite" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit site parameters</a></li> *}
+    <li class="permanent-action"><a href="{$domain}smartest/page/new" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add page</a></li>
     <li class="permanent-action"><a href="{$domain}websitemanager/releaseCurrentUserHeldPages" class="right-nav-link"><img src="{$domain}Resources/Icons/lock_open.png" border="0" alt=""> Release all pages</a></li>
     <li class="permanent-action"><a href="{$domain}websitemanager/clearPagesCache" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt=""> Clear cached pages</a></li>
     <li class="permanent-action"><a href="{$domain}desktop/closeCurrentSite" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Finish working with this site</a></li>

@@ -289,7 +289,8 @@ class SmartestInstallationStatusHelper{
                     try{
                         $db->executeSqlFile(SM_ROOT_DIR."System/Install/SqlScripts/table_setup.sql");
                     }catch(SmartestDatabaseException $e){
-                        echo print_r($e);
+                        // The tables could not be set up. Write to install log
+                        SmartestLog::getInstance('installer')->log('Database schema setup failed: '.$e->getMessage(), SM_LOG_ERROR);
                     }
                 }
                 

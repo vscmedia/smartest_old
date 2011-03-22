@@ -495,6 +495,17 @@ class Assets extends SmartestSystemApplication{
                         $this->send($placeholder, 'placeholder');
                         $this->send($page, 'page');
                         $this->send('placeholder', 'for');
+                        
+                        if($placeholder->getFilterType() == 'SM_ASSETCLASS_FILTERTYPE_ASSETGROUP'){
+	                        // add file to placeholder's group
+	                        $group = new SmartestAssetGroup;
+
+                            if($group->find($placeholder->getFilterValue())){
+                                $this->send($group->getId(), 'group_id');
+                                $this->send(true, 'lock_group_dropdown');
+                            }
+                            
+	                    }
                     
                     }else{
                         $this->addUserMessageToNextRequest("The placeholder ID was not recognised.", SmartestUserMessage::ERROR);
@@ -536,6 +547,18 @@ class Assets extends SmartestSystemApplication{
                     
                     $this->send('ipv', 'for');
                     $this->send($property, 'property');
+                    
+                    if($property->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_ASSETGROUP'){
+                        
+                        $group = new SmartestAssetGroup;
+                        
+                        if($group->find($property->getOptionSetId())){
+                            $this->send($group->getId(), 'group_id');
+                            $this->send(true, 'lock_group_dropdown');
+                        }else{
+                            // Log: property specifies group that does not exist
+                        }
+                    }
                     
                     if($this->getRequestParameter('item_id')){
                         if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
@@ -826,7 +849,7 @@ class Assets extends SmartestSystemApplication{
                 	                        $group = new SmartestAssetGroup;
 
                                             if($group->find($placeholder->getFilterValue())){
-                                                $asset->addToGroupById($group->getId(), true);
+                                                $asset->addToGroupById($group->getId());
                                             }
                                             
                 	                    }
@@ -883,7 +906,7 @@ class Assets extends SmartestSystemApplication{
                                         $group = new SmartestAssetGroup;
                                         
                                         if($group->find($property->getOptionSetId())){
-                                            $asset->addToGroupById($group->getId(), true);
+                                            $asset->addToGroupById($group->getId());
                                         }else{
                                             // Log: property specifies group that does not exist
                                         }
@@ -1784,7 +1807,7 @@ class Assets extends SmartestSystemApplication{
 	        define('SM_CMS_PAGE_SITE_ID', $this->getSite()->getId());
         }
 	    
-	    if($asset->hydrate($asset_id)){
+	    if($asset->find($asset_id)){
 	        
 	        // $data = $asset->__toArray(false, true); // don't include object, do include owner info
 		    
@@ -1853,7 +1876,14 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 	
-	function textFragmentElements($get){
+	public function showPreviewedAssetContent(){
+	    
+	    $this->getRequest()->setMeta('template', '_blank.tpl');
+	    // print_r($this->getRequest());
+	    
+	}
+	
+	public function textFragmentElements($get){
 	    
 	    $asset_id = $this->getRequestParameter('asset_id');
 

@@ -26,9 +26,9 @@ function setVarName(){
     <input type="hidden" name="continue" value="{$continue}" />
     
     <div class="edit-form-row">
-      <div class="form-section-label">Type of property</div>
+      <div class="form-section-label">Choose which type of property you want to add</div>
       <select name="itemproperty_datatype" id='itemproperty_datatype' onchange="$('type_chooser').submit()">
-        <option value="">Choose a type</option>
+        <option value="">Choose a type...</option>
 {foreach from=$data_types item="data_type"}
   	    <option value="{$data_type.id}"{if $data_type.id==$property.datatype} selected="selected"{/if}>{$data_type.label}</option>
 {/foreach}

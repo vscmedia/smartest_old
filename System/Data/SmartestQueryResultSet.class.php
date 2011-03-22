@@ -1,6 +1,6 @@
 <?php
 
-class SmartestQueryResultSet{
+class SmartestQueryResultSet implements ArrayAccess, IteratorAggregate, Countable{
 	
 	protected $_model_id;
 	protected $_model_class;
@@ -250,5 +250,109 @@ class SmartestQueryResultSet{
         return $this->_items;
         
 	}
+	
+	public function count(){
+        return count($this->_data);
+    }
+
+    public function offsetGet($offset){
+    
+        switch($offset){
+        
+            case "_ids":
+            return $this->getIds();
+            case "_data":
+            case "_items":
+            case "_objects":
+            return $this->getData();
+            case "_count":
+            return count($this->_data);
+            case "_keys":
+            return array_keys($this->_data);
+            case "_first":
+            return reset($this->_data);
+            case "_last":
+            return end($this->_data);
+        
+        }
+    
+        return $this->_data[$offset];
+    }
+
+    public function offsetExists($offset){
+        return isset($this->_data[$offset]);
+    }
+
+    public function offsetSet($offset, $value){
+        if($offset){
+            $this->_data[$offset] = $value;
+        }else{
+            $this->_data[] = $value;
+        }
+    }
+
+    public function offsetUnset($offset){
+        unset($this->_data[$offset]);
+    }
+
+    /* public function next(){
+        return next($this->_data);
+    }
+
+    public function seek($index){
+    
+        $this->rewind();
+        $position = 0;
+    
+        while($position < $index && $this->valid()) {
+            $this->next();
+            $position++;
+        }
+    
+        if (!$this->valid()) {
+            throw new OutOfBoundsException('Invalid seek position');
+        }
+    
+    } */
+
+    public function &getIterator(){
+        return new ArrayIterator($this->_data);
+    }
+
+    /* public function current(){
+        return current($this->_data);
+    }
+
+    public function key(){
+        return array_search(current($this->_data), $this->_data);
+    }
+
+    public function rewind(){
+        reset($this->_data);
+    } */
+
+    public function append($value){
+        $this->_data[] = $value;
+    }
+
+    public function asort(){
+        sort($this->_data);
+    }
+
+    public function ksort(){
+        ksort($this->_data);
+    }
+
+    public function natcasesort(){
+        natcasesort($this->_data);
+    }
+
+    public function natsort(){
+        natsort($this->_data);
+    }
+
+    public function reverse(){
+        return array_reverse($this->_data);
+    }
 
 }

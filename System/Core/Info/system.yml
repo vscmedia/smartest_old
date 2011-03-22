@@ -1,8 +1,8 @@
 system:
   info:
     version: "0.4.2"
-    revision: 427
-    build: "4,38"
+    revision: 432
+    build: "4,43"
     minimum_php_version: 5.2
     minimum_database_version: 16
     default_timezone: Europe/London
@@ -79,7 +79,6 @@ system:
       - Public/Resources/Stylesheets/
       - Public/Resources/Javascript/
       - System/Temporary/
-      - Public/Resources/System/Cache/
     templates_repo:
       - Presentation/Masters/
       - Presentation/Layouts/
@@ -90,3 +89,4 @@ system:
       - Public/
       - System/Core/Info/
       - Configuration/
+      - Presentation/Masters/

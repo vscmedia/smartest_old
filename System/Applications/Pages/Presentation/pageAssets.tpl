@@ -1,24 +1,24 @@
-<script language="javascript" type="text/javascript">
+<script type="text/javascript" type="text/javascript">
 
-var selectedPage = null;
+/* var selectedPage = null;
 var selectedPageName = null;
 var lastRow;
-var lastRowColor;
+var lastRowColor; */
 var treeNodes = new Array();
 var pageWebId = '{$page.webid}';
 
 {literal}
 
-function viewDraftPage(){
+function viewDraftPage(parameters){
 
 	var pageURL = sm_domain+'website/renderEditableDraftPage?page_id='+pageWebId;
 	window.location=pageURL;
 
 }
 
-function viewLivePage(){
+function viewLivePage(parameters){
 
-	var pageURL = sm_domain+'website/renderPageFromId?page_id='+pageWebId{/literal}{if $item}+'&item_id={$item.id}'{/if};
+	var pageURL = 'http://'+parameters.domain+'/website/renderPageFromId?page_id='+pageWebId{/literal}{if $item}+'&item_id={$item.id}'{/if};
 	window.open(pageURL);
 
 {literal}}{/literal}
@@ -121,9 +121,9 @@ function viewLivePage(){
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Page Options</b></li>
-  {if $template.filename && $version == "draft"}<li class="permanent-action"><a href="{$domain}templates/editTemplate?asset_type=SM_ASSETTYPE_MASTER_TEMPLATE&amp;template={if $page_template.status == "imported"}{$page_template.id}{else}{$page_template.url}{/if}" value="Edit"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Edit Page Template</a></li>{/if}
+  {if $page_template.filename && $version == "draft"}<li class="permanent-action"><a href="{$domain}templates/editTemplate?asset_type=SM_ASSETTYPE_MASTER_TEMPLATE&amp;template={if $page_template.status == "imported"}{$page_template.id}{else}{$page_template.url}{/if}" value="Edit"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Edit Page Template</a></li>{/if}
   {if $version == "draft"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishPageConfirm?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_lightning.png" border="0" alt=""> Publish this page</a></li>{/if}
-  <li class="permanent-action"><a href="#" onclick="viewLivePage();" class="right-nav-link"><img src="{$domain}Resources/Icons/page_go.png" border="0" alt=""> Go to this page</a></li>
+  <li class="permanent-action"><a href="javascript:;" onclick="viewLivePage({ldelim}domain: '{$sm_currentSite.domain}'{rdelim});" class="right-nav-link"><img src="{$domain}Resources/Icons/page_go.png" border="0" alt=""> Go to this page</a></li>
   <li class="permanent-action"><a href="{$domain}{$section}/layoutPresetForm?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Create preset from this page</a></li>
   {if $draftAsset.asset_id && $draftAsset.asset_id != $liveAsset.asset_id}<li class="permanent-action"><a href="#" onclick="{literal}if(confirm('Are you sure you want to publish your changes right now?')){workWithItem('setLiveAsset');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt=""> Publish This Asset Class</a>{/if}
   <li class="permanent-action"><a href="{$domain}smartest/assets/types" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Browse Assets Library</a></li>

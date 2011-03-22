@@ -84,8 +84,7 @@ class SmartestItemPage extends SmartestPage{
 	            }
 	        }
             
-            print_r($urls);
-	        return $urls[0];
+            return $urls[0];
     
 	    }else{
 	        // No urls have been defined.
@@ -265,10 +264,6 @@ class SmartestItemPage extends SmartestPage{
                 $this->_placeholders[$def_array['assetclass_name']] = $def;
             }
         }
-        
-        // print_r($this->_containers['stage_right']->getTemplateFilePath());
-        
-        // print_r(array_keys($this->_containers));
 	    
 	}
 	
@@ -279,12 +274,6 @@ class SmartestItemPage extends SmartestPage{
 	        case "item":
 	        case "principal_item":
 	        return $this->_principal_item;
-	        
-	        /* case "model_name":
-	        return $this->_simple_item->getModel()->getName();
-	        
-	        case "model_plural_name":
-	        return $this->_simple_item->getModel()->getPluralName(); */
 	        
 	        case "fallback_url":
 	        return "website/renderPageFromId?page_id=".$this->getWebid().'&item_id='.$this->_simple_item->getId();

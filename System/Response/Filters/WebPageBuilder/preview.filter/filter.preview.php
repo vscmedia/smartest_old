@@ -38,6 +38,7 @@ function smartest_filter_preview($html, $filter){
             $sid = '';
         }
         
+        // echo strlen($html);
         $creator = "\n<!--Powered by Smartest(TM) Online Publishing Platform, v".constant('SM_INFO_VERSION_NUMBER')." -->\n".$sid;
         $html = str_replace('</body>', $creator."<!--Page was returned in: ".SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken')."ms -->\n</body>", $html);
         

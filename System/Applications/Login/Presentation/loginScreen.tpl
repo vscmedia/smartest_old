@@ -61,7 +61,7 @@
 
       {if $smarty.get.reason == "badauth"}<p id="login_error">There was a problem with your username and/or password.</p>{/if}
 
-      <form name="loginform" id="loginform" action="{$domain}loginscreen/doAuth" method="post">
+      <form name="loginform" id="loginform" action="{$domain}smartest/login/check" method="post">
 
         <p id="username-holder"><label>Username:<br /><input type="text" name="user" id="username" value="" size="20" tabindex="1" class="textInput" /></label></p>
         <p id="password-holder"><label>Password:<br /><input type="password" name="passwd" id="password" value="" size="20" tabindex="2" class="textInput" /></label></p>

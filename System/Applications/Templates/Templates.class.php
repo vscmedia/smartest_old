@@ -606,6 +606,7 @@ class Templates extends SmartestSystemApplication{
     	    if($file_success){
     	        // Add the template asset to the database
     	        $new_template->save();
+    	        chmod($full_filename, 0666);
     	    }
 		
 	    }else{
@@ -862,6 +863,8 @@ class Templates extends SmartestSystemApplication{
     		    $template->setModified(time());
     		    $template->save();
     		}
+    		
+    		// $this->addUserMessageToNextRequest("The template was successfully updated.", SmartestUserMessage::SUCCESS);
 	        
 	    }
 	    
@@ -873,7 +876,7 @@ class Templates extends SmartestSystemApplication{
 	        }
 	        $this->redirect("/templates/editTemplate?asset_type=".$type_code."&template=".$url_id);
 	    }else{
-	        $this->addUserMessageToNextRequest("The template was successfully saved", SmartestUserMessage::SUCCESS);
+	        $this->addUserMessageToNextRequest("The template was successfully saved.", SmartestUserMessage::SUCCESS);
 	        $this->formForward();
 	    }
 		

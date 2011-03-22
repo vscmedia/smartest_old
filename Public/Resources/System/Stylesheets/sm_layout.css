@@ -275,3 +275,23 @@ ul._new-desktop-square-buttons li a{
     padding:40px 5px 0 5px;
     height:55px;
 }
+
+ul.item_property_actions{
+    margin:0px;
+    padding:0px;
+    height:31px;
+}
+
+ul.item_property_actions li{
+    margin:3px 5px 0 0;
+    float:left;
+}
+
+ul.item_property_actions li a{
+    padding:6px;
+    display:block;
+}
+
+ul.item_property_actions li a img{
+    display:block;
+}

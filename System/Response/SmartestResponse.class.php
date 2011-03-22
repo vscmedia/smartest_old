@@ -267,9 +267,13 @@ class SmartestResponse{
 	    
 	}
 	
+	protected function getUser(){
+	    return SmartestSession::get('user');
+	}
+	
 	protected function getUserIdOrZero(){
-        if(is_object(SmartestSession::get('user'))){
-            return SmartestSession::get('user')->getId();
+        if(is_object($this->getUser())){
+            return $this->getUser()->getId();
         }else{
             return '0';
         }
@@ -454,6 +458,20 @@ class SmartestResponse{
 		}
 	}
 	
+	protected function checkForUpdateScripts(){
+	    
+	    if($this->isLoggedInRootUser()){
+		    
+		    // TODO: Run code in here that will redirect the user to views that will carry out urgent updates when they are necessary
+		    return null;
+		    
+		}
+	}
+	
+	public function isLoggedInRootUser(){
+	    return (!$this->isPublicMethod() && $this->isSystemClass() && $this->_authentication->getUserIsLoggedIn() && $this->getUser()->hasToken('root_permission'));
+	}
+	
 	public function isPublicMethod(){
 	    
 	    $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
@@ -524,10 +542,10 @@ class SmartestResponse{
 		
 		$this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$subfolder.$default_tpl;
 		
-		if(!is_file($this->_main_template)){
+		/* if(!is_file($this->_main_template)){
 			$this->_smarty->assign("sm_main_interface", $this->_main_template);
 			$this->_main_template = SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_templateNotFound.tpl";
-		}
+		} */
 		
 		// $this->_smarty->assign("template", $this->_main_template);
 		$this->_smarty->assign("sm_app_templates_dir", SM_SYSTEM_APP_TEMPLATES_DIR);

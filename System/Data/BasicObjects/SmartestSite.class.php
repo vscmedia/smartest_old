@@ -336,5 +336,17 @@ class SmartestSite extends SmartestBaseSite{
         return $users;
         
     }
+    
+    public function urlExists($url, $ignore_deleted=false){
+        
+        $sql = "SELECT PageUrls.pageurl_id FROM PageUrls, Pages WHERE pageurl_url='".$url."' AND PageUrls.pageurl_page_id=Pages.page_id AND Pages.page_site_id='".$this->getId()."'";
+        
+        if($ignore_deleted){
+            $sql .= " AND page_deleted='FALSE'";
+        }
+        
+        return (bool) count($this->database->queryToArray($sql));
+        
+    }
 	
 }

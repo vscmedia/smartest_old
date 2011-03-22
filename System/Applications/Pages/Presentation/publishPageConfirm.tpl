@@ -19,8 +19,6 @@
 	
 {elseif $count > 1}
 
-<div class="edit-form-row">
-
 <div class="warning"><strong>Warning</strong>: The following elements are not defined in the draft version of this page:</div>
 
 <ul class="basic-list">
@@ -32,8 +30,6 @@
 </ul>
 
 <div class="special-box">Publishing this page will cause undefined placeholders and containers to be included on a live page.<br />Are you sure you want to continue?</div>
-
-</div>
 
 {/if}{* number of undefined elements *}
 

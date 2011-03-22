@@ -389,11 +389,11 @@ class PagesManager{
 	
 	
 	public function getPageTemplateAssetClasses($page_id, $version="draft", $item_id=false){
-		// echo $page_id;
+		
 		$page_id = $this->getPageIdFromPageWebId($page_id);
 		$tree = $this->getPageAssetClassTree($page_id, $version, $item_id);
-		// $list = $this->getSerialisedAssetClassTree($tree);
 		return array("tree"=>$tree, "list"=>array());
+		
 	}
 	
 	public function getPageAssetClassTree($page_id, $version, $item_id=false){
@@ -403,21 +403,14 @@ class PagesManager{
 		// $template = $this->database->specificQuery($field, "page_id", $page_id, "Pages");
 		$page = new SmartestPage;
 		
-		if($page->hydrate($page_id)){
+		if($page->find($page_id)){
 		    
-		    // echo "page hydrated";
-		    
-		    // $site_id = $this->database->specificQuery("page_site_id", "page_webid", $page_id, "Pages");
-    		// $site_root = $this->database->specificQuery("site_root", "site_id", $site_id, "Sites");
-    		
-    		$template = ($version == "live") ? $page->getLiveTemplate() : $page->getDraftTemplate();
+		    $template = ($version == "live") ? $page->getLiveTemplate() : $page->getDraftTemplate();
     		$draft = ($version == "live") ? false : true;
     		
     		$template_file = SM_ROOT_DIR."Presentation/Masters/".$template;
             
-            // var_dump($item_id);
-            
-    		$assetClasses = $this->getTemplateAssetClasses($template_file, $page, 0, $version, $item_id);
+            $assetClasses = $this->getTemplateAssetClasses($template_file, $page, 0, $version, $item_id);
 
     		return $assetClasses;
 		
@@ -524,7 +517,7 @@ class PagesManager{
 			    $info[$i]['info'] = $this->getAssetClassInfo($placeholderName);
 				
 				$info[$i]['info']['exists'] = $this->getAssetClassExists($placeholderName);
-				$info[$i]['info']['defined'] = $this->getAssetClassDefinedOnPage($placeholderName, $page->getId());
+				$info[$i]['info']['defined'] = $this->getAssetClassDefinedOnPage($placeholderName, $page->getId(), $item_id);
 				
 				$info[$i]['info']['assetclass_name'] = $placeholderName;
 				$info[$i]['info']['assetclass_id'] = 'placeholder_'.$placeholderName;
@@ -548,8 +541,9 @@ class PagesManager{
 				        $child['children'] = $assetObj->getTextFragment()->getAttachmentsForElementsTree($level+2, $version);
 				        
 				        foreach($child['children'] as $key => $attachment){
+				            
 				            $child['children'][$key]['info']['assetclass_id'] = $assetObj->getStringid().'_'.$attachment['info']['assetclass_name'];
-				            $child['children'][$key]['info']['assetclass_name'] = $assetObj->getStringid().'_'.$attachment['info']['assetclass_name'];
+				            $child['children'][$key]['info']['assetclass_name'] = $assetObj->getStringid().':'.$attachment['info']['assetclass_name'];
 				            
 				            if(isset($child['children'][$key]['asset_object']) && is_object($child['children'][$key]['asset_object'])){
 				                $child_asset = $child['children'][$key]['asset_object'];
@@ -1149,7 +1143,6 @@ class PagesManager{
 
 		$sql = "SELECT assetidentifier_draft_asset_id, assetidentifier_live_asset_id FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_assetclass_id=assetclass_id AND assetidentifier_page_id='$page_id' AND assetclass_name='$assetclass_name'";
 		
-		// $sql .= ;
 		$result = $this->database->queryToArray($sql." AND assetidentifier_item_id IS NULL");
 		
 		if(!empty($result[0]) && $result[0]["assetidentifier_draft_asset_id"] > 0 && $result[0]["assetidentifier_live_asset_id"] > 0 && $result[0]["assetidentifier_draft_asset_id"] == $result[0]["assetidentifier_live_asset_id"] && $result[0]["assetidentifier_draft_render_data"] == $result[0]["assetidentifier_live_render_data"]){

@@ -72,6 +72,7 @@ class Users extends SmartestSystemApplication{
             
             if(is_numeric($this->getRequestParameter('user_role'))){
                 
+                // User-created role is being used to assign tokens
                 $role = new SmartestRole;
                 
                 if($role->find($this->getRequestParameter('user_role'))){

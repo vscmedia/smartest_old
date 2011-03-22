@@ -103,6 +103,8 @@ class Items extends SmartestSystemApplication{
   	    
   	    if($model->find($model_id)){
   	        
+  	        $this->send((bool) count($model->getMetaPages()), 'has_metapages');
+  	        
   	        if(is_file($model->getClassFilePath())){
   	            
   	            if(class_exists($model->getClassName())){
@@ -1103,7 +1105,13 @@ class Items extends SmartestSystemApplication{
 	        $this->send(number_format($num_items_all_sites), 'num_items_all_sites');
 	        $this->send($this->getUser()->hasToken('edit_model_plural_name'), 'allow_plural_name_edit');
 	        
-	        $multiple_sites = $model->isUsedOnMultipleSites();
+	        $sites_where_used = $model->getSitesWhereUsed();
+	        $multiple_sites = (count($sites_where_used) > 1);
+	        
+	        $site_ids = array();
+	        foreach($sites_where_used as $s){
+	            $site_ids[] = $s->getId();
+	        }
 	        
 	        $shared = ($model->isShared() || $multiple_sites);
 	        $this->send($shared, 'shared');
@@ -1129,7 +1137,11 @@ class Items extends SmartestSystemApplication{
 	        
 	        if($model->getSiteId() == '0'){
 	            $this->send(true, 'allow_main_site_switch');
-                $this->send($this->getUser()->getAllowedSites(), 'sites');
+	            if($multiple_sites){
+                    $this->send($this->getUser()->getAllowedSites($site_ids), 'sites');
+                }else{
+                    $this->send($this->getUser()->getAllowedSites(), 'sites');
+                }
             }else{
                 $this->send(false, 'allow_main_site_switch');
             }
@@ -1154,7 +1166,6 @@ class Items extends SmartestSystemApplication{
 	public function updateModel($get, $post){
 	    
 	    $model_id = $this->getRequestParameter('class_id');
-	    
 	    $model = new SmartestModel;
 	    
 	    $error = false;
@@ -1190,6 +1201,8 @@ class Items extends SmartestSystemApplication{
                 }
             }
             
+            // var_dump($model->getSiteId());
+            
             if($model->isUsedOnMultipleSites()){
                 
                 $model->setShared('1');
@@ -1207,17 +1220,19 @@ class Items extends SmartestSystemApplication{
                         $error = true;
                     }
                     
-                }else if($model->getSiteId() == '0'){
-                    
-                    if($this->getRequestParameter('itemclass_site_id') && (int) $this->getRequestParameter('itemclass_site_id') > 0 && in_array($this->getRequestParameter('itemclass_site_id'), $this->getUser()->getAllowedSiteIds())){
-                        $new_site_id = $this->getRequestParameter('itemclass_site_id');
-                    }else{
-                        $new_site_id = $this->getSite()->getId();
-                    }
-                    
-                    $model->setSiteId($new_site_id);
-                    
                 }
+            }
+            
+            if($model->getSiteId() == '0'){
+                
+                if($this->getRequestParameter('itemclass_site_id') && (int) $this->getRequestParameter('itemclass_site_id') > 0 && in_array($this->getRequestParameter('itemclass_site_id'), $this->getUser()->getAllowedSiteIds())){
+                    $new_site_id = $this->getRequestParameter('itemclass_site_id');
+                }else{
+                    $new_site_id = $this->getSite()->getId();
+                }
+                
+                $model->setSiteId($new_site_id);
+                
             }
             
             if($error){
@@ -1228,11 +1243,11 @@ class Items extends SmartestSystemApplication{
                 $model->save();
             }
             
-            $this->redirect("/datamanager/editModel?class_id=".$model->getId());
+            // $this->redirect("/datamanager/editModel?class_id=".$model->getId());
             
 	    }else{
 	        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
-	        $this->redirect("/smartest/models");
+	        // $this->redirect("/smartest/models");
 	    }
 	    
 	}
@@ -1339,6 +1354,8 @@ class Items extends SmartestSystemApplication{
 	        }
 		    
 		    $this->send($item->getModel()->getMetaPages(), 'metapages');
+		    $this->send((bool) count($item->getModel()->getMetaPages()), 'has_metapages');
+		    
 		    $this->setTitle('Edit '.$item->getModel()->getName().' | '.$item->getName());
 		    $this->send($item, 'item');
 		    $this->send((bool) $this->getUser()->hasToken('edit_item_name'), 'allow_edit_item_slug');
@@ -1596,6 +1613,41 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
+	public function preview(){
+	    
+	    $item_id = $this->getRequestParameter('item_id');
+        $item = SmartestCmsItem::retrieveByPk($item_id);
+        
+        if(is_object($item)){
+            
+            $metapages = $item->getModel()->getMetaPages();
+            $num_metapages = count($metapages);
+            
+            if(!$num_metapages){
+                
+            }else if($num_metapages == 1){
+                // forward to preview of only metapage
+                $this->redirect('/websitemanager/preview?page_id='.$metapages[0]->getWebId().'&item_id='.$item_id);
+            }else{
+                // display choice
+                $this->send($metapages, 'metapages');
+                $this->send($item, 'item');
+                
+                // checkto see if a specific page has already been chosen - We'll use this as a default
+                $metapage = new SmartestPage;
+
+    		    if($metapage->find($item->getMetapageId())){
+    		        $this->send($metapage, 'default_metapage');
+    		    }else if($metapage->find($item->getModel()->getDefaultMetapageId($this->getSite()->getId()))){
+    		        $this->send($metapage, 'default_metapage');
+    		    }
+                
+            }
+            
+        }
+	    
+	}
+	
 	public function publishItem($get, $post){
 	    
 	    if(isset($_POST['item_id'])){
@@ -1608,7 +1660,13 @@ class Items extends SmartestSystemApplication{
 	            
 	            if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items')){
 	                
-	            // it is ok to publish the item
+	                if(!count($item->getModel()->getMetaPages())){
+	                    if($this->getRequestParameter('hide_no_metapage_warning') == '1'){
+                            $this->setApplicationPreference('hide_metapages_publish_warning', '1');
+                        }
+                    }
+	                
+	                // it is ok to publish the item
     	            $item->publish();
     	            
     	            $update_itemspaces = $this->getRequestParameter('update_itemspaces');
@@ -1623,7 +1681,7 @@ class Items extends SmartestSystemApplication{
     	                    
     	                    $def->publish();
     	                    
-    	                    if($update_itemspaces == 'PUBLISH'){
+    	                    if($update_itemspaces == 'PUBLISHPAGE'){
     	                        
     	                        if($page = $def->getPage()){
     	                            
@@ -1637,21 +1695,31 @@ class Items extends SmartestSystemApplication{
     	            
     	            $update_pages = $this->getRequestParameter('update_pages');
     	            
-    	            if($update_pages == 'PUBLISH'){
+    	            if($page = $item->getMetaPage()){
     	                
-    	                if($this->getRequestParameter('metapage_id') && is_numeric($this->getRequestParameter('metapage_id'))){
+    	                if($update_pages == 'PERITEM'){
     	                
-    	                    $page = new SmartestPage;
+    	                    $page->publishAssetClasses($item->getId(), true);
+    	                    
+    	                    /* if($this->getRequestParameter('metapage_id') && is_numeric($this->getRequestParameter('metapage_id'))){
     	                
-    	                    if($page->hydrate($this->getRequestParameter('metapage_id'))){
-    	                        $page->publish();
-    	                    }else{
-    	                        $this->getRequestParameter('metapage_id');
-    	                    }
+        	                    $page = new SmartestPage;
     	                
-    	                }
+        	                    if($page->hydrate($this->getRequestParameter('metapage_id'))){
+        	                        $page->publish();
+        	                    }else{
+        	                        $this->getRequestParameter('metapage_id');
+        	                    }
+    	                
+        	                } */
     	            
-	                }
+    	                }elseif($update_pages == 'PUBLISH'){
+    	                    
+    	                    $page->publish($item->getId());
+    	                    
+    	                }
+	                
+                    }
 	                
 	                $this->addUserMessageToNextRequest('The item has been published.', SmartestUserMessage::SUCCESS);
 	            
@@ -1688,24 +1756,30 @@ class Items extends SmartestSystemApplication{
             $item_id = $this->getRequestParameter('item_id');
             $item = SmartestCmsItem::retrieveByPk($item_id);
             
-            if($page = $item->getMetaPage()){
-                if($this->getUser()->hasToken('publish_all_pages') || $this->getUser()->hasToken('publish_approved_pages')){
-                    $this->send(true, 'show_page_publish_option');
-                    $this->send($page->__toArray(), 'meta_page');
+            if(is_object($item)){
+	            
+	            $metapages = $item->getModel()->getMetaPages();
+                $this->send($metapages, 'metapages');
+                
+                if(!count($metapages)){
+                    $this->send(($this->getApplicationPreference('hide_metapages_publish_warning') == '1') ? false : true, 'metapages_publish_warning');
+                }
+	            
+	            if($page = $item->getMetaPage()){
+	                $this->send($page, 'meta_page');
+	                $this->send($item->getItem()->getDefaultMetaPageHasBeenChanged(), 'meta_page_has_changed');
+                    if($this->getUser()->hasToken('publish_all_pages') || $this->getUser()->hasToken('publish_approved_pages')){
+                        $this->send(true, 'show_page_publish_option');
+                    }else{
+                        $this->send(false, 'show_page_publish_option');
+                    }
                 }else{
                     $this->send(false, 'show_page_publish_option');
                 }
-            }else{
-                $this->send(false, 'show_page_publish_option');
-            }
-            
-            if(is_object($item)){
-	    
+	            
     	        if(($this->getUser()->hasToken('publish_approved_items') && $item->isApproved()) || $this->getUser()->hasToken('publish_all_items')){
 	            
     	            // user has permission - show options
-    	            // $item_data = $item->__toArray(true, false, true);
-    	            // $this->send($item_data, 'item');
     	            $this->send($item, 'item');
     	            $this->setTitle('Publish '.$item_data['_model']['name']);
 	            
@@ -1758,7 +1832,7 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
-	public function editProperties($get){  
+	/* public function editProperties($get){  
 		
 		$formValues = $this->manager->getItemClassProperties($get["class_id"]);
 		$selectMenus = array();
@@ -1786,7 +1860,7 @@ class Items extends SmartestSystemApplication{
 		$itemBaseValues = $this->manager->getItemClassBaseValues($get["class_id"]);
 		$itemClass = $this->manager->getItemClass($get["class_id"]);		
 		return array("itemClass"=>$itemClass[0], "itemProperties"=>$itemBaseValues, "formProperties"=>$formValues, "otherClassMenus"=>$selectMenus);
-	}
+	} */
 	
     public function updateItemClassProperty($get, $post){
 		
@@ -1870,8 +1944,6 @@ class Items extends SmartestSystemApplication{
                     $this->redirect('/smartest/file/new?for=ipv&property_id='.$model->getPrimaryPropertyId());
                 }
                 
-                // $model_array = $model->__toArrayLikeCmsItemArray();
-                // $this->send($model_array, 'item');
                 $this->send($model->getProperties(), 'properties');
                 $this->send($model, 'model');
             
@@ -1923,7 +1995,6 @@ class Items extends SmartestSystemApplication{
                 
                 }else{
                     $this->addUserMessageToNextRequest("You cannot create ".$class_name." does not exist or is not properly defined.", SmartestUserMessage::ERROR);
-                    // $this->redirect("/datamanager/getItemClassMembers?class_id=".$model->getId());
                     $this->formForward();
                 }
         
@@ -2003,9 +2074,7 @@ class Items extends SmartestSystemApplication{
 		    $this->send(($this->getRequestParameter('createmetapage') && $this->getRequestParameter('createmetapage') == 'true') ? true : false, 'cmp');
 		    
 		    // get page templates
-		    // $path = SM_ROOT_DIR.'Presentation/Masters/';
-            // $templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
-            $tlh = new SmartestTemplatesLibraryHelper;
+		    $tlh = new SmartestTemplatesLibraryHelper;
             $templates = $tlh->getMasterTemplates($this->getSite()->getId());
             $this->send($templates, 'templates');
 		
@@ -2081,8 +2150,8 @@ class Items extends SmartestSystemApplication{
 		    
     	    }else{
 	        
-    	        $this->addUserMessageToNextRequest("The model name \'".$this->getRequestParameter('itemclass_name')."\' is not valid.", SmartestUserMessage::WARNING);
-    	        $this->formForward();
+    	        $this->addUserMessageToNextRequest("The model name '".$this->getRequestParameter('itemclass_name')."' is not valid.", SmartestUserMessage::WARNING);
+    	        $this->forward('datamanager', 'addItemClass');
 	        
     	    }
 	    
@@ -2103,39 +2172,50 @@ class Items extends SmartestSystemApplication{
 		$model->hydrate($model_id);
 		
 		if(SmartestDataUtility::isValidPropertyName($new_property_name)){
+		    
+		    $new_get_method = 'get'.SmartestStringHelper::toCamelCase($this->getRequestParameter('itemproperty_name'));
+		    
+		    if(in_array($new_get_method, get_class_methods($model->getClassName()))){
+		        
+		        $this->addUserMessage('A property with that name already exists for this model.', SmartestUserMessage::WARNING);
+		        $this->forward('datamanager', 'addPropertyToClass');
+		        
+		    }else{
+		    
+		        $property = new SmartestItemProperty;
 		
-		    $property = new SmartestItemProperty;
+        		$property->setName($this->getRequestParameter('itemproperty_name'));
+        		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
+        		$property->setDatatype($this->getRequestParameter('itemproperty_datatype'));
+        		$property->setRequired($this->getRequestParameter('itemproperty_required') ? 'TRUE' : 'FALSE');
 		
-    		$property->setName($this->getRequestParameter('itemproperty_name'));
-    		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
-    		$property->setDatatype($this->getRequestParameter('itemproperty_datatype'));
-    		$property->setRequired($this->getRequestParameter('itemproperty_required') ? 'TRUE' : 'FALSE');
+        		if($this->getRequestParameter('foreign_key_filter')){
+        		    $property->setForeignKeyFilter($this->getRequestParameter('foreign_key_filter'));
+        		}
 		
-    		if($this->getRequestParameter('foreign_key_filter')){
-    		    $property->setForeignKeyFilter($this->getRequestParameter('foreign_key_filter'));
-    		}
-		
-    		$property->setItemClassId($model->getId());
-    		$property->save();
+        		$property->setItemClassId($model->getId());
+        		$property->save();
 	    
-    	    SmartestCache::clear('model_properties_'.$model->getId(), true);
-    	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
+        	    SmartestCache::clear('model_properties_'.$model->getId(), true);
+        	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
     	    
-    	    SmartestLog::getInstance('site')->log("{$this->getUser()} added a property called $new_property_name to model {$model->getName()}.", SmartestLog::USER_ACTION);
+        	    SmartestLog::getInstance('site')->log("{$this->getUser()} added a property called $new_property_name to model {$model->getName()}.", SmartestLog::USER_ACTION);
 	    
-    	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
+        	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
 	    
-	        if($this->getRequestParameter('continue') == 'NEW_PROPERTY'){
-	            $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId().'&continue=NEW_PROPERTY');
-	        }else{
-	            $this->redirect('/datamanager/getItemClassProperties?class_id='.$model->getId());
-	        }
+    	        if($this->getRequestParameter('continue') == 'NEW_PROPERTY'){
+    	            $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId().'&continue=NEW_PROPERTY');
+    	        }else{
+    	            $this->redirect('/datamanager/getItemClassProperties?class_id='.$model->getId());
+    	        }
+	        
+            }
 	    
         }else{
             $this->addUserMessageToNextRequest("You must enter a valid property name.", SmartestUserMessage::WARNING);
             SmartestLog::getInstance('site')->log("{$this->getUser()} tried to add a property called '$new_property_name' to model {$model->getName()}.", SmartestLog::WARNING);
             SmartestLog::getInstance('system')->log("{$this->getUser()} tried to add a property called '$new_property_name' to model {$model->getName()}.", SmartestLog::ERROR);
-            $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId());
+            $this->forward('datamanager', 'addPropertyToClass');
         }
 
 	}
@@ -2240,7 +2320,6 @@ class Items extends SmartestSystemApplication{
 		    
 		    if($property->getDataType() == 'SM_DATATYPE_CMS_ITEM' || $property->getDataType() == 'SM_DATATYPE_CMS_ITEM_SELECTION'){
 		        
-		        // $this->addUserMessage("hello");
 		        $possible_sets = $property->getPossibleDataSets($this->getSite()->getId());
 		        $this->send($possible_sets, 'possible_sets');
 		        

@@ -307,8 +307,8 @@ type:
     input_options:
       - SM_ASSETINPUTTYPE_URL_INPUT
     url_translation:
-      format: "https?:\/\/vimeo\.com\/(\d+)"
-      id_position: 1
+      format: "https?:\/\/(www\.)vimeo\.com\/(\d+)"
+      id_position: 2
     storage:
       type: external_translated
     render:

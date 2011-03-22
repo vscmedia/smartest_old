@@ -555,8 +555,7 @@ class SmartestModel extends SmartestBaseModel{
     
     public function getSitesWhereUsed(){
         
-        $sql = "SELECT DISTINCT Sites.* FROM Sites, Items, ItemClasses, Pages WHERE (Items. item_itemclass_id=ItemClasses.itemclass_id AND Items.item_site_id=Sites.site_id AND ItemClasses.itemclass_id='".$this->getId()."') OR (Pages.page_type='ITEMCLASS' AND Pages.page_dataset_id='".$this->getId()."' AND Pages.page_site_id=Sites.site_id)";
-        
+        $sql = str_replace('%', $this->getid(), "SELECT DISTINCT Sites.* FROM Sites, Items, ItemClasses, Pages WHERE (Items.item_itemclass_id=ItemClasses.itemclass_id AND Items.item_site_id=Sites.site_id AND ItemClasses.itemclass_id='%') OR (Pages.page_type='ITEMCLASS' AND Pages.page_dataset_id='%' AND Pages.page_site_id=Sites.site_id)");
         $result = $this->database->queryToArray($sql);
         
         $sites = array();

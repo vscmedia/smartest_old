@@ -54,10 +54,16 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
     
     public function getStorableFormat(){
         // return serialize(array('dropdown_id'=>$this->getDropdownId(), 'value'=>$this->getValue()));
-        return $this->getValue();
+        // return $this->getValue();
+        return $this->getDropdownId().':'.$this->getValue();
     }
     
     public function hydrateFromStorableFormat($v){
+        
+        if(preg_match('/(\d+):([\w_-]+)/', $v, $matches)){
+            return $this->hydrateByValueWithDropdownId($matches[2], $matches[1]);
+        }
+        
         $d = unserialize($v);
         
         if(is_array($d)){
@@ -65,6 +71,7 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
         }else{
             return $this->searchForMatchingValue($v);
         }
+        
     }
     
     public function getValueObject(){
@@ -85,6 +92,9 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
             
             case "html":
             return '<option value="'.$this->_properties['value'].'">'.$this->_properties['label'].'</option>';
+            
+            case "html_selected":
+            return '<option value="'.$this->_properties['value'].'" selected="selected">'.$this->_properties['label'].'</option>';
             
             case "value":
             return $this->getValueObject();

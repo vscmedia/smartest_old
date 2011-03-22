@@ -182,6 +182,7 @@ class SmartestAssetCreationHelper{
             
 	            if(SmartestFileSystemHelper::move($new_temp_file, $final_file_name)){
 	                $this->_asset->setUrl(basename($final_file_name));
+	                chmod($final_file_name, 0666);
 		            return true;
 		        }else{
 		            $everything_ok = false;

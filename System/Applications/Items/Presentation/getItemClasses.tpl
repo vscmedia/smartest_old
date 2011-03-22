@@ -12,6 +12,7 @@
       <form action="" method="get" id="items-search-form">
         Search for an item: <input type="text" name="query" id="items-search-name" style="width:250px" />
       </form>
+      {literal}<script type="text/javascript">$('items-search-form').observe('submit', void)</script>{/literal}
   </div>
   
   <div id="autocomplete_choices" class="autocomplete"></div>

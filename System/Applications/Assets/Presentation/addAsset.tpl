@@ -129,10 +129,10 @@ function validateUploadSuffix(){
 
         <div>
           Add this file to group:
-            <select name="initial_group_id">
+            <select name="initial_group_id"{if $lock_group_dropdown} disabled="disabled"{/if}>
               <option value="">None</option>
 {foreach from=$possible_groups item="possible_group"}
-              <option value="{$possible_group.id}">{$possible_group.label}</option>
+              <option value="{$possible_group.id}"{if $group_id && $possible_group.id == $group_id} selected="selected"{/if}>{$possible_group.label}</option>
 {/foreach}
             </select>
         </div>

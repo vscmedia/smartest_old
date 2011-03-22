@@ -14,7 +14,7 @@ function updateAssetClassName(){
 
 <div id="work-area">
 
-<h3>Website Manager &gt; Assets &gt; Add a New Container</h3>
+<h3>Add a New Container</h3>
 
 <form action="{$domain}{$section}/insertContainer" method="post" style="margin:0px">
   
@@ -26,7 +26,7 @@ function updateAssetClassName(){
 
       <div class="edit-form-row">
         <div class="form-section-label">Label:</div>
-        <input type="text" name="container_label" id="container_label" {if !$name}onkeyup="updateAssetClassName();"{/if} />
+        <input type="text" name="container_label" id="container_label"{if $name} value="{$label}"{else} onkeyup="updateAssetClassName();"{/if} />
       </div>
       
       <div class="edit-form-row">

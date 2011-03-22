@@ -12,3 +12,7 @@
     {/foreach}
   </optgroup>
 </select>
+
+{if $request_parameters.itemproperty_datatype == "SM_DATATYPE_ASSET"}
+<input type="checkbox" name="create_group" value="1" id="create-group" checked="checked" /><label for="create-group">Create a new group for these files</label>
+{/if}

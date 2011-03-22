@@ -317,7 +317,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
         if(isset($info['filter']['entitysource']['sortfield'])){
             $sql .= " ORDER BY ".$info['filter']['entitysource']['sortfield'];
         }
-        
+        echo $sql;
         return $sql;
 	    
 	}

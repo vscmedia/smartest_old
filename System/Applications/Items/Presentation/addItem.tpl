@@ -3,8 +3,6 @@
 {* <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Add a new {$model.name|strtolower}</h3> *}
 <h3>Add a new {$model.name|strtolower}</h3>
 
-<div id="instruction">You are submitting the draft property values of the new {$model.name|lower}.</div>
-
 <form action="{$domain}{$section}/insertItem" method="post">
 
 <input type="hidden" name="class_id" value="{$model.id}" />
@@ -32,11 +30,9 @@
   </select>
 </div>
 
-<div class="edit-form-row">
-  <div class="buttons-bar">
-    <input type="button" onclick="window.location='{$domain}{$section}/getItemClassMembers?class_id={$model.id}';" value="Cancel" />
-    <input type="submit" value="Save Changes" />
-  </div>
+<div class="buttons-bar">
+  <input type="button" onclick="window.location='{$domain}{$section}/getItemClassMembers?class_id={$model.id}';" value="Cancel" />
+  <input type="submit" value="Save Changes" />
 </div>
 
 </form>

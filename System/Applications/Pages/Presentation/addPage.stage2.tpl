@@ -1,8 +1,8 @@
-  <h3>Create a New Page</h3>
+  <h3>Unsaved Page: {$newPage.title}</h3>
   
   <div class="instruction">Step 2 of 3: Please fill out the details below</div>
   
-  <form action="{$domain}{$section}/addPage" method="post">
+  <form action="{$domain}smartest/page/new" method="post">
   
     <input type="hidden" name="page_parent" value="{$page_parent}" />
     <input type="hidden" name="stage" value="3">
@@ -11,15 +11,11 @@
     <div id="edit-form-layout">
         
   	  <div class="edit-form-row">
-  	    <div class="form-section-label">Title:</div>
-  	    <input type="text" name="page_title" id="page_title" value="{$newPage.title}" />
-  	  </div>
-  	  
-  	  <div class="edit-form-row">
-  	    <div class="form-section-label">Address</div>
-  	    http://{$siteInfo.domain}{$domain}<input type="text" name="page_url" id="page_url" value="{$newPage.url}" />
+  	    <div class="form-section-label">Please confirm the URL for your new page</div>
+  	    http://{$siteInfo.domain}{$domain}<input type="text" name="page_url" id="page_url" style="width:420px" value="{if $suggested_url}{$suggested_url}{else}{$newPage.url}{/if}" />
   	    {if $newPage.type == "ITEMCLASS"}<input type="button" value="&lt;&lt; Item URL Name" onclick="addField('page_url', 'name');" />{/if}
   	    {if $newPage.type == "ITEMCLASS"}<input type="button" value="&lt;&lt; Item Short ID" onclick="addField('page_url', 'id');" />{/if}
+  	    <br /><span class="form-hint">You will be able to change this and add more URLs later</span>
   	  </div>
   	
   	{if $newPage.type == "ITEMCLASS"}

@@ -11,7 +11,7 @@
     <p><strong>Build</strong>: {$build}</p>
     <p><strong>Installed</strong>: {if $system_installed_timestamp > 0}{$system_installed_timestamp|date_format:"%A %B %e, %Y, %l:%M%p"}{else}<em>Unknown</em>{/if}</p>
     <p><strong>PHP Version</strong>: {$php_version}</p>
-    <p><strong>Available Memory</strong>: {$memory_limit}</p>
+    <p><strong>Available Memory</strong>: {if $memory_limit < 32}<span style="color:#e20">{/if}{$memory_limit} MB{if $memory_limit < 32} - Please allocate more memory to PHP</span>{/if}</p>
     {if $allow_see_server_speed}<p><strong>Server Speed</strong>: <!--<img src="{$domain}Resources/System/Images/{$speed_category_info.image}" alt="" />--> <span style="color:#{$speed_category_info.color}">{$speed_category_info.description}</span> <span style="color:#ccc">({$speed_score})</span> {if $allow_test_server_speed}<input type="button" value="Test..." onclick="window.location='{$domain}desktop/testServerSpeed'" />{/if}</p>{/if}
     <p><strong>Web Server</strong>: {$platform}</p>
     <p><strong>Root directory</strong>: <code>{$root_dir}</code></p>

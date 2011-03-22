@@ -136,14 +136,18 @@ class SmartestCmsLink extends SmartestHelper{
             $data = $markup_attributes->getParameters();
         }
         
-        $allowed_attributes = array('title', 'id', 'name', 'style', 'onclick', 'ondblclick', 'onmouseover', 'onmouseout', 'class', 'target', 'rel');
+        $allowed_attributes = array('title', 'id', 'name', 'style', 'class', 'target', 'rel');
+        $deprecated_javascript_attributes = array('onclick', 'ondblclick', 'onmouseover', 'onmouseout');
         $html_attributes_array = array();
         $other_attributes_array = array();
         
         foreach($data as $name => $value){
             
-            if(in_array($name, $allowed_attributes)){
+            if(in_array($name, $deprecated_javascript_attributes)){
                 $html_attributes_array[$name] = $value;
+            }else if(in_array($name, $allowed_attributes)){
+                // Make sure attributed supplied for display are XML friendly
+                $html_attributes_array[$name] = SmartestStringHelper::toXmlEntities($value);
             }else{
                 $other_attributes_array[$name] = $value;
             }
@@ -603,7 +607,8 @@ class SmartestCmsLink extends SmartestHelper{
         }
         
         if(($this->getType() == SM_LINK_TYPE_PAGE || $this->getType() == SM_LINK_TYPE_METAPAGE) && !$this->_markup_attributes->hasParameter('title')){
-            $this->_markup_attributes->setParameter('title', $this->_destination->getTitle());
+            // Make sure that any title added automatically won't break well-formed markup
+            $this->_markup_attributes->setParameter('title', SmartestStringHelper::toXmlEntities($this->_destination->getTitle()));
         }
         
         $content = $r->renderLink($this);

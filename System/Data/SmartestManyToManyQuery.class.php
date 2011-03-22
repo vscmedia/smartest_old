@@ -123,7 +123,7 @@ class SmartestManyToManyQuery{
         $id_2 = (int) $id_2;
         
         if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
-            $sql = "DELETE FROM ManyToManyLookups WHERE (mtmlookup_entity_1_foreignkey='".$id_1."' AND mtmlookup_entity_2_foreignkey='".$id_2."') OR (mtmlookup_entity_1_foreignkey='".$id_2."' AND mtmlookup_entity_2_foreignkey='".$id_1."')";
+            $sql = "DELETE FROM ManyToManyLookups WHERE ManyToManyLookups.mtmlookup_type='".$this->_typeId."' AND ((mtmlookup_entity_1_foreignkey='".$id_1."' AND mtmlookup_entity_2_foreignkey='".$id_2."') OR (mtmlookup_entity_1_foreignkey='".$id_2."' AND mtmlookup_entity_2_foreignkey='".$id_1."'))";
             $this->database->rawQuery($sql);
         }else{
             throw new SmartestException('Error: SmartestManyToManyQuery::deleteNetworkLinkBetween() should only be used with Network method connections', SM_ERROR_USER);
@@ -135,9 +135,30 @@ class SmartestManyToManyQuery{
         
         $id = (int) $id;
         
+        $this->setCentralNodeId($id);
+        
         if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
-            $sql = "DELETE FROM ManyToManyLookups WHERE mtmlookup_entity_1_foreignkey='".$id."' OR  mtmlookup_entity_2_foreignkey='".$id."'";
-            $this->database->rawQuery($sql);
+            
+            // $sql = "DELETE ManyToManyLookups FROM ManyToManyLookups, ".$this->_type->getNetwork()->getTable()." WHERE ManyToManyLookups.mtmlookup_type='".$this->_typeId."' AND ((".$this->_type->getNetwork()->getForeignKeyField()."=ManyToManyLookups.mtmlookup_entity_1_foreignkey AND mtmlookup_entity_1_foreignkey='".$id."') OR (".$this->_type->getNetwork()->getForeignKeyField()."=ManyToManyLookups.mtmlookup_entity_2_foreignkey AND mtmlookup_entity_2_foreignkey='".$id."'))";
+            // $this->database->rawQuery($sql);
+            
+            $lookups = $this->retrieveLookups();
+            $num_lookups = count($lookups);
+            
+            if($num_lookups){
+                
+                $lookup_ids = array();
+                
+                foreach($this->retrieveLookups() as $l){
+                    $lookup_ids[] = $l->getId();
+                }
+                
+                $sql = "DELETE FROM ManyToManyLookups WHERE ManyToManyLookups.mtmlookup_type='".$this->_typeId."' AND ManyToManyLookups.mtmlookup_id";
+                if($num_lookups == 1){ $sql .= "=".$lookup_ids[0]; }else{ $sql .= " IN (".implode(',', $lookup_ids).")";}
+                $this->database->rawQuery($sql);
+                
+            }
+            
         }else{
             throw new SmartestException('Error: SmartestManyToManyQuery::deleteNetworkNodeById() should only be used with Network method connections', SM_ERROR_USER);
         }
@@ -267,16 +288,39 @@ class SmartestManyToManyQuery{
                 $query .= $this->_type->getNetwork()->getTable().'.*, ManyToManyLookups.* FROM ';
             }
             
+            $num_constraints = count($this->_foreignTableConstraints);
+            
+            if($num_constraints){
+                
+                $conditions_sql = ' AND ';
+                if($num_constraints > 1) $conditions_sql .= '(';
+                
+                $conds = array();
+                
+                foreach($this->_foreignTableConstraints as $ftc){
+                    $conds[] = $ftc->getSql();
+                }
+                
+                $conditions_sql .= implode(' AND ', $conds);
+                if($num_constraints > 1) $conditions_sql .= ')';
+            
+            }
+            
             $query .= $this->_type->getNetwork()->getTable().", ManyToManyLookups WHERE mtmlookup_type='".$this->_type->getId()."'";
-            $query .= " AND ((mtmlookup_entity_1_foreignkey='".$this->_central_node_id."' AND mtmlookup_entity_2_foreignkey=".$this->_type->getNetwork()->getForeignKeyField()." AND mtmlookup_entity_2_foreignkey!='".$this->_central_node_id."') OR (mtmlookup_entity_2_foreignkey='".$this->_central_node_id."' AND mtmlookup_entity_1_foreignkey=".$this->_type->getNetwork()->getForeignKeyField()." AND mtmlookup_entity_1_foreignkey!='".$this->_central_node_id."'))";
+            $query .= " AND ((mtmlookup_entity_1_foreignkey='".$this->_central_node_id."' AND mtmlookup_entity_2_foreignkey=".$this->_type->getNetwork()->getForeignKeyField()." AND mtmlookup_entity_2_foreignkey!='".$this->_central_node_id."'";
+            if($num_constraints) $query .= $conditions_sql;
+            $query .= ") OR (mtmlookup_entity_2_foreignkey='".$this->_central_node_id."' AND mtmlookup_entity_1_foreignkey=".$this->_type->getNetwork()->getForeignKeyField()." AND mtmlookup_entity_1_foreignkey!='".$this->_central_node_id."')";
+            if($num_constraints) $query .= $conditions_sql;
+            $query .= ")";
             
             // observe foreign table constraints
-            if(count($this->_foreignTableConstraints)){
+            
+            /* if(count($this->_foreignTableConstraints)){
                 foreach($this->_foreignTableConstraints as $ftc){
                     $qf = ' AND '.$ftc->getSql();
                     $query .= $qf;
                 }
-            }
+            } */
             
         }else{
             
@@ -352,14 +396,14 @@ class SmartestManyToManyQuery{
                 $qf = " AND ManyToManyLookups.mtmlookup_instance_name IN ('".implode("', '", $this->_allowedInstanceNames).'\')';
                 $query .= $qf;
             }
+            
+            $query .= ' ORDER BY '.$this->getSortFieldsForQuery();
+            $query .= ' '.$this->_sortDirection;
         
-        }
+            if($this->_resultLimit > 0){
+                $query .= ' LIMIT '.$this->_resultLimit;
+            }
         
-        $query .= ' ORDER BY '.$this->getSortFieldsForQuery();
-        $query .= ' '.$this->_sortDirection;
-        
-        if($this->_resultLimit > 0){
-            $query .= ' LIMIT '.$this->_resultLimit;
         }
         
         $this->_query = $query;
@@ -471,7 +515,7 @@ class SmartestManyToManyQuery{
             $o = new $object_type;
             $o->hydrate($r);
             
-            if($use_numeric_indices){
+            if($use_numeric_indices || $this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
                 
                 $objects[] = $o;
                 

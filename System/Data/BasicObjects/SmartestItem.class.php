@@ -67,15 +67,12 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        
 	        case "name":
 	        return new SmartestString($this->getName());
-	        break;
 	        
 	        case "title":
 	        return new SmartestString($this->getName());
-	        break;
 	        
 	        case "url":
 	        return $this->getUrl();
-	        break;
 	        
 	        case "link_contents":
 	        
@@ -84,28 +81,21 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
     	    }else{
     	        return '#';
     	    }
-            
-	        break;
 	        
 	        case 'created':
             return new SmartestDateTime($this->getCreated());
-            break;
 	        
 	        case "class":
 	        return $this->getModel()->getClassName();
-	        break;
 	        
 	        case "model":
 	        return $this->getModel();
-	        break;
 	        
 	        case "tags":
 	        return $this->getTags();
-	        break;
 	        
 	        case "authors":
 	        return $this->getAuthors();
-	        break;
 	        
 	        case "small_icon":
             return $this->getSmallIcon();
@@ -185,7 +175,6 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        $arrays[] = $a->getArrayForElementsTree(1);
 	    }
 	    
-	    // print_r($arrays);
 	    return $arrays;
 	    
 	}
@@ -238,7 +227,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    $sql = "SELECT * FROM Tags, TagsObjectsLookup WHERE TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id='".$this->_properties['id']."' AND TagsObjectsLookup.taglookup_type='SM_ITEM_TAG_LINK' ORDER BY Tags.tag_name";
 	    $result = $this->database->queryToArray($sql);
 	    $ids = array();
-	    $tags = array();
+	    $tags = new SmartestArray;
 	    
 	    foreach($result as $ta){
 	        if(!in_array($ta['taglookup_tag_id'], $ids)){
@@ -249,7 +238,6 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        }
 	    }
 	    
-	    // print_r($tags);
 	    return $tags;
 	    
 	}
@@ -273,7 +261,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        
 	        $tag = new SmartestTag;
 	        
-	        if(!$tag->hydrate($tag_identifier)){
+	        if(!$tag->find($tag_identifier)){
 	            // kill it off if they are supplying a numeric ID which doesn't match a tag
 	            return false;
 	        }
@@ -394,8 +382,6 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
 	    }
 	    
-	    // var_dump($draft_mode);
-	    
 	    if(!$draft_mode){
 	        $q->addForeignTableConstraint('Items.item_public', 'TRUE');
 	    }
@@ -482,8 +468,10 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
 	    }else{
 	        $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS_OTHER');
+	        $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
 	    }
 	    
+	    $q->setCentralNodeId($this->getId());
 	    $q->deleteNetworkNodeById($this->_properties['id']);
 	    
 	}
@@ -637,8 +625,6 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	    $q->delete();
 	    
-	    // print_r($q);
-	    
 	}
 	
 	// CMS Display stuff
@@ -669,7 +655,6 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	            $value = $this->getPropertyValueByNumericKey($property->getId());
 	            
 	            if(is_object($value)){
-	                // $id = $value->getId();
 	                return $value->render();
 	            }else if(is_numeric($value)){
 	                $asset = new SmartestRenderableAsset;
@@ -854,14 +839,107 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	    $sql .= " AND ".$match_field."='".$this->getId()."'";
 	    
-	    // echo $sql;
-	    
 	    $result = $this->database->queryToArray($sql);
 	    
 	    foreach($result as $record){
 	        $definition = new SmartestItemSpaceDefinition;
 	        $definition->hydrateFromGiantArray($record);
 	        $defs[] = $definition;
+	    }
+	    
+	    return $defs;
+	    
+	}
+	
+	public function getMetapagesWithUnpublishedAssetClassChanges(){
+	    
+	    $sql = "SELECT Pages.* FROM Pages, AssetIdentifiers WHERE Pages.page_type='ITEMCLASS' AND Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND AssetIdentifiers.assetidentifier_draft_asset_id != AssetIdentifiers.assetidentifier_live_asset_id AND AssetIdentifiers.assetidentifier_item_id='".$this->getId()."'";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $pages = array();
+	    
+	    foreach($result as $p){
+	        $page = new SmartestPage;
+	        $page>hydrate($p);
+	        $pages[] = $page;
+	    }
+	    
+	    return $pages;
+	    
+	    // SELECT Pages.page_type, AssetClasses.assetclass_name, AssetIdentifiers.* FROM Pages, AssetClasses, AssetIdentifiers WHERE Pages.page_id = AssetIdentifiers.assetidentifier_page_id AND AssetClasses.assetclass_id=AssetIdentifiers.assetidentifier_assetclass_id AND AssetClasses.assetclass_id=78
+	    // echo $sql;
+	    // $result = $this->database->queryToArray($sql);
+	    
+	}
+	
+	public function getDefaultMetaPageHasBeenChanged($include_general_assetidentifiers=false){
+	    
+	    if($id = $this->getMetaPageId()){
+	        
+	        $sql = "SELECT AssetIdentifiers.* FROM Pages, AssetIdentifiers WHERE Pages.page_type='ITEMCLASS' AND Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND AssetIdentifiers.assetidentifier_draft_asset_id != AssetIdentifiers.assetidentifier_live_asset_id AND Pages.page_id='".$id."'";
+    	    
+    	    if($include_general_assetidentifiers){
+    	        $sql .= " AND (AssetIdentifiers.assetidentifier_item_id IS NULL OR AssetIdentifiers.assetidentifier_item_id='".$this->getId()."')";
+    	    }else{
+    	        $sql .= " AND AssetIdentifiers.assetidentifier_item_id='".$this->getId()."'";
+    	    }
+    	    
+    	    $result = $this->database->queryToArray($sql);
+    	    return (bool) count($result);
+	        
+	    }
+	    
+	    return false;
+	    
+	}
+	
+	public function getAssetClassChanges($page_id=null){
+	    
+	    // if($id = $this->getMetaPageId()){
+	        
+	        $sql = "SELECT AssetIdentifiers.* FROM Pages, AssetIdentifiers WHERE Pages.page_type='ITEMCLASS' AND Pages.page_id=AssetIdentifiers.assetidentifier_page_id AND AssetIdentifiers.assetidentifier_draft_asset_id != AssetIdentifiers.assetidentifier_live_asset_id AND AssetIdentifiers.assetidentifier_item_id='".$this->getId()."'";
+    	    
+    	    if(is_numeric($page_id)){
+    	        $sql .= " AND Pages.page_id='".$page_id."'";
+    	    }
+    	    
+    	    $result = $this->database->queryToArray($sql);
+    	    return (bool) count($result);
+	        
+	    // }
+	    
+	    return false;
+	    
+	}
+	
+	public function getItemSpacesWithThisItemInDraftOnly(){
+	    
+	    $sql = "SELECT AssetClasses.* FROM AssetClasses, AssetIdentifiers WHERE AssetClasses.assetclass_id=AssetIdentifiers.assetidentifier_assetclass_id AND AssetClasses.assetclass_type='SM_ASSETCLASS_ITEM_SPACE' AND AssetIdentifiers.assetidentifier_draft_asset_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_live_asset_id != '".$this->getId()."'";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $itemspaces = array();
+	    
+	    foreach($result as $itemspace){
+	        $is = new SmartestItemSpace;
+	        $is->hydrate($itemspace);
+	        $itemspaces[] = $is;
+	    }
+	    
+	    return $itemspaces;
+	    
+	}
+	
+	public function getItemSpaceDefinitionsWithThisItemInDraftOnly(){
+	    
+	    $sql = "SELECT AssetIdentifiers.* FROM AssetClasses, AssetIdentifiers WHERE AssetClasses.assetclass_id=AssetIdentifiers.assetidentifier_assetclass_id AND AssetClasses.assetclass_type='SM_ASSETCLASS_ITEM_SPACE' AND AssetIdentifiers.assetidentifier_draft_asset_id='".$this->getId()."' AND AssetIdentifiers.assetidentifier_live_asset_id != '".$this->getId()."'";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $defs = array();
+	    
+	    foreach($result as $itemspace){
+	        $is = new SmartestItemSpaceDefinition;
+	        $is->hydrate($itemspace);
+	        $defs[] = $is;
 	    }
 	    
 	    return $defs;
@@ -1030,8 +1108,6 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	// System UI calls
 	
 	public function getSmallIcon(){
-	    
-	    $info = $this->getTypeInfo();
 	    
 	    return $this->_request->getDomain().'Resources/Icons/package_small.png';
 	    

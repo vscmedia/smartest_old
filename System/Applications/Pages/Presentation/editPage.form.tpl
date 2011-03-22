@@ -225,12 +225,10 @@
     
   {/if}
     
-  <div class="edit-form-row">
     <div class="buttons-bar">
       <input type="button" value="Cancel" onclick="cancelForm();" />
       <input type="submit" name="action" value="Save Changes" />
     </div>
-  </div>
   
 </div>
 

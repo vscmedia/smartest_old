@@ -221,22 +221,33 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    }
 	}
 	
-	public function getAssetIdentifiers($item_id=false){
+	public function getAssetIdentifiers($item_id=false, $item_only=false){
 	    
-	    $sql = "SELECT * FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_page_id='".$this->_properties['id']."' AND assetidentifier_assetclass_id=assetclass_id AND assetidentifier_item_id IS NULL";
+	    $sql = "SELECT * FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_page_id='".$this->_properties['id']."' AND assetidentifier_assetclass_id=assetclass_id";
+	    
+	    if(is_numeric($item_id)){
+	        if($item_only){
+	            $sql .= " AND assetidentifier_item_id='".$item_id."'";
+	        }else{
+	            $sql .= " AND (assetidentifier_item_id='".$item_id."' OR assetidentifier_item_id IS NULL)";
+	        }
+	    }else{
+	        $sql .= " AND assetidentifier_item_id IS NULL";
+	    }
+	    
 	    $result = $this->database->queryToArray($sql);
-	    
+    
 	    $ais = array();
-	    
+    
 	    foreach($result as $r){
-	        
+        
 	        $ai = new SmartestAssetIdentifier;
 	        $ai->hydrateFromGiantArray($r);
 	        $ais[$r['assetclass_id']] = $ai;
-	        
+        
 	    }
 	    
-	    if($item_id !== false){
+	    /* if($item_id !== false){
 	        
 	        $sql = "SELECT * FROM AssetIdentifiers, AssetClasses WHERE assetidentifier_page_id='".$this->_properties['id']."' AND assetidentifier_assetclass_id=assetclass_id AND assetidentifier_item_id='".$item_id."'";
             $result = $this->database->queryToArray($sql);
@@ -249,7 +260,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 
     	    }
     	    
-	    }
+	    } */
 	    
 	    return $ais;
 	    
@@ -278,7 +289,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    
 	}
 	
-	public function publish($item_id=false){
+	public function publish($item_id=false, $item_only=null){
 	    
 	    // update database defs
 		$sql = "UPDATE Lists SET list_live_set_id=list_draft_set_id, list_live_template_file=list_draft_template_file, list_live_header_template=list_draft_header_template, list_live_footer_template=list_draft_footer_template WHERE list_page_id='".$this->_properties['id']."'";
@@ -287,29 +298,11 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		// delete files in page cache
 		$this->clearCachedCopies();
 		
-		$asset_identifiers = $this->getAssetIdentifiers($item_id);
+		// Update placeholders and containers
+		$this->publishAssetClasses($item_id, $item_only);
 		
-		// new way of publishing asset identifiers that takes account of items and itemspaces
-		foreach($asset_identifiers as $ai){
-		    
-		    if($ai->getAssetClass()->getType() == 'SM_ASSETCLASS_ITEM_SPACE'){
-		        
-		        $item = $ai->getSimpleItem(true);
-		        
-		        if($item){
-		            $item_published = ($item->getPublic() == 'TRUE') ? true : false;
-		        }else{
-		            // echo 'no item <br />';
-		        }
-	        }
-		    
-		    if($ai->getAssetClass()->getUpdateOnPagePublish() == 1 || $item_published){
-		        $ai->publish(true);
-		    }
-		}
-		
-		$sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
-		$this->database->rawQuery($sql);
+		// Update fields
+		$this->publishFields();
 		
 		$this->setLiveTemplate($this->getDraftTemplate());
 		$this->setLastPublished(time());
@@ -322,10 +315,48 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		    $tf->publish();
 		}
 		
-		// finally, request the page to force the system to build and cache the new copy
-		/* if(!defined('SM_CMS_PAGE_SITE_ID')){define('SM_CMS_PAGE_SITE_ID', $this->getSiteId());}
-		$ph = new SmartestWebPagePreparationHelper($this); */
+	}
+	
+	public function publishAssetClasses($item_id=false, $item_only=false){
+	    
+	    $asset_identifiers = $this->getAssetIdentifiers($item_id, $item_only);
 		
+		foreach($asset_identifiers as $ai){
+		    
+		    if($ai->getAssetClass()->getType() == 'SM_ASSETCLASS_ITEM_SPACE'){
+		        
+		        $item = $ai->getSimpleItem(true);
+		        
+		        if($item){
+		            
+		            $item_published = ($item->getPublic() == 'TRUE') ? true : false;
+		            
+		            if($item_published){
+		                // if the item selected as the draft def for the itemspace is published
+		                $ai->publish(true);
+		            }
+		            
+		        }else{
+		            SmartestLog::getInstance("system")->log('Item ID '.$ai->getItemId(true).' chosen as draft definition for itemspace ID '.$ai->getItemSpaceId().' could not be found.');
+		        }
+		        
+		        if($ai->getAssetClass()->getUpdateOnPagePublish() == 1 || $item_published){
+
+    		    }
+		        
+	        }else{
+	            $ai->publish(true);
+	        }
+		    
+		}
+	    
+	}
+	
+	public function publishFields(){
+	    
+	    $sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
+		$this->database->rawQuery($sql);
+	    
 	}
 	
 	public function unpublish($auto_save=true){
@@ -1976,6 +2007,43 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		
 	}
 	
+	public function getStrictUrl(){
+	    
+	    $home_page = $this->getParentSite()->getHomePage(true);
+	    
+		$breadcrumbs = array();
+		$bits = array();
+		
+		$limit = self::HIERARCHY_DEPTH_LIMIT;
+		
+		$page = $this;
+		
+		while($limit > 0){
+		    
+		    $pp = $page->getParentPage();
+		    $bits[] = SmartestStringHelper::toSlug($page->getTitle());
+		    
+		    if($pp->getId() != $home_page->getId()){
+		    
+    		    $page = $pp;
+			
+		    }else{
+		        
+		        break;
+		        
+		    }
+		    
+		    $limit--;
+			
+		}
+		
+		krsort($bits);
+		$result = array_values($bits);
+	    
+	    return implode('/', $bits).'.html';
+	    
+	}
+	
 	public function getTreeLevel(){
 	    return $this->_level;
 	}
@@ -2030,11 +2098,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	public function getParentSite(){
 	    
 	    if(!$this->_parent_site){
-	        // var_dump($this->_properties['site_id']);
-	        /* if(!$this->_properties['site_id']){
-	            throw new SmartestException("No site ID");
-	        } */
-	        $sql = "SELECT * FROM Sites WHERE Sites.site_id='".$this->_properties['site_id']."'";
+	        $sql = "SELECT * FROM Sites WHERE Sites.site_id='".$this->getSiteId()."'";
             $result = $this->database->queryToArray($sql);
             $s = new SmartestSite;
             $s->hydrate($result[0]);

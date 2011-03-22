@@ -49,15 +49,21 @@ class SmartestSystemUser extends SmartestUser{
 	    
 	}
 	
-	public function getAllowedSites(){
+	public function getAllowedSites($limit_ids=null){
 	    
 	    // Retrieves a list of sites where the user is allowed to edit the permissins of other users
 	    
 	    if($this->hasGlobalPermission('site_access')){
             $sql = "SELECT * FROM Sites";
+            if(is_array($limit_ids) && count($limit_ids)){
+                $sql .= " WHERE Sites.site_id IN ('".implode("','", $limit_ids)."')";
+            }
         }else{
             // site_access token is ALWAYS ID 21
             $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UsersTokensLookup.utlookup_token_id = '21' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
+            if(is_array($limit_ids) && count($limit_ids)){
+                $sql .= " AND Sites.site_id IN ('".implode("','", $limit_ids)."')";
+            }
         }   
         
         $this->_site_ids = array();
@@ -71,7 +77,7 @@ class SmartestSystemUser extends SmartestUser{
 	        $site->hydrate($site_array);
 	        $sites[] = $site;
 	        
-	        if($site->getId()){
+	        if($site->getId() && !$limit_ids){
 	            $this->_site_ids[] = $site->getId();
             }
 	    }

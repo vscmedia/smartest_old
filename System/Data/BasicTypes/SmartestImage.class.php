@@ -24,6 +24,10 @@ class SmartestImage extends SmartestFile{
         parent::__construct();
     }
     
+    public function __toString(){
+        return (string) $this->render();
+    }
+    
     public function getFullPath(){
         // return $this->_directory.$this->_file_name;
         return $this->_current_file_path;
@@ -338,7 +342,7 @@ class SmartestImage extends SmartestFile{
             
                 case self::PNG:
             
-                if(imagepng($this->_thumbnail_resource, $full_path, 100)){
+                if(imagepng($this->_thumbnail_resource, $full_path, 0)){
                     $this->clearThumbnailResource();
                     $thumbnail->loadFile($full_path);
                     return $thumbnail;
@@ -348,7 +352,7 @@ class SmartestImage extends SmartestFile{
             
                 case self::GIF:
             
-                if(imagegif($this->_thumbnail_resource, $full_path, 100)){
+                if(imagegif($this->_thumbnail_resource, $full_path)){
                     $this->clearThumbnailResource();
                     $thumbnail->loadFile($full_path);
                     return $thumbnail;

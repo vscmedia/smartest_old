@@ -105,7 +105,6 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	public function extractId(){
 	    $regex = "/".$this->_type_info['url_translation']['format']."/i";
 	    preg_match($regex, $this->getUrl(), $matches);
-	    // print_r($matches);
 	    $position = isset($this->_type_info['url_translation']['id_position']) ? $this->_type_info['url_translation']['id_position'] : 1;
 	    return $matches[$position];
 	}

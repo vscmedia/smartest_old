@@ -367,7 +367,7 @@ class Desktop extends SmartestSystemApplication{
         $this->send($sys['system']['info']['build'], 'build');
         
         // Memory Limit
-        $this->send(SmartestSystemHelper::getPhpMemoryLimit(), 'memory_limit');
+        $this->send(SmartestSystemHelper::getPhpMemoryLimit(true), 'memory_limit');
         
         // PHP Version
         $this->send(SmartestSystemHelper::getPhpVersion(), 'php_version');
@@ -385,15 +385,24 @@ class Desktop extends SmartestSystemApplication{
         $raw_speed_score = SmartestSystemSettingHelper::load('_server_speed_index');
         $cats = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/serverspeed.yml');
         $speed_categories = $cats['levels'];
+        $speed_categories[0] = null;
         $previous_category = array('description'=>'Unrated', 'image'=>'server-level-0.png', 'color'=>'333');
         
+        $this->setTitle('About Smartest');
+        
+        ksort($speed_categories);
+        
+        $category = end($speed_categories);
+        reset($speed_categories);
+        
         foreach($speed_categories as $k => $sc){
+          
             if($raw_speed_score < $k){
-                $previous_category = $speed_categories[$k];
-                continue;
-            }else{
-                $category = $previous_category;
+                $category = $sc;
                 break;
+            }else{
+                // $previous_category = $speed_categories[$k];
+                continue;
             }
         }
         
@@ -442,6 +451,18 @@ class Desktop extends SmartestSystemApplication{
         }
         
         $this->redirect('/smartest/about');
+        
+    }
+    
+    public function phpinfo(){
+        
+        if($this->getUser()->hasToken('view_phpinfo')){
+            phpinfo();
+            exit;
+        }else{
+            $this->addUserMessageToNextRequest("You do not have permission to view PHP Info.", SmartestUserMessage::ACCESS_DENIED);
+            $this->formForward();
+        }
         
     }
     

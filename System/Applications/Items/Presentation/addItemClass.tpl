@@ -80,9 +80,9 @@ function turnOffAutoPlural(){
     <input id="plural" type="text" name="num_properties" style="width:200px" />
 </div> *}
     
-<div class="edit-form-row">
-    <div class="buttons-bar"><input type="submit" value="Next &gt;&gt;" /></div>
-</div>
+
+<div class="buttons-bar"><input type="submit" value="Next &gt;&gt;" /></div>
+
 
 </form>
 

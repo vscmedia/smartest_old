@@ -515,7 +515,9 @@ class Pages extends SmartestSystemApplication{
 	public function addContainer($get){
 		
 		$container_name = SmartestStringHelper::toVarName($this->getRequestParameter('name'));
-		
+		$container_label = SmartestStringHelper::toTitleCaseFromVarName($container_name);
+    
+        $this->send($container_label, 'label');
 		$this->send($container_name, 'name');
 		$this->send($asset_class_types, 'types');
 		
@@ -954,28 +956,12 @@ class Pages extends SmartestSystemApplication{
 		$helper = new SmartestPageManagementHelper;
 		
 		if($this->getRequestParameter('stage') && is_numeric($this->getRequestParameter('stage')) && is_object(SmartestSession::get('__newPage'))){
-			  $stage = $this->getRequestParameter('stage');
+		    $stage = $this->getRequestParameter('stage');
 		}else{
 		    $stage = 1;
 		}
 		
 		// echo $this->getRequestParameter('stage');
-		
-		/* if($this->getRequestParameter('site_id') && is_numeric($this->getRequestParameter('site_id'))){
-			$site = new SmartestSite;
-			$site->hydrate($this->getRequestParameter('site_id'));
-			$site_info = $site->__toArray();
-		}else if($this->getRequestParameter('page_id')){
-			$parent_id = $this->getRequestParameter('page_id');
-			$site_id = $this->manager->database->specificQuery("page_site_id", "page_webid", $parent_id, "Pages");
-			$site = new SmartestSite;
-			$site->hydrate($site_id);
-			$site_info = $site->__toArray();
-		}else if(is_object(SmartestSession::get('__newPage')) && SmartestSession::get('__newPage')->getSiteId()){
-			$site = new SmartestSite;
-			$site->hydrate(SmartestSession::get('__newPage')->getSiteId());
-			$site_info = $site->__toArray();
-		}*/
 		
 		if($this->getSite() instanceof SmartestSite){
 		    $site_id = $this->getSite()->getId();
@@ -985,16 +971,18 @@ class Pages extends SmartestSystemApplication{
 		    $this->redirect("/smartest");
 		}
 		
-		if($this->getRequestParameter('page_id')){
+		/* if($this->getRequestParameter('page_id')){
 			$page_id = $this->getRequestParameter('page_id');
 			$parent = new SmartestPage;
 			$parent->hydrate($page_id);
 			$parent_info = $parent;
-		}else if(is_object(SmartestSession::get('__newPage')) && SmartestSession::get('__newPage')->getParent()){
-			$parent = new SmartestPage;
-			$parent->hydrate(SmartestSession::get('__newPage')->getParent());
-			$parent_info = $parent;
-		}
+		}else{
+		    if(is_object(SmartestSession::get('__newPage')) && SmartestSession::get('__newPage')->getParent()){
+			    $parent = new SmartestPage;
+			    $parent->hydrate(SmartestSession::get('__newPage')->getParent());
+			    $parent_info = $parent;
+			}
+		} */
 		
 		// $templates = $helper->getMasterTemplates($site_id);
 		$tlh = new SmartestTemplatesLibraryHelper;
@@ -1006,9 +994,27 @@ class Pages extends SmartestSystemApplication{
 			
 			case "2":
 			
-			// $type = strtolower(($this->getRequestParameter('page_type') == 'ITEMCLASS') ? 'ITEMCLASS' : 'NORMAL');
+			if(!$this->getRequestParameter('page_title')){
+			    $this->setRequestParameter('stage', 1);
+			    $p = new SmartestPage;
+			    if($p->find($this->getRequestParameter('page_parent'))){
+			        $this->setRequestParameter('page_id', $p->getWebId());
+		        }
+		        $this->addUserMessage("You must enter a title for your new page", SmartestUserMessage::WARNING);
+		        $this->forward('websitemanager', 'addPage');
+			}else{
+			    SmartestSession::get('__newPage')->setTitle(htmlentities($this->getRequestParameter('page_title'), ENT_COMPAT, 'UTF-8'));
+			}
+			
 			$type = in_array($this->getRequestParameter('page_type'), array('NORMAL', 'ITEMCLASS', 'LIST', 'TAG')) ? $this->getRequestParameter('page_type') : 'NORMAL';
 			$this->send($this->getRequestParameter('page_parent'), 'page_parent');
+			
+			SmartestSession::get('__newPage')->setParent($this->getRequestParameter('page_parent'));
+			$suggested_url = SmartestSession::get('__newPage')->getStrictUrl();
+			
+			if(!$this->getSite()->urlExists($suggested_url)){
+			    $this->send($suggested_url, 'suggested_url');
+			}
 			
 			$page_presets = $helper->getPagePresets($this->getSite()->getId());
 			
@@ -1066,8 +1072,10 @@ class Pages extends SmartestSystemApplication{
 			case "3":
 			
 			// verify the page details
+			if($this->getRequestParameter('page_title') && SmartestSession::get('__newPage')->getTitle() == "Untitled Page"){
+			    SmartestSession::get('__newPage')->setTitle($this->getRequestParameter('page_title'));
+			}
 			
-			SmartestSession::get('__newPage')->setTitle(strlen($this->getRequestParameter('page_title')) ? htmlentities($this->getRequestParameter('page_title'), ENT_COMPAT, 'UTF-8') : 'Untitled Smartest Web Page');
 			SmartestSession::get('__newPage')->setName(strlen($this->getRequestParameter('page_title')) ? SmartestStringHelper::toSlug($this->getRequestParameter('page_title')) : SmartestStringHelper::toSlug('Untitled Smartest Web Page'));
 			SmartestSession::get('__newPage')->setCacheAsHtml($this->getRequestParameter('page_cache_as_html'));
 			SmartestSession::get('__newPage')->setCacheInterval($this->getRequestParameter('page_cache_interval'));
@@ -1163,7 +1171,29 @@ class Pages extends SmartestSystemApplication{
 			
 			default:
 			
-			$parent = new SmartestPage;
+			if($this->getRequestParameter('page_id')){
+    			
+    			$page_id = $this->getRequestParameter('page_id');
+    			$parent = new SmartestPage;
+    			
+    			if($parent->findby('webid', $page_id)){
+    			    $this->send($parent, 'parent_page');
+			    }
+			    
+    		}else{
+    		    
+    		    if(is_object(SmartestSession::get('__newPage')) && SmartestSession::get('__newPage')->getParent()){
+    			    $parent = new SmartestPage;
+    			    $parent->find(SmartestSession::get('__newPage')->getParent());
+    			    $this->send($parent, 'parent_page');
+    			}else{
+    			    // fetch list of site pages for dropdown
+    			    $parent_pages = $this->getSite()->getPagesList(true);
+    			    $this->send($parent_pages, 'parent_pages');
+    			}
+    		}
+			
+			/* $parent = new SmartestPage;
 			
 			if($this->getRequestParameter('page_id') && !isset($site_id)){
 			    
@@ -1172,17 +1202,18 @@ class Pages extends SmartestSystemApplication{
 				
 				$site_id = $parent->getSiteId();
 				
-			}
+			} */
 			
 			$type = 'start';
+			
 			SmartestSession::set('__newPage', new SmartestPage);
 			SmartestSession::get('__newPage')->setWebId(SmartestStringHelper::random(32));
 			SmartestSession::get('__newPage')->setCreatedbyUserid($user_id);
 			SmartestSession::get('__newPage')->setSiteId($site_info['id']);
 			SmartestSession::get('__newPage')->setParent($parent_info['id']);
 			
-			$this->send($parent->getId(), 'page_parent');
 			$template = "addPage.start.tpl";
+			
 			break;
 		}
 		
@@ -1312,7 +1343,7 @@ class Pages extends SmartestSystemApplication{
 
 	}
 
-	function pageAssets($get){
+	public function pageAssets($get){
 	    
 	    if($this->getUser()->hasToken('modify_draft_pages')){
 	        
@@ -1421,7 +1452,7 @@ class Pages extends SmartestSystemApplication{
             		
             		$template_object = $tlh->hydrateMasterTemplateByFileName($template_name, $this->getSite()->getId());
             		
-            		$this->send((!$tlh->getMasterTemplateHasBeenImported($page->getDraftTemplate()) && $version == 'draft'), 'show_template_warning');
+            		$this->send((!$tlh->getMasterTemplateHasBeenImported($page->getDraftTemplate()) && $version == 'draft' && strlen($page->getDraftTemplate())), 'show_template_warning');
     		
             		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
             		    $allow_release = true;
@@ -2903,7 +2934,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $id = $this->getRequestParameter('assetclass_id');
 	    $page_webid = $this->getRequestParameter('page_id');
-	    $parts = explode('/', $id);
+	    $parts = explode(':', $id);
 	    $asset_stringid = $parts[0];
 	    $attachment = $parts[1];
 	    $asset = new SmartestAsset;
@@ -2911,10 +2942,10 @@ class Pages extends SmartestSystemApplication{
 	    if($asset->hydrateBy('stringid', $asset_stringid)){
 	        $this->redirect('/assets/defineAttachment?attachment='.$attachment.'&asset_id='.$asset->getId());
 	    }else{
-	        // $page = new SmartestPage;
+	        
 	        if(strlen($page_webid) == 32){
-	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid);
 	            $this->addUserMessageToNextRequest("The attachment ID was not recognized.", SmartestUserMessage::ERROR);
+	            $this->redirect('/websitemanager/pageAssets?page_id='.$page_webid); 
 	        }else{
 	            $this->redirect('/smartest/pages');
 	        }
@@ -2959,13 +2990,16 @@ class Pages extends SmartestSystemApplication{
 	
 	public function setPageTemplate($get){
 		
-		$template_name = $get["template_name"];
+		$template_name = $this->getRequestParameter('template_name');
+		$page_id = $this->getRequestParameter('page_id');
 		
 		if(is_file(SM_ROOT_DIR.'Presentation/Masters/'.$template_name)){
-		    $page_id = $get["page_id"];
-		    SmartestDatabase::getInstance('SMARTEST')->query("UPDATE Pages SET page_draft_template='$template_name' WHERE page_webid='$page_id'");
-		    $this->formForward();
+		    SmartestDatabase::getInstance('SMARTEST')->query("UPDATE Pages SET Pages.page_draft_template='$template_name' WHERE Pages.page_webid='$page_id'");
+	    }else if(!strlen($template_name)){
+	        SmartestDatabase::getInstance('SMARTEST')->query("UPDATE Pages SET Pages.page_draft_template='' WHERE Pages.page_webid='$page_id'");
 	    }
+	    
+	    $this->formForward();
 		
 	}
 	

@@ -545,11 +545,11 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	        $instance = array();
 	        $page = new SmartestPage;
 	        $page->hydrate($ri);
-	        $instance['page'] = $page->__toArray();
+	        $instance['page'] = $page;
 	        
 	        $site = new SmartestSite;
 	        $site->hydrate($ri);
-	        $instance['site'] = $site->__toArray();
+	        $instance['site'] = $site;
 	        
 	        if($this->getType() == 'SM_ASSETTYPE_CONTAINER_TEMPLATE'){
 	            $assetclass = new SmartestContainer;
@@ -558,7 +558,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             }
             
             $assetclass->hydrate($ri);
-            $instance['assetclass'] = $assetclass->__toArray();
+            $instance['assetclass'] = $assetclass;
             
             $instances[] = $instance;
             
@@ -585,11 +585,11 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	        $instance = array();
 	        $page = new SmartestPage;
 	        $page->hydrate($ri);
-	        $instance['page'] = $page->__toArray();
+	        $instance['page'] = $page;
 	        
 	        $site = new SmartestSite;
 	        $site->hydrate($ri);
-	        $instance['site'] = $site->__toArray();
+	        $instance['site'] = $site;
 	        
 	        if($this->getType() == 'SM_ASSETTYPE_CONTAINER_TEMPLATE'){
 	            $assetclass = new SmartestContainer;
@@ -598,7 +598,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             }
             
             $assetclass->hydrate($ri);
-            $instance['assetclass'] = $assetclass->__toArray();
+            $instance['assetclass'] = $assetclass;
             
             $instances[] = $instance;
             

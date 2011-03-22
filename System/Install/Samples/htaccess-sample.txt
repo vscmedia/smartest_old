@@ -5,7 +5,6 @@ php_flag magic_quotes_gpc off
 php_flag register_globals off
 php_flag session.auto_start off
 php_value session.name "SMARTEST"
-php_value display_errors 0
 
 Options +FollowSymLinks +ExecCGI
 
