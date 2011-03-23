@@ -2164,58 +2164,99 @@ class Items extends SmartestSystemApplication{
   
 	public function insertItemClassProperty($get, $post){
 		
-		$new_property_name = $this->getRequestParameter('itemproperty_name');
-		
 		$model_id = $this->getRequestParameter('class_id');
 		
-		$model = new SmartestModel;
-		$model->hydrate($model_id);
+		if($this->getUser()->hasToken('create_remove_properties')){
 		
-		if(SmartestDataUtility::isValidPropertyName($new_property_name)){
+    		$new_property_name = $this->getRequestParameter('itemproperty_name');
+		
+    		$model = new SmartestModel;
+    		$model->find($model_id);
+		
+    		if(SmartestDataUtility::isValidPropertyName($new_property_name)){
 		    
-		    $new_get_method = 'get'.SmartestStringHelper::toCamelCase($this->getRequestParameter('itemproperty_name'));
+    		    $new_get_method = 'get'.SmartestStringHelper::toCamelCase($this->getRequestParameter('itemproperty_name'));
 		    
-		    if(in_array($new_get_method, get_class_methods($model->getClassName()))){
+    		    if(in_array($new_get_method, get_class_methods($model->getClassName()))){
 		        
-		        $this->addUserMessage('A property with that name already exists for this model.', SmartestUserMessage::WARNING);
-		        $this->forward('datamanager', 'addPropertyToClass');
+    		        $this->addUserMessage('A property with that name already exists for this model.', SmartestUserMessage::WARNING);
+    		        $this->forward('datamanager', 'addPropertyToClass');
 		        
-		    }else{
+    		    }else{
 		    
-		        $property = new SmartestItemProperty;
+    		        $property = new SmartestItemProperty;
 		
-        		$property->setName($this->getRequestParameter('itemproperty_name'));
-        		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
-        		$property->setDatatype($this->getRequestParameter('itemproperty_datatype'));
-        		$property->setRequired($this->getRequestParameter('itemproperty_required') ? 'TRUE' : 'FALSE');
+            		$property->setName($this->getRequestParameter('itemproperty_name'));
+            		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
+            		$property->setDatatype($this->getRequestParameter('itemproperty_datatype'));
+            		$property->setRequired($this->getRequestParameter('itemproperty_required') ? 'TRUE' : 'FALSE');
 		
-        		if($this->getRequestParameter('foreign_key_filter')){
-        		    $property->setForeignKeyFilter($this->getRequestParameter('foreign_key_filter'));
-        		}
+            		if($this->getRequestParameter('foreign_key_filter')){
+            		    $property->setForeignKeyFilter($this->getRequestParameter('foreign_key_filter'));
+            		}
+            		
+            		if($this->getRequestParameter('create_group')){
+            		    
+            		    $set = new SmartestAssetGroup;
+            		    
+            		    $label = $property->getName().' files for '.$model->getPluralName();
+                	    
+                	    $set->setLabel($label);
+                	    $set->setName(SmartestStringHelper::toVarName($label));
+
+                	    /* if($this->getRequestParameter('asset_group_type') == 'ALL'){
+                	        $set->setFilterType('SM_SET_FILTERTYPE_NONE');
+                	    }else{ */
+                	        switch(substr($this->getRequestParameter('foreign_key_filter'), 8, 1)){
+                	            case 'T':
+                	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETTYPE');
+                	            break;
+                	            case 'C':
+                	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
+                	            break;
+                	        }
+                	    // }
+
+                	    $set->setFilterValue($this->getRequestParameter('foreign_key_filter'));
+                	    $set->setSiteId($this->getSite()->getId());
+                	    $set->setShared(0);
+                	    $set->save();
+                	    
+                	    $property->setOptionSetType('SM_PROPERTY_FILTERTYPE_ASSETGROUP');
+                	    $property->setOptionSetId($set->getId());
+                	    
+            		}
 		
-        		$property->setItemClassId($model->getId());
-        		$property->save();
+            		$property->setItemClassId($model->getId());
+            		$property->save();
 	    
-        	    SmartestCache::clear('model_properties_'.$model->getId(), true);
-        	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
+            	    SmartestCache::clear('model_properties_'.$model->getId(), true);
+            	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
     	    
-        	    SmartestLog::getInstance('site')->log("{$this->getUser()} added a property called $new_property_name to model {$model->getName()}.", SmartestLog::USER_ACTION);
+            	    SmartestLog::getInstance('site')->log("{$this->getUser()} added a property called $new_property_name to model {$model->getName()}.", SmartestLog::USER_ACTION);
 	    
-        	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
+            	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
 	    
-    	        if($this->getRequestParameter('continue') == 'NEW_PROPERTY'){
-    	            $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId().'&continue=NEW_PROPERTY');
-    	        }else{
-    	            $this->redirect('/datamanager/getItemClassProperties?class_id='.$model->getId());
-    	        }
+        	        if($this->getRequestParameter('continue') == 'NEW_PROPERTY'){
+        	            $this->redirect('/datamanager/addPropertyToClass?class_id='.$model->getId().'&continue=NEW_PROPERTY');
+        	        }else{
+        	            $this->redirect('/datamanager/getItemClassProperties?class_id='.$model->getId());
+        	        }
 	        
-            }
+                }
 	    
+            }else{
+                $this->addUserMessageToNextRequest("You must enter a valid property name.", SmartestUserMessage::WARNING);
+                SmartestLog::getInstance('site')->log("{$this->getUser()} tried to add a property called '$new_property_name' to model {$model->getName()}.", SmartestLog::WARNING);
+                SmartestLog::getInstance('system')->log("{$this->getUser()} tried to add a property called '$new_property_name' to model {$model->getName()}.", SmartestLog::ERROR);
+                $this->forward('datamanager', 'addPropertyToClass');
+            }
+        
         }else{
+            
             $this->addUserMessageToNextRequest("You must enter a valid property name.", SmartestUserMessage::WARNING);
-            SmartestLog::getInstance('site')->log("{$this->getUser()} tried to add a property called '$new_property_name' to model {$model->getName()}.", SmartestLog::WARNING);
-            SmartestLog::getInstance('system')->log("{$this->getUser()} tried to add a property called '$new_property_name' to model {$model->getName()}.", SmartestLog::ERROR);
-            $this->forward('datamanager', 'addPropertyToClass');
+            $this->redirect('/datamanager/getItemClassProperties?class_id='.$model_id);
+            
         }
 
 	}
