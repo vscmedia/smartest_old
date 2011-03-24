@@ -193,6 +193,7 @@ type:
     class: SmartestAsset
     icon: script.png
     parsable: false
+    show_preview_edit_link: false
     input_options:
       - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
       - SM_ASSETINPUTTYPE_DIRECT_INPUT

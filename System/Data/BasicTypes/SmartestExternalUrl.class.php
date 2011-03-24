@@ -45,7 +45,7 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
     }
     
     public function offsetExists($offset){
-        return in_array($offset, array('_host', '_request', '_protocol'));
+        return in_array($offset, array('_host', '_request', '_protocol', 'encoded'));
     }
     
     public function offsetGet($offset){
@@ -56,6 +56,9 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
             return $this->getValue();
             case '_protocol':
             return $this->getValue();
+            case "encoded":
+            case "urlencoded":
+            return urlencode($this->getValue());
         }
     }
     

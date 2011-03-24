@@ -20,7 +20,7 @@ div{
 }
 
 a img{
-  border:0px;
+    border:0px;
 }
 
 div#top-strip{
@@ -255,7 +255,7 @@ div.edit-form-row select{
 	width:380px;
 }
 
-div.edit-form-row input[type="text"], div.edit-form-row input[type="password"]{
+div.edit-form-row input[type="text"], div.edit-form-row input[type="password"], input.free-sl-text-input[type="text"]{
 	width:400px;
 	height:25px;
 	padding:3px;
@@ -319,6 +319,22 @@ div.error{
     background-color:#fdd;
     padding:5px;
     margin:10px 0 10px 0;
+}
+
+table.info-table{
+    width:100%;
+    /* background-color:#ccc; */
+    margin-top:10px;
+}
+
+table.info-table td{
+    padding:2px;
+    background-color:#fff;
+}
+
+table.info-table td.field-name{
+    text-align:right;
+    color:#666;
 }
 
 div#footer{

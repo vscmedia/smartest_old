@@ -15,22 +15,12 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	    $this->_context = SM_CONTEXT_CONTENT_PAGE;
 	    
 	    if(!SmartestPersistentObject::get('template_layer_data:sets')){
-		    
 		    SmartestPersistentObject::set('template_layer_data:sets', new SmartestParameterHolder("Template Layer Datasets"));
-		    
 		}
 		
 		if(!SmartestPersistentObject::get('template_layer_data:items')){
-		    
 		    SmartestPersistentObject::set('template_layer_data:items', new SmartestParameterHolder("Template Layer Items"));
-		    
 		}
-		
-		/* if(!defined('SM_CMS_PAGE_SITE_ID')){
-            define('SM_CMS_PAGE_SITE_ID', $page->getSiteId());
-        } */
-        
-        // var_dump(constant('SM_CMS_PAGE_SITE_ID'));
 		
 		if(!defined('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN')){
 		    define('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN', true);

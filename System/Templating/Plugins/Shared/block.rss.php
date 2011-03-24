@@ -47,7 +47,8 @@ function smarty_block_rss ($params, $content, &$smarty,&$repeat) {
   $repeat=!empty($item);
 
   if($item){
-     $smarty->assign("rss_item",$item);
+     $smarty->assign("rss_index", $index);
+     $smarty->assign("rss_item", $item);
      $smarty->_RSS_parse_res[]=&$res;
      $smarty->_RSS_parse_index[]=&$index;
   }

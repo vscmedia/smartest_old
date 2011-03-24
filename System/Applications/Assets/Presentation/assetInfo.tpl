@@ -6,40 +6,40 @@
     
     <input type="hidden" name="asset_id" value="{$asset.id}" />
     
-    <table cellspacing="1" cellpadding="2" border="0" style="width:100%;background-color:#ccc;margin-top:10px">
+    <table cellspacing="1" border="0" class="info-table">
       <tr>
-        <td style="width:150px;background-color:#fff" valign="top">File name:</td>
-        <td style="background-color:#fff" valign="top">
-          <input type="text" name="asset_label" value="{$asset.label}" style="width:250px" maxlength="64" />
+        <td style="width:170px;background-color:#fff" valign="middle" class="field-name">File name:</td>
+        <td>
+          <input type="text" name="asset_label" value="{$asset.label}" maxlength="64" class="free-sl-text-input" />
         </td>
       </tr>
       <tr>
-        <td style="width:150px;background-color:#fff" valign="top">Name on disk:</td>
-        <td style="background-color:#fff" valign="top">{$asset.full_path}</td>
+        <td style="width:150px;background-color:#fff" class="field-name">Name on disk:</td>
+        <td>{$asset.full_path}</td>
       </tr>
       <tr>
-        <td style="background-color:#fff" valign="top">Size:</td>
-        <td style="background-color:#fff" valign="top">{$asset.size}{if $asset.is_image}, ({$asset.width} x {$asset.height} pixels){/if}</td>
+        <td class="field-name">Size:</td>
+        <td>{$asset.size}{if $asset.is_image}, ({$asset.width} x {$asset.height} pixels){/if}</td>
       </tr>
       <tr>
-        <td style="background-color:#fff" valign="top">Type:</td>
-        <td style="background-color:#fff" valign="top"><a href="{$domain}{$section}/getAssetTypeMembers?asset_type={$asset.type}">{$asset.type_info.label}</a> <span style="color:#666">({$asset.type})</span></td>
+        <td class="field-name">Type:</td>
+        <td><a href="{$domain}{$section}/getAssetTypeMembers?asset_type={$asset.type}">{$asset.type_info.label}</a> <span style="color:#666">({$asset.type})</span></td>
       </tr>
       {if $asset.created > 0}
       <tr>
-        <td style="background-color:#fff" valign="top">Created:</td>
-        <td style="background-color:#fff" valign="top">{$asset.created|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
+        <td class="field-name">Created:</td>
+        <td>{$asset.created|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
       </tr>
       {/if}
       {if $asset.modified > 0}
       <tr>
-        <td style="background-color:#fff" valign="top">Modified:</td>
-        <td style="background-color:#fff" valign="top">{$asset.modified|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
+        <td class="field-name">Modified:</td>
+        <td>{$asset.modified|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
       </tr>
       {/if}
       <tr>
-        <td style="background-color:#fff" valign="top">Owner:</td>
-        <td style="background-color:#fff" valign="top">
+        <td valign="middle" class="field-name">Owner:</td>
+        <td>
           <select name="asset_user_id">
   {foreach from=$potential_owners item="p_owner"}
             <option value="{$p_owner.id}"{if $asset.owner.id == $p_owner.id} selected="selected"{/if}>{$p_owner.fullname} ({$p_owner.id})</option>
@@ -48,12 +48,12 @@
         </td>
       </tr>
       <tr>
-        <td style="background-color:#fff" valign="top">Original site:</td>
-        <td style="background-color:#fff" valign="top">{$asset.site.label}</td>
+        <td class="field-name">Original site:</td>
+        <td>{$asset.site.label}</td>
       </tr>
       <tr>
-        <td style="background-color:#fff" valign="top">Shared with other sites:</td>
-        <td style="background-color:#fff" valign="top"><input type="checkbox" name="asset_shared"{if $asset.shared==1} checked="checked"{/if} /></td>
+        <td class="field-name">Shared with other sites:</td>
+        <td><input type="checkbox" name="asset_shared"{if $asset.shared==1} checked="checked"{/if} /></td>
       </tr>
     </table>
   

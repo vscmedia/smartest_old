@@ -1238,13 +1238,13 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    switch($offset){
 	        
 	        case "title":
-	        return $this->getTitle();
+	        return new SmartestString($this->getTitle());
 	        
 	        case "url":
 	        return $this->getDefaultUrl();
 	        
 	        case "permalink":
-	        return 'http://'.$this->getSite()->getDomain().$this->_request->getDomain().$this->getDefaultUrl();
+	        return new SmartestExternalUrl('http://'.$this->getSite()->getDomain().$this->_request->getDomain().$this->getDefaultUrl());
 	        
 	        case "fallback_url":
 	        return "website/renderPageFromId?page_id=".$this->getWebid();
@@ -1257,7 +1257,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        return $this->getUrls();
 	        
 	        case "formatted_title":
-	        return $this->getFormattedTitle();
+	        return new SmartestString($this->getFormattedTitle());
 	        
 	        case "static_title":
 	        return $this->_properties['title'];
