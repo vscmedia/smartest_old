@@ -155,8 +155,8 @@ class MetaData extends SmartestSystemApplication{
     		    if($field->getType() == 'SM_DATATYPE_DROPDOWN_MENU'){
     		        $dropdown_id = $field->getForeignKeyFilter();
     		        $dropdown = new SmartestDropdown;
-    		        $dropdown->hydrate($dropdown_id);
-    		        $options = $dropdown->getOptionsAsArrays();
+    		        $dropdown->find($dropdown_id);
+    		        $options = $dropdown->getOptions();
     		        $this->send($options, 'options');
     		    }
     		    
@@ -229,7 +229,7 @@ class MetaData extends SmartestSystemApplication{
     		//	$value = $post['pageproperty_id'];
     		//}
 		
-    		if($field->hydrateBy($lookup_field, $value)){
+    		if($field->findBy($lookup_field, $value)){
 		
     		    // print_r($field);
 		

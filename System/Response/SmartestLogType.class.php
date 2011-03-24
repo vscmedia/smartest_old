@@ -37,8 +37,8 @@ class SmartestLogType extends SmartestParameterHolder{
             }
         }else{
             if(isset($_SESSION)){
-                if(is_object(SmartestPersistentObject::get('current_open_project'))){ // make sure the site object exists
-                    $site_id = SmartestPersistentObject::get('current_open_project')->getId();
+                if(is_object(SmartestSession::get('current_open_project'))){ // make sure the site object exists
+                    $site_id = SmartestSession::get('current_open_project')->getId();
                 }else{
                     return '0';
                 }

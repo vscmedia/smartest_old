@@ -1076,7 +1076,7 @@ class Pages extends SmartestSystemApplication{
 			    SmartestSession::get('__newPage')->setTitle($this->getRequestParameter('page_title'));
 			}
 			
-			SmartestSession::get('__newPage')->setName(strlen($this->getRequestParameter('page_title')) ? SmartestStringHelper::toSlug($this->getRequestParameter('page_title')) : SmartestStringHelper::toSlug('Untitled Smartest Web Page'));
+			SmartestSession::get('__newPage')->setName(strlen(SmartestSession::get('__newPage')->getTitle()) ? SmartestStringHelper::toSlug(SmartestSession::get('__newPage')->getTitle()) : SmartestStringHelper::toSlug('Untitled Smartest Web Page'));
 			SmartestSession::get('__newPage')->setCacheAsHtml($this->getRequestParameter('page_cache_as_html'));
 			SmartestSession::get('__newPage')->setCacheInterval($this->getRequestParameter('page_cache_interval'));
 			SmartestSession::get('__newPage')->setIsPublished('FALSE');

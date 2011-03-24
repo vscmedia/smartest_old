@@ -28,18 +28,17 @@ function smartest_filter_preview($html, $filter){
 		
 		$html = str_replace('</head>', $pcss.'</head>', $html);
 		$html = str_replace($body_tag, $body_tag."\n".$phtml, $html);
-        $html = str_replace('</body>', "<script type=\"text/javascript\">if(parent.showPreview){parent.showPreview();}</script>\n<!--Page was built in: ".SM_TOTAL_TIME."ms -->\n</body>", $html);
+        $html = str_replace('</body>', "<script type=\"text/javascript\">if(parent.showPreview){parent.showPreview();}</script>\n<!--Page was built in: ".SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken')."ms -->\n</body>", $html);
         
     }else{
         
         if(defined('SM_CMS_PAGE_SITE_UNIQUE_ID')){
-            $sid = "<!--SITEID: ".SM_CMS_PAGE_SITE_UNIQUE_ID."-->\n";
+            $sid = "<!--SMARTEST HEARTBEAT-->\n<!--SITEID: ".SM_CMS_PAGE_SITE_UNIQUE_ID."-->\n";
         }else{
-            $sid = '';
+            $sid = "<!--SMARTEST HEARTBEAT-->\n";
         }
         
-        // echo strlen($html);
-        $creator = "\n<!--Powered by Smartest(TM) Online Publishing Platform, v".constant('SM_INFO_VERSION_NUMBER')." -->\n".$sid;
+        $creator = "\n<!--Powered by Smartest v".constant('SM_INFO_VERSION_NUMBER')." -->\n".$sid;
         $html = str_replace('</body>', $creator."<!--Page was returned in: ".SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken')."ms -->\n</body>", $html);
         
     }
