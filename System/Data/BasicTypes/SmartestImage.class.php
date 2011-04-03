@@ -332,7 +332,7 @@ class SmartestImage extends SmartestFile{
             
                 case self::JPEG:
             
-                if(imagejpeg($this->_thumbnail_resource, $full_path, 100)){
+                if(imagejpeg($this->_thumbnail_resource, $full_path, 80)){
                     $this->clearThumbnailResource();
                     $thumbnail->loadFile($full_path);
                     return $thumbnail;
@@ -341,8 +341,9 @@ class SmartestImage extends SmartestFile{
                 break;
             
                 case self::PNG:
-            
-                if(imagepng($this->_thumbnail_resource, $full_path, 0)){
+
+                if(imagepng($this->_thumbnail_resource, $full_path, 1)){
+
                     $this->clearThumbnailResource();
                     $thumbnail->loadFile($full_path);
                     return $thumbnail;
