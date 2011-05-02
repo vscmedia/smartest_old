@@ -1024,6 +1024,8 @@ class Pages extends SmartestSystemApplication{
 				SmartestSession::get('__newPage')->setType(strtoupper($type));
 			}
 			
+			$this->send((bool) SmartestSession::get('__newPage_preset_id'), 'disable_template_dropdown');
+			
 			$pages = $helper->getSerialisedPageTree($helper->getPagesTree($site_info['id']));
 			$this->send('TRUE', 'chooseParent');
 			$this->send($pages, 'pages');

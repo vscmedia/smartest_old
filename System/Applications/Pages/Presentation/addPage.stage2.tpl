@@ -75,8 +75,8 @@
   	{/if}
   	
   	  <div class="edit-form-row">
-  	    <div class="form-section-label">Main Template</div>
-  	    <select name="page_draft_template" id="page_draft_template"{if $newPage.preset} disabled="true"{/if}>
+  	    <div class="form-section-label">Main Template</div>{$disable_template_dropdown}
+  	    <select name="page_draft_template" id="page_draft_template"{if $disable_template_dropdown} disabled="true"{/if}>
   	      {foreach from=$templates item="template"}
   	      <option value="{$template.url}"{if $newPage.draft_template == $template.url} selected="selected"{/if}>{$template.url}</option>
   	      {/foreach}
