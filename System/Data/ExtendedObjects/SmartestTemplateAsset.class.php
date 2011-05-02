@@ -5,6 +5,32 @@ class SmartestTemplateAsset extends SmartestAsset{
     protected $_template_file;
     protected $_base_dir = '';
     
+    /* public function __toString(){
+        
+        return ''.$this->render();
+        
+    }
+    
+    public function render(){
+        
+        if($this->_properties['type'] == 'SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE'){
+            
+            $sm = new SmartyManager('SingleItemTemplateRenderer');
+            $r = $sm->initialize($this->getStringId());
+            $r->assignItem($this);
+            $r->setDraftMode($draft_mode);
+    	    $content = $r->renderAsset($this->_render_data);
+    	    
+    	    return $content;
+            
+        }else if($this->_properties['type'] == 'SM_ASSETTYPE_MASTER_TEMPLATE'){
+            return 'Please use <strong>SmartestWebPagePreparationHelper</strong> to build this template: Presentation/Masters/'.$this->getUrl();
+        }else{
+            return parent::__toString();
+        }
+        
+    } */
+    
     public function getFile(){
         
         $this->_base_dir = SM_ROOT_DIR.$this->getStorageLocation();
@@ -123,6 +149,10 @@ class SmartestTemplateAsset extends SmartestAsset{
                 $sql = "SELECT Assets.asset_id FROM Assets, AssetClasses, AssetIdentifiers WHERE AssetClasses.assetclass_type='SM_ASSETCLASS_CONTAINER' AND AssetClasses.assetclass_id=AssetIdentifiers.assetidentifier_assetclass_id AND ((AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id AND AssetIdentifiers.assetidentifier_draft_asset_id='".$this->getId()."') OR (AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id AND AssetIdentifiers.assetidentifier_live_asset_id='".$this->getId()."'))";
                 $result = $this->database->queryToArray($sql);
                 break;
+            /* case "SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE":
+                $sql = "SELECT Assets.asset_id FROM Assets, Items, ItemPropertyValues WHERE AssetClasses.assetclass_type='SM_ASSETCLASS_CONTAINER' AND AssetClasses.assetclass_id=AssetIdentifiers.assetidentifier_assetclass_id AND ((AssetIdentifiers.assetidentifier_draft_asset_id=Assets.asset_id AND AssetIdentifiers.assetidentifier_draft_asset_id='".$this->getId()."') OR (AssetIdentifiers.assetidentifier_live_asset_id=Assets.asset_id AND AssetIdentifiers.assetidentifier_live_asset_id='".$this->getId()."'))";
+                $result = $this->database->queryToArray($sql);
+                break; */
         }
         
         return (bool) count($result);

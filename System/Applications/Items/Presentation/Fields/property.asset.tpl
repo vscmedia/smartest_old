@@ -3,9 +3,10 @@
 
 {asset_select id=$input_id name=$name value=$value options=$property._options required=$property.required}
 
+{if $item.id}
   <ul class="item_property_actions">
     
-    {if $item}
+    {if $item.id}
       <li><a href="{$domain}assets/startNewFileCreationForItemPropertyValue?property_id={$property.id}&amp;item_id={$item.id}" title="Use a new file instead" id="new-asset-button-{$property.id}"><img src="{$domain}Resources/Icons/add.png" alt="" /></a>
         <script type="text/javascript">
         $('new-asset-button-{$property.id}').observe('mouseover', function(){literal}{{/literal}$('file-property-tooltip-{$property.id}').update('Define this property with a new file');{literal}}{/literal});
@@ -34,3 +35,4 @@
     <li style="padding-top:6px"><span class="form-hint" id="file-property-tooltip-{$property.id}"></span></li>
     
   </ul>
+{/if}

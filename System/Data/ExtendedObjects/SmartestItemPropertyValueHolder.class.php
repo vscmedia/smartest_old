@@ -4,18 +4,25 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
     
     protected $_value = null;
 	protected $_contextual_item_id = null;
+	protected $_item;
     
     public function setContextualItemId($id){
 	    if(is_numeric($id)){
 	        $this->_contextual_item_id = $id;
 	    }
 	}
+	
+	public function setItem(SmartestCmsItem $item){
+	    $this->_item = $item;
+	    $this->setContextualItemId($item->getId());
+	}
     
-    public function hydrateValueFromIpvArray($ipv_array){
+    public function hydrateValueFromIpvArray($ipv_array, SmartestCmsItem $item){
 	    if(is_array($ipv_array)){
 	        $ipv = new SmartestItemPropertyValue;
 	        $ipv->hydrate($ipv_array);
 	        $this->_value = $ipv;
+	        $this->_item = $item;
         }
 	}
 	

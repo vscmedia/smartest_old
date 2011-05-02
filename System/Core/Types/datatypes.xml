@@ -153,6 +153,36 @@
         
     </type>
     
+    <type id="SM_DATATYPE_TEMPLATE" valuetype="foreignkey">
+        
+        <label>Template</label>
+        <description>A single-item template.</description>
+        <usage>itemproperty</usage>
+        <long>false</long>
+        
+        <filter>
+          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestTemplateAsset" label="Template" />
+          <!--<typesource type="smartest:templatetypes" label="Tem Type" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.assettypes.tpl" />
+          <entitysource type="db" table="Assets" matchfield="asset_type" sortfield="asset_stringid" sitefield="asset_site_id" sharedfield="asset_shared" class="SmartestAsset" label="File" />
+          <optionsettype id="SM_PROPERTY_FILTERTYPE_ASSETGROUP" class="SmartestAssetGroup" table="Sets" sitefield="set_site_id">
+            <condition field="set_type" value="SM_SET_ASSETGROUP" operator="EQUAL" />
+          </optionsettype>
+          Conditions only apply to filtering when no group is in use-->
+          <condition field="asset_deleted" value="1" operator="NOT_EQUAL" />
+          <condition field="asset_is_archived" value="1" operator="NOT_EQUAL" />
+          <condition field="asset_type" value="SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE" operator="EQUAL" />
+        </filter>
+        
+        <menu value="id" display="url" />
+        
+        <render template="System/Presentation/WebPageBuilder/property.asset.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/asset.tpl" />
+        
+        
+        <class>SmartestRenderableSingleItemTemplateAsset</class>
+        
+    </type>
+    
     <!--<type id="SM_DATATYPE_ASSET_DOWNLOAD" valuetype="foreignkey">
         
         <label>File Download</label>

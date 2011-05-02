@@ -48,6 +48,10 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
         }
     }
     
+    public function setItem(SmartestCmsItem $item){
+        $this->_item = $item;
+    }
+    
     public function getRawValue($draft){
         
         if($draft){
@@ -117,6 +121,12 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     
                     if($class == 'SmartestRenderableAsset'){
                         $obj->setAdditionalRenderData($this->getInfo($draft));
+                    }
+                    
+                    if($class == 'SmartestRenderableSingleItemTemplateAsset'){
+                        // print_r($obj);
+                        $this->_item->disableTemplateProperty($this->_properties['property_id']);
+                        $obj->setItem(&$this->_item);
                     }
                     
                     if($class == 'SmartestCmsItemSet'){

@@ -15,7 +15,7 @@ class SmartestAssetCreationHelper{
         if(isset($types[$asset_type])){
             $this->_asset_type = $types[$asset_type];
         }else{
-            throw new SmartestFileCreationException('Tried to create a file by upload of a non-existent file type: \''.$asset_type.'\'');
+            throw new SmartestAssetCreationException('Tried to create a file by upload of a non-existent file type: \''.$asset_type.'\'');
         }
         
     }
@@ -80,14 +80,14 @@ class SmartestAssetCreationHelper{
 		            // $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name)), SmartestUserMessage::ERROR);
 		            // $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
 		            $message = sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name));
-		            throw new SmartestFileCreationException($message);
+		            throw new SmartestAssetCreationException($message);
 		            SmartestLog::getInstance('site')->log($message, SmartestLog::ERROR);
 		            SmartestLog::getInstance('site')->log("File that failed to move to final location is still stored at: ".$new_temp_file, SmartestLog::NOTICE);
 		        }
 	        
 	        }else{
                 
-                throw new SmartestFileCreationException("Temporary upload ".$new_temp_file." was unexpectedly not created.");
+                throw new SmartestAssetCreationException("Temporary upload ".$new_temp_file." was unexpectedly not created.");
                 SmartestLog::getInstance('site')->log("Temporary upload ".$new_temp_file." was unexpectedly not created.", SmartestLog::ERROR);
                 
             }
@@ -187,7 +187,7 @@ class SmartestAssetCreationHelper{
 		        }else{
 		            $everything_ok = false;
 		            $message = sprintf("Could not move %s to %s. Please check file permissions on directory ".$this->_asset_type['storage']['location'].".", basename($new_temp_file), basename($final_file_name));
-		            throw new SmartestFileCreationException($message);
+		            throw new SmartestAssetCreationException($message);
 		            SmartestLog::getInstance('site')->log($message, SmartestLog::ERROR);
 		            SmartestLog::getInstance('site')->log("File that failed to move to final location is still stored at: ".$new_temp_file, SmartestLog::NOTICE);
 		        }

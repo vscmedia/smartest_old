@@ -13,9 +13,9 @@
   *
   * @category   Presentation
   * @package    SmartyManager
-  * @author     Marcus Gilroy-Ware <marcus@visudo.com>
-  * @copyright  2009 VSC Creative Ltd.
-  * @version    0.3.7
+  * @author     Marcus Gilroy-Ware <marcus@vsccreative.com>
+  * @copyright  2011 VSC Creative Ltd.
+  * @version    0.4.3
   */
   
 if(!class_exists('SmartestEngine')){
@@ -77,7 +77,9 @@ class SmartyManager{
 		    $smartyObj = new SmartestWebPageBuilder('_main');
 		}else if($this->context == 'BasicRenderer'){
     	    $smartyObj = new SmartestBasicRenderer($pid);
-    	}else if($this->context == 'UserAppBuilder'){
+    	}else if($this->context == 'SingleItemTemplateRenderer'){
+        	$smartyObj = new SmartestSingleItemTemplateRenderer($pid);
+        }else if($this->context == 'UserAppBuilder'){
     	    $smartyObj = new SmartestBasicRenderer('_main');
     	}else{
 		    $smartyObj = new SmartestEngine('_main');

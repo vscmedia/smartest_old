@@ -78,6 +78,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	protected $_save_errors = array();
 	protected $_draft_mode = false;
 	protected $_request;
+	protected $_disabled_template_properties = array();
 	
 	/** 
 	* Description
@@ -168,6 +169,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
         $r = $this->find((int) $v);
         return $r;
     }
+    
+    public function disableTemplateProperty($property_id){
+        $this->_disabled_template_properties[$property_id] = true;
+    }
 	
 	public function offsetExists($offset){
 	    return ($this->_item->offsetExists($offset) || isset($this->_varnames_lookup[$offset]) || in_array($offset, array('_workflow_status', '_model', '_properties')));
@@ -186,8 +191,12 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        
 	    }else if(isset($this->_varnames_lookup[$offset])){
 	        
-	        $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset], $this->getDraftMode(), true);
-            return $v;
+	        if(isset($this->_disabled_template_properties[$this->_varnames_lookup[$offset]])){
+	            return "Recursion disallowed";
+	        }else{
+	            $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset], $this->getDraftMode(), true);
+                return $v;
+            }
 	        
 	    }else{
 	        
@@ -456,7 +465,8 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		        }
 		        
 			    $this->_properties[$property['itemproperty_id']]->hydrate($property);
-			    $this->_properties[$property['itemproperty_id']]->setContextualItemId($this->_item->getId());
+			    $this->_properties[$property['itemproperty_id']]->setItem(&$this);
+			    // $this->_properties[$property['itemproperty_id']]->setContextualItemId($this->_item->getId());
 		    }
 		    
 		    $values_sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_item_id='$id'";
@@ -469,6 +479,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 			    
 			    $ipv = new SmartestItemPropertyValue;
 			    $ipv->hydrate($propertyvalue);
+			    $ipv->setItem(&$this);
 			    
                 // if the property object does not exist, create and hydrate it
                 
@@ -481,7 +492,8 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            }
 			    
 			    // give the property the current item id, so that it knows which ItemPropertyValue record to retrieve in any future operations (though it isn't needed in this one)
-			    $this->_properties[$ipv->getPropertyId()]->setContextualItemId($this->_item->getId());
+			    // $this->_properties[$ipv->getPropertyId()]->setContextualItemId($this->_item->getId());
+			    
 			    // $this->_properties[$ipv->getPropertyId()]->hydrateValueFromIpvArray($propertyvalue);
 			    
 		    } 
@@ -528,7 +540,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        if($this->_model_built){
 	            foreach($this->_properties as &$p){
 	                // $p is an itempropertyvalueholder object
-	                $p->hydrateValueFromIpvArray($record[$p->getId()]);
+	                $p->hydrateValueFromIpvArray($record[$p->getId()], &$this);
 	            }
 	        }
 	    }

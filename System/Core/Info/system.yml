@@ -83,6 +83,7 @@ system:
       - Presentation/Masters/
       - Presentation/Layouts/
       - Presentation/ListItems/
+      - Presentation/SingleItem/
       - System/Temporary/
       - Documents/Deleted/
     installation:

@@ -593,3 +593,18 @@ type:
       location: Presentation/ListItems/
     suffix:
       - {mime: application/octet-stream, _content: tpl}
+  
+  SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE:
+    id: SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE
+    template_type: SM_SINGLE_ITEM_TEMPLATE
+    category: templates
+    label: Single-item template
+    description: "Template used in an item property which has access to the item's other properties"
+    editable: true
+    icon: layout.png
+    class: SmartestTemplateAsset
+    storage: 
+      type: file
+      location: Presentation/SingleItem/
+    suffix:
+      - {mime: application/octet-stream, _content: tpl}

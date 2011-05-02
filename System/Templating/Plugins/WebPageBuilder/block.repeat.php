@@ -47,6 +47,22 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	    $smartest_engine->assign("repeated_item_object", $item); // legacy support
 	    $smartest_engine->assign("key", $index);
 	    
+	    if(isset($items[$index+1])){
+	        $smartest_engine->assign("next_key", $index+1);
+	        $smartest_engine->assign("is_last", false);
+        }else{
+            $smartest_engine->assign("next_key", false);
+            $smartest_engine->assign("is_last", true);
+        }
+        
+        if(isset($items[$index-1])){
+	        $smartest_engine->assign("previous_key", $index-1);
+	        $smartest_engine->assign("is_first", false);
+        }else{
+            $smartest_engine->assign("previous_key", false);
+            $smartest_engine->assign("is_first", true);
+        }
+	    
 	    // if($smartest_engine->getDraftMode()){
 	        $dah->setItemAppearsOnPage($item->getId(), $smartest_engine->getPage()->getId());
         // }

@@ -159,6 +159,7 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 		
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");
+		$page_name = str_replace(' - ', '-', $page_name);
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
 		$page_name = preg_replace("/[^\w-]+/", "-", $page_name);
 		return $page_name;

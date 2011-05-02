@@ -89,6 +89,12 @@ class Templates extends SmartestSystemApplication{
 	            $templates = $h->getArticulatedListTemplates($this->getSite()->getId());
 	            break;
 	            
+	            case "SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE":
+	            $alh = new SmartestAssetsLibraryHelper;
+	            $this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId(), 'SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE'), 'recently_edited');
+	            $templates = $alh->getAssetsByTypeCode("SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE", $this->getSite()->getId());
+	            break;
+	            
 	        }
 	        
 	        $this->send($templates, 'templates');
