@@ -266,7 +266,7 @@
         
         <filter>
           <typesource type="db" table="ItemClasses" matchfield="id" label="Model" class="SmartestModel" sortfield="itemclass_plural_name" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.models.tpl" />
-          <entitysource type="db" table="Sets" sitefield="set_site_id" sharedfield="set_shared" class="SmartestCmsItemSet" />
+          <entitysource type="db" table="Sets" sitefield="set_site_id" sharedfield="set_shared" class="SmartestCmsItemSet" filterfield="set_itemclass_id" />
           <condition field="set_type" value="SM_SET_ASSETGROUP" operator="NOT_EQUAL" />
         </filter>
         

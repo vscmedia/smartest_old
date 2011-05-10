@@ -1,6 +1,6 @@
 <?php
 
-class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, SmartestStorableValue, SmartestSubmittableValue{
+class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, SmartestStorableValue, SmartestSubmittableValue, IteratorAggregate, Countable{
 
     protected $_set_members = array();
     protected $_set_members_simple = array();
@@ -10,6 +10,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     protected $_conditions = array();
     protected $_fetch_attempted = false;
     protected $_model = null;
+    protected $_retrieve_mode = 9;
     
     public function __objectConstruct(){
         
@@ -24,6 +25,14 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	        return false;
 	    }
 	}
+	
+	public function count(){
+        return count($this->getMembers());
+    }
+    
+    public function &getIterator(){
+        return new ArrayIterator($this->getMembers());
+    }
 	
 	public function addItems($item_ids){
 	    
@@ -144,7 +153,19 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getLookups($mode){
+	public function setRetrieveMode($mode){
+	    if(is_numeric($mode) && $mode < 16){
+	        $this->_retrieve_mode = $mode;
+	    }else{
+	        throw new SmartestException('Invalid retrieve mode given to SmartestCmsItemSet');
+	    }
+	}
+	
+	public function getLookups($mode='DEF'){
+	    
+	    if(!is_numeric($mode)){
+	        $mode = $this->_retrieve_mode;
+	    }
 	    
 	    if($this->getType() == 'STATIC'){
 	        
@@ -204,7 +225,11 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getMembers($mode=9, $query_data=''){
+	public function getMembers($mode='DEF', $query_data=''){
+	    
+	    if(!is_numeric($mode)){
+	        $mode = $this->_retrieve_mode;
+	    }
 	    
 	    // retrieve ALL members of the set, but only once per instance
 	    
@@ -247,7 +272,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getPage($mode=9, $page_num=1, $page_size=10, $query_data=''){
+	public function getPage($mode='DEF', $page_num=1, $page_size=10, $query_data=''){
 	    
 	    $start = ($page_num-1) * $page_size + 1;
         $limit = $page_size;
@@ -256,7 +281,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getMembersPaged($mode=9, $limit=0, $start=1, $query_data=''){
+	public function getMembersPaged($mode='DEF', $limit=0, $start=1, $query_data=''){
 	    
 	    // if static
 	      // get ids
@@ -268,6 +293,10 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	      // tell result set to remove ids before $start and after $limit
 	      
 	    if($this->getType() == 'STATIC'){
+	        
+	        if(!is_numeric($mode)){
+    	        $mode = $this->_retrieve_mode;
+    	    }
 	        
 	        $ids = $this->getRawStaticSetMemberIds($mode);
 	        
@@ -283,6 +312,10 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     		$items = $this->getItemsFromIds($ids);
 	        
   	    }else if($this->getType() == 'DYNAMIC'){
+  	        
+  	        if(!is_numeric($mode)){
+    	        $mode = $this->_retrieve_mode;
+    	    }
   	        
             $items = $this->getRawDynamicSetResultSet($mode)->getItems($limit, $start);
 	            
@@ -302,6 +335,10 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	}
 	
 	public function getRawStaticSetMemberIds($mode){
+	    
+	    if(!is_numeric($mode)){
+	        $mode = $this->_retrieve_mode;
+	    }
 	    
 	    $sql = "SELECT setlookup_item_id FROM Items, SetsItemsLookup WHERE SetsItemsLookup.setlookup_item_id=Items.item_id AND SetsItemsLookup.setlookup_set_id='".$this->getId()."'";
         
@@ -336,7 +373,11 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getRawStaticSetMembers($mode=9){
+	public function getRawStaticSetMembers($mode='DEF'){
+	    
+	    if(!is_numeric($mode)){
+	        $mode = $this->_retrieve_mode;
+	    }
 	    
 	    $ids = $this->getRawStaticSetMemberIds($mode);
 	    $members = $this->getItemsFromIds($ids);
@@ -344,13 +385,17 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
         
 	}
 	
-	public function getRawDynamicSetMemberIds($mode=9, $limit=0, $start=1){
+	public function getRawDynamicSetMemberIds($mode='DEF', $limit=0, $start=1){
 	    if($this->getType() == 'DYNAMIC'){
 	        return $this->getRawDynamicSetResultSet()->getIds();
         }
 	}
 	
-	public function getRawDynamicSetResultSet($mode=9, $query_data=''){
+	public function getRawDynamicSetResultSet($mode='DEF', $query_data=''){
+	    
+	    if(!is_numeric($mode)){
+	        $mode = $this->_retrieve_mode;
+	    }
 	    
 	    $model = $this->getModel();
 	    
@@ -408,13 +453,22 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getRawDynamicSetMembers($mode=9, $query_data=''){
+	public function getRawDynamicSetMembers($mode='DEF', $query_data=''){
+	    
+	    if(!is_numeric($mode)){
+	        $mode = $this->_retrieve_mode;
+	    }
 	    
 	    return $this->getRawDynamicSetResultSet($mode, $query_data)->getItems();
 	    
 	}
 	
-	public function getRandom($limit, $mode=9, $query_data=''){
+	public function getRandom($limit, $mode='DEF', $query_data=''){
+	    
+	    if(!is_numeric($mode)){
+	        $mode = $this->_retrieve_mode;
+	    }
+	    
 	    if($this->getType() == 'STATIC'){
 	        
 	    }else if($this->getType() == 'DYNAMIC'){
@@ -425,7 +479,11 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getSimpleMembers($mode=9, $refresh=false, $limit=null, $query_data=''){
+	public function getSimpleMembers($mode='DEF', $refresh=false, $limit=null, $query_data=''){
+	    
+	    if(!is_numeric($mode)){
+	        $mode = $this->_retrieve_mode;
+	    }
 	    
 	    // calculate which items are in the set and assign to $_set_members.
 	    
@@ -565,7 +623,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    return $this->_set_members_simple;
 	}
 	
-	public function getMemberIds($mode=9, $refresh=false){
+	public function getMemberIds($mode='DEF', $refresh=false){
 	    
 	    $this->getMembers($mode);
 	    return $this->_set_member_ids;
@@ -756,9 +814,31 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	        case "_members":
 	        return $this->getMembers();
 	        
+	        case "_count":
+	        return count($this->getMembers());
+	        
+	        case "_first":
+	        $this->getMembers();
+	        return reset($this->_set_members);
+	        
+	        case "_last":
+	        $this->getMembers();
+	        return end($this->_set_members);
+	        
+	        case '_retrieve_mode':
+	        return $this->_retrieve_mode;
+	        
+	        case '_draft_mode':
+            return new SmartestBoolean($this->_retrieve_mode < 6);
+	        
+	        default:
+	        if(preg_match('/_members_(\d)+/', $offset, $matches)){
+	            return $this->getMembers($matches[1]);
+	        }else{
+	            return parent::offsetGet($offset);
+	        }
+	        
 	    }
-	    
-	    return parent::offsetGet($offset);
 	    
 	}
 	

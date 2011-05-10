@@ -305,6 +305,10 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
                 $sql .= " AND ".$info['filter']['entitysource']['sitefield']."='".$site_id."'";
             }
         }
+        
+        if(isset($info['filter']['entitysource']['filterfield'])){
+            $sql .= " AND ".$info['filter']['entitysource']['filterfield']."='".$this->getForeignKeyFilter()."'";
+        }
     
         if(isset($info['filter']['condition'])){
         

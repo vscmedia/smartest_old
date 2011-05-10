@@ -63,6 +63,7 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess, SmartestStorabl
             case 'english':
             return $this->getValue() ? 'Yes' : 'No';
             case 'int':
+            case 'numeric':
             return (int) $this->_value;
             case 'cssdisplayblock':
             return 'display:'.$this->_value ? 'block' : 'none';

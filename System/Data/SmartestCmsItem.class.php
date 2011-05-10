@@ -265,6 +265,9 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            return $this->getProperties();
 	            break;
 	            
+	            case '_draft_mode':
+	            return new SmartestBoolean($this->_draft_mode);
+	            
 	        }
 	        
 	    }
