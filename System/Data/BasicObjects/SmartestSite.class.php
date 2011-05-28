@@ -348,5 +348,16 @@ class SmartestSite extends SmartestBaseSite{
         return (bool) count($this->database->queryToArray($sql));
         
     }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "unique_id":
+            return $this->getUniqueId();
+        }
+        
+        return parent::offsetGet($offset);
+        
+    }
 	
 }

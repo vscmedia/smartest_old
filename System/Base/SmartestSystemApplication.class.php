@@ -148,15 +148,64 @@ class SmartestSystemApplication extends SmartestBaseApplication{
         
 	}
 	
+	public function setTemporaryFormReturnUri($uri=''){
+	    
+	    $d = $this->getRequest()->getDomain();
+	    
+	    if(strlen($uri)){
+	        
+	        $uri_parts = explode("?", $uri);
+	        
+	        $fn = $uri_parts[0];
+	        
+	        if(substr($fn, 0, strlen($d)) != $d){
+	            if($fn{0} == '/'){
+	                $request_filename = $d.$fn;
+	            }else{
+	                $request_filename = $d.'/'.$fn;
+	            }
+	        }else{
+	            $request_filename = $fn;
+	        }
+	        
+	        if(count($uri_parts) > 1){
+	            $qs = $uri_parts[1];
+	            $request_vars = SmartestStringHelper::parseQueryString($qs);
+            }else{
+                $request_vars = array();
+            }
+	        
+	    }else{
+	        $request_vars = $_GET;
+	        $request_filename = reset(explode("?", $_SERVER["REQUEST_URI"]));
+        }
+        
+        /* if(isset($request_vars['from']) && isset($request_vars['from']{0})){
+	        // do nothing
+	    }else{ */
+		    SmartestSession::set("form:return:temp_location", $request_filename);
+		    $vars = new SmartestParameterHolder("Form failure request variables");
+            $vars->loadArray($request_vars);
+            SmartestSession::set("form:return:temp_vars", $vars);
+	    // }
+	    
+	}
+	
 	public function getFormReturnUri($escape=false){
 	    
-	    if(SmartestSession::hasData("form:return:location")){
+	    if(SmartestSession::hasData("form:return:temp_location")){
+			$form_return_uri =& SmartestSession::get("form:return:temp_location");
+	    }else if(SmartestSession::hasData("form:return:location")){
 			$form_return_uri =& SmartestSession::get("form:return:location");
 		}else{
 			$form_return_uri = "/smartest";
 		}
 		
-		if(SmartestSession::hasData("form:return:vars") && (SmartestSession::get("form:return:vars") instanceof SmartestParameterHolder) && SmartestSession::get("form:return:vars")->hasData()){
+		if(SmartestSession::hasData("form:return:temp_vars") && (SmartestSession::get("form:return:temp_vars") instanceof SmartestParameterHolder) && SmartestSession::get("form:return:temp_vars")->hasData()){
+		    
+			$form_return_uri .= "?".SmartestStringHelper::toQueryString(SmartestSession::get("form:return:temp_vars")->getParameters(), $escape);
+		
+		}else if(SmartestSession::hasData("form:return:vars") && (SmartestSession::get("form:return:vars") instanceof SmartestParameterHolder) && SmartestSession::get("form:return:vars")->hasData()){
 		    
 			$form_return_uri .= "?".SmartestStringHelper::toQueryString(SmartestSession::get("form:return:vars")->getParameters(), $escape);
 			
@@ -167,11 +216,21 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	}
 	
 	public function getFormReturnDescription(){
-	    return SmartestSession::get("form:return:description");
+	    
+	    if(SmartestSession::hasData("form:return:temp_description")){
+	        return SmartestSession::get("form:return:temp_description");
+	    }else{
+	        return SmartestSession::get("form:return:description");
+	    }
+	    
 	}
 	
 	protected function setFormReturnDescription($rd){
 	    return SmartestSession::set("form:return:description", $rd);
+	}
+	
+	protected function setTemporaryFormReturnDescription($rd){
+	    return SmartestSession::set("form:return:temp_description", $rd);
 	}
 	
 	protected function setFormReturnVar($var, $value){
@@ -205,9 +264,17 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		$_SESSION["_FORM_RETURN_VARS"][$var] = $value;
 	} */
 	
-	protected function formForward(){
+	protected function formForward($clear_temp=true){
 		
-		$this->redirect($this->getFormReturnUri(), true);
+		$uri = $this->getFormReturnUri();
+		
+		if($clear_temp){
+		    SmartestSession::clear('form:return:temp_description');
+		    SmartestSession::clear('form:return:temp_vars');
+		    SmartestSession::clear('form:return:temp_location');
+	    }
+	    
+		$this->redirect($uri, true);
 		
 	}
 	

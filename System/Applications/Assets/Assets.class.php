@@ -356,6 +356,7 @@ class Assets extends SmartestSystemApplication{
                 $all_input_types = $alh->getInputTypes();
                 $template = $all_input_types[$input_method_id]['template'];
                 $this->send($template, 'interface_file');
+                $this->send('Name this file', 'name_instruction');
                 
                 // Can a new file be saved?
                 if($type['storage']['type'] != 'database' && $type['storage']['type'] != 'external_translated'){
@@ -398,64 +399,6 @@ class Assets extends SmartestSystemApplication{
     		        break;
     		        
     		    }
-                
-    		    /* $type = $types_array[$asset_type];
-    		    $this->setTitle("Add a new ".$type['label']);
-    		    $this->send($type['id'], 'type_code');
-    		    $this->send($type, 'new_asset_type_info');
-
-    		    $possible_groups = $alh->getAssetGroupsThatAcceptType($asset_type, $this->getSite()->getId());
-    		    $this->send($possible_groups, 'possible_groups');
-
-    		    if(isset($type['param'])){
-
-        	        $raw_xml_params = $type['param'];
-
-        	        foreach($raw_xml_params as $rxp){
-        	            if(isset($rxp['default'])){
-        	                $params[$rxp['name']] = $rxp['default'];
-                        }else{
-                            $params[$rxp['name']] = '';
-                        }
-        	        }
-
-        	    }else{
-        	        $params = array();
-        	    }
-
-    		    $suffixes = array();
-
-    		    $this->send($params, 'params');
-
-    		    if(is_array($type['suffix'])){
-    		        foreach($type['suffix'] as $s){
-    		            $suffixes[] = $s['_content'];
-    		        }
-    		    }
-
-    		    if($type['storage']['type'] == 'database' || $type['category'] == "browser_instructions"){
-    		        $starting_mode = 'direct';
-    		    }else{
-    		        $starting_mode = 'upload';
-    		    }
-
-    		    if($type['category'] != 'image'){
-    		        $form_include = "add.".strtolower(substr($asset_type, 13)).".tpl";
-    	        }else{
-    	            $form_include = "add.image.tpl";
-    	        }
-
-    	        if($type['storage']['type'] != 'database'){
-    	            $path = SM_ROOT_DIR.$type['storage']['location'];
-    	            $allow_save = is_writable($path);
-    	            $this->send($allow_save, 'allow_save');
-    	            $this->send($path, 'path');
-                }else{
-                    $this->send(true, 'allow_save');
-                }
-
-    	        $this->send($starting_mode, 'starting_mode');
-    	        $this->send(json_encode($suffixes), 'suffixes'); */
 
     		}else{
     		    $this->send($asset_type, 'wanted_type');
@@ -568,6 +511,8 @@ class Assets extends SmartestSystemApplication{
                             $this->addUserMessageToNextRequest("The ".strtolower($property->getModel()->getName())." ID was not recognised.", SmartestUserMessage::ERROR);
                             $this->redirect('/datamanager/getItemclassMembers?class_id='.$property->getItemclassId());
                         }
+                    }else{
+                        $this->send('Name this '.strtolower($property->getModel()->getName()), 'name_instruction');
                     }
 
                 }else{
@@ -653,6 +598,10 @@ class Assets extends SmartestSystemApplication{
                 
                 if($this->getRequestParameter('item_id')){
                     $url .= '&item_id='.$this->getRequestParameter('item_id');
+                }
+                
+                if($this->getRequestParameter('page_id')){
+                    $url .= '&page_id='.$this->getRequestParameter('page_id');
                 }
                 
                 $this->redirect($url);
@@ -1453,8 +1402,17 @@ class Assets extends SmartestSystemApplication{
         
 		$asset_id = $this->getRequestParameter('asset_id');
 
-		if(!$this->getRequestParameter('from')){
-		    // $this->setFormReturnUri();
+		if($this->getRequestParameter('from') == 'item_edit' && is_numeric($this->getRequestParameter('item_id'))){
+		    $ruri = '/datamanager/editItem?item_id='.$this->getRequestParameter('item_id');
+		    if($this->getRequestParameter('page_id')){
+		        $ruri .= '&page_id='.$this->getRequestParameter('page_id');
+		    }
+		    
+		    $this->setTemporaryFormReturnUri($ruri);
+		    
+		    if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+	            $this->setTemporaryFormReturnDescription(strtolower($item->getModel()->getName()));
+	        }
 		}
 
 		$asset = new SmartestAsset;
@@ -1484,8 +1442,6 @@ class Assets extends SmartestSystemApplication{
 			            $file = SM_ROOT_DIR.$asset_type['storage'].$asset->getUrl();
 			            $content = htmlspecialchars(SmartestFileSystemHelper::load($asset->getFullPathOnDisk()), ENT_COMPAT, 'UTF-8');
 			        }
-                    
-                    
                     
                     if(isset($asset_type['source_editable']) && SmartestStringHelper::toRealBool($asset_type['source_editable'])){
         		        $this->send(true, 'allow_source_edit');

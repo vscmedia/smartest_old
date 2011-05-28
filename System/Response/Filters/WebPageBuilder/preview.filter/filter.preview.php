@@ -32,6 +32,14 @@ function smartest_filter_preview($html, $filter){
         
     }else{
         
+        $heartbeat_id = SmartestPersistentObject::get('request_data')->getParameter('request_parameters')->getParameter('heartbeat_id');
+        
+        if($heartbeat_id == SM_CMS_PAGE_SITE_UNIQUE_ID){
+            $html = str_replace('</head>', "<meta name=\"smartest:siteid\" content=\"".$heartbeat_id."\">\n</head>", $html);
+            $html = str_replace('</body>', "<!--SMARTEST HEARTBEAT-->\n</body>", $html);
+        }
+      
+        /* 
         if(defined('SM_CMS_PAGE_SITE_UNIQUE_ID')){
             $sid = "<!--SMARTEST HEARTBEAT-->\n<!--SITEID: ".SM_CMS_PAGE_SITE_UNIQUE_ID."-->\n";
         }else{
@@ -40,6 +48,7 @@ function smartest_filter_preview($html, $filter){
         
         $creator = "\n<!--Powered by Smartest v".constant('SM_INFO_VERSION_NUMBER')." -->\n".$sid;
         $html = str_replace('</body>', $creator."<!--Page was returned in: ".SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken')."ms -->\n</body>", $html);
+        */
         
     }
     

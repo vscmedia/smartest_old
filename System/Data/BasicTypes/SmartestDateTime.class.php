@@ -10,6 +10,8 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     public function __construct($date=''){
         if((bool) $date){
             $this->setValue($date);
+        }else{
+            $this->_value = date();
         }
     }
     

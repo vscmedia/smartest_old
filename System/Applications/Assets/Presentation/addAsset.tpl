@@ -151,7 +151,7 @@ function validateUploadSuffix(){
       {/if}
       
       <div class="edit-form-row">
-        <div class="form-section-label">Name this file</div>
+        <div class="form-section-label">{$name_instruction}</div>
         <input type="text" name="asset_label" value="{$suggested_name}" />
       </div>
       

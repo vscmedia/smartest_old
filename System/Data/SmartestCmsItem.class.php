@@ -999,6 +999,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            $this->_item->setItemclassId($this->_model_id);
 	        }
 	        
+	        if(!strlen($this->_item->getSlug())){
+	            $this->_item->setSlug(SmartestStringHelper::toSlug($this->_item->getName()));
+	        }
+	        
 	        $this->_item->save();
             
             foreach($this->getModel()->getProperties() as $prop){
