@@ -422,7 +422,7 @@ class SmartestCmsLink extends SmartestHelper{
     
     public function getContent($draft_mode=false){
         
-        if($this->_render_data->getParameter('with')){
+        if($this->_render_data->hasParameter('with')){
             // if the with="" attribute is specified
             
             if($this->_render_data->getParameter('with') instanceof SmartestImage){

@@ -1,11 +1,11 @@
 <div id="work-area">
 
-  <h3>Tagged Items: {$tag_name}</h3>
+  <h3>Tagged Items: {$tag.label}</h3>
   
   {if empty($objects)}
-  <div class="instruction">No items or pages are tagged with "{$tag_name}" on this site.</div>
+  <div class="instruction">No items or pages are tagged with "{$tag.label}" on this site.</div>
   {else}
-  <div class="instruction">{$objects|count} objects have ben tagged with "{$tag_name}".</div>
+  <div class="instruction">{$objects._count} objects have been tagged with "{$tag.label}".</div>
   <ul>
     {foreach from=$objects item="object"}
     <li style="list-style-image:url('{$object.small_icon}')"> <a href="{$object.action_url}">{$object.title}</a></li>

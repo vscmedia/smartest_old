@@ -572,6 +572,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     
                     $child = $this->startChildProcess(substr(md5($list->getName().microtime()), 0, 8));
         	        $child->assign('items', $data);
+        	        $child->assign('num_items', count($data));
         	        $child->assign('title', $list->getTitle());
         	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
         	        $child->setDraftMode($this->getDraftMode());

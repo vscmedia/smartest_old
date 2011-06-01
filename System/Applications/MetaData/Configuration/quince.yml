@@ -14,6 +14,9 @@ module:
     tags:
       action: listTags
       url: /smartest/tags
+    tagged_objects:
+      action: getTaggedObjects
+      url: /smartest/tagged/:tag
   meta:
     system: true
     author: Marcus Gilroy-Ware

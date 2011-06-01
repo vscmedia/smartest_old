@@ -1846,6 +1846,21 @@ class Assets extends SmartestSystemApplication{
 		/* if(!$this->getRequestParameter('from')){
 		    $this->setFormReturnUri();
 		} */
+		
+		if($this->getRequestParameter('from') == 'item_edit' && is_numeric($this->getRequestParameter('item_id'))){
+		    
+		    // $ruri = '/datamanager/editItem?item_id='.$this->getRequestParameter('item_id');
+		    
+		    /* if($this->getRequestParameter('page_id')){
+		        $ruri .= '&page_id='.$this->getRequestParameter('page_id');
+		    } */
+		    
+		    $this->setTemporaryFormReturnUri();
+		    
+		    if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+	            $this->setTemporaryFormReturnDescription(strtolower($item->getModel()->getName()));
+	        }
+		}
 
 		$asset = new SmartestAsset;
 

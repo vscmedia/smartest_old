@@ -4,7 +4,7 @@
 <div class="instruction">Tags exist across all your sites. Some pags may not make sense for certain sites, but they can be ignored.</div>
 
 {foreach from=$tags item="tag" key="key"}
-<a style="font-size:1.2em" href="{$domain}{$section}/getTaggedObjects?tag={$tag.name}">{$tag.label}</a>{if $key < count($tags)}, {/if}
+<a class="tag" href="{$domain}smartest/tagged/{$tag.name}">{$tag.label}</a>
 {/foreach}
 </div>
 

@@ -11,7 +11,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
         if((bool) $date){
             $this->setValue($date);
         }else{
-            $this->_value = date();
+            $this->_value = time();
         }
     }
     

@@ -440,39 +440,64 @@ class MetaData extends SmartestSystemApplication{
 	
 	public function insertTag($get, $post){
 	    
-	    $tag_label = $post['tag_label'];
-	    $tag_name = SmartestStringHelper::toSlug($tag_label);
+	    $proposed_tags = SmartestStringHelper::fromCommaSeparatedList($this->getRequestParameter('tag_label'));
 	    
-	    $tag = new SmartestTag;
+	    // print_r($proposed_tags);
 	    
-	    if($tag->hydrateBy('name', $tag_name)){
-	        $this->addUserMessageToNextRequest("A tag with that name already exists.", SmartestUserMessage::WARNING);
-	        $this->formForward();
-	    }else{
-	        $tag->setName($tag_name);
-	        $tag->setLabel($tag_label);
-	        $tag->save();
+	    $num_new_tags = 0;
+	    
+	    foreach($proposed_tags as $tag_label){
 	        
-	        $this->addUserMessageToNextRequest("Tag was successfully added.", SmartestUserMessage::SUCCESS);
-	        $this->formForward();
-	    }
+	        if(strlen($tag_label)){
+	        
+        	    $tag_name = SmartestStringHelper::toSlug($tag_label);
+	    
+        	    $tag = new SmartestTag;
+        	    $existing_tags = array();
+	    
+        	    if($tag->hydrateBy('name', $tag_name)){
+        	        // $this->addUserMessageToNextRequest("A tag with that name already exists.", SmartestUserMessage::WARNING);
+        	        $existing_tags[] = "'".$tag_label."'";
+        	    }else{
+        	        $tag->setName($tag_name);
+        	        $tag->setLabel($tag_label);
+        	        $tag->save();
+        	        $num_new_tags++;
+        	    }
+    	    
+	        }
+	    
+        }
+        
+        $message = $num_new_tags.' tag successfully added.';
+        
+        if(count($existing_tags)){
+            $message .= ' Tags '.SmartestStringHelper::toCommaSeparatedList($existing_tags).' already existed.';
+            $type = SmartestUserMessage::INFO;
+        }else{
+            $type = SmartestUserMessage::SUCCESS;
+        }
+        
+        $this->addUserMessageToNextRequest($message, $type);
+        $this->formForward();
 	    
 	}
 	
 	public function getTaggedObjects($get){
 	    
-	    $tag_identifier = SmartestStringHelper::toSlug($get['tag']);
+	    $tag_identifier = SmartestStringHelper::toSlug($this->getRequestParameter('tag'));
 	    $tag = new SmartestTag;
 	    
 	    if($tag->findBy('name', $tag_identifier)){
+	        $this->send($tag, 'tag');
 	        $objects = $tag->getObjectsOnSite($this->getSite()->getId(), true);
 	    }else{
 	        $objects = array();
 	        $this->addUserMessage("This tag does not exist.", SmartestUserMessage::WARNING);
 	    }
 	    
-	    $this->send($objects, 'objects');
-	    $this->send($tag_identifier, 'tag_name');
+	    $this->send(new SmartestArray($objects), 'objects');
+	    
 	    
 	}
 

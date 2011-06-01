@@ -429,3 +429,18 @@ ul.item_property_actions li a{
 ul.item_property_actions li a:hover{
     background-color:#eee;
 }
+
+a.tag{
+    display:inline-block;
+    font-size:14px;
+    padding:3px 5px 3px 5px;
+    margin:2px;
+    border:1px solid #aaa;
+    border-radius:8px;
+    -moz-border-radius:8px;
+}
+
+a.tag:hover{
+    text-decoration:none;
+    background-color:#f4eee9;
+}

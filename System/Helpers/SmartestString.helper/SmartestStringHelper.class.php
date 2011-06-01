@@ -700,6 +700,10 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	}
 	
+	public static function fromCommaSeparatedList($string){
+	    return preg_split('/[\s]*[,][\s]*/', $string);
+	}
+	
 	public static function guaranteeUnique($string, $taken_strings, $separator='-'){
 	    
 	    if(!is_array($taken_strings)){
