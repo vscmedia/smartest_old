@@ -272,10 +272,10 @@ class SmartestTag extends SmartestBaseTag{
             return $this->getObjectsOnSite($this->getCurrentSiteId(), true);
             
             case "url":
-            return $this->_request_data->g('domain').'tags/'.$this->getName().'.html';
+            return $this->_request->getDomain().'tags/'.$this->getName().'.html';
             
             case "feed_url":
-            return $this->_request_data->g('domain').'tags/'.$this->getName().'/feed';
+            return $this->_request->getDomain().'tags/'.$this->getName().'/feed';
             
             default:
             

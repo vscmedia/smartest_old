@@ -1,8 +1,8 @@
-# AuthUserFile /etc/htpasswd                                          
-# AuthGroupFile /etc/htgroup                                          
-# AuthName "Smartest Development"                                               
-# AuthType Basic                              
-# require group smartest
+#AuthUserFile /etc/htpasswd                                          
+#AuthGroupFile /etc/htgroup                                          
+#AuthName "Smartest Development"                                               
+#AuthType Basic                              
+#require group smartest
 
 # php_value session.name "SMARTEST"
 

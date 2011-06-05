@@ -612,6 +612,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     		$breadcrumbs = $this->_tpl_vars['this']['navigation']['_breadcrumb_trail'];
     		$separator = (isset($params['separator'])) ? $params['separator'] : "&gt;";
     		$string = "";
+    		
+    		// print_r($breadcrumbs);
 
     		$link_params = array();
 

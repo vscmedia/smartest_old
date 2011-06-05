@@ -154,6 +154,8 @@ class SmartestAssetCreationHelper{
         
         $suffixes = $this->_alh->getAllSuffixesForType($this->_asset_type['id']);
         
+        $textarea_contents = SmartestTextFragmentCleaner::clean($textarea_contents);
+        
         $new_temp_file = SM_ROOT_DIR.'System/Temporary/'.md5(microtime(true)).'.'.$suffixes[0];
         SmartestFileSystemHelper::save($new_temp_file, SmartestStringHelper::sanitize($textarea_contents), true);
         
