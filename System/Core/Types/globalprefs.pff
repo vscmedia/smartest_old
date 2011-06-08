@@ -1,2 +1,6 @@
 name:site_specific:user_specific:description
 default_timezone:0:0:System timezone
+site_user_page_id:1:0:Which page should be used to display user profiles?
+site_tag_page_id:1:0:Which page should be used to display tagged content?
+site_error_page_id:1:0:Which page should be used to display a 'not found' message (404)?
+site_search_page_id:1:0:Which page should be used to display search results?

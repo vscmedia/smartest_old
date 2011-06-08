@@ -84,7 +84,6 @@ class SmartestSiteCreationHelper{
 	    $error_page->setOrderIndex(1024);
 	    $error_page->setIsPublished('TRUE');
 	    $error_page->save();
-	    $error_page->addAuthorById($u->getId());
 	    $site->setErrorPageId($error_page->getId());
 	    SmartestLog::getInstance('system')->log("Created and connected 404 page to new site (page ID {$error_page->getId()})", SM_LOG_DEBUG);
         
@@ -99,7 +98,6 @@ class SmartestSiteCreationHelper{
 	    $search_page->setCreatedbyUserid($u->getId());
 	    $search_page->setOrderIndex(1022);
 	    $search_page->save();
-	    $search_page->addAuthorById($u->getId());
 	    $site->setSearchPageId($search_page->getId());
 	    SmartestLog::getInstance('system')->log("Created and connected search page to new site (page ID {$search_page->getId()})", SM_LOG_DEBUG);
 	    
@@ -114,7 +112,6 @@ class SmartestSiteCreationHelper{
 	    $tag_page->setCreatedbyUserid($u->getId());
 	    $tag_page->setOrderIndex(1023);
 	    $tag_page->save();
-	    $tag_page->addAuthorById($u->getId());
 	    $site->setTagPageId($tag_page->getId());
 	    SmartestLog::getInstance('system')->log("Created and connected tag page to new site (page ID {$tag_page->getId()})", SM_LOG_DEBUG);
 	    

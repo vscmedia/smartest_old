@@ -96,6 +96,19 @@ var section = '{$section}';
 </div>
 
 <div class="edit-form-row">
+  <div class="form-section-label">Select User Profile Page (Advanced)</div>
+  <select name="site_user_page">
+    {if !$site.user_page_id}<option value="NEW">Create a new page for this purpose</option>{/if}
+    {foreach from=$pages item="page"}
+      {if $page.info.id != $site.top_page_id}
+      <option value="{$page.info.id}"{if $site.user_page_id == $page.info.id} selected="selected"{/if}>+{section name="dashes" loop=$page.treeLevel}-{/section} {$page.info.title}</option>
+      {/if}
+    {/foreach}
+  </select>
+  <br /><span class="form-hint">This page will be loaded when a user profile is requested.</span>
+</div>
+
+<div class="edit-form-row">
   <div class="form-section-label">Select Error Page (Advanced)</div>
   <select name="site_error_page">
     {foreach from=$pages item="page"}

@@ -185,6 +185,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	            
 	        }
 	        
+	        // TODO: Make ASC/DESC settable
 	        $sql .= " ORDER BY SetsItemsLookup.setlookup_order ASC";
 	        
 	        $results = $this->database->queryToArray($sql);

@@ -101,13 +101,17 @@ class SmartestDataUtility{
 	    
 	}
 	
-	public function getModelPluralNamesLowercase($site_id=''){
+	public function getModelPluralNamesLowercase($site_id='', $reverse=false){
 	    
 	    $models = $this->getModels(false, $site_id);
 	    $names = array();
 	    
 	    foreach($models as $m){
-	        $names[SmartestStringHelper::toVarName($m->getPluralName())] = $m->getId();
+	        if($reverse){
+	            $names[$m->getId()] = SmartestStringHelper::toVarName($m->getPluralName());
+	        }else{
+	            $names[SmartestStringHelper::toVarName($m->getPluralName())] = $m->getId();
+            }
 	    }
 	    
 	    return $names;

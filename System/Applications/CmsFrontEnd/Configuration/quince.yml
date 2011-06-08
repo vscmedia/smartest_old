@@ -29,6 +29,9 @@ module:
     feed:
       url: /feeds/:set_name/rss
       action: getDataSetRssFeed
+    author:
+      url: /author/:username
+      action: getAuthorProfile
 #    sitemap:
 #      url: /sitemap.xml
 #      action: buildXmlSitemap

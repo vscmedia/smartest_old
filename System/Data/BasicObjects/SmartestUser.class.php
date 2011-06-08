@@ -4,6 +4,7 @@ class SmartestUser extends SmartestBaseUser{
 	
 	protected $_tokens = array();
 	protected $_site_ids = array();
+	protected $_model_plural_names = array();
 	
 	protected function __objectConstruct(){
 		$this->_table_prefix = 'user_';
@@ -154,9 +155,23 @@ class SmartestUser extends SmartestBaseUser{
 	    
 	}
 	
+	protected function getModelPluralNames(){
+        
+        if(!count($this->_model_plural_names)){
+            $du = new SmartestDataUtility;
+            $this->_model_plural_names = $du->getModelPluralNamesLowercase($this->getSiteId());
+        }
+        
+        return $this->_model_plural_names;
+    }
+	
 	public function offsetGet($offset){
 	    
 	    $offset = strtolower($offset);
+	    
+	    if(in_array($offset, array_keys($this->getModelPluralNames()))){
+            return $this->getCreditedItemsOnCurrentSite($this->_model_plural_names[$offset]);
+        }
 	    
 	    switch($offset){
 	        case "password":
@@ -170,6 +185,13 @@ class SmartestUser extends SmartestBaseUser{
 	    return parent::offsetGet($offset);
 	    
 	}
+	
+	public function getCreditedItemsOnCurrentSite($model_id=null){
+        // echo $model_id;
+        if($sid = $this->getCurrentSiteId()){
+            return $this->getCreditedItems($sid, $model_id);
+        }
+    }
 	
 	public function sendEmail($subject, $message, $from=""){
 	    
@@ -187,5 +209,95 @@ class SmartestUser extends SmartestBaseUser{
         }
 	    
 	}
+	
+	public function getCreditedItems($site_id=null, $model_id=null, $mode=9){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_ITEM_AUTHORS');
+	    $q->setTargetEntityByIndex(2);
+	    $q->addQualifyingEntityByIndex(1, $this->_properties['id']);
+	    $q->addForeignTableConstraint('Items.item_deleted', '0');
+	    $draft_mode = $mode < 6;
+	    
+	    if($mode > 5){
+            $q->addForeignTableConstraint('Items.item_public', 'TRUE');
+        }
+        
+        if(is_numeric($model_id)){
+            $q->addForeignTableConstraint('Items.item_itemclass_id', $model_id);
+        }
+        
+        if(is_numeric($site_id)){
+            $q->addForeignTableOrConstraints(
+	            array('field'=>'Items.item_site_id', 'value'=>$site_id),
+	            array('field'=>'Items.item_shared', 'value'=>'1')
+	        );
+        }
+        
+        if(in_array($mode, array(1,4,7,10))){
+	    
+	        $q->addForeignTableConstraint('Items.item_is_archived', '1');
+	    
+        }else if(in_array($mode, array(2,5,8,11))){
+            
+            $q->addForeignTableConstraint('Items.item_is_archived', '0');
+            
+        }
+        
+        $ids = $q->retrieveIds();
+        $ih = new SmartestCmsItemsHelper;
+        
+        if(is_numeric($model_id)){
+            $items = $ih->hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode);
+        }else{
+            $items = $ih->hydrateMixedListFromIdsArray($ids, $draft_mode);
+        }
+        
+        return new SmartestArray($items);
+	    
+	}
+	
+	public function getCreditedWorkOnSite($site_id='', $draft=false){
+        
+        /*  $master_array = array();
+        
+        $pages = $this->getPages($site_id, $draft);
+        $items = $this->getItems($site_id, $draft);
+        
+        foreach($pages as $p){
+            
+            $key = $p->getDate();
+            
+            if(in_array($key, array_keys($master_array))){
+                while(in_array($key, array_keys($master_array))){
+                    $key++;
+                }
+            }
+            
+            $master_array[$key] = $p;
+            
+        }
+        
+        foreach($items as $i){
+            
+            $key = $i->getDate();
+            if($key instanceof SmartestDateTime){
+                $key = $key->getUnixFormat();
+            }
+            
+            if(in_array($key, array_keys($master_array))){
+                while(in_array($key, array_keys($master_array))){
+                    $key++;
+                }
+            }
+            
+            $master_array[$key] = $i;
+            
+        }
+        
+        krsort($master_array);
+        
+        return $master_array; */
+        
+    }
 	
 }

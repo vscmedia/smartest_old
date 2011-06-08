@@ -53,7 +53,7 @@ class SmartestCmsItemsHelper{
         
     }
     
-    public function hydrateUniformListFromIdsArray($ids, $model_id){
+    public function hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode=false){
         
         $results = $this->getSquareDbDataFromIdsArray($ids, $model_id);
         $items = array();
@@ -66,6 +66,7 @@ class SmartestCmsItemsHelper{
             
                 $item = new $class_name();
                 $item->hydrateFromRawDbRecord($result);
+                $item->setDraftMode($draft_mode);
                 $items[] = $item;
                 
             }

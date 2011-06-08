@@ -274,7 +274,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		    SmartestSession::clear('form:return:temp_location');
 	    }
 	    
-		$this->redirect($uri, true);
+	    $this->redirect($uri, true);
 		
 	}
 	

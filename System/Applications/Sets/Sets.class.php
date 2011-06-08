@@ -494,7 +494,7 @@ class Sets extends SmartestSystemApplication{
 	
 	public function previewSet($get){     
 	    
-	    if($this->getRequestParameter('mode')){
+	    if($this->getRequestParameter('mode') != null){
 	        $mode = (int) $this->getRequestParameter('mode');
 	    }else{
 	        $mode = SM_QUERY_PUBLIC_DRAFT;

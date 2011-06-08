@@ -538,6 +538,19 @@ class SmartestManyToManyQuery{
         
     }
     
+    public function retrieveIds($all_phases=false){
+        
+        $lookups = $this->retrieveLookups($all_phases);
+        $ids = array();
+        
+        foreach($lookups as $l){
+            $ids[] = $l->getEntityForeignKeyValue($this->getTargetEntity()->getEntity()->getEntityIndex());
+        }
+        
+        return $ids;
+        
+    }
+    
     public function setDraftMode($mode){
         
         /* if($status == 'SM_MTMLOOKUPSTATUS_LIVE' || $status == 'SM_MTMLOOKUPSTATUS_DRAFT' || $status == 'SM_MTMLOOKUPSTATUS_OLD'){

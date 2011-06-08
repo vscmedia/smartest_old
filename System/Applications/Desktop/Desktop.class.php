@@ -93,17 +93,31 @@ class Desktop extends SmartestSystemApplication{
 	    if($this->getSite() instanceof SmartestSite){
 	        
 	        $site = $this->getSite();
-	        $site->setName($post['site_name']);
-	        $site->setInternalLabel($post['site_internal_label']);
-	        $site->setTitleFormat($post['site_title_format']);
-	        $site->setDomain($post['site_domain']);
-	        $site->setIsEnabled((int) (bool) $post['site_is_enabled']);
-	        // $site->setTopPageId($post['site_top_page']);
-	        $site->setTagPageId($post['site_tag_page']);
-	        $site->setSearchPageId($post['site_search_page']);
-	        $site->setErrorPageId($post['site_error_page']);
-	        $site->setAdminEmail($post['site_admin_email']);
+	        $site->setName($this->getRequestParameter('site_name'));
+	        $site->setInternalLabel($this->getRequestParameter('site_internal_label'));
+	        $site->setTitleFormat($this->getRequestParameter('site_title_format'));
+	        $site->setDomain($this->getRequestParameter('site_domain'));
+	        $site->setIsEnabled((int) (bool) $this->getRequestParameter('site_is_enabled'));
+	        // $site->setTopPageId($this->getRequestParameter('site_top_page'));
+	        $site->setTagPageId($this->getRequestParameter('site_tag_page'));
+	        $site->setSearchPageId($this->getRequestParameter('site_search_page'));
+	        $site->setErrorPageId($this->getRequestParameter('site_error_page'));
+	        $site->setAdminEmail($this->getRequestParameter('site_admin_email'));
 	        $site->save();
+	        
+	        if($this->getRequestParameter('site_user_page') == 'NEW' && !is_numeric($site->getUserPageId())){
+	            $p = new SmartestPage;
+	            $p->setTitle('User Profile');
+	            $p->setName('user');
+	            $p->setSiteId($site->getId());
+	            $p->setParent($site->getTopPageId());
+        	    $p->setWebid(SmartestStringHelper::random(32));
+        	    $p->setCreatedbyUserid($this->getUser()->getId());
+        	    $p->setOrderIndex(1021);
+        	    $p->save();
+        	    $site->setUserPageId($p->getId());
+        	    SmartestCache::clear('site_pages_tree_'.$p->getSiteId(), true);
+	        }
 	        
 		    $this->formForward();
 	    }
@@ -165,11 +179,11 @@ class Desktop extends SmartestSystemApplication{
 	public function buildSite($get, $post){
 	    
 	    $p = new SmartestParameterHolder('New site parameters');
-	    $p->setParameter('site_name', $post['site_name']);
-	    $p->setParameter('site_internal_label', $post['site_name']);
-	    $p->setParameter('site_domain', $post['site_domain']);
-	    $p->setParameter('site_admin', $post['site_admin_email']);
-	    $p->setParameter('site_master_template', $post['site_master_template']);
+	    $p->setParameter('site_name', $this->getRequestParameter('site_name'));
+	    $p->setParameter('site_internal_label', $this->getRequestParameter('site_name'));
+	    $p->setParameter('site_domain', $this->getRequestParameter('site_domain'));
+	    $p->setParameter('site_admin', $this->getRequestParameter('site_admin_email'));
+	    $p->setParameter('site_master_template', $this->getRequestParameter('site_master_template'));
 	    
 	    $sch = new SmartestSiteCreationHelper;
 	    

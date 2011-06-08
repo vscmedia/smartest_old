@@ -43,7 +43,7 @@ class SmartestWebPagePreparationHelper{
     
     public function cachedPagesAllowed(){
         
-        return (file_exists(SM_ROOT_DIR.'System/Cache/Pages/'.$this->_page->getCacheFileName()) && $this->_page->getCacheAsHtml() == "TRUE" && $this->_page->getDraftMode() == false && $this->_request->getAction() != 'searchDomain');
+        return (file_exists(SM_ROOT_DIR.'System/Cache/Pages/'.$this->_page->getCacheFileName()) && $this->_page->getCacheAsHtml() == "TRUE" && $this->_page->getDraftMode() == false && ($this->_request->getAction() == 'renderPageFromId' || $this->_request->getAction() == 'renderPageFromUrl'));
         
     }
     

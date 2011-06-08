@@ -11,7 +11,7 @@
   <b>Attached File:</b>&nbsp;{if $attachment.asset.id}{$attachment.asset.url}{else}<em style="color:#999">None yet</em>{/if}<br />
   <b>Caption:</b>&nbsp;{$attachment.caption}<br />
   <b>Align:</b>&nbsp;{$attachment.alignment}
-  <div style="margin-top:10px"><input type="button" value="{if $attachment.asset.id}Edit...{else}Attach file...{/if}" onclick="window.location='{$domain}{$section}/defineAttachment?attachment={$attachment.name}&amp;asset_id={$asset.id}'" /></div>
+  <div style="margin-top:10px"><input type="button" value="{if $attachment.asset.id}Edit...{else}Attach file...{/if}" onclick="window.location='{$domain}{$section}/defineAttachment?attachment={$attachment.name}&amp;asset_id={$asset.id}{if $request_parameters.item_id}&amp;item_id={$request_parameters.item_id}{/if}{if $request_parameters.from}&amp;from={$request_parameters.from}{/if}{if $request_parameters.page_id}&amp;page_id={$request_parameters.page_id}{/if}{if $request_parameters.author_id}&amp;author_id={$request_parameters.author_id}{/if}{if $request_parameters.search_query}&amp;search_query={$request_parameters.search_query}{/if}{if $request_parameters.tag}&amp;tag={$request_parameters.tag}{/if}'" /></div>
   </div>
   {/foreach}
 {else}

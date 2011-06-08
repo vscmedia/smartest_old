@@ -36,6 +36,7 @@ system:
     - website/addRating
     - website/buildXmlSitemap
     - website/buildRobotsTxtFile
+    - website/getAuthorProfile
   content_interaction_methods:
     - website/renderPageFromUrl
     - website/renderPageFromId
@@ -47,6 +48,7 @@ system:
     - website/submitPageComment
     - website/addRating
     - website/buildXmlSitemap
+    - website/getAuthorProfile
   smarty_config:
     default_templates_dir: Presentation/
     templates_cache: System/Cache/Smarty/

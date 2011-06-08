@@ -364,7 +364,7 @@ class SmartestResponse{
 	                // unknown page id
 	            }
 	        }else{
-	            if($site = $h->getSiteByDomain($_REQUEST['HTTP_HOST'])){
+	            if($site = $h->getSiteByDomain($_SERVER['HTTP_HOST'])){
 	                $GLOBALS['_site'] = $site;
 	            }else{
 	                // unknown site domain

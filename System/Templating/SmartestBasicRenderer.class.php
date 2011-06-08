@@ -211,7 +211,10 @@ class SmartestBasicRenderer extends SmartestEngine{
             if($this->_request_data->g('action') == "renderEditableDraftPage" && $path == 'none' && $show_preview_edit_link){
 			    
 			    if(isset($asset_type_info['editable']) && SmartestStringHelper::toRealBool($asset_type_info['editable'])){
-			        $edit_link .= "<a title=\"Click to edit file: ".$this->_asset->getUrl()." (".$this->_asset->getType().")\" href=\"".$this->_request_data->g('domain')."assets/editAsset?asset_id=".$this->_asset->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
+			        $edit_url = $this->_request_data->g('domain')."assets/editAsset?asset_id=".$this->_asset->getId()."&amp;from=pagePreview";
+			        if($this->_request_data->g('request_parameters')->hasParameter('item_id')) $edit_url .= '&item_id='.$this->_request_data->g('request_parameters')->getParameter('item_id');
+			        if($this->_request_data->g('request_parameters')->hasParameter('page_id')) $edit_url .= '&page_id='.$this->_request_data->g('request_parameters')->getParameter('page_id');
+			        $edit_link .= "<a title=\"Click to edit file: ".$this->_asset->getUrl()." (".$this->_asset->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
 			    }else{
 			        $edit_link = "<!--edit link-->";
 		        }

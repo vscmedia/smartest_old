@@ -50,7 +50,7 @@
 </div>
 
 <div id="preview">
-  <iframe class="building" id="preview-iframe" src="{$domain}website/renderEditableDraftPage?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}" style="height:0px"></iframe>
+  <iframe class="building" id="preview-iframe" src="{$domain}website/renderEditableDraftPage?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}{if $request_parameters.author_id}&amp;author_id={$request_parameters.author_id}{/if}{if $request_parameters.search_query}&amp;q={$request_parameters.search_query}{/if}{if $request_parameters.tag}&amp;tag={$request_parameters.tag}{/if}" style="height:0px"></iframe>
 </div>
 
 <div id="preview-loading" style="padding-top:50px;text-align:center">

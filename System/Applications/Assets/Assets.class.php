@@ -1847,7 +1847,7 @@ class Assets extends SmartestSystemApplication{
 		    $this->setFormReturnUri();
 		} */
 		
-		if($this->getRequestParameter('from') == 'item_edit' && is_numeric($this->getRequestParameter('item_id'))){
+		// if($this->getRequestParameter('from') == 'item_edit' && is_numeric($this->getRequestParameter('item_id'))){
 		    
 		    // $ruri = '/datamanager/editItem?item_id='.$this->getRequestParameter('item_id');
 		    
@@ -1855,12 +1855,13 @@ class Assets extends SmartestSystemApplication{
 		        $ruri .= '&page_id='.$this->getRequestParameter('page_id');
 		    } */
 		    
-		    $this->setTemporaryFormReturnUri();
+		    /* $this->setTemporaryFormReturnUri();
+		    $this->setTemporaryFormReturnDescription('attachments');
 		    
 		    if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
 	            $this->setTemporaryFormReturnDescription(strtolower($item->getModel()->getName()));
-	        }
-		}
+	        } */
+		// }
 
 		$asset = new SmartestAsset;
 
@@ -2009,6 +2010,41 @@ class Assets extends SmartestSystemApplication{
                 
                         $border = $current_def->getBorder();
                         $this->send($border, 'border');
+                        
+                        // if($is_numeric($this->getRequestParameter('item_id'))){
+                		    
+                		    $ruri = '/assets/textFragmentElements?asset_id='.$asset->getId();
+                		    
+                		    if($this->getRequestParameter('from')){
+                		        $ruri .= '&from='.$this->getRequestParameter('from');
+                		    }
+                		    
+                		    if($this->getRequestParameter('item_id')){
+                		        $ruri .= '&item_id='.$this->getRequestParameter('item_id');
+                		    }
+                		    
+                		    if($this->getRequestParameter('page_id')){
+                		        $ruri .= '&page_id='.$this->getRequestParameter('page_id');
+                		    }
+                		    
+                		    if($this->getRequestParameter('author_id')){
+                		        $ruri .= '&author_id='.$this->getRequestParameter('author_id');
+                		    }
+                		    
+                		    if($this->getRequestParameter('search_query')){
+                		        $ruri .= '&search_query='.$this->getRequestParameter('search_query');
+                		    }
+                		    
+                		    if($this->getRequestParameter('tag')){
+                		        $ruri .= '&tag='.$this->getRequestParameter('tag');
+                		    }
+
+                		    $this->setTemporaryFormReturnUri($ruri);
+
+                		    /* if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+                	            $this->setTemporaryFormReturnDescription(strtolower($item->getModel()->getName()));
+                	        } */
+                		//}
                 
                     }
                 

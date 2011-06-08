@@ -6,8 +6,11 @@ function smartest_filter_preview($html, $filter){
         
         $request_data = SmartestPersistentObject::get('request_data');
         
-        $preview_url = '/website/renderEditableDraftPage?page_id='.$request_data->getParameter('request_parameters')->getParameter('page_id');
+        $preview_url = '/website/renderEditableDraftPage?page_id='.$request_data->getParameter('request_parameters')->getParameter('page_id').'&amp;liberate_link=false';
         if($request_data->getParameter('request_parameters')->hasParameter('item_id')) $preview_url .= '&amp;item_id='.$request_data->getParameter('request_parameters')->getParameter('item_id');
+        if($request_data->getParameter('request_parameters')->hasParameter('search_query')) $preview_url .= '&amp;q='.$request_data->getParameter('request_parameters')->getParameter('search_query');
+        if($request_data->getParameter('request_parameters')->hasParameter('author_id')) $preview_url .= '&amp;author_id='.$request_data->getParameter('request_parameters')->getParameter('author_id');
+        if($request_data->getParameter('request_parameters')->hasParameter('tag')) $preview_url .= '&amp;tag='.$request_data->getParameter('request_parameters')->getParameter('tag');
         
         $phtml = SmartestFileSystemHelper::load($filter->getDirectory().'previewbar.html.txt');
         $phtml = str_replace('%PREVIEWURL%', $preview_url, $phtml);

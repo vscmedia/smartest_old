@@ -94,10 +94,14 @@ class SmartestSite extends SmartestBaseSite{
 		
 	}
 	
-	public function getSpecialPageIds($include_home=false){
-	    $ids = array("search_page_id"=>$this->getSearchPageId(), "tag_page_id"=>$this->getTagPageId(), "error_page_id"=>$this->getErrorPageId());
-	    return $ids;
-	}
+	public function getSpecialPageIds(){
+        $ids = new SmartestParameterHolder('Special page IDs for site \''.$this->getName().'\'');
+        $ids->setParameter('tag_page_id', $this->getTagPageId());
+        $ids->setParameter('user_page_id', $this->getUserPageId());
+        $ids->setParameter('error_page_id', $this->getErrorPageId());
+        $ids->setParameter('search_page_id', $this->getSearchPageId());
+        return $ids;
+    }
 	
 	public function getNormalPagesList(){
 	    $list = $this->getPagesList();
@@ -354,10 +358,87 @@ class SmartestSite extends SmartestBaseSite{
         switch($offset){
             case "unique_id":
             return $this->getUniqueId();
+            case "user_page_id":
+            return $this->getUserPageId();
+            case "tag_page_id":
+            return $this->getTagPageId();
+            case "error_page_id":
+            return $this->getErrorPageId();
+            case "search_page_id":
+            return $this->getSearchPageId();
         }
         
         return parent::offsetGet($offset);
         
+    }
+    
+    /** User Page **/
+    
+    public function getUserPageId(){
+        $ph = new SmartestPreferencesHelper;
+        return $ph->getGlobalPreference('site_user_page_id', null, $this->getId());
+    }
+    
+    public function setUserPageId($id){
+        $ph = new SmartestPreferencesHelper;
+        return $ph->setGlobalPreference('site_user_page_id', $id, null, $this->getId());
+    }
+    
+    /** Tag Page **/
+    
+    public function getTagPageId(){
+        $ph = new SmartestPreferencesHelper;
+        if($ph->getGlobalPreference('site_tag_page_id', null, $this->getId(), true)){
+            return $ph->getGlobalPreference('site_tag_page_id', null, $this->getId());
+        }else{
+            // Migrate to new storage system
+            $p = $this->_properties['tag_page_id'];
+            $ph->setGlobalPreference('site_tag_page_id', $p, null, $this->getId());
+            return $p;
+        }
+    }
+    
+    public function setTagPageId($id){
+        $ph = new SmartestPreferencesHelper;
+        return $ph->setGlobalPreference('site_tag_page_id', $id, null, $this->getId());
+    }
+    
+    /** Search Page **/
+    
+    public function getSearchPageId(){
+        $ph = new SmartestPreferencesHelper;
+        if($ph->getGlobalPreference('site_search_page_id', null, $this->getId(), true)){
+            return $ph->getGlobalPreference('site_search_page_id', null, $this->getId());
+        }else{
+            // Migrate to new storage system
+            $p = $this->_properties['search_page_id'];
+            $ph->setGlobalPreference('site_search_page_id', $p, null, $this->getId());
+            return $p;
+        }
+    }
+    
+    public function setSearchPageId($id){
+        $ph = new SmartestPreferencesHelper;
+        return $ph->setGlobalPreference('site_search_page_id', $id, null, $this->getId());
+    }
+    
+    /** Error Page **/
+    
+    public function getErrorPageId(){
+        $ph = new SmartestPreferencesHelper;
+        if($ph->getGlobalPreference('site_error_page_id', null, $this->getId(), true)){
+            return $ph->getGlobalPreference('site_error_page_id', null, $this->getId());
+        }else{
+            // Migrate to new storage system
+            $p = $this->_properties['error_page_id'];
+            $ph->setGlobalPreference('site_error_page_id', $p, null, $this->getId());
+            return $p;
+        }
+    }
+    
+    public function setErrorPageId($id){
+        $ph = new SmartestPreferencesHelper;
+        return $ph->setGlobalPreference('site_error_page_id', $id, null, $this->getId());
     }
 	
 }

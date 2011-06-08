@@ -93,8 +93,10 @@ class SmartestDataObject implements ArrayAccess{
 	    return $this->_modified_properties;
 	}
 
-    public function copy(){
-        $classname = get_class($this);
+    public function copy($classname=null){
+        if(!$classname){
+            $classname = get_class($this);
+        }
         $obj = new $classname;
         $obj->hydrate($this->getOriginalDbRecord());
         return $obj;
@@ -514,6 +516,10 @@ class SmartestDataObject implements ArrayAccess{
 		    return false;
 	    }
 	    
+	}
+	
+	public function getClassName(){
+	    return get_class($this);
 	}
 	
 	protected function getRetrievalSqlQuery($value, $field='id', $site_id=''){

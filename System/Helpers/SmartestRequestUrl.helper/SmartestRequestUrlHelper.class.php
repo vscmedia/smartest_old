@@ -41,6 +41,19 @@ class SmartestRequestUrlHelper{
 	    
 	}
 	
+	public function getSiteByPageWebId($page_webid){
+	    
+	    $sql = "SELECT Sites.* FROM Sites, Pages WHERE Pages.page_webid='{$page_webid}' AND Pages.page_site_id=Sites.site_id";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    if(count($result)){
+	        $site = new SmartestSite;
+	        $site->hydrate($result[0]);
+	        return $site;
+	    }
+	    
+	}
+	
 	public function getNormalPageByUrl($url, $site_id){
 		
 		$sql = "SELECT Pages.*, PageUrls.pageurl_id, PageUrls.pageurl_type, PageUrls.pageurl_url FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";

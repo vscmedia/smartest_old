@@ -39,8 +39,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	
 	public function renderPageFromUrl(){
 		
-		// var_dump($this->lookupSiteDomain());
-		
 		if($this->lookupSiteDomain()){
 		    
 		    define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
@@ -60,10 +58,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 
         		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->getRequest()->getRequestString(), $this->_site->getId())){
 
-        		        // we are viewing a meta-page (based on an item from a data set)
-        		        /* if($this->_page->getLastPublished()){
-        		            header("Last-Modified: ".date('D, j M Y H:i:s e', $this->_page->getLastPublished())); // Tue, 15 Nov 1994 12:45:26 GMT
-        		        } */
         		        $this->renderPage();
 
         		    }else{
@@ -89,8 +83,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        $this->renderPage();
 		        
 		    }
-        	
-        	return Quince::NODISPLAY;
 		    
 	    }else{
         	    
@@ -152,8 +144,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
         	    }
         	
     	    }
-    	    
-    	    return Quince::NODISPLAY;
 		    
 	    }else{
         	    
@@ -168,29 +158,66 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
 		define('SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN', $this->getUser()->hasToken('edit_containers_in_preview', false));
 		
-		$page_webid = $get['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
+		
+		if($this->_site = $this->manager->getSiteByPageWebId($page_webid)){
 		    
-	    if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){
+		    define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
+	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
 	        
-	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
-	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_page->getSite()->getUniqueId());
-	        $this->_page->setDraftMode(true);
-	        $this->renderPage(true);
-	        
-	    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], true)){
-	        
-	        define('SM_CMS_PAGE_SITE_ID', $this->_page->getSiteId());
-	        define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_page->getSite()->getUniqueId());
-	        $this->_page->setDraftMode(true);
-	        $this->renderPage(true);
-	        
-	    }else{
-    		
-    		$this->renderNotFoundPage();
-    		
-    	}
-    	
-    	return Quince::NODISPLAY;
+	        if($this->_page = $this->manager->getNormalPageByWebId($page_webid, true)){
+                
+                if(in_array($this->_page->getId(), $this->_site->getSpecialPageIds()->getParameters())){
+                    
+                    if($this->_page->getId() == $this->_site->getSpecialPageIds()->g('search_page_id') && $this->getRequestParameter('q')){
+                        // Search page
+                        $p = $this->_page->copy('SmartestSearchPage');
+                        $p->setSearchQuery($this->getRequestParameter('q'));
+                        $this->_page = $p;
+                    }
+                    
+                    if($this->_page->getId() == $this->_site->getSpecialPageIds()->g('tag_page_id') && $this->getRequestParameter('tag')){
+                        
+                        // Tag page
+                        $p = $this->_page->copy('SmartestTagPage');
+                        $t = new SmartestTag;
+                        
+                        if($t->hydrateBy('name', $this->getRequestParameter('tag'))){
+                            $p->assignTag($t);
+                            $this->_page = $p;
+                        }
+                        
+                    }
+                    
+                    if($this->_page->getId() == $this->_site->getSpecialPageIds()->g('user_page_id') && $this->getRequestParameter('author_id')){
+                        
+                        // User page
+                        $p = $this->_page->copy('SmartestUserPage');
+                        $u = new SmartestUser;
+                        
+                        if($u->find($this->getRequestParameter('author_id'))){
+                            $p->assignUser($u);
+                            $this->_page = $p;
+                        }
+                        
+                    }
+                }
+                
+    	        $this->_page->setDraftMode(true);
+    	        $this->renderPage(true);
+
+    	    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], true)){
+
+    	        $this->_page->setDraftMode(true);
+    	        $this->renderPage(true);
+
+    	    }else{
+
+        		$this->renderNotFoundPage();
+
+        	}
+		    
+		}
 		
 	}
 	
@@ -368,8 +395,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        header("HTTP/1.1 404 Not Found");
 	        $this->renderPage($draft_mode);
 	        
-	        return Quince::NODISPLAY;
-	        
         }else{
             
             
@@ -417,6 +442,25 @@ class CmsFrontEnd extends SmartestSystemApplication{
         }
 	}
 	
+	public function getAuthorProfile(){
+	    if($this->lookupSiteDomain()){
+	        $u = new SmartestUser;
+	        if($u->findBy('username', $this->getRequestParameter('username'))){
+	            $p = new SmartestUserPage;
+	            if($p->find($this->_site->getUserPageId())){
+	                $p->assignUser($u);
+	                $this->_page = $p;
+	                $this->renderPage();
+                }else{
+                    // page designated as user page doesn't exist, or no page has been designated
+                }
+	        }else{
+	            // User not recognised
+	            $this->renderNotFoundPage();
+	        }
+        }
+	}
+	
 	public function buildRobotsTxtFile(){
 	    header('Content-type: text/plain');
 	}
@@ -424,5 +468,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	public function systemStatusAsXml(){
 	    header('Content-type: application/xml');
 	}
+	
+	
 	
 }
