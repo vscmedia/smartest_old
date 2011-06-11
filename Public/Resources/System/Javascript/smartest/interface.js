@@ -462,12 +462,35 @@ Smartest.UI.TagsList = Class.create({
         }
     },
     
-    tagPage: function(){
-        
+    tagPage: function(page_id, tag_id){
+        var url = sm_domain+'ajax:websitemanager/tagPage?page_id='+page_id+'&tag_id='+tag_id;
+        new Ajax.Request(url, {
+            method: 'get',
+            onSuccess: function(transport) {
+                var l = $('tag-link-'+tag_id);
+                l.addClassName('selected');
+            } 
+        });
     },
     
-    unTagPage: function(){
-        
-    }
+    unTagPage: function(page_id, tag_id){
+        var url = sm_domain+'ajax:websitemanager/unTagPage?page_id='+page_id+'&tag_id='+tag_id;
+        new Ajax.Request(url, {
+            method: 'get',
+            onSuccess: function(transport) {
+                var l = $('tag-link-'+tag_id);
+                l.removeClassName('selected');
+            } 
+        });
+    },
+    
+    togglePageTagged: function(page_id, tag_id){
+        var l = $('tag-link-'+tag_id);
+        if(l.hasClassName('selected')){
+            this.unTagPage(page_id, tag_id);
+        }else{
+            this.tagPage(page_id, tag_id);
+        }
+    },
     
 });

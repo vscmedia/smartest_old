@@ -1474,7 +1474,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        
 	        $tag = new SmartestTag;
 	        
-	        if(!$tag->hydrate($tag_identifier)){
+	        if(!$tag->find($tag_identifier)){
 	            // kill it of if they are supplying a numeric ID which doesn't match a tag
 	            return false;
 	        }
@@ -1494,6 +1494,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    }
 	    
 	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->_properties['id']."', 'SM_PAGE_TAG_LINK')";
+	    echo $sql;
 	    $this->database->rawQuery($sql);
 	    return true;
 	    

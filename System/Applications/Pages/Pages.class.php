@@ -1545,12 +1545,15 @@ class Pages extends SmartestSystemApplication{
 	            
 	                $i++;
 	            }
-	        
-	            $this->send($page_tags, 'tags');
-	            $this->send(true, 'show_tags');
-	            $this->send($page->__toArray(), 'page');
 	            
-	            $this->setTitle('Page Tags | '.$page->getTitle());
+	            $tag_ids = $page->getTagIdsArray();
+	            
+	            $this->send($tag_ids, 'used_tags_ids');
+	            $this->send($tags, 'tags');
+	            $this->send(true, 'show_tags');
+	            $this->send($page, 'page');
+	            
+	            $this->setTitle($page->getTitle().' | Tags');
 	        
             }
             

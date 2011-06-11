@@ -24,3 +24,9 @@ module:
       url: /smartest/page/new
   meta:
     system: true
+  namespaces:
+    ajax:
+      class: PagesAjax
+      meta:
+        template: _blank.tpl
+        presentation_subfolder: Ajax/
