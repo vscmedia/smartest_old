@@ -182,6 +182,9 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
 	        case 'time_only':
 	        return date($this->_time_format, $this->_value);
 	        
+	        case 'month_only':
+	        return date('F Y', $this->_value);
+	        
 	        default:
 	        return date($offset, $this->_value);
 	        

@@ -43,7 +43,7 @@ function executeTransfer(){
   		    <select name="available_assets[]"  id="available_assets" size="2" multiple style="width:270px; height:300px;"  onclick="setMode('add')"  >
 
 {foreach from=$non_members key="key" item="asset"}
-  		      <option value="{$asset.id}" >{$asset.url}</option>
+  		      <option value="{$asset.id}" >{$asset.label}</option>
 {/foreach}
 
   		    </select>
@@ -60,7 +60,7 @@ function executeTransfer(){
    	      
    	      <select name="used_assets[]"  id='used_assets' size="2" multiple style="width:270px; height:300px" onclick="setMode('remove')" >	
 {foreach from=$members key="key" item="asset"}
-  		      <option value="{$asset.id}" >{$asset.url}</option>
+  		      <option value="{$asset.id}" >{$asset.label}</option>
 {/foreach}
           </select>
           

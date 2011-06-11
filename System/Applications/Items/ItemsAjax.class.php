@@ -18,5 +18,43 @@ class ItemsAjax extends SmartestSystemApplication{
 	    $this->send($items, 'items');
 	    
 	}
+	
+	public function tagItem(){
+	    
+	    $item = new SmartestItem;
+	    
+	    if($item->find($this->getRequestParameter('item_id'))){
+	        
+	        if($item->tag($this->getRequestParameter('tag_id'))){
+	            header('HTTP/1.1 200 OK');
+	            echo 'true';
+	        }
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+	    
+	}
+	
+	public function unTagItem(){
+	    
+	    $item = new SmartestItem;
+	    
+	    if($item->find($this->getRequestParameter('item_id'))){
+	        
+	        if($item->untag($this->getRequestParameter('tag_id'))){
+	            header('HTTP/1.1 200 OK');
+	            echo 'true';
+	        }
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+	    
+	}
 
 }

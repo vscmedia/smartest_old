@@ -435,12 +435,25 @@ a.tag{
     font-size:14px;
     padding:3px 5px 3px 5px;
     margin:2px;
-    border:1px solid #aaa;
+    border:2px solid #ccc;
     border-radius:8px;
     -moz-border-radius:8px;
+    cursor:pointer;
+    color:#666;
 }
 
 a.tag:hover{
     text-decoration:none;
-    background-color:#f4eee9;
+    background-color:#fff5ec;
+}
+
+a.tag.selected{
+    border:2px solid #f90;
+    color:#f90;
+}
+
+a.tag.selected:hover{
+    text-decoration:none;
+    color:#fff;
+    background-color:#f90;
 }

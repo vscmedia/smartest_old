@@ -151,6 +151,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     $r->setCentralEntityObjectId($this->getId());
                     $r->setCentralEntityByIndex($this->getProperty()->getManyToManyRelationshipItemEntityIndex());
                     $r->setTargetEntityByIndex($this->getProperty()->getManyToManyRelationshipMappedObjectEntityIndex());
+                    // fix goes here
                     
                     $obj = new $class;
                     $obj->hydrateFromStoredIdsArray($r->getIds($mode), $draft);

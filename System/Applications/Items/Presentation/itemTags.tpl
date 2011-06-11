@@ -3,26 +3,34 @@
   {load_interface file="edit_tabs.tpl"}
   
   <h3>Tags for this {$model.name} ({$item.name})</h3>
-  <div class="instruction">Choose which tags this item is attached to. Some pags may not make sense for certain sites, but they can be ignored.</div>
+  <div class="instruction">Choose which tags this item is attached to. Some tags may not make sense for certain sites, but they can be ignored.</div>
   
   <form action="{$domain}{$section}/updateItemTags" method="post">
     
     <input type="hidden" name="item_id" value="{$item.id}" />
     
-    <ul class="basic-list">
+    {* <ul class="basic-list">
       {foreach from=$tags item="tag"}
       <li><input type="checkbox" name="tags[{$tag.id}]" id="tag_{$tag.id}"{if $tag.attached} checked="checked"{/if} /><label for="tag_{$tag.id}">{$tag.label}</label></li>
       {/foreach}
-    </ul>
+    </ul> *}
+    
+    <script type="text/javascript">
+    var TL = new Smartest.UI.TagsList();
+    </script>
+    
+    {foreach from=$tags item="tag"}
+      <a class="tag{if $tag.attached} selected{/if}" href="javascript:TL.toggleItemTagged({$item.id}, {$tag.id});" id="tag-link-{$tag.id}">{$tag.label}</a>
+    {/foreach}
   
-    <div id="edit-form-layout">
+    {* <div id="edit-form-layout">
       <div class="edit-form-row">
         <div class="buttons-bar">
           <input type="button" value="Cancel" onclick="cancelForm();" />
           <input type="submit" name="action" value="Save" />
         </div>
       </div>
-    </div>
+    </div> *}
   
   </form>
   
@@ -32,7 +40,7 @@
   
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Tagging Options</b></li>
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}metadata/addTag'"><img src="{$domain}Resources/Icons/tag_blue.png" />Add Tag</a></li>    
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}metadata/addTag?item_id={$item.id}'"><img src="{$domain}Resources/Icons/tag_blue.png" />Add Tag</a></li>    
   </ul>
 
   <ul class="actions-list" id="non-specific-actions">

@@ -436,15 +436,42 @@ class MetaData extends SmartestSystemApplication{
 	
 	public function addTag(){
 	    
+	    if(is_numeric($this->getRequestParameter('item_id'))){
+	        $item = new SmartestItem;
+	        if($item->find($this->getRequestParameter('item_id'))){
+	            $this->send($item, 'item');
+	        }
+	    }
+	    
+	    if(is_numeric($this->getRequestParameter('page_id'))){
+	        $page = new SmartestPage;
+	        if($item->find($this->getRequestParameter('page_id'))){
+	            $this->send($page, 'page');
+	        }
+	    }
+	    
 	}
 	
 	public function insertTag($get, $post){
 	    
 	    $proposed_tags = SmartestStringHelper::fromCommaSeparatedList($this->getRequestParameter('tag_label'));
 	    
-	    // print_r($proposed_tags);
-	    
 	    $num_new_tags = 0;
+	    $tag_item = false;
+	    
+	    if($this->getRequestParameter('tag_item') && is_numeric($this->getRequestParameter('item_id'))){
+	        $item = new SmartestItem;
+	        if($item->find($this->getRequestParameter('item_id'))){
+	            $tag_item = true;
+	        }
+	    }
+	    
+	    if($this->getRequestParameter('tag_page') && is_numeric($this->getRequestParameter('page_id'))){
+	        $page = new SmartestPage;
+	        if($page->find($this->getRequestParameter('page_id'))){
+	            $tag_page = true;
+	        }
+	    }
 	    
 	    foreach($proposed_tags as $tag_label){
 	        
@@ -462,6 +489,12 @@ class MetaData extends SmartestSystemApplication{
         	        $tag->setName($tag_name);
         	        $tag->setLabel($tag_label);
         	        $tag->save();
+        	        if($tag_item){
+        	            $item->tag($tag->getId());
+        	        }
+        	        if($tag_page){
+        	            $page->tag($tag->getId());
+        	        }
         	        $num_new_tags++;
         	    }
     	    

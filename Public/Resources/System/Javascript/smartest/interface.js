@@ -422,4 +422,52 @@ Smartest.UI.CheckBoxGroup = Class.create({
         $$('input.'+this.className).find(function(e){e.checked = false;});
     }
     
-})
+});
+
+Smartest.UI.TagsList = Class.create({
+    
+    initialize: function(){
+        
+    },
+    
+    tagItem: function(item_id, tag_id){
+        var url = sm_domain+'ajax:datamanager/tagItem?item_id='+item_id+'&tag_id='+tag_id;
+        new Ajax.Request(url, {
+            method: 'get',
+            onSuccess: function(transport) {
+                var l = $('tag-link-'+tag_id);
+                l.addClassName('selected');
+            } 
+        });
+    },
+    
+    unTagItem: function(item_id, tag_id){
+        var url = sm_domain+'ajax:datamanager/unTagItem?item_id='+item_id+'&tag_id='+tag_id;
+        // alert(url);
+        new Ajax.Request(url, {
+            method: 'get',
+            onSuccess: function(transport) {
+                var l = $('tag-link-'+tag_id);
+                l.removeClassName('selected');
+            } 
+        });
+    },
+    
+    toggleItemTagged: function(item_id, tag_id){
+        var l = $('tag-link-'+tag_id);
+        if(l.hasClassName('selected')){
+            this.unTagItem(item_id, tag_id);
+        }else{
+            this.tagItem(item_id, tag_id);
+        }
+    },
+    
+    tagPage: function(){
+        
+    },
+    
+    unTagPage: function(){
+        
+    }
+    
+});
