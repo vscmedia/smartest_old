@@ -673,3 +673,8 @@ CREATE TABLE `UserTokens` (
 INSERT INTO `Settings` (`setting_id`, `setting_parent_id`, `setting_site_id`, `setting_user_id`, `setting_application_id`, `setting_type`, `setting_name`, `setting_value`) VALUES
 (1, 0, 0, 0, '', 'SM_SETTINGTYPE_SYSTEM_META', 'database_minimum_revision', '384'),
 (2, 0, 0, 0, '', 'SM_SETTINGTYPE_SYSTEM_META', 'database_version', '16');
+
+INSERT INTO `AssetClasses` (`assetclass_name`, `assetclass_label`, `assetclass_site_id`, `assetclass_shared`, `assetclass_type`) VALUES
+('page_specific_stylesheet', 'Page-specific Stylesheet', 1, 1, 'SM_ASSETCLASS_STYLESHEET'),
+('page_specific_javascript', 'Page-specific Javascript', 1, 1, 'SM_ASSETCLASS_JAVASCRIPT'),
+('page_layout', 'Page layout', 1, 1, 'SM_ASSETCLASS_CONTAINER');

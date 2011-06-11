@@ -268,6 +268,13 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            case '_draft_mode':
 	            return new SmartestBoolean($this->_draft_mode);
 	            
+	            case '_meta_page':
+	            if($p = $this->getMetaPage()){
+	                return $p;
+                }else{
+                    return 'blah';
+                }
+	            
 	        }
 	        
 	    }

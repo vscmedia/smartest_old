@@ -121,6 +121,15 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             case "site":
             return $this->getSite();
             
+            case "download_link_contents":
+            return 'download:'.$this->getUrl();
+            
+            case "file_size":
+            return $this->getSize();
+            
+            case "raw_file_size":
+            return $this->getSize(true);
+            
         }
         
         return parent::offsetGet($offset);
