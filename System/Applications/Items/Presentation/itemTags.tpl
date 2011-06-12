@@ -5,34 +5,15 @@
   <h3>Tags for this {$model.name} ({$item.name})</h3>
   <div class="instruction">Choose which tags this item is attached to. Some tags may not make sense for certain sites, but they can be ignored.</div>
   
-  <form action="{$domain}{$section}/updateItemTags" method="post">
-    
-    <input type="hidden" name="item_id" value="{$item.id}" />
-    
-    {* <ul class="basic-list">
-      {foreach from=$tags item="tag"}
-      <li><input type="checkbox" name="tags[{$tag.id}]" id="tag_{$tag.id}"{if $tag.attached} checked="checked"{/if} /><label for="tag_{$tag.id}">{$tag.label}</label></li>
-      {/foreach}
-    </ul> *}
-    
-    <script type="text/javascript">
-    var TL = new Smartest.UI.TagsList();
-    </script>
-    
-    {foreach from=$tags item="tag"}
-      <a class="tag{if $tag.attached} selected{/if}" href="javascript:TL.toggleItemTagged({$item.id}, {$tag.id});" id="tag-link-{$tag.id}">{$tag.label}</a>
-    {/foreach}
+  <script type="text/javascript">
+  var TL = new Smartest.UI.TagsList();
+  </script>
   
-    {* <div id="edit-form-layout">
-      <div class="edit-form-row">
-        <div class="buttons-bar">
-          <input type="button" value="Cancel" onclick="cancelForm();" />
-          <input type="submit" name="action" value="Save" />
-        </div>
-      </div>
-    </div> *}
-  
-  </form>
+  <div style="text-align:justify">
+  {foreach from=$tags item="tag"}
+    <a class="tag{if $tag.attached} selected{/if}" href="javascript:TL.toggleItemTagged({$item.id}, {$tag.id});" id="tag-link-{$tag.id}">{$tag.label}</a>
+  {/foreach}
+  </div>
   
 </div>
 

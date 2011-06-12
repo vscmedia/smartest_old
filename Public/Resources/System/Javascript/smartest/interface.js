@@ -432,23 +432,28 @@ Smartest.UI.TagsList = Class.create({
     
     tagItem: function(item_id, tag_id){
         var url = sm_domain+'ajax:datamanager/tagItem?item_id='+item_id+'&tag_id='+tag_id;
+        var l = $('tag-link-'+tag_id);
+        l.addClassName('selected');
+        
         new Ajax.Request(url, {
             method: 'get',
             onSuccess: function(transport) {
-                var l = $('tag-link-'+tag_id);
-                l.addClassName('selected');
+                /* var l = $('tag-link-'+tag_id);
+                l.addClassName('selected'); */
             } 
         });
     },
     
     unTagItem: function(item_id, tag_id){
         var url = sm_domain+'ajax:datamanager/unTagItem?item_id='+item_id+'&tag_id='+tag_id;
-        // alert(url);
+        var l = $('tag-link-'+tag_id);
+        l.removeClassName('selected');
+        
         new Ajax.Request(url, {
             method: 'get',
             onSuccess: function(transport) {
-                var l = $('tag-link-'+tag_id);
-                l.removeClassName('selected');
+                /* var l = $('tag-link-'+tag_id);
+                l.removeClassName('selected'); */
             } 
         });
     },
@@ -463,12 +468,16 @@ Smartest.UI.TagsList = Class.create({
     },
     
     tagPage: function(page_id, tag_id){
+        
         var url = sm_domain+'ajax:websitemanager/tagPage?page_id='+page_id+'&tag_id='+tag_id;
+        var l = $('tag-link-'+tag_id);
+        l.addClassName('selected');
+        
         new Ajax.Request(url, {
             method: 'get',
             onSuccess: function(transport) {
-                var l = $('tag-link-'+tag_id);
-                l.addClassName('selected');
+                /* var l = $('tag-link-'+tag_id);
+                l.addClassName('selected'); */
             } 
         });
     },

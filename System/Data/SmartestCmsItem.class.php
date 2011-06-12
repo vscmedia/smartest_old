@@ -165,7 +165,6 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
     }
     
     public function hydrateFromFormData($v){
-        // var_dump($v);
         $r = $this->find((int) $v);
         return $r;
     }
@@ -230,10 +229,12 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            break;
 	            
 	            case 'url':
+	            case 'permalink':
 	            return $this->getUrl();
 	            break;
 	            
 	            case 'description':
+	            case '_description':
 	            return $this->getDescription();
 	            break;
 	            
@@ -272,7 +273,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            if($p = $this->getMetaPage()){
 	                return $p;
                 }else{
-                    return 'blah';
+                    
                 }
 	            
 	        }
@@ -290,9 +291,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	}
 	
 	public function getCacheFiles(){
-	    
 	    return $this->getItem()->getCacheFiles();
-	    
 	}
 	
 	private function getField($field_name, $draft=false){
