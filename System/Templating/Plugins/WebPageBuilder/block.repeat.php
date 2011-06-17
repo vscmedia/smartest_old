@@ -9,7 +9,11 @@
 function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	
 	$dah = new SmartestDataAppearanceHelper;
-	$item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_item";
+	if($params['from'] == '_authors'){
+        $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "author";
+    }else{
+	    $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_item";
+    }
 	
 	if ($repeat) {
 	

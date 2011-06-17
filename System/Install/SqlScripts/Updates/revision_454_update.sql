@@ -1,0 +1,14 @@
+ALTER TABLE  `Users` ADD  `user_profile_pic_asset_id` INT( 9 ) UNSIGNED NOT NULL AFTER  `user_birthday`;
+ALTER TABLE  `Sets` ADD  `set_is_system` INT( 9 ) NOT NULL AFTER  `set_shared`;
+ALTER TABLE  `ItemProperties` ADD  `itemproperty_storage_migrated` TINYINT( 1 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `Assets` ADD  `asset_is_subbed` TINYINT( 1 ) NOT NULL AFTER  `asset_is_approved`;
+ALTER TABLE  `Users` ADD  `user_is_smartest_account` TINYINT( 1 ) NOT NULL DEFAULT '1';
+ALTER TABLE  `Users` CHANGE  `user_is_smartest_account`  `user_is_smartest_account` TINYINT( 1 ) NOT NULL DEFAULT '0';
+ALTER TABLE  `ItemProperties` ADD  `itemproperty_defaultformat` VARCHAR( 32 ) NOT NULL AFTER  `itemproperty_defaultvalue`;
+ALTER TABLE  `Lists` ADD  `list_item_id` MEDIUMINT( 9 ) NOT NULL AFTER  `list_page_id`;
+ALTER TABLE  `TextFragments` ADD  `textfragment_is_approved` TINYINT( 1 ) NOT NULL DEFAULT  '1';
+ALTER TABLE  `TextFragments` CHANGE  `textfragment_is_approved`  `textfragment_is_approved` TINYINT( 1 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `TextFragments` ADD  `textfragment_type` VARCHAR( 64 ) NOT NULL;
+ALTER TABLE  `Assets` CHANGE  `asset_group_id`  `asset_parent_id` INT( 11 ) NOT NULL;
+ALTER TABLE  `Sites` DROP INDEX  `site_name`;
+ALTER TABLE  `Sites` ADD UNIQUE (`site_domain`);

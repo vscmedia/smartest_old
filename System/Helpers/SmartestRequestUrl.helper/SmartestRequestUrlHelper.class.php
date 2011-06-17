@@ -32,7 +32,7 @@ class SmartestRequestUrlHelper{
     	    $result = $this->database->queryToArray($sql);
     	    
     	    if(count($result)){
-	            throw new SmartestRedirectException('http://'.$try_domain.'/'.$url, SmartestRedirectException::PERMANENT);
+    	        throw new SmartestRedirectException('http://'.$try_domain.'/'.$url, SmartestRedirectException::PERMANENT);
 	        }else{
 	            return false;
             }
@@ -50,6 +50,8 @@ class SmartestRequestUrlHelper{
 	        $site = new SmartestSite;
 	        $site->hydrate($result[0]);
 	        return $site;
+	    }else{
+	        return false;
 	    }
 	    
 	}

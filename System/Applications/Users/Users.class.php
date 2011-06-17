@@ -134,6 +134,7 @@ class Users extends SmartestSystemApplication{
         }else{
             
             $this->addUserMessageToNextRequest("You don't have permission to modify users other than yourself.");
+            $this->formForward();
             
         }
         
@@ -190,6 +191,77 @@ class Users extends SmartestSystemApplication{
 	        $this->formForward();
         }
     	
+	}
+	
+	public function editUserProfilePic(){
+	    
+	    if($this->getRequestParameter('user_id') == $this->getUser()->getId() || $this->getUser()->hasToken('modify_other_user_details')){
+		
+		    $user = new SmartestUser;
+		
+    		if($user->find($this->getRequestParameter('user_id'))){
+    		    
+    		    $this->send($user, 'user');
+    		    $uh = new SmartestUsersHelper;
+    		    
+    		    if($g = $uh->getUserProfilePicsGroup()){
+    		        $this->send($g->getMembers(1, $this->getSite()), 'assets');
+    		    }else{
+    		        $helper = new SmartestAssetsLibraryHelper;
+            	    $this->send($helper->getAttachableFiles($this->getSite()->getId()), 'assets');
+    		    }
+    		    
+            }else{
+                $this->addUserMessageToNextRequest("The user ID was not recognised.");
+                $this->formForward();
+            }
+            
+            $this->send($this->getUser()->hasToken('modify_user_permissions'), 'show_tokens_edit_tab');
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("You don't have permission to modify users other than yourself.");
+            $this->formForward();
+            
+        }
+	    
+	}
+	
+	public function saveUserProfilePic(){
+	    
+	    if($this->getRequestParameter('user_id') == $this->getUser()->getId() || $this->getUser()->hasToken('modify_other_user_details')){
+		
+		    $user = new SmartestUser;
+		
+    		if($user->find($this->getRequestParameter('user_id'))){
+    		    
+    		    if($this->getRequestParameter('profile_pic_asset_id')){
+    		        $a = new SmartestAsset;
+    		        if($a->find($this->getRequestParameter('profile_pic_asset_id'))){
+    		            $user->setProfilePicAssetId($this->getRequestParameter('profile_pic_asset_id'));
+    		            $user->save();
+    		            $this->formForward();
+    		        }else{
+    		            
+    		        }
+		        }else{
+		            
+		        }
+    		    
+            }else{
+                $this->addUserMessageToNextRequest("The user ID was not recognised.");
+                $this->formForward();
+            }
+            
+            $this->send($this->getUser()->hasToken('modify_user_permissions'), 'show_tokens_edit_tab');
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("You don't have permission to modify users other than yourself.");
+            $this->formForward();
+            
+        }
+	    
 	}
 	
 	public function transferTokens($get, $post){

@@ -4,3 +4,5 @@ site_user_page_id:1:0:Which page should be used to display user profiles?
 site_tag_page_id:1:0:Which page should be used to display tagged content?
 site_error_page_id:1:0:Which page should be used to display a 'not found' message (404)?
 site_search_page_id:1:0:Which page should be used to display search results?
+default_user_profile_pic_asset_id:1:0:The image asset which should be used when a user does not have a profile pic
+default_user_profile_pic_asset_group_id:0:0:The file group which holds user profile pics

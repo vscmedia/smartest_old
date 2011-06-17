@@ -50,20 +50,25 @@ class SmartestSearchPage extends SmartestPage{
     public function offsetGet($offset){
         
         switch($offset){
+            
             case "query":
             return $this->_query;
+            
+            case "is_search":
+            return true;
+            
         }
         
         return parent::offsetGet($offset);
         
     }
     
-    public function __toArray(){
+    /* public function __toArray(){
         $data = parent::__toArray();
         // $data['tagged_objects'] = $this->_tag->getObjectsOnSiteAsArrays($this->getSite()->getId(), true);
         // $data['formatted_title'] = "";
         $data['query'] = $this->_query;
         return $data;
-    }
+    } */
     
 }

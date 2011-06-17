@@ -221,7 +221,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
 	}
 	
-	public function searchDomain($get){
+	public function searchDomain(){
 	    
 	    if($this->lookupSiteDomain()){
 	        

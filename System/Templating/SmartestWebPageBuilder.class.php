@@ -716,8 +716,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             $type = $parts[0];
             $name = $parts[1];
         }else{
-            $type = 'set';
-            $name = $params['from'];
+            if($params['from'] == '_authors'){
+                $type = 'authors';
+                $uh = new SmartestUsersHelper;
+                return $uh->getCreditableUsersOnSite($this->page->getSiteId());
+            }else{
+                $type = 'set';
+                $name = $params['from'];
+            }
         }
         
         switch($type){

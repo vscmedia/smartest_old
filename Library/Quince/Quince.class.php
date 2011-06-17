@@ -257,6 +257,14 @@ class QuinceRequest{
         return $this->_request_string;
     }
     
+    final public function getRequestStringWithVars(){
+        $rs = $this->_request_string;
+        if(isset($_SERVER['QUERY_STRING']{0})){
+            $rs .= '?'.$_SERVER['QUERY_STRING'];
+        }
+        return $rs;
+    }
+    
     final public function getHyperlinkRequestString(){
         if($this->_namespace == 'default'){
             return $this->_request_string;

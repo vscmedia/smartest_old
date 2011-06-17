@@ -226,6 +226,10 @@ div#footer{
 	width:100%;
 }
 
+div.breaker{
+    clear:both;
+}
+
 div._new-desktop-column{
     width:33%;
     float:left;

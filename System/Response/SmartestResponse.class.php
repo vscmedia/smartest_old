@@ -353,26 +353,38 @@ class SmartestResponse{
 		$rp->setParameter('application', $module);
 		
 		SmartestPersistentObject::set('request_data', $rp);
+	    $h = new SmartestRequestUrlHelper;
 	    
-	    // Make sure site is always looked up
-	    if($this->isWebsitePage()){
-		    $h = new SmartestSiteIdentificationHelper;
-		    if($this->_controller->getCurrentRequest()->getAction() == 'renderEditableDraftPage'){
-		        if($site = $h->getSiteByPageWebId($_GET['page_id'])){
-	                $GLOBALS['_site'] = $site;
-	            }else{
-	                // unknown page id
-	            }
-	        }else{
-	            if($site = $h->getSiteByDomain($_SERVER['HTTP_HOST'])){
-	                $GLOBALS['_site'] = $site;
-	            }else{
-	                // unknown site domain
-	            }
-	        }
-		}else if(SmartestSession::hasData('current_open_project')){
-		    $GLOBALS['_site'] =& SmartestSession::get('current_open_project')->getId();
-		}
+	    try{
+	    
+    	    // Make sure site is always looked up
+    	    if($this->isWebsitePage()){
+		    
+    		    if($this->_controller->getCurrentRequest()->getAction() == 'renderEditableDraftPage'){
+    		        if($site = $h->getSiteByPageWebId($_GET['page_id'])){
+    	                $GLOBALS['_site'] = $site;
+    	            }else{
+    	                // unknown page id
+    	            }
+    	        }else{
+    	            if($site = $h->getSiteByDomain($_SERVER['HTTP_HOST'])){
+    	                $GLOBALS['_site'] = $site;
+    	            }else{
+    	                // unknown site domain
+    	            }
+    	        }
+	    
+    	    }else if($this->isSystemClass() && SmartestSession::hasData('current_open_project')){
+    	        // Logged in to Smartest and working with objects in the backend
+    		    $GLOBALS['_site'] =& SmartestSession::get('current_open_project')->getId();
+    		}else if($site = $h->getSiteByDomain($_SERVER['HTTP_HOST'], $this->_controller->getCurrentRequest()->getRequestStringWithVars())){
+    		    // Anything else - just look up the domain
+    		    $GLOBALS['_site'] =& $site;
+    		}
+		
+		}catch(SmartestRedirectException $e){
+            $e->redirect();
+        }
 	    
 	    // Start Smarty
 	    if($this->isSystemClass()){
@@ -434,9 +446,6 @@ class SmartestResponse{
 		$rp->setParameter('application', $module);
 		
 		SmartestPersistentObject::set('request_data', $rp);
-		// SmartestPersistentObject::set('request_data', $rp);
-		
-		
 	    
 	}
 	

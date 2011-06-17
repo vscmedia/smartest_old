@@ -180,17 +180,105 @@ class SmartestUser extends SmartestBaseUser{
 	        case "full_name":
 	        case "fullname":
 	        return $this->getFullName();
+	        
+	        case "profile_pic":
+	        return $this->getProfilePic();
+	        
+	        case "profile_pic_asset_id":
+	        return $this->getProfilePicAssetId();
+	        
+	        case "bio":
+	        return $this->getBio();
+	        
+	        case "website":
+	        case "website_url":
+	        $url = $this->_properties['website'];
+	        // TODO: check this value
+	        return new SmartestExternalUrl($url);
+	        
 	    }
 	    
 	    return parent::offsetGet($offset);
 	    
 	}
 	
-	public function getCreditedItemsOnCurrentSite($model_id=null){
-        // echo $model_id;
-        if($sid = $this->getCurrentSiteId()){
-            return $this->getCreditedItems($sid, $model_id);
+	public function getCreditedItemsOnCurrentSite($model_id=null, $mode=9){
+	    if($site_id = $this->getCurrentSiteId()){
+            return $this->getCreditedItems($site_id, $model_id, $mode);
         }
+    }
+    
+    public function getProfilePicAssetId(){
+        
+        if($this->baseClassHasField('profile_pic_asset_id')){
+            if($this->_properties['profile_pic_asset_id']){
+                return $this->_properties['profile_pic_asset_id'];
+            }else{
+                return $this->getDefaultProfilePicAssetId();
+            }
+        }else{
+            $this->__call('getProfilePicAssetId', null);
+        }
+        
+    }
+    
+    public function getDefaultProfilePicAssetId(){
+        
+        $ph = new SmartestPreferencesHelper;
+        
+        // does the setting exist?
+        if($ph->getGlobalPreference('default_user_profile_pic_asset_id', null, $this->getCurrentSiteId(), true)){
+            
+            // if so, what is it's value?
+            return $ph->getGlobalPreference('default_user_profile_pic_asset_id', null, $this->getCurrentSiteId());
+            
+        }else{
+            
+            // if not, create the asset and set the value of the preference to the id of the new asset
+            $a = new SmartestAsset;
+            $a->setUrl('default_user_profile_pic.jpg');
+            $a->setWebid(SmartestStringHelper::random(32));
+            $a->setIsSystem(1);
+            $a->setStringId('default_user_profile_pic_asset_id');
+            $a->setLabel('Default User Profile Picture');
+            $a->setType('SM_ASSETTYPE_JPEG_IMAGE');
+            $a->setUserId('0');
+            $a->setCreated(time());
+            $a->setSiteId(1);
+            $a->setShared(1);
+            $a->save();
+            
+            $p = $a->getId();
+            
+            $ph->setGlobalPreference('default_user_profile_pic_asset_id', $p, null, $this->getCurrentSiteId());
+            return $p;
+            
+        }
+        
+    }
+    
+    public function getProfilePic(){
+        
+        if(is_object($this->_profile_pic_asset)){
+            
+            return $this->_profile_pic_asset;
+            
+        }else{
+            
+            $asset = new SmartestRenderableAsset;
+            
+            if($this->getRequest()->getAction() == 'renderEditableDraftPage'){
+                $asset->setDraftMode(true);
+            }
+            
+            if($asset->find($this->getProfilePicAssetId())){
+                $this->_profile_pic_asset = $asset;
+            }
+            
+            return $asset;
+            
+        }
+        
     }
 	
 	public function sendEmail($subject, $message, $from=""){
@@ -298,6 +386,10 @@ class SmartestUser extends SmartestBaseUser{
         
         return $master_array; */
         
+    }
+    
+    public function getBio(){
+        return stripslashes($this->_properties['bio']);
     }
 	
 }

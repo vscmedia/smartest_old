@@ -308,15 +308,15 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	}
 	
-	public function __call($name, $args){
+    public function __call($name, $args){
 		
 		$f3 = strtolower(substr($name, 0, 3));
 		
 		// Has the database structure changed?
 	    if ($f3 == 'get' || $f3 == 'set') {
 		    
-		    SmartestCache::clear('smartest_'.$this->_table_name.'_columns', true);
-			$class_file = SM_ROOT_DIR.'System/Cache/ObjectModel/DataObjects/SmartestBase'.$this->_base_class.'.class.php';
+		    $this->clearTableColumnsCache();
+		    $class_file = $this->getBaseClassFilename();
 			
 			if(is_file($class_file)){
 			    
@@ -336,6 +336,23 @@ class SmartestDataObject implements ArrayAccess{
 		    throw new SmartestException('Call to undefined function: '.get_class($this).'->'.$name.'()', SM_ERROR_USER);
 		}
 		
+	}
+	
+	public function baseClassHasField($field_name){
+	    return isset($this->_properties[$field_name]);
+	}
+	
+	public function clearTableColumnsCache(){
+	    
+	    SmartestCache::clear('smartest_'.$this->_table_name.'_columns', true);
+	    
+	}
+	
+	public function getBaseClassFilename(){
+	    
+	    $class_file = SM_ROOT_DIR.'System/Cache/ObjectModel/DataObjects/SmartestBase'.$this->_base_class.'.class.php';
+	    return $class_file;
+	    
 	}
 	
 	protected function getField($field_name){
@@ -675,10 +692,14 @@ class SmartestDataObject implements ArrayAccess{
 	protected function getCurrentSiteId(){
 	    
 	    if($this->getRequest()->getModule() == 'website'){
+	        // This is mostly for when objects are used on web pages
             $site_id = constant('SM_CMS_PAGE_SITE_ID');
         }else if(is_object($this->getSite())){
+            // This is mostly for when objects are used within the Smartest backend
             // make sure the site object exists
             $site_id = $this->getSite()->getId();
+        }else if(is_object($GLOBALS['_site'])){
+            $site_id = $GLOBALS['_site']->getId();
         }
         
         return $site_id;

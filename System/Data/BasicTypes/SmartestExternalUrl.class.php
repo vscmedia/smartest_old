@@ -20,7 +20,7 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
     }
     
     public function __toString(){
-        return $this->_value;
+        return ''.$this->_value;
     }
     
     // The next two methods are for the SmartestStorableValue interface

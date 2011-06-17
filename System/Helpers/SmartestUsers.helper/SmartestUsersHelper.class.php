@@ -290,4 +290,48 @@ class SmartestUsersHelper extends SmartestHelper{
 		
 		return $tokens;
     } */
+    
+    public function getUserProfilePicsGroupId(){
+        
+        $ph = new SmartestPreferencesHelper;
+        
+        // does the setting exist?
+        if($ph->getGlobalPreference('default_user_profile_pic_asset_group_id', null, null, true)){
+
+            // if so, what is it's value?
+            return $ph->getGlobalPreference('default_user_profile_pic_asset_group_id', null, null);
+
+        }else{
+
+            // if not, create the asset and set the value of the preference to the id of the new asset
+            $g = new SmartestAssetGroup;
+            $g->setIsSystem(1);
+            $g->setName('user_profile_pictures');
+            $g->setLabel('User Profile Pictures');
+            $g->setType('SM_SET_ASSETGROUP');
+            $g->setSiteId(1);
+            $g->setShared(1);
+            $g->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
+            $g->setFilterValue('SM_ASSETCLASS_STATIC_IMAGE');
+            $g->save();
+
+            $p = $g->getId();
+
+            $ph->setGlobalPreference('default_user_profile_pic_asset_group_id', $p, null, null);
+            return $p;
+
+        }
+        
+    }
+    
+    public function getUserProfilePicsGroup(){
+        
+        $g = new SmartestAssetGroup;
+        
+        if($g->find($this->getUserProfilePicsGroupId())){
+            return $g;
+        }
+        
+    }
+    
 }

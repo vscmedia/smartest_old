@@ -193,7 +193,7 @@ class SmartestSite extends SmartestBaseSite{
             
             // print_r($this->database->getDebugInfo());
 
-            return $master_array;
+            return new SmartestArray($master_array);
             
         }else{
             // no search terms were entered so no serch results come back

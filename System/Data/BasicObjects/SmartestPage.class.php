@@ -1313,6 +1313,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 
             case "label":
             return $this->getLabel();
+            
+            case "is_search":
+            return false;
 
             case "action_url":
             return $this->getActionUrl();

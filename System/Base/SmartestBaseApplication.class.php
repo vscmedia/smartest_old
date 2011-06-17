@@ -88,16 +88,13 @@ class SmartestBaseApplication extends QuinceBase{
 	
 	public function lookupSiteDomain(){
 	    
-	    // $e = new Exception;
-	    // print_r($e->getTrace());
-	    
 	    if((!$this->isSystemApplication()) || $this->isWebsitePage()){
 		    
 		    $rh = new SmartestRequestUrlHelper;
 		    
 		    try{
                 
-                if($this->_site = $rh->getSiteByDomain($_SERVER['HTTP_HOST'], $this->url)){
+                if($this->_site = $rh->getSiteByDomain($_SERVER['HTTP_HOST'], $this->getRequest()->getRequestStringWithVars())){
                     return true;
         	    }else{
         	        return false;
