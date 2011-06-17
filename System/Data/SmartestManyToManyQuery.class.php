@@ -83,7 +83,6 @@ class SmartestManyToManyQuery{
             if($this->_type->getMethod() == 'SM_MTMLOOKUPMETHOD_NETWORK'){
                 
             }else{
-                // $this->_sortField = $this->getTargetEntity()->getEntity()->getForeignKeyField();
                 if($this->_type->usesInstances()){
                     return 'ManyToManyLookups.mtmlookup_instance_name';
                 }else{
@@ -193,6 +192,10 @@ class SmartestManyToManyQuery{
     
     public function addForeignTableConstraint($full_field, $value, $operator=0){
         $c = new SmartestManyToManyQueryForeignTableConstraint($full_field, $value, $operator);
+        $this->_foreignTableConstraints[] = $c;
+    }
+    
+    public function passForeignTableConstraint(SmartestManyToManyQueryForeignTableConstraint $c){
         $this->_foreignTableConstraints[] = $c;
     }
     

@@ -106,6 +106,11 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
         return $attachment_names;
     }
     
+    public function containsAttachmentTags(){
+        $c = !strpos($this->_properties['content'], '<?sm:att') === FALSE;
+        return $c;
+    }
+    
     public function getAttachmentCurrentDefinition($attachment_name){
         
         $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_TEXTFRAGMENT_ATTACHMENTS');

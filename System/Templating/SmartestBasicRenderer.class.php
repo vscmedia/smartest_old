@@ -120,7 +120,11 @@ class SmartestBasicRenderer extends SmartestEngine{
                     
                     $render_process_id = SmartestStringHelper::toVarName('textfragment_'.$this->_asset->getStringid().'_'.substr(microtime(true), -6));
                     
-                    $attachments = $this->_asset->getTextFragment()->getAttachments();
+                    if($this->_asset->getTextFragment()->containsAttachmentTags()){
+                        $attachments = $this->_asset->getTextFragment()->getAttachments();
+                    }else{
+                        $attachments = array();
+                    }
                     
                     // If draft, check that a temporary preview copy has been created, and creat it if not
                     if($this->getDraftMode()){

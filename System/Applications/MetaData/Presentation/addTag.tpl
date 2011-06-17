@@ -1,7 +1,7 @@
 <div id="work-area">
 <h3>Add Tag</h3>
 
-<div class="instruction">Enter one or more tags. Separate multiple tags with spaces.</div>
+<div class="instruction">Enter one or more tags. Separate multiple tags with commas.</div>
 
 <form action="{$domain}{$section}/insertTag" method="post">
   <div id="edit-form-layout">

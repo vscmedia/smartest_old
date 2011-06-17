@@ -184,6 +184,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             $dah->setItemAppearsOnPage($this->getId(), constant('SM_CMS_PAGE_ID'));
 		}
 	    
+	    if($offset == 'name'){
+	        return $this->getName();
+	    }
+	    
 	    if($this->_item->offsetExists($offset)){
 	        
 	        return $this->_item->offsetGet($offset);
@@ -560,7 +564,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	}
 	
 	public function getName(){
-		return $this->getItem()->getName();
+		$n = $this->getItem()->getName();
+		if($this->_draft_mode && $this->getItem()->getPublic() != 'TRUE' && $this->getRequest()->getAction() == "renderEditableDraftPage"){
+		    $n .= ' (not published)';
+		}
+		return $n;
 	}
 	
 	public function setName($name){

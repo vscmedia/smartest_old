@@ -151,6 +151,11 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     $r->setCentralEntityObjectId($this->getId());
                     $r->setCentralEntityByIndex($this->getProperty()->getManyToManyRelationshipItemEntityIndex());
                     $r->setTargetEntityByIndex($this->getProperty()->getManyToManyRelationshipMappedObjectEntityIndex());
+                    
+                    if(!$draft){
+                        $r->addConstraint('Items.item_public', 'TRUE');
+                    }
+                    
                     // fix goes here
                     
                     $obj = new $class;

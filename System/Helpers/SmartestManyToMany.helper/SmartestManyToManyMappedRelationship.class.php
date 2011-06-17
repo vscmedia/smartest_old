@@ -13,6 +13,7 @@ class SmartestManyToManyMappedRelationship{
     protected $database;
     protected $_new_connections = array();
     protected $_deleted_connections = array();
+    protected $_constraints = array();
     
     public function __construct($type_code){
         
@@ -52,12 +53,18 @@ class SmartestManyToManyMappedRelationship{
     }
     
     public function getExistingLookupObjects(){
+        
         if($this->_central_entity_index){
             if($this->_central_entity_item_id){
                 
                 $q = new SmartestManyToManyQuery($this->_type->getId());
                 $q->setTargetEntityByIndex($this->_target_entity_index);
                 $q->addQualifyingEntityByIndex($this->_central_entity_index, $this->_central_entity_item_id);
+                
+                foreach($this->_constraints as $c){
+                    $q->passForeignTableConstraint($c);
+                }
+                
                 $lookups = $q->retrieveLookups(true);
                 return $lookups;
                 
@@ -105,6 +112,11 @@ class SmartestManyToManyMappedRelationship{
             return $this->_all_ids;
         }
         
+    }
+    
+    public function addConstraint($full_field, $value, $operator=0){
+        $c = new SmartestManyToManyQueryForeignTableConstraint($full_field, $value, $operator);
+        $this->_constraints[] = $c;
     }
     
     public function getIds($mode=SM_MTMLOOKUPMODE_PUBLIC){

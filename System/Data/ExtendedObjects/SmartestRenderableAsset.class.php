@@ -94,12 +94,16 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	
 	public function __toString(){
 	    // This function has to return a string:
-	    $output = $this->render();
-	    if(strlen($output)){
-	        return $output;
-	    }else{
-	        return '';
-	    }
+	    try{
+    	    $output = $this->render();
+    	    if(strlen($output)){
+    	        return $output;
+    	    }else{
+    	        return '';
+    	    }
+        }catch(SmartestException $e){
+            return 'Error: '.$e->getMessage();
+        }
 	}
 	
 	public function extractId(){
