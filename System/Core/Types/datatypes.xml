@@ -105,6 +105,16 @@
         <input template="System/Presentation/InterfaceBuilder/Inputs/twitter_acct.tpl" />
     </type>
     
+    <type id="SM_DATATYPE_PIXEL_COORDINATES" valuetype="string">
+        <label>Screen position (X,Y pixel coordinates)</label>
+        <description>Pair of integers that can be used to position something on a page or graphic</description>
+        <usage>field,itemproperty</usage>
+        <class>SmartestScreenPosition</class>
+        <long>true</long>
+        <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/pixel_coordinates.tpl" />
+    </type>
+    
     <type id="SM_DATATYPE_DROPDOWN_MENU" valuetype="foreignkey">
         
         <label>Dropdown Menu</label>

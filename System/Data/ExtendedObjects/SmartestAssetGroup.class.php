@@ -8,13 +8,21 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
     
     public function delete(){
         
-        // delete memberships
-        $q = new SmartestManyToManyQuery($this->_membership_type);
-        $q->setTargetEntityByIndex(1);
-        $q->addQualifyingEntityByIndex(2, $this->getId());
-	    $q->delete();
+        if($this->_properties['is_system']){
+            
+            return false;
+            
+        }else{
+        
+            // delete memberships
+            $q = new SmartestManyToManyQuery($this->_membership_type);
+            $q->setTargetEntityByIndex(1);
+            $q->addQualifyingEntityByIndex(2, $this->getId());
+            $q->delete();
+    
+            parent::delete();
 	    
-	    parent::delete();
+        }
         
     }
     

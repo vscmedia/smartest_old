@@ -1,0 +1,23 @@
+#module:
+#  class: Sample_App
+#  shortname: yourapp
+#  identifier: com.smartest.FileManager
+#  longname: Sample Application
+#  default_action: startPage
+#  aliases:
+#    - {url: /alternate-url, action: startPage}
+#  routes:
+#    home:
+#      action: startPage
+#      url: /sample_app
+#      meta:
+#        foo: bar
+#  meta:
+#    system: false
+#    author: Marcus Gilroy-Ware
+#  namespaces:
+#    ajax:
+#      class: Sample_App_Ajax
+#      meta:
+#        template: _alt.tpl
+#        presentation_subfolder: Ajax/
