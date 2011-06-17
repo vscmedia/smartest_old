@@ -52,8 +52,12 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
         
         switch($offset){
             
+            case "text":
             case "text_content":
             return $this->getContent();
+            
+            case "text_fragment":
+            return $this->getTextFragment();
             
             case "type_info":
             return $this->getTypeInfo();
@@ -81,9 +85,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             return $this->getSize();
             
             case "owner":
-            $o = new SmartestUser;
-	        if($o->hydrate($this->_properties['user_id'])){
-	            return $o->__toArray();
+            $o = new SmartestSystemUser;
+	        if($o->find($this->_properties['user_id'])){
+	            return $o;
             }else{
                 return array();
             }
@@ -99,6 +103,10 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             
             case "height":
             return $this->isImage() ? $this->getHeight() : null;
+            
+            case "word_count":
+            case "wordcount":
+            return $this->getWordCount();
             
             case "credit":
             return $this->isImage() ? $data['default_parameters']['credit'] : null;
@@ -207,6 +215,16 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	        }
 		    return $this->_image->getHeight();
 		}
+	    
+	}
+	
+	public function getWordCount(){
+	    
+	    if($this->usesTextFragment()){
+	        return $this->getTextFragment()->getWordCount();
+	    }else{
+	        return 0;
+	    }
 	    
 	}
 	

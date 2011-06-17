@@ -32,6 +32,10 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
         return $this->_string;
     }
     
+    public function getWordCount(){
+        return SmartestStringHelper::getWordCount($this->_string);
+    }
+    
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_string;
@@ -109,6 +113,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
             return $this->toHexEncoded();
             case "urlencoded":
             return urlencode($this->_string);
+            case "wordcount":
+            return $this->getWordCount();
         }
     }
     

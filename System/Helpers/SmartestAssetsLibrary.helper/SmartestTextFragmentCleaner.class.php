@@ -4,10 +4,14 @@ class SmartestTextFragmentCleaner{
     
     public static function clean($input){
         
-        $output = $input;
+        $output = self::convertDoubleLineBreaks($input);
+        return $output;
         
-        $output = str_ireplace('<br /><br />', '</p>'."\n".'<p>', $output);
+    }
+    
+    public function convertDoubleLineBreaks($input){
         
+        $output = str_ireplace('<br /><br />', '</p>'."\n".'<p>', $input);
         return $output;
         
     }

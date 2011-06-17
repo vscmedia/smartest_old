@@ -770,5 +770,9 @@ class SmartestStringHelper extends SmartestHelper{
 	    }
 	    
 	}
+	
+	public static function getWordCount($string){
+	    return count(preg_split('/\s+/', strip_tags($string)));
+	}
 
 }

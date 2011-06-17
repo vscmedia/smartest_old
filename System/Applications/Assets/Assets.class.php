@@ -1925,6 +1925,7 @@ class Assets extends SmartestSystemApplication{
 
     		    $content = $this->getRequestParameter('asset_content');
     		    $content = SmartestStringHelper::unProtectSmartestTags($content);
+    		    $content = SmartestTextFragmentCleaner::convertDoubleLineBreaks($content);
     		    $asset->setContent($content);
     	        $asset->setLanguage(strtolower(substr($this->getRequestParameter('asset_language'), 0, 3)));
     	        $asset->setModified(time());

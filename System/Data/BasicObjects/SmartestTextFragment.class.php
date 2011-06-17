@@ -182,6 +182,10 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	    return $this->_getContent();
 	}
 	
+	public function getContentAsObject(){
+	    return new SmartestString($this->_properties['content']);
+	}
+	
 	public function setContent($content){
 	    return $this->_setContent($content);
 	}
@@ -202,5 +206,32 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	    parent::save();
 	    
 	}
+	
+	public function getWordCount(){
+        return SmartestStringHelper::getWordCount($this->_properties['content']);
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            
+            case "word_count":
+            case "wordcount":
+            return $this->getWordCount();
+            
+            case "object":
+            return $this->getContentAsObject();
+            
+            case "draft_parsable_file_path":
+            return $this->getParsableFilePath(true);
+            
+            case "live_parsable_file_path":
+            return $this->getParsableFilePath();
+            
+        }
+        
+        return parent::offsetGet($offset);
+        
+    }
     
 }
