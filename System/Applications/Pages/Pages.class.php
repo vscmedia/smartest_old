@@ -2331,7 +2331,7 @@ class Pages extends SmartestSystemApplication{
 		            
     		        $page = new SmartestItemPage;
 		        
-    		        if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+    		        if($item = SmartestCmsItem::retrieveByPk($item_id)){
     	                $page->setPrincipalItem($item);
     	                $this->send($item, 'item');
     	                $this->send(true, 'show_item_options');
@@ -2385,7 +2385,7 @@ class Pages extends SmartestSystemApplication{
                 
                 $page_definition = new SmartestPlaceholderDefinition;
                 
-                if($page_definition->load($placeholder_name, $page, true)){
+                if($page_definition->load($placeholder_name, $page, true, $this->getRequestParameter('item_id'))){
 	                
 	                $is_defined = true;
 	                
@@ -2435,6 +2435,7 @@ class Pages extends SmartestSystemApplication{
                     $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
                     
         	    }else{
+        	        
         	        if($is_defined){
         	            
         	            // if asset is chosen

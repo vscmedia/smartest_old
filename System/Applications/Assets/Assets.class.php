@@ -439,6 +439,12 @@ class Assets extends SmartestSystemApplication{
                         $this->send($page, 'page');
                         $this->send('placeholder', 'for');
                         
+                        if($this->getRequestParameter('item_id')){
+                            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+                                $this->send($item, 'item');
+                            }
+                        }
+                        
                         if($placeholder->getFilterType() == 'SM_ASSETCLASS_FILTERTYPE_ASSETGROUP'){
 	                        // add file to placeholder's group
 	                        $group = new SmartestAssetGroup;
@@ -551,10 +557,15 @@ class Assets extends SmartestSystemApplication{
                         $this->send($types, 'types');
                         
                         if(count($types) == 1){
-                            $this->redirect('/smartest/file/new?for=placeholder&asset_type='.$types[0]['id'].'&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId());
+                            $url = '/smartest/file/new?for=placeholder&asset_type='.$types[0]['id'].'&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId();
                         }else{
-                            $this->redirect('/smartest/file/new?for=placeholder&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId());
+                            $url = '/smartest/file/new?for=placeholder&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId();
                         }
+                        
+                        if($this->getRequestParameter('item_id')) $url .= '&item_id='.$this->getRequestParameter('item_id');
+                        
+                        $this->redirect($url);
+                        
                     }
                     
                 }else{
@@ -807,7 +818,11 @@ class Assets extends SmartestSystemApplication{
                                         $this->addUserMessageToNextRequest("The new file was not the right type to use with this placeholder.", SmartestUserMessage::ERROR);   
                                     }
                                     // forward back to placeholder def screen
-                                    $this->redirect('/websitemanager/definePlaceholder?assetclass_id='.$placeholder->getName().'&page_id='.$page->getWebid());
+                                    
+                                    $url = '/websitemanager/definePlaceholder?assetclass_id='.$placeholder->getName().'&page_id='.$page->getWebid();
+                                    if($this->getRequestParameter('item_id')) $url .= '&item_id='.$this->getRequestParameter('item_id');
+                                    
+                                    $this->redirect($url);
                                 }else{
                                     $this->addUserMessageToNextRequest("The placeholder ID was not recognised.", SmartestUserMessage::ERROR);
                                 }
