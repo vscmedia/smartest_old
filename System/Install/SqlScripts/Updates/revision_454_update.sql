@@ -12,3 +12,5 @@ ALTER TABLE  `TextFragments` ADD  `textfragment_type` VARCHAR( 64 ) NOT NULL;
 ALTER TABLE  `Assets` CHANGE  `asset_group_id`  `asset_parent_id` INT( 11 ) NOT NULL;
 ALTER TABLE  `Sites` DROP INDEX  `site_name`;
 ALTER TABLE  `Sites` ADD UNIQUE (`site_domain`);
+UPDATE `Settings` SET `setting_value` = '454' WHERE `Settings`.`setting_type` ='SM_SETTINGTYPE_SYSTEM_META' AND `Settings`.`setting_name`='database_minimum_revision' LIMIT 1;
+UPDATE `Settings` SET `setting_value` = '17' WHERE `Settings`.`setting_type` ='SM_SETTINGTYPE_SYSTEM_META' AND `Settings`.`setting_name`='database_version' LIMIT 1;

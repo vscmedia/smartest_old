@@ -1,10 +1,10 @@
 system:
   info:
     version: "0.4.2"
-    revision: 453
-    build: "4,64"
+    revision: 455
+    build: "4,66"
     minimum_php_version: 5.2
-    minimum_database_version: 16
+    minimum_database_version: 17
     default_timezone: Europe/London
   reserved_classes:
     - Assets
