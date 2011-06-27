@@ -1,90 +1,120 @@
 <div id="work-area">
-    
-  {load_interface file="template_edit_tabs.tpl"}
-    
-  <h3>Template info</h3>
   
-  <table cellspacing="1" cellpadding="2" border="0" style="width:100%;background-color:#ccc;margin-top:10px">
-    <tr>
-      <td style="width:150px;background-color:#fff" valign="top">Name on disk:</td>
-      <td style="background-color:#fff" valign="top"><code>{$template.full_path}</code></td>
-    </tr>
-    <tr>
-      <td style="background-color:#fff" valign="top">Size:</td>
-      <td style="background-color:#fff" valign="top">{$template.size}</td>
-    </tr>
-    <tr>
-      <td style="background-color:#fff" valign="top">Type:</td>
-      <td style="background-color:#fff" valign="top">{$template.type_info.label} <span style="color:#666">({$template.type})</span></td>
-    </tr>
-    {if $template.created > 0}
-    <tr>
-      <td style="background-color:#fff" valign="top">Created:</td>
-      <td style="background-color:#fff" valign="top">{$template.created|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
-    </tr>
-    {/if}
-    {if $template.modified > 0}
-    <tr>
-      <td style="background-color:#fff" valign="top">Modified:</td>
-      <td style="background-color:#fff" valign="top">{$template.modified|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
-    </tr>
-    {/if}
-    <tr>
-      <td style="background-color:#fff" valign="top">Owner:</td>
-      <td style="background-color:#fff" valign="top">{$template.owner.firstname} {$template.owner.lastname} <span style="color:#666">({$template.owner.id})</span></td>
-    </tr>
-{*    <tr>
-      <td style="background-color:#fff" valign="top">File groups:</td>
-      <td style="background-color:#fff" valign="top">{if count($groups)}{foreach from=$groups item="group"}<a href="{$domain}{$section}/browseAssetGroup?group_id={$group.id}">{$group.label}</a> (<a href="{$domain}{$section}/transferSingleAsset?asset_id={$template.id}&amp;group_id={$group.id}&amp;transferAction=remove">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
-{if count($possible_groups)}
-        <div>
-          <form action="{$domain}{$section}/transferSingleAsset" method="post">
-            <input type="hidden" name="asset_id" value="{$template.id}" />
-            <input type="hidden" name="transferAction" value="add" />
-            Add this file to group:
-            <select name="group_id">
-{foreach from=$possible_groups item="possible_group"}
-              <option value="{$possible_group.id}">{$possible_group.label}</option>
-{/foreach}
-            </select>
-            <input type="submit" value="Go" />
-          </form>
-        </div>
-{/if}
-      </td>
-    </tr> *}
+  {load_interface file="template_edit_tabs.tpl"}
+  
+  <h3>Template Info</h3>
+  
+  {if $template.id}
+  
+  <form action="{$domain}templates/updateTemplateInfo" method="post">
     
-  </table>
-      
-{*      <h4 style="margin-top:15px">Usage of this file</h4> *}
-      
- {*     <h4 style="margin-top:15px">Comments on this file</h4>
-      
-      <ul style="padding:0px;margin:0px;list-style-type:none">
-  {foreach from=$comments item="comment"}
-        <li style="padding:5px;background-color:#{cycle values="fff,ddd"}">
-          <b>{$comment.user.full_name}</b>, {$comment.posted_at|date_format:"%A %e %B, %Y"}<br />
-          <p>{$comment.content}</p>
-        </li>
-  {foreachelse}
-        <li style="padding:5px;"><div class="instruction">No comments yet</div></li>
+    <input type="hidden" name="template_id" value="{$template.id}" />
+    
+    <table cellspacing="1" border="0" class="info-table">
+      <tr>
+        <td style="width:170px;background-color:#fff" valign="middle" class="field-name">Template name:</td>
+        <td>
+          <input type="text" name="template_label" value="{$template.label}" maxlength="64" class="free-sl-text-input" />
+        </td>
+      </tr>
+      <tr>
+        <td style="width:150px;background-color:#fff" class="field-name">Name on disk:</td>
+        <td>{$template.full_path}</td>
+      </tr>
+      <tr>
+        <td class="field-name">Size:</td>
+        <td>{$template.size}</td>
+      </tr>
+      <tr>
+        <td class="field-name">Type:</td>
+        <td><a href="{$domain}smartest/templates/{$template.type}">{$template.type_info.label}</a> <span style="color:#666">({$template.type})</span></td>
+      </tr>
+      {if $template.created > 0}
+      <tr>
+        <td class="field-name">Created:</td>
+        <td>{$template.created|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
+      </tr>
+      {/if}
+      {if $template.modified > 0}
+      <tr>
+        <td class="field-name">Modified:</td>
+        <td>{$template.modified|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
+      </tr>
+      {/if}
+      <tr>
+        <td valign="middle" class="field-name">Owner:</td>
+        <td>
+          <select name="template_user_id">
+  {foreach from=$potential_owners item="p_owner"}
+            <option value="{$p_owner.id}"{if $template.owner.id == $p_owner.id} selected="selected"{/if}>{$p_owner.fullname} ({$p_owner.id})</option>
   {/foreach}
-      </ul>
+          </select>
+        </td>
+      </tr>
+{if $template_type.model_specific != 'never'}
+      <tr>
+        <td valign="middle" class="field-name">Restrict to one model:</td>
+        <td>
+          <select name="template_model_id">
+            {if $template_type.model_specific == 'sometimes'}<option value="0"{if $template.model_id == '0'} selected="selected"{/if}>No restriction</option>{/if}
+  {foreach from=$models item="model"}
+            <option value="{$model.id}"{if $template.model_id == $model.id} selected="selected"{/if}>{$model.pluralname}</option>
+  {/foreach}
+          </select>&nbsp;{help id="templates:data_in_templates"}What's this?{/help}
+        </td>
+      </tr>
+{/if}
+      <tr>
+        <td class="field-name">Original site:</td>
+        <td>{$template.site.label}</td>
+      </tr>
+      <tr>
+        <td class="field-name">Shared with other sites:</td>
+        <td><input type="checkbox" name="asset_shared"{if $asset.shared==1} checked="checked"{/if} /></td>
+      </tr>
+    </table>
+  
+    <div class="buttons-bar" style="margin-top:5px">
+      {save_buttons}
+    </div>
 
-      <div class="instruction">Leave a comment</div>
-
-      <form action="{$domain}{$section}/attachCommentToAsset" method="post">
-        <input type="hidden" name="asset_id" value="{$template.id}" />
-        <textarea name="comment_content" style="width:500px;height:90px"></textarea><br />
-        <input type="submit" value="Save" />
-      </form> *}
+  </form>
+  
+  <div class="special-box">
+    <div class="special-box-key">File groups:</div>
+    {if count($groups)}{foreach from=$groups item="group"}<a href="{$domain}{$section}/browseAssetGroup?group_id={$group.id}">{$group.label}</a> (<a href="{$domain}{$section}/transferSingleAsset?asset_id={$asset.id}&amp;group_id={$group.id}&amp;transferAction=remove">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
+{if count($possible_groups)}
+      <div>
+        <form action="{$domain}{$section}/transferSingleAsset" method="post">
+          <input type="hidden" name="asset_id" value="{$asset.id}" />
+          <input type="hidden" name="transferAction" value="add" />
+          Add this file to group:
+          <select name="group_id">
+{foreach from=$possible_groups item="possible_group"}
+            <option value="{$possible_group.id}">{$possible_group.label}</option>
+{/foreach}
+          </select>
+          <input type="submit" value="Go" />
+        </form>
+      </div>
+{/if}
+  </div>
   
 </div>
+  
+  {else}
+    
+    No template info available.
+    
+  {/if}
 
 <div id="actions-area">
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editTemplate?asset_type={$asset_type.id}&amp;template={$template.id}'"><img src="{$domain}Resources/Icons/pencil.png" alt=""/> Edit this file</a></li>
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/listByType?type={$template.type_info.id}'"><img src="{$domain}Resources/Icons/folder_old.png" alt=""/> View all {$template.type_info.label} files</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editAsset?asset_type={$asset_type.id}&amp;asset_id={$asset.id}'"><img src="{$domain}Resources/Icons/pencil.png" alt=""/> Edit this file</a></li>
+    {if $allow_source_edit}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editTextFragmentSource?assettype_code={$asset_type.id}&amp;asset_id={$asset.id}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}'"><img src="{$domain}Resources/Icons/page_edit.png" alt=""/> Edit This File's Source</a></li>{/if}
+    {if $show_attachments}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/textFragmentElements?assettype_code={$asset_type.id}&amp;asset_id={$asset.id}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}'"><img src="{$domain}Resources/Icons/attach.png" alt=""/> Edit File Attachments</a></li>{/if}
+    {if $show_publish}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishTextAsset?assettype_code={$asset_type.id}&amp;asset_id={$asset.id}'"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Publish This Text</a></li>{/if}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getAssetTypeMembers?asset_type={$asset.type_info.id}'"><img src="{$domain}Resources/Icons/folder_old.png" alt=""/> View all {$asset.type_info.label} files</a></li>
   </ul>
 </div>

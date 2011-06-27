@@ -1,0 +1,5 @@
+help:
+  data_in_templates:
+    title: "Templates &amp; Models"
+    keywords: [templates, models, data]
+    content: data_in_templates.tpl

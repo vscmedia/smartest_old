@@ -6,16 +6,25 @@ class Templates extends SmartestSystemApplication{
 
 	private $AssetsManager;
 	
-	/* function __moduleConstruct(){
+	public function startPage(){
 	    
-		$this->AssetsManager = new AssetsManager();
-		
-	} */
+	    if($this->getApplicationPreference('startpage_view') == 'groups'){
+	        $this->forward('templates', 'templateGroups');
+	    }else if($this->getApplicationPreference('startpage_view') == 'models'){
+	        $this->forward('templates', 'templatesByModel');
+	    }else{
+	        $this->forward('templates', 'templateTypes');
+	    }
+	    
+	}
 	
-	public function startPage(){          	
+	public function templateTypes(){          	
 		
 		$this->setTitle("Your Templates");
 		$this->setFormReturnUri();
+		$this->setFormReturnDescription('template types');
+		
+		$this->setApplicationPreference('startpage_view', 'types');
 		
 		$h = new SmartestTemplatesLibraryHelper;
 		$types = $h->getTypes();
@@ -28,20 +37,320 @@ class Templates extends SmartestSystemApplication{
 		$this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId()), 'recently_edited');
 		
 	}
-
-	/* public function containerTemplates(){
-		
+	
+	public function templateGroups(){
+	    
+	    $this->requireOpenProject();
+	    
+	    $this->setTitle("Template groups");
+	    $h = new SmartestAssetsLibraryHelper;
+	    $locations = $h->getUnWritableStorageLocations();
+		$this->send($locations, 'locations');
 		$this->setFormReturnUri();
+		$this->setFormReturnDescription('template groups');
 		
-		$templates = $this->AssetsManager->getAssetsByTypeCode("SM_ASSETTYPE_CONTAINER_TEMPLATE", $this->getSite()->getId());
-		
-		if(count($templates)){
-			$this->send($templates, "assetList");
-		}else {
-		    $this->send(array(), "assetList");
-			$this->send("No members of this type", "error");
-		}
-	} */
+	    $tlh = new SmartestTemplatesLibraryHelper;
+	    
+	    if($this->getRequestParameter('template_type') && in_array($this->getRequestParameter('template_type'), $tlh->getTypeCodes())){
+	        $type = $this->getRequestParameter('template_type');
+	    }else{
+	        $this->setApplicationPreference('startpage_view', 'groups');
+	        $type = 'ALL';
+	    }
+	    
+	    $groups = $tlh->getTemplateGroups($type, $this->getSite()->getId());
+	    $this->send($groups, 'groups');
+	    
+	}
+	
+	public function templatesByModel(){
+	    
+	    $this->requireOpenProject();
+	    
+	    $du = new SmartestDataUtility;
+	    $models = $du->getModelsWithPrimaryKeyIndices($this->getSite()->getId());
+        $this->send($models, 'models');
+        $model_ids = $du->getModelIds($this->getSite()->getId());
+        $tlh = new SmartestTemplatesLibraryHelper;
+        $this->setApplicationPreference('startpage_view', 'models');
+        
+        $this->setFormReturnUri();
+        
+        if($this->getRequestParameter('model_id') !== null && is_numeric($this->getRequestParameter('model_id'))){
+            
+            $model_id = $this->getRequestParameter('model_id');
+            
+            if($model_id > 0){
+                $model = $models[$this->getRequestParameter('model_id')];
+                $this->setApplicationPreference('model_view_model_id', $model_id);
+            }else{
+                $model = new SmartestModel;
+                $this->setApplicationPreference('model_view_model_id', 0);
+            }
+            
+        }else if($pref_id = $this->getApplicationPreference('model_view_model_id')){
+            $model_id = $pref_id;
+            $model = $models[$pref_id];
+        }else{
+            $model_id = 0;
+            $model = new SmartestModel;
+        }
+        
+        if($model_id > 0){
+            $this->setFormReturnDescription(strtolower($model->getName()).' templates');
+        }else{
+            $this->setFormReturnDescription('unassigned templates');
+        }
+        
+        $this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId()), 'recently_edited');
+        $this->send($model, 'model');
+        $this->send(new SmartestArray($tlh->getTemplatesByModelId($model_id, $this->getSIte()->getId())), 'templates');
+	    
+	}
+	
+	public function addTemplateGroup(){
+	    
+	    $tlh = new SmartestTemplatesLibraryHelper;
+	    $template_types = $tlh->getTypes();
+	    
+	    if($this->getRequestParameter('filter_type')){
+	        $this->send($this->getRequestParameter('filter_type'), 'filter_type');
+	    }
+	    
+	    $this->send($template_types, 'template_types');
+	    
+	}
+	
+	public function insertTemplateGroup(){
+	    
+	    $this->requireOpenProject();
+	    
+	    $set = new SmartestTemplateGroup;
+	    $set->setLabel($this->getRequestParameter('template_group_label'));
+	    $set->setName(SmartestStringHelper::toVarName($this->getRequestParameter('template_group_label')));
+	    
+	    $tlh = new SmartestTemplatesLibraryHelper;
+	    
+	    if($this->getRequestParameter('template_group_type')){
+	    
+    	    if(in_array($this->getRequestParameter('template_group_type'), $tlh->getTypeCodes())){
+	        
+    	        $set->setFilterType('SM_SET_FILTERTYPE_TEMPLATETYPE');
+    	        $set->setFilterValue($this->getRequestParameter('template_group_type'));
+    	        $set->setSiteId($this->getSite()->getId());
+    	        $shared = $this->getRequestParameter('template_group_shared') ? 1 : 0;
+    	        $set->setShared($shared);
+        	    $set->save();
+    	        $this->addUserMessageToNextRequest("Your new template group was successfully created.", SmartestUserMessage::SUCCESS);
+	        
+        	    header("HTTP/1.1 201 Created");
+        	    $this->redirect('/templates/editTemplateGroupContents?group_id='.$set->getId());
+    	    
+    	    }else{
+	        
+    	        $this->addUserMessageToNextRequest("The template type was not recognised. Please try again.", SmartestUserMessage::ERROR);
+    	        $this->redirect('/templates/addTemplateGroup');
+	        
+	        }
+	    
+        }else{
+            
+            $this->addUserMessage('You must select what type of templates will be used in this group', SmartestUserMessage::WARNING);
+            $this->forward('templates', 'addTemplateGroup');
+            
+        }
+	    
+	}
+	
+	public function browseTemplateGroup($get){
+	    
+	    $group_id = $this->getRequestParameter('group_id');
+	    
+	    $this->setFormReturnUri();
+	    $this->setFormReturnDescription('file group');
+	    
+	    $group = new SmartestTemplateGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        $this->send(new SmartestArray($group->getMembers($this->getSite()->getId(), false)), 'templates');
+	        $this->send($group, 'group');
+	        
+	    }
+	    
+	}
+	
+	public function editTemplateGroup(){
+	    
+	    $group = new SmartestTemplateGroup;
+	    
+	    if($group->find($this->getRequestParameter('group_id'))){
+	        
+	        $this->send($group, 'group');
+	        $this->send($this->getUser()->hasToken('edit_template_group_names'), 'allow_name_edit');
+	        
+	        $is_empty = count($group->getMemberships()) == 0;
+	        
+	        $this->send($is_empty, 'allow_type_change');
+	        
+	        if($is_empty){
+	        
+    	        $h = new SmartestTemplatesLibraryHelper;
+    	        $this->send($h->getGroupableTypes(), 'template_types');
+    	    
+	        }
+	        
+	        $this->send(true, 'allow_shared_toggle');
+	        
+	        $du = new SmartestDataUtility;
+	        $this->send($du->getModels(false, $this->getSite()->getId()), 'models');
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	    }
+	    
+	}
+	
+	public function updateTemplateGroup(){
+	    
+	    $group = new SmartestTemplateGroup;
+	    $group_id = (int) $this->getRequestParameter('group_id');
+	    
+	    if($group->find($group_id)){
+	        
+	        $group->setLabel($this->getRequestParameter('group_label'));
+	        
+	        if($this->getUser()->hasToken('edit_template_group_names')){
+	            $group->setName(SmartestStringHelper::toVarName($this->getRequestParameter('group_name')));
+	        }
+	        
+	        /* if($group->isUsedForPlaceholders()){
+                $group->setShared(1);
+            }else{ */
+                $shared = ($this->getRequestParameter('group_shared') && $this->getRequestParameter('group_shared')) ? 1 : 0;
+                $group->setShared($shared);
+            // }
+            
+            $group->setItemclassId($this->getRequestParameter('template_group_model_id'));
+            
+            if(count($group->getMemberships()) == 0){
+                
+                $group->setFilterType('SM_SET_FILTERTYPE_TEMPLATETYPE');
+        	    $group->setFilterValue($this->getRequestParameter('template_group_type'));
+                
+            }
+            
+            $group->save();
+            
+            $this->addUserMessageToNextRequest("The template group was updated", SmartestUserMessage::SUCCESS);
+            $this->redirect('/templates/editTemplateGroup?group_id='.$group_id);
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The template group ID was not recognized", SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/templates/groups');
+	        
+	    }
+	    
+	}
+	
+	public function editTemplateGroupContents(){
+	    
+	    $group_id = $this->getRequestParameter('group_id');
+	    
+	    $this->setFormReturnUri();
+	    
+	    $group = new SmartestTemplateGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        $this->send($group->getOptions($this->getSite()->getId()), 'non_members');
+	        $this->send($group->getMembers($this->getSite()->getId(), false), 'members');
+	        $this->send($group, 'group');
+	        
+	    }
+	    
+	}
+	
+	public function transferSingleTemplate($get, $post){
+	    
+	    $group_id = $this->getRequestParameter('group_id');
+	    
+	    $group = new SmartestTemplateGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        $template_id = (int) $this->getRequestParameter('template_id');
+	        $template = new SmartestTemplateAsset;
+	        
+	        if($template->find($template_id)){
+	            if($this->getRequestParameter('transferAction') == 'add'){
+	                $group->addTemplateById($template_id);
+                }else{
+                    $group->removeTemplateById($template_id);
+                }
+	        }
+	        
+	        if($this->getRequestParameter('from') == 'edit'){
+                $this->redirect('/templates/editTemplate?template_id='.$template->getId());
+    	    }else{
+    	        $this->formForward();
+    	    }
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	    }
+	}
+	
+	public function transferTemplates($get, $post){
+	    
+	    $group_id = $this->getRequestParameter('group_id');
+	    
+	    $group = new SmartestTemplateGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        if($this->getRequestParameter('transferAction') == 'add'){
+	            
+	            $template_ids = ($this->getRequestParameter('available_templates') && is_array($this->getRequestParameter('available_templates'))) ? $this->getRequestParameter('available_templates') : array();
+	            
+	            foreach($template_ids as $tid){
+	            
+	                $group->addTemplateById($tid);
+	            
+	            }
+	            
+	        }else{
+	            
+	            $template_ids = ($this->getRequestParameter('used_templates') && is_array($this->getRequestParameter('used_templates'))) ? $this->getRequestParameter('used_templates') : array();
+	            
+	            foreach($template_ids as $tid){
+	            
+	                $group->removeTemplateById($tid);
+	            
+	            }
+	            
+	        }
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
+	public function deleteTemplateGroupConfirm(){
+	    
+	}
+	
+	public function deleteTemplateGroup(){
+	    
+	}
 	
 	public function listByType($get){
 	    
@@ -54,7 +363,7 @@ class Templates extends SmartestSystemApplication{
 	    if(in_array($type_code, $h->getTypeCodes())){
 	        
 	        $type = $types[$type_code];
-	        // echo ;
+	        
 	        $this->send(is_writable(SM_ROOT_DIR.$type['storage']['location']), 'dir_is_writable');
 	        $this->send($type, 'type');
 	        $this->send(true, 'show_list');
@@ -103,38 +412,6 @@ class Templates extends SmartestSystemApplication{
         }
 	    
 	}
-	
-	/* public function listItemTemplates(){
-	    
-		$path = SM_ROOT_DIR.'Presentation/ListItems/'; 
-		
-		$this->setFormReturnUri();
-		$templates = SmartestFileSystemHelper::getDirectoryContents($path, false, SM_DIR_SCAN_FILES);
-		
-		if(count($templates) > 0){
-		    $this->send($templates, "templateList");
-		}else {
-		    $this->send(array(), "templateList");
-		    $this->send("No members of this type", "error");
-		}
-		
-	} */
-	
-	/* public function masterTemplates(){
-		
-		$this->setFormReturnUri();
-		
-		$h = new SmartestTemplatesLibraryHelper;
-		$templates = $h->getMasterTemplates($this->getSite()->getId());
-		
-		if(count($templates)>0){
-		    $this->send($templates, "templateList");
-		}else {
-		    $this->send(array(), "templateList");
-		    $this->send("No members of this type", "error");
-		}
-		
-	} */
 	
 	public function import(){
 	    
@@ -519,7 +796,7 @@ class Templates extends SmartestSystemApplication{
 		
 	}
 	
- 	function saveNewTemplate($get, $post){
+ 	public function saveNewTemplate($get, $post){
 		
 		$h = new SmartestTemplatesLibraryHelper;
 		$types = $h->getTypes();
@@ -544,17 +821,17 @@ class Templates extends SmartestSystemApplication{
     			if(substr($content, -3) == ']]>'){
     			    $content = substr($content, 0, -3);
     			}
+			    
+			    $label    = $this->getRequestParameter('template_name');
+    			$stringid = SmartestStringHelper::toVarName($this->getRequestParameter('template_name'));
 			
-    			$stringid = SmartestStringHelper::toVarName($post['template_name']);
-    			$file     = $post['template_name'];
-			
-    			if(SmartestStringHelper::getDotSuffix($file) != 'tpl'){
+    			// if(SmartestStringHelper::getDotSuffix($this->getRequestParameter('template_name')) != 'tpl'){
     			    $file = SmartestFileSystemHelper::removeDotSuffix($stringid).'.tpl';
-    			}
+    			/* }else{
+    			    
+    			} */
 			    
-			    // var_dump($stringid);
-			    
-    			$full_filename = SmartestFileSystemHelper::getUniqueFileName($path.$file);
+			    $full_filename = SmartestFileSystemHelper::getUniqueFileName($path.$file);
     			$final_filename = basename($full_filename);
 			
     		}elseif($post['add_type'] == "UPLOAD"){
@@ -575,35 +852,31 @@ class Templates extends SmartestSystemApplication{
 		
     		$new_template->setType($type_id);
     		$new_template->setCreated(time());
+    		$new_template->setLabel($stringid);
     		$new_template->setStringid($stringid);
     		$new_template->setWebid(SmartestStringHelper::random(32));
     		$new_template->setUrl($final_filename);
     		$new_template->setSiteId($this->getSite()->getId());
-    		$shared = (isset($post['template_shared']) && $post['template_shared']) ? 1 : 0;
+    		$shared = $this->getRequestParameter('template_shared') ? 1 : 0;
     		$new_template->setShared($shared);
-		
-    		// $this->addUserMessage($full_filename);
 		
     		if($post['add_type'] == "DIRECT"){
 			
-    			if(SmartestFileSystemHelper::save($full_filename, stripslashes($post['template_content']), true)){
-    				// $this->setFormReturnVar('savedNewTemplate', 'true');
-    				$this->addUserMessageToNextRequest('The file was saved successfully', SmartestUserMessage::SUCCESS);
+    			if(SmartestFileSystemHelper::save($full_filename, stripslashes($this->getRequestParameter('template_content')), true)){
+    				$this->addUserMessageToNextRequest('The file was saved successfully.', SmartestUserMessage::SUCCESS);
     				$file_success = true;
     			}else{
-    				// $this->setFormReturnVar('savedNewTemplate', 'failed');
-    				$this->addUserMessageToNextRequest('There was a problem creating the file', SmartestUserMessage::WARNING);
+    				$this->addUserMessageToNextRequest('There was a problem creating the file.', SmartestUserMessage::WARNING);
     				$file_success = false;
     			}
 			
     		}else if($post['add_type'] == "UPLOAD"){
 		
     		    if($uploader->save()) { // Move the file over
-    			    // $this->setFormReturnVar('savedNewTemplate', 'true');
-    			    $this->addUserMessageToNextRequest('The file was saved successfully', SmartestUserMessage::SUCCESS);
+    			    $this->addUserMessageToNextRequest('The file was saved successfully.', SmartestUserMessage::SUCCESS);
     			    $file_success = true;
     		    }else{ // Couldn't save the file
-    		        $this->addUserMessageToNextRequest('There was a problem creating the file', SmartestUserMessage::WARNING);
+    		        $this->addUserMessageToNextRequest('There was a problem creating the file.', SmartestUserMessage::WARNING);
     		        $file_success = false;
     		    }
 		
@@ -629,8 +902,9 @@ class Templates extends SmartestSystemApplication{
 		$template_type = $get['type'];
 		
 		$h = new SmartestTemplatesLibraryHelper;
-	    $type_code = $get['asset_type'];
-	    $template_id = $get['template'];
+	    $type_code = $this->getRequestParameter('asset_type');
+	    $template_id = $this->getRequestParameter('template');
+	    
 	    
 	    if(is_numeric($template_id)){
 	        
@@ -660,9 +934,59 @@ class Templates extends SmartestSystemApplication{
 	            $title = 'Edit '.$type['label'];
 	        }
 	        
-	    }else{
+	        if($template->getModelId() == 0 && isset($type['model_specific']) && $type['model_specific'] != 'never'){
+	            
+	            $show_suggested_models = false;
+	            
+    	        // look for repeats - these are conclusive
+    	        if(preg_match_all('/<\?sm:repeat from="([\w_]+)"/i', $template->getContent(), $repeat_matches)){
+	            
+    	            $models = array();
+    	            $model_ids = array();
+	            
+    	            foreach($repeat_matches[1] as $set_name){
+    	                $s = new SmartestCmsItemSet;
+    	                if($s->findBy('name', $set_name)){
+    	                    if(!in_array($s->getModelId(), $model_ids)){
+    	                        $models[] = $s->getModel();
+    	                        $model_ids[] = $s->getModelId();
+                            }
+    	                }
+    	            }
+    	            
+    	            if(count($models)){
+	                    $show_suggested_models = true;
+	                    $this->send(new SmartestArray($models), 'suggested_models');
+                    }
+	            
+    	        }else if(preg_match_all('/(\$(this\.principal_item|repeated_item|item)\.|property name=")([\w_]+)/', $template->getContent(), $var_matches)){ // look for variables - these are suggestive
+    	            
+    	            $found_property_names = array_values(array_unique($var_matches[3]));
+    	            $database = SmartestDatabase::getInstance('SMARTEST');
+    	            $sql = "SELECT DISTINCT ItemClasses.* FROM ItemClasses, ItemProperties WHERE ItemProperties.itemproperty_itemclass_id=ItemClasses.itemclass_id AND ItemProperties.itemproperty_varname IN ('".implode("','", $found_property_names)."') AND (ItemClasses.itemclass_site_id='".$this->getSite()->getId()."' OR ItemClasses.itemclass_shared='1')";
+    	            $result = $database->queryToArray($sql);
+    	            $models = array();
+    	            
+    	            foreach($result as $r){
+    	                $m = new SmartestModel;
+    	                $m->hydrate($r);
+    	                $models[] = $m;
+    	            }
+    	            
+    	            if(count($result)){
+	                    $show_suggested_models = true;
+	                    $this->send(new SmartestArray($models), 'suggested_models');
+                    }
+    	            
+    	        }
+    	        
+    	        $this->send($show_suggested_models, 'show_suggested_models');
 	        
-	        // && SmartestFileSystemHelper::isSafeFileName($file, $path)
+            }else{
+                $this->send(false, 'show_suggested_models');
+            }
+	        
+	    }else{
 	        
 	        if(in_array($type_code, $h->getTypeCodes())){
                 
@@ -778,7 +1102,7 @@ class Templates extends SmartestSystemApplication{
 
 	}
 	
-	function updateTemplate($get, $post){
+	public function updateTemplate($get, $post){
 		
 		$h = new SmartestTemplatesLibraryHelper;
 		$edit_type = $post['edit_type'];
@@ -939,7 +1263,79 @@ class Templates extends SmartestSystemApplication{
   		
 	}
 	
-	function templateInfo($get){
+	public function updateTemplateInfo(){
+	    
+	    $template = new SmartestTemplateAsset;
+	    // echo $this->getRequestParameter('asset_id');
+	    
+	    if($template->find($this->getRequestParameter('template_id'))){
+	        
+	        $template->setLabel($this->getRequestParameter('template_label'));
+	        $template->setUserId($this->getRequestParameter('template_user_id'));
+	        $template->setShared($this->getRequestParameter('template_shared') ? 1 : 0);
+	        $template->setModelId($this->getRequestParameter('template_model_id', 0));
+	        $template->save();
+	        
+	        $this->addUserMessageToNextRequest("The template has been updated.", SmartestUserMessage::SUCCESS);
+	        
+	        if($this->getRequestParameter('_submit_action') == "continue"){
+    	        $this->redirect("/templates/templateInfo?template=".$template->getId());
+    	    }else{
+    	        $this->formForward();
+    	    }
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The template ID was not recognized", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	    }
+	    
+	}
+	
+	public function pairTemplateWithModelOneClick(){
+	    
+	    $template = new SmartestTemplateAsset;
+	    
+	    if($template->find($this->getRequestParameter('template_id'))){
+	        $du = new SmartestDataUtility;
+	        if(in_array($this->getRequestParameter('model_id'), $du->getModelIds($this->getSite()->getId()))){
+	            $model = new SmartestModel;
+	            if($model->find($this->getRequestParameter('model_id'))){
+	                $template->setModelId($this->getRequestParameter('model_id'));
+	                $template->save();
+	                $this->addUserMessageToNextRequest('The template has now been paired with the '.strtolower($model->getName()).' model.', SmartestUserMessage::SUCCESS);
+                }else{
+                    $this->addUserMessageToNextRequest('The specified model ID was not found.', SmartestUserMessage::ERROR);
+                }
+	        }else{
+	            $this->addUserMessageToNextRequest('The specified model ID is not in use.', SmartestUserMessage::WARNING);
+	        }
+	        
+	        $this->redirect('/templates/editTemplate?template='.$this->getRequestParameter('template_id'));
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest('The specified template ID was not found.', SmartestUserMessage::ERROR);
+	    }
+	    
+	    $this->redirect('/smartest/templates');
+	    
+	}
+	
+	public function hideTemplateModelPairingMessage(){
+	    
+	    $template = new SmartestTemplateAsset;
+	    
+	    if($template->find($this->getRequestParameter('template_id'))){
+	        $template->setModelId('-1');
+            $template->save();
+            $this->redirect('/templates/editTemplate?template='.$this->getRequestParameter('template_id'));
+	    }else{
+	        $this->addUserMessageToNextRequest('The specified template ID was not found.', SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/templates');
+	    }
+	    
+	}
+	
+	public function templateInfo($get){
 	    
 	    $template_id = $get['template'];
 	    
@@ -947,23 +1343,21 @@ class Templates extends SmartestSystemApplication{
 
 		if($template->find($template_id)){
 		    
-		    $this->setFormReturnUri();
+		    $this->send($template->getGroups(), 'groups');
+		    $this->send($template->getPossibleGroups(), 'possible_groups');
 		    
-		    // $data = $asset;
+		    $this->send($template->getPossibleOwners(), 'potential_owners');
+		    $this->send($template->getTypeInfo(), 'template_type');
+		    $this->send($template, 'template');
 		    
-		    // $comments = $asset->getComments();
-		    // $this->send($comments, 'comments');
-		    // $this->send($asset->getGroups(), 'groups');
-		    // $this->send($asset->getPossibleGroups(), 'possible_groups');
-		    
-		    $this->send($template->getTypeInfo(), 'asset_type');
-		    $this->send($template, 'template'); 
+		    $du = new SmartestDataUtility;
+	        $this->send($du->getModels(false, $this->getSite()->getId()), 'models');
 		    
 		}
 	    
 	}
 
-	function deleteTemplate($get){
+	public function deleteTemplate($get){
 	    
 	    $template_type = $get['type'];
 		

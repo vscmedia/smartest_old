@@ -56,5 +56,17 @@ class ItemsAjax extends SmartestSystemApplication{
 	    }
 	    
 	}
+	
+	public function getTextIpvAutoSuggestValues(){
+	    
+	    $p = new SmartestItemProperty;
+	    
+	    if($p->find($this->getRequestParameter('property_id'))){
+	        $this->send($p->getSuggestionsForFormBasedOnIncomplete($this->getRequestParameter('str'), $this->getSite()->getId()), 'values');
+	    }else{
+	        $this->send(array(), 'values');
+	    }
+	    
+	}
 
 }

@@ -21,6 +21,10 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    
 	    $this->send($this->getFormReturnUri(), 'sm_cancel_uri');
 	    
+	    if($this->getSite()){
+	        $this->setCookie('SMARTEST_LPID', $this->getSite()->getId(), 1);
+	    }
+	    
     }
     
     final protected function transferUserMessages(){

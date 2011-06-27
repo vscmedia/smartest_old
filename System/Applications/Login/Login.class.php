@@ -2,6 +2,8 @@
 
 class Login extends SmartestSystemApplication{
 	
+	protected $_new_user;
+	
 	/* function startPage(){
 		$this->setTitle("Start Page");
 	}
@@ -23,7 +25,7 @@ class Login extends SmartestSystemApplication{
 	public function loginScreen($get){
 		
 		if($this->getUser() && $this->getUser()->isAuthenticated()){
-		    $this->redirect('/smartest');
+		    // $this->redirect('/smartest');
 		}
 		
 		if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING']) && isset($get['from'])){
@@ -39,12 +41,11 @@ class Login extends SmartestSystemApplication{
 	            }
 		    }
 		    
-		    $refer_url = SmartestStringHelper::toQueryString($vars, true);
-		    
-		    // echo $refer_url;
+		    /* $refer_url = SmartestStringHelper::toQueryString($vars, true);
 		    
 		    $this->send($get['from'], 'from');
-		    $this->send($refer_url, 'refer');
+		    $this->send($refer_url, 'refer'); */
+		    
 		}else{
 		    $this->send('', 'refer');
 		}
@@ -54,29 +55,71 @@ class Login extends SmartestSystemApplication{
 	public function doAuth($get, $post){
 		
 		if(array_key_exists('service', $post) && strlen($post['service'])){
-		    $service = $post['service'];
+		    $service = $this->getRequestParameter('service');
 		}else{
-		    $service = 'smartest';
+		    $service = 'SMARTEST';
 		}
 		
-		if($user = $this->_auth->newLogin($post['user'], $post['passwd'], $service)){
+		if($user = $this->_auth->newLogin($this->getRequestParameter('user'), $this->getRequestParameter('passwd'), $service)){
 		    
 		    SmartestSession::set('user', $user);
 		    
-		    if(strlen($post['from']) && $post['from']{0} == '/'){
-			    $this->redirect($this->getRequest()->getDomain().substr($post['from'], 1).'?'.$post['refer']);
-			}else{
-			    $this->redirect("/smartest");
-			}
+		    if($this->getUser()->getId()){
+			    
+			    $last_site_id = $this->getCookie('SMARTEST_LPID');
+			    
+    	        if(is_numeric($last_site_id)){
+    	            if(in_array($last_site_id, $this->getUser()->getAllowedSiteIds())){
+    	                
+    	                if(strlen($this->getCookie('SMARTEST_RET'))){
+    	                    
+    	                    $url = '/'.$this->getCookie('SMARTEST_RET');
+                            $this->clearCookie('SMARTEST_RET');
+    	                    
+    	                    // user still has access to last edited site, so return to what they were last doing
+    	                    $site = new SmartestSite;
+
+            		        if($site->find($last_site_id)){
+
+            			        SmartestSession::set('current_open_project', $site);
+            			        $this->getUser()->reloadTokens();
+                                $this->redirect($url);
+        		        
+            		        }else{
+            		            
+            		            // They have access to a site ID which doesn't exist
+            		            
+            		        }
+        		        
+    		            }else{
+    		                
+    		                $this->redirect("/smartest");
+    		                
+    		            }
+        		        
+    	            }else{
+    	                // user no longer has access to that site
+    	                $this->addUserMessageToNextRequest("Smartest could not return you to what you were last working on because you no longer have permission to work on that site.", SmartestUserMessage::ACCESS_DENIED);
+    	                $this->redirect("/smartest");
+    	            }
+    	        }else{
+    	            // No information remains about what the last edited project was
+    	            $this->redirect("/smartest");
+    	        }
+    	    }else{
+    	        // User is not hydrated
+    	        $this->redirect("/smartest");
+    	    }
 			
 		}else{
-			$this->redirect("/smartest/login?reason=badauth");
+			$this->redirect("/smartest/login#badauth");
 		}
 	}
 	
 	public function doLogOut(){
+	    $this->clearCookie('SMARTEST_RET');
 		$this->_auth->logout();
-		$this->redirect("/smartest/login?reason=logout");
+		$this->redirect("/smartest/login#logout");
 	}
 	
 }

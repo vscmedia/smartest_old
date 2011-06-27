@@ -84,6 +84,19 @@ class SmartestDataUtility{
 	    
 	}
 	
+	public function getModelsWithPrimaryKeyIndices($site_id='', $force_regenerate=false){
+	    
+	    $m = $this->getModels(false, $site_id, $force_regenerate);
+	    $models = array();
+	    
+	    foreach($m as $model){
+	        $models[$model->getId()] = $model;
+	    }
+	    
+	    return $models;
+	    
+	}
+	
 	public function getSharedModels(){
 	    
 	    $sql = "SELECT * FROM ItemClasses WHERE itemclass_shared = 1";

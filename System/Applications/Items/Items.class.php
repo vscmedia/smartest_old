@@ -2190,6 +2190,7 @@ class Items extends SmartestSystemApplication{
             		$property->setVarname(SmartestStringHelper::toVarName($property->getName()));
             		$property->setDatatype($this->getRequestParameter('itemproperty_datatype'));
             		$property->setRequired($this->getRequestParameter('itemproperty_required') ? 'TRUE' : 'FALSE');
+            		$property->setItemClassId($model->getId());
 		
             		if($this->getRequestParameter('foreign_key_filter')){
             		    $property->setForeignKeyFilter($this->getRequestParameter('foreign_key_filter'));
@@ -2197,16 +2198,15 @@ class Items extends SmartestSystemApplication{
             		
             		if($this->getRequestParameter('create_group')){
             		    
-            		    $set = new SmartestAssetGroup;
+            		    if($this->getRequestParameter('itemproperty_datatype') == 'SM_DATATYPE_ASSET'){
             		    
-            		    $label = $property->getName().' files for '.$model->getPluralName();
+            		        $set = new SmartestAssetGroup;
+            		    
+                		    $label = $property->getName().' files for '.$model->getPluralName();
                 	    
-                	    $set->setLabel($label);
-                	    $set->setName(SmartestStringHelper::toVarName($label));
+                    	    $set->setLabel($label);
+                    	    $set->setName(SmartestStringHelper::toVarName($label));
 
-                	    /* if($this->getRequestParameter('asset_group_type') == 'ALL'){
-                	        $set->setFilterType('SM_SET_FILTERTYPE_NONE');
-                	    }else{ */
                 	        switch(substr($this->getRequestParameter('foreign_key_filter'), 8, 1)){
                 	            case 'T':
                 	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETTYPE');
@@ -2215,25 +2215,42 @@ class Items extends SmartestSystemApplication{
                 	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
                 	            break;
                 	        }
-                	    // }
 
-                	    $set->setFilterValue($this->getRequestParameter('foreign_key_filter'));
-                	    $set->setSiteId($this->getSite()->getId());
-                	    $set->setShared(0);
-                	    $set->save();
+                    	    $set->setFilterValue($this->getRequestParameter('foreign_key_filter'));
+                    	    $set->setSiteId($this->getSite()->getId());
+                    	    $set->setShared(0);
+                    	    $set->save();
                 	    
-                	    $property->setOptionSetType('SM_PROPERTY_FILTERTYPE_ASSETGROUP');
-                	    $property->setOptionSetId($set->getId());
+                    	    $property->setOptionSetType('SM_PROPERTY_FILTERTYPE_ASSETGROUP');
+                    	    $property->setOptionSetId($set->getId());
+                	    
+            	        }else if($this->getRequestParameter('itemproperty_datatype') == 'SM_DATATYPE_TEMPLATE'){
+            		        
+            		        $set = new SmartestTemplateGroup;
+            		        $label = $property->getName().' templates for '.$model->getPluralName();
+            		        $set->setLabel($label);
+                    	    $set->setName(SmartestStringHelper::toVarName($label));
+                    	    $set->setFilterType('SM_SET_FILTERTYPE_TEMPLATETYPE');
+                    	    $set->setFilterValue('SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE');
+                    	    
+                    	    $set->setSiteId($this->getSite()->getId());
+                    	    $shared = ($model->isShared()) ? 1 : 0;
+                    	    $set->setShared($shared);
+                    	    $set->save();
+                	    
+                    	    $property->setOptionSetType('SM_PROPERTY_FILTERTYPE_TEMPLATEGROUP');
+                    	    $property->setOptionSetId($set->getId());
+            		        
+            		    }
                 	    
             		}
 		
-            		$property->setItemClassId($model->getId());
             		$property->save();
 	    
             	    SmartestCache::clear('model_properties_'.$model->getId(), true);
             	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
     	    
-            	    SmartestLog::getInstance('site')->log("{$this->getUser()} added a property called $new_property_name to model {$model->getName()}.", SmartestLog::USER_ACTION);
+            	    SmartestLog::getInstance('site')->log($this->getUser()->__toString()." added a property called $new_property_name to model ".$model->getName().".", SmartestLog::USER_ACTION);
 	    
             	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
 	    
@@ -2355,6 +2372,13 @@ class Items extends SmartestSystemApplication{
 		    if($property->getDataType() == 'SM_DATATYPE_ASSET' || $property->getDataType() == 'SM_DATATYPE_ASSET_DOWNLOAD'){
 		        
 		        $possible_groups = $property->getPossibleFileGroups($this->getSite()->getId());
+		        $this->send($possible_groups, 'possible_groups');
+		        
+		    }
+		    
+		    if($property->getDataType() == 'SM_DATATYPE_TEMPLATE'){
+		        
+		        $possible_groups = $property->getPossibleTemplateGroups($this->getSite()->getId());
 		        $this->send($possible_groups, 'possible_groups');
 		        
 		    }

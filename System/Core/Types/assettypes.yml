@@ -525,6 +525,7 @@ type:
     label: Container template
     description: Template used to define containers
     editable: true
+    model_specific: sometimes
     icon: layout.png
     class: SmartestTemplateAsset
     allow_convert_to: [SM_ASSETTYPE_ITEMSPACE_TEMPLATE, SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE]
@@ -541,6 +542,8 @@ type:
     label: Page template
     description: "Template used to give a page its most basic, outermost features"
     editable: true
+    model_specific: never
+    groupable: false
     icon: layout.png
     class: SmartestTemplateAsset
     storage: 
@@ -556,6 +559,7 @@ type:
     label: Itemspace template
     description: "Template used to define itemspaces"
     editable: true
+    model_specific: always
     icon: layout.png
     class: SmartestTemplateAsset
     storage: 
@@ -571,6 +575,7 @@ type:
     label: Simple list template
     description: Template used to define compound lists
     editable: true
+    model_specific: always
     icon: layout.png
     class: SmartestTemplateAsset
     storage: 
@@ -586,6 +591,8 @@ type:
     label: Articulated list template
     description: "Template used to define the header, footer, or repeating parts of articulated lists"
     editable: true
+    model_specific: always
+    deprecated: true
     icon: layout.png
     class: SmartestTemplateAsset
     storage: 
@@ -601,6 +608,7 @@ type:
     label: Single-item template
     description: "Template used in an item property which has access to the item's other properties"
     editable: true
+    model_specific: sometimes
     icon: layout.png
     class: SmartestTemplateAsset
     storage: 

@@ -4,6 +4,8 @@ class Desktop extends SmartestSystemApplication{
     
     public function startPage(){
         
+        $this->clearCookie('SMARTEST_RET');
+        
         if($this->getSite() instanceof SmartestSite){
             
             $this->setFormReturnUri();
@@ -131,7 +133,7 @@ class Desktop extends SmartestSystemApplication{
 		    
 		        $site = new SmartestSite;
 		    
-		        if($site->hydrate($get['site_id'])){
+		        if($site->find($get['site_id'])){
 			        
 			        SmartestSession::set('current_open_project', $site);
 			        $this->getUser()->reloadTokens();

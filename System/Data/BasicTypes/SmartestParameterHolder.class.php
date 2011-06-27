@@ -180,4 +180,8 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
         return count($this->_data);
     }
     
+    public function hasValue($v){
+        return in_array($v, $this->_data);
+    }
+    
 }

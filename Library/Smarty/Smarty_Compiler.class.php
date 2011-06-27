@@ -443,6 +443,7 @@ class Smarty_Compiler extends Smarty {
                 . '|\/?' . $this->_reg_obj_regexp . '|\/?' . $this->_func_regexp . ')(' . $this->_mod_regexp . '*))
                       (?:\s+(.*))?$
                     ~xs', $template_tag, $match)) {
+            
             $this->_syntax_error("unrecognized tag: $template_tag", E_USER_ERROR, __FILE__, __LINE__);
         }
         
@@ -1528,7 +1529,7 @@ class Smarty_Compiler extends Smarty {
                          [=]
                         ~x', $tag_args, $match);
         $tokens       = $match[0];
-
+        
         $attrs = array();
         /* Parse state:
             0 - expecting attribute name

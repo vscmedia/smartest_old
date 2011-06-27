@@ -108,6 +108,10 @@ div#actions-area{
 	padding:5px;
 }
 
+#actions-area .special-box{}
+    
+#actions-area .special-box p{margin:3px}
+
 div.edit-form-row{
     padding:5px;
     margin-bottom:8px;

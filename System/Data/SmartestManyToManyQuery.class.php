@@ -409,6 +409,7 @@ class SmartestManyToManyQuery{
         
         }
         
+        // echo $query;
         $this->_query = $query;
         return $query;
         

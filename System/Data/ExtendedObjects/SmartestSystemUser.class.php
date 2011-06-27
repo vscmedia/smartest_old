@@ -51,7 +51,7 @@ class SmartestSystemUser extends SmartestUser{
 	
 	public function getAllowedSites($limit_ids=null){
 	    
-	    // Retrieves a list of sites where the user is allowed to edit the permissins of other users
+	    // Retrieves a list of sites the user is allowed to enter/see
 	    
 	    if($this->hasGlobalPermission('site_access')){
             $sql = "SELECT * FROM Sites";

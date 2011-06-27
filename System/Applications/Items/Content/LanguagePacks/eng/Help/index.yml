@@ -3,3 +3,7 @@ help:
     title: Organizing your items into sets
     keywords: categorisation, organisation
     content: sets.tpl
+  models:
+    title: "Models: structured information"
+    keywords: models
+    content: models_basic.tpl

@@ -101,7 +101,11 @@ class SmartestTemplateAsset extends SmartestAsset{
             return $this->getRequest()->getDomain()."templates/editTemplate?template=".$this->getId();
             
             case "label":
-            return $this->getUrl();
+            if(strlen($this->_properties['label'])){
+                return $this->getLabel();
+            }else{
+                return $this->getStringid();
+            }
             
         }
         

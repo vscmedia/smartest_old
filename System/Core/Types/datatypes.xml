@@ -48,7 +48,7 @@
         <class>SmartestBoolean</class>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
-        <input template="System/Presentation/InterfaceBuilder/Inputs/default.tpl" />
+        <input template="System/Presentation/InterfaceBuilder/Inputs/boolean_radio.tpl" />
     </type>
     
     <type id="SM_DATATYPE_RGB_COLOR" valuetype="string">

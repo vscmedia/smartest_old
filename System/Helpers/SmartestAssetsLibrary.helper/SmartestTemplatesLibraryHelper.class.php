@@ -213,6 +213,30 @@ class SmartestTemplatesLibraryHelper{
         
     }
     
+    public function getTemplatesByModelId($model_id=0, $site_id='', $avoid_ids='', $code=null){
+        
+        if($code !== null && ((is_string($code) && in_array($code, $this->getTypeCodes())) OR is_array($code))){
+            $c = $code;
+        }else{
+            $c = $this->getTypeCodes();
+        }
+        
+        return $this->_helper->getAssetsByModelId($model_id, $site_id, null, $avoid_ids='', $c);
+        
+    }
+    
+    public function getGroupableTypes(){
+        
+        $types = $this->getTypes();
+        foreach($types as $k=>$t){
+            if(isset($t['groupable']) && SmartestStringHelper::toRealBool($t['groupable']) === false){
+                unset($types[$k]);
+            }
+        }
+        return $types;
+        
+    }
+    
     public function getStorageLocationByTypeCode($type_code){
         
         $asset_types = $this->getTypes();
@@ -272,6 +296,36 @@ class SmartestTemplatesLibraryHelper{
         
         $result = $this->database->queryToArray($sql);
 	    return (bool) count($result);
+        
+    }
+    
+    public function getTemplateGroups($type='ALL', $site_id=''){
+        
+        $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_TEMPLATEGROUP'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared=1)";
+	    }
+	    
+	    if(is_array($type)){
+	        $sql .= " AND set_filter_value IN ('".implode("', '", $type)."')";
+	    }else if(in_array($type, $this->getTypeCodes())){
+	        $sql .= " AND set_filter_value='".$type."'";
+	    }
+	    
+	    $sql .= " ORDER BY set_name";
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $groups = array();
+	    
+	    foreach($result as $r){
+	        $g = new SmartestTemplateGroup;
+	        $g->hydrate($r);
+	        $groups[] = $g;
+	    }
+	    
+	    return $groups;
         
     }
 

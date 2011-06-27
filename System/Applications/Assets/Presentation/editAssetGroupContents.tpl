@@ -40,7 +40,7 @@ function executeTransfer(){
         <td align="center">
           <div style="text-align:left">Files that <strong>aren't</strong> in this group</div>
 
-  		    <select name="available_assets[]"  id="available_assets" size="2" multiple style="width:270px; height:300px;"  onclick="setMode('add')"  >
+  		    <select name="available_assets[]"  id="available_assets" size="2" multiple="multiple" style="width:270px; height:300px;"  onclick="setMode('add')"  >
 
 {foreach from=$non_members key="key" item="asset"}
   		      <option value="{$asset.id}" >{$asset.label}</option>
@@ -58,7 +58,7 @@ function executeTransfer(){
         <td align="center">
           <div style="text-align:left">Files that <strong>are</strong> in this group</div>
    	      
-   	      <select name="used_assets[]"  id='used_assets' size="2" multiple style="width:270px; height:300px" onclick="setMode('remove')" >	
+   	      <select name="used_assets[]"  id='used_assets' size="2" multiple="multiple" style="width:270px; height:300px" onclick="setMode('remove')" >	
 {foreach from=$members key="key" item="asset"}
   		      <option value="{$asset.id}" >{$asset.label}</option>
 {/foreach}

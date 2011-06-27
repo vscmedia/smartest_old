@@ -226,14 +226,12 @@ class SmartestBaseApplication extends QuinceBase{
 	
 	final public function isSystemApplication(){
 	    
-	    // echo $this->getRequest()->getModule();
 	    return ((bool) $this->getRequest()->getMeta('system') ? true : false) && ($this instanceof SmartestSystemApplication);
 	    
 	}
 	
 	final public function isWebsitePage(){
 	    
-	    // return in_array($this->getRequest()->getAction(), array('renderPageFromUrl', 'renderPageFromId', 'renderEditableDraftPage', 'searchDomain', 'renderSiteTagSimpleRssFeed', 'submitItemComment', 'submitPageComment'));
 	    $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
 	    $websiteMethodNames = $sd['system']['content_interaction_methods'];
 	    $method = $this->getRequest()->getModule().'/'.$this->getRequest()->getAction();
@@ -518,6 +516,40 @@ class SmartestBaseApplication extends QuinceBase{
     	}
     	
     	$this->_errorStack->recordError($message, $type);
+    }
+    
+    ///// Cookies /////
+    
+    public function getCookie($name){
+        
+        /* if(isset($_COOKIE[$name])){
+            return urldecode($_COOKIE[$name]);
+        }else{
+            return null;
+        } */
+        
+        return SmartestCookiesHelper::getCookie($name);
+        
+    }
+    
+    public function setCookie($name, $value, $duration=30, $domain='_C', $secure=false){ // default duration is 30 days
+        
+        return SmartestCookiesHelper::setCookie($name, $value, $duration, $domain, $secure);
+        
+        /* $expire = time() + 86400 * (int) $duration; // 86400 is the number of seconds in one day
+        $domain = ($domain == '_C') ? '.'.$_SERVER['HTTP_HOST'] : $domain;
+        return setcookie($name, $value, $expire, $this->getRequest()->getDomain(), $domain, (bool) $secure); */
+        
+    }
+    
+    public function clearCookie($name, $domain='_C', $secure=false){
+        
+        return SmartestCookiesHelper::clearCookie($name, $domain, $secure);
+        
+        /* $expire = time() - 86400; // now, minus one day
+        $domain = ($domain == '_C') ? '.'.$_SERVER['HTTP_HOST'] : $domain;
+        return setcookie($name, '', $expire, $this->getRequest()->getDomain(), $domain, (bool) $secure); */
+        
     }
 
 }

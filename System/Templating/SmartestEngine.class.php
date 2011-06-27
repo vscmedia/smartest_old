@@ -244,5 +244,9 @@ class SmartestEngine extends Smarty{
 	        return $this->_series[$series_name];
 	    }
 	}
+	
+	public function getInitializedVariableNames(){
+	    return array_keys($this->_tpl_vars);
+	}
 
 }

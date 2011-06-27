@@ -1,0 +1,4 @@
+<p>Obviously, templates generally describe how the document they are used to create will be <em>structured</em>.</p>
+<p>Sometimes, that structure involves data that are connected to one of your {help id="datamanager:models"}models{/help}.</p>
+<p>Therefore, if you are working with a specific model, it is helpful for Smartest to know which templates refer to data from that model, as opposed to any others that may not be relevant.</p>
+<p>From version 0.4.3, Smartest now lets you specify which templates use data from which models, and will even guess for you if your template appears to contain data.</p>

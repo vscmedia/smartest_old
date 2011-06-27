@@ -973,6 +973,8 @@ class Assets extends SmartestSystemApplication{
 	    
 	    if($this->getRequestParameter('filter_type')){
 	        $this->send($this->getRequestParameter('filter_type'), 'filter_type');
+	    }else if($this->getRequestParameter('asset_type')){
+	        $this->send($this->getRequestParameter('asset_type'), 'filter_type');
 	    }
 	    
 	    $this->send($asset_types, 'asset_types');
@@ -1147,7 +1149,7 @@ class Assets extends SmartestSystemApplication{
 	    if($group->find($this->getRequestParameter('group_id'))){
 	        
 	        $this->send($group, 'group');
-	        $this->send($this->getUser()->hasToken('edit_file_group_name'), 'allow_name_edit');
+	        $this->send($this->getUser()->hasToken('edit_file_group_names'), 'allow_name_edit');
 	        
 	        $is_empty = count($group->getMemberships()) == 0;
 	        
@@ -1191,7 +1193,7 @@ class Assets extends SmartestSystemApplication{
 	        
 	        $group->setLabel($this->getRequestParameter('group_label'));
 	        
-	        if($this->getUser()->hasToken('edit_file_group_name')){
+	        if($this->getUser()->hasToken('edit_file_group_names')){
 	            $group->setName(SmartestStringHelper::toVarName($this->getRequestParameter('group_name')));
 	        }
 	        

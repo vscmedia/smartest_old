@@ -1,6 +1,8 @@
 Smartest.HelpViewer = Class.create({
     
     isVisible: false,
+    history: [],
+    current: null,
     
     load: function(help_id){
         
@@ -11,12 +13,14 @@ Smartest.HelpViewer = Class.create({
         }
         
         this.updateTo(url);
+        // this.history
+        this.current = help_id;
         
     },
     
     showNew: function(){
         if(!this.isVisible){
-            $('help-updater').innerHTML = "<p>Loading...</p>";
+            $('help-updater').update("<p>Loading...</p>");
             $('help').appear({duration: 0.4, to: 0.9});
             this.isVisible = true;
         }
@@ -24,8 +28,8 @@ Smartest.HelpViewer = Class.create({
     
     updateTo: function(url){
         $('help-updater').hide();
-        $('help-updater').innerHTML = "<p>Loading...</p>";
-        new Ajax.Updater($('help-updater'), url);
+        $('help-updater').update("<p>Loading...</p>");
+        new Ajax.Updater($('help-updater'), url, {evalScripts: true});
         $('help-updater').appear({duration: 0.4, delay: 0.3});
     },
     
@@ -34,6 +38,10 @@ Smartest.HelpViewer = Class.create({
             $('help').fade({duration: 0.3});
             this.isVisible = false;
         }
+    },
+    
+    back: function(){
+        
     }
 
 });

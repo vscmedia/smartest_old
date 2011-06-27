@@ -106,7 +106,7 @@ class SmartestSite extends SmartestBaseSite{
 	public function getNormalPagesList(){
 	    $list = $this->getPagesList();
 	    foreach($list as $k=>$page){
-            if($page['info']['type'] != 'NORMAL' || in_array($page['info']['id'], $this->getSpecialPageIds())){
+            if($page['info']['type'] != 'NORMAL' || $this->getSpecialPageIds()->hasValue($page['info']['id'])){
 	            unset($list[$k]);
 	        }
 	    }

@@ -10,9 +10,9 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	
 	protected function __objectConstruct(){
 		
-		$this->_table_prefix = 'itemproperty_';
+		/* $this->_table_prefix = 'itemproperty_';
 		$this->_table_name = 'ItemProperties';
-		$this->addPropertyAlias('VarName', 'varname');
+		$this->addPropertyAlias('VarName', 'varname'); */
 		
 	}
 	
@@ -337,12 +337,29 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
             
             if(substr($filter, 0, 13) == 'SM_ASSETCLASS'){
                 $alh = new SmartestAssetsLibraryHelper;
-                // $groups = $alh->getPlaceholderAssetGroupsByType($filter, $site_id);
                 $groups = $alh->getAssetGroupsByPlaceholderType($filter, $site_id);
             }else{
                 $alh = new SmartestAssetsLibraryHelper;
                 $groups = $alh->getTypeSpecificAssetGroupsByType($filter, $site_id);
             }
+            
+        }
+	    
+	    return $groups;
+	    
+	}
+	
+	public function getPossibleTemplateGroups($site_id){
+	    
+	    $groups = array();
+	    
+	    if($this->isForeignKey()){
+            
+            $info = $this->getTypeInfo();
+            $filter = $this->getForeignKeyFilter();
+            
+            $tlh = new SmartestTemplatesLibraryHelper;
+            $groups = $tlh->getTemplateGroups($filter, $site_id);
             
         }
 	    
@@ -509,6 +526,10 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	}
 	
+	public function getInputDataForForm(){
+	    
+	}
+	
 	public function renderInput($form_name=false, $existing_value=false){
 	    
 	    // if is foreign key, get values
@@ -519,11 +540,13 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    if(!$form_name){
 	        $form_name = $this->getVarname();
 	    }
+	    
 	    $parameters->setParameter('name',  $form_name);
 	    
 	    if(!$existing_value){
 	        $existing_value = $this->getDefaultValue();
 	    }
+	    
 	    $parameters->setParameter('value',  $existing_value);
 	    
 	    if($this->isForeignKey()){
@@ -533,7 +556,31 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	    $m = new SmartyManager('InterfaceBuilder');
 	    $renderer = $m->initialize('input');
+	    // $renderer->assign('_input_data', $this->getInputDataForForm());
+	    
 	    return $renderer->renderBasicInput($parameters);
+	}
+	
+	public function getSuggestionsForFormBasedOnIncomplete($string, $site_id){
+	    
+	    $values = array();
+	    $sql = "SELECT ItemPropertyValues.itempropertyvalue_draft_content, ItemPropertyValues.itempropertyvalue_content FROM ItemPropertyValues, Items WHERE ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_deleted !='1' AND Items.item_is_archived !='1' AND (Items.item_site_id='".$site_id."' OR Items.item_shared=1) AND (ItemPropertyValues.itempropertyvalue_draft_content LIKE '".$string."%' OR ItemPropertyValues.itempropertyvalue_content LIKE '".$string."%') AND ItemPropertyValues.itempropertyvalue_property_id='".$this->getId()."'";
+	    $results = $this->database->queryToArray($sql);
+	    
+	    foreach($results as $r){
+	        
+	        if(isset($r['itempropertyvalue_draft_content']{1}) && !in_array($r['itempropertyvalue_draft_content'], $values)){
+	            $values[] = $r['itempropertyvalue_draft_content'];
+	        }
+	        
+	        if(isset($r['itempropertyvalue_content']{1}) && !in_array($r['itempropertyvalue_content'], $values)){
+	            $values[] = $r['itempropertyvalue_content'];
+	        }
+	    }
+	    
+	    sort($values);
+	    return $values;
+	    
 	}
 	
 }

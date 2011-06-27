@@ -83,6 +83,7 @@ class SmartestResponse{
         	'System/Base/Exceptions/SmartestWebPageBuilderException.class.php',
         	'System/Base/Exceptions/SmartestInterfaceBuilderException.class.php',
         	'System/Base/Exceptions/SmartestRedirectException.class.php',
+        	'System/Base/Exceptions/SmartestAuthenticationException.class.php',
         	'System/Base/Exceptions/SmartestAssetCreationException.class.php'
 
         );
@@ -328,7 +329,12 @@ class SmartestResponse{
 	    SmartestPersistentObject::set('controller', $this->_controller);
 	    $this->_controller->getCurrentRequest()->getUserActionObject()->give('_auth', $this->_authentication);
 	    
-	    $this->checkAuthenticationStatus();
+	    try{
+	        $this->checkAuthenticationStatus();
+        }catch(SmartestAuthenticationException $e){
+            $e->lockOut();
+            exit;
+        }
 	    
 	    $rp = new SmartestParameterHolder("Smartest Controller Information");
 	    
@@ -456,12 +462,7 @@ class SmartestResponse{
 		    if(!$this->_authentication->getUserIsLoggedIn()){
 				if($this->_controller->getCurrentRequest()->getRequestString() != "smartest/login"){
 					
-					$new_url = $this->_controller->getCurrentRequest()->getDomain().'smartest/login';
-					
-					header("HTTP/1.1 401 Unauthorized");
-					$e = new SmartestRedirectException();
-					$e->setRedirectUrl($new_url);
-					$e->redirect();
+					throw new SmartestAuthenticationException;
 					
 				}
 			}

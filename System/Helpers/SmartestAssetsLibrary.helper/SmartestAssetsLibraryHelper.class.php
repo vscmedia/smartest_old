@@ -508,7 +508,7 @@ class SmartestAssetsLibraryHelper{
 	    
 	}
 	
-	public function getAssetsByTypeCode($code, $site_id='', $mode=1, $avoid_ids=''){
+	public function getAssetsByTypeCode($code, $site_id='', $mode=1, $avoid_ids='', $model_id=0){
 		
 		if(is_array($code)){
 		    $sql = "SELECT * FROM Assets WHERE asset_type IN ('".implode("', '", $code)."') AND asset_deleted != 1";
@@ -525,6 +525,11 @@ class SmartestAssetsLibraryHelper{
 	    if(is_array($avoid_ids)){
 	        $sql .= " AND asset_id NOT IN ('".implode("', '", $avoid_ids)."')";
 	    }
+	    
+	    $model_id = (int) $model_id;
+		if($model_id > 0){
+		    $sql .= " AND (asset_model_id='".$model_id."' OR asset_model_id='0')";
+		}
 	    
 	    if(is_numeric($site_id)){
 		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_url";
@@ -562,6 +567,53 @@ class SmartestAssetsLibraryHelper{
 	    
 	    return $arrays;
 	    
+	}
+	
+	public function getAssetsByModelId($model_id=0, $site_id='', $mode=1, $avoid_ids='', $code){
+		
+		$sql = "SELECT * FROM Assets WHERE asset_model_id='".$model_id."' AND asset_deleted != 1";
+	    
+	    if($mode == 1){
+	        $sql .= " AND asset_is_archived=0";
+	    }else if($mode == 2){
+	        $sql .= " AND asset_is_archived=1";
+	    }
+	    
+	    if(is_array($avoid_ids)){
+	        $sql .= " AND asset_id NOT IN ('".implode("', '", $avoid_ids)."')";
+	    }
+	    
+	    if($code){
+    		if(is_array($code)){
+    		    $sql .= " AND asset_type IN ('".implode("', '", $code)."')";
+    	    }else{
+    		    $sql .= " AND asset_type='".$code."'";
+    	    }
+        }
+	    
+	    if(is_numeric($site_id)){
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_url";
+		}
+		
+		$result = $this->database->queryToArray($sql);
+		$assets = array();
+		
+		$classes = $this->getClassNamesByTypeCode();
+		
+		foreach($result as $r){
+		    
+		    if(class_exists($classes[$r['asset_type']])){
+		        $c = $classes[$r['asset_type']];
+		        $a = new $c;
+		    }else{
+		        $a = new SmartestAsset;
+		    }
+		    
+		    $a->hydrate($r);
+		    $assets[] = $a;
+		}
+		
+		return $assets;
 	}
 	
 	public function getAssetClassOptions($code, $site_id='', $mode=1, $avoid_ids=''){

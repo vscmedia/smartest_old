@@ -43,7 +43,8 @@
   <ul class="actions-list" id="item-specific-actions" style="display:none">
     <li><b>Selected File Type</b></li>
   	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('getAssetTypeMembers'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Show me all of this type</a></li>
-  	<li class="permanent-action"><a href="#" onclick="workWithItem('addAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add another one of this type</a></li>
+  	<li class="permanent-action"><a href="#" onclick="workWithItem('addAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add a file this type</a></li>
+  	<li class="permanent-action"><a href="#" onclick="workWithItem('newAssetGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Make a new group of these files</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">

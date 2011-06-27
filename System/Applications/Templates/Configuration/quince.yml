@@ -8,6 +8,15 @@ module:
     home:
       action: startPage
       url: /smartest/templates
+    list_template_types:
+      action: templateTypes
+      url: /smartest/templates/types
+    list_template_groups:
+      action: templateGroups
+      url: /smartest/templates/groups
+    list_templates_by_model:
+      action: templatesByModel
+      url: /smartest/templates/models
     template_type:
       action: listByType
       url: /smartest/templates/:type

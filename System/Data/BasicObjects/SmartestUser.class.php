@@ -159,7 +159,7 @@ class SmartestUser extends SmartestBaseUser{
         
         if(!count($this->_model_plural_names)){
             $du = new SmartestDataUtility;
-            $this->_model_plural_names = $du->getModelPluralNamesLowercase($this->getSiteId());
+            $this->_model_plural_names = $du->getModelPluralNamesLowercase($this->getCurrentSiteId());
         }
         
         return $this->_model_plural_names;

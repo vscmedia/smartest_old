@@ -1,7 +1,7 @@
 <div id="work-area">
   <h3>Import a template</h3>
   {if $show_form}
-  <div class="special-box">You are importing <strong><code>{$template.file_path}</code></strong> into Smartest's new templates database</div>
+  <div class="special-box">You are importing <strong><code>{$template.file_path}</code></strong> into Smartest's templates database</div>
   <form action="{$domain}{$section}/addSingleTemplateToDatabase" method="post">
     
     <input type="hidden" name="template_filename" value="{$template.url}" />

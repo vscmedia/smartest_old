@@ -1,0 +1,3 @@
+prefs:
+  startpage_view: {user_specific: true, site_specific: false, description: Should the user see template types or template groups}
+  templates_model_view_model_id: {user_specific: true, site_specific: true, description: "When listing templates by model, which model should be selected by default?"}

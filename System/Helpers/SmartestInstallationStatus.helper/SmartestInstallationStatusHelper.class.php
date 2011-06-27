@@ -217,9 +217,9 @@ class SmartestInstallationStatusHelper{
                         $cd = SmartestSystemSettingHelper::load('htaccess_rewrite_base');
                         
                         if(strlen($cd) && $cd != '/'){
-                            $location = $cd.'smartest/login';
+                            $location = $cd.'smartest/login#welcome';
                         }else{
-                            $location = '/smartest/login';
+                            $location = '/smartest/login#welcome';
                         }
                         
                         header("Location: ".$location);
