@@ -74,6 +74,13 @@ class SmartestNumeric implements SmartestBasicType, ArrayAccess, SmartestStorabl
             return number_format($this->_value, 2, ',', '.');
         }
         
+        // if(preg_match('/d([\d_]+)/', $offset, $matches)){} // Divide the value by x
+        // if(preg_match('/b([\d_]+)/', $offset, $matches)){} // Divide x by the value
+        // if(preg_match('/m([\d_]+)/', $offset, $matches)){} // Multiply the value from x
+        // if(preg_match('/s([\d_]+)/', $offset, $matches)){} // Subtract x from the value
+        // if(preg_match('/f([\d_]+)/', $offset, $matches)){} // Subtract the value from x
+        // if(preg_match('/a([\d_]+)/', $offset, $matches)){} // Add x to the value
+        
         return null;
     }
     

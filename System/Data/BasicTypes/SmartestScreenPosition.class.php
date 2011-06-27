@@ -103,9 +103,9 @@ class SmartestScreenPosition implements SmartestBasicType, ArrayAccess, Smartest
             case "css_y":
             return $this->getCssVerticalProperty().':'.$this->_y.'px;';
             case "x":
-            return $this->_x;
+            return new SmartestNumeric($this->_x);
             case "y":
-            return $this->_y;
+            return new SmartestNumeric($this->_y);
             case "orient":
             return $this->_v_orientation.$this->_h_orientation;
         }

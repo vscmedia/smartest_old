@@ -17,8 +17,13 @@
     margin-left:auto;
     margin-right:auto;
     padding:10px;
+    
     border-radius:12px;
     -moz-border-radius:12px;
+    
+    box-shadow: 6px 6px 15px #777;
+    -moz-box-shadow: 6px 6px 15px #777;
+    -webkit-box-shadow: 6px 6px 15px #777;
 }
 
 #help-viewer h1{

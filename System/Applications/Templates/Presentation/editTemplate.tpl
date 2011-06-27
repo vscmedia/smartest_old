@@ -80,9 +80,10 @@
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Suggested models</b></li>
   {foreach from=$suggested_models item="model"}
-	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_template.action_url}'"><img border="0" src="{$model.small_icon}" /> {$model.plural_name}</a></li>
+	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/pairTemplateWithModelOneClick?template_id={$template.id}&amp;model_id={$model.id}'"><img border="0" src="/Resources/Icons/package_small.png" /> {$model.plural_name}</a></li>
   {/foreach}
-</ul></div>
+</ul>
+<p>Or, you can just <a href="{$domain}{$section}/hideTemplateModelPairingMessage?template_id={$template.id}">hide this message</a>.</p></div>
   {else}
 <div class="special-box"><p>It looks like you're using data in this template that is specific to the <strong>{$suggested_models._first.plural_name|lower}</strong> model.</p><p>You can confirm this by <a href="{$domain}{$section}/pairTemplateWithModelOneClick?template_id={$template.id}&amp;model_id={$suggested_models._first.id}">clicking here</a>, which will help Smartest show you the most relevant options when choosing templates, or you can hide this message by <a href="{$domain}{$section}/hideTemplateModelPairingMessage?template_id={$template.id}">clicking here</a>.</p></div>
   {/if}
