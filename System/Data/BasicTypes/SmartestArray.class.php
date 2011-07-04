@@ -113,6 +113,14 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
             
         }
         
+        if(preg_match('/_first_(\d+)/', $offset, $matches)){
+            return new SmartestArray(array_slice($this->_data, 0, $matches[1]));
+        }
+        
+        if(preg_match('/_last_(\d+)/', $offset, $matches)){
+            return new SmartestArray(array_slice($this->_data, $matches[1]*-1));
+        }
+        
         return $this->_data[$offset];
     }
     

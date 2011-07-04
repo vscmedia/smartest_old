@@ -238,15 +238,21 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	}
 	
 	protected function setFormReturnVar($var, $value){
-    	SmartestSession::get('form:return_vars')->setParameter($var, $value);
+	    if(is_object(SmartestSession::get('form:return:vars'))){
+    	    SmartestSession::get('form:return:vars')->setParameter($var, $value);
+	    }
     }
 
     protected function getFormReturnVar($var){
-        return SmartestSession::get('form:return:vars')->getParameter($var);
+        if(is_object(SmartestSession::get('form:return:vars'))){
+            return SmartestSession::get('form:return:vars')->getParameter($var);
+        }
     }
 
     protected function hasFormReturnVar($var){
-        return SmartestSession::get('form:return:vars')->hasParameter($var);
+        if(is_object(SmartestSession::get('form:return:vars'))){
+            return SmartestSession::get('form:return:vars')->hasParameter($var);
+        }
     }
 	
 	/* protected function setFormCompleteUri(){
