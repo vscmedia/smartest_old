@@ -231,6 +231,29 @@ type:
     suffix:
       - {mime: text/css, _content: css}
 
+  SM_ASSETTYPE_CUFON_FONT:
+    id: SM_ASSETTYPE_CUFON_FONT
+    category: browser_instructions
+    label: Cufón font
+    description: A font converted to javascript for use with Cufón
+    editable: true
+    class: SmartestAsset
+    icon: script.png
+    parsable: false
+    show_preview_edit_link: false
+    input_options:
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
+    input_panel: System/Applications/Assets/Presentation/add.javascript.tpl
+    storage:
+      type: file
+      location: Public/Resources/Javascript/
+      system_location: Public/Resources/System/Javascript/
+    render:
+      template: System/Presentation/WebPageBuilder/display.javascript.tpl
+    suffix:
+      - {mime: text/javascript, _content: js}
+
 # Embedded files
   SM_ASSETTYPE_QUICKTIME_MOVIE:
     id: SM_ASSETTYPE_QUICKTIME_MOVIE

@@ -1613,7 +1613,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		        $ds->insertItemId($item_id);
 		    }
 	    
-	        return $ds->getItems();
+	        return new SmartestArray($ds->getItems());
 	    
         }else{
             return array();
