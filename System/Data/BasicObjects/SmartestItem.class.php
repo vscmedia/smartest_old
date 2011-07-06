@@ -811,9 +811,9 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	        if($this->getMetaPageId()){
 	            
-	            $page = new SmartestPage;
+	            $page = new SmartestItemPage;
 	            
-	            if($page->hydrate($this->getMetaPageId())){
+	            if($page->find($this->getMetaPageId())){
 	                $this->_meta_page = $page;
 	            }
 	            

@@ -19,6 +19,11 @@ class SmartestRenderableSingleItemTemplateAsset extends SmartestAsset{
             $sm = new SmartyManager('SingleItemTemplateRenderer');
             $r = $sm->initialize($this->getStringId());
             $r->assign('item', $this->_item);
+            
+            if(is_object($GLOBALS['CURRENT_PAGE'])){
+                $r->assign('this', $GLOBALS['CURRENT_PAGE']->fetchRenderingData());
+            }
+            
             $r->assignTemplate($this->getFullPathOnDisk());
             $r->setDraftMode($draft_mode);
     	    $content = $r->renderTemplate();
@@ -37,8 +42,6 @@ class SmartestRenderableSingleItemTemplateAsset extends SmartestAsset{
     }
     
     public function getFile(){
-        
-        
         
         if(!$this->_template_file){
             

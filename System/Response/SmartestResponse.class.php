@@ -129,6 +129,7 @@ class SmartestResponse{
         	'System/Base/SmartestBaseApplication.class.php',
         	'System/Base/SmartestSystemApplication.class.php',
         	'System/Data/SmartestDataObjectHelper.class.php',
+        	'System/Data/SmartestRandomNumberGenerator.class.php',
         	'System/Base/SmartestSiteActions.class.php',
         	'System/Templating/SmartestBasicRenderer.class.php',
         	'System/Templating/SmartestSingleItemTemplateRenderer.class.php',

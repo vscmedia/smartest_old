@@ -198,7 +198,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            return "Recursion disallowed";
 	        }else{
 	            $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset], $this->getDraftMode(), true);
-                return $v;
+	            return $v;
             }
 	        
 	    }else{
@@ -232,6 +232,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            return $this->getItem()->getNumApprovedPublicComments();
 	            break;
 	            
+	            case '_php_class':
+	            return get_class($this);
+	            break;
+	            
 	            case 'url':
 	            case 'permalink':
 	            return $this->getUrl();
@@ -239,10 +243,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            
 	            case 'description':
 	            case '_description':
-	            return $this->getDescription();
+	            return $this->getDescriptionFieldContents();
 	            break;
 	            
-	            case 'date':
+	            case '_auto_date':
 	            return $this->getDate();
 	            break;
 	            
@@ -250,11 +254,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            return new SmartestDateTime($this->getItem()->getCreated());
 	            break;
 	            
-	            case 'is_published':
-	            return $this->isPublished();
+	            case '_is_published':
+	            return new SmartestBoolean($this->isPublished());
 	            break;
 	            
-	            case 'byline':
+	            case '_byline':
 	            return SmartestStringHelper::toCommaSeparatedList($this->getItem()->getAuthors());
 	            break;
 	            
@@ -690,11 +694,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        $type_info = $property->getTypeInfo();
 	        
 	        if($property->getDatatype() == 'SM_DATATYPE_ASSET'){
-	            $asset = new SmartestAsset;
+	            $asset = new SmartestRenderableAsset;
 	            
 	            if($asset = $this->getPropertyValueByNumericKey($property->getId())){
 	                // get asset content
-	                return $asset->getContent();
+	                return $asset;
 	            }else{
 	                // throw new SmartestException(sprintf("Asset with ID %s was not found.", $this->getPropertyValueByNumericKey($property_id)));
 	                return null;

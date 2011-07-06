@@ -62,6 +62,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             case "type_info":
             return $this->getTypeInfo();
             
+            case "type":
+            return $this->_properties['type'];
+            
             case "default_parameters":
             return $this->getDefaultParams();
             
@@ -131,6 +134,14 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             
             case "download_link_contents":
             return 'download:'.$this->getUrl();
+            
+            case "link_contents":
+            if($this->isImage()){
+                return 'image:'.$this->getUrl();
+            }else{
+                return 'download:'.$this->getUrl();
+            }
+            break;
             
             case "file_size":
             return $this->getSize();
@@ -317,7 +328,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    
 	    if($this->getTextFragment()){
 	        if($this->isParsable()){
-    	        $string = $this->getTextFragment()->getContent();
+	            $string = $this->getTextFragment()->getContent();
             }else{
                 $string = htmlspecialchars($this->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
             }

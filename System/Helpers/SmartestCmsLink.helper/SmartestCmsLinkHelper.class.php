@@ -18,10 +18,24 @@ class SmartestCmsLinkHelper extends SmartestHelper{
     
     public static function createLink($to, $markup_attributes){
         
-        $properties = SmartestLinkParser::parseSingle($to);
-        $link = new SmartestCmsLink($properties, $markup_attributes);
+        if($to instanceof SmartestCmsItem){
+            $link = self::createLinkFromCmsItem($to, $markup_attributes);
+        }else{
+            $properties = SmartestLinkParser::parseSingle($to);
+            $link = new SmartestCmsLink($properties, $markup_attributes);
+        }
         
-        // print_r($properties->getparameters());
+        return $link;
+        
+    }
+    
+    public static function createLinkFromCmsItem(SmartestCmsItem $item, $markup_attributes){
+        
+        $properties = new SmartestParameterHolder('Link to existing CMS Item');
+        $properties->setParameter('from_item', true);
+        $properties->setParameter('item', $item);
+        
+        $link = new SmartestCmsLink($properties, $markup_attributes);
         
         return $link;
         

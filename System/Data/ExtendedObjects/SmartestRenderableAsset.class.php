@@ -170,7 +170,7 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	}
 	
 	public function offsetGet($offset){
-	  
+	    
 	    switch($offset){
         
             case "html":
@@ -180,7 +180,10 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
             return $this->_render_data;
             
             case "link_contents":
-            return 'image:'.$this->getUrl();
+            if($this->isImage()){
+                return 'image:'.$this->getUrl();
+            }
+            break;
             
             case "is_defined":
             return (bool) $this->getId();

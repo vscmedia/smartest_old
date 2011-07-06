@@ -9,11 +9,11 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
     }
     
     public function __toString(){
-        if(defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && constant('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && defined('SM_CMS_PAGE_ID')){
+        /* if(defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && constant('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && defined('SM_CMS_PAGE_ID')){
             return (string) SmartestStringHelper::toXmlEntities($this->_string);
-        }else{
+        }else{ */
             return (string) $this->_string;
-        }
+        // }
     }
     
     public function stdObjectOrScalar(){
@@ -90,7 +90,7 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
     }
     
     public function offsetExists($offset){
-        return in_array(strtolower($offset), array('slug', 'varname', 'constantname', 'camelcase', 'is_md5', 'length', 'paragraphs', 'encoded', 'urlencoded'));
+        return in_array(strtolower($offset), array('slug', 'varname', 'constantname', 'camelcase', 'is_md5', 'length', 'paragraphs', 'encoded', 'urlencoded', 'wordcount', 'xmlentities'));
     }
     
     public function offsetGet($offset){
@@ -115,6 +115,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
             return urlencode($this->_string);
             case "wordcount":
             return $this->getWordCount();
+            case "xmlentities":
+            return (string) SmartestStringHelper::toXmlEntities($this->_string);
         }
     }
     

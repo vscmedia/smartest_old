@@ -145,13 +145,8 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
                                 
                                 // Assets are limited to a placeholder type, so multiple asset types
                                 
-                                // if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
-
-        	                        $alh = new SmartestAssetsLibraryHelper;
-        	                        $this->_possible_values = $alh->getAssetClassOptions($filter, $site_id, 1);
-        	                        // echo count($this->_possible_values);
-
-        	                    // }
+                                $alh = new SmartestAssetsLibraryHelper;
+        	                    $this->_possible_values = $alh->getAssetClassOptions($filter, $site_id, 1);
 
                             }else{
                                 
@@ -162,6 +157,12 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
                             
                         }
 	                
+	                }else if($this->getDatatype() == 'SM_DATATYPE_TEMPLATE'){
+	                    
+	                    $alh = new SmartestAssetsLibraryHelper;
+	                    $this->_possible_values = $alh->getAssetsByTypeCode('SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE', $site_id, 1);
+	                    // Todo: take account of template groups here
+	                    
 	                }else if($this->getDatatype() == 'SM_DATATYPE_CMS_ITEM' || $this->getDatatype() == 'SM_DATATYPE_CMS_ITEM_SELECTION'){
 	                    
 	                    if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
@@ -292,7 +293,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	
 	public function getForeignKeySelectSql($info, $filter, $site_id=null){
 	    
-	    $sql = "SELECT * FROM ".$info['filter']['entitysource']['table']." WHERE 1=1";
+	    $sql = "SELECT DISTINCT * FROM ".$info['filter']['entitysource']['table']." WHERE 1=1";
         
         if($filter && $info['filter']['entitysource']['matchfield']){
             $sql .= " AND ".$info['filter']['entitysource']['matchfield']." ='".$filter."'";

@@ -46,6 +46,8 @@ class SmartestEngine extends Smarty{
 		
 		$this->assign('request_parameters', $this->_request_data->getParameter('request_parameters'));
 		
+		$this->_tpl_vars['random'] = new SmartestRandomNumberGenerator;
+		
 	}
 	
 	public function startChildProcess($pid, $type=''){

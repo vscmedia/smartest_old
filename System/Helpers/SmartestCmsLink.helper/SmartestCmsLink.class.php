@@ -46,9 +46,16 @@ class SmartestCmsLink extends SmartestHelper{
         $extra_markup_attributes = $this->getSeparatedAttributes($this->_destination_properties)->getParameter('html');
         $this->_markup_attributes->absorb($extra_markup_attributes);
         
-        $this->setTypeFromNameSpace($this->_destination_properties->getParameter('namespace'));
+        if($this->_destination_properties->getParameter('from_item')){
+            
+            $this->setDestinationFromProvidedItem($this->_destination_properties->getParameter('item'));
+            
+        }else{
         
-        $this->_loadDestination();
+            $this->setTypeFromNameSpace($this->_destination_properties->getParameter('namespace'));
+            $this->_loadDestination();
+        
+        }
         
     }
     
@@ -216,6 +223,35 @@ class SmartestCmsLink extends SmartestHelper{
          return $this->_destination_properties->getParameter('destination');
     }
     
+    public function setDestinationFromProvidedItem(SmartestCmsItem $item){
+        
+        $this->setType(SM_LINK_TYPE_METAPAGE);
+        $this->setNamespace('metapage');
+        $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_AUTO);
+        
+        if(defined('SM_CMS_PAGE_SITE_ID')){
+            $site_id = SM_CMS_PAGE_SITE_ID;
+        }else if(SmartestSession::hasData('current_open_project')){
+            $site_id = SmartestSession::get('current_open_project')->getId();
+        }
+        
+        // $sql = "SELECT * FROM Pages WHERE page_id='".$item->getMetaPageId()."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_type='ITEMCLASS' AND page_deleted != 'TRUE'";
+        // $result = $this->database->queryToArray($sql);
+        
+        if(is_object($item->getMetaPage()) && $item->getMetaPage()->getId()){
+            
+            $d = $item->getMetaPage();
+            // $d->hydrate($result[0]);
+            $d->setPrincipalItem($item);
+        
+            $this->_destination = $d;
+        
+        }else{
+            return $this->error("A metapage was not found for the item provided: ".$item->getName().')');
+        }
+        
+    }
+    
     protected function _loadDestination(){
         
         if(defined('SM_CMS_PAGE_SITE_ID')){
@@ -258,8 +294,6 @@ class SmartestCmsLink extends SmartestHelper{
                     
                     $sql = "SELECT * FROM Items WHERE item_".$this->_destination_properties->getParameter('item_ref_field_name')."='".$this->_destination_properties->getParameter('item_ref_field_value')."' AND item_site_id='".$site_id."' AND item_itemclass_id='{$d->getDatasetId()}' AND item_deleted != '1'";
                     $result = $this->database->queryToArray($sql);
-                    
-                    // echo $sql;
                     
                     if(count($result)){
                         $d->setPrincipalItem(SmartestCmsItem::retrieveByPk($result[0]['item_id']));
@@ -317,8 +351,6 @@ class SmartestCmsLink extends SmartestHelper{
             
             case SM_LINK_TYPE_DOWNLOAD:
             $d = new SmartestAsset;
-            // echo $this->_destination_properties->getParameter('filename');
-            // var_dump($this->_destination_properties->getParameters());
             $d->hydrateBy('url', $this->_destination_properties->getParameter('filename'));
             $this->_destination = $d;
             break;
@@ -366,7 +398,7 @@ class SmartestCmsLink extends SmartestHelper{
     
     public function shouldOmitAnchorTag($draft_mode=false){
         // return !$this->_preview_mode && ($this->isInternalPage() && $this->shouldGoCold() && is_object($this->_host_page) && $this->_page->getId() == $this->_host_page->getId());
-        if(!$this->_destination_properties->getParameter('destination') || $this->_destination_properties->getParameter('destination') == '#'){
+        if(!$this->_destination_properties->getParameter('from_item') && (!$this->_destination_properties->getParameter('destination') || $this->_destination_properties->getParameter('destination') == '#')){
             return true;
         }else{
             if($this->getHostPage()){

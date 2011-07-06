@@ -699,7 +699,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    
 	}
 	
-	public function getParentPage($get_item_page=true){
+	public function getParentPage($get_item_page=true, $draft_mode='AUTO'){
 	    
 	    if(!$this->_parent_page || $get_item_page){
 	        
@@ -734,12 +734,12 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
                     	            $parent->setPrincipalItem($parent_item);
 	                            }else{
 	                                $parent = new SmartestPage;
-                    	            $parent->hydrate($this->getParent());
+                    	            $parent->find($this->getParent());
 	                            }
                                 
 	                        }else{
 	                            $parent = new SmartestPage;
-                	            $parent->hydrate($this->getParent());
+                	            $parent->find($this->getParent());
 	                        }
 	                        
 	                        
@@ -773,7 +773,11 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	            $parent->hydrate($this->getParent());
 	        }
 	        
-	        $parent->setDraftMode($this->getDraftMode());
+	        if(is_bool($draft_mode)){
+	            $parent->setDraftMode($draft_mode);
+	        }else if($draft_mode == 'AUTO'){
+	            $parent->setDraftMode($this->getDraftMode());
+            }
 	        
 	        // if($get_item_page || $parent->getType() != 'ITEMCLASS'){
 	            $this->_parent_page = $parent;
@@ -1123,27 +1127,19 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        if($this->getPrincipalItem()){
 	            
 	            $data->setParameter('principal_item', $this->getPrincipalItem());
-	            
-	            // $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
-	            // $data['data_set'] = $this->getDataSet()->__toArray();
-	            
+	            $data->setParameter('has_item', true);
 	            $data->setParameter('is_item', true);
 	            
             }else{
                 
                 $data->setParameter('principal_item', array());
-                
-                /* if($this->getDataSet() instanceof SmartestCmsItemSet){
-                    $data['sibling_items'] = $this->getDataSet()->getMembersAsArrays();
-                    $data['data_set'] = $this->getDataSet()->__toArray();
-                }else{
-                    $data['sibling_items'] = array();
-                    $data['data_set'] = array();
-                } */
-                
+                $data->setParameter('has_item', false);
                 $data->setParameter('is_item', true);
+                
             }
+            
 	    }else{
+	        $data->setParameter('has_item', false);
 	        $data->setParameter('is_item', false);
 	    }
 	    
@@ -1724,10 +1720,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		$data->setParameter('parent', $this->getParentPage());
 		$data->setParameter('section', $this->getSectionPage());
 		$data->setParameter('_breadcrumb_trail', $this->getPageBreadCrumbs());
-		$data->setParameter('sibling_level_pages', $this->getParentPage()->getPageChildrenForWeb());
-		$data->setParameter('parent_level_pages', $this->getGrandParentPage()->getPageChildrenForWeb());
+		$data->setParameter('sibling_level_pages', $this->getParentPage($this->getDraftMode())->getPageChildrenForWeb());
+		$data->setParameter('parent_level_pages', $this->getGrandParentPage($this->getDraftMode())->getPageChildrenForWeb());
 		$data->setParameter('child_pages', $this->getPageChildrenForWeb());
-		$data->setParameter('main_sections', $home_page->getPageChildrenForWeb(true));
+		$data->setParameter('main_sections', $home_page->getPageChildrenForWeb(true, $this->getDraftMode()));
 		$data->setParameter('related', $this->getRelatedContentForRender());
 		
 		return $data;
@@ -1966,6 +1962,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		
 		while($home_page->getId() != $page->getId() && $limit > 0){
 		    
+		    $page->setDraftMode($this->getDraftMode());
 		    $breadcrumbs[] = $page;
 			$page = $page->getParentPage();
 			
@@ -2074,6 +2071,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	                $limit--;
 	            }
 	            
+	            $section_page->setDraftMode($this->getDraftMode());
 	            $this->_section_page = $section_page;
 	            return $section_page;
 	            
@@ -2083,6 +2081,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
         }else{
             return $this;
         }
+        
 	}
 	
 	public function getSite(){

@@ -246,7 +246,7 @@ class SmartestBasicRenderer extends SmartestEngine{
             
             if($link->getDestinationProperties()->getParameter('text') && ($link->getDestinationProperties()->getParameter('text') != SmartestLinkParser::LINK_TARGET_TITLE)){
                 $eo .= $link->getDestinationProperties()->getParameter('text');
-            }else if($link->getRenderData()->getParameter('with') && ($link->getRenderData()->getParameter('with') != SmartestLinkParser::LINK_TARGET_TITLE)){
+            }else if($link->getRenderData()->hasParameter('with') && ($link->getRenderData()->getParameter('with') != SmartestLinkParser::LINK_TARGET_TITLE)){
                 $eo .= $link->getRenderData()->getParameter('with');
             }
             
@@ -261,7 +261,7 @@ class SmartestBasicRenderer extends SmartestEngine{
         $child->setContext(SM_CONTEXT_HYPERLINK);
         $child->assign('_link_url', $link->getUrl($this->draft_mode));
         $child->assign('_link_use_span', SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('span')));
-        $child->assign('_link_span_invisible', !SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('spanvisible')));
+        $child->assign('_link_span_invisible', ($link->getRenderData()->hasParameter('spanvisible') && !SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('spanvisible'))));
         $child->assign('_link_contents', $link->getContent($this->draft_mode));
         $child->assign('_link_parameters', SmartestStringHelper::toAttributeString($link->getMarkupAttributes()->getParameters()));
         $child->assign('_link_show_anchor', !$link->shouldOmitAnchorTag($this->draft_mode));
