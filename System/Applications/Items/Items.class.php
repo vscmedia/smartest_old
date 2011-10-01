@@ -2322,6 +2322,19 @@ class Items extends SmartestSystemApplication{
     		                }
     		                
     		                $this->send(true, 'foreign_key_filter_select');
+    		                
+    		            }else if($data_type['valuetype'] == 'auto'){
+    		                
+    		                if(is_file($data_type['filter']['typesource']['template'])){
+    		                    $this->send(new SmartestArray($model->getReferringProperties()), 'foreign_key_filter_options');
+    		                    $this->send(SM_ROOT_DIR.$data_type['filter']['typesource']['template'], 'filter_select_template');
+    		                }else{
+    		                    $this->send($data_type['filter']['typesource']['template'], 'intended_file');
+    		                    $this->send(SM_ROOT_DIR.'System/Applications/Items/Presentation/FKFilterSelectors/filtertype.unknown.tpl', 'filter_select_template');
+    		                }
+    		                
+    		                $this->send(true, 'foreign_key_filter_select');
+    		                
     		            }
     		            
     		            $this->send(true, 'show_full_form');

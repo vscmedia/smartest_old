@@ -315,6 +315,21 @@
         
     </type>
     
+    <type id="SM_DATATYPE_AUTO_ITEM_FK" valuetype="auto">
+      
+      <label>Auto-query</label>
+      <description>Automatic query based on foreign keys.</description>
+      <usage>itemproperty</usage>
+      <long>false</long>
+      
+      <filter>
+        <typesource template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.referring_properties.tpl" />
+      </filter>
+      
+      <class>SmartestCmsItemsCollection</class>
+      
+    </type>
+    
     <type id="SM_DATATYPE_ASSET_SELECTION" valuetype="manytomany">
         
         <label>Selection of files</label>

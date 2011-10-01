@@ -124,6 +124,11 @@ class SmartestCmsItemsCollection extends SmartestArray implements SmartestSubmit
     
     public function offsetGet($offset){
         
+        if(is_numeric($offset)){
+            // echo "fetch offset ".$offset;
+            return $this->_data[$offset];
+        }
+        
         switch($offset){
             case "summary":
             return new SmartestString($this->getItemsSummary());

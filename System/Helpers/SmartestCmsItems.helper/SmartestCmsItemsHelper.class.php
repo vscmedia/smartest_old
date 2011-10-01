@@ -79,15 +79,12 @@ class SmartestCmsItemsHelper{
     
     public function getRawDbDataFromIdsArray($ids, $model_id=''){
         
-        // $items_sql = "SELECT * FROM Items WHERE Items.item_id IN ('".implode("','", $ids)."')";
-        $sql = "SELECT * FROM Items, ItemPropertyValues WHERE Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND ItemPropertyValues.itempropertyvalue_item_id IN ('".implode("','", $ids)."')";
-        // echo $sql;
+        $sql = "SELECT * FROM Items, ItemPropertyValues WHERE Items.item_deleted !=1 AND Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND ItemPropertyValues.itempropertyvalue_item_id IN ('".implode("','", $ids)."')";
         
         if(is_numeric($model_id)){
             $sql .= " AND Items.item_itemclass_id='".$model_id."'";
         }
         
-        // $results = $this->database->queryToArray($sql);
         return $this->database->queryToArray($sql);
         
     }

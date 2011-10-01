@@ -43,13 +43,21 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		    }
 		    
 			$userObj->hydrate($user[0]);
-			$userObj->getTokens();
 			
-			SmartestSession::set('user:isAuthenticated', true);
+			if($userObj->getActivated()){
 			
-			$this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
+    			$userObj->getTokens();
+			    SmartestSession::set('user:isAuthenticated', true);
+			    $this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
 			
-			return $userObj;
+    			return $userObj;
+			
+		    }else{
+		        
+		        return false;
+		        
+		    }
+			
 		}else{
 			return false;
 		}

@@ -303,8 +303,12 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	}
 	
 	private function getField($field_name, $draft=false){
-		if(array_key_exists($field_name, $this->_properties_lookup)){
+	    
+	    $t = $this->_properties[$this->_properties_lookup[$field_name]]->getTypeInfo();
+        
+        if(array_key_exists($field_name, $this->_properties_lookup)){
 		    if($this->_properties[$this->_properties_lookup[$field_name]] instanceof SmartestItemPropertyValueHolder){
+			    
 			    // return $this->_properties[$this->_properties_lookup[$field_name]];
 			    if($this->_properties[$this->_properties_lookup[$field_name]]->getData() instanceof SmartestItemPropertyValue){
 		            if($draft){
@@ -314,18 +318,22 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		            }
 		        }else{
 		            
-		            // no value found, so create one
-		            $ipv = new SmartestItemPropertyValue;
-    	            $ipv->setPropertyId($this->_properties[$this->_properties_lookup[$field_name]]->getId());
-    	            $ipv->setItemId($this->getItem()->getId());
-    	            $ipv->setDraftContentId($this->_properties[$this->_properties_lookup[$field_name]]->getDefaultValue());
-    	            $ipv->save();
+		            if($t['valuetype'] != 'auto'){
+		            
+    		            // no value found, so create one
+    		            $ipv = new SmartestItemPropertyValue;
+        	            $ipv->setPropertyId($this->_properties[$this->_properties_lookup[$field_name]]->getId());
+        	            $ipv->setItemId($this->getItem()->getId());
+        	            $ipv->setDraftContentId($this->_properties[$this->_properties_lookup[$field_name]]->getDefaultValue());
+        	            $ipv->save();
     	            
-    	            if($draft){
-    	                return $ipv->getDraftContent();
-    	            }else{
-    	                return null;
-    	            }
+        	            if($draft){
+        	                return $ipv->getDraftContent();
+        	            }else{
+        	                return null;
+        	            }
+    	            
+	                }
 		        }
 		    }
 		}else if(array_key_exists($field_name, $this->_overloaded_properties)){
@@ -1026,6 +1034,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             foreach($this->getModel()->getProperties() as $prop){
                 
                 $key = $prop->getId();
+                $t = $prop->getTypeInfo();
                 
                 $this->_properties[$key]->setContextualItemId($this->_item->getId());
                 $this->_properties[$key]->getData()->setItemId($this->_item->getId());
@@ -1037,8 +1046,12 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
                     
                 }
                 
-                // save a value object regardless if it is
-                $this->_properties[$key]->getData()->save();
+                if($t['valuetype'] != 'auto'){
+                
+                    // save a value object regardless if it is
+                    $this->_properties[$key]->getData()->save();
+                
+                }
                 
             }
             

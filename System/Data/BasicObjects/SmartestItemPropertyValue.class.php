@@ -162,6 +162,29 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     $obj->hydrateFromStoredIdsArray($r->getIds($mode), $draft);
                     return $obj;
                     
+                }else if($t['valuetype'] == 'auto'){
+                    
+                    if($t['id'] == 'SM_DATATYPE_AUTO_ITEM_FK'){
+                    
+                        $ids = array();
+                    
+                        $p = $this->getProperty();
+                    
+                        $field = $draft ? 'itempropertyvalue_draft_content' : 'itempropertyvalue_content';
+                    
+                        $sql = "SELECT item_id FROM Items, ItemProperties, ItemPropertyValues WHERE item_deleted !=1 AND item_itemclass_id=itemproperty_itemclass_id AND itempropertyvalue_item_id=item_id AND itempropertyvalue_property_id = itemproperty_id AND ".$field."='".$this->getItemId()."' AND itemproperty_id='".$p->getForeignKeyFilter()."'";
+                        $result = $this->database->queryToArray($sql);
+                        
+                        foreach($result as $r){
+                            $ids[] = $r['item_id'];
+                        }
+                    
+                        $obj = new $class;
+                        $obj->hydrateFromStoredIdsArray($ids, $draft);
+                        return $obj;
+                    
+                    }
+                    
                 }else{
                     // get a SmartestBasicType object
                     $obj = new $class;

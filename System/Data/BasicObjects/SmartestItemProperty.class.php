@@ -24,6 +24,16 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	        $this->getTypeInfo();
 	    }
 	    
+	    if(isset($value['itemclass_id'])){
+	        
+	        $m = new SmartestModel;
+	        
+	        if($m->hydrate($value)){
+	            $this->_model = $m;
+	        }
+	        
+	    }
+	    
 	    return $result;
 	    
 	}

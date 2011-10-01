@@ -1,0 +1,1 @@
+Automatic property - {$value._count} object{if $value._count != 1}s{/if} retrieved: {$value}

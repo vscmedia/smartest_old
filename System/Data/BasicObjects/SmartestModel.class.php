@@ -523,6 +523,22 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
+    public function getReferringProperties(){
+        
+        $sql = "SELECT ItemProperties.* FROM ItemProperties, ItemClasses WHERE ItemProperties.itemproperty_itemclass_id=ItemClasses.itemclass_id AND ItemProperties.itemproperty_datatype='SM_DATATYPE_CMS_ITEM' AND ItemProperties.itemproperty_foreign_key_filter='".$this->getId()."' ORDER BY ItemClasses.itemclass_plural_name";
+        $result = $this->database->queryToArray($sql);
+        $properties = array();
+        
+        foreach($result as $r){
+            $p = new SmartestItemProperty;
+            $p->hydrate($r);
+            $properties[] = $p;
+        }
+        
+        return $properties;
+        
+    }
+    
     public function getMainSite(){
         
         $s = new SmartestSite;
