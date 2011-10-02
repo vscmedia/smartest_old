@@ -411,6 +411,43 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		
 	}
 	
+	/* public function getTemplate(){
+	    
+	    
+	    
+	} */
+	
+	public function getStylesheets(){
+	    
+	    $t = $this->getMasterTemplate();
+	    $hct = is_object($t) ? $t->getImportedStylesheets() : array();
+	    $hard_coded_templates = array();
+	    
+	    foreach($hct as $a){
+	        $hard_coded_templates[$a->getStringId()] = $a;
+	    }
+	    
+	    $h = new SmartestAssetsLibraryHelper;
+	    
+	    // 1. Get placeholder types that accept stylesheets
+	    $codes = $h->getAssetClassCodesThatAcceptType('SM_ASSETTYPE_STYLESHEET');
+	    
+	    // 2. Get placeholders of those types that are defined on this page
+	    $sql = "SELECT Assets.*, AssetIdentifiers.* FROM Assets, AssetIdentifiers, AssetClasses, Pages WHERE AssetIdentifiers.assetidentifier_page_id = Pages.page_id AND AssetIdentifiers.assetidentifier_assetclass_id = AssetClasses.assetclass_id AND AssetIdentifiers.assetidentifier_draft_asset_id = Assets.asset_id AND Pages.page_id = '".$this->getId()."' AND AssetClasses.assetclass_type IN ('".implode("','", $codes)."')";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    foreach($result as $ra){
+	        $a = new SmartestAsset;
+	        $a->hydrate($ra);
+	        $hard_coded_templates[$a->getStringId()] = $a;
+	    }
+	    
+	    ksort($hard_coded_templates);
+	    
+	    return $hard_coded_templates;
+	    
+	}
+	
 	public function getNextChildOrderIndex(){
 	    
 	    $children = $this->getPageChildren();

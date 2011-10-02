@@ -730,7 +730,8 @@ class Pages extends SmartestSystemApplication{
     		        $this->setTitle('Page Preview | '.$page->getTitle());
     		        $this->send(false, 'show_edit_item_option');
                     $this->send(false, 'show_publish_item_option');
-                    $this->send($page->getMasterTemplate()->getImportedStylesheets(), 'stylesheets');
+                    // $this->send($page->getMasterTemplate()->getImportedStylesheets(), 'stylesheets');
+                    $this->send($page->getStylesheets(), 'stylesheets');
 		        
     		    }else if($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET'){
 		        
@@ -744,6 +745,7 @@ class Pages extends SmartestSystemApplication{
     		                $this->send($item, 'item');
     		                $this->send(true, 'show_iframe');
     		                $this->send($page->getMasterTemplate()->getImportedStylesheets(), 'stylesheets');
+    		                
     		                $this->send($domain, 'site_domain');
     		                $this->setTitle('Meta-Page Preview | '.$item->getName());
     		                

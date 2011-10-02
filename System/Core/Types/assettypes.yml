@@ -236,7 +236,7 @@ type:
     category: browser_instructions
     label: Cufón font
     description: A font converted to javascript for use with Cufón
-    editable: true
+    editable: false
     class: SmartestAsset
     icon: script.png
     parsable: false

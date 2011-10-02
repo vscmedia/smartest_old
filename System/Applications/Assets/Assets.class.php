@@ -2,10 +2,7 @@
 
 /**
  *
- * PHP versions 4,5
- *
- * @category   WebApplication
- * @package    PHP-Controller
+ * PHP version 5
  * @author     Marcus Gilroy-Ware <marcus@visudo.com>
  * @author     Eddie Tejeda <eddie@visudo.com>
  */

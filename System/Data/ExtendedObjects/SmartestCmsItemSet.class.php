@@ -842,6 +842,11 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	
 	public function offsetGet($offset){
 	    
+	    if(is_numeric($offset)){
+	        $this->getMembers();
+	        return $this->_set_members[$offset];
+	    }
+	    
 	    switch($offset){
 	        
 	        case "model":

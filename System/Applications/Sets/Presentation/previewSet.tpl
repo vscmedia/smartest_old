@@ -64,6 +64,7 @@ View as:
     <ul class="actions-list" id="item-specific-actions" style="display:none">
       <li><b>Selected Item</b></li>
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}datamanager/openItem?item_id='+selectedPage+'&amp;from=previewSet'"><img border="0" src="{$domain}Resources/Icons/pencil.png" style="width:16px;height:18px"> Edit this {$model.name|strtolower}</a></li>	
+      <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}datamanager/publishItem?item_id='+selectedPage"><img border="0" src="{$domain}Resources/Icons/page_lightning.png" style="width:16px;height:18px"> Publish this {$model.name|strtolower}</a></li>	
     </ul>
     
     <ul class="actions-list">
