@@ -1,0 +1,2 @@
+prefs:
+  reorder_static_set_num_cols: {user_specific: true, site_specific: false, description: How many columns should the user see when changing the order of a static set}

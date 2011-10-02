@@ -1,0 +1,10 @@
+ALTER TABLE  `Sets` CHANGE  `set_filter_type`  `set_filter_type` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '';
+ALTER TABLE  `Sets` CHANGE  `set_filter_value`  `set_filter_value` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '';
+ALTER TABLE  `Sets` CHANGE  `set_name`  `set_name` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '';
+ALTER TABLE  `Sites` CHANGE  `site_name`  `site_name` VARCHAR( 128 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '';
+ALTER TABLE  `ManyToManyLookups` CHANGE  `mtmlookup_id`  `mtmlookup_id` INT( 20 ) NOT NULL AUTO_INCREMENT;
+ALTER TABLE  `ItemPropertyValues` CHANGE  `itempropertyvalue_id`  `itempropertyvalue_id` INT( 20 ) NOT NULL AUTO_INCREMENT;
+ALTER TABLE  `ItemPropertyValues` DROP  `itempropertyvalue_binary`;
+ALTER TABLE  `Items` CHANGE  `item_name`  `item_name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '';
+ALTER TABLE  `Items` CHANGE  `item_slug`  `item_slug` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '';
+ALTER TABLE  `ItemClasses` ADD  `itemclass_settings` TEXT NOT NULL AFTER  `itemclass_primary_property_id`;

@@ -11,6 +11,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     protected $_fetch_attempted = false;
     protected $_model = null;
     protected $_retrieve_mode = 9;
+    protected $_constituent_item_chaining = false;
     
     public function __objectConstruct(){
         
@@ -207,11 +208,20 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
+	public function getLookupsForReordering(){
+	    $ls = $this->getLookups(0);
+	    $lwci = array();
+	    foreach($ls as $l){
+	        $lwci[$l->getItemId()] = $l;
+	    }
+	    return $lwci;
+	}
+	
 	public function fixOrderIndices(){
 	    
 	    if($this->getType() == 'STATIC'){
 	    
-    	    $lookups = $this->getLookups(SM_QUERY_ALL_DRAFT);
+    	    $lookups = $this->getLookups(0);
     	    $c = count($lookups);
 	    
     	    for($i=0;$i<$c;$i++){
@@ -223,6 +233,17 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
         }else{
             throw new SmartestException("SmartestCmsItemSet::fixOrderIndices() must only be called on a static data set", SM_ERROR_USER);
         }
+	    
+	}
+	
+	public function updateOrderFromItemIdsList($list){
+	    
+	    $lookups = $this->getLookupsForReordering();
+	    
+	    foreach($list as $key=>$item_id){
+	        $lookups[$item_id]->setOrder($key);
+	        $lookups[$item_id]->save();
+	    }
 	    
 	}
 	
@@ -266,6 +287,20 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
             $this->_set_member_webids[] = $item->getWebid();
             $this->_set_member_slugs[] = $item->getSlug();
             $this->_set_members[$key]->setDraftMode($draft);
+            
+            // Items in a data set/foreach/repeat will know which is the next item's id
+            if($this->_constituent_item_chaining){
+                
+                $this->_set_members[$key]->setPositionInItemChain($this->getId(), $key);
+                
+                if(isset($this->_set_members[$key-1])){
+                    $this->_set_members[$key]->setPreviousPrimaryKeyInItemChain($this->getId(), $this->_set_members[$key-1]->getId());
+                }
+                
+                if(isset($this->_set_members[$key+1])){
+                    $this->_set_members[$key]->setNextPrimaryKeyInItemChain($this->getId(), $this->_set_members[$key+1]->getId());
+                }
+            }
         
         }
 	    
@@ -857,6 +892,14 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	
 	public function renderInput($params){
 	    
+	}
+	
+	public function setConstituentItemChaining($value){
+	    $this->_constituent_item_chaining = (bool) $value;
+	}
+	
+	public function getConstituentItemChaining(){
+	    return $this->_constituent_item_chaining;
 	}
 
 }

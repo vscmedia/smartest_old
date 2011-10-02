@@ -150,21 +150,22 @@ CREATE TABLE `DropDownValues` (
 --
 
 CREATE TABLE `ItemClasses` (
-  `itemclass_id` int(9) unsigned NOT NULL auto_increment,
-  `itemclass_type` varchar(32) NOT NULL default 'SM_ITEMCLASS_MODEL',
-  `itemclass_webid` varchar(16) NOT NULL default '',
-  `itemclass_parent_id` int(9) NOT NULL default '0',
-  `itemclass_name` varchar(40) NOT NULL default '',
-  `itemclass_plural_name` varchar(64) NOT NULL default '',
-  `itemclass_site_id` int(11) NOT NULL default '0',
+  `itemclass_id` int(9) unsigned NOT NULL AUTO_INCREMENT,
+  `itemclass_type` varchar(32) NOT NULL DEFAULT 'SM_ITEMCLASS_MODEL',
+  `itemclass_webid` varchar(16) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `itemclass_parent_id` int(9) NOT NULL DEFAULT '0',
+  `itemclass_name` varchar(40) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `itemclass_plural_name` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `itemclass_site_id` int(11) NOT NULL DEFAULT '0',
   `itemclass_shared` tinyint(1) NOT NULL,
-  `itemclass_varname` varchar(64) NOT NULL default '',
+  `itemclass_varname` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `itemclass_class_file_checksum` varchar(32) NOT NULL,
-  `itemclass_default_description_property_id` int(11) unsigned NOT NULL default '0',
+  `itemclass_default_description_property_id` int(11) unsigned NOT NULL DEFAULT '0',
   `itemclass_primary_property_id` int(11) NOT NULL,
-  `itemclass_userid` int(11) NOT NULL default '0',
-  `itemclass_rating_max_score` smallint(3) NOT NULL default '5',
-  PRIMARY KEY  (`itemclass_id`)
+  `itemclass_settings` text NOT NULL,
+  `itemclass_userid` int(11) NOT NULL DEFAULT '0',
+  `itemclass_rating_max_score` smallint(3) NOT NULL DEFAULT '5',
+  PRIMARY KEY (`itemclass_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -200,16 +201,15 @@ CREATE TABLE `ItemProperties` (
 --
 
 CREATE TABLE `ItemPropertyValues` (
-  `itempropertyvalue_id` int(9) NOT NULL auto_increment,
-  `itempropertyvalue_item_id` int(9) NOT NULL default '0',
-  `itempropertyvalue_property_id` int(9) NOT NULL default '0',
-  `itempropertyvalue_draft_content` text NOT NULL,
-  `itempropertyvalue_content` text NOT NULL,
-  `itempropertyvalue_binary` longblob NOT NULL,
+  `itempropertyvalue_id` int(20) NOT NULL AUTO_INCREMENT,
+  `itempropertyvalue_item_id` int(9) NOT NULL DEFAULT '0',
+  `itempropertyvalue_property_id` int(9) NOT NULL DEFAULT '0',
+  `itempropertyvalue_draft_content` text CHARACTER SET utf8 NOT NULL,
+  `itempropertyvalue_content` text CHARACTER SET utf8 NOT NULL,
   `itempropertyvalue_draft_info` text NOT NULL,
   `itempropertyvalue_live_info` text NOT NULL,
-  `itempropertyvalue_language` varchar(8) NOT NULL default 'eng',
-  PRIMARY KEY  (`itempropertyvalue_id`)
+  `itempropertyvalue_language` varchar(8) NOT NULL DEFAULT 'eng',
+  PRIMARY KEY (`itempropertyvalue_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -223,8 +223,8 @@ CREATE TABLE `Items` (
   `item_webid` varchar(32) character set utf8 NOT NULL default '',
   `item_itemclass_id` int(9) unsigned NOT NULL default '0',
   `item_shared` tinyint(1) unsigned NOT NULL default '0',
-  `item_name` varchar(128) character set utf8 NOT NULL,
-  `item_slug` varchar(127) character set utf8 NOT NULL default '',
+  `item_name` varchar(255) character set utf8 NOT NULL,
+  `item_slug` varchar(255) character set utf8 NOT NULL default '',
   `item_public` enum('FALSE','TRUE') character set utf8 NOT NULL default 'FALSE',
   `item_search_field` text character set utf8 NOT NULL,
   `item_is_held` tinyint(1) NOT NULL default '0',

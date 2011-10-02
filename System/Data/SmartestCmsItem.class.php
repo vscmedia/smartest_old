@@ -79,6 +79,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	protected $_draft_mode = false;
 	protected $_request;
 	protected $_disabled_template_properties = array();
+	protected $_item_chain_data;
 	
 	/** 
 	* Description
@@ -1201,6 +1202,39 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
     
     protected function getDataStore(){
         return SmartestPersistentObject::get('centralDataHolder');
+    }
+    
+    public function initializeItemChainDataStorage(){
+        if(!$this->_item_chain_data){
+            $this->_item_chain_data = new SmartestParameterHolder('Item Chain information for item '.$this->_item->getName());
+        }
+    }
+    
+    public function setPositionInItemChain($set_id, $position){
+        $this->initializeItemChainDataStorage();
+        $this->_item_chain_data->setParameter('pos_'.$set_id, (int) $position);
+    }
+    
+    public function setPreviousPrimaryKeyInItemChain($set_id, $id){
+        $this->initializeItemChainDataStorage();
+        $this->_item_chain_data->setParameter('prev_'.$set_id, (int) $id);
+    }
+    
+    public function setNextPrimaryKeyInItemChain($set_id, $id){
+        $this->initializeItemChainDataStorage();
+        $this->_item_chain_data->setParameter('next_'.$set_id, (int) $id);
+    }
+    
+    public function getPositionInItemChain($set_id){
+        $this->_item_chain_data->getParameter('pos_'.$set_id);
+    }
+    
+    public function getPreviousPrimaryKeyInItemChain($set_id){
+        $this->_item_chain_data->getParameter('prev_'.$set_id);
+    }
+    
+    public function getNextPrimaryKeyInItemChain($set_id){
+        $this->_item_chain_data->getParameter('next_'.$set_id);
     }
 	
 }

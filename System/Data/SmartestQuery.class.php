@@ -210,7 +210,6 @@ class SmartestQuery{
         				    $sql .= "AND Items.item_id IN ('".implode("', '", $ids)."')";
         				}else{
         				    SmartestLog::getInstance('system')->log("The tag '".$condition['value']."' was used as a query condition but does not exist.");
-        				    // echo "tag not found";
         				}
 				        
 				    }else if($condition['operator'] == self::NOT_TAGGED_WITH){
@@ -231,7 +230,8 @@ class SmartestQuery{
         				}
 				    
     				}else{
-				
+				        
+				        // Standard item property field as added by the user
     				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_property_id='$property_id' AND Items.item_id = ItemPropertyValues.itempropertyvalue_item_id AND ".$value_field.' ';
 				    
     				}
@@ -326,16 +326,12 @@ class SmartestQuery{
 	
 	public static function init($force_regenerate=false, $site_id=''){
 		
-		// print_r(SmartestCache::load('models_query', true));
-		
 		if(!defined('SM_QUERY_INIT_COMPLETE') || $force_regenerate == true){
 		
 			$database =& SmartestPersistentObject::get('db:main');
 			
 			$du = new SmartestDataUtility;
 			$models = $du->getModels(false, $site_id);
-			
-			// print_r($models);
 			
 			foreach($models as $m){
 			    

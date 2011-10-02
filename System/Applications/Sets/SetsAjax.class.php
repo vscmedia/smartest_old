@@ -29,4 +29,27 @@ class SetsAjax extends SmartestSystemApplication{
         $this->send($operator, 'operator');
     }
     
+    public function updateStaticSetOrder(){
+        
+        $set = new SmartestCmsItemSet;
+        
+        if($set->find((int) $this->getRequestParameter('set_id'))){
+            
+            if($set->getType() == 'DYNAMIC'){
+	            exit;
+	        }
+	        
+	        // $set->fixOrderIndices();
+	        
+	        // echo implode(',', $this->getRequestParameters());
+	        
+	        // print_r(explode(',', $this->getRequestParameter('item_ids')));
+	        
+	        $set->updateOrderFromItemIdsList(explode(',', $this->getRequestParameter('item_ids')));
+	        
+        }
+        
+        exit;
+    }
+    
 }

@@ -9,6 +9,10 @@
         <long>true</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/sl_text.tpl" />
+        <parameters>
+          <param name="autocomplete" label="Auto-complete" type="SM_DATATYPE_BOOLEAN" default="true" usage="field,itemproperty" />
+          <param name="require_unique" label="Require unique values" type="SM_DATATYPE_BOOLEAN" default="false" usage="itemproperty" />
+        </parameters>
     </type>
     
     <type id="SM_DATATYPE_NUMERIC" valuetype="string">
@@ -19,6 +23,10 @@
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/numeric.tpl" />
+        <parameters>
+          <param name="num_decimal_places" label="Number of decimal places" type="SM_DATATYPE_NUMERIC" default="true" usage="field,itemproperty" />
+          <param name="require_unique" label="Require unige values" type="SM_DATATYPE_BOOLEAN" default="false" usage="itemproperty" />
+        </parameters>
     </type>
     
     <type id="SM_DATATYPE_URL" valuetype="string">

@@ -100,6 +100,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                         $obj->setDraftMode($draft);
                     }else if($obj instanceof SmartestCmsItemSet){
                         $obj->setRetrieveMode($draft ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT);
+                        $obj->setConstituentItemChaining(true);
                     }
                 
                     if($class == 'SmartestDropdownOption'){

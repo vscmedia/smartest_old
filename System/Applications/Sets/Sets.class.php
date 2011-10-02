@@ -420,6 +420,7 @@ class Sets extends SmartestSystemApplication{
 	        $this->send($set->getModel(), 'model');
 	        $this->send($set, 'set');
 	        $this->send($set->getMembers(SM_QUERY_ALL_DRAFT), 'items');
+	        $this->send($this->getApplicationPreference('reorder_static_set_num_cols'), 'num_cols');
 	        
 	    }else{
 	        $this->addUserMessageToNextRequest("The set ID was not recognised.", SM_USER_MESSAGE_ERROR);

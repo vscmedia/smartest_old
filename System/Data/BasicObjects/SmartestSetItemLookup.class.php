@@ -32,4 +32,8 @@ class SmartestSetItemLookup extends SmartestBaseSetItemLookup{
         
     }
     
+    public function __toString(){
+        return $this->getOrder().':'.$this->getItemId();
+    }
+    
 }

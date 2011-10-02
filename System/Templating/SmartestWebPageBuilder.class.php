@@ -260,7 +260,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         $assetclass_types = SmartestDataUtility::getAssetClassTypes();
         
-        $display = (isset($params['display']) && in_array($params['display'], array('file', 'full', 'normal'))) ? $params['display'] : 'normal';
+        $display = (isset($params['display']) && in_array($params['display'], array('file', 'full', 'path', 'normal'))) ? $params['display'] : 'normal';
         
         if($this->getPage()->hasPlaceholderDefinition($placeholder_name, $this->getDraftMode())){
             
@@ -276,7 +276,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                         
                         return $asset->getUrl();
                         
-                    }else if($display == 'full'){
+                    }else if($display == 'full' || $display == 'path'){
                         
                         if($asset->usesLocalFile()){
                             
@@ -284,13 +284,18 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                             
                         }else{
                             
-                            return $this->raiseError('display="full" used on asset type that does not have a local file: '.$asset->getType());
+                            return $this->raiseError('display="'.$display.'" used on asset type that does not have a local file: '.$asset->getType());
                             
                         }
                         
                     }else{
-                    
+                        
                         $render_data = array();
+                        
+                        if(isset($params['transform'])){
+                            $transform_param_values = SmartestStringHelper::parseNameValueString($params['transform']);
+                            // TODO: Allow inline transformations on certain asset types - resize, (rotate?)
+                        }
                     
                         if($asset->isImage()){
                             $render_data['width'] = $asset->getWidth();

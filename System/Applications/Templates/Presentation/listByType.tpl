@@ -1,3 +1,9 @@
+<script type="text/javascript">
+{literal}
+  var templates = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'option', 'options_grid');
+{/literal}
+</script>
+
 <div id="work-area">
 
 <h3>{$type.label}s</h3>
@@ -16,11 +22,11 @@
 
 <div id="options-view-chooser">
 Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
-<a href="javascript:nothing()" onclick="setView('list', 'options_grid')">List</a> /
-<a href="javascript:nothing()" onclick="setView('grid', 'options_grid')">Icons</a>
+<a href="javascript:templates.setView('list', 'list_by_type_view')">List</a> /
+<a href="javascript:templates.setView('grid', 'list_by_type_view')">Icons</a>
 </div>
 
-<ul class="options-grid" style="margin-top:0px" id="options_grid">
+<ul class="options-{$list_style}" style="margin-top:0px" id="options_grid">
 {foreach from=$templates item="template"}
 <li>
   <a href="javascript:nothing()" class="option" id="item_{if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}" onclick="setSelectedItem('{if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}', '{$template.url}', '{if $template.status == 'imported'}imported-template{else}unimported-template{/if}');" ondblclick="window.location='{$domain}{$section}/editTemplate?asset_type={$template.type}&amp;template={if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}'">
@@ -36,11 +42,11 @@ Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
 <ul class="actions-list" id="imported-template-specific-actions" style="display:none">
     
   <li><b>Selected template:</b></li>
-	<li class="permanent-action"><a href="javascript:nothing()" onclick="workWithItem('editTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this template</a></li>
-	<li class="permanent-action"><a href="javascript:nothing()" onclick="workWithItem('templateInfo');" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About this template</a></li>
-	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){ workWithItem('duplicateTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate this template</a></li>
-	<li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(confirm('Really delete this template?')){ workWithItem('deleteTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete this template</a></li>
-	<li class="permanent-action"><a href="javascript:nothing()" onclick="workWithItem('downloadTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_put.png" border="0" alt="" /> Download this template</a></li>
+	<li class="permanent-action"><a href="javascript:templates.workWithItem('editTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this template</a></li>
+	<li class="permanent-action"><a href="javascript:templates.workWithItem('templateInfo');" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About this template</a></li>
+	<li class="permanent-action"><a href="javascript:{literal}if(selectedPage){ templates.workWithItem('duplicateTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate this template</a></li>
+	<li class="permanent-action"><a href="javascript:{literal}if(confirm('Really delete this template?')){ templates.workWithItem('deleteTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete this template</a></li>
+	<li class="permanent-action"><a href="javascript:workWithItem('templates.downloadTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_put.png" border="0" alt="" /> Download this template</a></li>
 </ul>
 
 <ul class="actions-list" id="unimported-template-specific-actions" style="display:none">

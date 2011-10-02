@@ -406,6 +406,7 @@ class Templates extends SmartestSystemApplication{
 	            
 	        }
 	        
+	        $this->send($this->getApplicationPreference('list_by_type_view', 'grid'), 'list_style');
 	        $this->send($templates, 'templates');
 	        $this->send(count($templates), 'count');
 	    
@@ -564,12 +565,13 @@ class Templates extends SmartestSystemApplication{
 	        
 	        if($success){
 	            
-    	        $a = new SmartestAsset;
+    	        $a = new SmartestTemplateAsset;
     	        
     	        $a->setType($nf['type']);
     	        $a->setSiteId($this->getSite()->getId());
     	        $a->setShared(isset($nf['shared']) ? 1 : 0);
     	        $a->setWebid(SmartestStringHelper::random(32));
+    	        $a->setLabel($nf['name']);
     	        $a->setStringid(SmartestStringHelper::toVarName($nf['name']));
     	        $a->setUrl($filename);
     	        $a->setUserId($this->getUser()->getId());

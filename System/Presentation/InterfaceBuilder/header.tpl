@@ -40,8 +40,11 @@
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/interface.js"></script>
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/treeview.js"></script>
     <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/help.js"></script>
+    <script type="text/javascript" language="javascript" src="{$domain}Resources/System/Javascript/smartest/prefs.js"></script>
+    
     <script type="text/javascript">
-      var help = new Smartest.HelpViewer();
+      var HELP = new Smartest.HelpViewer();
+      var PREFS = new Smartest.PreferencesBridge();
     </script>
     
     <style type="text/css">
@@ -63,7 +66,7 @@
       <div id="help-viewer">
         <div id="help-title-bar">
           Smartest Help Viewer
-          <a id="help-closer" href="#" onclick="help.hideViewer();">Done</a>
+          <a id="help-closer" href="#" onclick="HELP.hideViewer();">Done</a>
         </div>
         <div id="help-updater">
           

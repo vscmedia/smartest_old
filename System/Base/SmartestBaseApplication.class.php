@@ -367,16 +367,21 @@ class SmartestBaseApplication extends QuinceBase{
         return $this->_site;
     }
     
-    protected function getApplicationPreference($preference_name){
+    protected function getApplicationPreference($preference_name, $default=null){
         
         $name = SmartestStringHelper::toVarName($preference_name);
         
         if($this->_cached_application_preferences->hasParameter($name)){
-            return $this->_cached_application_preferences->getParameter($name);
+            $value = $this->_cached_application_preferences->getParameter($name);
         }else{
             $value = $this->_preferences_helper->getApplicationPreference($name, $this->getRequest()->getMeta('_module_identifier'), $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        }
+        
+        if(isset($value)){
             $this->_cached_application_preferences->setParameter($name, $value);
             return $value;
+        }else{
+            return $default;
         }
         
     }

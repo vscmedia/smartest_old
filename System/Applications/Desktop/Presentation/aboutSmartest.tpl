@@ -17,7 +17,7 @@
     <p><strong>Root directory</strong>: <code>{$root_dir}</code></p>
     <p><strong>Operating System</strong>: {$linux_version}</p>
     <p><strong>Is SVN checkout</strong>: {$is_svn_checkout.english}</p>
-    <p><strong>Credit</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Chris Brauer, Eddie Tejeda, Sereen Joseph, Nancy Arnold, Matt Asay, the wisdom of Professor Lawrence Lessig, PG, VW, a few brave MA Journalism students at City University London, and early adopters everywhere.</p>
+    <p><strong>Credit</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Chris Brauer, Eddie Tejeda, Alex Wood, Sereen Joseph, Nancy Arnold, Matt Asay, the wisdom of Professor Lawrence Lessig, PG, VW, a few brave MA Journalism students at City University London, and early adopters everywhere. Smartest exists because you believed in it.</p>
     <p style="margin-top:15px"><strong>Want to give Smartest's developers some props?</strong> just put <code>&lt;?sm:credit:?&gt;</code> in a template to make: <a href="http://sma.rte.st"><img src="{$domain}Resources/System/Images/smartest_credit_button.png" /></a></p>
     <p style="margin-top:15px"><a href="http://www.vsclabs.com/" target="_blank"><img src="{$domain}Resources/System/Images/info_vsc_labs.png" alt="More great software from VSC Labs" /></a></p>
     <p style="margin-top:20px"><span style="font-size:10px;color:#999">"Smartest" and the Smartest logo are trademarks of and © VSC Creative Ltd 2006-{$smarty.now|date_format:"%Y"}.</span></p>

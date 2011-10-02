@@ -553,12 +553,15 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	public static function parseNameValueString($string){
 	    
-	    $pairs = explode(';', $string);
+	    $pairs = preg_split('/\s*;\s*/', $string);
 	    $data = array();
 	    
-	    foreach($pairs as $nvp){
-	        $parts = explode(':', $nvp);
-	        $data[trim($parts[0])] = trim($parts[1]);
+	    foreach($pairs as $key=>$nvp){
+	        $parts = preg_split('/\s*:\s*/', $nvp);
+	        
+	        if(strlen($parts[0])){
+	            $data[trim($parts[0])] = trim($parts[1]);
+            }
 	    }
 	    
 	    return $data;

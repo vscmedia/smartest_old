@@ -346,18 +346,48 @@ div#footer{
 ul.re-orderable-list{
     margin:0px;
     padding:0px;
+    list-style-type:none;
 }
 
 ul.re-orderable-list li{
     padding:5px;
     background-color:#f8f8f8;
-    border:1px solid #ddd;
+    border:2px solid #f90;
     margin-bottom:5px;
+    cursor:move;
+    border-radius:10px;
+    -moz-border-radius:10px;
+    margin:0 7px 7px 0;
 }
 
-ul.re-orderable-list li div.buttons{
-    float:right;
+ul.re-orderable-list.div1 li{
+    width:98%;
+    margin:0 0 7px 0;
 }
+
+ul.re-orderable-list.div2 li{
+    width:47%;
+    float:left;
+}
+
+ul.re-orderable-list.div3 li{
+    width:30%;
+    float:left;
+}
+
+ul.re-orderable-list.div4 li{
+    width:22%;
+    float:left;
+}
+
+ul.re-orderable-list.div5 li{
+    width:17%;
+    float:left;
+}
+
+/* ul.re-orderable-list li div.buttons{
+    float:right;
+} */
 
 div._new-desktop-column-inner h4{
     border:0;

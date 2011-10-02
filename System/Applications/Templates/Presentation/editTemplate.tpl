@@ -60,9 +60,8 @@
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
     {if $is_convertable}<li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/convertTemplateType?template_id={$template.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/wrench_orange.png" border="0" alt="" /> Convert to another type</a></li>{/if}
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/listByType?type={$template.type}'"><img src="{$domain}Resources/Icons/page_white_stack.png" border="0" alt="" /> Back to {$type_info.label|lower}s</a></li>
-    {if $template_type == "SM_LIST_ITEM_TEMPLATE"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/listItemTemplates'">Back to list item temnplates</a></li>{/if}
-    {if $template_type == "SM_PAGE_MASTER_TEMPLATE"}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/masterTemplates'">Back to master temnplates</a></li>{/if}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/listByType?type={$template.type}'"><img src="{$domain}Resources/Icons/page_white_stack.png" border="0" alt="" /> See {$type_info.label|lower}s</a></li>
+    {if $model.id}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/templates/models?model_id={$model.id}'"><img src="{$domain}Resources/Icons/page_white_stack.png" border="0" alt="" /> See {$model.name|lower} templates</a></li>{/if}
   </ul>
   
 {if !empty($stylesheets)}

@@ -330,6 +330,38 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		exit;
 	} */
 	
+	final public function getApplicationPreferenceFromAjax(){
+        // $preference_name
+        $v = $this->getApplicationPreference($this->getRequestParameter('pref_name'));
+        header('Content-Type:text/javascript');
+        echo json_encode($v);
+        exit;
+    }
+    
+    final public function setApplicationPreferenceFromAjax(){
+        // $preference_name, $preference_value
+        $r = $this->setApplicationPreference($this->getRequestParameter('pref_name'), $this->getRequestParameter('pref_value'));
+        header('Content-Type:text/javascript');
+        echo json_encode((bool) $r);
+        exit;
+    }
+    
+    final public function getGlobalPreferenceFromAjax(){
+        // $preference_name
+        $v = $this->getGlobalPreference($this->getRequestParameter('pref_name'));
+        header('Content-Type:text/javascript');
+        echo json_encode($v);
+        exit;
+    }
+    
+    final public function setGlobalPreferenceFromAjax(){
+        // $preference_name, $preference_value
+        $r = $this->setGlobalPreference($this->getRequestParameter('pref_name'), $this->getRequestParameter('pref_value'));
+        header('Content-Type:text/javascript');
+        echo json_encode((bool) $r);
+        exit;
+    }
+	
 	///// Errors /////
     
     function _error($message, $type=''){

@@ -278,19 +278,23 @@ Smartest.UI.OptionSet = Class.create({
     
     initialize: function(formId, inputId, optionClass, listId){
         
-        this.setFormId(formId);
+        var sfi = this.setFormId.bind(this);
         this.setPrimaryInputId(inputId);
         this.optionClass = optionClass;
+        var sli = this.setListId.bind(this);
         
-        if($(listId)){
-            this.setListId(listId);
-        }
+        document.observe('dom:loaded', function(){
+            sli(listId);
+            sfi(formId);
+        });
+        
     },
     
     setFormId: function(id){
         if($(id)){
             this.form = $(id);
         }else{
+            alert('form '+id+' not found.');
             // TODO: create a new form and append it to the document
         }
     },
@@ -304,8 +308,12 @@ Smartest.UI.OptionSet = Class.create({
     },
     
     setListId: function(id){
-        this.listId = id;
-        this.listStyle = $(this.listId).hasClassName('options-list') ? 'list' : 'grid';
+        if($(id)){
+            this.listId = id;
+            this.listStyle = $(this.listId).hasClassName('options-list') ? 'list' : 'grid';
+        }else{
+            // The list of options doesn't exist! do something!
+        }
     },
     
     showOnly: function(className){
@@ -389,20 +397,23 @@ Smartest.UI.OptionSet = Class.create({
         
         var app = (params && params.application) ? params.application : sm_section;
         
-        if(this.lastItemId){
-            if((params && params.confirm && confirm(params.confirm)) || (!params || (params && !params.confirm))){
-                this.form.action = sm_domain+app+"/"+action;
-	            this.form.submit();
-            }
+        if((params && params.confirm && confirm(params.confirm)) || (!params || (params && !params.confirm))){
+            this.form.action = sm_domain+app+"/"+action;
+            this.form.submit();
         }
+        
     },
     
-    setView: function(view){
+    setView: function(view, preferenceName){
+        
         if(view == 'grid'){
             $(this.listId).className = 'options-grid';
-        }
-        if(view == 'list'){
+        }else if(view == 'list'){
             $(this.listId).className = 'options-list';
+        }
+        
+        if(preferenceName && PREFS){
+            PREFS.setApplicationPreference(preferenceName, view);
         }
     }
     
@@ -501,5 +512,28 @@ Smartest.UI.TagsList = Class.create({
             this.tagPage(page_id, tag_id);
         }
     },
+    
+});
+
+Smartest.UI.UserMessageSystem = Class.create({
+    
+    initialize: function(){
+        
+    },
+    
+    showMessage: function(content, level){
+        
+    }
+    
+});
+
+Smartest.UI.UserMessageSystem.Message = Class.create({
+    
+    content: '[empty message]',
+    level: null,
+    
+    initialize: function(content, level){
+        
+    }
     
 });
