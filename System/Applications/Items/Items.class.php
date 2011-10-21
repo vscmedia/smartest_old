@@ -14,7 +14,9 @@ class Items extends SmartestSystemApplication{
 	}
 	
 	public function startPage($get){	
+	    
 		$this->setTitle("Items");
+		
 	}
 		
 	public function getItemClasses(){
@@ -1927,15 +1929,34 @@ class Items extends SmartestSystemApplication{
 	insertItemClass()
 	*/
 	
-	function addItem($get, $post){
+	public function addItem($get, $post){
         
         $this->send(date("Y"), 'default_year');
         $this->send(date("m"), 'default_month');
         $this->send(date("d"), 'default_day');
         
         if($this->getUser()->hasToken('add_items')){
-        
-            $model_id = $this->getRequestParameter('class_id');
+            
+            if($this->getRequestParameter('class_id')){
+            
+                $model_id = $this->getRequestParameter('class_id');
+            
+            }else if($this->getRequestParameter('for') == 'ipv' && $this->getRequestParameter('property_id')){
+                
+                $p = new SmartestItemProperty;
+                
+                if($p->find($this->getRequestParameter('property_id'))){
+                    if($p->getDatatype() == 'SM_DATATYPE_CMS_ITEM'){
+                        $model_id = $p->getForeignKeyFilter();
+                    }else{
+                        
+                    }
+                }else{
+                    
+                }
+                
+            }
+            
             $model = new SmartestModel;
             
             if($model->find($model_id)){
@@ -1983,11 +2004,47 @@ class Items extends SmartestSystemApplication{
                     $item->setSiteId($this->getSite()->getId());
                 
                     if($success = $item->save()){
+                        
                         if($this->getUser()->hasToken('author_credit')){
                             $item->addAuthorById($this->getUser()->getId());
                         }
-                        $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.", SmartestUserMessage::SUCCESS);
-                        $this->redirect("/datamanager/openItem?item_id=".$item->getId());
+                        
+                        if($this->getRequestParameter('for') == 'ipv'){
+                            
+                            $parent_item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'));
+                            $parent_item->setPropertyValueByNumericKey($this->getRequestParameter('property_id'), $item->getId());
+                            $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.", SmartestUserMessage::SUCCESS);
+                            $this->redirect("/datamanager/openItem?item_id=".$parent_item->getId());
+                            
+                        }else{
+                        
+                            if($this->getRequestParameter('nextAction') == 'createAsset' && is_numeric($this->getRequestParameter('property_id'))){
+                            
+                                // redirect the user to the screen for creating an asset
+                                $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.", SmartestUserMessage::SUCCESS);
+                                $this->redirect("/assets/startNewFileCreationForItemPropertyValue?property_id=".$this->getRequestParameter('property_id')."&item_id=".$item->getId());
+                            
+                            }else if($this->getRequestParameter('nextAction') == 'createTemplate' && is_numeric($this->getRequestParameter('property_id'))){
+                            
+                                // redirect the user to the screen for creating a single-item template
+                                $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.", SmartestUserMessage::SUCCESS);
+                                $this->redirect("/templates/startNewTemplateCreationForItemPropertyValue?property_id=".$this->getRequestParameter('property_id')."&item_id=".$item->getId());
+                            
+                            }else if($this->getRequestParameter('nextAction') == 'createItem' && is_numeric($this->getRequestParameter('property_id'))){
+                            
+                                // redirect the user to the screen for creating another item
+                                $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.", SmartestUserMessage::SUCCESS);
+                                $this->redirect("/datamanager/addItem?for=ipv&property_id=".$this->getRequestParameter('property_id')."&item_id=".$item->getId());
+                            
+                            }else{
+                        
+                                $this->addUserMessageToNextRequest("Your new ".$model->getName()." has been created.", SmartestUserMessage::SUCCESS);
+                                $this->redirect("/datamanager/openItem?item_id=".$item->getId());
+                        
+                            }
+                        
+                        }
+                        
                     }else{
                         $this->formForward();
                     }

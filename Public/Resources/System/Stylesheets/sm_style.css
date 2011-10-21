@@ -454,6 +454,9 @@ ul.item_property_actions{
 
 ul.item_property_actions li a{
     border: 1px solid #ccc;
+    border-radius:4px;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
 }
 
 ul.item_property_actions li a:hover{
