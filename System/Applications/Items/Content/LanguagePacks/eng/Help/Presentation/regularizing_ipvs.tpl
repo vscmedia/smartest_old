@@ -1,0 +1,3 @@
+<p>To store your data efficiently and flexibly, each {help id="datamanager:datatypes"}property type{/help} has a specific format that is saved to the database.</p>
+<p>Smartest is constantly evolving, and from time to time something happens that means those formats might change, or might benfit from being stored in a new way.</p>
+<p>The regularize feature is a utility that will update all the values stored for a given property and ensure that those values are stored in the most optimal format.</p>

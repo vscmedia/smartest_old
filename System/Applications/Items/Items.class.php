@@ -2468,6 +2468,18 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
+	public function startItemClassPropertyRegularization(){
+	    
+	    $property = new SmartestItemProperty;
+	    if($property->find($this->getRequestParameter('itemproperty_id'))){
+	        
+	        $this->send($property, 'property');
+	        $this->send(count($property->getStoredValues($this->getSite()->getId())), 'num_values');
+	        
+	    }
+	    
+	}
+	
 	public function addNewItemClassAction($get, $post){
     
 		if(strlen($this->getRequestParameter('item_class_name'))>0){

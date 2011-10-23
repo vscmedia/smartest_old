@@ -1,0 +1,3 @@
+<p>Different types of information need to be treated differently. A date, a color, and a number all refer to different kinds of entity in the world: a time, a physical object, and a quantity respectively.</p>
+<p>Smartest uses a system of different "datatypes" in order to achieve this, so that whatever type of information you are working with, you see a user interface that makes sense and the right bits of code are run.</p>
+<p>Whenever you add new properties to your {help id="datamanager:models"}models{/help} or create a new {help id="websitemanager:fields"}page field{/help}, you will asked to specify  what <strong>type</strong> of data it will store and retrieve, and to do this you will be shown a list of different data types.</p>

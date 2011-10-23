@@ -76,9 +76,9 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
-        // return $this->_value;
+        return $this->_value;
         // MySQL Native date format
-        return date('Y-m-d H:i:s', $this->_value);
+        // return date('Y-m-d H:i:s', $this->_value);
     }
     
     public function hydrateFromStorableFormat($v){

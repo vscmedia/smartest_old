@@ -85,7 +85,8 @@ function viewPage(){
 
 <ul class="actions-list" id="item-specific-actions" style="display:none">
 	<li><b>Selected item property</b></li>
-	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('editItemClassProperty'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this property</a></li>
+	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('editItemClassProperty'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this property</a></li>
+	<li class="permanent-action"><a href="#" onclick="workWithItem('startItemClassPropertyRegularization'); return false;" class="right-nav-link"><img src="{$domain}Resources/Icons/wand.png" border="0" alt="" /> Regularize this property</a></li>
 	{if $can_delete_properties}<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this property?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/package_delete.png" border="0" alt="" /> Delete this property</a></li>{/if}
 </ul>
 

@@ -68,5 +68,29 @@ class ItemsAjax extends SmartestSystemApplication{
 	    }
 	    
 	}
+	
+	public function regularizeItemClassProperty(){
+	    
+	    $property = new SmartestItemProperty;
+	    
+	    if($property->find($this->getRequestParameter('property_id'))){
+	        
+	        foreach($property->getStoredValues($this->getSite()->getId()) as $ipv){
+	            $new_live_value_object = SmartestDataUtility::objectize($ipv->getRawValue(), $property->getDatatype());
+	            $new_draft_value_object = SmartestDataUtility::objectize($ipv->getRawValue(true), $property->getDatatype());
+	            $ipv->setValue($new_live_value_object->getStorableFormat());
+	            $ipv->setDraftValue($new_draft_value_object->getStorableFormat());
+	            $ipv->save();
+	        }
+	        
+	        $this->send(true, 'success');
+	        
+	    }else{
+	        
+	        $this->send(false, 'success');
+	        
+	    }
+	    
+	}
 
 }

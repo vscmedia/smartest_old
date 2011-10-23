@@ -594,4 +594,25 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	}
 	
+	public function getStoredValues($site_id=null){
+	    
+	    if(is_numeric($site_id)){
+	        $sql = "SELECT ItemPropertyValues.* FROM Items, ItemPropertyValues WHERE ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND (Items.item_shared=1 OR Items.item_site_id='".$site_id."') AND ItemPropertyValues.itempropertyvalue_property_id='".$this->getId()."'";
+	    }else{
+	        $sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_property_id='".$this->getId()."'";
+	    }
+	    
+	    $result = $this->database->queryToArray($sql);
+	    $values = array();
+	    
+	    foreach($result as $r){
+	        $v = new SmartestItemPropertyValue;
+	        $v->hydrate($r);
+	        $values[] = $v;
+	    }
+	    
+	    return $values;
+	    
+	}
+	
 }

@@ -7,3 +7,11 @@ help:
     title: "Models: structured information"
     keywords: models
     content: models_basic.tpl
+  regularizing:
+    title: Regularizing stored data
+    keywords: storage, formatting, data
+    content: regularizing_ipvs.tpl
+  datatypes:
+    title: Data types
+    keywords: storage, formatting, data
+    content: datatypes.tpl

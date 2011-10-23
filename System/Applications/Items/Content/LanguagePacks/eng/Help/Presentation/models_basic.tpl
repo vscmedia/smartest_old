@@ -1,1 +1,5 @@
-<p>Documentation about models.<p>
+<p>Models are a major feature of Smartest that allow your website to store structured data that can be displayed on your web pages and cleanly organized.<p>
+<p>Each model is at first glance akin to a single spreadsheet or table. It has a number of <strong>properties</strong>, which are akin to the columns of the table.</p>
+<p>Some of the columns, such as <em>Name</em>, are built in, but most are created by you, the user, in the context of whatever type of information you are storing.</p>
+<p>So for example, if you were storing information about cars, you'd create a 'Car' model, and the properties you create for it might be things like make, model, color, year, etc.</p>
+<p>Then, once you're happy with the <strong>data structure</strong> that those properties form together, you'll want to add <strong>items</strong>, which are like the rows in the spreadsheet or table - the actual data.</p>

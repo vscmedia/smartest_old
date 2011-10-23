@@ -52,7 +52,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
         $this->_item = $item;
     }
     
-    public function getRawValue($draft){
+    public function getRawValue($draft=false){
         
         if($draft){
             return $this->_properties['draft_content'];
@@ -216,14 +216,14 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     // Now no longer used
     protected function processContent($draft=false){
         
-        switch($this->getProperty()->getDatatype()){
+        /* switch($this->getProperty()->getDatatype()){
             
             default:
-                $data = $this->getValueObject($draft);
+                $data = 
                 break;
-        }
+        } */
         
-	    return $data;
+	    return $this->getValueObject($draft);
         
     }
     
