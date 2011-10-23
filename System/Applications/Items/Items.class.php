@@ -485,9 +485,7 @@ class Items extends SmartestSystemApplication{
                         }
             		}
                 
-    		        $destination = '/'.$this->getRequest()->getModule().'/editItem?item_id='.$item->getId();
-    		        
-    		        
+    		        $destination = '/smartest/item/edit/'.$item->getId();
 		
     	    	    if($this->getRequestParameter('from')){
     	    	        if($this->getRequestParameter('page_webid')){
@@ -1474,7 +1472,7 @@ class Items extends SmartestSystemApplication{
 	        if($this->getRequestParameter('page_id')){
 	            $this->redirect("/datamanager/editItem?page_id=".$this->getRequestParameter('page_id')."&item_id=".$item->getItem()->getId());
             }else{
-                $this->redirect("/datamanager/editItem?item_id=".$item->getItem()->getId());
+                $this->redirect("/smartest/item/edit/".$item->getItem()->getId());
             }
 	    }else{
 	        $this->formForward();
@@ -2435,6 +2433,11 @@ class Items extends SmartestSystemApplication{
 		    $model = new SmartestModel;
 		    $model->find($model_id);
 		    
+		    if(!strlen($property->getWebid())){
+		        $property->setWebid(SmartestStringHelper::random(16));
+		        $property->save();
+		    }
+		    
 		    $this->setTitle($model->getPluralName().' | Edit Property');
 		    
 		    $data_types = SmartestDataUtility::getDataTypes();
@@ -2471,10 +2474,28 @@ class Items extends SmartestSystemApplication{
 	public function startItemClassPropertyRegularization(){
 	    
 	    $property = new SmartestItemProperty;
+	    
 	    if($property->find($this->getRequestParameter('itemproperty_id'))){
 	        
-	        $this->send($property, 'property');
-	        $this->send(count($property->getStoredValues($this->getSite()->getId())), 'num_values');
+	        $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+	        
+	        if(in_array($property->getDatatype(), $sd['system']['regularizable_types'])){
+	        
+    	        if(!strlen($property->getWebid())){
+    		        $property->setWebid(SmartestStringHelper::random(16));
+    		        $property->save();
+    		    }
+	        
+    	        $this->send($property, 'property');
+    	        $this->send(count($property->getStoredValues($this->getSite()->getId())), 'num_values');
+    	        $this->send(true, 'allow');
+	        
+            }else{
+                
+                $this->send($property, 'property');
+                $this->send(false, 'allow');
+                
+            }
 	        
 	    }
 	    

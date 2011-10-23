@@ -372,7 +372,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
 	    }
 	} */
     
-    public function setContent($data, $save=true){
+    public function setContent($data, $save=true, $force_live=false){
         
         if(is_object($data)){
             $filtered_data = $data->getStorableFormat();
@@ -398,8 +398,11 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
             $r->updateTo($data);
             
         }else{
-            $this->_properties['draft_content'] = $data;
-            $this->_modified_properties['draft_content'] = addslashes($filtered_data);
+            
+            $field = $force_live ? 'content' : 'draft_content';
+            
+            $this->_properties[$field] = $data;
+            $this->_modified_properties[$field] = addslashes($filtered_data);
 
             if(isset($this->_properties['item_id']) && is_numeric($this->_properties['item_id']) && $save){
                 $this->save();
@@ -438,6 +441,22 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     
     public function setDraftContent($data){
         return $this->setContent($data);
+    }
+    
+    public function _setContent($v, $draft=true){
+        $field = $draft ? 'draft_content' : 'content';
+        $this->setField($field, $v);
+    }
+    
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "storable_format":
+            return $this->getValueObject()->getStorableFormat();
+        }
+        
+        return parent::offsetGet($offset);
+        
     }
     
 }

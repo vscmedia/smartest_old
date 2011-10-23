@@ -73,21 +73,65 @@ class ItemsAjax extends SmartestSystemApplication{
 	    
 	    $property = new SmartestItemProperty;
 	    
-	    if($property->find($this->getRequestParameter('property_id'))){
+	    // echo '<code>/ajax:datamanager/regularizeItemClassProperty?property_id='.$this->getRequestParameter('property_id').'</code><br />';
+	    
+	    if($property->findBy('webid', $this->getRequestParameter('property_id'))){
 	        
-	        foreach($property->getStoredValues($this->getSite()->getId()) as $ipv){
-	            $new_live_value_object = SmartestDataUtility::objectize($ipv->getRawValue(), $property->getDatatype());
-	            $new_draft_value_object = SmartestDataUtility::objectize($ipv->getRawValue(true), $property->getDatatype());
-	            $ipv->setValue($new_live_value_object->getStorableFormat());
-	            $ipv->setDraftValue($new_draft_value_object->getStorableFormat());
-	            $ipv->save();
-	        }
+	        $num_values_affected = 0;
 	        
-	        $this->send(true, 'success');
+	        try{
+	        
+    	        foreach($property->getStoredValues($this->getSite()->getId()) as $ipv){
+	            
+    	            $save = false;
+	            
+    	            if(strlen($ipv->getRawValue()) && $new_live_value_object = SmartestDataUtility::objectize($ipv->getRawValue(), $property->getDatatype())){
+    	                if($ipv->getRawValue() != $new_live_value_object->getStorableFormat()){
+    	                    // echo "Changed live value from ".$ipv->getRawValue()." to ".$new_live_value_object->getStorableFormat().", ";
+    	                    $new_raw_value = $new_live_value_object->getStorableFormat();
+    	                    if(strlen($new_raw_value)){
+    	                        $ipv->_setContent($new_raw_value, false);
+    	                        $save = true;
+	                        }
+                        }
+    	            }
+	            
+    	            if(strlen($ipv->getRawValue(true)) && $new_draft_value_object = SmartestDataUtility::objectize($ipv->getRawValue(true), $property->getDatatype())){
+    	                if($ipv->getRawValue(true) != $new_draft_value_object->getStorableFormat()){
+    	                    // echo "Changed draft value from ".$ipv->getRawValue(true)." to ".$new_draft_value_object->getStorableFormat()."<br />";
+    	                    $new_raw_value = $new_draft_value_object->getStorableFormat();
+    	                    if(strlen($new_raw_value)){
+    	                        $ipv->_setContent($new_raw_value);
+    	                        $save = true;
+	                        }
+                        }
+    	            }
+	            
+    	            // Only save the ones that need changing
+    	            if($save){
+    	                $ipv->save();
+    	                ++$num_values_affected;
+                    }
+	            
+    	        }
+	        
+    	        if($num_values_affected > 0){
+    	            $this->send(2, 'status');
+    	            $this->send($num_values_affected, 'num_changed_values');
+                }else{
+                    $this->send(1, 'status');
+                }
+            
+            }catch(SmartestException $e){
+                
+                $this->send(0, 'status');
+                $this->send($e->getMessage(), 'status_message');
+                
+            }
 	        
 	    }else{
 	        
-	        $this->send(false, 'success');
+	        $this->send(0, 'status');
 	        
 	    }
 	    

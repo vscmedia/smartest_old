@@ -6,6 +6,10 @@ module:
   default_action: getItemClasses
   aliases:
     - {url: /smartest/data, action: getItemClasses}
+    - {url: /smartest/item/tags/:item_id, action: itemTags}
+    - {url: /smartest/item/related/:item_id, action: relatedContent}
+    - {url: /smartest/item/authors/:item_id, action: authors}
+    - {url: /smartest/item/comments/:item_id, action: itemComments}
   routes:
     models:
       action: getItemClasses
@@ -15,6 +19,9 @@ module:
       url: /smartest/model/:plural_name
       params:
         use_plural_name: true
+    edit_item:
+      action: editItem
+      url: /smartest/item/edit/:item_id
   meta:
     system: true
   namespaces:

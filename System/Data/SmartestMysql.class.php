@@ -421,7 +421,7 @@ class SmartestMysql{
 		    if(defined('SM_DEVELOPER_MODE') && constant('SM_DEVELOPER_MODE')){
 		        
 		        // There was no error, but we use the exceptions's backtrace
-		        $e = new SmartestException('MySQL QUERY: ', SM_ERROR_DB);
+		        /* $e = new SmartestException('MySQL QUERY: ', SM_ERROR_DB);
 		        $stack = $e->getTrace();
 		        
 		        foreach($stack as $key => $event){
@@ -430,7 +430,9 @@ class SmartestMysql{
 			            $error = basename($stack[$guiltykey]['file']).' on line '.$stack[$guiltykey]['line'];
 			            break;
 			        }
-			    }
+			    } */
+			    
+			    $error = "Query OK";
 			    
 		    }else{
 		    

@@ -1,8 +1,8 @@
 system:
   info:
     version: "0.4.2"
-    revision: 468
-    build: "4,79"
+    revision: 469
+    build: "4,80"
     minimum_php_version: 5.2
     minimum_database_version: 17
     default_timezone: Europe/London
@@ -93,3 +93,8 @@ system:
       - System/Core/Info/
       - Configuration/
       - Presentation/Masters/
+  regularizable_types:
+    - SM_DATATYPE_DROPDOWN_MENU
+    - SM_DATATYPE_DATE
+    - SM_DATATYPE_TIMESTAMP
+    - SM_DATATYPE_CALENDAR_EVENT

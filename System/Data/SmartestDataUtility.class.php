@@ -828,7 +828,7 @@ class SmartestDataUtility{
 	    if($object = self::getBlankObjectForDataType($as_type)){
 	        
 	        if($object instanceof SmartestStorableValue){
-	            // print_r ($value);
+	            
 	            if($object->hydrateFromStorableFormat($value)){
 	                return $object;
 	            }else{
@@ -868,6 +868,20 @@ class SmartestDataUtility{
 	        
 	        throw new SmartestException("Could not objectize value ".$value." as type '".$as_type."'");
 	        
+	    }
+	    
+	}
+	
+	public static function getItemPropertyValue($item_id, $property_id){
+	    
+	    $sql = "SELECT * FROM ItemProperties, ItemPropertyValues WHERE itempropertyvalue_property_id = itemproperty_id AND itempropertyvalue_property_id='".$property_id."' AND itempropertyvalue_item_id='".$item_id."'";
+	    $db = SmartestDatabase::getInstance('SMARTEST');
+	    $result = $db->queryToArray($sql);
+	    
+	    if(count($result)){
+	        $ipv = new SmartestItemPropertyValue;
+	        $ipv->hydrate($result[0]);
+	        return $ipv;
 	    }
 	    
 	}

@@ -21,7 +21,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
             $this->setValueFromUserInputArray($v);
         }else if(is_numeric($v)){
             $this->_value = $v;
-        }else if(strlen($v) == 19){
+        }else if(strlen($v) == 19){ // this is the fastest way to check for the format YYYY-MM-DD hh:ii:ss
             $this->setValueFromUserInputArray(array(
                 'h' => substr($v, 11, 2),
                 'i' => substr($v, 14, 2),
