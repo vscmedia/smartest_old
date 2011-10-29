@@ -1025,14 +1025,15 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
     	    $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->_properties['site_id']."'";
     	    $result = $this->database->queryToArray($sql);
     	    $fields = array();
+    	    
+    	    $definitions = new SmartestParameterHolder("Page field definitions for page '".$this->_properties['title']."'");
         
             foreach($result as $p){
     	        $property = new SmartestPageField;
     	        $property->hydrate($p);
     	        $fields[$property->getId()] = $property;
+    	        $definitions->setParameter($p['pageproperty_name'], false);
     	    }
-	    
-    	    $definitions = new SmartestParameterHolder("Page field definitions for page '".$this->_properties['title']."'");
 	    
     	    $sql = "SELECT * FROM `PagePropertyValues` WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
     	    $result = $this->database->queryToArray($sql);

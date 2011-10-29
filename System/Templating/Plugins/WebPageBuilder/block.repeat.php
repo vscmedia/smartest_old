@@ -15,13 +15,15 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	    $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_item";
     }
 	
+	$limit = (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : 0;
+	
 	if ($repeat) {
 	
 		$items = $smartest_engine->getRepeatBlockData($params);
 		$index = 0;
 		
-		if($params['limit'] > 0){
-			$items = array_slice($items, 0, $params['limit']);
+		if($limit > 0){
+			$items = array_slice($items, 0, $limit);
 		}
 
 	}else{
@@ -51,7 +53,7 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	    $smartest_engine->assign("repeated_item_object", $item); // legacy support
 	    $smartest_engine->assign("key", $index);
 	    
-	    if(isset($items[$index+1])){
+	    if(isset($items[$index+1]) && $limit > $items[$index+1]){
 	        $smartest_engine->assign("next_key", $index+1);
 	        $smartest_engine->assign("is_last", false);
         }else{

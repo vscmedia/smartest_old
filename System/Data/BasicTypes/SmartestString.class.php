@@ -117,6 +117,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
             return $this->getWordCount();
             case "xmlentities":
             return (string) SmartestStringHelper::toXmlEntities($this->_string);
+            case "empty":
+            return (strlen($this->_string) == 0);
         }
     }
     

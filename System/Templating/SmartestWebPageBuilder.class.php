@@ -189,6 +189,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     		    
     		    return $edit_link;
                 
+            }else{
+                
+                
+                
             }
             
             /* $container = new SmartestContainerDefinition;
@@ -247,6 +251,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	        $render_process_id = SmartestStringHelper::toVarName('template_'.SmartestStringHelper::removeDotSuffix($requested_file).'_'.substr(microtime(true), -6));
 	        $child = $this->startChildProcess($render_process_id);
 	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
+	        $child->assign('this', $this->_tpl_vars['this']);
 	        $content = $child->fetch($template);
 	        $this->killChildProcess($child->getProcessId());
 	        return $content;
@@ -492,7 +497,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             $value = $this->_page_rendering_data['fields'][$field_name];
         
             if($this->getDraftMode()){
-			    $edit_link = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".$this->_request_data->g('domain')."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+			    $edit_link = $this->renderEditFieldButton($field_name, $params);
 		    }else{
 			    $edit_link = '';
 		    }
@@ -513,7 +518,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         $markup = '<!--edit link-->';
         
-        if(array_key_exists($field_name, $this->_page_rendering_data['fields'])){
+        if($this->_page_rendering_data['fields']->hasParameter($field_name)){
         
             if($this->_request_data->g('action') == "renderEditableDraftPage"){
 		        $markup = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".$this->_request_data->g('domain')."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";

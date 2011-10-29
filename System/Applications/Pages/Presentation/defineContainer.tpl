@@ -63,7 +63,7 @@
 <div id="actions-area">
   
   <ul class="actions-list" id="item-specific-actions" style="display:none">
-    <li><b>Selected Asset</b></li>
+    <li><b>Selected template</b></li>
     <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('updateContainerDefinition');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Use This Template</a></li>
   </ul>
 

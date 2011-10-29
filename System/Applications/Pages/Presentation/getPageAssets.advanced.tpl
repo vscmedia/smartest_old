@@ -31,6 +31,7 @@ var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'pa
     {if $page.type == 'ITEMCLASS' && $item.id}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
     
     <div class="special-box-key">Viewing mode:</div>
+    
     <select name="version" onchange="document.getElementById('viewSelect').submit();">
       <option value="draft"{if $version == "draft"} selected="selected"{/if}>Draft</option>
       <option value="live"{if $version == "live"} selected="selected"{/if}>Live</option>

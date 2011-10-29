@@ -1945,7 +1945,6 @@ class Pages extends SmartestSystemApplication{
 		    
 		    $this->setTitle('Create Preset');
 		    
-		    $page_id = $this->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
 		    $assetClasses = $this->manager->getPageTemplateAssetClasses($page_webid, "draft", $item_id);
 		    $assetClasseslist = $this->manager->getSerialisedAssetClassTree($assetClasses['tree']);
  		    
@@ -1955,7 +1954,7 @@ class Pages extends SmartestSystemApplication{
 	    }
 	}
 	
-	function createLayoutPreset($get, $post){
+	public function createLayoutPreset($get, $post){
 	
 		/* $page_id = $this->getRequestParameter('page_id');
 		$user_id = $_SESSION['user']['user_id'];

@@ -1130,7 +1130,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    if($group->find($group_id)){
 	        
-	        $this->send($group->getMembers($mode, $this->getSite()->getId(), false), 'assets');
+	        $this->send($group->getMembers($mode, $this->getSite()->getId()), 'assets');
 	        $this->send($group, 'group');
 	        $this->send($mode, 'mode');
 	        $this->send(count($group->getMembers($mode, $this->getSite()->getId(), false)), 'num_assets');

@@ -773,7 +773,7 @@ class SmartestAssetsLibraryHelper{
 	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
 	    
 	    if(is_numeric($site_id)){
-	        $sql .= " AND set_site_id='".$site_id."'";
+	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared='1')";
 	    }
 	    
 	    $sql .= " AND set_filter_type='SM_SET_FILTERTYPE_ASSETTYPE' AND set_filter_value='".$asset_type."'";
@@ -854,7 +854,7 @@ class SmartestAssetsLibraryHelper{
 	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
 	    
 	    if(is_numeric($site_id)){
-	        $sql .= " AND set_site_id='".$site_id."'";
+	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared='1')";
 	    }
 	    
 	    $sql .= " AND ((set_filter_type='SM_SET_FILTERTYPE_ASSETCLASS' AND set_filter_value='".$placeholder_type."') OR (set_filter_type='SM_SET_FILTERTYPE_ASSETTYPE' AND set_filter_value IN ('".implode("', '", $types)."')))";

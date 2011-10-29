@@ -43,7 +43,7 @@ function executeTransfer(){
         <select name="site_id" onchange="window.location='{$domain}{$section}/editUserTokens?user_id={$user.id}&amp;site_id='+this.value;">
           {if $allow_global}<option value="GLOBAL">All sites (global)</option>{/if}
           {foreach from=$sites item="site"}
-          <option value="{$site.id}"{if $site.id==$site_id} selected="selected"{/if}>{$site.name}</option>
+          <option value="{$site.id}"{if $site.id==$site_id} selected="selected"{/if}>{$site.internal_label}</option>
           {/foreach}
         </select>
       </div>
