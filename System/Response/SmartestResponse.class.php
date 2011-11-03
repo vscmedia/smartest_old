@@ -208,6 +208,8 @@ class SmartestResponse{
             }
         }
 		
+		// Now that the default timezone has been set, Logs can be saved into a daily log file
+		ini_set('error_log', SM_ROOT_DIR.'System/Logs/php_errors_'.date('Ymd').'.log');
 	    SmartestPersistentObject::set('errors:stack', $this->_error_stack);
 	    
 	    $sh = new SmartestSystemHelper;

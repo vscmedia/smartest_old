@@ -846,8 +846,6 @@ class Quince{
 	    
 	    $r = new $this->_request_class;
 	    
-	    
-		
 	    // $ulength = strlen($url.'/');
 	    
 	    // echo getcwd().' ';
@@ -869,31 +867,32 @@ class Quince{
 	    
 	    // Calculate the domain
 	    $dr = realpath($_SERVER["DOCUMENT_ROOT"]).'/';
-	    
-	    // echo $test_url;
-	    
-        $hdp = explode('/', $test_url);
+	    $hdp = explode('/', $test_url);
+        
         array_shift($hdp);
-        array_pop($hdp);
+        // array_pop($hdp);
         $possible_dir = implode('/', $hdp).'/';
         
         // MultiViews support: look for URLS like index.php/module/action
-		$fc_filename = basename($_SERVER['SCRIPT_FILENAME']);
-		$fc_filename_len = strlen($fc_filename)+1;
+		// $fc_filename = basename($_SERVER['SCRIPT_FILENAME']);
+		// $fc_filename_len = strlen($fc_filename)+1;
 		
 		// echo $possible_dir;
         // echo substr($possible_dir, 0, $fc_filename_len+1);
         
+        // echo $dr.$possible_dir.' ';
+        
         while(!is_dir($dr.$possible_dir)){
             array_pop($hdp);
             $possible_dir = implode('/', $hdp).'/';
-            // echo $possible_dir.' ';
         }
+        
+        // echo $possible_dir;
 		
-		if(substr($possible_dir, 0, $fc_filename_len) == '/'.$fc_filename){
+		/* if(substr($possible_dir, 0, $fc_filename_len) == '/'.$fc_filename){
 		    $possible_dir .= $fc_filename.'/';
 		    $url = substr($url, $fc_filename_len);
-		}
+		} */
         
         if($possible_dir == '/'){
             $r->setDomain('/');
@@ -1404,6 +1403,7 @@ class Quince{
         
         if($prepare || !$this->_current_action){
             $this->prepare($url);
+            echo $this->getCurrentRequest()->getDomain();
         }
 	    
 	    try{

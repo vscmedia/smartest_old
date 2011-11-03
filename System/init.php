@@ -62,7 +62,7 @@ class SmartestInit{
         
         if(is_writable(SM_ROOT_DIR.'System/Logs/')){
             // If PHP error messages can be logged, they should be.
-            ini_set('error_log', SM_ROOT_DIR.'System/Logs/php_errors_'.date('Ymd').'.log');
+            ini_set('error_log', SM_ROOT_DIR.'System/Logs/php_errors_no_date.log');
             ini_set('log_errors', true);
             ini_set('display_errors', false);
         }
