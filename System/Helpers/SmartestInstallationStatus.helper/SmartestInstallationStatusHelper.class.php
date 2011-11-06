@@ -318,7 +318,7 @@ class SmartestInstallationStatusHelper{
                     
                 }
                 
-                if(count($db->queryToArray("SELECT token_id FROM UserTokens")) < 1){
+                /* if(count($db->queryToArray("SELECT token_id FROM UserTokens")) < 1){
                     
                     try{
                         $db->executeSqlFile(SM_ROOT_DIR."System/Install/SqlScripts/user_tokens.sql");
@@ -326,7 +326,7 @@ class SmartestInstallationStatusHelper{
                         SmartestLog::getInstance('installer')->log('There was an error creating user tokens from file System/Install/SqlScripts/user_tokens.sql: '.$tokens_error->getMessage(), SM_LOG_ERROR);
                     }
                     
-                }
+                } */
                 
                 if(count($db->queryToArray("SELECT site_id FROM Sites")) < 1){
                     
