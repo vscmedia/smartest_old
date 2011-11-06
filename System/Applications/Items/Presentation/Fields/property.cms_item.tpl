@@ -7,7 +7,7 @@
 
 {if $request_parameters.for != 'ipv'}
 
-<ul class="item_property_actions">
+{* <ul class="item_property_actions">
 
 {if $item.id}
   <li><a href="#" onclick="return false;" id="new-item-button-{$property.id}"><img src="{$domain}Resources/Icons/add.png" alt="" /></a></li>
@@ -21,13 +21,13 @@
 
   <li style="padding-top:6px"><span class="form-hint" id="file-property-tooltip-{$property.id}"></span></li>
 
-</ul>
+</ul> *}
 
 {/if}
 
 {if $asset.type_info.editable=='true'}
-<input type="button" onclick="window.location='{$domain}datamanager/editItem?from=child_edit&amp;item_id='+$('item_property_{$property.id}').value" value="Edit 
-&gt;&gt;" />
+{* <input type="button" onclick="window.location='{$domain}datamanager/editItem?from=child_edit&amp;item_id='+$('item_property_{$property.id}').value" value="Edit 
+&gt;&gt;" /> *}
 {/if}
 
 {if $request_parameters.for != 'ipv'}

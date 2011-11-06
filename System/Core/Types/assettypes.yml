@@ -93,6 +93,7 @@ type:
     param:
       - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: source_url, label: "Source URL", type: SM_DATATYPE_URL, required: false}
       - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
@@ -122,6 +123,7 @@ type:
     param:
       - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: source_url, label: "Source URL", type: SM_DATATYPE_URL, required: false}
       - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
@@ -151,6 +153,7 @@ type:
     param:
       - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: source_url, label: "Source URL", type: SM_DATATYPE_URL, required: false}
       - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}

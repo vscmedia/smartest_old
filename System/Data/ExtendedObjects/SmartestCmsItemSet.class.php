@@ -771,8 +771,8 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    $members = array();
 	    
 	    $draft = $mode < 6;
-        $h = new SmartestSmsItemsHelper;
-        $members = $h->hydrateUniformListFromIdsArray($ids, $this->getModelId(), $draft);
+        $h = new SmartestCmsItemsHelper;
+        $members = $h->hydrateUniformListFromIdsArrayPreservingOrder($ids, $this->getModelId(), $draft);
 	    
 	    return $members;
 	    

@@ -53,24 +53,46 @@ class SmartestCmsItemsHelper{
         
     }
     
+    protected function _hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode=false){
+
+           $results = $this->getSquareDbDataFromIdsArray($ids, $model_id);
+           $items = array();
+
+           if($model = $this->getModelFromId($model_id)){
+
+               $class_name = $model->getClassName();
+
+               foreach($results as $item_id => $result){
+
+                   $item = new $class_name();
+                   $item->hydrateFromRawDbRecord($result);
+                   $item->setDraftMode($draft_mode);
+                   $items[$item->getId()] = $item;
+
+               }
+
+           }
+
+           return $items;
+
+       }
+    
     public function hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode=false){
         
-        $results = $this->getSquareDbDataFromIdsArray($ids, $model_id);
-        $items = array();
+        return array_keys($this->_hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode));
         
-        if($model = $this->getModelFromId($model_id)){
-            
-            $class_name = $model->getClassName();
-            
-            foreach($results as $item_id => $result){
-            
-                $item = new $class_name();
-                $item->hydrateFromRawDbRecord($result);
-                $item->setDraftMode($draft_mode);
-                $items[] = $item;
-                
-            }
-            
+    }
+    
+    public function hydrateUniformListFromIdsArrayPreservingOrder($ids, $model_id, $draft_mode=false){
+        
+        // $results = $this->getSquareDbDataFromIdsArray($ids, $model_id);
+        $items = array();
+        // int_r($ids);
+        $raw_items = $this->_hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode);
+        // print_r(array_keys($raw_items));
+        
+        foreach($ids as $id){
+            $items[] = $raw_items[$id];
         }
         
         return $items;

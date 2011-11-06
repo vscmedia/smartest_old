@@ -1,8 +1,8 @@
 system:
   info:
-    version: "0.5 Beta"
-    revision: 477
-    build: "4,88"
+    version: "0.5"
+    revision: 478
+    build: "4,89"
     minimum_php_version: 5.2
     minimum_database_version: 18
     default_timezone: Europe/London
