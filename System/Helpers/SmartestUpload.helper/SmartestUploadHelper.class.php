@@ -10,7 +10,7 @@ class SmartestUploadHelper extends SmartestHelper{
     protected $_temp_file_name = null;
     protected $_original_file_name = null;
     
-	function __construct($upload_name, $new_file_dir='', $new_file_name=''){
+	public function __construct($upload_name, $new_file_dir='', $new_file_name=''){
 		
 		if(isset($_FILES[$upload_name]) && $_FILES[$upload_name]){
 		    
@@ -34,15 +34,61 @@ class SmartestUploadHelper extends SmartestHelper{
 		
 	}
 	
-	function save(){
-	    if(@move_uploaded_file($_FILES[$this->_upload_name]['tmp_name'], $this->getUploadDirectory().$this->getFileName())){
-	        return true;
-        }else{
-            return false;
-        }
+	public static function uploadExists($name){
+	    return (isset($_FILES[$name]) && $_FILES[$name]['name']);
 	}
 	
-	function hasDotSuffix(){
+	public function save(){
+	    
+	    if($_FILES[$this->_upload_name]['error'] == 0){
+	        
+	        if(move_uploaded_file($_FILES[$this->_upload_name]['tmp_name'], $this->getUploadDirectory().$this->getFileName())){
+    	        return true;
+            }else{
+                return false;
+            }
+	        
+	    }else{
+	    
+    	    switch($_FILES[$this->_upload_name]['error']){
+	        
+    	        case 1:
+    	        $message = "The uploaded file exceeds the maximum set in your php.ini file.";
+    	        break;
+	        
+    	        case 2:
+    	        $message = "The uploaded file exceeds the maximum set on the form.";
+    	        break;
+	        
+    	        case 3:
+    	        $message = "The uploaded file was only partially uploaded.";
+    	        break;
+	        
+    	        case 4:
+    	        $message = "No file was uploaded.";
+    	        break;
+	        
+    	        case 6:
+    	        $message = "Temporary folder mmissing.";
+    	        break;
+	        
+    	        case 7:
+    	        $message = "Failed to write to disk.";
+    	        break;
+	        
+    	        case 8:
+    	        $message = "The upload was prevented by a PHP extension. Please check your phpinfo().";
+    	        break;
+	        
+    	    }
+    	    
+    	    throw new SmartestException($message);
+    	    
+        }
+        
+	}
+	
+	public function hasDotSuffix(){
 	    
 	    if($this->getFileName()){
 	        
@@ -68,7 +114,11 @@ class SmartestUploadHelper extends SmartestHelper{
         }
 	}
 	
-	function setFileName($file_name){
+	public function getDotSuffix(){
+	    return SmartestStringHelper::getDotSuffix($this->getFileName());
+	}
+	
+	public function setFileName($file_name){
 	    
 	    // $max_tries = 1;
 	    
@@ -84,15 +134,15 @@ class SmartestUploadHelper extends SmartestHelper{
         }
 	}
 	
-	function getFileName(){
+	public function getFileName(){
 	    return $this->_file_name;
 	}
 	
-	function getOriginalFileName(){
+	public function getOriginalFileName(){
 	    return $this->_original_file_name;
 	}
 	
-	function setUploadDirectory($directory){
+	public function setUploadDirectory($directory){
 	    
 	    if(!SmartestStringHelper::startsWith($directory, '/')){
 	        $directory = SM_ROOT_DIR.$directory;
@@ -105,18 +155,23 @@ class SmartestUploadHelper extends SmartestHelper{
 		    }else{
 		        $this->_directory = $directory.'/';
 		    }
+		    
+		    // recalculate file name to make sure it is still unique in the new directory.
+    	    $this->setFileName($this->_file_name);
+		    
+	    }else{
+	        
+	        throw new SmartestException("Upload directory ".$directory." does not exist or is not writable.");
+	        
 	    }
-	    
-	    // recalculate file name to make sure it is still unique in the new directory.
-	    $this->setFileName($this->_file_name);
 	    
 	}
 	
-	function getUploadDirectory(){
+	public function getUploadDirectory(){
 	    return $this->_directory;
 	}
 	
-	function getName(){
+	public function getName(){
 	    return $this->_upload_name;
 	}
 	

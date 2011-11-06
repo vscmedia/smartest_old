@@ -4,6 +4,7 @@ class SmartestSystemUser extends SmartestUser{
     
     protected $_tokens;
     protected $_token_codes;
+    protected $_num_allowed_sites = 0;
     
     public function getPermissionEditableSites(){
 	    
@@ -82,6 +83,8 @@ class SmartestSystemUser extends SmartestUser{
             }
 	    }
 	    
+	    $this->_num_allowed_sites = count($sites);
+	    
 	    return $sites;
 	}
 	
@@ -92,6 +95,39 @@ class SmartestSystemUser extends SmartestUser{
 	    }
 	    
 	    return $this->_site_ids;
+	    
+	}
+	
+	public function openSiteById($site_id){
+	    
+	    if(in_array($site_id, $this->getAllowedSiteIds(true))){
+	    
+	        $site = new SmartestSite;
+	    
+	        if($site->find($site_id)){
+		        
+		        SmartestSession::set('current_open_project', $site);
+		        $this->reloadTokens();
+		        
+		        if(!$site->getDirectoryName()){
+		        
+		            SmartestSiteCreationHelper::createSiteDirectory($site);
+        		
+    		    }
+    		    
+    		    return true;
+    		    
+	        }else{
+	            
+	            return false;
+	            
+	        }
+	        
+        }else{
+            
+            return false;
+            
+        }
 	    
 	}
 	
@@ -784,6 +820,19 @@ class SmartestSystemUser extends SmartestUser{
         }
         
         $q->delete();
+	    
+	}
+	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        
+	        case "num_allowed_sites":
+	        return $this->_num_allowed_sites;
+	        
+	    }
+	    
+	    return parent::offsetGet($offset);
 	    
 	}
 

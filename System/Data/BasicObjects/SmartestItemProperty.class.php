@@ -7,6 +7,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	protected $_possible_values_retrieval_attempted = false;
 	protected $_option_set;
 	protected $_model;
+	protected $_property_info;
 	
 	protected function __objectConstruct(){
 		
@@ -35,6 +36,20 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    }
 	    
 	    return $result;
+	    
+	}
+	
+	public function __postHydrationAction(){
+	    
+	    $this->getInfo();
+	    $this->_property_info = new SmartestParameterHolder("Settings for model '".$this->_properties['name']."'");
+		$s = unserialize($this->_properties['info']);
+		
+		if(is_array($s)){
+		    $this->_property_info->loadArray($s);
+	    }else{
+	        $this->_property_info->loadArray(array());
+	    }
 	    
 	}
 	
@@ -80,6 +95,26 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	}
 	
+	//// URL Encoding is being used to work around a bug in PHP's serialize/unserialize. No actual URLS are necessarily in use here
+	public function setInfoField($field, $new_data){
+	    
+	    $field = SmartestStringHelper::toVarName($field);
+	    $this->_property_info->setParameter($field, rawurlencode(utf8_decode($new_data)));
+	    $this->_modified_properties['info'] = SmartestStringHelper::sanitize(serialize($this->_property_info->getArray()));
+	    
+	}
+	
+	public function getInfoField($field){
+	    
+	    $field = SmartestStringHelper::toVarName($field);
+	    
+	    if($this->_property_info->hasParameter($field)){
+	        return utf8_encode(stripslashes(rawurldecode($this->_property_info->getParameter($field))));
+	    }else{
+	        return null;
+	    }
+	}
+	
 	public function isForeignKey(){
 	    $info = $this->getTypeInfo();
 	    return $info['valuetype'] == 'foreignkey';
@@ -88,6 +123,64 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	public function isManyToMany(){
 	    $info = $this->getTypeInfo();
 	    return $info['valuetype'] == 'manytomany';
+	}
+	
+	public function getDraftValues($site_id, $raw=false){
+	    
+	    $sql = "SELECT itempropertyvalue_draft_content FROM ItemPropertyValues, Items WHERE itempropertyvalue_property_id='".$this->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Itens.item_id AND (Items.item_site_id='".$site_id."' OR Items.item_shared=1)";
+	    $result = $this->queryToArray($sql);
+	    $raw_values = array();
+	    
+	    foreach($result as $r){
+	        $raw_values[] = $r['itempropertyvalue_draft_content'];
+	    }
+	    
+	    $raw_values = array_unique($raw_values);
+	    
+	    if($raw){
+	        return $raw_values;
+	    }
+	    
+	    $values = array();
+	    
+	    foreach($raw_values as $rv){
+	        $values[] = SmartestDataUtility::objectize($rv, $this->getDatatype());
+	    }
+	    
+	    return $values;
+	    
+	}
+	
+	public function getLiveValues($site_id, $raw=false){
+	    
+	    $sql = "SELECT itempropertyvalue_content FROM ItemPropertyValues, Items WHERE itempropertyvalue_property_id='".$this->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Itens.item_id AND (Items.item_site_id='".$site_id."' OR Items.item_shared=1)";
+	    $result = $this->queryToArray($sql);
+	    $raw_values = array();
+	    
+	    foreach($result as $r){
+	        $raw_values[] = $r['itempropertyvalue_content'];
+	    }
+	    
+	    $raw_values = array_unique($raw_values);
+	    
+	    if($raw){
+	        return $raw_values;
+	    }
+	    
+	    $values = array();
+	    
+	    foreach($raw_values as $rv){
+	        $values[] = SmartestDataUtility::objectize($rv, $this->getDatatype());
+	    }
+	    
+	    return $values;
+	    
+	}
+	
+	public function getAllValues($site_id, $raw=false){
+	    
+	    $all_raw_values = array_unique(array_merge($this->getDraftValues($site_id, true), $this->getLiveValues($site_id, true)));
+	    
 	}
 	
 	public function getPossibleValues(){
@@ -435,16 +528,24 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	public function offsetGet($offset){
 	    
 	    switch($offset){
+	        
 	        case "_type_info":
 	        $p = new SmartestParameterHolder('Data type info for property: '.$this->getName());
 	        $p->loadArray($this->getTypeInfo());
 	        return $p;
+	        
 	        case "_options":
 	        return $this->getPossibleValues();
+	        
 	        case "_model":
 	        return $this->getModel();
+	        
 	        case "input_html":
 	        return $this->renderInput();
+	        
+	        case "hint":
+	        return new SmartestString($this->getHint());
+	        
 	    }
 	    
 	    return parent::offsetGet($offset);
@@ -613,6 +714,16 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	    return $values;
 	    
+	}
+	
+	// 
+	
+	public function getHint(){
+	    return $this->getInfoField('hint');
+	}
+	
+	public function setHint($hint){
+	    return $this->setInfoField('hint', $hint);
 	}
 	
 }

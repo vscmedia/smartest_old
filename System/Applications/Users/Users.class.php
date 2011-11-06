@@ -52,22 +52,26 @@ class Users extends SmartestSystemApplication{
     		$lastname = $this->getRequestParameter('user_lastname');
     		$email = $this->getRequestParameter('user_email');
     		$website = $this->getRequestParameter('user_website');
-    		$hash = md5($this->getRequestParameter('password'));
+    		$salt = SmartestStringHelper::random(40);
+    		$hash = md5($this->getRequestParameter('password').$salt);
     		
     		if(!SmartestStringHelper::isValidExternalUri($website)){
     		    $website = 'http://'.$website;
     		}
-		
-    		$user->setUsername($username);
+		    
+		    $user->setUsername($username);
     		$user->setPassword($hash);
+    		$user->setPasswordSalt($salt);
     		$user->setFirstname($firstname);
     		$user->setLastname($lastname);
     		$user->setEmail($email);
     		$user->setWebsite($website);
+    		$user->setRegisterDate(time());
     		
     		$user->save();
 		
     		// add user tokens
+            
             $site_id = $this->getSite()->getId();
             
             if(is_numeric($this->getRequestParameter('user_role'))){
@@ -123,6 +127,7 @@ class Users extends SmartestSystemApplication{
 		    $user = new SmartestUser;
 		
     		if($user->find($this->getRequestParameter('user_id'))){
+    		    $this->setTitle('Edit user | '.$user->__toString());
     		    $this->send($user, 'user');
             }else{
                 $this->addUserMessageToNextRequest("The User ID was not recognised.");
@@ -130,6 +135,7 @@ class Users extends SmartestSystemApplication{
             }
             
             $this->send($this->getUser()->hasToken('modify_user_permissions'), 'show_tokens_edit_tab');
+            $this->send($this->getUser()->hasToken('require_user_password_change'), 'require_password_changes');
         
         }else{
             
@@ -141,6 +147,8 @@ class Users extends SmartestSystemApplication{
 	}
 	
 	public function editUserTokens($get){
+	    
+	    $this->requireOpenProject();
 	    
 	    if($this->getUser()->hasToken('modify_user_permissions')){
 	    
@@ -163,16 +171,9 @@ class Users extends SmartestSystemApplication{
     	        
     	        $this->send(true, 'show_tokens_edit_tab');
     	        
-    	        // $h = new SmartestUsersHelper;
-        	    // $utokens = $this->manager->getUserPermissions($user_id, $site_id); // print_r($utokens);
-        	    // $tokens = $h->getUserPermissions();
-        	    $utokens = $user->getTokensOnSite($site_id, true);
+    	        $utokens = $user->getTokensOnSite($site_id, true);
         	    
-        	    // $t = $user->getTokenCodes();
         	    $tokens = $user->getAvailableTokens($site_id);
-    		    
-    		    // $tokens_old = $this->manager->getAvailablePermissions($user_id, $site_id);
-    		    // $tokens = SmartestUsersHelper::getTokenData();
     		    
     		    $this->send($user, 'user');
     		    $this->send($utokens, 'utokens');
@@ -338,12 +339,19 @@ class Users extends SmartestSystemApplication{
     		    $user->setEmail($post['user_email']);
     		    $user->setWebsite($post['user_website']);
     		    $user->setBio(addslashes($post['user_bio']));
-		    
+    		    
     		    if(isset($post['password']) && strlen($post['password']) && $post['password'] == $post['passwordconfirm']){
-    		        $user->setPassword(md5($post['password']));
+    		        $user->setPasswordWithSalt($post['password'], SmartestStringHelper::random(40));
     		        $this->addUserMessageToNextRequest("The user has been updated, including a new password.");
     	        }else{
     		        $this->addUserMessageToNextRequest("The user has been updated.");
+    		        if($this->getUser()->hasToken('require_user_password_change')){
+    		            if($this->getRequestParameter('require_password_change')){
+        		            $user->setPasswordChangeRequired(1);
+    		            }else{
+    		                $user->setPasswordChangeRequired(0);
+    		            }
+        		    }
     	        }
 	        
     	        $user->save();
@@ -360,6 +368,24 @@ class Users extends SmartestSystemApplication{
 		
 		$this->formForward();
 		
+	}
+	
+	public function uploadUserProfilePic(){
+	    
+	    if($this->getRequestParemeter('user_id')){
+	        
+	        $user = new SmartestSystemUser;
+	        
+	        if($user->find($this->getRequestParemeter('user_id'))){
+	            
+	            
+	            
+	        }else{
+	            $this->addUserMessageToNextRequest("The user ID was not recognized.", SmartestUserMessage::ERROR);
+	        }
+	        
+	    }
+	    
 	}
 	
 	///////////////////////////////// ROLES ////////////////////////////////////
@@ -444,6 +470,82 @@ class Users extends SmartestSystemApplication{
     	
     	$this->formForward();
 		
+	}
+	
+	public function editMyProfile(){
+	    
+	    $this->send($this->getUser(), 'user');
+	    $this->send($this->getUser()->hasToken('allow_username_change'), 'allow_username_change');
+	    $this->send($this->getUser()->getTwitterHandle(), 'twitter_handle');
+	    
+	}
+	
+	public function updateMyProfile(){
+	    
+	    $username = str_replace(' ', '_', $this->getRequestParameter('username'));
+	    
+	    if($this->getUser()->hasToken('allow_username_change') && strlen($username) > 3 && strlen($username) < 41){
+	        if($username != $this->getUser()->getUsername()){
+	            $suh = new SmartestUsersHelper;
+	            if(!$suh->usernameExists($username, $this->getUser()->getId())){
+	                $this->getUser()->setUsername($this->getRequestParameter('username'));
+                }
+            }
+	    }
+	    
+	    if($this->getUser()->hasToken('allow_username_change') && strlen($this->getRequestParameter('user_firstname')) > 3){
+	        $this->getUser()->setFirstName($this->getRequestParameter('user_firstname'));
+	    }
+	    
+	    $this->getUser()->setLastName($this->getRequestParameter('user_lastname'));
+	    
+	    if(SmartestStringHelper::isEmailAddress($this->getRequestParameter('user_email'))){
+	        $this->getUser()->setEmail($this->getRequestParameter('user_email'));
+        }
+	    
+	    $this->getUser()->setTwitterHandle($this->getRequestParameter('user_twitter'));
+	    
+	    if($this->getRequestParameter('user_website') != 'http://'){
+	        $this->getUser()->setWebsite($this->getRequestParameter('user_website'));
+        }
+        
+	    $this->getUser()->setBio($this->getRequestParameter('user_bio'));
+	    $this->getUser()->save();
+	    
+	    $this->addUserMessageToNextRequest('Your user profile has been updated.', SmartestUserMessage::SUCCESS);
+	    $this->redirect('/smartest/profile');
+	    
+	}
+	
+	public function setMyPassword(){
+	    
+	    
+	}
+	
+	public function updateMyPassword(){
+	    
+	    if(strlen($this->getRequestParameter('password_1')) < 8){
+	        $this->addUserMessage("Your password must be eight or more characters.", SmartestUserMessage::INFO);
+	        $this->forward('users', 'setMyPassword');
+	    }else if($this->getRequestParameter('password_1') != $this->getRequestParameter('password_2')){
+	        $this->addUserMessage("The passwords you entered didn't match.", SmartestUserMessage::WARNING);
+	        $this->forward('users', 'setMyPassword');
+        }else if($this->getRequestParameter('password_1') == 'password'){
+	        $this->addUserMessage("Your password can't be 'password'. Come on, you can do better than that!", SmartestUserMessage::INFO);
+	        $this->forward('users', 'setMyPassword');
+	    }else{
+	        $salt = SmartestStringHelper::random(40);
+	        
+	        if($this->getUser()->setPasswordWithSalt($this->getRequestParameter('password_1'), $salt)){
+	            $this->getUser()->setPasswordChangeRequired('0');
+	            $this->getUser()->save();
+    	        $this->addUserMessageToNextRequest("Your password has been successfully updated.", SmartestUserMessage::SUCCESS);
+    	        $this->redirect('/smartest/profile');
+    	    }else{
+    	        $this->addUserMessage("That password is the same. Please try again.", SmartestUserMessage::INFO);
+    	        $this->forward('users', 'setMyPassword');
+    	    }
+	    }
 	}
     
 }

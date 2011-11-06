@@ -3,11 +3,12 @@
 class SmartestModel extends SmartestBaseModel{
 
 	protected $_model_properties = array();
-
+	protected $_model_settings;
+	
 	protected function __objectConstruct(){
 		
-		$this->_table_prefix = 'itemclass_';
-		$this->_table_name = 'ItemClasses';
+		// $this->_table_prefix = 'itemclass_';
+		// $this->_table_name = 'ItemClasses';
 		
 	}
 	
@@ -29,9 +30,7 @@ class SmartestModel extends SmartestBaseModel{
     		    SmartestCache::save('model_properties_'.$this->_properties['id'], $result, -1, true);
     	    }
 		
-		    // print_r($result);
-		    
-    		foreach($result as $db_property){
+		    foreach($result as $db_property){
     			$property = new SmartestItemProperty;
     			$property->hydrate($db_property);
     			$this->_model_properties[] = $property;
@@ -41,10 +40,58 @@ class SmartestModel extends SmartestBaseModel{
 		
 	}
 	
+	public function refreshProperties($rebuild_auto_class=true){
+	    
+	    SmartestCache::clear('model_properties_'.$this->getId(), true);
+	    $this->_model_properties = array();
+	    $this->buildPropertyMap();
+	    $this->buildAutoClassFile();
+	    
+	}
+	
+	public function __postHydrationAction(){
+	    
+	    $this->_model_settings = new SmartestParameterHolder("Settings for model '".$this->_properties['name']."'");
+		$s = unserialize($this->getSettings());
+		
+		if(is_array($s)){
+		    $this->_model_settings->loadArray($s);
+	    }else{
+	        $this->_model_settings->loadArray(array());
+	    }
+	    
+	}
+	
 	public function getProperties(){
 	    
 	    $this->buildPropertyMap();
 	    return $this->_model_properties;
+	    
+	}
+	
+	public function getPropertiesForReorder(){
+	    
+	    $this->buildPropertyMap();
+	    $props = array();
+	    
+	    foreach($this->_model_properties as $p){
+	        $props[$p->getId()] = $p;
+	    }
+	    
+	    return $props;
+	    
+	}
+	
+	public function getPropertiesForQueryEngine(){
+	    
+	    $this->buildPropertyMap();
+	    $props = array();
+	    
+	    foreach($this->_model_properties as $p){
+	        $props[$p->getId()] = $p;
+	    }
+	    
+	    return $props;
 	    
 	}
 	
@@ -78,6 +125,28 @@ class SmartestModel extends SmartestBaseModel{
 	public function refresh(){
 	    SmartestCache::clear('model_properties_'.$this->_properties['id'], true);
         SmartestObjectModelHelper::buildAutoClassFile($this->_properties['id'], SmartestStringHelper::toCamelCase($this->getName()));
+	}
+	
+	//// URL Encoding is being used to work around a bug in PHP's serialize/unserialize. No actual URLS are necessarily in use here
+	public function setSettingValue($field, $new_data){
+	    
+	    $field = SmartestStringHelper::toVarName($field);
+	    $this->_model_settings->setParameter($field, rawurlencode(utf8_decode($new_data)));
+	    // $this->_model_settings_modified = true;
+	    $this->_modified_properties['settings'] = SmartestStringHelper::sanitize(serialize($this->_model_settings->getArray()));
+	    // $this->setContextData($data);
+	    
+	}
+	
+	public function getSettingValue($field){
+	    
+	    $field = SmartestStringHelper::toVarName($field);
+	    
+	    if($this->_model_settings->hasParameter($field)){
+	        return utf8_encode(stripslashes(rawurldecode($this->_model_settings->getParameter($field))));
+	    }else{
+	        return null;
+	    }
 	}
 	
 	public function delete($remove=false){
@@ -114,6 +183,13 @@ class SmartestModel extends SmartestBaseModel{
 	        
 	        case "default_metapage_id":
 	        return $this->getDefaultMetaPageId($this->getCurrentSiteId());
+	        
+	        case "color":
+	        case "colour":
+	        return $this->getColor();
+	        
+	        case "item_name_field_name":
+	        return $this->getItemNameFieldName();
 	        
 	    }
 	    
@@ -437,6 +513,40 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
+    public function getAvailableSortProperties(){
+        
+        // var_dump(SmartestDataUtility::getSortableDataTypeCodes('itemproperty'));
+        
+        $sql = "SELECT * FROM ItemProperties WHERE itemproperty_datatype IN ('".implode("', '", SmartestDataUtility::getSortableDataTypeCodes('itemproperty'))."') AND itemproperty_itemclass_id='".$this->getId()."'";
+        $result = $this->database->queryToArray($sql);
+        $properties = array();
+        
+        foreach($result as $r){
+            $p = new SmartestItemProperty;
+            $p->hydrate($r);
+            $properties[] = $p;
+        }
+        
+        return $properties;
+        
+    }
+    
+    public function getAvailableThumbnailProperties(){
+        
+        $sql = "SELECT * FROM ItemProperties WHERE itemproperty_datatype='SM_DATATYPE_ASSET' AND itemproperty_foreign_key_filter IN ('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE', 'SM_ASSETCLASS_STATIC_IMAGE') AND itemproperty_itemclass_id='".$this->getId()."'";
+        $result = $this->database->queryToArray($sql);
+        $properties = array();
+        
+        foreach($result as $r){
+            $p = new SmartestItemProperty;
+            $p->hydrate($r);
+            $properties[] = $p;
+        }
+        
+        return $properties;
+        
+    }
+    
     public function getDefaultMetaPageId($site_id){
         // TODO: this functionality should be stored in the database
         return SmartestSystemSettingHelper::load('model_'.$this->_properties['id'].'_default_metapage_site_'.$site_id);
@@ -687,6 +797,40 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
+    public function getColor(){
+        
+        $raw = $this->getSettingValue('color');
+        if(!$raw) $raw = '222';
+        return new SmartestRgbColor($raw);
+        
+    }
+    
+    public function setColor($color){
+        
+        $c = new SmartestRgbColor($color);
+        $sf = $c->getStorableFormat();
+        
+        return $this->setSettingValue('color', $sf);
+        
+    }
+    
+    public function getItemNameFieldName(){
+        
+        $raw = $this->getSettingValue('item_name_field_name');
+        if(!$raw) $raw = 'Name';
+        return new SmartestString($raw);
+        
+    }
+    
+    public function setItemNameFieldName($infn){
+        
+        $c = new SmartestString($infn);
+        $sf = $c->getStorableFormat();
+        
+        return $this->setSettingValue('item_name_field_name', $sf);
+        
+    }
+    
     ///////////////////////////// Code for building and including model classes /////////////////////////////////
     
     public function init(){
@@ -695,7 +839,7 @@ class SmartestModel extends SmartestBaseModel{
 	    $constant_name = SmartestStringHelper::toCamelCase($this->getName());
 		
 	    if(!defined($constant_name)){
-			define($constant_name, $item_class["itemclass_id"], true);
+			define($constant_name, $this->getId(), true);
 		}
 		
 		// if(is_file(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php')){

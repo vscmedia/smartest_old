@@ -2,6 +2,7 @@
 {capture name="input_id" assign="input_id"}item_property_{$property.id}{/capture}
 
 {asset_select id=$input_id name=$name value=$value options=$property._options required=$property.required}
+{if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}
 
 {if $value.id}
   <ul class="item_property_actions">

@@ -62,7 +62,7 @@ function updateSetConditionsFormFromOperator(condition, value){
             {foreach from=$sites item="site"}
 				    <option value="{$site.id}" {if $site.id == $set.data_source_site_id} selected="selected"{/if}>{$site.name}</option>
             {/foreach}
-            <option value="ALL" {if $set.data_source_site_id == "ALL"} selected="selected"{/if}>All Sites</option>
+            {if count($sites) > 1}<option value="ALL" {if $set.data_source_site_id == "ALL"} selected="selected"{/if}>All Sites</option>{/if}
             <option value="CURRENT"{if $set.data_source_site_id == "CURRENT"} selected="selected"{/if}>The site where it is used (contextual)</option>
 			    </select>
         </td>
@@ -72,7 +72,7 @@ function updateSetConditionsFormFromOperator(condition, value){
         <td style="width:180px">Sort By Property:</td>
         <td>
           <select name="set_sort_field">
-            <option value="_SMARTEST_ITEM_NAME" {if $set.sort_field == '_SMARTEST_ITEM_NAME'} selected="selected"{/if}>Name</option>
+            <option value="_SMARTEST_ITEM_NAME" {if $set.sort_field == '_SMARTEST_ITEM_NAME'} selected="selected"{/if}>{$model.item_name_field_name}</option>
             <option value="_SMARTEST_ITEM_ID" {if $set.sort_field == '_SMARTEST_ITEM_ID'} selected="selected"{/if}>ID</option>
 {foreach from=$properties item="property"}
 			      <option value="{$property.id}" {if $property.id == $set.sort_field} selected="selected"{/if}>{$property.name}</option>
@@ -115,7 +115,7 @@ function updateSetConditionsFormFromOperator(condition, value){
 					    <span id="no-property-input-{$rule.id}" style="{if $rule.itemproperty_id == '_SMARTEST_ITEM_TAGGED'}display:inline{else}display:none{/if}">The {$model.name}
 					    <input value="_SMARTEST_ITEM_TAGGED" name="conditions[{$rule.id}][property_id]" type="hidden" /></span>
   					  <select name="conditions[{$rule.id}][property_id]" id="property-select-input-{$rule.id}" style="{if $rule.itemproperty_id == '_SMARTEST_ITEM_TAGGED'}display:none{else}display:inline{/if}">
-  						  <option value="_SMARTEST_ITEM_NAME" {if $rule.itemproperty_id == "_SMARTEST_ITEM_NAME"} selected{/if}>{$model.name} Name</option>
+  						  <option value="_SMARTEST_ITEM_NAME" {if $rule.itemproperty_id == "_SMARTEST_ITEM_NAME"} selected{/if}>{$model.name} {$model.item_name_field_name}</option>
   						  <option value="_SMARTEST_ITEM_ID" {if $rule.itemproperty_id == "_SMARTEST_ITEM_ID"} selected{/if}>{$model.name} ID</option>
   					    {foreach from=$properties item="property"}
   						  <option value="{$property.id}" {if $property.id == $rule.itemproperty_id} selected{/if}>{$property.name}</option>
@@ -156,7 +156,7 @@ function updateSetConditionsFormFromOperator(condition, value){
 				  <select name="new_condition_property_id" id="new-condition-aspect">
   				  <option value="">Choose...</option>
   				  <option value="_SMARTEST_ITEM_PIECE_ITSELF" id="nc_name">The {$model.name} itself</option>
-  				  <option value="_SMARTEST_ITEM_NAME" id="nc_name">{$model.name} Name</option>
+  				  <option value="_SMARTEST_ITEM_NAME" id="nc_name">{$model.name} {$model.item_name_field_name}</option>
   				  <option value="_SMARTEST_ITEM_ID" id="nc_id">{$model.name} ID</option>
             {foreach from=$properties item="property"}<option value="{$property.id}">{$property.name}</option>{/foreach}
 					  <option value="_SMARTEST_ITEM_NUM_HITS">Number of hits</option>
@@ -202,7 +202,7 @@ function updateSetConditionsFormFromOperator(condition, value){
 		
 		<ul class="actions-list">
 		  <li><b>Options</b></li>
-			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/magnify.png"> Browse set contents</a></li>
+			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/folder_magnify.png"> Browse set contents</a></li>
       <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/deleteSetConfirm?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> Delete this set</a></li>
 			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/editStaticSetOrder?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Change the order of this set</a></li>
 			<li class="permanent-action">{if $model.id}<a href="#" onclick="window.location='{$domain}{$section}/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder_old.png"> Browse sets of {$model.plural_name|strtolower}</a>{else}<a href="#" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/folder_old.png"> Back to data sets</a></li>{/if}		

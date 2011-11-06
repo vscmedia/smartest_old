@@ -179,7 +179,7 @@ function getCaretPosition(textarea_id){
             // var otherSelectionRange = realSelectionRange.duplicate();
             // var excapedText = 
             var otherTextArea = Object.clone(textArea);
-            alert(otherTextArea);
+            // alert(otherTextArea);
             // var caret_pos = 0;
             
             // create a real selection from the real textarea
@@ -279,11 +279,12 @@ Smartest.UI.OptionSet = Class.create({
     initialize: function(formId, inputId, optionClass, listId){
         
         var sfi = this.setFormId.bind(this);
-        this.setPrimaryInputId(inputId);
+        var spii = this.setPrimaryInputId.bind(this);
         this.optionClass = optionClass;
         var sli = this.setListId.bind(this);
         
         document.observe('dom:loaded', function(){
+            spii(inputId);
             sli(listId);
             sfi(formId);
         });
@@ -294,7 +295,7 @@ Smartest.UI.OptionSet = Class.create({
         if($(id)){
             this.form = $(id);
         }else{
-            alert('form '+id+' not found.');
+            // alert('form '+id+' not found.');
             // TODO: create a new form and append it to the document
         }
     },
@@ -324,6 +325,9 @@ Smartest.UI.OptionSet = Class.create({
     
     setSelectedItem: function(id, category, params){
         
+        if(!params)
+            params = {};
+            
         this.currentCategoryName = category ? category : 'default';
         
         if(this.currentCategoryName == 'default' || !this.currentCategoryName){
@@ -363,6 +367,10 @@ Smartest.UI.OptionSet = Class.create({
     		$(domID).className = "selected-option";
     	}
     	
+    	/* if(params.scroll){
+    	    new Effect.ScrollTo(domID);
+    	} */
+    	
     	if(params && params.updateFields){
     	    $H(params.updateFields).each(function(f){
     	        new Smartest.UI().updateSpansByClassName(f.key, f.value);
@@ -373,6 +381,19 @@ Smartest.UI.OptionSet = Class.create({
     	this.lastItemCategoryName = this.currentCategoryName;
     	this.primaryInput.value = id;
     	
+    	return false;
+    	
+    },
+    
+    setPriorSelection: function(id, category, params){
+        if(!params){
+            params = {};
+        }
+        var SSI = this.setSelectedItem.bind(this);
+        params.scroll = true;
+        document.observe('dom:loaded', function(){
+            SSI(id, category, params);
+        });
     },
     
     getOptionElement: function(id, category){
@@ -400,6 +421,8 @@ Smartest.UI.OptionSet = Class.create({
         if((params && params.confirm && confirm(params.confirm)) || (!params || (params && !params.confirm))){
             this.form.action = sm_domain+app+"/"+action;
             this.form.submit();
+        }else{
+            return false;
         }
         
     },
@@ -415,6 +438,8 @@ Smartest.UI.OptionSet = Class.create({
         if(preferenceName && PREFS){
             PREFS.setApplicationPreference(preferenceName, view);
         }
+        
+        return false;
     }
     
 });

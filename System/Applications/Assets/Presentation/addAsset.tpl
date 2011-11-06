@@ -85,12 +85,14 @@ function validateUploadSuffix(){
         <input type="hidden" name="placeholder_id" value="{$placeholder.id}" />
         <input type="hidden" name="page_id" value="{$page.id}" />
         {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
-      {else if $for=='ipv'}
+      {elseif $for=='ipv'}
         <input type="hidden" name="for" value="ipv" />
         <input type="hidden" name="property_id" value="{$property.id}" />
         {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
       {/if}
     {/if}
+    
+    {if $group}<input type="hidden" name="group_id" value="{$group.id}" />{/if}
     
     <div class="buttons-bar"><input type="submit" value="Continue" /></div>
     
@@ -171,7 +173,10 @@ function validateUploadSuffix(){
       <input type="checkbox" name="asset_shared" id="asset_shared" /><label for="asset_shared">Check here to allow all your sites to use this file.</label>
     </div>
 
-<div class="buttons-bar"><input type="submit" value="Save"></div>
+    <div class="buttons-bar">
+      <input type="button" value="Cancel" onclick="cancelForm()">
+      <input type="submit" value="Save">
+    </div>
 </form>
     {else}
   

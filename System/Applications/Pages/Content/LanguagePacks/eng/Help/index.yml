@@ -1,0 +1,21 @@
+help:
+  fields:
+    title: Page fields
+    keywords: content, structure
+    content: fields.tpl
+  placeholders:
+    title: Placeholders
+    keywords: content, structure
+    content: placeholders.tpl
+  containers:
+    title: Containers
+    keywords: structure
+    content: containers.tpl
+  lists:
+    title: Lists
+    keywords: content, structure
+    content: lists.tpl
+  page_elements_tree:
+    title: Page elements tree
+    keywords: content, structure
+    content: pageelements.tpl

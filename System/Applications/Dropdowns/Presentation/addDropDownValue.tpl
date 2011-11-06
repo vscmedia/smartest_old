@@ -22,6 +22,8 @@
   
   <div class="edit-form-row">
     <div class="buttons-bar">
+      <input type="checkbox" name="continue_to_values" value="1" id="continue-to-values" checked="checked" />
+      <label for="continue-to-values">Add another value after saving</label>
       <input type="button" value="Cancel" onclick="cancelForm();" />
       <input type="submit" value="Save" />
     </div>

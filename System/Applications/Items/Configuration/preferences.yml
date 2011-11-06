@@ -1,2 +1,3 @@
 prefs:
   hide_metapages_publish_warning: {user_specific: true, site_specific: false, description: Should the user see a warning on the item publish screen when there are no available meta-pages?}
+  item_list_style: {user_specific: true, site_specific: false, description: Should the user see an array of listed items in a list or grid style?}

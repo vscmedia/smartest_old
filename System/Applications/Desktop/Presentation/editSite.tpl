@@ -18,7 +18,14 @@ var section = '{$section}';
 <div id="work-area">
 
 <h3 id="siteName">Edit Site Parameters</h3>
-<form id="updateSiteDetails" name="updateSiteDetails" action="{$domain}{$section}/updateSiteDetails" method="POST" style="margin:0px">
+
+{* <div style="height:100px;border-radius:10px;-moz-border-radius:10px;background-color:#222;overflow:hidden">
+  {foreach from=$site_images item="asset"}
+  {$asset.image.height_33}
+  {/foreach}
+</div> *}
+
+<form id="updateSiteDetails" name="updateSiteDetails" action="{$domain}{$section}/updateSiteDetails" method="POST" style="margin:0px" enctype="multipart/form-data">
 
 <input type="hidden" name="site_id" value="{$site.id}">
 
@@ -45,13 +52,24 @@ var section = '{$section}';
 </div>
 
 <div class="edit-form-row">
+  <div class="form-section-label">Logo</div>
+  <select name="site_logo_image_asset_id">
+    <option value="">None</option>
+{foreach from=$logo_assets item="logo_asset"}
+    <option value="{$logo_asset.id}"{if $site.logo_image_asset_id == $logo_asset.id} selected="selected"{/if}>{$logo_asset.label}</option>
+{/foreach}
+  </select><br />
+  <input type="file" name="site_logo" />
+</div>
+
+<div class="edit-form-row">
   <div class="form-section-label">Admin email</div>
   <input type="text" name="site_admin_email" value="{$site.admin_email}" />
 </div>
 
 <div class="edit-form-row">
   <div class="form-section-label">Site ID</div>
-  <code>{$site.unique_id}</code>
+  <code>{$site.unique_id}</code> {help id="desktop:install_ids" buttonize="true"}What's this?{/help}
 </div>
 
 <div class="edit-form-row">

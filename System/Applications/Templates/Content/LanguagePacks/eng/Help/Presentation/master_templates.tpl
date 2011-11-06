@@ -1,0 +1,3 @@
+<p>Every page has a <strong>master template</strong>.</p>
+<p>The master template should contain any aspects of the page that are <strong>the same on every page</strong> - in other words, things that don't have a strong connection to the actual content of the page. This includes things like the header and footer, navigation, etc.</p>
+<p>Inside that master template you can put <strong>elements</strong> like placeholders, {help id="websitemanager:containers"}containers{/help}, {help id="websitemanager:fields"}fields{/help} and lists, which can then be defined with files, templates, and other content in order to build the page.</p>

@@ -76,6 +76,7 @@ class SmartestBaseApplication extends QuinceBase{
 		    
 		}
 		
+		$this->getPresentationLayer()->assign("now", new SmartestDateTime(time()));
 		$this->getPresentationLayer()->assign("domain", $this->getRequest()->getDomain());
 	    $this->getPresentationLayer()->assign("section", $this->getRequest()->getModule()); // deprecated
 	    $this->getPresentationLayer()->assign("module", $this->getRequest()->getModule());
@@ -83,6 +84,14 @@ class SmartestBaseApplication extends QuinceBase{
 	    $this->getPresentationLayer()->assign("action", $this->getRequest()->getAction());
 	    $this->getPresentationLayer()->assign("method", $this->getRequest()->getAction()); // deprecated
 	    $this->getPresentationLayer()->assign("metas", $this->getRequest()->getMetas());
+	    
+	}
+	
+	public function __post(){
+	    
+	    $rp = new SmartestParameterHolder('Final request parameters');
+	    $rp->loadArray($this->getRequest()->getRequestParameters());
+	    $this->getPresentationLayer()->assign('request_parameters', $rp);
 	    
 	}
 	
@@ -111,7 +120,7 @@ class SmartestBaseApplication extends QuinceBase{
 	private function _callOptionalConstructors(){
 	    
 	    // Called by all system applications
-	    if(method_exists($this, "__systemModulePreConstruct")){
+	    if($this->isSystemApplication() && method_exists($this, "__systemModulePreConstruct")){
 		    $this->__systemModulePreConstruct();
 	    }
 	    
@@ -174,7 +183,7 @@ class SmartestBaseApplication extends QuinceBase{
 		
 		define("SM_MANAGER_CLASS", $managerClass);
 		
-		if(is_file(SM_ROOT_DIR.'Managers/'.$managerClass.".class.php")){
+		/* if(is_file(SM_ROOT_DIR.'Managers/'.$managerClass.".class.php")){
 		
 			define("SM_MANAGER_CLASS_FILE", SM_ROOT_DIR.'Managers/'.$managerClass.".class.php");
 			include_once(SM_MANAGER_CLASS_FILE);
@@ -185,12 +194,15 @@ class SmartestBaseApplication extends QuinceBase{
 				
 			}
 			
-		}else if(is_file($this->getRequest()->getMeta('_module_dir').$managerClass.".class.php")){
+		}else */
+		
+		if(is_file($this->getRequest()->getMeta('_module_dir').$managerClass.".class.php")){
 			
-			define("SM_MANAGER_CLASS_FILE", $this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
-			include_once(SM_MANAGER_CLASS_FILE);
+			// define("SM_MANAGER_CLASS_FILE", $this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
+		    include_once($this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
+			// echo SM_MANAGER_CLASS_FILE;
 			
-			if(class_exists(SM_MANAGER_CLASS)){
+			if(class_exists($managerClass)){
 			
 				$this->manager = new $managerClass($this->database);
 			
@@ -324,7 +336,7 @@ class SmartestBaseApplication extends QuinceBase{
         if(strlen($name) > 0){
     		$this->getPresentationLayer()->assign($name, $data);
     	}else{
-    		$this->getPresentationLayer()->_tpl_vars["content"][$this->_resultIndex] = $data;
+    		$this->getPresentationLayer()->_tpl_vars["data"][$this->_resultIndex] = $data;
     		$this->_resultIndex++;
     	}
     }

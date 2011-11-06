@@ -27,6 +27,10 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
         }
     }
     
+    public function getArray(){
+        return $this->_data;
+    }
+    
     public function absorb(SmartestParameterHolder $d){
         $this->loadArray($d->getParameters());
     }
@@ -56,7 +60,7 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
     }
     
     public function getParameters(){
-        return $this->_data;
+        return $this->getArray();
     }
     
     public function getParameterNames(){
@@ -152,6 +156,8 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
             return array_keys($this->_data);
             case "_has":
             return new SmartestParameterHolderValuePresenceChecker(array_keys($this->_data));
+            case "_debug":
+            return "<code>".print_r($this->_data, true)."</code>";
         }
         
         return $this->getParameter($offset);

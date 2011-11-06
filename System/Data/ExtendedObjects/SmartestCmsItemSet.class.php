@@ -14,10 +14,10 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     protected $_constituent_item_chaining = false;
     
     public function __objectConstruct(){
-        
+        // This prevents SmartestSet::__objectConstruct from being called, so do not delete.
     }
     
-	public function setType($type){
+    public function setType($type){
 	    if(!$this->_came_from_database){
 	        $this->_properties['type'] = $type;
 	        $this->_modified_properties['type'] = $type;
@@ -345,7 +345,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     		    $ids = array_slice($ids, 0, $limit);
     		}
     		
-    		$items = $this->getItemsFromIds($ids);
+    		$items = $this->getItemsFromIds($ids, $mode);
 	        
   	    }else if($this->getType() == 'DYNAMIC'){
   	        
@@ -416,7 +416,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    }
 	    
 	    $ids = $this->getRawStaticSetMemberIds($mode);
-	    $members = $this->getItemsFromIds($ids);
+	    $members = $this->getItemsFromIds($ids, $mode);
         return $members;
         
 	}
@@ -484,7 +484,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
             $result->sort($this->getSortField(), $this->getSortDirection());
         }
         
-        // returns a SmartestQueryResultSet object
+        // returns a SmartestSortableItemReferenceSet object
         return $result;
 	    
 	}
@@ -688,51 +688,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
         
 	}
 	
-	/* public function getMembersAsArrays($mode=9, $refresh=false){
-	    
-	    $members = $this->getMembers($mode, $refresh);
-	    
-	    // print_r($draft);
-	    
-	    $draft = in_array($mode, array(0,1,2,6,7,8));
-	    
-	    $result = array();
-	    
-	    foreach($members as $item){
-	        $result[] = $item->__toArray($draft);
-	    }
-	    
-	    return $result;
-	    
-	}
-	
-	public function getSimpleMembersAsArrays($mode=9, $refresh=false){
-	    
-	    $members = $this->getSimpleMembers($mode, $refresh);
-	    
-	    $draft = in_array($mode, array(0,1,2,6,7,8));
-	    
-	    $result = array();
-	    
-	    foreach($members as $item){
-	        $result[] = $item->__toArray($draft);
-	    }
-	    
-	    return $result;
-	    
-	}
-	
-	public function __toArray($get_members=true){
-	    $result = parent::__toArray();
-	    
-	    if($get_members){
-	        $result['_members'] = $this->getMembersAsArrays();
-        }
-        
-	    return $result;
-	} */
-	
-	public function getModel(){
+    public function getModel(){
 	    
 	    if(!$this->_model){
 	        $model = new SmartestModel;
@@ -810,33 +766,15 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    return $this->__toArray();
 	}
 	
-	public function getItemsFromIds($ids){
+	public function getItemsFromIds($ids, $mode=9){
 	    
 	    $members = array();
 	    
-	    // $model = new SmartestModel;
-        // $model->find($this->getModelId());
-        $class_name = $this->getModel()->getClassName();
-        // $cardinality = 0;
+	    $draft = $mode < 6;
+        $h = new SmartestSmsItemsHelper;
+        $members = $h->hydrateUniformListFromIdsArray($ids, $this->getModelId(), $draft);
 	    
-	    foreach($ids as $id){
-            
-            if(($limit && is_numeric($limit) && $cardinality <= $limit) || !$limit){
-            
-                $item = new $class_name;
-                $item->find($id, $draft);
-                $item->setDraftMode($draft);
-                // echo $item->getName().' ';
-                // var_dump($item->isHydrated());
-                
-                if($item->isHydrated()){
-                    $members[] = $item;
-                    // $cardinality++;
-                }
-            }
-        }
-        
-        return $members;
+	    return $members;
 	    
 	}
 	

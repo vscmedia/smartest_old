@@ -3,31 +3,53 @@ licenses:
     label: Copyright / All rights reserved
     shortname: copyright
     url: http://en.wikipedia.org/wiki/Copyright
-  attribution:
+  cc_attribution:
     label: Creative Commons - Attribution 3.0
     shortname: cc_by
     url: http://creativecommons.org/licenses/by/3.0/
-  attribution_noderivs:
+  cc_attribution_noderivs:
     label: Creative Commons - Attribution No Derivatives 3.0
     shortname: cc_by_nd
     url: http://creativecommons.org/licenses/by-nd/3.0/
-  attribution_noncommercial_noderivs:
+  cc_attribution_noncommercial_noderivs:
     label: Creative Commons - Attribution Non-Commercial No Derivatives 3.0
     shortname: cc_by_nc_nd
     url: http://creativecommons.org/licenses/by-nc-nd/3.0/
-  attribution_noncommercial:
+  cc_attribution_noncommercial:
     label: Creative Commons - Attribution Non-Commercial 3.0
     shortname: cc_by_nc
     url: http://creativecommons.org/licenses/by-nc/3.0/
-  attribution_noncommercial_sharealike:
+  cc_attribution_noncommercial_sharealike:
     label: Creative Commons - Attribution Non-Commercial Sharealike 3.0
     shortname: cc_by_nc_sa
+    copyleft: true
     url: http://creativecommons.org/licenses/by-nc-sa/3.0/
-  attribution_sharealike:
+  cc_attribution_sharealike:
     label: Creative Commons - Attribution Sharealike 3.0
     shortname: cc_by_sa
+    copyleft: true
     url: http://creativecommons.org/licenses/by-sa/3.0/
+  gfdl:
+    label: GNU Free Documentation License
+    shortname: gfdl
+    copyleft: true
+    url: http://www.gnu.org/copyleft/fdl.html
+  gnu_gpl2:
+    label: GNU General Public License version 2
+    shortname: gnu_gpl_2
+    copyleft: true
+    url: http://www.gnu.org/licenses/gpl-2.0.html
+  gnu_gpl3:
+    label: GNU General Public License version 3
+    shortname: gnu_gpl_2
+    copyleft: true
+    url: http://www.gnu.org/licenses/gpl-3.0.html
+  mit:
+    label: MIT License
+    shortname: mit
+    url: http://en.wikipedia.org/wiki/MIT_License
   public_domain:
     label: CC0 / Public Domain
     shortname: public
+    copyleft: true
     url: http://en.wikipedia.org/wiki/Public_domain

@@ -434,6 +434,8 @@ class SmartestDataObject implements ArrayAccess{
 		return true;
 	}
 	
+	public function __postHydrationAction(){}
+	
 	public function hydrate($id, $site_id=''){
 		
 		if(is_array($id)){
@@ -452,6 +454,8 @@ class SmartestDataObject implements ArrayAccess{
 	                }
 	            }
 	        }
+	        
+	        $this->__postHydrationAction();
 				
 			$this->_came_from_database = true;
 			
@@ -481,7 +485,7 @@ class SmartestDataObject implements ArrayAccess{
 
 		    if(count($result)){
 	
-			    foreach($result[0] as $name => $value){
+			    /* foreach($result[0] as $name => $value){
 				    if (substr($name, 0, strlen($this->_table_prefix)) == $this->_table_prefix) {
 					    $this->_properties[substr($name, strlen($this->_table_prefix))] = $value;
 				    }else if(isset($this->_no_prefix[$name])){
@@ -489,7 +493,9 @@ class SmartestDataObject implements ArrayAccess{
 				    }
 			    }
 	
-			    $this->_came_from_database = true;
+			    $this->_came_from_database = true; */
+			    
+			    $this->hydrate($result[0]);
 		    
 			    return true;
 		    }else{
@@ -497,7 +503,8 @@ class SmartestDataObject implements ArrayAccess{
 		    }
 	    
         }else{
-            
+            // $e = new Exception;
+            // SmartestLog::getInstance('system')->log(get_class($this)."->find() called without a valid ID.  Backtrace: (".$e->getTraceAsString().")", SmartestLog::WARNING);
             SmartestLog::getInstance('system')->log(get_class($this)."->find() called without a valid ID.", SmartestLog::WARNING);
             // A bit harsh for now:
             // throw new SmartestException("SmartestDataObject->find() must be called with a valid ID.");

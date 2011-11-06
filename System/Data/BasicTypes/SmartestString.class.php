@@ -90,7 +90,7 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
     }
     
     public function offsetExists($offset){
-        return in_array(strtolower($offset), array('slug', 'varname', 'constantname', 'camelcase', 'is_md5', 'length', 'paragraphs', 'encoded', 'urlencoded', 'wordcount', 'xmlentities'));
+        return in_array(strtolower($offset), array('slug', 'varname', 'constantname', 'camelcase', 'is_md5', 'length', 'paragraphs', 'encoded', 'urlencoded', 'wordcount', 'xmlentities', 'html_escape'));
     }
     
     public function offsetGet($offset){
@@ -117,6 +117,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
             return $this->getWordCount();
             case "xmlentities":
             return (string) SmartestStringHelper::toXmlEntities($this->_string);
+            case "html_escape":
+            return htmlspecialchars($this->_string, ENT_QUOTES, 'UTF-8', false);
             case "empty":
             return (strlen($this->_string) == 0);
         }

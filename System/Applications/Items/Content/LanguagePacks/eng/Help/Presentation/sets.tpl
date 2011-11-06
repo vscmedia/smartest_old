@@ -1,4 +1,2 @@
-<p>Data sets are a feature of Smartest that allow you to categorize the items you create into smaller groups.</p>
-<p>There are two different kinds of data set - dynamic and static.</p>
-<h2>Dynamic Sets</h2>
-<p>Dynamic sets are based on rules.</p>
+<p>Data sets are a feature of Smartest that allow you to categorize the {help id="datamanager:models"}items{/help} you create into smaller groups.</p>
+<p>There are two different kinds of data set - {help id="datamanager:dynamic_sets"}dynamic{/help}, which are rule-based, and {help id="datamanager:static_sets"}static{/help} which let you manually add and remove items.</p>

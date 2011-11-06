@@ -39,5 +39,5 @@ module:
     ajax:
       class: AssetsAjax
       meta:
-        template: _blank.tpl
+        template: _blank.tpl # Can also be 'none'
         presentation_subfolder: Ajax/

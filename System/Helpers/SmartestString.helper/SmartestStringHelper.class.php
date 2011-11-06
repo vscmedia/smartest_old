@@ -745,15 +745,15 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	public static function separateIntoColumns($text){
 	    
-	    $text = str_replace('<p><!--NewColumn--></p>', '<!--NewColumn-->', $text);
-	    $columns = explode('<!--NewColumn-->', $text);
+	    $text = str_ireplace('<p><!--NewColumn--></p>', '<!--NewColumn-->', $text);
+	    $columns = preg_split('/<!--NewColumn-->/i', $text);
 	    $num_columns = count($columns);
 	    
 	    if($num_columns > 1){
 	        
 	        $newtext = '';
-	        $column_open = "<div class=\"smartest-column\">";
-	        $last_column_open = "<div class=\"smartest-column last\">";
+	        $column_open = '<div class="smartest-column '.$num_columns.'-column-width">';
+	        $last_column_open = '<div class="smartest-column '.$num_columns.'-column-width last">';
 	        $column_close = "</div>\n";
 	        $i = 1;
 	        

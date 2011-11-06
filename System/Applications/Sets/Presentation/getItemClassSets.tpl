@@ -4,7 +4,7 @@
 
 <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Sets</h3>
 
-<div class="instruction">Use Data Sets to organize your data into smaller groups.</div>
+<div class="instruction">Use Data Sets to organize your data into smaller groups. {help id="datamanager:sets"}What are sets?{/help}</div>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="set_id" id="item_id_input" value="" />

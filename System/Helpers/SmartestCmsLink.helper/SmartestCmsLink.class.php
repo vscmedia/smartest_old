@@ -49,6 +49,10 @@ class SmartestCmsLink extends SmartestHelper{
         if($this->_destination_properties->getParameter('from_item')){
             
             $this->setDestinationFromProvidedItem($this->_destination_properties->getParameter('item'));
+        
+        }else if($this->_destination_properties->getParameter('from_page')){
+            
+            $this->setDestinationFromProvidedPage($this->_destination_properties->getParameter('page'));
             
         }else{
         
@@ -235,13 +239,9 @@ class SmartestCmsLink extends SmartestHelper{
             $site_id = SmartestSession::get('current_open_project')->getId();
         }
         
-        // $sql = "SELECT * FROM Pages WHERE page_id='".$item->getMetaPageId()."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_type='ITEMCLASS' AND page_deleted != 'TRUE'";
-        // $result = $this->database->queryToArray($sql);
-        
         if(is_object($item->getMetaPage()) && $item->getMetaPage()->getId()){
             
             $d = $item->getMetaPage();
-            // $d->hydrate($result[0]);
             $d->setPrincipalItem($item);
         
             $this->_destination = $d;
@@ -249,6 +249,22 @@ class SmartestCmsLink extends SmartestHelper{
         }else{
             return $this->error("A metapage was not found for the item provided: ".$item->getName().')');
         }
+        
+    }
+    
+    public function setDestinationFromProvidedPage(SmartestPage $page){
+        
+        $this->setType(SM_LINK_TYPE_PAGE);
+        $this->setNamespace('page');
+        $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_AUTO);
+        
+        if(defined('SM_CMS_PAGE_SITE_ID')){
+            $site_id = SM_CMS_PAGE_SITE_ID;
+        }else if(SmartestSession::hasData('current_open_project')){
+            $site_id = SmartestSession::get('current_open_project')->getId();
+        }
+        
+        $this->_destination = $page;
         
     }
     

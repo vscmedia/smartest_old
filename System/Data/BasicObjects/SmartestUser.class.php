@@ -391,5 +391,56 @@ class SmartestUser extends SmartestBaseUser{
     public function getBio(){
         return stripslashes($this->_properties['bio']);
     }
+    
+    public function passwordIs($password){
+        
+        return $this->getPassword() == md5($password.$this->getPasswordSalt());
+        
+    }
+    
+    public function setPasswordWithSalt($raw_password, $salt){
+        if($this->passwordIs($raw_password)){
+            return false;
+        }else{
+            $this->setPasswordSalt($salt);
+            $this->setField('password', md5($raw_password.$salt));
+            $this->setPasswordLastChanged(time());
+            return true;
+        }
+    }
+    
+    public function delete(){
+        
+        if($this->getId() > 0 && $this->getUsername() != 'smartest'){ // The Smartest user, ID zero, should never be deletable
+        
+            // release all pages, files and items
+            $sql = "UPDATE Pages SET page_held_by='0', page_is_held='0', page_createdby_userid='0' WHERE page_held_by='".$this->getId()."'";
+            $this->database->rawQuery($sql);
+            $sql = "UPDATE Items SET item_held_by='0', item_is_held='0', item_createdby_userid='0' WHERE item_held_by='".$this->getId()."'";
+            $this->database->rawQuery($sql);
+            $sql = "UPDATE Assets SET asset_held_by='0', asset_is_held='0', asset_user_id='0' WHERE asset_held_by='".$this->getId()."'";
+            $this->database->rawQuery($sql);
+        
+            // delete "recently edited" records
+            $sql = "DELETE FROM ManyToManyLookups WHERE (mtmlookup_type='SM_MTMLOOKUP_RECENTLY_EDITED_ASSETS' AND mtmlookup_entity_2_foreignkey='".$this->getId()."') OR (mtmlookup_type='SM_MTMLOOKUP_RECENTLY_EDITED_PAGES' AND mtmlookup_entity_2_foreignkey='".$this->getId()."') OR (mtmlookup_type='SM_MTMLOOKUP_RECENTLY_EDITED_ITEMS' AND mtmlookup_entity_2_foreignkey='".$this->getId()."') OR (mtmlookup_type='SM_MTMLOOKUP_RECENTLY_EDITED_TEMPLATES' AND mtmlookup_entity_2_foreignkey='".$this->getId()."')";
+            $this->database->rawQuery($sql);
+        
+            // delete authorship records
+            $sql = "DELETE FROM ManyToManyLookups WHERE (mtmlookup_type='SM_MTMLOOKUP_ITEM_AUTHORS' AND mtmlookup_entity_1_foreignkey='".$this->getId()."') OR (mtmlookup_type='SM_MTMLOOKUP_PAGE_AUTHORS' AND mtmlookup_entity_1_foreignkey='".$this->getId()."')";
+            $this->database->rawQuery($sql);
+        
+            // delete all tokens/permissions
+            $sql = "DELETE FROM UsersTokensLookup WHERE utlookup_user_id='".$this->getId()."'";
+            $this->database->rawQuery($sql);
+        
+            // delete all settings
+            $sql = "DELETE FROM Settings WHERE setting_user_id='".$this->getId()."'";
+            $this->database->rawQuery($sql);
+        
+            parent::delete();
+        
+        }
+        
+    }
 	
 }

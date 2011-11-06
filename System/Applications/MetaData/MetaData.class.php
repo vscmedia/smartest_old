@@ -90,81 +90,90 @@ class MetaData extends SmartestSystemApplication{
 	
 	public function defineFieldOnPage($get){
 		
-		$page_webid = $get['page_id'];
+		if($this->getUser()->hasToken('modify_page_properties')){
 		
-		$page = new SmartestPage;
+    		$page_webid = $get['page_id'];
 		
-		if($page->hydrate($page_webid)){
+    		$page = new SmartestPage;
 		
-		    $field = new SmartestPageField;
+    		if($page->hydrate($page_webid)){
 		
-    		if(!empty($get['assetclass_id'])){
-    			// $pageproperty_name = $get['assetclass_id'];
-    			// $pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $get['assetclass_id'], "PageProperties");
-    			// $field->hydrateBy();
-    			$lookup_field = 'pageproperty_name';
-    			$value = $get['assetclass_id'];
-    		}else{
-    			// $pageproperty_id = $get['pageproperty_id'];
-    			// $pageproperty_name = $this->manager->database->specificQuery("pageproperty_name", "pageproperty_id", $pageproperty_id, "PageProperties");
-    			$lookup_field = 'pageproperty_id';
-    			$value = $get['pageproperty_id'];
-    		}
+    		    $field = new SmartestPageField;
+		
+        		if(!empty($get['assetclass_id'])){
+        			// $pageproperty_name = $get['assetclass_id'];
+        			// $pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $get['assetclass_id'], "PageProperties");
+        			// $field->hydrateBy();
+        			$lookup_field = 'pageproperty_name';
+        			$value = $get['assetclass_id'];
+        		}else{
+        			// $pageproperty_id = $get['pageproperty_id'];
+        			// $pageproperty_name = $this->manager->database->specificQuery("pageproperty_name", "pageproperty_id", $pageproperty_id, "PageProperties");
+        			$lookup_field = 'pageproperty_id';
+        			$value = $get['pageproperty_id'];
+        		}
 		    
-		    $db = SmartestPersistentObject::get('db:main');
-		    $sql = "SELECT * FROM PageProperties WHERE ".$lookup_field."='".$value."' AND pageproperty_site_id='".$page->getSiteId()."'";
-		    $result = $db->queryToArray($sql);
+    		    $db = SmartestPersistentObject::get('db:main');
+    		    $sql = "SELECT * FROM PageProperties WHERE ".$lookup_field."='".$value."' AND pageproperty_site_id='".$page->getSiteId()."'";
+    		    $result = $db->queryToArray($sql);
 		    
-    		if(count($result)){
+        		if(count($result)){
 		        
-		        // $field->hydrateBy($lookup_field, $value)
-		        $field->hydrate($result[0]);
+    		        // $field->hydrateBy($lookup_field, $value)
+    		        $field->hydrate($result[0]);
 		        
-    		    // print_r($field);
+        		    // print_r($field);
 		
-        		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");
-        		// $sql = "SELECT pagepropertyvalue_draft_value FROM PagePropertyValues WHERE pagepropertyvalue_page_id ='$page_id' AND pagepropertyvalue_pageproperty_id='$pageproperty_id'";
+            		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");
+            		// $sql = "SELECT pagepropertyvalue_draft_value FROM PagePropertyValues WHERE pagepropertyvalue_page_id ='$page_id' AND pagepropertyvalue_pageproperty_id='$pageproperty_id'";
 		
-        		// $result = $this->manager->database->queryToArray($sql);
-        		// $pageproperty_value = $result[0];
+            		// $result = $this->manager->database->queryToArray($sql);
+            		// $pageproperty_value = $result[0];
     		
-        		$def = new SmartestPageFieldDefinition;
-        		$def->loadForUpdate($field, $page);
+            		$def = new SmartestPageFieldDefinition;
+            		$def->loadForUpdate($field, $page);
         		
-        		// print_r($def);
+            		// print_r($def);
 		
-    		    /* return array(
-        			"page_id" => $page_webid,
-        			"pageproperty_id" => $pageproperty_id,
-        			"pageproperty_name" => $pageproperty_name,
-        			"pageproperty_value" => $pageproperty_value,
-    			    "pagepropertyvalue_id" => $pagepropertyvalue_id
-    		    ); */
+        		    /* return array(
+            			"page_id" => $page_webid,
+            			"pageproperty_id" => $pageproperty_id,
+            			"pageproperty_name" => $pageproperty_name,
+            			"pageproperty_value" => $pageproperty_value,
+        			    "pagepropertyvalue_id" => $pagepropertyvalue_id
+        		    ); */
     		    
-    		    if($field->getType() == 'SM_DATATYPE_DROPDOWN_MENU'){
-    		        $dropdown_id = $field->getForeignKeyFilter();
-    		        $dropdown = new SmartestDropdown;
-    		        $dropdown->find($dropdown_id);
-    		        $options = $dropdown->getOptions();
-    		        $this->send($options, 'options');
-    		    }
+        		    if($field->getType() == 'SM_DATATYPE_DROPDOWN_MENU'){
+        		        $dropdown_id = $field->getForeignKeyFilter();
+        		        $dropdown = new SmartestDropdown;
+        		        $dropdown->find($dropdown_id);
+        		        $options = $dropdown->getOptions();
+        		        $this->send($options, 'options');
+        		    }
     		    
-    		    $this->send($def->getDraftValue(), 'value');
-    		    $this->send($field->getName(), 'field_name');
-    		    $this->send($field->getType(), 'field_type');
-    		    $this->send($field->getId(), 'field_id');
-    		    $this->send($page->getId(), 'page_id');
+        		    $this->send($def->getDraftValue(), 'value');
+        		    $this->send($field->getName(), 'field_name');
+        		    $this->send($field->getType(), 'field_type');
+        		    $this->send($field->getId(), 'field_id');
+        		    $this->send($page->getId(), 'page_id');
 		
-    	    }else{
+        	    }else{
     	        
-    	        $this->addUserMessageToNextRequest('The specified field doesn\'t exist', SmartestUserMessage::INFO);
-    	        $this->formForward();
+        	        $this->addUserMessageToNextRequest('The specified field doesn\'t exist', SmartestUserMessage::INFO);
+        	        $this->formForward();
     	        
-    	    }
+        	    }
 	    
+            }else{
+            
+                $this->addUserMessageToNextRequest('The page ID wasn\'t recognized.', SmartestUserMessage::ERROR);
+    	        $this->formForward();
+            
+            }
+        
         }else{
             
-            $this->addUserMessageToNextRequest('The page ID wasn\'t recognized.', SmartestUserMessage::ERROR);
+            $this->addUserMessageToNextRequest("You don't have permission to edit the properties of pages. This includes page fields.", SmartestUserMessage::ACCESS_DENIED);
 	        $this->formForward();
             
         }

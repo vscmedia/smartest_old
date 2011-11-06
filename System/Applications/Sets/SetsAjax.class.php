@@ -40,16 +40,32 @@ class SetsAjax extends SmartestSystemApplication{
 	        }
 	        
 	        // $set->fixOrderIndices();
-	        
-	        // echo implode(',', $this->getRequestParameters());
-	        
-	        // print_r(explode(',', $this->getRequestParameter('item_ids')));
-	        
 	        $set->updateOrderFromItemIdsList(explode(',', $this->getRequestParameter('item_ids')));
 	        
         }
         
         exit;
+    }
+    
+    public function updateSetLabelFromInPlaceEditField(){
+        
+        $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($this->getRequestParameter('set_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $set->setLabel($this->getRequestParameter('new_label'));
+	        $set->save();
+	        // echo 'true';
+	        echo $this->getRequestParameter('new_label');
+	        exit();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+        
     }
     
 }

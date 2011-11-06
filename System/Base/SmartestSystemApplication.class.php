@@ -19,12 +19,34 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		$this->_languages = $language_options['languages'];
 		$this->send($this->_languages, '_languages');
 	    
-	    $this->send($this->getFormReturnUri(), 'sm_cancel_uri');
-	    
 	    if($this->getSite()){
 	        $this->setCookie('SMARTEST_LPID', $this->getSite()->getId(), 1);
+	        $this->send($this->getUser()->hasToken('modify_site_parameters'), '_user_allow_site_edit');
 	    }
 	    
+	    if(SmartestSession::get('user:isAuthenticated')){
+
+            $this->send($this->getUser()->hasGlobalPermission('create_sites'), '_user_allow_site_create');
+
+	        if($this->getUser()->getPasswordChangeRequired() == '1'){
+	        
+    	        if(($this->getRequest()->getModule() == 'users' && ($this->getRequest()->getAction() == 'setMyPassword' || $this->getRequest()->getAction() == 'updateMyPassword')) || $this->getRequest()->getModule() == 'loginscreen'){
+    	            $this->setRequestParameter('password_change_required', '1');
+    	        }else{
+    	            $this->forward('users', 'setMyPassword');
+    	        }
+	        
+            }
+	        
+	    }
+	    
+    }
+    
+    public function __post(){
+        
+        $this->send($this->getFormReturnUri(), 'sm_cancel_uri');
+        parent::__post();
+        
     }
     
     final protected function transferUserMessages(){
@@ -81,12 +103,16 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	
 	protected function requireAuthenticatedUser(){
 		if(!$this->_auth->getUserIsLoggedIn()){
-			$this->redirect($this->domain."smartest/login");
+			$this->redirect($this->domain."smartest/login#session");
 		}
 	}
 	
 	protected function getSite(){
 	    
+	    if($this->getRequest()->getModule() != 'desktop' && $this->getRequest()->getModule() != 'loginscreen' && $this->getRequest()->getModule() != 'users' && $this->getRequest()->getModule() != 'help'){
+	        $this->requireOpenProject();
+        }
+        
 	    return SmartestSession::get('current_open_project');
 	    
 	}
@@ -145,14 +171,16 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	        // do nothing
 	    }else{
 		    SmartestSession::set("form:return:location", $request_filename);
+		    SmartestSession::clear("form:return:temp_location");
 		    $vars = new SmartestParameterHolder("Form failure request variables");
             $vars->loadArray($request_vars);
 		    SmartestSession::set("form:return:vars", $vars);
+		    SmartestSession::clear("form:return:temp_vars");
 	    }
         
 	}
 	
-	public function setTemporaryFormReturnUri($uri=''){
+	protected function setTemporaryFormReturnUri($uri=''){
 	    
 	    $d = $this->getRequest()->getDomain();
 	    
@@ -184,18 +212,14 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	        $request_filename = reset(explode("?", $_SERVER["REQUEST_URI"]));
         }
         
-        /* if(isset($request_vars['from']) && isset($request_vars['from']{0})){
-	        // do nothing
-	    }else{ */
-		    SmartestSession::set("form:return:temp_location", $request_filename);
-		    $vars = new SmartestParameterHolder("Form failure request variables");
-            $vars->loadArray($request_vars);
-            SmartestSession::set("form:return:temp_vars", $vars);
-	    // }
+        SmartestSession::set("form:return:temp_location", $request_filename);
+	    $vars = new SmartestParameterHolder("Form failure request variables");
+        $vars->loadArray($request_vars);
+        SmartestSession::set("form:return:temp_vars", $vars);
 	    
 	}
 	
-	public function getFormReturnUri($escape=false){
+	protected function getFormReturnUri($escape=false){
 	    
 	    if(SmartestSession::hasData("form:return:temp_location")){
 			$form_return_uri =& SmartestSession::get("form:return:temp_location");
@@ -219,7 +243,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    
 	}
 	
-	public function getFormReturnDescription(){
+	protected function getFormReturnDescription(){
 	    
 	    if(SmartestSession::hasData("form:return:temp_description")){
 	        return SmartestSession::get("form:return:temp_description");
@@ -227,6 +251,15 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	        return SmartestSession::get("form:return:description");
 	    }
 	    
+	}
+	
+	protected function clearFormReturnInfo($temp=false){
+	    SmartestSession::clear("form:return:temp_location");
+	    SmartestSession::clear("form:return:location");
+	    SmartestSession::clear("form:return:temp_description");
+	    SmartestSession::clear("form:return:description");
+	    SmartestSession::clear("form:return:temp_vars");
+	    SmartestSession::clear("form:return:vars");
 	}
 	
 	protected function setFormReturnDescription($rd){
@@ -254,27 +287,8 @@ class SmartestSystemApplication extends SmartestBaseApplication{
             return SmartestSession::get('form:return:vars')->hasParameter($var);
         }
     }
-	
-	/* protected function setFormCompleteUri(){
-		$_SESSION["_FORM_RETURN"] = reset(explode("?", $_SERVER["REQUEST_URI"]));
-		$_SESSION["_FORM_RETURN_VARS"] = $_GET;
-	}
-	
-	protected function setFormContinueUri(){
-		$_SESSION["_FORM_CONTINUE"] = reset(explode("?", $_SERVER["REQUEST_URI"]));
-		$_SESSION["_FORM_CONTINUE_VARS"] = $_GET;
-	}
-	
-	protected function setFormFailUri(){
-		$_SESSION["_FORM_FAIL"] = reset(explode("?", $_SERVER["REQUEST_URI"]));
-		$_SESSION["_FORM_FAIL_VARS"] = $_GET;
-	}
-	
-	protected function setFormReturnVar($var, $value){
-		$_SESSION["_FORM_RETURN_VARS"][$var] = $value;
-	} */
-	
-	protected function formForward($clear_temp=true){
+    
+    protected function formForward($clear_temp=true){
 		
 		$uri = $this->getFormReturnUri();
 		
@@ -287,48 +301,6 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    $this->redirect($uri, true);
 		
 	}
-	
-	/* protected function formContinue(){
-		
-		if($_SESSION["_FORM_CONTINUE"]){
-			$this->_formContinueUri =& $_SESSION["_FORM_CONTINUE"];
-		}else{
-			$this->_formContinueUri = "/smartest";
-		}
-		
-		$uri = $this->_formContinueUri;
-		
-		if(is_array($_SESSION["_FORM_CONTINUE_VARS"])){
-			$uri .= "?";
-			foreach($_SESSION["_FORM_CONTINUE_VARS"] as $var=>$value){
-				$uri .= "$var=$value&";
-			}
-		}
-		
-		header("Location:".$uri);
-		exit;
-	}
-	
-	protected function formFail(){
-		
-		if($_SESSION["_FORM_FAIL"]){
-			$this->_formFailUri =& $_SESSION["_FORM_FAIL"];
-		}else{
-			$this->_formFailUri = "/";
-		}
-		
-		$uri = $this->_formFailUri;
-		
-		if(is_array($_SESSION["_FORM_FAIL_VARS"])){
-			$uri .= "?";
-			foreach($_SESSION["_FORM_FAIL_VARS"] as $var=>$value){
-				$uri .= "$var=$value&";
-			}
-		}
-		
-		header("Location:".$uri);
-		exit;
-	} */
 	
 	final public function getApplicationPreferenceFromAjax(){
         // $preference_name
@@ -364,7 +336,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	
 	///// Errors /////
     
-    function _error($message, $type=''){
+    public function _error($message, $type=''){
     	
     	if(!$message){
     		$message = "[unspecified error]";

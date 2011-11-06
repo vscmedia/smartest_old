@@ -1,17 +1,29 @@
 help:
   sets:
     title: Organizing your items into sets
-    keywords: categorisation, organisation
+    keywords: [categorisation, organisation]
     content: sets.tpl
   models:
     title: "Models: structured information"
-    keywords: models
+    keywords: [models]
     content: models_basic.tpl
   regularizing:
     title: Regularizing stored data
-    keywords: storage, formatting, data
+    keywords: [storage, formatting, data]
     content: regularizing_ipvs.tpl
   datatypes:
     title: Data types
-    keywords: storage, formatting, data
+    keywords: [storage, formatting, data]
     content: datatypes.tpl
+  query_modes:
+    title: Query modes
+    keywords: [data, query, live, draft, archive]
+    content: query_modes.tpl
+  dynamic_sets:
+    title: Dynamic sets (saved queries)
+    keywords: [categorisation, organisation, data, sets]
+    content: dynamic_sets.tpl
+  static_sets:
+    title: Static sets
+    keywords: [categorisation, organisation, data, sets]
+    content: static_sets.tpl

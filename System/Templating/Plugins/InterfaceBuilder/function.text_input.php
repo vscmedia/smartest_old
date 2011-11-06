@@ -14,7 +14,11 @@ function smarty_function_text_input($params, &$smartest_engine){
         }
         
         if(isset($params['value'])){
-            $input->setParameter('value', $params['value']);
+            if($params['value'] instanceof SmartestString){
+                $input->setParameter('value', $params['value']);
+            }else{
+                $input->setParameter('value', new SmartestString($params['value']));
+            }
         }else{
             $input->setParameter('value', null);
         }

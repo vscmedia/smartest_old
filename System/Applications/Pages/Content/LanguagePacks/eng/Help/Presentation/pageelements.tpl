@@ -1,0 +1,3 @@
+<p>The page elements tree is an overview of all the content on a given page, displayed as a hierarchy.</p>
+<p>That hierarchy is derived from the way that the various templates used on the page fit together.</p>
+<p>Each page has a {help id="templates:master_templates"}master template{/help}, which likely contains various <strong>elements</strong> like {help id="websitemanager:containers"}containers{/help}, placeholders, {help id="websitemanager:fields"}fields{/help} and lists.</p>

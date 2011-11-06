@@ -5,17 +5,26 @@ class SmartestAssetCreationHelper{
     protected $_alh;
     protected $_asset;
     protected $_asset_type;
+    protected $_guess_asset_type_on_upload;
     
-    public function __construct($asset_type){
+    public function __construct($asset_type='_GUESS'){
         
         $this->_alh = new SmartestAssetsLibraryHelper;
-        
         $types = $this->_alh->getTypes();
         
-        if(isset($types[$asset_type])){
-            $this->_asset_type = $types[$asset_type];
+        if($asset_type == '_GUESS'){
+            
+            $this->_guess_asset_type_on_upload = true;
+            
         }else{
-            throw new SmartestAssetCreationException('Tried to create a file by upload of a non-existent file type: \''.$asset_type.'\'');
+        
+            if(isset($types[$asset_type])){
+                $this->_asset_type = $types[$asset_type];
+                $this->_guess_asset_type_on_upload = true;
+            }else{
+                throw new SmartestAssetCreationException('Tried to create a file with a non-existent file type: \''.$asset_type.'\'');
+            }
+        
         }
         
     }
@@ -40,19 +49,24 @@ class SmartestAssetCreationHelper{
         $this->_asset->setStringId(SmartestStringHelper::toVarName($asset_label));
         $this->_asset->setLabel($asset_label);
         $this->_asset->setUserId(SmartestSession::get('user')->getId());
+        
+        if($this->_guess_asset_type_on_upload){
+        
+            $raw_filename = $upload->getFileName();
+            $upload_suffix = strtolower(SmartestStringHelper::getDotSuffix($raw_filename));
+            $types = $this->_alh->getPossibleTypesBySuffix($upload_suffix);
+        
+            if(count($types)){
+                $this->_asset_type = $types[0]['type'];
+            }else{
+                throw new SmartestException("Tried to upload a file with an unknown suffix in guess mode.");
+            }
+        
+        }
+        
         $this->_asset->setType($this->_asset_type['id']);
-        
         $suffixes = $this->_alh->getAllSuffixesForType($this->_asset_type['id']);
-        
-        if(!$upload->hasDotSuffix($suffixes)){
-    		$upload->setFileName(SmartestStringHelper::toVarName($upload->getFileName()).'.'.$suffixes[0]);
-    	}
-    	
-    	// create filename based on existing filename
-        $raw_filename = $upload->getFileName();
         $filename = SmartestStringHelper::toSensibleFileName($raw_filename);
-        
-        // give it hashed name for now and save it to disk
         $upload->setFileName(md5(microtime(true)).'.'.$suffixes[0]);
         $r = $upload->save();
         

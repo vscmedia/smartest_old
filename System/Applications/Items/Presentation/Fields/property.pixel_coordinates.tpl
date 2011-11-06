@@ -6,4 +6,4 @@ orient from:
   <option value="BL"{if $value.orient == 'BL'} selected="selected"{/if}>Bottom left</option>
   <option value="TR"{if $value.orient == 'TR'} selected="selected"{/if}>Top right</option>
   <option value="BR"{if $value.orient == 'BR'} selected="selected"{/if}>Bottom right</option>
-</select>
+</select>{if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}

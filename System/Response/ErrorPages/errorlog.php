@@ -70,6 +70,7 @@
         </tr>
 <?php endforeach; ?>
       </table>
+      <p>Smartest v<?php echo $smartest_version; ?>.<?php echo $smartest_revision; ?></p>
     </div>
     </div>
 <?php endif; ?>

@@ -3,11 +3,11 @@ body {
 }
 
 body	{
-  background-color: #242c35;
-  /* background:url(/Resources/System/Images/smartest_login_bg.gif); */
+  background-color: #565656;
   color: #000;
   margin: 0;
   padding: 0;
+  background:url(/Resources/System/Images/login_form_bg_hgrad.png);
 }
 
 a img{
@@ -19,38 +19,38 @@ body, td {
 }
 
 textarea, input.textInput, select {
-  background: #f4f4f4;
+  /* background: #f4f4f4; */
   border: 1px solid #b2b2b2;
   color: #000;
   font:  13px Verdana, Arial, Helvetica, sans-serif;
   margin: 1px;
   padding: 3px;
-  /* background:url(/Resources/System/Images/smartest_login_bg.gif); */
 }
 
 .submit, .editform th, #postcustomsubmit {
   text-align: right;
 }
 
-#login {
-  background: #c0c0c0;
-/*  border: 1px solid #a2a2a2; */
-  margin: 5em auto;
-  width: 325px;
+#logo{
+  cursor:pointer;
 }
 
-#login_error {
-  background: #c00;
-  border: 1px solid #a40000;
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  padding: .5em;
-  text-align: center;
+#login {
+    /* background: #eee; */
+    margin: 5em auto 12px auto;
+    width: 325px;
+    border-radius:10px;
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    box-shadow:0 10px 15px #222;
+    -moz-box-shadow:0 10px 15px #222;
+    background:url(../Images/login_form_bg.png);
+    
 }
 
 #login-inner{
   margin:0 1.7em 0 1.7em;
+  padding:16px 0 16px 0;
 }
 
 #login h1 {
@@ -68,6 +68,18 @@ textarea, input.textInput, select {
   padding: 3px;
 }
 
+#login p{
+    color:#fff;
+    text-shadow: 1px 2px 2px #000;
+    margin-bottom:4px;
+}
+
+input[type="text"], input[type="password"]{
+  border-radius:4px;
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+}
+
 #username, #password {
   font-size: 1.4em;
   width: 80%;
@@ -75,4 +87,12 @@ textarea, input.textInput, select {
 
 #submit {
   font-size: 1.4em;
+}
+
+#footer{
+  padding-top:5px;
+  text-align:center;
+  font-size:.7em;
+  color:#aaa;
+  text-shadow: 1px 2px 2px #000;
 }

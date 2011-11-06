@@ -22,8 +22,15 @@ module:
     new_page:
       action: addPage
       url: /smartest/page/new
+    page_groups:
+      action: pageGroups
+      url: /smartest/pagegroups
+    new_pagegroup:
+      action: addPageGroup
+      url: /smartest/pagegroup/new
   meta:
     system: true
+    author: Marcus Gilroy-Ware
   namespaces:
     ajax:
       class: PagesAjax

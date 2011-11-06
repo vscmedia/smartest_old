@@ -36,20 +36,27 @@ class Dropdowns extends SmartestSystemApplication{
     	    $dropdown = new SmartestDropdown;
 	    
     	    if(!$dropdown->hydrateBy('name', $name)){
+    	        
     	        $dropdown->setName($name);
     	        $dropdown->setLabel($label);
     	        $dropdown->save();
     	        $this->addUserMessageToNextRequest('Your new dropdown menu was saved successfully.', SmartestUserMessage::SUCCESS);
-    	        $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
+    	        
+    	        if($this->getRequestParameter('continue_to_values')){
+    	            $this->redirect('/dropdowns/addDropDownValue?dropdown_id='.$dropdown->getId());
+	            }else{
+	                $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
+	            }
+	            
     	    }else{
-    	        $this->addUserMessageToNextRequest('A dropdown menu with that name already exists.', SmartestUserMessage::INFO);
-    	        $this->redirect('/dropdowns/addDropDown');
+    	        $this->addUserMessage('A dropdown menu with that name already exists.', SmartestUserMessage::INFO);
+    	        $this->forward('dropdowns', 'addDropDown');
     	    }
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('You must enter a valid label for the dropdown.', SmartestUserMessage::ERROR);
-            $this->redirect('/dropdowns/addDropDown');
+            $this->addUserMessage('You must enter a valid label for the dropdown.', SmartestUserMessage::ERROR);
+            $this->forward('dropdowns','addDropDown');
             
         }
 	    
@@ -169,8 +176,13 @@ class Dropdowns extends SmartestSystemApplication{
 	        
 	        $option->save();
 	        
-	        $this->addUserMessageToNextRequest('Your new dropdown menu was saved successfully.', SmartestUserMessage::SUCCESS);
-	        $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
+	        if($this->getRequestParameter('continue_to_values')){
+	            $this->addUserMessageToNextRequest('Your new dropdown value was saved successfully.', SmartestUserMessage::SUCCESS);
+	            $this->redirect('/dropdowns/addDropDownValue?dropdown_id='.$dropdown->getId());
+            }else{
+                $this->addUserMessageToNextRequest('Your new dropdown value was saved successfully.', SmartestUserMessage::SUCCESS);
+    	        $this->redirect('/dropdowns/editValues?dropdown_id='.$dropdown->getId());
+            }
 	        
 	    }else{
 	        

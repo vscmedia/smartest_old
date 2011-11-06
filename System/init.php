@@ -10,6 +10,10 @@ function debug_time(){
 define("SM_CONTROLLER_DEBUG_LEVEL", 0);
 define("SM_DEVELOPER_MODE", true);
 
+// If your host does not allow the use of ini_set(), comment out these three lines and see Public/.htaccess
+ini_set('session.name', 'SMARTEST');
+ini_set('session.auto_start', 0);
+
 class SmartestInit{
 
 	static function setRootDir(){
@@ -55,9 +59,7 @@ class SmartestInit{
 	    self::setRootDir();
 		self::setIncludePaths();
 		
-		// ini_set('session.gc_maxlifetime', 30*60);
-
-        // error reporting control
+		// error reporting control
         error_reporting(E_ALL ^ E_NOTICE);
         
         if(is_writable(SM_ROOT_DIR.'System/Logs/')){

@@ -385,7 +385,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     
                 }else{
                     
-                    if($ph->hydrateBy('name', $placeholder_name)){
+                    if($ph->findBy('name', $placeholder_name)){
                         
                         $show_edit_link = isset($params['showeditbutton']) ? (SmartestStringHelper::toRealBool($params['showeditbutton']) && $this->_request_data->g('action') == "renderEditableDraftPage") : ($ph->isEditableFromPreview() && $this->_request_data->g('action') == "renderEditableDraftPage");
                         

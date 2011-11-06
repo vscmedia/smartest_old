@@ -57,4 +57,4 @@
 <div style="float:left">
   Year<br />
   <input type="text" name="item[{$property.id}][Y]" size="5" maxlength="4" value="{if $value.Y}{$value.Y}{else}{$default_year}{/if}" style="width:85px" />
-</div><br clear="all" />
+</div>{if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}<br clear="all" />

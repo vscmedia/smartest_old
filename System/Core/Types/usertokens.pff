@@ -14,20 +14,20 @@ id:type:scope:code:category:description
 10:p:s:modify_draft_pages:SM_USERTOKEN_PAGES:Update placeholders, containers, itemspaces &amp; lists
 11:p:s:approve_page_changes:SM_USERTOKEN_PAGES:Approve pages marked as ready for approval
 # Number 12 was formerly a setting for seeing the advanced page edit screen
-12:p:s:edit_model:SM_USERTOKEN_ITEMS:Edit model properties
+12:p:s:edit_model:SM_USERTOKEN_ITEMS:Edit the basic attributes of models
 13:p:s:modify_user_permissions:SM_USERTOKEN_USERS:Edit the permissions of other users
-14:p:s:modify_items:SM_USERTOKEN_ITEMS:Edit CMS Items that do not belong to the user
+14:p:s:modify_items:SM_USERTOKEN_ITEMS:Edit Items that do not belong to the user
 15:p:s:approve_item_changes:SM_USERTOKEN_ITEMS:Approve changes to items that do not belong to the user
 16:p:s:publish_approved_pages:SM_USERTOKEN_PAGES:Publish changes to pages that have been modified, and those modifications accepted
 17:p:s:publish_approved_items:SM_USERTOKEN_ITEMS:Publish changes to items that have been modified, and those modifications accepted
 18:p:s:publish_all_pages:SM_USERTOKEN_PAGES:Publish changed pages without needing approval
 19:p:s:publish_all_items:SM_USERTOKEN_ITEMS:Publish changed items without needing approval
-20:p:s:modify_site_parameters:SM_USERTOKEN_SYSTEM:Edit site parameters
-21:p:s:site_access:SM_USERTOKEN_USERS:See the contents of the site; to open it in order to work on it
+20:p:s:modify_site_parameters:SM_USERTOKEN_SITES:Edit site parameters
+21:p:s:site_access:SM_USERTOKEN_SITES:See the contents of the site; to open it in order to work on it
 22:p:s:modify_other_user_details:SM_USERTOKEN_USERS:Edit the details of other users
 23:p:s:grant_site_access:SM_USERTOKEN_USERS:Grant access to a site to another user
 24:p:g:grant_global_permissions:SM_USERTOKEN_USERS:Permission to grant permissions that will persist across all sites
-25:p:s:create_sites:SM_USERTOKEN_SYSTEM:Allows the user to create new sites
+25:p:s:create_sites:SM_USERTOKEN_SITES:Create new sites
 26:p:s:modify_assets:SM_USERTOKEN_ASSETS:Edit existing media files
 27:p:s:delete_assets:SM_USERTOKEN_ASSETS:Delete files that the user doesn't own
 28:p:s:create_assets:SM_USERTOKEN_ASSETS:Add new files to the system
@@ -45,4 +45,7 @@ id:type:scope:code:category:description
 40:p:s:edit_containers_in_preview:SM_USERTOKEN_PAGES:Change the values of containers from the page preview screen
 41:p:s:delete_models:SM_USERTOKEN_ITEMS:Permanently delete models and all their items
 42:p:s:edit_file_group_names:SM_USERTOKEN_ASSETS:Edit file group names
-42:p:s:edit_template_group_names:SM_USERTOKEN_ASSETS:Edit template group names
+43:p:s:edit_template_group_names:SM_USERTOKEN_ASSETS:Edit template group names
+44:p:s:edit_file_names:SM_USERTOKEN_ASSETS:Rename files
+45:p:s:edit_template_names:SM_USERTOKEN_ASSETS:Rename templates
+46:p:s:require_user_password_change:SM_USERTOKEN_USERS:Require other users to change their passwords

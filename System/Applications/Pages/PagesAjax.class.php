@@ -41,5 +41,25 @@ class PagesAjax extends SmartestSystemApplication{
 	    }
 	    
 	}
+	
+	public function setPageGroupLabelFromInPlaceEditField(){
+	    
+	    $group = new SmartestPageGroup;
+	    
+	    if($group->find($this->getRequestParameter('pagegroup_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $group->setLabel($this->getRequestParameter('new_label'));
+	        $group->save();
+	        echo $this->getRequestParameter('new_label');
+	        exit();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+	    
+	}
 
 }

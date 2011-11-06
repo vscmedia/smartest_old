@@ -334,4 +334,50 @@ class SmartestUsersHelper extends SmartestHelper{
         
     }
     
+    public function usernameExists($username, $except_user_id=null){
+        
+        $sql = "SELECT * FROM Users WHERE username='".SmartestStringHelper::sanitize($username)."'";
+        
+        if(is_numeric($except_user_id)){
+            $sql .= " AND user_id != ".$except_user_id;
+        }
+        
+        $result = $this->database->queryToArray($sql);
+        
+        return (bool) count($result);
+        
+    }
+    
+    public function emailExists($email, $except_user_id=null){
+        
+        if(SmartestStringHelper::isEmailAddress($email)){
+        
+            $sql = "SELECT * FROM Users WHERE user_email='".$email."'";
+        
+            if(is_numeric($except_user_id)){
+                $sql .= " AND user_id != ".$except_user_id;
+            }
+        
+            $result = $this->database->queryToArray($sql);
+        
+            return (bool) count($result);
+        
+        }
+        
+    }
+    
+    public function twitterHandleExists($twitter_handle, $except_user_id=null){
+        
+        $sql = "SELECT * FROM Users WHERE LOWER(user_twitter_handle)='".SmartestStringHelper::toVarName($twitter_handle)."'";
+        
+        if(is_numeric($except_user_id)){
+            $sql .= " AND user_id != ".$except_user_id;
+        }
+        
+        $result = $this->database->queryToArray($sql);
+        
+        return (bool) count($result);
+        
+    }
+    
 }

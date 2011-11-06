@@ -20,7 +20,12 @@
     </div>
     
 {if $property.datatype == 'SM_DATATYPE_ASSET' || $property.datatype == 'SM_DATATYPE_ASSET_DOWNLOAD'}
-
+    
+    <div class="edit-form-row">
+        <div class="form-section-label">Accepted file types</div>
+        {$file_type} <span style="color:#999">({$property.foreign_key_filter})</span>
+    </div>
+    
     <div class="edit-form-row">
         <div class="form-section-label">Restrict selection to a file group?</div>
         <input type="hidden" name="itemproperty_filter_type" value="ASSET_GROUP" />
@@ -52,6 +57,11 @@
 {/if}
 
   <div class="edit-form-row">
+    <div class="form-section-label">Hint text</div>
+    <input type="text" name="itemproperty_hint" value="{$property.hint.html_escape}" />
+  </div>
+
+  <div class="edit-form-row">
     <div class="form-section-label">Default value</div>
     {item_field property=$property value=$property.default_value}
   </div>
@@ -63,7 +73,7 @@
     
     <div class="edit-form-row">
         <div class="buttons-bar">
-            <input type="button" value="Cancel" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$model.id}';" />
+            <input type="button" value="Cancel" onclick="cancelForm();" />
             <input type="submit" value="Save Changes" />
         </div>
     </div>

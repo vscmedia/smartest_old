@@ -22,9 +22,9 @@ function viewPage(){
     
     {load_interface file="cms_elements_tabs.tpl"}
 
-<h3>Pages</h3>
+<h3>Site structure</h3>
 <a name="top"></a>
-<div class="instruction">Double click a page to edit or click once and choose from the options on the right.</div>
+<div class="instruction">A website is structured by the hierarchy of its pages.</div>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="page_id" id="item_id_input" value="" />
@@ -62,7 +62,7 @@ function viewPage(){
       <img src="{$domain}Resources/System/Images/blank.gif" alt="" border="0" />
       {/if}
       
-      <a id="item_{$page.info.webid}" class="option" href="javascript:nothing()" onclick="setSelectedItem('{$page.info.webid}', '{$page.info.title|escape:quotes}', '{if $page.info.type == 'ITEMCLASS'}meta-page{else}static-page{/if}');" ondblclick="window.location='{$domain}{$section}/openPage?page_id={$page.info.webid}&amp;site_id={$content.data[0].info.site_id}'">		 
+      <a id="item_{$page.info.webid}" class="option" href="#" onclick="setSelectedItem('{$page.info.webid}', '{$page.info.title|escape:quotes}', '{if $page.info.type == 'ITEMCLASS'}meta-page{else}static-page{/if}');return false;" ondblclick="window.location='{$domain}{$section}/openPage?page_id={$page.info.webid}&amp;site_id={$content.data[0].info.site_id}'">		 
         {if $page.info.type == 'ITEMCLASS'}<img border="0" src="{$domain}Resources/Icons/page_gear.gif" />{else}<img border="0" src="{$domain}Resources/Icons/page.gif" />{/if}
         {$page.info.title} {if $page.info.is_published == "TRUE"}(published)
         {else}(not published){/if}
@@ -139,8 +139,8 @@ function viewPage(){
     <li><b>Site Options</b></li>
     <li class="permanent-action"><a href="{$domain}smartest/page/new" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add page</a></li>
     <li class="permanent-action"><a href="{$domain}websitemanager/releaseCurrentUserHeldPages" class="right-nav-link"><img src="{$domain}Resources/Icons/lock_open.png" border="0" alt=""> Release all pages</a></li>
+    <li class="permanent-action"><a href="{$domain}smartest/pagegroups" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_stack.png" border="0" alt=""> Page groups</a></li>
     <li class="permanent-action"><a href="{$domain}websitemanager/clearPagesCache" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt=""> Clear cached pages</a></li>
-    <li class="permanent-action"><a href="{$domain}desktop/closeCurrentSite" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Finish working with this site</a></li>
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">

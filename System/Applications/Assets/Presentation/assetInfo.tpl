@@ -1,8 +1,11 @@
+<script type="text/javascript">
+  var asset_id = {$asset.id};
+</script>
+
 <div id="work-area">
     {load_interface file="edit_asset_tabs.tpl"}
-  <h3>File Info</h3>
-  
-  <form action="{$domain}assets/updateAssetInfo" method="post">
+    
+    <h3>File Info</h3>
     
     <input type="hidden" name="asset_id" value="{$asset.id}" />
     
@@ -10,7 +13,17 @@
       <tr>
         <td style="width:170px;background-color:#fff" valign="middle" class="field-name">File name:</td>
         <td>
-          <input type="text" name="asset_label" value="{$asset.label}" maxlength="64" class="free-sl-text-input" />
+          <p class="editable" id="asset-label">{$asset.label}</p>
+          <script type="text/javascript">
+          new Ajax.InPlaceEditor('asset-label', sm_domain+'ajax:assets/setAssetLabelFromInPlaceEditField', {ldelim}
+            callback: function(form, value) {ldelim}
+              return 'asset_id={$asset.id}&new_label='+encodeURIComponent(value);
+            {rdelim},
+            highlightColor: '#ffffff',
+            hoverClassName: 'editable-hover',
+            savingClassName: 'editable-saving'
+          {rdelim});
+          </script>
         </td>
       </tr>
       <tr>
@@ -40,11 +53,22 @@
       <tr>
         <td valign="middle" class="field-name">Owner:</td>
         <td>
-          <select name="asset_user_id">
+          <select name="asset_user_id" id="asset-owner">
   {foreach from=$potential_owners item="p_owner"}
             <option value="{$p_owner.id}"{if $asset.owner.id == $p_owner.id} selected="selected"{/if}>{$p_owner.fullname} ({$p_owner.id})</option>
   {/foreach}
           </select>
+          <script type="text/javascript">
+          {literal}
+          $('asset-owner').observe('change', function(){
+            var url = sm_domain+'ajax:assets/setAssetOwnerById';
+            new Ajax.Request(url, {
+              method: 'post',
+              parameters: {'asset_id': asset_id, 'owner_id': $('asset-owner').value}
+            });
+          });
+          {/literal}
+          </script>
         </td>
       </tr>
       <tr>
@@ -53,15 +77,23 @@
       </tr>
       <tr>
         <td class="field-name">Shared with other sites:</td>
-        <td><input type="checkbox" name="asset_shared"{if $asset.shared==1} checked="checked"{/if} /></td>
+        <td>
+          <input type="checkbox" id="asset-shared" name="asset_shared" value="1"{if $asset.shared==1} checked="checked"{/if} />
+          <script type="text/javascript">
+          {literal}
+          $('asset-shared').observe('click', function(){
+            var url = sm_domain+'ajax:assets/setAssetShared';
+            var checked = $('asset-shared').checked ? 1 : 0;
+            new Ajax.Request(url, {
+              method: 'post',
+              parameters: {'asset_id': asset_id, 'is_shared': checked}
+            });
+          });
+          {/literal}
+          </script>
+        </td>
       </tr>
     </table>
-  
-    <div class="buttons-bar" style="margin-top:5px">
-      {save_buttons}
-    </div>
-
-  </form>
   
   <div class="special-box">
     <div class="special-box-key">File groups:</div>

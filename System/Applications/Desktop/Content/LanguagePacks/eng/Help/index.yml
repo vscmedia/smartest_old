@@ -1,0 +1,9 @@
+help:
+  install_ids:
+    title: Site &amp; Install IDs
+    keywords: community, services
+    content: install_ids.tpl
+  freesoftware:
+    title: Free &amp; open source software
+    keywords: licensing, philosophy
+    content: free_software.tpl

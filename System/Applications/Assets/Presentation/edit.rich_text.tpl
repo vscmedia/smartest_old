@@ -59,5 +59,9 @@ tinyMCE.init({
   
 });
 
+var AutoSaver = new PeriodicalExecuter(function(pe){
+  // autosave routine
+}, 5);
+
 {/literal}
 </script>

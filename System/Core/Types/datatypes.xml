@@ -7,6 +7,7 @@
         <usage>field,itemproperty</usage>
         <class>SmartestString</class>
         <long>true</long>
+        <sortable>true</sortable>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/sl_text.tpl" />
         <parameters>
@@ -73,6 +74,7 @@
         <description>A numeric value in standard notation such as an integer or decimal. Scientific notation and fractions are not supported.</description>
         <usage>field,itemproperty</usage>
         <class>SmartestNumeric</class>
+        <sortable>true</sortable>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/numeric.tpl" />
@@ -127,6 +129,7 @@
         <description>An exact point in time - year, month, day, hour, minute, and second.</description>
         <usage>field,itemproperty,feed</usage>
         <class>SmartestDateTime</class>
+        <sortable>true</sortable>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.timestamp.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/timestamp.tpl" />
@@ -138,6 +141,7 @@
         <description>A date that specifies year, month, and day of the month, but not the time of day.</description>
         <usage>field,itemproperty,feed</usage>
         <class>SmartestDateTime</class>
+        <sortable>true</sortable>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.date.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/date.tpl" />
@@ -162,6 +166,7 @@
         <usage>field,itemproperty</usage>
         <class>SmartestTwitterAccountName</class>
         <long>true</long>
+        <sortable>true</sortable>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/twitter_acct.tpl" />
     </type>
@@ -172,6 +177,7 @@
         <description>A value from one of the dropdown menus defined in the dropdown menu editor.</description>
         <usage>field,itemproperty</usage>
         <long>false</long>
+        <sortable>true</sortable>
         
         <filter>
           <typesource type="db" table="DropDowns" matchfield="id" label="Dropdown Menu" class="SmartestDropdown" template="System/Applications/Items/Presentation/FKFilterSelectors/filtertype.dropdownmenus.tpl" />

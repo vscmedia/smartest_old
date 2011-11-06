@@ -191,12 +191,12 @@
     <class>UserTokenLookup</class>
   </table>
 
-  <table name="UserTokens">
+  <!--<table name="UserTokens">
     <prefix>token_</prefix>
     <class>UserToken</class>
   </table>
 
-  <!--<table name="Vocabulary">
+  <table name="Vocabulary">
     <prefix>vocabulary_</prefix>
     <class>VocabularyItem</class>
   </table>-->

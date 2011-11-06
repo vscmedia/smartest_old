@@ -45,30 +45,43 @@ class SmartestImage extends SmartestFile{
     
     public function getResource(){
       
-       $suffix = strtoupper(SmartestStringHelper::getDotSuffix($this->_current_file_path));
-
-        switch($this->getImageType()){
-
-            case self::JPG:
-            $resource = imagecreatefromjpeg($this->_current_file_path);
-            break;
-
-            case self::PNG:
-            $resource = imagecreatefrompng($this->_current_file_path);
-            break;
-
-            case self::GIF:
-            $resource = imagecreatefromgif($this->_current_file_path);
-            break;
-        }
-
-        if($resource){
-            $this->_resource = $resource;
-            return $this->_resource;
-        }else{
-            return null;
-        }
+       $resource = $this->createResource($this->_current_file_path);
+       
+       if($resource){
+           $this->_resource = $resource;
+           return $this->_resource;
+       }else{
+           return null;
+       }
       
+    }
+    
+    public function createResource($file_path){
+        
+        if(is_file($file_path)){
+            
+            $suffix = strtoupper(SmartestStringHelper::getDotSuffix($file_path));
+
+            switch($suffix){
+
+                case "JPG":
+                case "JPEG":
+                $resource = imagecreatefromjpeg($file_path);
+                break;
+
+                case "PNG":
+                $resource = imagecreatefrompng($file_path);
+                break;
+
+                case "GIF":
+                $resource = imagecreatefromgif($file_path);
+                break;
+            }
+
+            return $resource;
+            
+        }
+        
     }
     
     public function getImageType(){
@@ -96,6 +109,12 @@ class SmartestImage extends SmartestFile{
         }
         
         return $this->_image_type;
+    }
+    
+    public function getSuffix(){
+        
+        return SmartestStringHelper::getDotSuffix($this->_current_file_path);
+        
     }
     
     public function getOrientation(){
@@ -187,6 +206,34 @@ class SmartestImage extends SmartestFile{
         
     }
     
+    public function saveToFile($resource, $path){
+        
+        $suffix = strtoupper(SmartestStringHelper::getDotSuffix($path));
+
+        switch($suffix){
+
+            case "JPG":
+            case "JPEG":
+            $r = imagejpeg($resource, $path, 80);
+            break;
+
+            case "PNG":
+            $r = imagepng($resource, $path, 0);
+            break;
+
+            case "GIF":
+            $r = imagegif($resource, $path);
+            break;
+        }
+        
+        if($r){
+            imagedestroy($resource);
+        }
+        
+        return $r;
+        
+    }
+    
     public function getSquareVersion($side){
         
         $url = 'Resources/System/Cache/Images/'.$this->getSquareVersionFilename($side);
@@ -215,8 +262,9 @@ class SmartestImage extends SmartestFile{
             
             $thumbnail = new SmartestImage;
             
-            if(imagepng($this->_thumbnail_resource, $full_path, 0)){
-                $this->clearThumbnailResource();
+            if($this->saveToFile($this->_thumbnail_resource, $full_path)){
+                // saveToFile() automatically destroys image resource, making the following commented line unnecessary
+                // $this->clearThumbnailResource();
                 $thumbnail->loadFile($full_path);
                 return $thumbnail;
             }
@@ -226,7 +274,7 @@ class SmartestImage extends SmartestFile{
     }
     
     public function getSquareVersionFilename($side){
-        return SmartestStringHelper::toVarName(basename($this->_current_file_path)).'_sqthumb_'.$side.'.png';
+        return SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix(basename($this->_current_file_path))).'_sqthumb_'.$side.'.'.$this->getSuffix();
     }
     
     public function restrictToWidth($width){
@@ -261,7 +309,7 @@ class SmartestImage extends SmartestFile{
     }
     
     public function getWidthRestrictedVersionFilename($w){
-        return SmartestStringHelper::toVarName(basename($this->_current_file_path)).'_width_'.$w.'.png';
+        return SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix(basename($this->_current_file_path))).'_width_'.$w.'.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
     }
     
     public function restrictToHeight($height){
@@ -296,7 +344,7 @@ class SmartestImage extends SmartestFile{
     }
     
     public function getHeightRestrictedVersionFilename($h){
-        return SmartestStringHelper::toVarName(basename($this->_current_file_path)).'_height_'.$h.'.png';
+        return SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix(basename($this->_current_file_path))).'_height_'.$h.'.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
     }
     
     public function getResizedVersionFromMaxLongSide($max_long_side){
@@ -304,6 +352,31 @@ class SmartestImage extends SmartestFile{
         $long_side = max($this->getWidth(), $this->getHeight());
         $percentage = ceil($max_long_side/$long_side*100);
         return $this->getResizedVersionFromPercentage($percentage);
+        
+    }
+    
+    public function overlayWith($full_file_path){
+        
+        if(is_file($full_file_path)){
+            
+            $new_file_path = SM_ROOT_DIR.'Public/Resources/System/Cache/Images/'.SmartestStringHelper::removeDotSuffix(SmartestFileSystemHelper::getFileName($this->_current_file_path)).'_O_'.SmartestStringHelper::removeDotSuffix(SmartestFileSystemHelper::getFileName($full_file_path)).'.'.$this->getSuffix();
+            $overlaid_image_resource = $this->createResource($full_file_path);
+            $new_image_rsrc = $this->getResource();
+            imagealphablending($new_image_rsrc, true);
+            imagesavealpha($new_image_rsrc, FALSE);
+            imagecopy($new_image_rsrc, $overlaid_image_resource, 0,0,0,0, $this->getWidth(), $this->getHeight());
+            
+            if($this->saveToFile($new_image_rsrc, $new_file_path)){
+                // dispose of overlaid image resource to free up memory. The new image resource has already been disposed of by saveToFile(), assuming it was successful
+                imagedestroy($overlaid_image_resource);
+                $new_image = new SmartestImage;
+                $new_image->loadFile($new_file_path);
+                return $new_image;
+            }
+            
+        }else{
+            return $this;
+        }
         
     }
     
@@ -375,7 +448,7 @@ class SmartestImage extends SmartestFile{
     
     public function getResizeFilenameFromPercentage($percentage){
         
-        return $filename = SmartestStringHelper::toVarName(basename($this->_current_file_path)).'_resize_'.$percentage.'pc.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
+        return $filename = SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix(basename($this->_current_file_path))).'_resize_'.$percentage.'pc.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
         
     }
     

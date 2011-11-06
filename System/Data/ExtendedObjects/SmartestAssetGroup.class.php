@@ -53,6 +53,10 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         $q->addQualifyingEntityByIndex(2, $this->getId());
 	    $q->addForeignTableConstraint('Assets.asset_deleted', 0);
 	    
+	    if(!$this->getIsSystem()){
+	        $q->addForeignTableConstraint('Assets.asset_is_hidden', 0);
+	    }
+	    
 	    if($mode == 1){
 	        $q->addForeignTableConstraint('Assets.asset_is_archived', '0');
 	    }else if($mode == 2){
@@ -161,6 +165,18 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
             // print_r($this->getFilterValue());
             return $du->getSelectedTypes(array($this->getFilterValue()));
         }
+        
+    }
+    
+    public function getTypeCodes(){
+        
+        $codes = array();
+        
+        foreach($this->getTypes() as $t){
+            $codes[] = $t['id'];
+        }
+        
+        return $codes;
         
     }
     

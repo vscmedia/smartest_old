@@ -11,7 +11,7 @@ class SmartestSession{
         return isset($_SESSION);
     }
     
-	final static function get($object_name){
+	final public static function get($object_name){
 		
 		if(strlen($object_name)){
 			
@@ -30,7 +30,7 @@ class SmartestSession{
 		}
 	}
 	
-	final static function set($object_name, $data){
+	final public static function set($object_name, $data){
 		
 		if(strlen($object_name)){
 			
@@ -49,7 +49,7 @@ class SmartestSession{
 		}
 	}
 	
-	function clear($object_name){
+	public static function clear($object_name){
 	    if(strlen($object_name)){
 			
 			$key = 'smartest/';
@@ -68,7 +68,7 @@ class SmartestSession{
 		}
 	}
 	
-	function hasData($object_name){
+	public static function hasData($object_name){
 	    if(strlen($object_name)){
 			
 			$key = 'smartest/';
@@ -86,7 +86,7 @@ class SmartestSession{
 		}
 	}
 	
-	function clearAll($killNonSmartest=false){
+	public static function clearAll($killNonSmartest=false){
 	    
 	    if($killNonSmartest){
 	        $killed = array_keys($_SESSION);
@@ -105,7 +105,7 @@ class SmartestSession{
 	    
 	}
 	
-	function getRegisteredNames($type = 100){
+	public static function getRegisteredNames($type = 100){
 	    
 	    $vars = array();
 	    

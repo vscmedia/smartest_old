@@ -1,3 +1,8 @@
+<script type="text/javascript">
+  var templates = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'option', 'options_grid');
+  {if $selected_template_id > 0}templates.setPriorSelection('{$selected_template_id}', 'template');{/if}
+</script>
+
 <div id="work-area">
   
   <h3>Define Container</h3>
@@ -45,14 +50,14 @@
   </form>
   
   <div id="options-view-chooser">
-  <a href="javascript:nothing()" onclick="setView('list', 'options_grid')">List</a> /
-  <a href="javascript:nothing()" onclick="setView('grid', 'options_grid')">Icons</a>
+  <a href="#" onclick="return templates.setView('list', 'define_container_list_view')">List</a> /
+  <a href="#" onclick="return templates.setView('grid', 'define_container_list_view')">Icons</a>
   </div>
 
-  <ul class="options-grid" style="margin-top:0px" id="options_grid">
+  <ul class="options-{$list_view}" style="margin-top:0px" id="options_grid">
   {foreach from=$templates item="asset"}
   <li>
-      <a href="javascript:nothing()" class="option" id="item_{$asset.id}" onclick="setSelectedItem('{$asset.id}');" >
+      <a href="#" class="option" id="template_{$asset.id}" onclick="return templates.setSelectedItem('{$asset.id}', 'template');" >
       <img border="0" src="{$domain}Resources/Icons/blank_page.png" />{$asset.stringid}</a>
   </li>
   {/foreach}
@@ -62,9 +67,9 @@
 
 <div id="actions-area">
   
-  <ul class="actions-list" id="item-specific-actions" style="display:none">
+  <ul class="actions-list" id="template-specific-actions" style="display:none">
     <li><b>Selected template</b></li>
-    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('updateContainerDefinition');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Use This Template</a></li>
+    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){templates.workWithItem('updateContainerDefinition');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Use This Template</a></li>
   </ul>
 
   <ul class="actions-list" id="non-specific-actions">
@@ -74,4 +79,10 @@
   
 </div>
 
-{if $selected_template_id > 0}<script language="javascript">setSelectedItem('{$selected_template_id}');</script>{/if}
+{if $selected_template_id > 0}
+
+<script language="javascript">
+  templates.setPriorSelection('{$selected_template_id}', 'template');
+</script>
+
+{/if}

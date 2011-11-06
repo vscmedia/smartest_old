@@ -20,6 +20,8 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         
         if($to instanceof SmartestCmsItem){
             $link = self::createLinkFromCmsItem($to, $markup_attributes);
+        }else if($to instanceof SmartestPage){
+            $link = self::createLinkFromPage($to, $markup_attributes);
         }else{
             $properties = SmartestLinkParser::parseSingle($to);
             $link = new SmartestCmsLink($properties, $markup_attributes);
@@ -34,6 +36,18 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         $properties = new SmartestParameterHolder('Link to existing CMS Item');
         $properties->setParameter('from_item', true);
         $properties->setParameter('item', $item);
+        
+        $link = new SmartestCmsLink($properties, $markup_attributes);
+        
+        return $link;
+        
+    }
+    
+    public static function createLinkFromPage(SmartestPage $page, $markup_attributes){
+        
+        $properties = new SmartestParameterHolder('Link to existing page');
+        $properties->setParameter('from_page', true);
+        $properties->setParameter('page', $page);
         
         $link = new SmartestCmsLink($properties, $markup_attributes);
         

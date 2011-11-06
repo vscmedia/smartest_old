@@ -118,6 +118,9 @@ class ItemsAjax extends SmartestSystemApplication{
     	        if($num_values_affected > 0){
     	            $this->send(2, 'status');
     	            $this->send($num_values_affected, 'num_changed_values');
+    	            $property->setLastRegularized(time());
+    	            $property->setStorageMigrated(1);
+    	            $property->save();
                 }else{
                     $this->send(1, 'status');
                 }
@@ -134,6 +137,31 @@ class ItemsAjax extends SmartestSystemApplication{
 	        $this->send(0, 'status');
 	        
 	    }
+	    
+	}
+	
+	public function updateItemClassPropertyOrder(){
+	    
+	    $model = new SmartestModel;
+	    if($model->find($this->getRequestParameter('class_id'))){
+	        
+	        $ids = explode(',', $this->getRequestParameter('property_ids'));
+	        $properties = $model->getPropertiesForReorder();
+	        
+	        if(count($ids) == count($properties)){
+	            
+	            foreach($ids as $position=>$property_id){
+	                $properties[$property_id]->setOrderIndex($position);
+	                $properties[$property_id]->save();
+	            }
+	            
+	            $model->refreshProperties();
+	            
+	        }
+	        
+	    }
+	    
+	    exit;
 	    
 	}
 

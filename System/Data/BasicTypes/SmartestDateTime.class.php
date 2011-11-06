@@ -19,8 +19,10 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
         
         if(is_array($v)){
             $this->setValueFromUserInputArray($v);
+            return true;
         }else if(is_numeric($v)){
             $this->_value = $v;
+            return true;
         }else if(strlen($v) == 19){ // this is the fastest way to check for the format YYYY-MM-DD hh:ii:ss
             $this->setValueFromUserInputArray(array(
                 'h' => substr($v, 11, 2),
@@ -30,8 +32,9 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
                 'M' => substr($v, 5, 2),
                 'D' => substr($v, 8, 2)
             ));
+            return true;
         }else{
-            $this->_value = strtotime($v);
+            return $this->_value = strtotime($v);
         }
     }
     
@@ -82,8 +85,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     }
     
     public function hydrateFromStorableFormat($v){
-        $this->setValue($v);
-        return true;
+        return $this->setValue($v);
     }
     
     // and two from SmartestSubmittableValue

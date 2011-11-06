@@ -1,0 +1,2 @@
+prefs:
+  define_container_list_view: {user_specific: true, site_specific: false, description: Should the user see files in a list or agrid when defining a placeholder?}

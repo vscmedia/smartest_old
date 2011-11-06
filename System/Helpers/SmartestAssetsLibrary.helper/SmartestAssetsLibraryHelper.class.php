@@ -511,9 +511,9 @@ class SmartestAssetsLibraryHelper{
 	public function getAssetsByTypeCode($code, $site_id='', $mode=1, $avoid_ids='', $model_id=0){
 		
 		if(is_array($code)){
-		    $sql = "SELECT * FROM Assets WHERE asset_type IN ('".implode("', '", $code)."') AND asset_deleted != 1";
+		    $sql = "SELECT * FROM Assets WHERE asset_type IN ('".implode("', '", $code)."') AND asset_is_hidden='0' AND asset_deleted != 1";
 	    }else{
-		    $sql = "SELECT * FROM Assets WHERE asset_type='".$code."' AND asset_deleted != 1";
+		    $sql = "SELECT * FROM Assets WHERE asset_type='".$code."' AND asset_is_hidden='0' AND asset_deleted != 1";
 	    }
 	    
 	    if($mode == 1){
@@ -521,6 +521,8 @@ class SmartestAssetsLibraryHelper{
 	    }else if($mode == 2){
 	        $sql .= " AND asset_is_archived=1";
 	    }
+	    
+	    $sql .= " AND asset_is_hidden=0";
 	    
 	    if(is_array($avoid_ids)){
 	        $sql .= " AND asset_id NOT IN ('".implode("', '", $avoid_ids)."')";
@@ -631,7 +633,7 @@ class SmartestAssetsLibraryHelper{
 	
 	public function getAssetGroups($site_id=''){
 	    
-	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP' AND set_is_hidden = '0'";
 	    
 	    if(is_numeric($site_id)){
 	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared=1)";
@@ -732,7 +734,7 @@ class SmartestAssetsLibraryHelper{
 	    
 	    if(count($types)){
 	        
-	        $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	        $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP' AND set_is_hidden=0";
 	        
 	        if(is_numeric($site_id)){
     	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared='1')";
@@ -851,7 +853,7 @@ class SmartestAssetsLibraryHelper{
 	    $ach = new SmartestAssetClassesHelper;
 	    $types = $ach->getAssetTypeCodesFromAssetClassType($placeholder_type);
 	    
-	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP'";
+	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP' AND set_is_hidden=0";
 	    
 	    if(is_numeric($site_id)){
 	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared='1')";
@@ -910,6 +912,8 @@ class SmartestAssetsLibraryHelper{
 	        
 	        if($type['storage']['type'] == "file"){
 	            
+	            // print_r($type['suffix']);
+	            
 	            $dir = SM_ROOT_DIR.$type['storage']['location'];
 	            $files = SmartestFileSystemHelper::load($dir);
 	            $regex = $this->getSuffixTestRegex($type_code);
@@ -925,6 +929,23 @@ class SmartestAssetsLibraryHelper{
 	            
 	            return $unimported;
 	            
+	        }
+	        
+	    }
+	    
+	}
+	
+	public function getAssetTypeCodesThatShareSuffix($type_code){
+	    
+	    $types = $this->getTypes();
+	    
+	    if(isset($types[$type_code])){
+	        
+	        $type = $types[$type_code];
+	        $sharing_types = array();
+	        
+	        foreach($type['suffix'] as $suffix){
+	            $sharing_types = array_merge();
 	        }
 	        
 	    }

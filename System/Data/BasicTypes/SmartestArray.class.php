@@ -177,6 +177,10 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
     } */
     
     public function append($value){
+        $this->push($value);
+    }
+    
+    public function push($value){
         $this->_data[] = $value;
     }
     

@@ -16,11 +16,12 @@ class SmartestSiteCreationHelper{
         $site = new SmartestSite;
         $site->setName($p->getParameter('site_name'));
         $site->setInternalLabel($p->getParameter('site_internal_label', $p->getParameter('site_name')));
-        $site->setTitleFormat('$site | $page');
+        $site->setTitleFormat('$page | $section | $site');
         $site->setDomain($p->getParameter('site_domain'));
         $site->setAdminEmail($p->getParameter('site_admin'));
         $site->setAutomaticUrls('OFF');
 	    $site->save();
+	    $site->getUniqueId();
 	    SmartestLog::getInstance('system')->log("User {$u->__toString()} created a new site record: '{$site->getName()}/{$site->getDomain()}'", SM_LOG_DEBUG);
 	    
 	    if($p->getParameter('site_master_template') == '_DEFAULT'){
@@ -115,19 +116,23 @@ class SmartestSiteCreationHelper{
 	    $site->setTagPageId($tag_page->getId());
 	    SmartestLog::getInstance('system')->log("Created and connected tag page to new site (page ID {$tag_page->getId()})", SM_LOG_DEBUG);
 	    
+	    $user_page = new SmartestPage;
+	    $user_page->setTitle('User Profile');
+	    $user_page->setName('user');
+	    $user_page->setSiteId($site->getId());
+	    $user_page->setDraftTemplate($master_template);
+	    $user_page->setLiveTemplate($master_template);
+	    $user_page->setParent($home_page->getId());
+	    $user_page->setWebid(SmartestStringHelper::random(32));
+	    $user_page->setCreatedbyUserid($u->getId());
+	    $user_page->setOrderIndex(1020);
+	    $user_page->save();
+	    $site->setUserPageId($user_page->getId());
+	    SmartestLog::getInstance('system')->log("Created and connected user page to new site (page ID {$user_page->getId()})", SM_LOG_DEBUG);
+	    
 	    $site->save();
     
-	    /* $logo_upload = new SmartestUploadHelper('site_logo');
-	    $logo_upload->setUploadDirectory(SM_ROOT_DIR.'Public/Resources/Images/SiteLogos/');
-    
-	    if($logo_upload->hasDotSuffix('gif', 'png', 'jpg', 'jpeg')){
-			$logo_upload->save();
-			$site->setLogoImageFile($logo_upload->getFileName());
-		}else{
-		    $site->setLogoImageFile('default_site.jpg');
-		} */
-	
-		self::createSiteDirectory($site);
+	    self::createSiteDirectory($site);
 	
 		if(!$u->hasGlobalPermission('site_access')){
 		    $u->addToken('site_access', $site->getId());

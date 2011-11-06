@@ -6,7 +6,7 @@ class SmartestErrorStack{
 	protected $stackIndex = 0;
 	protected $errorCodes;
 	
-	function __construct(){
+	public function __construct(){
 		
 		$this->errorCodes = array(
 			"100" => "Unknown or Miscellaneous",
@@ -22,10 +22,14 @@ class SmartestErrorStack{
 		
 	}
 	
-	function display(){
+	public function display(){
 		if(count($this->stack)){
 		    
 		    header("HTTP/1.1 500 Internal Server Error");
+		    
+		    $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+		    $smartest_version = $sd['system']['info']['version'];
+		    $smartest_revision = $sd['system']['info']['revision'];
 		    
 			if(defined("SM_DEVELOPER_MODE") && constant('SM_DEVELOPER_MODE')){
 				$errors = $this->getErrors();

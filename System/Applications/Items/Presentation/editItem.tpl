@@ -33,11 +33,13 @@
 <input type="hidden" name="class_id" value="{$item._model.id}" />
 <input type="hidden" name="item_id" value="{$item.id}" />
 {if $request_parameters.page_id}<input type="hidden" name="page_id" value="{$request_parameters.page_id}" />{/if}
+<input type="hidden" name="nextAction" id="next-action" value="" />
+<input type="hidden" name="property_id" id="property-id" value="" />
 
 {if $request_parameters.from}<input type="hidden" name="from" value="{$smarty.get.from}" />{/if}
 
 <div class="edit-form-row">
-  <div class="form-section-label">{$item._model.name} name</div>
+  <div class="form-section-label">{$item._model.name} {$item._model.item_name_field_name}</div>
   <input type="text" name="item_name" value="{$item.name|escape_double_quotes}" />
 </div>
 
@@ -67,7 +69,7 @@
 
 {foreach from=$item._editable_properties key="pid" item="property"}
 <div class="edit-form-row">
-  <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}</div>
+  <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}{if $can_edit_properties}<a style="float:right" href="{$domain}datamanager/editItemClassProperty?from=item_edit&amp;item_id={$item.id}&amp;itemproperty_id={$property.id}"><img src="{$domain}Resources/System/Images/edit_setting_minimal.png" alt="Edit this property" /></a>{/if}</div>
   {item_field property=$property value=$item[$pid]} {* <a href="{$domain}test:datamanager/ipv?item_id={$item.id}&amp;property_id={$property.id}">Test</a> *}
 </div>
 {/foreach}

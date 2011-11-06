@@ -36,7 +36,7 @@ function toggleZoomImageOption(){
     </div>
     <div class="edit-form-row">
       <div class="form-section-label">Zoom</div>
-      <input type="checkbox" name="attached_file_zoom" value="TRUE" id="attached_file_zoom"{if $zoom} checked="checked"{/if} onchange="toggleZoomImageOption()" />&nbsp;<label for="attached_file_zoom">Zoom from thumbnail file</label> <span id="highslide-credit" class="form-hint" style="display:{if $zoom}inline{else}none{/if}">(Powered by <a href="http://www.highslide.com/" target="_blank">Highslide</a>. License terms apply.)</span>
+      <input type="checkbox" name="attached_file_zoom" value="TRUE" id="attached_file_zoom"{if $zoom} checked="checked"{/if} onchange="toggleZoomImageOption()" />&nbsp;<label for="attached_file_zoom">Zoom from thumbnail file</label> <span id="highslide-credit" class="form-hint" style="display:{if $zoom}inline{else}none{/if}">(Powered by <a href="http://www.highslide.com/" target="_blank">Highslide</a>. License terms apply. Please {help id="assets:highslide"}click here{/help} for more information. )</span>
     </div>
     <div class="edit-form-row" style="display:{if $zoom}block{else}none{/if}" id="thumbnail_size_selector">
       <div class="form-section-label">Thumbnail Relative Size:</div>

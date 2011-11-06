@@ -167,7 +167,8 @@ class Templates extends SmartestSystemApplication{
 	    $group_id = $this->getRequestParameter('group_id');
 	    
 	    $this->setFormReturnUri();
-	    $this->setFormReturnDescription('file group');
+	    $this->setFormReturnDescription('template group');
+	    $this->send($this->getApplicationPreference('list_by_type_view', 'grid'), 'list_style');
 	    
 	    $group = new SmartestTemplateGroup;
 	    

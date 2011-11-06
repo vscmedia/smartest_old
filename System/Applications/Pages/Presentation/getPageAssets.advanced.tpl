@@ -1,7 +1,7 @@
 {if $version == "draft"}
-<div class="instruction">Page elements as they are being rendered on the draft version of this page.</div>
+<div class="instruction">Structure of elements as they are being rendered on the draft version of this page. {help id="websitemanager:page_elements_tree"}What is this?{/help}</div>
 {else}
-<div class="instruction">Page elements as they are being rendered on the live version of this page:</div>
+<div class="instruction">Structure of elements as they are being rendered on the live version of this page. {help id="websitemanager:page_elements_tree"}What is this?{/help}</div>
 {/if}
 
 <form id="pageViewForm" method="get" action="">
@@ -89,7 +89,9 @@ var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'pa
       <a href="{dud_link}" onclick="toggleParentNodeFromOpenState('{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}')"><img src="{$domain}Resources/System/Images/open.gif" alt="" border="0" id="toggle_{$foreach_id}_{$smarty.foreach.$foreach_name.iteration}" /></a>
       {else}
       <img src="{$domain}Resources/System/Images/blank.gif" alt="" border="0" />
-      {/if}<a id="{$assetclass.info.type|lower}_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="{if $version == "draft"}javascript:elementTree.setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}javascript:nothing();{/if}">		 
+      {/if}
+      
+      <a id="{$assetclass.info.type|lower}_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="{if $version == "draft"}javascript:elementTree.setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}javascript:nothing();{/if}">		 
     {if $assetclass.info.exists == 'true'}
         
 		{if $assetclass.info.defined == "PUBLISHED"}

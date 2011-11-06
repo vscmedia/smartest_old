@@ -80,9 +80,9 @@ class Pages extends SmartestSystemApplication{
     			            $page->setHeldBy($this->getUser()->getId());
     			            $page->save();
 			            
-    			            if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId())){
+    			            /* if(!$this->getUser()->hasTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId())){
     			                $this->getUser()->assignTodo('SM_TODOITEMTYPE_RELEASE_PAGE', $page->getId(), 0);
-    		                }
+    		                } */
 	                    }
 			            
 			            $page->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
@@ -914,10 +914,11 @@ class Pages extends SmartestSystemApplication{
 		$this->formForward();
 	}
 	
-	function sitePages($get){
+	public function sitePages($get){
 		
 		$this->requireOpenProject();
 		$this->setFormReturnUri();
+		$this->setFormReturnDescription('site tree');
 
         $site_id = $this->getSite()->getId();
         
@@ -927,7 +928,7 @@ class Pages extends SmartestSystemApplication{
             SmartestCache::clear('site_pages_tree_'.$site_id, true);
         }
         
-        $this->setTitle($this->getSite()->getName()." | Site Map");
+        $this->setTitle($this->getSite()->getName()." | Site Tree");
         
         $this->send($pagesTree, "tree");
         $this->send($site_id, "site_id");
@@ -949,7 +950,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	}
 	
-	function addPage($get, $post){
+	public function addPage($get, $post){
 		
 		$this->requireOpenProject();
 		
@@ -1229,7 +1230,7 @@ class Pages extends SmartestSystemApplication{
  		
 	}
 	
-	function insertPage($get, $post){
+	public function insertPage($get, $post){
 	    
 	    if($this->getSite() instanceof SmartestSite){
 	        
@@ -2022,6 +2023,7 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $helper = new SmartestPageManagementHelper;
 		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+		$this->send($this->getApplicationPreference('define_container_list_view', 'grid'), 'list_view');
 	    
 	    if(isset($type_index[$page_webid])){
 		    
@@ -2314,218 +2316,227 @@ class Pages extends SmartestSystemApplication{
 	
 	public function definePlaceholder($get){
 	    
-	    $placeholder_name = $this->getRequestParameter('assetclass_id');
-	    $page_webid = $this->getRequestParameter('page_id');
+	    if($this->getUser()->hasToken('modify_draft_pages')){
 	    
-	    $this->setTitle('Define Placeholder');
+    	    $placeholder_name = $this->getRequestParameter('assetclass_id');
+    	    $page_webid = $this->getRequestParameter('page_id');
 	    
-	    $helper = new SmartestPageManagementHelper;
-		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+    	    $this->setTitle('Define Placeholder');
 	    
-	    if(isset($type_index[$page_webid])){
+    	    $helper = new SmartestPageManagementHelper;
+    		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+	    
+    	    if(isset($type_index[$page_webid])){
 		    
-		    if($type_index[$page_webid] == 'ITEMCLASS'){
+    		    if($type_index[$page_webid] == 'ITEMCLASS'){
 		        
-		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+    		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
 		            
-		            $item_id = (int) $this->getRequestParameter('item_id');
+    		            $item_id = (int) $this->getRequestParameter('item_id');
 		            
-    		        $page = new SmartestItemPage;
+        		        $page = new SmartestItemPage;
 		        
-    		        if($item = SmartestCmsItem::retrieveByPk($item_id)){
-    	                $page->setPrincipalItem($item);
-    	                $this->send($item, 'item');
-    	                $this->send(true, 'show_item_options');
-    	                $this->send(false, 'require_choose_item');
+        		        if($item = SmartestCmsItem::retrieveByPk($item_id)){
+        	                $page->setPrincipalItem($item);
+        	                $this->send($item, 'item');
+        	                $this->send(true, 'show_item_options');
+        	                $this->send(false, 'require_choose_item');
+        	            }else{
+        	                $this->send(true, 'require_choose_item');
+        	                $require_item = true;
+        	            }
+	            
+                    }else{
+                        // this is a meta page, but the item id is problematic
+                        $page = new SmartestItemPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
+                        $this->send(true, 'require_choose_item');
+                        $require_item = true;
+                    }
+		        
+    		    }else{
+    		        // this is just a normal static page
+    		        $item_id = '';
+    		        $page = new SmartestPage;
+    		        $this->send(false, 'require_choose_item');
+    		    }
+    		}else{
+    		    $page = new SmartestPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
+    		}
+		
+    		if($page->hydrateBy('webid', $page_webid)){
+	        
+    	        $page->setDraftMode(true);
+	        
+    	        if(isset($require_item) && $require_item){
+                
+                    $model = new SmartestModel;
+                
+                    if($model->hydrate($page->getDatasetId())){
+                        $items = $model->getSimpleItems($this->getSite()->getId());
+                        $this->send($items, 'items');
+                        $this->send($model, 'model');
+                        $this->send($page, 'page');
+                    }
+                
+                }
+	        
+    	        $placeholder = new SmartestPlaceholder;
+	        
+    	        if($placeholder->hydrateBy('name', $placeholder_name)){
+	            
+    	            $this->setTitle('Define Placeholder | '.$placeholder_name);
+	            
+    	            $types_array = SmartestDataUtility::getAssetTypes();
+                
+                    $page_definition = new SmartestPlaceholderDefinition;
+                
+                    if($page_definition->load($placeholder_name, $page, true, $this->getRequestParameter('item_id'))){
+	                
+    	                $is_defined = true;
+	                
+    	                if($type_index[$page_webid] == 'ITEMCLASS'){
+	                    
+    	                    $item_definition = new SmartestPlaceholderDefinition;
+    	                    if($item_definition->load($placeholder_name, $page, true, $item_id)){
+    	                        if($page_definition->getDraftAssetId() == $item_definition->getDraftAssetId()){
+    	                            $item_uses_default = true;
+    	                        }else{
+    	                            $item_uses_default = false;
+    	                        }
+    	                    }else{
+    	                        $item_uses_default = true;
+    	                    }
+    	                }
+	                
+    	                if($existing_render_data = unserialize($page_definition->getDraftRenderData())){
+    	                    if(is_array($existing_render_data) && is_array($params)){
+	                        
+    	                        foreach($params as $key => $value){
+    	                            if(isset($existing_render_data[$key])){
+    	                                $params[$key] = $existing_render_data[$key];
+    	                            }
+    	                        }
+                            }
+                        }
+	                
+    	                $this->send($page_definition->getDraftAssetId(), 'draft_asset_id');
+    	                $this->send($page_definition->getLiveAssetId(), 'live_asset_id');
+	                
     	            }else{
-    	                $this->send(true, 'require_choose_item');
-    	                $require_item = true;
+    	                $item_uses_default = false;
+    	                $is_defined = false;
+    	                $this->send($page_definition->getDraftAssetId(), 'draft_asset_id');
+    	                $existing_render_data = array();
     	            }
 	            
-                }else{
-                    // this is a meta page, but the item id is problematic
-                    $page = new SmartestItemPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
-                    $this->send(true, 'require_choose_item');
-                    $require_item = true;
-                }
-		        
-		    }else{
-		        // this is just a normal static page
-		        $item_id = '';
-		        $page = new SmartestPage;
-		        $this->send(false, 'require_choose_item');
-		    }
-		}else{
-		    $page = new SmartestPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
-		}
-		
-		if($page->hydrateBy('webid', $page_webid)){
-	        
-	        $page->setDraftMode(true);
-	        
-	        if(isset($require_item) && $require_item){
+    	            $this->send($item_uses_default, 'item_uses_default');
+    	            $this->send($is_defined, 'is_defined');
                 
-                $model = new SmartestModel;
+                    $asset = new SmartestAsset;
                 
-                if($model->hydrate($page->getDatasetId())){
-                    $items = $model->getSimpleItems($this->getSite()->getId());
-                    $this->send($items, 'items');
-                    $this->send($model, 'model');
-                    $this->send($page, 'page');
-                }
-                
-            }
-	        
-	        $placeholder = new SmartestPlaceholder;
-	        
-	        if($placeholder->hydrateBy('name', $placeholder_name)){
-	            
-	            $this->setTitle('Define Placeholder | '.$placeholder_name);
-	            
-	            $types_array = SmartestDataUtility::getAssetTypes();
-                
-                $page_definition = new SmartestPlaceholderDefinition;
-                
-                if($page_definition->load($placeholder_name, $page, true, $this->getRequestParameter('item_id'))){
-	                
-	                $is_defined = true;
-	                
-	                if($type_index[$page_webid] == 'ITEMCLASS'){
-	                    
-	                    $item_definition = new SmartestPlaceholderDefinition;
-	                    if($item_definition->load($placeholder_name, $page, true, $item_id)){
-	                        if($page_definition->getDraftAssetId() == $item_definition->getDraftAssetId()){
-	                            $item_uses_default = true;
-	                        }else{
-	                            $item_uses_default = false;
-	                        }
-	                    }else{
-	                        $item_uses_default = true;
-	                    }
-	                }
-	                
-	                if($existing_render_data = unserialize($page_definition->getDraftRenderData())){
-	                    if(is_array($existing_render_data) && is_array($params)){
-	                        
-	                        foreach($params as $key => $value){
-	                            if(isset($existing_render_data[$key])){
-	                                $params[$key] = $existing_render_data[$key];
-	                            }
-	                        }
-                        }
-                    }
-	                
-	                $this->send($page_definition->getDraftAssetId(), 'draft_asset_id');
-	                $this->send($page_definition->getLiveAssetId(), 'live_asset_id');
-	                
-	            }else{
-	                $item_uses_default = false;
-	                $is_defined = false;
-	                $this->send($page_definition->getDraftAssetId(), 'draft_asset_id');
-	                $existing_render_data = array();
-	            }
-	            
-	            $this->send($item_uses_default, 'item_uses_default');
-	            $this->send($is_defined, 'is_defined');
-                
-                $asset = new SmartestAsset;
-                
-                if($this->getRequestParameter('chosen_asset_id')){
+                    if($this->getRequestParameter('chosen_asset_id')){
                     
-                    $chosen_asset_id = (int) $this->getRequestParameter('chosen_asset_id');
-                    $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
+                        $chosen_asset_id = (int) $this->getRequestParameter('chosen_asset_id');
+                        $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
                     
-        	    }else{
-        	        
-        	        if($is_defined){
-        	            
-        	            // if asset is chosen
-        	            if($type_index[$page_webid] == 'ITEMCLASS' && $item_definition->load($placeholder_name, $page, true, $item_id)){
-        	                $chosen_asset_id = $item_definition->getDraftAssetId();
-        	            }else{
-        	                $chosen_asset_id = $page_definition->getDraftAssetId();
-    	                }
-    	                
-        	            $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
-        	        }else{
-        	            // No asset choasen. don't show params or 'continue' button
-        	            $chosen_asset_id = 0;
-        	            $chosen_asset_exists = false;
-        	        }
-        	    }
-        	    
-        	    if($chosen_asset_exists){
-        	        
-        	        $this->send($asset, 'asset');
-        	        
-        	        $type = $types_array[$asset->getType()];
-        	        
-        	        // Merge values for render data
-        	        
-        	        if(isset($type['param'])){
-
-            	        $raw_xml_params = $type['param'];
-                        $params = array();
-            	        foreach($raw_xml_params as $rxp){
-            	            
-            	            if(isset($rxp['default'])){
-            	                $params[$rxp['name']]['xml_default'] = $rxp['default'];
-            	                $params[$rxp['name']]['value'] = $rxp['default'];
-                            }else{
-                                $params[$rxp['name']]['xml_default'] = '';
-                                $params[$rxp['name']]['value'] = '';
-                            }
-                            
-                            $params[$rxp['name']]['type'] = $rxp['type'];
-                            $params[$rxp['name']]['asset_default'] = '';
-            	        }
-            	        
-            	        $this->send($type, 'asset_type');
-
             	    }else{
-            	        $params = array();
-            	    }
-            	    
-            	    $asset_params = $asset->getDefaultParameterValues();
-            	    
-            	    $this->send($asset_params, 'asset_params');
-            	    
-            	    foreach($params as $key=>$p){
-            	        // default values from xml are set above.
-            	        
-            	        // next, set values from asset
-            	        if(isset($asset_params[$key]) && strlen($asset_params[$key])){
-            	            // $params[$key]['value'] = $asset_params[$key];
-            	            // $params[$key]['asset_default'] = $asset_params[$key];
-            	        }
-            	        
-            	        // then, override any values that already exist
-            	        if(isset($existing_render_data[$key]) && strlen($existing_render_data[$key])){
-            	            $params[$key]['value'] = $existing_render_data[$key];
-            	        }
-        	        }
         	        
-            	    $this->send(true, 'valid_definition');
+            	        if($is_defined){
+        	            
+            	            // if asset is chosen
+            	            if($type_index[$page_webid] == 'ITEMCLASS' && $item_definition->load($placeholder_name, $page, true, $item_id)){
+            	                $chosen_asset_id = $item_definition->getDraftAssetId();
+            	            }else{
+            	                $chosen_asset_id = $page_definition->getDraftAssetId();
+        	                }
+    	                
+            	            $chosen_asset_exists = $asset->hydrate($chosen_asset_id);
+            	        }else{
+            	            // No asset choasen. don't show params or 'continue' button
+            	            $chosen_asset_id = 0;
+            	            $chosen_asset_exists = false;
+            	        }
+            	    }
+        	    
+            	    if($chosen_asset_exists){
+        	        
+            	        $this->send($asset, 'asset');
+        	        
+            	        $type = $types_array[$asset->getType()];
+        	        
+            	        // Merge values for render data
+        	        
+            	        if(isset($type['param'])){
+
+                	        $raw_xml_params = $type['param'];
+                            $params = array();
+                	        foreach($raw_xml_params as $rxp){
+            	            
+                	            if(isset($rxp['default'])){
+                	                $params[$rxp['name']]['xml_default'] = $rxp['default'];
+                	                $params[$rxp['name']]['value'] = $rxp['default'];
+                                }else{
+                                    $params[$rxp['name']]['xml_default'] = '';
+                                    $params[$rxp['name']]['value'] = '';
+                                }
+                            
+                                $params[$rxp['name']]['type'] = $rxp['type'];
+                                $params[$rxp['name']]['asset_default'] = '';
+                	        }
+            	        
+                	        $this->send($type, 'asset_type');
+
+                	    }else{
+                	        $params = array();
+                	    }
             	    
-    	        }else{
+                	    $asset_params = $asset->getDefaultParameterValues();
+            	    
+                	    $this->send($asset_params, 'asset_params');
+            	    
+                	    foreach($params as $key=>$p){
+                	        // default values from xml are set above.
+            	        
+                	        // next, set values from asset
+                	        if(isset($asset_params[$key]) && strlen($asset_params[$key])){
+                	            // $params[$key]['value'] = $asset_params[$key];
+                	            // $params[$key]['asset_default'] = $asset_params[$key];
+                	        }
+            	        
+                	        // then, override any values that already exist
+                	        if(isset($existing_render_data[$key]) && strlen($existing_render_data[$key])){
+                	            $params[$key]['value'] = $existing_render_data[$key];
+                	        }
+            	        }
+        	        
+                	    $this->send(true, 'valid_definition');
+            	    
+        	        }else{
     	            
-    	            $this->send(false, 'valid_definition');
+        	            $this->send(false, 'valid_definition');
     	            
+        	        }
+	            
+    	            $this->send($params, 'params');
+	            
+    	            $assets = $placeholder->getPossibleAssets($this->getSite()->getId());
+	            
+    	            $this->send($assets, 'assets');
+    	            $this->send($page, 'page');
+    	            $this->send($placeholder, 'placeholder');
+	            
     	        }
-	            
-	            $this->send($params, 'params');
-	            
-	            $assets = $placeholder->getPossibleAssets($this->getSite()->getId());
-	            
-	            $this->send($assets, 'assets');
-	            $this->send($page, 'page');
-	            $this->send($placeholder, 'placeholder');
-	            
-	        }
 	    
+            }else{
+                $this->addUserMessageToNextRequest("The page ID was not recognized", SM_USER_MESSAGE_WARNING);
+                $this->redirect('/smartest/pages');
+            }
+        
         }else{
-            $this->addUserMessageToNextRequest("The page ID was not recognized", SM_USER_MESSAGE_WARNING);
-            $this->redirect('/smartest/pages');
+            
+            $this->addUserMessageToNextRequest("You don't have permission to update placeholders.", SmartestUserMessage::ACCESS_DENIED);
+            $this->formForward();
+            
         }
         
 	}
@@ -3218,7 +3229,7 @@ class Pages extends SmartestSystemApplication{
 		
 	}
 
-	function getPageLists($get){
+	public function getPageLists($get){
 		
 		$this->setFormReturnUri();
 		
@@ -3232,7 +3243,7 @@ class Pages extends SmartestSystemApplication{
  		return array("pageListNames"=>$pageListNames,"page"=>$page,"version"=>$version,"templateMenuField"=>$page[$field],"site_id"=>$site_id);	
 	}
 	
-	function defineList($get){
+	public function defineList($get){
         
         $templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/ListItems/');
         
@@ -3301,7 +3312,7 @@ class Pages extends SmartestSystemApplication{
 	
 	}
 	
-	function saveList($get, $post){
+	public function saveList($get, $post){
 	    
 	    $list_name = $this->getRequestParameter('list_name');
         
@@ -3982,20 +3993,68 @@ class Pages extends SmartestSystemApplication{
 	
 	public function pageGroups(){
 	    
+	    $this->setFormReturnUri();
+	    $this->setFormReturnDescription('page groups');
+	    
 	    $pgh = new SmartestPageGroupsHelper;
 	    $groups = $pgh->getSiteGroups($this->getSite()->getId());
+	    $this->send($groups, 'groups');
+	    $this->setTitle('Page groups');
 	    
 	}
 	
 	public function addPageGroup(){
 	    
+	    $this->send($this->getSite()->getNormalPagesList(true, true), 'pages');
+	    
 	}
 	
 	public function insertPageGroup(){
 	    
+	    $label = $this->getRequestParameter('pagegroup_label');
+	    
+	    if(strlen($label)){
+	    
+    	    $name = SmartestStringHelper::toVarName($label);
+    
+    	    $pg = new SmartestPageGroup;
+    
+    	    if(!$pg->hydrateBy('name', $name) && !$pg->hydrateBy('label', $name)){
+	        
+    	        $pg->setName($name);
+    	        $pg->setLabel($label);
+    	        $pg->setSiteId($this->getSite()->getId());
+    	        $pg->save();
+    	        
+    	        $this->addUserMessageToNextRequest('Your new page group menu was saved successfully.', SmartestUserMessage::SUCCESS);
+	        
+    	        if($this->getRequestParameter('continue_to_pages')){
+    	            $this->redirect('/websitemanager/editPageGroup?group_id='.$pg->getId());
+                }else{
+                    $this->redirect('/smartest/pagegroups');
+                }
+            
+    	    }else{
+    	        $this->addUserMessage('A page group with that name already exists.', SmartestUserMessage::INFO);
+    	        $this->forward('websitemanager', 'addPageGroup');
+    	    }
+	    
+        }else{
+
+            $this->addUserMessage('You must enter a valid label for your page group.', SmartestUserMessage::ERROR);
+            $this->forward('websitemanager','addPageGroup');
+
+        }
+	    
 	}
 	
 	public function editPageGroup(){
+	    
+	    $group = new SmartestPageGroup;
+	    
+	    if($group->find($this->getRequestParameter('group_id'))){
+	        $this->send($group, 'pagegroup');
+	    }
 	    
 	}
 	

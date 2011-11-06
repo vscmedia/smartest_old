@@ -51,6 +51,7 @@ class Assets extends SmartestSystemApplication{
 		
 		$code = strtoupper($get["asset_type"]);
 		$mode = isset($get["mode"]) ? (int) $get["mode"] : 1;
+		$this->send($this->getApplicationPreference('asset_list_style', 'grid'), 'list_view');
 		
 		$this->send($mode, 'mode');
 		
@@ -302,6 +303,13 @@ class Assets extends SmartestSystemApplication{
 		$this->requireOpenProject();
 		$alh = new SmartestAssetsLibraryHelper;
 		
+		if($this->getRequestParameter('group_id') && !$this->getRequestParameter('for')){
+		    $group = new SmartestAssetGroup;
+		    if($group->find($this->getRequestParameter('group_id'))){
+		        $this->send($group, 'group');
+		    }
+	    }
+		
         if($this->getRequestParameter('asset_type')){
             
             $this->send(false, 'require_type_selection');
@@ -406,9 +414,34 @@ class Assets extends SmartestSystemApplication{
     		$this->send($form_include, 'form_include'); 
             
         }else{
-            $types = $alh->getTypes(array('templates'));
-            $this->send(true, 'require_type_selection');
-            $this->setTitle("Choose file type");
+            
+            if($this->getRequestParameter('group_id') && $group->getId() && !$this->getRequestParameter('asset_type')){
+	            $types = $group->getTypes();
+	            if(count($types) == 1){
+	                $this->send($types[0]['id'], 'type_code');
+	                $this->send($types[0], 'new_asset_type_info');
+	                $this->send(false, 'require_type_selection');
+	                
+	                // Can a new file be saved?
+                    if($types[0]['storage']['type'] != 'database' && $types[0]['storage']['type'] != 'external_translated'){
+        	            $path = SM_ROOT_DIR.$types[0]['storage']['location'];
+        	            $allow_save = is_writable($path);
+        	            $this->send($allow_save, 'allow_save');
+        	            $this->send($path, 'path');
+                    }else{
+                        $this->send(true, 'allow_save');
+                    }
+                    
+	            }else{
+	                $types = $group->getTypes();
+	                $this->send(true, 'require_type_selection');
+	            }
+            }else{
+                $types = $alh->getTypes(array('templates'));
+                $this->send(true, 'require_type_selection');
+                $this->setTitle("Choose file type");
+            }
+            
         }
         
         if($this->getRequestParameter('for') == 'placeholder'){
@@ -690,11 +723,16 @@ class Assets extends SmartestSystemApplication{
     		        
         		        // Upload file via html form
         		        case 'SM_ASSETINPUTTYPE_BROWSER_UPLOAD':
-        		        $upload = new SmartestUploadHelper('new_file');
-                        $upload->setUploadDirectory(SM_ROOT_DIR.'System/Temporary/');
-                        // creates a new unsaved asset from the file upload
-                        $ach->createNewAssetFromFileUpload($upload, $this->getRequestParameter('asset_label'));
-                        $asset = $ach->finish();
+        		        if(SmartestUploadHelper::uploadExists('new_file')){
+        		            $upload = new SmartestUploadHelper('new_file');
+                            $upload->setUploadDirectory(SM_ROOT_DIR.'System/Temporary/');
+                            // creates a new unsaved asset from the file upload
+                            $ach->createNewAssetFromFileUpload($upload, $this->getRequestParameter('asset_label'));
+                            $asset = $ach->finish();
+                        }else{
+                            $this->addUserMessage('You didn\'t attach a file to upload.', SmartestUserMessage::WARNING);
+                            $this->forward('assets', 'addAsset');
+                        }
     		            break;
     		        
         		        // Insert file contents via textarea
@@ -965,7 +1003,8 @@ class Assets extends SmartestSystemApplication{
 	
 	public function newAssetGroup($get){
 	    
-	    $asset_types = SmartestDataUtility::getAssetTypes();
+	    $alh = new SmartestAssetsLibraryHelper;
+	    $asset_types = $alh->getTypes(array('templates'));
 	    $placeholder_types = SmartestDataUtility::getAssetClassTypes(true);
 	    
 	    if($this->getRequestParameter('filter_type')){
@@ -1078,8 +1117,12 @@ class Assets extends SmartestSystemApplication{
 	        $group = new SmartestAssetGroup;
 	        
 	        if($group->find($this->getRequestParameter('group_id'))){
-	            $group->delete();
-	            $this->addUserMessageToNextRequest("The file group was deleted", SmartestUserMessage::SUCCESS);
+	            if($group->getIsSystem()){
+	                $this->addUserMessageToNextRequest("The file group is part of system functioning and could not be deleted.", SmartestUserMessage::INFO);
+	            }else{
+	                $group->delete();
+	                $this->addUserMessageToNextRequest("The file group was deleted", SmartestUserMessage::SUCCESS);
+                }
 	        }else{
 	            $this->addUserMessageToNextRequest("The group ID wasn't recognized.", SmartestUserMessage::ERROR);
 	        }
@@ -1122,6 +1165,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $group_id = $this->getRequestParameter('group_id');
 	    $mode = $this->getRequestParameter("mode", 1);
+	    $this->send($this->getApplicationPreference('asset_list_style', 'grid'), 'list_view');
 	    
 	    $this->setFormReturnUri();
 	    $this->setFormReturnDescription('file group');
@@ -1412,122 +1456,138 @@ class Assets extends SmartestSystemApplication{
     
     public function editAsset($get, $post){
         
-        $this->requireOpenProject();
+        if($this->getUser()->hasToken('modify_assets')){
         
-		$asset_id = $this->getRequestParameter('asset_id');
+            $this->requireOpenProject();
+        
+    		$asset_id = $this->getRequestParameter('asset_id');
 
-		if($this->getRequestParameter('from') == 'item_edit' && is_numeric($this->getRequestParameter('item_id'))){
-		    $ruri = '/datamanager/editItem?item_id='.$this->getRequestParameter('item_id');
-		    if($this->getRequestParameter('page_id')){
-		        $ruri .= '&page_id='.$this->getRequestParameter('page_id');
-		    }
+    		if($this->getRequestParameter('from') == 'item_edit' && is_numeric($this->getRequestParameter('item_id'))){
+    		    
+    		    $ruri = '/datamanager/editItem?item_id='.$this->getRequestParameter('item_id');
+    		    
+    		    if($this->getRequestParameter('page_id')){
+    		        $ruri .= '&page_id='.$this->getRequestParameter('page_id');
+    		    }
 		    
-		    $this->setTemporaryFormReturnUri($ruri);
+    		    $this->setTemporaryFormReturnUri($ruri);
 		    
-		    if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
-	            $this->setTemporaryFormReturnDescription(strtolower($item->getModel()->getName()));
-	        }
-		}
+    		    if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+    	            $this->setTemporaryFormReturnDescription(strtolower($item->getModel()->getName()));
+    	        }
+    		}
 
-		$asset = new SmartestAsset;
+    		$asset = new SmartestAsset;
 		
-		if($asset->find($asset_id)){
+    		if($asset->find($asset_id)){
             
-            $assettype_code = $asset->getType();
-			$types_data = SmartestDataUtility::getAssetTypes();
-			$default_params = $asset->getDefaultParams();
+                $assettype_code = $asset->getType();
+    			$types_data = SmartestDataUtility::getAssetTypes();
+    			$default_params = $asset->getDefaultParams();
 
-			if(array_key_exists($assettype_code, $types_data)){
+    			if(array_key_exists($assettype_code, $types_data)){
 
-			    $asset_type = $types_data[$assettype_code];
+    			    $asset_type = $types_data[$assettype_code];
 			    
-			    $asset->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
-			    $this->getUser()->addRecentlyEditedAssetById($asset->getId(), $this->getSite()->getId());
+    			    $asset->clearRecentlyEditedInstances($this->getSite()->getId(), $this->getUser()->getId());
+    			    $this->getUser()->addRecentlyEditedAssetById($asset->getId(), $this->getSite()->getId());
 			    
-			    if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
+    			    if(isset($asset_type['editable']) && SmartestStringHelper::toRealBool($asset_type['editable'])){
 
-    			    $formTemplateInclude = "edit.".strtolower(substr($assettype_code, 13)).".tpl";
+        			    $formTemplateInclude = "edit.".strtolower(substr($assettype_code, 13)).".tpl";
 
-    			    if($asset_type['storage']['type'] == 'database'){
-    			        if($asset->usesTextFragment()){
-    			            $content = htmlspecialchars($asset->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
+        			    if($asset_type['storage']['type'] == 'database'){
+        			        if($asset->usesTextFragment()){
+        			            $content = htmlspecialchars($asset->getTextFragment()->getContent(), ENT_COMPAT, 'UTF-8');
+        			        }
+    			        }else{
+    			            $file = SM_ROOT_DIR.$asset_type['storage'].$asset->getUrl();
+    			            $content = htmlspecialchars(SmartestFileSystemHelper::load($asset->getFullPathOnDisk()), ENT_COMPAT, 'UTF-8');
     			        }
-			        }else{
-			            $file = SM_ROOT_DIR.$asset_type['storage'].$asset->getUrl();
-			            $content = htmlspecialchars(SmartestFileSystemHelper::load($asset->getFullPathOnDisk()), ENT_COMPAT, 'UTF-8');
-			        }
                     
-                    if(isset($asset_type['source_editable']) && SmartestStringHelper::toRealBool($asset_type['source_editable'])){
-        		        $this->send(true, 'allow_source_edit');
-        		    }else{
-        		        $this->send(false, 'allow_source_edit');
-        		    }
+                        if(isset($asset_type['source_editable']) && SmartestStringHelper::toRealBool($asset_type['source_editable'])){
+            		        $this->send(true, 'allow_source_edit');
+            		    }else{
+            		        $this->send(false, 'allow_source_edit');
+            		    }
         		    
-        		    if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
-        		        $this->send(true, 'show_publish');
-        		        $this->send(true, 'show_attachments');
-        		    }else{
-        		        $this->send(false, 'show_publish');
-        		        $this->send(false, 'show_attachments');
-        		    }
+            		    if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
+            		        $this->send(true, 'show_publish');
+            		        $this->send(true, 'show_attachments');
+            		    }else{
+            		        $this->send(false, 'show_publish');
+            		        $this->send(false, 'show_attachments');
+            		    }
                     
-                    $content = SmartestStringHelper::protectSmartestTags($content);
+                        $content = SmartestStringHelper::protectSmartestTags($content);
                     
-			        $this->send($content, 'textfragment_content');
+    			        $this->send($content, 'textfragment_content');
 
-			    }else{
-			        $formTemplateInclude = "edit.default.tpl";
-			    }
+    			    }else{
+    			        $formTemplateInclude = "edit.default.tpl";
+    			    }
 			    
-			    if($asset_type['storage']['type'] != 'database'){
+    			    if($asset_type['storage']['type'] != 'database'){
     	            
-    	            // if(SmartestStringHelper::toRealBool($asset_type['editable'])){
+        	            // if(SmartestStringHelper::toRealBool($asset_type['editable'])){
     	            
-        	            $path = SM_ROOT_DIR.$asset_type['storage']['location'];
-        	            $dir_is_writable = is_writable($path);
-        	            $file_is_writable = is_writable($path.$asset->getUrl());
+            	            $path = SM_ROOT_DIR.$asset_type['storage']['location'];
+            	            $dir_is_writable = is_writable($path);
+            	            $file_is_writable = is_writable($path.$asset->getUrl());
         	            
-        	            $this->send($path, 'path');
-        	            $this->send($dir_is_writable, 'dir_is_writable');
-        	            $this->send($file_is_writable, 'file_is_writable');
+            	            $this->send($path, 'path');
+            	            $this->send($dir_is_writable, 'dir_is_writable');
+            	            $this->send($file_is_writable, 'file_is_writable');
     	            
-        	            $allow_save = $dir_is_writable && $file_is_writable;
+            	            $allow_save = $dir_is_writable && $file_is_writable;
         	            
-        	            $this->send($allow_save, 'allow_save');
+            	            $this->send($allow_save, 'allow_save');
     	            
-	                /* }else{
+    	                /* }else{
 	                    
-	                    $this->send(true, 'dir_is_writable');
+    	                    $this->send(true, 'dir_is_writable');
+            	            $this->send(true, 'file_is_writable');
+                            $this->send(true, 'allow_save');
+	                    
+    	                } */
+    	            
+                    }else{
+                        $this->send(true, 'dir_is_writable');
         	            $this->send(true, 'file_is_writable');
                         $this->send(true, 'allow_save');
-	                    
-	                } */
-    	            
-                }else{
-                    $this->send(true, 'dir_is_writable');
-    	            $this->send(true, 'file_is_writable');
-                    $this->send(true, 'allow_save');
-                }
+                    }
 
-    			$this->send($formTemplateInclude, "formTemplateInclude");
-    			$this->setTitle('Edit File | '.$asset_type['label']);
-    			$this->send($asset_type, 'asset_type');
-    			$this->send($asset->__toArray(), 'asset');
+        			$this->send($formTemplateInclude, "formTemplateInclude");
+        			$this->setTitle('Edit File | '.$asset_type['label']);
+        			$this->send($asset_type, 'asset_type');
+        			$this->send($asset->__toArray(), 'asset');
     			
-    			$this->send($asset->getGroups(), 'groups');
-    		    $this->send($asset->getPossibleGroups(), 'possible_groups');
+        			$this->send($asset->getGroups(), 'groups');
+        		    $this->send($asset->getPossibleGroups(), 'possible_groups');
     		    
-    		    $recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId(), $assettype_code);
-      	        $this->send($recent, 'recent_assets');
+        		    $recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId(), $assettype_code);
+          	        $this->send($recent, 'recent_assets');
 
 
-		    }else{
-		        // asset type is not supported
-		    }
+    		    }else{
+    		        // asset type is not supported
+    		        $this->addUserMessageToNextRequest('This file type currently isn\'t supported.', SmartestUserMessage::WARNING);
+        	        $this->formForward();
+    		    }
 
-		}else{
-		    // asset ID was not recognised
-		}
+    		}else{
+    		    // asset ID was not recognised
+    		    $this->addUserMessageToNextRequest('The file ID wasn\'t recognized.', SmartestUserMessage::ERROR);
+    	        $this->formForward();
+    		}
+		
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("You don't have permission to edit files.", SmartestUserMessage::ACCESS_DENIED);
+	        $this->formForward();
+	        
+	    }
+		
 	}
 	
 	function editTextFragmentSource($get, $post){
@@ -1898,6 +1958,7 @@ class Assets extends SmartestSystemApplication{
 			        if(isset($asset_type['parsable']) && SmartestStringHelper::toRealBool($asset_type['parsable'])){
         		        $this->send(true, 'show_preview');
         		        $this->send(true, 'show_attachments');
+        		        // $this->setTemporaryFormReturnUri();
         		    }else{
         		        $this->send(false, 'show_preview');
         		        $this->send(false, 'show_attachments');
@@ -2026,7 +2087,7 @@ class Assets extends SmartestSystemApplication{
                         $border = $current_def->getBorder();
                         $this->send($border, 'border');
                         
-                        // if($is_numeric($this->getRequestParameter('item_id'))){
+                        if($this->getRequestParameter('from') != 'pagePreviewDirectEdit'){
                 		    
                 		    $ruri = '/assets/textFragmentElements?asset_id='.$asset->getId();
                 		    
@@ -2055,11 +2116,13 @@ class Assets extends SmartestSystemApplication{
                 		    }
 
                 		    $this->setTemporaryFormReturnUri($ruri);
-
+                            
+                            // echo "Set temporary form return URI as ".$uri;
+                            
                 		    /* if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
                 	            $this->setTemporaryFormReturnDescription(strtolower($item->getModel()->getName()));
                 	        } */
-                		//}
+                		}
                 
                     }
                 

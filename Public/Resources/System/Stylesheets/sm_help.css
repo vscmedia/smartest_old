@@ -1,10 +1,12 @@
 #help{
-    position:absolute;
+    position:fixed;
     z-index:100;
     width:100%;
+    height:100%;
     top:0px;
     left:0px;
     padding-top:90px;
+    background-color:rgba(30, 30, 30, 0.3);
 }
 
 #help-viewer{
@@ -21,9 +23,9 @@
     border-radius:12px;
     -moz-border-radius:12px;
     
-    box-shadow: 6px 6px 15px #777;
-    -moz-box-shadow: 6px 6px 15px #777;
-    -webkit-box-shadow: 6px 6px 15px #777;
+    box-shadow: 0px 10px 22px #444;
+    -moz-box-shadow: 0px 10px 22px #444;
+    -webkit-box-shadow: 0px 10px 22px #444;
 }
 
 #help-viewer h1{
@@ -34,6 +36,16 @@
 #help-viewer h2{
     margin:0 0 8px 0;
     font-size:16px;
+}
+
+#help-viewer ul{
+    padding:0px;
+    margin:0 0 6px 20px;
+}
+
+#help-viewer li{
+    margin:0 0 3px 0;
+    font-size:12px;
 }
 
 #help-viewer p{
@@ -61,4 +73,31 @@
 
 #help-closer{
     float:right;
+    width:23px;
+    height:23px;
+    background-image:url(../Images/close_button_out.png);
+    display:inline-block;
+}
+
+#help-closer:hover{
+    background-image:url(../Images/close_button_over.png);
+}
+
+a.sm-help-link.button{
+    /* background-image:url(../Images/buttonized-help-link-icon.png);
+    background-repeat:no-repeat;
+    background-position:3px 3px; */
+    margin-top:1px;
+    color:#fff;
+    background-color:#999;
+    display:inline-block;
+    padding:2px 5px 2px 5px;
+    border-radius:10px;
+    -moz-border-radius:10px;
+    font-size:12px;
+}
+
+a.sm-help-link.button:hover{
+    background-color:#f90;
+    text-decoration:none;
 }

@@ -3,3 +3,7 @@ help:
     title: "Templates &amp; Models"
     keywords: [templates, models, data]
     content: data_in_templates.tpl
+  master_templates:
+    title: "Master templates"
+    keywords: [page, structure, templates]
+    content: master_templates.tpl

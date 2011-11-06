@@ -4,6 +4,8 @@
 <head>
 	<title><?sm:$this.page.formatted_title:?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="keywords" content="<?sm:$this.page.meta_keywords:?>" />
+	<meta name="description" content="<?sm:$this.page.meta_description:?>" />
 	<?sm:placeholder name="page_specific_javascript":?>
 	<?sm:placeholder name="page_specific_stylesheet":?>
 </head>

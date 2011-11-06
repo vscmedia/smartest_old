@@ -1,58 +1,3 @@
-<script language="javascript" type="text/javascript">
-
-/* var selectedPage = null;
-var selectedPageName = null;
-var lastRow;
-var lastRowColor;
-var treeNodes = new Array();
-var domain = '{$domain}'; */
-
-{literal}
-
-/* function setSelectedItem(item_id,pageName, rowColor){
-	
-	var row='item_'+item_id;
-	var editForm = document.getElementById('pageViewForm');
-	
-	rowColor='#'+rowColor;
-	selectedPage = item_id;
-	selectedPageName = pageName;
-	
-	document.getElementById('item-specific-actions').style.display = 'block';
-	
-	if(lastRow){
-		// document.getElementById(lastRow).style.backgroundColor=lastRowColor;
-	}
-	
-	// document.getElementById(row).style.backgroundColor='#99F';
-	
-	lastRow = row;
-	lastRowColor = rowColor;
-	editForm.itemproperty_id.value = item_id;
-}
-
-function workWithItem(pageAction){
-	
-	var editForm = document.getElementById('pageViewForm');
-	
-	if(editForm){
-		
-		editForm.action=pageAction;
-		editForm.submit();
-		
-	}
-}
-
-function viewPage(){
-
-	var pageURL = '{$domain}{$section}/editItemProperty?property_id='+selectedPage;
-	window.open(pageURL);
-	
-}  */
-
-{/literal}
-
-</script>
 <div id="work-area">
 
 {load_interface file="edit_model_tabs.tpl"}
@@ -85,7 +30,7 @@ function viewPage(){
 
 <ul class="actions-list" id="item-specific-actions" style="display:none">
 	<li><b>Selected item property</b></li>
-	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('editItemClassProperty'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this property</a></li>
+	<li class="permanent-action"><a href="#" onclick="workWithItem('editItemClassProperty'); return false;" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this property</a></li>
 	<li class="permanent-action"><a href="#" onclick="workWithItem('startItemClassPropertyRegularization'); return false;" class="right-nav-link"><img src="{$domain}Resources/Icons/wand.png" border="0" alt="" /> Regularize this property</a></li>
 	{if $can_delete_properties}<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this property?')){workWithItem('deleteProperty');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/package_delete.png" border="0" alt="" /> Delete this property</a></li>{/if}
 </ul>
@@ -93,7 +38,7 @@ function viewPage(){
 <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
     {if $can_add_properties}<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addPropertyToClass?class_id={$model.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a property to this model</a></li>{/if}
-    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/package_add.png" border="0" alt="" /> Add a new {$model.name|strtolower}</a></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}';" class="right-nav-link"> <img src="{$domain}Resources/Icons/add.png" border="0" alt="" /> Create a new {$model.name|strtolower}</a></li>
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">

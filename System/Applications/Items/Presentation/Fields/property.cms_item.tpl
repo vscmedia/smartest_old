@@ -3,6 +3,8 @@
 
 {item_select name=$name id=$property_id value=$value options=$property._options}
 
+{if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}
+
 {if $request_parameters.for != 'ipv'}
 
 <ul class="item_property_actions">
@@ -31,10 +33,6 @@
 {if $request_parameters.for != 'ipv'}
 
 {if $item.id}
-  
-  
-  
-{else}
 
 <script type="text/javascript">
 

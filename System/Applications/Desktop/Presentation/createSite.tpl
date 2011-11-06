@@ -23,7 +23,7 @@ var section = '{$section}';
 
 <div id="edit-form-layout">
   
-<input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+<input type="hidden" name="MAX_FILE_SIZE" value="2097152" />
 
 <div class="edit-form-row">
   <div class="form-section-label">Site Title</div>
@@ -33,6 +33,11 @@ var section = '{$section}';
 <div class="edit-form-row">
   <div class="form-section-label">Host name</div>
   <input type="text" style="width:200px" name="site_domain" value="" />
+</div>
+
+<div class="edit-form-row">
+  <div class="form-section-label">Logo</div>
+  <input type="file" name="site_logo" /><span class="form-hint">Optional: Pick an image to represent this site.</span>
 </div>
 
 <div class="edit-form-row">

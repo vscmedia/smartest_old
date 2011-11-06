@@ -107,7 +107,7 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
     }
     
     public function containsAttachmentTags(){
-        $c = !strpos($this->_properties['content'], '<?sm:att') === FALSE;
+        $c = !(strpos($this->_properties['content'], '<?sm:att') === FALSE);
         return $c;
     }
     

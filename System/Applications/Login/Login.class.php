@@ -67,9 +67,11 @@ class Login extends SmartestSystemApplication{
 		    if($this->getUser()->getId()){
 			    
 			    $last_site_id = $this->getCookie('SMARTEST_LPID');
+			    $allowed_site_ids = $this->getUser()->getAllowedSiteIds();
 			    
     	        if(is_numeric($last_site_id)){
-    	            if(in_array($last_site_id, $this->getUser()->getAllowedSiteIds())){
+    	            
+    	            if(in_array($last_site_id, $allowed_site_ids)){
     	                
     	                if(strlen($this->getCookie('SMARTEST_RET'))){
     	                    
@@ -102,10 +104,13 @@ class Login extends SmartestSystemApplication{
     	                $this->addUserMessageToNextRequest("Smartest could not return you to what you were last working on because you no longer have permission to work on that site.", SmartestUserMessage::ACCESS_DENIED);
     	                $this->redirect("/smartest");
     	            }
+    	            
     	        }else{
-    	            // No information remains about what the last edited project was
+    	            
     	            $this->redirect("/smartest");
+    	            
     	        }
+    	        
     	    }else{
     	        // User is not hydrated
     	        $this->redirect("/smartest");
@@ -118,6 +123,7 @@ class Login extends SmartestSystemApplication{
 	
 	public function doLogOut(){
 	    $this->clearCookie('SMARTEST_RET');
+	    $this->clearCookie('SMARTEST_LPID');
 		$this->_auth->logout();
 		$this->redirect("/smartest/login#logout");
 	}

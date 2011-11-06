@@ -28,7 +28,25 @@ function executeTransfer(){
 
 {load_interface file="edit_set_tabs.tpl"}
 
-<h3><a href="{$domain}smartest/models">Items</a> &gt; {if $model.id}<a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}sets/getItemClassSets?class_id={$model.id}">Sets</a>{else}<a href="{$domain}smartest/sets">Sets</a>{/if} &gt; {$set.label}</h3>
+<h3><a href="{$domain}smartest/models">Items</a> &gt; {if $model.id}<a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; <a href="{$domain}sets/getItemClassSets?class_id={$model.id}">Sets</a>{else}<a href="{$domain}smartest/sets">Sets</a>{/if} &gt; <span id="set-label-h3">{$set.label}</span></h3>
+
+<div class="edit-form-row">
+  <div class="form-section-label">Set label</div>
+  <p class="editable" id="set-label">{$set.label}</p>
+  <script type="text/javascript">
+  new Ajax.InPlaceEditor('set-label', sm_domain+'ajax:sets/updateSetLabelFromInPlaceEditField', {ldelim}
+    callback: function(form, value) {ldelim}
+      return 'set_id={$set.id}&new_label='+encodeURIComponent(value);
+    {rdelim},
+    onComplete: function(t, e){ldelim}
+      $('set-label-h3').update($('set-label').innerHTML);
+    {rdelim},
+    highlightColor: '#ffffff',
+    hoverClassName: 'editable-hover',
+    savingClassName: 'editable-saving'
+  {rdelim});
+  </script>
+</div>
 
 <div class="instruction">Use the arrow buttons below to move {$model.plural_name|lower} in and out of this set.</div>
 

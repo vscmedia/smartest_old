@@ -58,8 +58,6 @@
             IDs_string = IDs.join(',');
             $('submit-ajax').value = 'Save new order';
             $('submit-ajax').disabled=false;
-            // $('tester').update('Set ID:'+setId+' IDs:'+IDs_string);
-            // alert(typeof IDs);
           },
           
           constraint: false,
@@ -72,14 +70,12 @@
           
           $('submit-ajax').disabled = true;
           $('submit-ajax').value = 'Updating...';
-          // ;
+          
           new Ajax.Request(url, {
               method: 'post',
               parameters: {item_ids: IDs_string, set_id: setId},
               onSuccess: function(){
-                  // alert('The order of this set has been updated');
                   $('submit-ajax').value = 'Drag items to change order';
-                  // alert('IDs submitted: '+IDs);
               }
           });
       });

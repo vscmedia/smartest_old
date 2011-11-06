@@ -19,11 +19,9 @@
     <input type="hidden" name="group_id" id="item_id_input" value="" />
   </form>
 
-
   <ul class="{if count($groups) > 10}options-list{else}options-grid{/if}" id="{if count($groups) > 10}options_list{else}options_grid{/if}">
   {foreach from=$groups key="key" item="group"}
-    <li style="list-style:none;" 
-  			ondblclick="window.location='{$domain}{$section}/browseAssetGroup?group_id={$group.id}'">
+    <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/browseAssetGroup?group_id={$group.id}'">
   			<a class="option" id="item_{$group.id}" onclick="setSelectedItem('{$group.id}', 'fff');" >
   			  <img border="0" src="{$domain}Resources/Icons/folder.png">
   			  {$group.label}</a></li>
@@ -44,7 +42,7 @@
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_add.png" border="0" alt="" /> Create a new file group</a></li>
-  	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/assets'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all files by type</a></li>
+  	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/files/types'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all files by type</a></li>
   </ul>
   
 </div>

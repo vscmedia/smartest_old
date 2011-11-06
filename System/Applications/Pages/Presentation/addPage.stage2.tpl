@@ -66,16 +66,16 @@
   	  <div class="edit-form-row">
   	    <div class="form-section-label">Use Preset Layout</div>
   	    <select name="page_preset" onchange="{literal}if(this.value){document.getElementById('page_draft_template').disabled=true;}else{document.getElementById('page_draft_template').disabled=false;}{/literal}">
+  	      <option value="">No preset</option>
   	      {foreach from=$presets item="preset"}
   	      <option value="{$preset.plp_id}"{if $newPage.preset == $preset.plp_id} selected="selected"{/if}>{$preset.plp_label}</option>
   	      {/foreach}
-  	      <option value="">No preset</option>
   	    </select>
   	  </div>
   	{/if}
   	
   	  <div class="edit-form-row">
-  	    <div class="form-section-label">Main Template</div>{$disable_template_dropdown}
+  	    <div class="form-section-label">Main Template</div>
   	    <select name="page_draft_template" id="page_draft_template"{if $disable_template_dropdown} disabled="true"{/if}>
   	      {foreach from=$templates item="template"}
   	      <option value="{$template.url}"{if $newPage.draft_template == $template.url} selected="selected"{/if}>{$template.url}</option>

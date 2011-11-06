@@ -28,13 +28,7 @@ class SmartestEngine extends Smarty{
 		$this->_context = SM_CONTEXT_GENERAL;
 		
 		$this->controller = SmartestPersistentObject::get('controller');
-		// $this->_request_data = SmartestPersistentObject::get('controller')->getCurrentRequest();
 		$this->_request_data = SmartestPersistentObject::get('request_data');
-		
-		/* $this->section = $this->controller->getModuleName();
-		$this->method  = $this->controller->getMethodName();
-		$this->domain  = $this->controller->getDomain();
-		$this->get     = $this->controller->getRequestVariables(); */
 		
 		$this->templateHelper = new SmartestTemplateHelper;
 		$this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/Shared/";

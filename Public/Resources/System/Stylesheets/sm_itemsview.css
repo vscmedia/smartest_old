@@ -88,6 +88,10 @@ ul.options-grid li a img{
 	height:73px;
 }
 
+ul.options-grid li a img.list, ul.options-grid li a.selected-option img.list{
+	display:none;
+}
+
 ul.options-grid li a.selected-option img{
 	display:block;
 	margin-top:10px;
@@ -269,7 +273,14 @@ ul.options-list li a img{
 	margin-right:4px;
 	margin-top:5px;
 	width:16px;
-	height:18px;
+}
+
+ul.options-list li a img.grid, ul.options-list li a.selected-option img.grid{
+	display:none;
+}
+
+ul.options-list li a img.list, ul.options-list li a.selected-option img.list{
+	display:inline-block;
 }
 
 ul.options-list li a.selected-option img{
@@ -277,5 +288,6 @@ ul.options-list li a.selected-option img{
 	margin-right:4px;
 	margin-top:5px;
 	width:16px;
-	height:18px;
 }
+
+

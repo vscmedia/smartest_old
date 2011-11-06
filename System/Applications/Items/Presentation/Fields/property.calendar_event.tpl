@@ -222,3 +222,5 @@
 </div>
 
 </div><br clear="all" />
+
+{if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}

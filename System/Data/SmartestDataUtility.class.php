@@ -508,6 +508,27 @@ class SmartestDataUtility{
 	    return $types;
 	}
 	
+	public static function getSortableDataTypes($usage_filter=''){
+	    
+	    $types = self::getDataTypes($usage_filter);
+	    $sortable_types = array();
+	    
+	    foreach($types as $k=>$t){
+	        if(isset($t['sortable']) && SmartestStringHelper::toRealBool($t['sortable'])){
+	            $sortable_types[$k] = $t;
+	        }
+	    }
+	    
+	    return $sortable_types;
+	    
+	}
+	
+	public static function getSortableDataTypeCodes($usage_filter=''){
+	    
+	    return array_keys(self::getSortableDataTypes($usage_filter));
+	    
+	}
+	
 	/* static function getAssetTypesXmlData(){
 	    
 	    $file_path = SM_ROOT_DIR.'System/Core/Types/assettypes.xml';
@@ -845,6 +866,29 @@ class SmartestDataUtility{
 	    }
 	    
 	}
+	
+	/* public static function objectizeMany($values, $as_type, $fk_field='id'){
+	    
+	    if($object = self::getBlankObjectForDataType($as_type)){
+	        
+	        if($object instanceof SmartestStorableValue){
+	            // print_r ($value);
+	            if($object->hydrateFromStorableFormat($value)){
+	                return $object;
+	            }else{
+	                // object couldn't be hydrated
+	            }
+	        }else{
+	            throw new SmartestException("Class ".get_class($object)." must implement interface SmartestStorableValue");
+	        }
+	        
+	    }else{
+	        
+	        throw new SmartestException("Could not objectize value ".$value." as type '".$as_type."'");
+	        
+	    }
+	    
+	} */
 	
 	public static function objectizeFromRawFormData($value, $as_type, $fk_field='id'){
 	    

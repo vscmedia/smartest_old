@@ -188,6 +188,10 @@ class QuinceAction{
             
             // now call the function. If it forwards, this will be the last line that gets executed
             $result = call_user_func_array(array($this->_action_object, $this->_action), $args);
+            
+            // call the module's post-action function
+            $this->_action_object->__post();
+            
             return $result;
             
         }catch(Exception $e){
@@ -465,6 +469,7 @@ class QuinceBase{
     
     protected function __moduleConstruct(){}
     public function __pre(){}
+    public function __post(){}
     
 }
 

@@ -10,6 +10,8 @@ class SmartestSite extends SmartestBaseSite{
     protected $displayPages = array();
     protected $displayPagesIndex = 0;
     
+    public static $special_page_ids = array();
+    
 	protected function __objectConstruct(){
 		
 		$this->_table_prefix = 'site_';
@@ -28,17 +30,11 @@ class SmartestSite extends SmartestBaseSite{
 	    
 	}
 	
-	public function getPagesTree($draft_mode=true, $get_items=false, $normal_pages_only=false){
+	public function getPagesTree($draft_mode=true, $normal_pages_only=false){
 	    
-	    /* if($get_items){
-	        $items_suffix = '_with_child_items';
-	    }else{ */
-	        $items_suffix = '';
-	    // }
-	    
-	    if(SmartestCache::hasData('site_pages_tree_'.$this->getId().$items_suffix, true)){
+	    if(SmartestCache::hasData('site_pages_tree_'.$this->getId(), true)){
 			
-			$tree = SmartestCache::load('site_pages_tree_'.$this->getId().$items_suffix, true);
+			$tree = SmartestCache::load('site_pages_tree_'.$this->getId(), true);
 			
 		}else{
 		
@@ -49,11 +45,11 @@ class SmartestSite extends SmartestBaseSite{
 		    $tree = array();
 			$tree[0]["info"] = $home_page->__toArray();
 			$tree[0]["treeLevel"] = 0;
-			$tree[0]["children"] = $home_page->getPagesSubTree(1, $get_items);
+			$tree[0]["children"] = $home_page->getPagesSubTree(1);
 			
 			$tree[0]["child_items"] = array();
 			
-			SmartestCache::save('site_pages_tree_'.$this->getId().$items_suffix, $tree, -1, true);
+			SmartestCache::save('site_pages_tree_'.$this->getId(), $tree, -1, true);
 		
 		}
 		
@@ -61,11 +57,11 @@ class SmartestSite extends SmartestBaseSite{
 	    
 	}
 	
-	public function getPagesList($draft_mode=false, $get_items=false, $normal_pages_only=false){
+	public function getPagesList($draft_mode=false, $normal_pages_only=false){
 	    
 	    $this->displayPages = array();
 	    $this->displayPagesIndex = 0;
-	    $list = $this->getSerializedPageTree($this->getPagesTree($draft_mode, $get_items, $normal_pages_only));
+	    $list = $this->getSerializedPageTree($this->getPagesTree($draft_mode, $normal_pages_only));
 	    return $list;
 	    
 	}
@@ -95,23 +91,41 @@ class SmartestSite extends SmartestBaseSite{
 	}
 	
 	public function getSpecialPageIds(){
-        $ids = new SmartestParameterHolder('Special page IDs for site \''.$this->getName().'\'');
-        $ids->setParameter('tag_page_id', $this->getTagPageId());
-        $ids->setParameter('user_page_id', $this->getUserPageId());
-        $ids->setParameter('error_page_id', $this->getErrorPageId());
-        $ids->setParameter('search_page_id', $this->getSearchPageId());
-        return $ids;
+	    
+	    if(count(self::$special_page_ids)){
+	        return self::$special_page_ids;
+	    }else{
+            $ids = new SmartestParameterHolder('Special page IDs for site \''.$this->getName().'\'');
+            $ids->setParameter('tag_page_id', $this->getTagPageId());
+            $ids->setParameter('user_page_id', $this->getUserPageId());
+            $ids->setParameter('error_page_id', $this->getErrorPageId());
+            $ids->setParameter('search_page_id', $this->getSearchPageId());
+            self::$special_page_ids = $ids;
+            return $ids;
+        }
+        
     }
 	
-	public function getNormalPagesList(){
-	    $list = $this->getPagesList();
-	    foreach($list as $k=>$page){
-            if($page['info']['type'] != 'NORMAL' || $this->getSpecialPageIds()->hasValue($page['info']['id'])){
-	            unset($list[$k]);
-	        }
-	    }
+	public function getNormalPagesList($draft_mode=false, $return_plain_objects=false){
 	    
-	    return array_values($list);
+	    if($return_plain_objects){
+	        
+	        
+	        
+	    }else{
+	        
+	        $list = $this->getPagesList($draft_mode, true);
+	        
+    	    foreach($list as $k=>$page){
+                if($page['info']['type'] != 'NORMAL' || $this->getSpecialPageIds()->hasValue($page['info']['id'])){
+    	            unset($list[$k]);
+    	        }
+    	    }
+	    
+    	    return array_values($list);
+	    
+        }
+        
 	}
 	
 	public function getSearchResults($query){
@@ -312,9 +326,21 @@ class SmartestSite extends SmartestBaseSite{
 	}
 	
 	public function getUniqueId(){
-	    // TODO: Make a field to store this once it has been initially generated
-	    $site_id = implode(':', str_split(substr(md5($this->getId()), 0, 6), 2));
-	    $install_id = implode(':', str_split(substr(md5(SM_ROOT_DIR), 0, 6), 2));
+	    if(!strlen($this->_properties['unique_id'])){
+	        $new_id = $this->calculateUniqueId();
+	        $s = $this->copy();
+	        $s->setUniqueId($new_id);
+	        $s->save();
+	        $this->_properties['unique_id'] = $new_id;
+	        return $new_id;
+	    }else{
+	        return $this->_properties['unique_id'];
+	    }
+	}
+	
+	public function calculateUniqueId(){
+	    $site_id = implode(':', str_split(substr(md5($this->getName().SmartestStringHelper::random(40)), 0, 4), 2));
+	    $install_id = SmartestSystemSettingHelper::getInstallId();
 	    $id = $install_id.':'.$site_id;
 	    return $id;
 	}
@@ -353,6 +379,27 @@ class SmartestSite extends SmartestBaseSite{
         
     }
     
+    public function getLogoAsset(){
+        
+        $a = new SmartestSiteLogoAsset;
+        $a->find($this->getLogoImageAssetId());
+        return $a;
+        
+    }
+    
+    public function getImages($limit=null){
+        
+        $alh = new SmartestAssetsLibraryHelper;
+        $images = $alh->getAssetsByTypeCode(array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE'), $this->getId());
+        
+        if(is_numeric($limit) && $limit > 0){
+            return array_slice($images, 0, $limit);
+        }else{
+            return $images;
+        }
+        
+    }
+    
     public function offsetGet($offset){
         
         switch($offset){
@@ -366,6 +413,8 @@ class SmartestSite extends SmartestBaseSite{
             return $this->getErrorPageId();
             case "search_page_id":
             return $this->getSearchPageId();
+            case "logo":
+            return $this->getLogoAsset();
         }
         
         return parent::offsetGet($offset);

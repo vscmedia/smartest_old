@@ -9,7 +9,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 	protected $user;
 	protected $userLoggedIn;
 	
-	function __construct(){
+	public function __construct(){
 		
 		$this->database = SmartestPersistentObject::get('db:main');
 		
@@ -29,9 +29,9 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		}
 	}
 	
-	function checkLoginDetails($username, $password, $service){
+	public function checkLoginDetails($username, $password, $service){
 		
-		$sql = "SELECT * FROM Users WHERE username='".mysql_real_escape_string($username)."' AND password='".md5($password)."'";
+		$sql = "SELECT * FROM Users WHERE username='".mysql_real_escape_string($username)."'";
 		$user = $this->database->queryToArray($sql);
 		
 		if(count($user) > 0){
@@ -41,21 +41,48 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 			}else{
 			    $userObj = new SmartestUser;
 		    }
-		    
+	    
 			$userObj->hydrate($user[0]);
-			
+		
 			if($userObj->getActivated()){
-			
-    			$userObj->getTokens();
-			    SmartestSession::set('user:isAuthenticated', true);
-			    $this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
-			
-    			return $userObj;
-			
+		        
+		        if(strlen($userObj->getPasswordSalt())){
+		            
+		            if($userObj->getPassword() == md5($password.$userObj->getPasswordSalt())){
+		            
+    			        $userObj->getTokens();
+    			        SmartestSession::set('user:isAuthenticated', true);
+    			        $this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
+		
+        			    return $userObj;
+    			    
+			        }else{
+			            
+			            return false;
+			            
+			        }
+    			
+			    }else{
+			        
+			        if($userObj->getPassword() == md5($password)){
+			            
+			            $userObj->getTokens();
+			            $userObj->setPasswordWithSalt($password, SmartestStringHelper::random(40));
+			            $userObj->save();
+			            
+    			        SmartestSession::set('user:isAuthenticated', true);
+    			        $this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
+
+        			    return $userObj;
+			            
+			        }
+			        
+			    }
+		
 		    }else{
-		        
+	        
 		        return false;
-		        
+	        
 		    }
 			
 		}else{
@@ -63,7 +90,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		}
 	}
 	
-	function getUserIsLoggedIn(){
+	public function getUserIsLoggedIn(){
 		
 		if(SmartestSession::get('user:isAuthenticated')){
 			return true;

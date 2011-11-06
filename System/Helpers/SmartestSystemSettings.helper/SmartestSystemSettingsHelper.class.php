@@ -81,4 +81,41 @@ class SmartestSystemSettingHelper extends SmartestHelper{
 		}
 	}
 	
+	public static function getInstallId(){
+	    
+	    $ph = SmartestPersistentObject::get('prefs_helper');
+	    $value = $ph->getGlobalPreference('install_id', '0', '0');
+	    
+	    if(!strlen($value)){
+            $value = implode(':', str_split(substr(md5(SM_ROOT_DIR.$_SERVER["SERVER_ADDR"]), 0, 12), 2));
+            $ph->setGlobalPreference('install_id', $value, '0', '0');
+        }
+        
+        return $value;
+	    
+	}
+	
+	public static function getSiteLogosFileGroupId(){
+	    
+	    $ph = SmartestPersistentObject::get('prefs_helper');
+	    $id = $ph->getGlobalPreference('default_site_logo_asset_group_id', '0', '0');
+	    
+	    if(!strlen($id)){
+            $group = new SmartestAssetGroup;
+            $group->setLabel("Site logos");
+            $group->setName("site_logos");
+            $group->setIsSystem(1);
+            $group->setIsHidden(1);
+            $group->setShared(1);
+            $group->setFilterType("SM_SET_FILTERTYPE_ASSETCLASS");
+            $group->setFilterValue("SM_ASSETCLASS_STATIC_IMAGE");
+            $group->save();
+            $id = $group->getId();
+            $ph->setGlobalPreference('default_site_logo_asset_group_id', $id, '0', '0');
+        }
+        
+        return $id;
+	    
+	}
+	
 }

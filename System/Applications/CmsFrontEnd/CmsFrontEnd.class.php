@@ -308,7 +308,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        $asset_url = urldecode($this->getRequestParameter('url'));
 	        $asset_webid = $this->getRequestParameter('key');
 	        
-	        $sql = "SELECT * FROM Assets WHERE asset_site_id='".$this->_site->getId()."' AND asset_url='".$asset_url."' AND asset_webid='".$asset_webid."'";
+	        $sql = "SELECT * FROM Assets WHERE (asset_site_id='".$this->_site->getId()."' OR asset_shared='1') AND asset_url='".$asset_url."' AND asset_webid='".$asset_webid."'";
 	        $result = $database->queryToArray($sql);
 	        
 	        if(count($result)){

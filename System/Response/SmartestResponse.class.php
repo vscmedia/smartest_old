@@ -49,6 +49,7 @@ class SmartestResponse{
 	// Presentation variables defined in build() and used in finish()
 	private $_main_template;
 	private $_ui_template;
+	private $_display_enabled = true;
 	
 	// Preferences management
 	protected $_cached_global_preferences;
@@ -116,7 +117,9 @@ class SmartestResponse{
 	    SmartestFileSystemHelper::include_group(
 
         	'System/Data/SmartestQuery.class.php',
-        	'System/Data/SmartestQueryResultSet.class.php',
+        	'System/Data/SmartestQueryCondition.class.php',
+        	'System/Data/SmartestPseudoItemProperty.class.php',
+        	'System/Data/SmartestSortableItemReferenceSet.class.php',
         	'System/Data/SmartestManyToManyQuery.class.php',
         	'System/Data/SmartestObjectModelHelper.class.php',
         	'Library/Quince/Quince.class.php',
@@ -551,7 +554,9 @@ class SmartestResponse{
 			$this->_smarty->assign("sm_intended_interface", $this->_ui_template);
 		}
 		
-		if(!$default_tpl = $this->_controller->getCurrentRequest()->getMeta('template')){
+		if($this->_controller->getCurrentRequest()->getMeta('template') == 'none'){
+		    $this->_display_enabled = false;
+		}else if(!$default_tpl = $this->_controller->getCurrentRequest()->getMeta('template')){
 		    $default_tpl = '_default.tpl';
 		}
 		
@@ -578,7 +583,10 @@ class SmartestResponse{
 		    $this->_smarty->assign('sm_messages', self::$user_messages);
 	    }
 	    
-	    echo $this->fetch();
+	    if($this->_display_enabled){
+	        echo $this->fetch();
+        }
+        
 	    exit;
 	    
 	}

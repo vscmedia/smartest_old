@@ -175,7 +175,8 @@ class Sets extends SmartestSystemApplication{
 	        if($set->getType() == "DYNAMIC"){
 	            
 	            $du = new SmartestDataUtility;
-	            $sites = $du->getSites();
+	            // $sites = $du->getSites();
+	            $sites = $this->getUser()->getAllowedSites();
 	            $conditions = $set->getConditions();
 	            $this->send($sites, 'sites');
 	            $this->send($conditions, 'conditions');

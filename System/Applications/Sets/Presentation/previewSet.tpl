@@ -12,7 +12,7 @@
 {if $set.type == 'STATIC' || $count > 0}
 <div class="instruction">Found {$count} item{if $count != 1}s{/if} in this data set</div>
 {else}
-<div class="warning">Please note: This saved query is currently empty because there are no items that match its conditions.</div>
+<div class="warning">Please note: This saved query is currently empty because there are no items that match its conditions in the current mode. {help id="datamanager:query_modes"}What's a mode{/help}</div>
 {/if}
 
 <form action="{$domain}{$section}/previewSet" method="get" id="mode-form">
@@ -42,6 +42,7 @@
       <option value="8"{if $mode == 8} selected="selected"{/if}>Published {$model.plural_name|strtolower}, excluding those that are archived</option>
       {/if}
     </select>
+    {help id="datamanager:query_modes"}What's this?{/help}
   </div>
 </form>
 

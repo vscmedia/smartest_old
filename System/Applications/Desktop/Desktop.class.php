@@ -8,6 +8,8 @@ class Desktop extends SmartestSystemApplication{
         
         if($this->getSite() instanceof SmartestSite){
             
+            $this->forward('websitemanager', 'sitePages');
+            
             $this->setFormReturnUri();
             
             // code to assemble the desktop goes here
@@ -23,11 +25,21 @@ class Desktop extends SmartestSystemApplication{
             
             $this->setTitle('Choose a Site');
             $sites = $this->getUser()->getAllowedSites();
-
-    		$this->send($sites, 'sites');
-    		$this->send('sites', 'display');
-    		$this->send(count($sites), 'num_sites');
-    		$this->send($this->getUser()->hasToken('create_sites'), 'show_create_button');
+            
+            if(count($sites) == 1 && !$this->getUser()->hasToken('create_sites')){
+                
+                $this->getUser()->openSiteById($sites[0]->getId());
+                // This is like a reload, except a new request is not needed.
+                $this->forward('desktop', 'startPage');
+                
+            }else{
+            
+        		$this->send($sites, 'sites');
+        		$this->send('sites', 'display');
+        		$this->send(count($sites), 'num_sites');
+        		$this->send($this->getUser()->hasToken('create_sites'), 'show_create_button');
+    		
+		    }
     		
         }
         
@@ -68,25 +80,44 @@ class Desktop extends SmartestSystemApplication{
     
     public function editSite($get){
 	    
-	    if($this->getSite() instanceof SmartestSite){
+	    if($this->getUser()->hasToken('modify_site_parameters')){
+	    
+    	    if($this->getSite() instanceof SmartestSite){
 		    
-		    $site_id = $this->getSite()->getId();
+    		    $site_id = $this->getSite()->getId();
 		    
-		    $main_page_templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/Masters/');
+    		    $main_page_templates = SmartestFileSystemHelper::load(SM_ROOT_DIR.'Presentation/Masters/');
 		    
-		    $sitedetails = $this->getSite();
-		    $pages = $this->getSite()->getPagesList();
-            $this->send($pages, 'pages');
+    		    $sitedetails = $this->getSite();
+    		    $pages = $this->getSite()->getPagesList();
+                $this->send($pages, 'pages');
+                
+                $site_logos_group = new SmartestAssetGroup;
+                if($site_logos_group->find(SmartestSystemSettingHelper::getSiteLogosFileGroupId())){
+                    $logos = $site_logos_group->getMembers();
+                }else{
+                    $logos = array();
+                }
+                
+                $this->send($logos, 'logo_assets');
             
-            $this->setTitle("Edit Site Parameters");
-		    $this->send($sitedetails, 'site');
+                $this->setTitle("Edit Site Parameters");
+    		    $this->send($sitedetails, 'site');
+    		    // $this->send($sitedetails->getImages(100), 'site_images');
 		    
-	    }else{
+    	    }else{
 	        
-	        $this->addUserMessageToNextRequest('You must have an open site to open edit settings.', SmartestUserMessage::INFO);
+    	        $this->addUserMessageToNextRequest('You must have an open site to open edit settings.', SmartestUserMessage::INFO);
+    	        $this->redirect('/smartest');
+	        
+    	    }
+	    
+        }else{
+            
+            $this->addUserMessageToNextRequest('You don\'t have permission to edit settings.', SmartestUserMessage::ACCESS_DENIED);
 	        $this->redirect('/smartest');
-	        
-	    }
+            
+        }
 		
 	}
 	
@@ -100,12 +131,44 @@ class Desktop extends SmartestSystemApplication{
 	        $site->setTitleFormat($this->getRequestParameter('site_title_format'));
 	        $site->setDomain($this->getRequestParameter('site_domain'));
 	        $site->setIsEnabled((int) (bool) $this->getRequestParameter('site_is_enabled'));
-	        // $site->setTopPageId($this->getRequestParameter('site_top_page'));
 	        $site->setTagPageId($this->getRequestParameter('site_tag_page'));
 	        $site->setSearchPageId($this->getRequestParameter('site_search_page'));
 	        $site->setErrorPageId($this->getRequestParameter('site_error_page'));
 	        $site->setAdminEmail($this->getRequestParameter('site_admin_email'));
 	        $site->save();
+	        
+	        if(SmartestUploadHelper::uploadExists('site_logo')){
+	            
+	            $alh = new SmartestAssetsLibraryHelper;
+	            $upload = new SmartestUploadHelper('site_logo');
+                $upload->setUploadDirectory(SM_ROOT_DIR.'System/Temporary/');
+                $types = $alh->getPossibleTypesBySuffix($upload->getDotSuffix());
+                
+                if(count($types)){
+                    $t = $types[0]['type']['id'];
+                    
+                    $ach = new SmartestAssetCreationHelper($t);
+                    $ach->createNewAssetFromFileUpload($upload, "Logo for ".$site->getInternalLabel().' - '.date('M d Y'));
+                    
+                    $file = $ach->finish();
+                    $file->setShared(1);
+                    $file->setIsSystem(1);
+                    $file->setIsHidden(1);
+                    $file->save();
+                    
+                    $site->setLogoImageAssetId($file->getId());
+                    $site->save();
+                    
+                    $site_logos_group = new SmartestAssetGroup;
+                    
+                    if($site_logos_group->find(SmartestSystemSettingHelper::getSiteLogosFileGroupId())){
+                        $site_logos_group->addAssetById($file->getId());
+                    }
+                }
+	        }else{
+	            $site->setLogoImageAssetId($this->getRequestParameter('site_logo_image_asset_id'));
+	            $site->save();
+	        }
 	        
 	        if($this->getRequestParameter('site_user_page') == 'NEW' && !is_numeric($site->getUserPageId())){
 	            $p = new SmartestPage;
@@ -115,11 +178,12 @@ class Desktop extends SmartestSystemApplication{
 	            $p->setParent($site->getTopPageId());
         	    $p->setWebid(SmartestStringHelper::random(32));
         	    $p->setCreatedbyUserid($this->getUser()->getId());
-        	    $p->setOrderIndex(1021);
+        	    $p->setOrderIndex(1020);
         	    $p->save();
         	    $site->setUserPageId($p->getId());
-        	    SmartestCache::clear('site_pages_tree_'.$p->getSiteId(), true);
 	        }
+	        
+	        SmartestCache::clear('site_pages_tree_'.$site->getId(), true);
 	        
 		    $this->formForward();
 	    }
@@ -127,38 +191,22 @@ class Desktop extends SmartestSystemApplication{
     
     public function openSite($get){
 		
-		if(@$get['site_id']){
+		if($this->getRequestParameter('site_id')){
 		    
-		    if(in_array($get['site_id'], $this->getUser()->getAllowedSiteIds(true))){
+		    if($this->getUser()->openSiteById($this->getRequestParameter('site_id'))){
+		        $this->redirect('/smartest');
+		    }else{
+		        $this->addUserMessageToNextRequest('You don\'t have permission to access that site. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
+                SmartestLog::getInstance('site')->log("User ".$this->getUser()->__toString()." tried to access this site but is not currently granted permission to do so.");
+                $this->redirect('/smartest');
+		    }
 		    
-		        $site = new SmartestSite;
-		    
-		        if($site->find($get['site_id'])){
-			        
-			        SmartestSession::set('current_open_project', $site);
-			        $this->getUser()->reloadTokens();
-			        
-			        if(!$site->getDirectoryName()){
-			        
-			            SmartestSiteCreationHelper::createSiteDirectory($site);
-            		
-        		    }
-            		
-			        $this->redirect('/smartest');
-		        }
-		        
-	        }else{
-	            
-	            $this->addUserMessageToNextRequest('You don\'t have permission to access that site. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
-	            SmartestLog::getInstance('site')->log("User ".$this->getUser()->__toString()." tried to access this site but is not currently granted permission to do so.");
-	            $this->redirect('/smartest');
-	            
-	        }
 		}
 	}
 	
 	public function closeCurrentSite($get){
 		SmartestSession::clear('current_open_project');
+		$this->clearFormReturnInfo();
 		$this->getUser()->reloadTokens();
 		$this->redirect('/smartest');
 	}
@@ -191,9 +239,39 @@ class Desktop extends SmartestSystemApplication{
 	    
 	    try{
 	        $site = $sch->createNewSite($p);
-	        $this->openSite(array('site_id'=>$site->getId()));
+	        
+	        if(SmartestUploadHelper::uploadExists('site_logo')){
+	            
+	            $alh = new SmartestAssetsLibraryHelper;
+	            $upload = new SmartestUploadHelper('site_logo');
+                $upload->setUploadDirectory(SM_ROOT_DIR.'System/Temporary/');
+                
+                $ach = new SmartestAssetCreationHelper;
+                $ach->createNewAssetFromFileUpload($upload, "Logo for ".$site->getInternalLabel().' - '.date('M d Y'));
+                
+                if($file = $ach->finish()){
+                    
+                    $file->setShared(1);
+                    $file->setIsSystem(1);
+                    $file->setIsHidden(1);
+                    $file->save();
+                
+                    $site->setLogoImageAssetId($file->getId());
+                    $site->save();
+                
+                    $site_logos_group = new SmartestAssetGroup;
+                
+                    if($site_logos_group->find(SmartestSystemSettingHelper::getSiteLogosFileGroupId())){
+                        $site_logos_group->addAssetById($file->getId());
+                    }
+                
+                }
+                
+	        }
+	        
 	        $this->getUser()->reloadTokens();
-	        $this->addUserMessageToNextRequest("The site has successfully been created. You must now log out and back in again to start editing.", SmartestUserMessage::SUCCESS);
+	        $this->getUser()->openSiteById($site->getId());
+	        
 	    }catch(SmartestException $e){
 	        throw $e;
 	    }
@@ -428,6 +506,9 @@ class Desktop extends SmartestSystemApplication{
         // Install date
         $system_installed_timestamp = SmartestSystemHelper::getInstallDate(true);
         $this->send($system_installed_timestamp, 'system_installed_timestamp');
+        
+        // Install ID
+        $this->send(SmartestSystemSettingHelper::getInstallId(), 'system_install_id');
         
         // Version control
         $this->send(new SmartestBoolean(is_dir(SM_ROOT_DIR.'.svn/')), 'is_svn_checkout');

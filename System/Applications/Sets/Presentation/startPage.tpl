@@ -4,7 +4,7 @@
 
 {load_interface file="items_front_tabs.tpl"}
 
-<div class="instruction">Use Data Sets to organize your data into smaller groups.</div>
+<div class="instruction">Use Data Sets to organize your data into smaller groups. {help id="datamanager:sets"}What are sets?{/help}</div>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="set_id" id="item_id_input" value="" />

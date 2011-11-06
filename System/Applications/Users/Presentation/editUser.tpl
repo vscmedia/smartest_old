@@ -39,7 +39,7 @@ return true;
 
 {load_interface file="edit_user_tabs.tpl"}
 
-<h3 id="user">{if $user.id == $_user.id}Your profile{else}Edit user: {$user.fullname}{/if}</h3>
+<h3 id="user">Edit user: {if $user.id == $_user.id}You{else}{$user.fullname}{/if}</h3>
 
 <form id="updatuserdetails" name="updatuserdetails" action="{$domain}{$section}/updateUser" method="post">
 
@@ -85,6 +85,14 @@ return true;
     	<textarea name="user_bio" style="width:500px;height:60px">{$user.bio}</textarea>
     	</td>
  </tr>
+{if $require_password_changes && $user.id != $_user.id}
+<tr>
+	<td class="text" style="width:100px" valign="top"> Require password change </td>
+    <td align="left">
+    	<input type="checkbox" name="require_password_change" value="1"{if $user.password_change_required} checked="checked"{/if} /> (takes effect next time they log in)
+    	</td>
+ </tr>
+{/if}
 </table>
 
 <h3 style="margin-top:10px">{if $user.id == $_user.id}Your password{else}Update user's password{/if}</h3>

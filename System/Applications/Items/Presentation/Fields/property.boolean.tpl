@@ -2,3 +2,5 @@
 {capture name="property_id" assign="property_id"}item_property_{$property.id}{/capture}
 
 {boolean name=$name id=$property_id value=$value}
+
+{if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}

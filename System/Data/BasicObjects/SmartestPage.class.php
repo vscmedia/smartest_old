@@ -558,7 +558,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		
 	}
 	
-	public function getPagesSubTree($level=1, $get_items=false){
+	public function getPagesSubTree($level=1){
 	
 		$working_array = array();
 		$index = 0;
@@ -586,7 +586,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 			$working_array[$index]["info"] = $child;
 			$working_array[$index]["treeLevel"] = $int_level;
 			$new_level = $int_level + 1; 
-			$working_array[$index]["children"] = $child->getPagesSubTree($new_level, false);
+			$working_array[$index]["children"] = $child->getPagesSubTree($new_level);
 			
 			/* if($child->getType() == "ITEMCLASS" && $get_items){
 			    $set = $child->getDataSet();
@@ -738,6 +738,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function getParentPage($get_item_page=true, $draft_mode='AUTO'){
 	    
+	    if($this->isHomePage()){
+	        throw new SmartestException("Tried to get Parent of the top (home) page.");
+	    }
+	    
 	    if(!$this->_parent_page || $get_item_page){
 	        
 	        $helper = new SmartestPageManagementHelper;
@@ -807,7 +811,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	            
             }else{
 	            $parent = new SmartestPage;
-	            $parent->hydrate($this->getParent());
+	            $parent->find($this->getParent());
 	        }
 	        
 	        if(is_bool($draft_mode)){
@@ -892,7 +896,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	}
 	
 	public function getPageChildrenForWeb($sections_only=false){
-	    
+	    // echo $this->getId();
 	    $special_page_ids = array();
 	    
 	    if($this->getParentSite()->getTagPageId()){
@@ -1641,7 +1645,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    
 	    if($model->find($model_id)){
 	    
-	        $ds = new SmartestQueryResultSet($model->getId(), $model->getClassName(), $this->getDraftMode());
+	        $ds = new SmartestSortableItemReferenceSet($model, $this->getDraftMode());
 	    
 	        foreach($ids_array as $item_id){
 		        $ds->insertItemId($item_id);
@@ -1745,21 +1749,37 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	}
 	
 	public function getNavigationStructure(){
-		
+		// echo $this->getId();
 		$home_page_id = $this->getParentSite()->getTopPageId();
 		$home_page = new SmartestPage;
 		$home_page->hydrate($home_page_id);
 		$home_page->setDraftMode($this->getDraftMode());
 		
-		$this->getGrandParentPage();
+		/* if(!$this->isHomePage()){
+		    $this->getGrandParentPage();
+		} */
 		
 		$data = new SmartestParameterHolder('Page Navigation Structure');
 		
-		$data->setParameter('parent', $this->getParentPage());
-		$data->setParameter('section', $this->getSectionPage());
-		$data->setParameter('_breadcrumb_trail', $this->getPageBreadCrumbs());
-		$data->setParameter('sibling_level_pages', $this->getParentPage($this->getDraftMode())->getPageChildrenForWeb());
-		$data->setParameter('parent_level_pages', $this->getGrandParentPage($this->getDraftMode())->getPageChildrenForWeb());
+		if($this->isHomePage()){
+		    $data->setParameter('parent', null);
+		    $data->setParameter('section', $this);
+		    $data->setParameter('_breadcrumb_trail', array($this));
+		    $data->setParameter('sibling_level_pages', array());
+		    $data->setParameter('parent_level_pages', array());
+		}else{
+		    $data->setParameter('parent', $this->getParentPage());
+    		$data->setParameter('section', $this->getSectionPage());
+    		$data->setParameter('_breadcrumb_trail', $this->getPageBreadCrumbs());
+		    $data->setParameter('sibling_level_pages', $this->getParentPage($this->getDraftMode())->getPageChildrenForWeb());
+		    
+		    if($this->getParentPage()->isHomePage()){
+		        $data->setParameter('parent_level_pages', array($this->getParentPage($this->getDraftMode())));
+		    }else{
+		        $data->setParameter('parent_level_pages', $this->getGrandParentPage($this->getDraftMode())->getPageChildrenForWeb());
+	        }
+	    }
+	    
 		$data->setParameter('child_pages', $this->getPageChildrenForWeb());
 		$data->setParameter('main_sections', $home_page->getPageChildrenForWeb(true, $this->getDraftMode()));
 		$data->setParameter('related', $this->getRelatedContentForRender());
@@ -2138,15 +2158,26 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function getParentSite(){
 	    
+	    if(!$this->getSiteId()){
+	        // echo "getParentSite() called without hydration.";
+	        $e = new Exception;
+	        echo nl2br($e->getTraceAsString());
+	    }
+	    
 	    if(!$this->_parent_site){
+	        
 	        $sql = "SELECT * FROM Sites WHERE Sites.site_id='".$this->getSiteId()."'";
-            $result = $this->database->queryToArray($sql);
-            $s = new SmartestSite;
-            $s->hydrate($result[0]);
-            $this->_parent_site = $s;
+	        $result = $this->database->queryToArray($sql);
+	        
+	        if(count($result)){
+                $s = new SmartestSite;
+                $s->hydrate($result[0]);
+                $this->_parent_site = $s;
+            }
         }
         
         return $this->_parent_site;
+        
 	}
 	
 	public function getTitle(){

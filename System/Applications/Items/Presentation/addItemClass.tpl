@@ -22,6 +22,8 @@ function turnOffAutoPlural(){
 
 <h3><a href="{$domain}smartest/models">Items</a> &gt; Build a new model</h3>
 
+<div class="special-box">Unsure about what "models" are? {help id="datamanager:models"}click here{/help} before you go any further.</div>
+
 <form name="searchform" onsubmit="return liveSearchSubmit()" method="post" action="{$domain}{$section}/insertItemClass">
 <input type="hidden" name="stage" value="2" />
     

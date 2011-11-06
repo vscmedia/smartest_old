@@ -25,4 +25,61 @@ class AssetsAjax extends SmartestSystemApplication{
         
     }
     
+    public function setAssetLabelFromInPlaceEditField(){
+        
+        $asset = new SmartestAsset;
+	    
+	    if($asset->find($this->getRequestParameter('asset_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $asset->setLabel($this->getRequestParameter('new_label'));
+	        $asset->save();
+	        // echo 'true';
+	        echo $this->getRequestParameter('new_label');
+	        exit();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+        
+    }
+    
+    public function setAssetOwnerById(){
+        
+        $asset = new SmartestAsset;
+	    
+	    if($asset->find($this->getRequestParameter('asset_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $asset->setUserId($this->getRequestParameter('owner_id'));
+	        $asset->save();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+        
+    }
+    
+    public function setAssetShared(){
+        
+        $asset = new SmartestAsset;
+	    
+	    if($asset->find($this->getRequestParameter('asset_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $asset->setShared($this->getRequestParameter('is_shared'));
+	        $asset->save();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+        
+    }
+    
 }

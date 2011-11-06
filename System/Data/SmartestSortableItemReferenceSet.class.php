@@ -1,9 +1,8 @@
 <?php
 
-class SmartestQueryResultSet implements ArrayAccess, IteratorAggregate, Countable{
+class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate, Countable{
 	
-	protected $_model_id;
-	protected $_model_class;
+	protected $_model;
 	protected $_items = array();
 	protected $_unused_items = array();
 	protected $_item_ids = array();
@@ -14,9 +13,8 @@ class SmartestQueryResultSet implements ArrayAccess, IteratorAggregate, Countabl
 	protected $_is_draft = false;
 	protected $database;
 	
-	public function __construct($model_id, $model_class, $set_item_draft_mode=false){
-		$this->_model_id = $model_id;
-		$this->_model_class = $model_class;
+	public function __construct(SmartestModel $model, $set_item_draft_mode=false){
+		$this->_model = $model;
 		$this->_is_draft = $set_item_draft_mode;
 		$this->database = SmartestPersistentObject::get('db:main');
 	}
@@ -37,7 +35,7 @@ class SmartestQueryResultSet implements ArrayAccess, IteratorAggregate, Countabl
 	    
 	    if(count($this->_item_ids)){
 	        
-            $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemProperties, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model_id."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id";
+            $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemProperties, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id";
     
     	    if(!in_array($field, array(SmartestCmsItem::ID, SmartestCmsItem::NAME, SmartestCmsItem::NUM_COMMENTS, SmartestCmsItem::NUM_HITS, SmartestQuery::RANDOM))){
     	        $sql .= " AND ItemPropertyValues.itempropertyvalue_property_id=ItemProperties.itemproperty_id AND ItemPropertyValues.itempropertyvalue_property_id='".$field."'";
@@ -113,11 +111,13 @@ class SmartestQueryResultSet implements ArrayAccess, IteratorAggregate, Countabl
 	
 	public function insert($object){
 		
-		if($object instanceof $this->_model_class){
+		$c = $this->_model->getClassName();
+		
+		if($object instanceof $c){
 			$this->_items[] = $object;
 			$this->_items_retrieval_attempted = false;
 		}else{
-		    throw new SmartestException(sprintf("Cannot add object of type %s to result set of class %s", get_class($object), $this->_model_class));
+		    throw new SmartestException(sprintf("Cannot add object of type %s to result set of class %s", get_class($object), $this->_model->getClassName()));
 		}
 		
 	}
@@ -231,9 +231,12 @@ class SmartestQueryResultSet implements ArrayAccess, IteratorAggregate, Countabl
 		    $ids = array_slice($ids, 0, $limit);
 		}
 		
-		foreach($ids as $id){
+		$h = new SmartestCmsItemsHelper;
+		$this->_items = $h->hydrateUniformListFromIdsArray($ids, $this->_model->getId(), $this->_is_draft);
+		
+		/* foreach($ids as $id){
             
-            $obj = new $this->_model_class;
+            $obj = new $this->_model->getClassName();
         
             if($this->_is_draft){
                 $obj->setDraftMode(true);
@@ -243,7 +246,7 @@ class SmartestQueryResultSet implements ArrayAccess, IteratorAggregate, Countabl
                 $this->_items[] = $obj;
             }
             
-        }
+        } */
         
         $this->_items_retrieval_attempted = true;
         
