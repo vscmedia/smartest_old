@@ -179,7 +179,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                         foreach($result as $r){
                             $ids[] = $r['item_id'];
                         }
-                    
+                        
                         $obj = new $class;
                         $obj->hydrateFromStoredIdsArray($ids, $draft);
                         return $obj;

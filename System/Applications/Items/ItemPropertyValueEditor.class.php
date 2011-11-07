@@ -20,6 +20,35 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
                     $this->send($property->getPossibleValues(), 'options');
                     $item->getPropertyValueByNumericKey($property->getId());
                     $this->send($item->getPropertyValueByNumericKey($property->getId())->getIds(), 'selected_ids');
+                    
+                    $ruri = '/smartest/item/edit/'.$item->getId();
+        		    
+        		    if($this->getRequestParameter('from')){
+        		        $ruri .= '&from='.$this->getRequestParameter('from');
+        		    }
+        		    
+        		    if($this->getRequestParameter('item_id')){
+        		        $ruri .= '&item_id='.$this->getRequestParameter('item_id');
+        		    }
+        		    
+        		    if($this->getRequestParameter('page_id')){
+        		        $ruri .= '&page_id='.$this->getRequestParameter('page_id');
+        		    }
+        		    
+        		    if($this->getRequestParameter('author_id')){
+        		        $ruri .= '&author_id='.$this->getRequestParameter('author_id');
+        		    }
+        		    
+        		    if($this->getRequestParameter('search_query')){
+        		        $ruri .= '&search_query='.$this->getRequestParameter('search_query');
+        		    }
+        		    
+        		    if($this->getRequestParameter('tag')){
+        		        $ruri .= '&tag='.$this->getRequestParameter('tag');
+        		    }
+
+        		    $this->setTemporaryFormReturnUri($ruri);
+                    
                 }else{
                     $this->addUserMessageToNextRequest("Item and property are from different models", SmartestUserMessage::ERROR);
                     $this->formForward();
@@ -64,7 +93,7 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
                             $item->setPropertyValueByNumericKey($property->getId(), $ids);
                             $item->save();
                             $this->addUserMessageToNextRequest("The attached items for this property were successfully updated.", SmartestUserMessage::SUCCESS);
-                            $this->redirect('/datamanager/editItem?item_id='.$item->getId());
+                            $this->redirect('/smartest/item/edit/'.$item->getId());
                         
                         }else{
                             

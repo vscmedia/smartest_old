@@ -2334,6 +2334,7 @@ class Items extends SmartestSystemApplication{
             		$property->setRequired($this->getRequestParameter('itemproperty_required') ? 'TRUE' : 'FALSE');
             		$property->setItemClassId($model->getId());
             		$property->setWebid(SmartestStringHelper::random(16));
+            		$property->setOrderIndex($model->getNextPropertyOrderIndex());
 		
             		if($this->getRequestParameter('foreign_key_filter')){
             		    $property->setForeignKeyFilter($this->getRequestParameter('foreign_key_filter'));

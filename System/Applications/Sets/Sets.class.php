@@ -164,7 +164,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	}
 
-	function editSet($get, $post){  
+	public function editSet($get, $post){  
 	
 		$set_id = $this->getRequestParameter('set_id');
 	    
@@ -318,12 +318,10 @@ class Sets extends SmartestSystemApplication{
 	    
 	    if($c->find($this->getRequestParameter('condition_id'))){
 	        $c->delete();
+	        $this->redirect('/sets/editSet?set_id='.$c->getSetId());
 	    }else{
-	        
+	        $this->formForward();
 	    }
-	    
-	    $this->redirect('/sets/editSet?set_id='.$set->getId());
-	    // $this->formForward();
 	    
 	}
 	

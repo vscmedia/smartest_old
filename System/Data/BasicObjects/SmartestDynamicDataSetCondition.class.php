@@ -9,5 +9,14 @@ class SmartestDynamicDataSetCondition extends SmartestBaseDynamicDataSetConditio
 		$this->_table_name = 'SetRules';
 		
 	}
+	
+	public function getSet(){
+	    
+	    $s = new SmartestCmsItemSet;
+	    if($s->find($this->getSetId())){
+	        return $s;
+	    }
+	    
+	}
     
 }

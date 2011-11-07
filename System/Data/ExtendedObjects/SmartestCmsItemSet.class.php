@@ -282,8 +282,8 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
         }
         
         foreach($this->_set_members as $key=>$item){
-	                
-            $this->_set_member_ids[] = $item->getId();
+	        
+	        $this->_set_member_ids[] = $item->getId();
             $this->_set_member_webids[] = $item->getWebid();
             $this->_set_member_slugs[] = $item->getSlug();
             $this->_set_members[$key]->setDraftMode($draft);
@@ -484,6 +484,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
             $result->sort($this->getSortField(), $this->getSortDirection());
         }
         
+        // print_r($result);
         // returns a SmartestSortableItemReferenceSet object
         return $result;
 	    

@@ -79,17 +79,14 @@ class SmartestCmsItemsHelper{
     
     public function hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode=false){
         
-        return array_keys($this->_hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode));
+        return array_values($this->_hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode));
         
     }
     
     public function hydrateUniformListFromIdsArrayPreservingOrder($ids, $model_id, $draft_mode=false){
         
-        // $results = $this->getSquareDbDataFromIdsArray($ids, $model_id);
         $items = array();
-        // int_r($ids);
         $raw_items = $this->_hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode);
-        // print_r(array_keys($raw_items));
         
         foreach($ids as $id){
             $items[] = $raw_items[$id];

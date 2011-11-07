@@ -49,6 +49,19 @@ class SmartestModel extends SmartestBaseModel{
 	    
 	}
 	
+	public function getNextPropertyOrderIndex(){
+	    
+	    $next_index = 0;
+	    $sql = "SELECT itemproperty_order_index FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_properties['id']."' ORDER BY itemproperty_order_index DESC LIMIT 1";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    if(count($result)){
+	        $next_index = ((int) $result[0]['itemproperty_order_index']) + 1;
+	    }
+	    
+	    return $next_index;
+	}
+	
 	public function __postHydrationAction(){
 	    
 	    $this->_model_settings = new SmartestParameterHolder("Settings for model '".$this->_properties['name']."'");

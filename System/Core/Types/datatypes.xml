@@ -75,6 +75,7 @@
         <usage>field,itemproperty</usage>
         <class>SmartestNumeric</class>
         <sortable>true</sortable>
+        <quantity>true</quantity>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/numeric.tpl" />
@@ -130,6 +131,7 @@
         <usage>field,itemproperty,feed</usage>
         <class>SmartestDateTime</class>
         <sortable>true</sortable>
+        <quantity>true</quantity>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.timestamp.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/timestamp.tpl" />
@@ -142,6 +144,7 @@
         <usage>field,itemproperty,feed</usage>
         <class>SmartestDateTime</class>
         <sortable>true</sortable>
+        <quantity>true</quantity>
         <long>false</long>
         <render template="System/Presentation/WebPageBuilder/property.date.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/date.tpl" />
