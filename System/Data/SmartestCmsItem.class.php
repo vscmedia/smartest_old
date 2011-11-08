@@ -138,11 +138,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		
 	}
 	
-	function __call($name, $args){
+	public function __call($name, $args){
 		  throw new SmartestException("Call to undefined function: ".get_class($this).'->'.$name.'()');
 	}
 	
-	function getPropertyVarNames(){
+	public function getPropertyVarNames(){
 	    return array_keys($this->_varnames_lookup);
 	}
 	
@@ -885,7 +885,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    if(array_key_exists($key, $this->_properties)){
 	        
 	        try{
-	        
+	            
+	            if(!$this->_properties[$key]->getData()->hasItem()){
+	                $this->_properties[$key]->getData()->setItem($this);
+	            }
+    	        
     	        if($this->getDraftMode()){
     	            $raw_value = $this->_properties[$key]->getData()->getDraftContent();
                 }else{

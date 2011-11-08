@@ -109,7 +109,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	
 	protected function getSite(){
 	    
-	    if($this->getRequest()->getModule() != 'desktop' && $this->getRequest()->getModule() != 'loginscreen' && $this->getRequest()->getModule() != 'users' && $this->getRequest()->getModule() != 'help'){
+	    if($this->getRequest()->getModule() != 'desktop' && $this->getRequest()->getModule() != 'loginscreen' && $this->getRequest()->getModule() != 'users' && $this->getRequest()->getModule() != 'help' && $this->getRequest()->getModule() != 'website'){
 	        $this->requireOpenProject();
         }
         

@@ -103,13 +103,7 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
             return $this->hasAsset() ? $this->_asset : null;
             
             case "thumbnail":
-            
-            if($this->_asset->isImage()){
-                $percentage = $this->getThumbnailRelativeSize() > 1 ? $this->getThumbnailRelativeSize() : 10;
-                $this->_thumbnail_image = $this->_asset->getImage()->getResizedVersionFromPercentage($percentage);
-                return $this->_thumbnail_image;
-            }
-            
+            return $this->getThumbnailImage();
             break;
             
             case "asset_object":
@@ -221,6 +215,14 @@ class SmartestTextFragmentAttachment extends SmartestManyToManyLookup{
     
     public function getAsset(){
         return $this->_asset;
+    }
+    
+    public function getThumbnailImage(){
+        if($this->_asset->isImage()){
+            $percentage = $this->getThumbnailRelativeSize() > 1 ? $this->getThumbnailRelativeSize() : 10;
+            $this->_thumbnail_image = $this->_asset->getImage()->getResizedVersionFromPercentage($percentage);
+            return $this->_thumbnail_image;
+        }
     }
     
     public function hasTextFragment(){

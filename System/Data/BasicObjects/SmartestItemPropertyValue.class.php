@@ -8,7 +8,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     
     const OMISSION_ERROR = 100;
     
-    function init($item_id, $property_id){
+    public function init($item_id, $property_id){
         
         /* $sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_item_id='".$item_id."' AND itempropertyvalue_property_id='".$property_id."'";
         $result = $this->database->queryToArray($sql);
@@ -46,6 +46,10 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
             $property->hydrate($array);
             $this->_property = $property;
         }
+    }
+    
+    public function hasItem(){
+        return ($this->_item instanceof SmartestCmsItem);
     }
     
     public function setItem(SmartestCmsItem $item){
@@ -127,7 +131,6 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     }
                     
                     if($class == 'SmartestRenderableSingleItemTemplateAsset'){
-                        // print_r($obj);
                         $this->_item->disableTemplateProperty($this->_properties['property_id']);
                         $obj->setItem(&$this->_item);
                     }

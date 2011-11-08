@@ -174,32 +174,9 @@ class SmartestImage extends SmartestFile{
             
             $newversion = new SmartestImage;
             
-            switch($this->getImageType()){
-                
-                case self::JPEG;
-                if(imagejpeg($r, $full_path, 80)){
-                    imagedestroy($r);
-                    $newversion->loadFile($full_path);
-                    return $newversion;
-                }
-                break;
-                
-                case self::GIF;
-                if(imagegif($r, $full_path)){
-                    imagedestroy($r);
-                    $newversion->loadFile($full_path);
-                    return $newversion;
-                }
-                break;
-                
-                case self::PNG;
-                if(imagepng($r, $full_path, 0)){
-                    imagedestroy($r);
-                    $newversion->loadFile($full_path);
-                    return $newversion;
-                }
-                break;
-            
+            if($this->saveToFile($r, $full_path)){
+                $newversion->loadFile($full_path);
+                return $newversion;
             }
         
         }
@@ -214,7 +191,7 @@ class SmartestImage extends SmartestFile{
 
             case "JPG":
             case "JPEG":
-            $r = imagejpeg($resource, $path, 80);
+            $r = imagejpeg($resource, $path, 85);
             break;
 
             case "PNG":
@@ -264,7 +241,6 @@ class SmartestImage extends SmartestFile{
             
             if($this->saveToFile($this->_thumbnail_resource, $full_path)){
                 // saveToFile() automatically destroys image resource, making the following commented line unnecessary
-                // $this->clearThumbnailResource();
                 $thumbnail->loadFile($full_path);
                 return $thumbnail;
             }
@@ -298,8 +274,7 @@ class SmartestImage extends SmartestFile{
             
             $newversion = new SmartestImage;
             
-            if(imagepng($r, $full_path, 0)){
-                imagedestroy($r);
+            if($this->saveToFile($r, $full_path)){
                 $newversion->loadFile($full_path);
                 return $newversion;
             }
@@ -333,8 +308,7 @@ class SmartestImage extends SmartestFile{
             
             $newversion = new SmartestImage;
             
-            if(imagepng($r, $full_path, 0)){
-                imagedestroy($r);
+            if($this->saveToFile($r, $full_path)){
                 $newversion->loadFile($full_path);
                 return $newversion;
             }
@@ -360,18 +334,29 @@ class SmartestImage extends SmartestFile{
         if(is_file($full_file_path)){
             
             $new_file_path = SM_ROOT_DIR.'Public/Resources/System/Cache/Images/'.SmartestStringHelper::removeDotSuffix(SmartestFileSystemHelper::getFileName($this->_current_file_path)).'_O_'.SmartestStringHelper::removeDotSuffix(SmartestFileSystemHelper::getFileName($full_file_path)).'.'.$this->getSuffix();
-            $overlaid_image_resource = $this->createResource($full_file_path);
-            $new_image_rsrc = $this->getResource();
-            imagealphablending($new_image_rsrc, true);
-            imagesavealpha($new_image_rsrc, FALSE);
-            imagecopy($new_image_rsrc, $overlaid_image_resource, 0,0,0,0, $this->getWidth(), $this->getHeight());
             
-            if($this->saveToFile($new_image_rsrc, $new_file_path)){
-                // dispose of overlaid image resource to free up memory. The new image resource has already been disposed of by saveToFile(), assuming it was successful
-                imagedestroy($overlaid_image_resource);
-                $new_image = new SmartestImage;
-                $new_image->loadFile($new_file_path);
-                return $new_image;
+            if(is_file($new_file_path)){
+                
+                $img = new SmartestImage;
+                $img->loadFile($new_file_path);
+                return $img;
+                
+            }else{
+            
+                $overlaid_image_resource = $this->createResource($full_file_path);
+                $new_image_rsrc = $this->getResource();
+                imagealphablending($new_image_rsrc, true);
+                imagesavealpha($new_image_rsrc, FALSE);
+                imagecopy($new_image_rsrc, $overlaid_image_resource, 0,0,0,0, $this->getWidth(), $this->getHeight());
+            
+                if($this->saveToFile($new_image_rsrc, $new_file_path)){
+                    // dispose of overlaid image resource to free up memory. The new image resource has already been disposed of by saveToFile(), assuming it was successful
+                    imagedestroy($overlaid_image_resource);
+                    $new_image = new SmartestImage;
+                    $new_image->loadFile($new_file_path);
+                    return $new_image;
+                }
+            
             }
             
         }else{
@@ -397,43 +382,13 @@ class SmartestImage extends SmartestFile{
         
             $new_width = ceil($percentage/100*$this->getWidth());
             $new_height = ceil($percentage/100*$this->getHeight());
-            $this->_thumbnail_resource = ImageCreateTrueColor($new_width, $new_height);
-            imagecopyresampled($this->_thumbnail_resource, $this->getResource(), 0,0,0,0, $new_width, $new_height, $this->getWidth(), $this->getHeight());
+            $thumbnail_resource = ImageCreateTrueColor($new_width, $new_height);
+            imagecopyresampled($thumbnail_resource, $this->getResource(), 0,0,0,0, $new_width, $new_height, $this->getWidth(), $this->getHeight());
             $thumbnail = new SmartestImage;
             
-            switch($this->_image_type){
-            
-                case self::JPEG:
-            
-                if(imagejpeg($this->_thumbnail_resource, $full_path, 80)){
-                    $this->clearThumbnailResource();
-                    $thumbnail->loadFile($full_path);
-                    return $thumbnail;
-                }
-            
-                break;
-            
-                case self::PNG:
-
-                if(imagepng($this->_thumbnail_resource, $full_path, 1)){
-
-                    $this->clearThumbnailResource();
-                    $thumbnail->loadFile($full_path);
-                    return $thumbnail;
-                }
-            
-                break;
-            
-                case self::GIF:
-            
-                if(imagegif($this->_thumbnail_resource, $full_path)){
-                    $this->clearThumbnailResource();
-                    $thumbnail->loadFile($full_path);
-                    return $thumbnail;
-                }
-            
-                break;
-            
+            if($this->saveToFile($thumbnail_resource, $full_path)){
+                $thumbnail->loadFile($full_path);
+                return $thumbnail;
             }
         
         }
@@ -480,7 +435,7 @@ class SmartestImage extends SmartestFile{
     
     public function resize($percentage){
         
-        
+        return $this->getResizedVersionFromPercentage($percentage);
         
     }
     
@@ -549,16 +504,6 @@ class SmartestImage extends SmartestFile{
 	
 	public function offsetGet($offset){
 	    
-	    if(preg_match('/(\d+)x(\d+)/', $offset, $m)){
-	        return $this->resizeAndCrop($m[1], $m[2]);
-	    }elseif(preg_match('/square_(\d+)/', $offset, $m)){
-	        return $this->getSquareVersion($m[1]);
-	    }elseif(preg_match('/width_(\d+)/', $offset, $m)){
-	        return $this->restrictToWidth($m[1]);
-	    }elseif(preg_match('/height_(\d+)/', $offset, $m)){
-	        return $this->restrictToHeight($m[1]);
-	    }
-	    
 	    switch($offset){
 	        
 	        case "width":
@@ -570,6 +515,16 @@ class SmartestImage extends SmartestFile{
 	        case "web_path":
 	        return $this->getWebPath();
 	        
+	    }
+	    
+	    if(preg_match('/(\d+)x(\d+)/', $offset, $m)){
+	        return $this->resizeAndCrop($m[1], $m[2]);
+	    }elseif(preg_match('/square_(\d+)/', $offset, $m)){
+	        return $this->getSquareVersion($m[1]);
+	    }elseif(preg_match('/width_(\d+)/', $offset, $m)){
+	        return $this->restrictToWidth($m[1]);
+	    }elseif(preg_match('/height_(\d+)/', $offset, $m)){
+	        return $this->restrictToHeight($m[1]);
 	    }
 	    
 	    return parent::offsetGet($offset);
