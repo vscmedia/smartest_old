@@ -1,7 +1,7 @@
 {capture name="name" assign="name"}item[{$property.id}]{/capture}
 {capture name="property_id" assign="property_id"}item_property_{$property.id}{/capture}
 
-{item_select name=$name id=$property_id value=$value options=$property._options}
+{item_select name=$_input_data.name id=$_input_data.id value=$value options=$property._options}
 
 {if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}
 
@@ -34,7 +34,7 @@
 
 {if $item.id}
 
-<script type="text/javascript">
+{* <script type="text/javascript">
 
   $('new-item-button-{$property.id}').observe('click', function(){ldelim}
     if($('item-name').value.charAt(1)){ldelim}
@@ -44,7 +44,7 @@
     {rdelim}
   {rdelim});
   
-</script>
+</script> *}
 
 {/if}
 

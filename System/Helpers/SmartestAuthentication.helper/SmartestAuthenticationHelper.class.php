@@ -75,6 +75,10 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 
         			    return $userObj;
 			            
+			        }else{
+			            
+			            return false;
+			            
 			        }
 			        
 			    }

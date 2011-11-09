@@ -150,7 +150,7 @@ class SmartestQuery{
 		
 		if(count($this->conditions)){
 		    
-			// $array_values = array_values($this->conditions);
+			$array_values = array_values($this->conditions);
 			
 			$ids_array = $this->conditions[0]->getIdsArray();
 			

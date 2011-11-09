@@ -310,6 +310,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		$this->save();
 		SmartestLog::getInstance('system')->log('SmartestPage: Page \''.$this->_properties['title'].'\' was published.');
 		
+		SmartestCache::clear('site_pages_tree_'.$this->getSiteId(), true);
+		
 		// publish all textfragments on the page
 		foreach($this->getParsableTextFragments($item_id) as $tf){
 		    $tf->publish();
@@ -361,8 +363,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function unpublish($auto_save=true){
 		$this->setIsPublished('FALSE');
+		
 		if($auto_save){
 		    $this->save();
+		    SmartestCache::clear('site_pages_tree_'.$this->getSiteId(), true);
 		    SmartestLog::getInstance('system')->log('SmartestPage: Page \''.$this->_properties['title'].'\' was un-published.');
 	    }else{
 	        SmartestLog::getInstance('system')->log('SmartestPage: Page \''.$this->_properties['title'].'\' published was set to \'FALSE\'.');

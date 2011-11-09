@@ -45,6 +45,8 @@ class SmartestDownloadHelper extends SmartestHelper{
     public function setMimeType($mime_type){
         if(preg_match('/[\w]+\/[\w-]+/', $mime_type)){
             $this->_mime_type = $mime_type;
+        }else{
+            throw new SmartestException("Supplied MIME type is invalid: ".$mime_type);
         }
     }
     
@@ -89,10 +91,8 @@ class SmartestDownloadHelper extends SmartestHelper{
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: public');
         header("Content-Type: ".$this->_mime_type."; charset=utf-8\r\n");
-        // header('Content-Type: text/html; charset=utf-8');
         header("Content-Length: ".$this->getDownloadSize()."\r\n");
         header('Content-Disposition: attachment; filename='.$this->_download_filename." \r\n");
-        // readfile($this->_local_file);
         echo $this->getDowloadableContent();
         exit;
     }

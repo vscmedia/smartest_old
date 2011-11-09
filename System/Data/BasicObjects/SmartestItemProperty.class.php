@@ -388,9 +388,14 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	
 	public function getDefaultValue(){
 	    if($this->_properties['defaultvalue']){
-	        return SmartestDataUtility::objectize($this->_properties['defaultvalue'], $this->_properties['type']);
+	        try{
+	            $v = SmartestDataUtility::objectize($this->_properties['defaultvalue'], $this->_properties['datatype']);
+	            return $v;
+            }catch(SmartestException $e){
+                return false;
+            }
         }else{
-            
+            return false;
         }
 	}
 	
@@ -545,6 +550,9 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	        
 	        case "hint":
 	        return new SmartestString($this->getHint());
+	        
+	        case "default_value":
+	        return $this->getDefaultValue();
 	        
 	    }
 	    

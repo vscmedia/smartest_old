@@ -9,6 +9,7 @@ class SmartestModel extends SmartestBaseModel{
 		
 		// $this->_table_prefix = 'itemclass_';
 		// $this->_table_name = 'ItemClasses';
+		$this->_model_settings = new SmartestParameterHolder("Settings for new model");
 		
 	}
 	
@@ -64,7 +65,10 @@ class SmartestModel extends SmartestBaseModel{
 	
 	public function __postHydrationAction(){
 	    
-	    $this->_model_settings = new SmartestParameterHolder("Settings for model '".$this->_properties['name']."'");
+	    if(!$this->_model_settings){
+	        $this->_model_settings = new SmartestParameterHolder("Settings for model '".$this->_properties['name']."'");
+        }
+        
 		$s = unserialize($this->getSettings());
 		
 		if(is_array($s)){
@@ -203,6 +207,9 @@ class SmartestModel extends SmartestBaseModel{
 	        
 	        case "item_name_field_name":
 	        return $this->getItemNameFieldName();
+	        
+	        case "item_name_field_visible":
+	        return $this->getItemNameFieldVisible();
 	        
 	    }
 	    
@@ -841,6 +848,24 @@ class SmartestModel extends SmartestBaseModel{
         $sf = $c->getStorableFormat();
         
         return $this->setSettingValue('item_name_field_name', $sf);
+        
+    }
+    
+    public function getItemNameFieldVisible(){
+        
+        $raw = $this->getSettingValue('item_name_field_visible');
+        $c = is_null($raw) || SmartestStringHelper::toRealBool($raw) ? true : false;
+        // if(!$raw) $raw = 'Name';
+        return $c;
+        
+    }
+    
+    public function setItemNameFieldVisible($infv){
+        
+        $c = !SmartestStringHelper::toRealBool($infv) ? false : true;
+        // $sf = $c->getStorableFormat();
+        
+        return $this->setSettingValue('item_name_field_visible', $c);
         
     }
     

@@ -22,18 +22,22 @@
 <input type="hidden" name="property_id" id="property-id" value="" />
 {/if}
 
+{if $model.item_name_field_visible}
 <div class="edit-form-row">
   <div class="form-section-label">{$model.name} {$model.item_name_field_name}</div>
   <input type="text" name="item[_name]" value="Untitled {$model.name}" id="item-name" />
-</div>
+</div>{/if}
 
 {foreach from=$properties key="pid" item="property"}
 
 <div class="edit-form-row">
   <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}{if $can_edit_properties}<a style="float:right" href="{$domain}datamanager/editItemClassProperty?from=item_edit&amp;item_id={$item.id}&amp;itemproperty_id={$property.id}"><img src="{$domain}Resources/System/Images/edit_setting_minimal.png" alt="Edit this property" /></a>{/if}</div>
-  {item_field property=$property}
+  {item_field property=$property value=$property.default_value}
 </div>
-
+{foreachelse}
+<div class="warning">
+  There are no properties yet, so this model will likely be of only limited use. Why not try <a href="{$domain}{$section}datamanager/addPropertyToClass?class_id={$model.id}">adding some properties</a> and then come back here?
+</div>
 {/foreach}
 
 <div class="edit-form-row">

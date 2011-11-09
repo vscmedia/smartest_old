@@ -1,3 +1,4 @@
+{$value.php_class}
 {if empty($value)}
   Save item first, then you will be able to choose items.
 {else}

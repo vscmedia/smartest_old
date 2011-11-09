@@ -37,9 +37,14 @@ function turnOffAutoPlural(){
   <input id="plural" onkeyup="turnOffAutoPlural()" type="text" name="itemclass_plural_name" style="width:200px" /><span class="form-hint">ie "Articles", "Cars", "People"</span>
 </div>
 
+{* <div class="edit-form-row">
+  <div class="form-section-label">Use name field</div>
+  <input id="name-field-visible" type="checkbox" name="itemclass_name_field_visible" checked="checked" value="1" /><label for="name-field-visible">Give this model a built-in "name" field</label><span class="form-hint">Leave this as it is if you are unsure. You can rename this field later.</span>
+</div> *}
+
 <div class="edit-form-row">
   <div class="form-section-label">Shared</div>
-  <input id="shared" type="checkbox" name="itemclass_shared" checked="checked" value="1" /><label for="shared">Make this model available to all sites</label>
+  <input id="shared" type="checkbox" name="itemclass_shared" checked="checked" value="1" /><label for="shared">Make this model available to all sites</label> {help id="desktop:multisite"}What does this mean?{/help}
 </div>
 
 <div class="special-box">

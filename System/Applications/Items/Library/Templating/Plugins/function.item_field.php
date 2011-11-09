@@ -16,7 +16,15 @@ function smarty_function_item_field($params, &$smarty){
             
             $input_data = new SmartestParameterHolder('Edit item field '.$params['property']['name']);
             $input_data->setParameter('id', 'item_property_'.$params['property']['id']);
-            $input_data->setParameter('name', 'item['.$params['property']['id'].']');
+            
+            if(isset($params['name']) && strlen($params['name'])){
+                $input_data->setParameter('name', $params['name']);
+            }else{
+                $input_data->setParameter('name', 'item['.$params['property']['id'].']');
+            }
+            
+            // echo $input_data->getParameter('name');
+            
             $input_data->setParameter('required', SmartestStringHelper::toRealBool($params['property']['required']));
             
             if(is_file(constant('SM_CONTROLLER_MODULE_PRES_DIR').$file)){

@@ -69,6 +69,8 @@ class Login extends SmartestSystemApplication{
 			    $last_site_id = $this->getCookie('SMARTEST_LPID');
 			    $allowed_site_ids = $this->getUser()->getAllowedSiteIds();
 			    
+			    SmartestLog::getInstance('site')->log("{$this->getUser()->__toString()} logged in.", SmartestLog::USER_ACTION);
+			    
     	        if(is_numeric($last_site_id)){
     	            
     	            if(in_array($last_site_id, $allowed_site_ids)){

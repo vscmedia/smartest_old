@@ -39,14 +39,14 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
 	        
 	        if(in_array($field, array_merge(array_keys($p), array(SmartestCmsItem::ID, SmartestCmsItem::NAME, SmartestCmsItem::NUM_COMMENTS, SmartestCmsItem::NUM_HITS, SmartestQuery::RANDOM)))){
 	            
-	            if($this->_is_draft){
-    		        $content_field = "ItemPropertyValues.itempropertyvalue_draft_content";
-    		    }else{
-    		        $content_field = "ItemPropertyValues.itempropertyvalue_content";
-    		    }
-    		    
-    		    if(in_array($field, array_keys($p))){
-    		    
+	            if(in_array($field, array_keys($p))){
+    		        
+    		        if($this->_is_draft){
+        		        $content_field = "ItemPropertyValues.itempropertyvalue_draft_content";
+        		    }else{
+        		        $content_field = "ItemPropertyValues.itempropertyvalue_content";
+        		    }
+    		        
         		    $property = $p[$field];
         		    $property_type_info = $property->getTypeInfo();
     		    
@@ -60,18 +60,18 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
         		    }
         		    
         		    if(isset($property_type_info['quantity']) && SmartestStringHelper::toRealBool($property_type_info['quantity'])){
-    		            $sql = "SELECT DISTINCT CONVERT(".$content_field.",DECIMAL(10,5))";
+    		            $sql = "SELECT DISTINCT CONVERT(".$content_field.",DECIMAL(10,5)) AS content,";
 		            }else{
-		                $sql = "SELECT DISTINCT ".$content_field;
+		                $sql = "SELECT DISTINCT ".$content_field." AS content,";
 		            }
     		        
 		        }else{
 		            
-		            $sql = "SELECT DISTINCT ".$content_field;
+		            $sql = "SELECT DISTINCT";
 		            
 		        }
 	        
-                $sql .= " AS content, itempropertyvalue_item_id FROM Items, ItemProperties, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id";
+                $sql .= " itempropertyvalue_item_id FROM Items, ItemProperties, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id";
     
         	    if(!in_array($field, array(SmartestCmsItem::ID, SmartestCmsItem::NAME, SmartestCmsItem::NUM_COMMENTS, SmartestCmsItem::NUM_HITS, SmartestQuery::RANDOM))){
         	        $sql .= " AND ItemPropertyValues.itempropertyvalue_property_id=ItemProperties.itemproperty_id AND ItemPropertyValues.itempropertyvalue_property_id='".$field."'";
@@ -126,10 +126,9 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
     		
     		    }
     		
-        		// echo $sql;
         		$result = $this->database->queryToArray($sql);
-	
-    		    $ids = array();
+        		
+        		$ids = array();
 	
     		    foreach($result as $record){
     		        $ids[] = $record['itempropertyvalue_item_id'];
@@ -212,6 +211,10 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
 	    
 	    return $this->_simple_items;
 	    
+	}
+	
+	public function getIds(){
+	    return $this->_item_ids;
 	}
 	
 	public function getSimpleItemsPreservingOrder($limit=0){

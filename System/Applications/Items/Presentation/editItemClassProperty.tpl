@@ -60,11 +60,15 @@
     <div class="form-section-label">Hint text</div>
     <input type="text" name="itemproperty_hint" value="{$property.hint.html_escape}" />
   </div>
+  
+{if $property._type_info.valuetype != 'manytomany' && $property._type_info.valuetype != 'auto'}
 
   <div class="edit-form-row">
     <div class="form-section-label">Default value</div>
-    {item_field property=$property value=$property.default_value}
+    {item_field property=$property value=$property.default_value name="itemproperty_default_value"}
   </div>
+  
+{/if}
     
     <div class="edit-form-row">
         <div class="form-section-label">Required</div>

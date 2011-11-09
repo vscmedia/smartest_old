@@ -1942,6 +1942,16 @@ class Items extends SmartestSystemApplication{
 		    
     		    $property->setRequired($this->getRequestParameter('itemproperty_required') ? 'TRUE' : 'FALSE');
     		    $property->setHint($this->getRequestParameter('itemproperty_hint'));
+    		    
+    		    if($this->getRequestParameter('itemproperty_default_value')){
+    		        try{
+    		            if($v = SmartestDataUtility::objectizeFromRawFormData($this->getRequestParameter('itemproperty_default_value'), $property->getDataType())){
+    		                $property->setDefaultValue($v->getStorableFormat());
+    		            }
+    		        }catch(SmartestException $e){
+    		            
+    		        }
+    		    }
 		    
     		    if($property->getDataType() == 'SM_DATATYPE_ASSET' || $property->getDataType() == 'SM_DATATYPE_ASSET_DOWNLOAD'){
 		    
@@ -2247,6 +2257,10 @@ class Items extends SmartestSystemApplication{
         		    $model->setWebid(SmartestStringHelper::random(16));
         		    $model->setType('SM_ITEMCLASS_MODEL');
         		    $model->setSiteId($this->getSite()->getId());
+        		    
+        		    // This feature needs to be thought through some more:
+        		    // $model->setItemNameFieldVisible($this->getRequestParameter('itemclass_name_field_visible') ? 1 : 0);
+        		    $model->setItemNameFieldVisible(1);
         		    
         		    if($model->hasSameNameAsModelOnOtherSite()){
         		        $model->setShared(0);

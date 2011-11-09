@@ -484,8 +484,6 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
             $result->sort($this->getSortField(), $this->getSortDirection());
         }
         
-        // print_r($result);
-        // returns a SmartestSortableItemReferenceSet object
         return $result;
 	    
 	}
@@ -496,7 +494,8 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	        $mode = $this->_retrieve_mode;
 	    }
 	    
-	    return $this->getRawDynamicSetResultSet($mode, $query_data)->getItems();
+	    $rs = $this->getRawDynamicSetResultSet($mode, $query_data);
+	    return $rs->getItems();
 	    
 	}
 	

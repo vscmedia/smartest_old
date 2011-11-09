@@ -191,6 +191,8 @@ class SmartestLog{
         $backtrace_offset = (int) $backtrace_offset;
         $backtrace_offset = $backtrace_offset * -1;
         
+        $request_data = SmartestPersistentObject::get('request_data');
+        
         $bt_data = $this->getDebugInfo();
         $bt = isset($bt_data[3+$backtrace_offset]) ? $bt_data[3+$backtrace_offset] : $bt_data[2+$backtrace_offset];
         
@@ -202,6 +204,7 @@ class SmartestLog{
         $message = str_replace('%CLASS%', $bt['class'], $message);
         $message = str_replace('%CALLTYPE%', $bt['type'], $message);
         $message = str_replace('%FUNCTION%', $bt['function'], $message);
+        // $message = str_replace('%APPLICATIONID%');
         
         return $message."\n";
         
