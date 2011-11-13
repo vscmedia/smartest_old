@@ -121,6 +121,7 @@
       <p class="login-message notify" id="message-logout" style="display:none">You have been safely logged out of Smartest.</p>
       <p class="login-message notify" id="message-badauth" style="display:none">The username or password you provided were wrong.</p>
       <p class="login-message notify" id="message-session" style="display:none">Your session has timed out. Please log back into Smartest</p>
+      <p class="login-message notify" id="message-welcome" style="display:none">Welcome to Smartest. Submit the username and password you just chose to log in.</p>
 
       <form name="loginform" id="loginform" action="{$domain}smartest/login/check" method="post">
 
