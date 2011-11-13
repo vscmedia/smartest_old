@@ -19,6 +19,10 @@ var section = '{$section}';
 
 <h3 id="siteName">Create a New Site</h3>
 
+{foreach from=$errors item="error"}
+<div class="error">{$error}</div>
+{/foreach}
+
 <form id="updateSiteDetails" name="buildSite" action="{$domain}{$section}/buildSite" method="post" style="margin:0px" enctype="multipart/form-data">
 
 <div id="edit-form-layout">
@@ -48,8 +52,8 @@ var section = '{$section}';
 <div class="edit-form-row">
   <div class="form-section-label">Master template</div>
   <select name="site_master_template">
-    <option value="_DEFAULT">None for now, I will create one later</option>
     <option value="_BLANK"{if !$allow_create_master_tpl} disabled="disabled"{/if}>Create a new, blank template{if !$allow_create_master_tpl} (directory is not writable){/if}</option>
+    <option value="_DEFAULT">None for now, I will create one later</option>
     {foreach from=$templates item="template"}
     <option value="{$template.url}">Use {$template.url}</option>
     {/foreach}

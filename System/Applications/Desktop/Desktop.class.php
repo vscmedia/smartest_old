@@ -213,11 +213,13 @@ class Desktop extends SmartestSystemApplication{
 	
 	public function createSite(){
 	    if($this->getUser()->hasToken('create_sites')){
+	        $this->setTitle('Create a new site');
 	        $this->send(SM_ROOT_DIR, "sm_root_dir");
 	        $this->send($this->getUser(), "user");
 	        $tlh = new SmartestTemplatesLibraryHelper;
 	        $templates = $tlh->getSharedMasterTemplates();
 	        $this->send($templates, 'templates');
+	        if(!$this->getRequestParameter('site_name')){$this->setRequestParameter('site_name', 'My Smartest Web Site');}
 	        $this->send(is_writable(SM_ROOT_DIR.'Presentation/Masters/'), 'allow_create_master_tpl');
 	    }else{
 	        $this->addUserMessageToNextRequest('You don\'t have permission to create new sites. This action has been logged.', SmartestUserMessage::ACCESS_DENIED);
@@ -227,6 +229,28 @@ class Desktop extends SmartestSystemApplication{
 	}
 	
 	public function buildSite($get, $post){
+	    
+	    $errors = array();
+	    
+	    if(!$this->getRequestParameter('site_name')){
+	        $errors['name'] = "You must enter a title for your site.";
+	    }
+	    
+	    if(!$this->getRequestParameter('site_domain')){
+	        $errors['domain'] = "You must enter a host name for your site.";
+	    }
+	    
+	    if(!$this->getRequestParameter('site_admin_email')){
+	        $errors['email'] = "You must enter an administrator email address for your site.";
+	    }else if(!SmartestStringHelper::isEmailAddress($this->getRequestParameter('site_admin_email'))){
+	        $errors['email'] = "The administrator email address you entered was not valid.";
+	    }
+	    
+	    $this->send($errors, 'errors');
+	    
+	    if(count($errors)){
+	        $this->forward('desktop', 'createSite');
+	    }
 	    
 	    $p = new SmartestParameterHolder('New site parameters');
 	    $p->setParameter('site_name', $this->getRequestParameter('site_name'));
