@@ -22,6 +22,7 @@ ALTER TABLE  `Users` ADD  `user_password_salt` VARCHAR( 40 ) NOT NULL AFTER  `pa
 ALTER TABLE  `Users` ADD  `user_invert_name_order` TINYINT( 1 ) NOT NULL DEFAULT '0' AFTER  `user_lastname`;
 ALTER TABLE  `Users` ADD  `user_password_last_changed` INT( 11 ) UNSIGNED NOT NULL AFTER  `user_password_salt`;
 ALTER TABLE  `Sets` CHANGE  `set_is_system`  `set_is_system` TINYINT( 1 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `Users` ADD  `user_password_change_required` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `user_password_last_changed`;
 ALTER TABLE  `Sets` ADD  `set_is_hidden` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `set_is_system`;
 ALTER TABLE  `Assets` ADD  `asset_is_hidden` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `asset_is_system`;
 ALTER TABLE  `UsersTokensLookup` ADD  `utlookup_order_index` INT( 9 ) UNSIGNED NOT NULL DEFAULT  '0' AFTER  `utlookup_is_global`;

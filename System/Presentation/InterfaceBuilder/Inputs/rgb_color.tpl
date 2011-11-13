@@ -1,0 +1,1 @@
+<input type="text" class="color" name="{$_input_data.name}" value="{$_input_data.value}" id="{$_input_data.id}" />
