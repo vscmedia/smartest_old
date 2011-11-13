@@ -69,7 +69,7 @@
   
   <ul class="actions-list" id="template-specific-actions" style="display:none">
     <li><b>Selected template</b></li>
-    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){templates.workWithItem('updateContainerDefinition');}{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Use This Template</a></li>
+    <li class="permanent-action"><a href="#" onclick="return templates.workWithItem('updateContainerDefinition');" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Use This Template</a></li>
   </ul>
 
   <ul class="actions-list" id="non-specific-actions">

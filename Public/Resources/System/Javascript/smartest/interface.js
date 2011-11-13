@@ -421,6 +421,7 @@ Smartest.UI.OptionSet = Class.create({
         if((params && params.confirm && confirm(params.confirm)) || (!params || (params && !params.confirm))){
             this.form.action = sm_domain+app+"/"+action;
             this.form.submit();
+            return false;
         }else{
             return false;
         }

@@ -985,7 +985,10 @@ class SmartestModel extends SmartestBaseModel{
 			
 			// var_dump($this->isShared());
 			// echo 'Built: '.$this->getClassFilePath();
-			return file_put_contents($this->getClassFilePath(), $file);
+			if(file_put_contents($this->getClassFilePath(), $file)){
+			    // change the permissions so that FTP users can edit without messing about with permissions
+			    chmod($this->getClassFilePath(), 0666);
+			}
 		
 		}else{
 			return false;
