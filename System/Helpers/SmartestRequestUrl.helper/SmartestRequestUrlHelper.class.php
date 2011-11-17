@@ -58,7 +58,7 @@ class SmartestRequestUrlHelper{
 	
 	public function getNormalPageByUrl($url, $site_id){
 		
-		$sql = "SELECT Pages.*, PageUrls.pageurl_id, PageUrls.pageurl_type, PageUrls.pageurl_url FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
+		$sql = "SELECT Pages.*, PageUrls.pageurl_id, PageUrls.pageurl_type, PageUrls.pageurl_url, PageUrls.pageurl_redirect_type FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='NORMAL' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		$page = $this->database->queryToArray($sql);
 		
 		$p = new SmartestPage;
@@ -74,7 +74,7 @@ class SmartestRequestUrlHelper{
 			        return $p;
 			    }else{
 			        $this->_request_data = SmartestPersistentObject::get('request_data');
-			        throw new SmartestRedirectException($this->_request_data->g('domain').$p->getDefaultUrl());
+			        throw new SmartestRedirectException($this->_request_data->g('domain').$p->getDefaultUrl(), $page[0]['pageurl_redirect_type']);
 		        }
 			    
 			}else{
@@ -96,7 +96,7 @@ class SmartestRequestUrlHelper{
     		
     		if(count($page) > 0){
     		    $this->_request_data = SmartestPersistentObject::get('request_data');
-    			throw new SmartestRedirectException($this->_request_data->g('domain').$new_url);
+    			throw new SmartestRedirectException($this->_request_data->g('domain').$new_url, SmartestRedirectException::SEE_OTHER);
     		}
     		
 		}
@@ -198,7 +198,7 @@ class SmartestRequestUrlHelper{
 	
 	public function getItemClassPageByUrl($url, $site_id){
 		
-		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url, PageUrls.pageurl_type, PageUrls.pageurl_page_id, PageUrls.pageurl_item_id FROM Pages, PageUrls WHERE (Pages.page_type='ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_DATASET') AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
+		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url, PageUrls.pageurl_type, PageUrls.pageurl_redirect_type, PageUrls.pageurl_page_id, PageUrls.pageurl_item_id FROM Pages, PageUrls WHERE (Pages.page_type='ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_DATASET') AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		$dataset_pages = $this->database->queryToArray($sql);
 		
 		if(is_array($dataset_pages)){
@@ -241,7 +241,7 @@ class SmartestRequestUrlHelper{
     			        if($page->isAcceptableItem()){
     		                $page->assignPrincipalItem();
     		                // echo $page->getPrincipalItem()->getUrl();
-    		                throw new SmartestRedirectException($page->getPrincipalItem()->getUrl());
+    		                throw new SmartestRedirectException($page->getPrincipalItem()->getUrl(), $page_record['pageurl_redirect_type']);
     		            }
 		            
 	                }
@@ -303,7 +303,7 @@ class SmartestRequestUrlHelper{
         					    
         					    if($page_record['pageurl_type'] == 'SM_PAGEURL_INTERNAL_FORWARD'){
         					        // var_dump($page->getPrincipalItem());
-        					        throw new SmartestRedirectException($page->getPrincipalItem()->getUrl());
+        					        throw new SmartestRedirectException($page->getPrincipalItem()->getUrl(), $page_record['pageurl_redirect_type']);
         					    }else{
         					        // the item id was ok. get the item
         					        return $page;
@@ -341,7 +341,7 @@ class SmartestRequestUrlHelper{
 
             		if(count($page) > 0){
             		    $this->_request_data = SmartestPersistentObject::get('request_data');
-            			throw new SmartestRedirectException($this->_request_data->g('domain').$new_url);
+            			throw new SmartestRedirectException($this->_request_data->g('domain').$new_url, SmartestRedirectException::SEE_OTHER);
             		}
 			        
 			    }

@@ -32,6 +32,9 @@ module:
     author:
       url: /author/:username
       action: getAuthorProfile
+    new_securimage_captcha_image:
+      url: /captcha/new
+      action: getCaptchaImage
 #    sitemap:
 #      url: /sitemap.xml
 #      action: buildXmlSitemap

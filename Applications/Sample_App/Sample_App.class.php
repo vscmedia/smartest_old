@@ -15,7 +15,7 @@ class Sample_App extends SmartestApplication{
 
 	// SmartestApplication already has a constructor, so if you want your class to have a constructor,
 	// put it here called __moduleConstruct() and SmartestApplication will call it.
-	public function __moduleConstruct(){
+	public function __smartestApplicationInit(){
 		
 	}
 	

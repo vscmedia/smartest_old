@@ -170,6 +170,12 @@ class SmartestImage extends SmartestFile{
             }
             
             $r = ImageCreateTrueColor($width, $height);
+            
+            if($this->getImageType() == self::PNG){
+                imagealphablending($r, false);
+                imagesavealpha($r, true);
+            }
+            
             imagecopyresampled($r, $this->getResource(), 0,0, $src_x, $src_y, $width, $height, $src_w, $src_h);
             
             $newversion = new SmartestImage;
@@ -270,6 +276,12 @@ class SmartestImage extends SmartestFile{
             
             $new_height = (int) ($width/$this->getWidth()*$this->getHeight());
             $r = ImageCreateTrueColor($width, $new_height);
+            
+            if($this->getImageType() == self::PNG){
+                imagealphablending($r, false);
+                imagesavealpha($r, true);
+            }
+            
             imagecopyresampled($r, $this->getResource(), 0,0, 0,0, $width, $new_height, $this->getWidth(), $this->getHeight());
             
             $newversion = new SmartestImage;
@@ -304,6 +316,12 @@ class SmartestImage extends SmartestFile{
             
             $new_width = (int) ($height/$this->getHeight()*$this->getWidth());
             $r = ImageCreateTrueColor($new_width, $height);
+            
+            if($this->getImageType() == self::PNG){
+                imagealphablending($r, false);
+                imagesavealpha($r, true);
+            }
+            
             imagecopyresampled($r, $this->getResource(), 0,0, 0,0, $new_width, $height, $this->getWidth(), $this->getHeight());
             
             $newversion = new SmartestImage;
@@ -383,6 +401,12 @@ class SmartestImage extends SmartestFile{
             $new_width = ceil($percentage/100*$this->getWidth());
             $new_height = ceil($percentage/100*$this->getHeight());
             $thumbnail_resource = ImageCreateTrueColor($new_width, $new_height);
+            
+            if($this->getImageType() == self::PNG){
+                imagealphablending($thumbnail_resource, false);
+                imagesavealpha($thumbnail_resource, true);
+            }
+            
             imagecopyresampled($thumbnail_resource, $this->getResource(), 0,0,0,0, $new_width, $new_height, $this->getWidth(), $this->getHeight());
             $thumbnail = new SmartestImage;
             

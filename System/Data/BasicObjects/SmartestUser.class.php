@@ -5,6 +5,7 @@ class SmartestUser extends SmartestBaseUser{
 	protected $_tokens = array();
 	protected $_site_ids = array();
 	protected $_model_plural_names = array();
+	protected $_parameters; // Only useful when the user is being stored in the session
 	
 	protected function __objectConstruct(){
 		$this->_table_prefix = 'user_';
@@ -391,6 +392,29 @@ class SmartestUser extends SmartestBaseUser{
     public function getBio(){
         return stripslashes($this->_properties['bio']);
     }
+
+    
+    protected function instantiateParameters(){
+        if(!is_object($this->_parameters)){
+            $this->_parameters = new SmartestParameterHolder("Parameters for user: ".$this->__toString());
+        }
+    }
+    
+    public function getParameter($param){
+        $this->instantiateParameters();
+        return $this->_parameters->getParameter($param);
+    }
+    
+    public function setParameter($param, $value){
+        $this->instantiateParameters();
+        $this->_parameters->setParameter($param, $value);
+    }
+    
+    public function hasParameter($param){
+        $this->instantiateParameters();
+        return $this->_parameters->hasParameter($param);
+    }
+
     
     public function passwordIs($password){
         

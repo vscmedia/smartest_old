@@ -615,8 +615,9 @@ class QuinceRouter{
     public function fetchRouteUrl($rc, $matches=''){
         
         if(!is_array($matches)){
-            if (!preg_match('/^@(\w+):(\w+)(\?(.*))?$/', $rcd, $matches)){
-                if(preg_match('/^@(\w+)(\?(.*))?$/', $rcd, $f_matches)){
+            if (!preg_match('/^@(\w+):(\w+)(\?(.*))?$/', $rc, $matches)){
+                
+                if(preg_match('/^@(\w+)(\?(.*))?$/', $rc, $f_matches)){
                     $matches = array();
                     $matches[1] = $this->_request->getModule();
                     $matches[2] = $f_matches[1];
@@ -687,7 +688,7 @@ class QuinceRouter{
             
         }else{
             
-            throw new QuinceException('Route @'.$route['module'].':'.$route['name'].' is not defined.');
+            throw new QuinceException('Route @'.$matches[1].':'.$matches[2].' is not defined.');
             
         }
     }

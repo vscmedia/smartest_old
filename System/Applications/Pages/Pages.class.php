@@ -3765,7 +3765,7 @@ class Pages extends SmartestSystemApplication{
 		// return array("pageInfo"=>$page_info, "msg"=>$msg, "ishomepage"=>$ishomepage );
 	}
 	
-	public function addNewPageUrl($get,$post){
+	public function insertPageUrl($get,$post){
 		
 		$url = new SmartestPageUrl;
 		
@@ -3807,6 +3807,10 @@ class Pages extends SmartestSystemApplication{
 		                            $url->setType($this->getRequestParameter('forward_to_default') ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
 		                        }
 		                        
+		                        if($this->getRequestParameter('forward_to_default') && $this->getRequestParameter('forward_to_default') == '1'){
+		                            $url->setRedirectType($this->getRequestParameter('url_redirect_type'));
+		                        }
+		                        
 		                        $url->setItemId($item->getId());
 		                        $url->setUrl($url_string);
     		                    
@@ -3826,6 +3830,7 @@ class Pages extends SmartestSystemApplication{
 		        $url->save();
 		        SmartestLog::getInstance('site')->log("{$this->getUser()} added URL '{$this->getRequestParameter('page_url')}' to page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        $this->addUserMessageToNextRequest("The new URL was successully added.", SmartestUserMessage::SUCCESS);
+		        
 		    }else{
 		        $this->addUserMessageToNextRequest("The page ID was not recognized.", SmartestUserMessage::ERROR);
 		    }
@@ -3886,8 +3891,6 @@ class Pages extends SmartestSystemApplication{
 		
 		if($this->getRequestParameter('forward_to_default') && $this->getRequestParameter('forward_to_default') == 1){
 		    
-		    // echo $url->getType();
-		    
 		    if(in_array($url->getType(), array('SM_PAGEURL_ITEM_FORWARD', 'SM_PAGEURL_SINGLE_ITEM'))){
 		        
 		        if($url->getIsDefault()){
@@ -3907,6 +3910,8 @@ class Pages extends SmartestSystemApplication{
 		        }
 		    
 	        }
+	        
+	        $url->setRedirectType($this->getRequestParameter('url_redirect_type'));
 		    
 		}else{
 		    if(in_array($url->getType(), array('SM_PAGEURL_ITEM_FORWARD', 'SM_PAGEURL_SINGLE_ITEM'))){

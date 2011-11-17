@@ -302,10 +302,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                             // TODO: Allow inline transformations on certain asset types - resize, (rotate?)
                         }
                     
-                        if($asset->isImage()){
+                        /* if(!isset($params['width']) && !isset($params['height']) && $asset->isImage()){
                             $render_data['width'] = $asset->getWidth();
                             $render_data['height'] = $asset->getHeight();
-                        }
+                        } */
                     
                         if($this->getDraftMode()){
                             $rd = $placeholder->getDraftRenderData();
@@ -337,7 +337,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         	            }
         	            
         	            $asset->setAdditionalRenderData($render_data, true);
-        	            
+        	            // print_r($render_data);
         	            $html = $asset->render($this->getDraftMode());
                     
                     }
@@ -1186,7 +1186,13 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	
 	public function renderGoogleAnalyticsTags($params){
 	    
-	    if(!$this->getDraftMode()){
+	    if($this->getDraftMode()){
+	        
+	        if(isset($params['id'])){
+	            return '<!--On a live page, Google Analytics will be placed here ('.$params['id'].')-->';
+            }
+	        
+	    }else{
 	    
 	        if(isset($params['id'])){
 	        

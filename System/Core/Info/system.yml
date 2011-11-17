@@ -1,8 +1,8 @@
 system:
   info:
     version: "0.5"
-    revision: 487
-    build: "5,14"
+    revision: 488
+    build: "5,15"
     minimum_php_version: 5.2
     minimum_database_version: 18
     default_timezone: Europe/London
@@ -37,6 +37,7 @@ system:
     - website/buildXmlSitemap
     - website/buildRobotsTxtFile
     - website/getAuthorProfile
+    - website/getCaptchaImage
   content_interaction_methods:
     - website/renderPageFromUrl
     - website/renderPageFromId

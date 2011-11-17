@@ -186,16 +186,20 @@ class SmartestBasicRenderer extends SmartestEngine{
                         $actual_img_width = $this->_asset->getImage()->getWidth();
                         $actual_img_height = $this->_asset->getImage()->getHeight();
                         
-                        if(is_numeric($render_data['width']) && is_numeric($render_data['height']) && ($render_data['width'] != $actual_img_width || $render_data['height'] != $actual_img_height)){
+                        if(isset($render_data['width']) && isset($render_data['height']) && is_numeric($render_data['width']) && is_numeric($render_data['height']) && ($render_data['width'] != $actual_img_width || $render_data['height'] != $actual_img_height)){
                             $image = $this->_asset->getImage()->resizeAndCrop($render_data['width'], $render_data['height']);
+                        }else if(isset($render_data['width']) && is_numeric($render_data['width']) && (!isset($render_data['height']) || !is_numeric($render_data['height'])) && $render_data['width'] != $actual_img_width){
+                            $image = $this->_asset->getImage()->restrictToWidth($render_data['width']);
+                        }else if(isset($render_data['height']) && is_numeric($render_data['height']) && (!isset($render_data['width']) || !is_numeric($render_data['width'])) && $render_data['height'] != $actual_img_height){
+                            $image = $this->_asset->getImage()->restrictToHeight($render_data['height']);
                         }
                         
-                        if(!$render_data['width']){
-                            $render_data['width'] = $actual_img_width;
+                        if(!isset($render_data['width'])){
+                            $render_data['width'] = $image->getWidth();
                         }
 
                         if(!$render_data['height']){
-                            $render_data['height'] = $actual_img_height;
+                            $render_data['height'] = $image->getHeight();
                         }
                     
                     }

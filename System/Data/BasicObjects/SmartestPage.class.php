@@ -689,8 +689,12 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	                return $u;
 	            }
 	        }
-    
-	        return $urls[0];
+            
+            if($this->isHomePage()){
+                return '';
+            }else{
+                return $urls[0];
+            }
     
 	    }else{
 	        // No urls have been defined.
