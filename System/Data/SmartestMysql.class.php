@@ -169,12 +169,12 @@ class SmartestMysql{
 	}
 	
 	protected function getHashFromQuery($query){
-	    $query = preg_replace('/\s{2,}/', ' ', $query);
+	    /* $query = preg_replace('/\s{2,}/', ' ', $query);
 	    $query = str_replace("\n", "", $query);
 	    $query = str_replace(" = '", "='", $query);
 	    $query = str_replace(" != '", "!='", $query);
 	    $query = str_replace(' = "', '="', $query);
-	    $query = str_replace(' != "', '!="', $query);
+	    $query = str_replace(' != "', '!="', $query); */
 	    $hash = sha1($query);
 	    return $hash;
 	}
