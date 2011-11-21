@@ -37,3 +37,5 @@ ALTER TABLE  `ItemClasses` ADD  `itemclass_item_webid_format` VARCHAR( 32 ) NOT 
 ALTER TABLE  `Lists` CHANGE  `list_global`  `list_global` TINYINT( 1 ) NOT NULL DEFAULT  '1';
 ALTER TABLE  `PageProperties` CHANGE  `pageproperty_type`  `pageproperty_type` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '';
 DROP TABLE  `UserTokens`;
+UPDATE `Settings` SET `setting_value` = '474' WHERE `Settings`.`setting_type` ='SM_SETTINGTYPE_SYSTEM_META' AND `Settings`.`setting_name`='database_minimum_revision' LIMIT 1;
+UPDATE `Settings` SET `setting_value` = '18' WHERE `Settings`.`setting_type` ='SM_SETTINGTYPE_SYSTEM_META' AND `Settings`.`setting_name`='database_version' LIMIT 1;
