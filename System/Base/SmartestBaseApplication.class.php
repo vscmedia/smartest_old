@@ -66,8 +66,6 @@ class SmartestBaseApplication extends QuinceBase{
 	    
 	    if(SmartestSession::hasData('current_open_project')){
 		    
-		    $this->getPresentationLayer()->assign("sm_currentSite", SmartestSession::get('current_open_project'));
-		    
 		    if(SmartestSession::get('current_open_project') instanceof SmartestSite){
     	        $this->getPresentationLayer()->assign('show_left_nav_options', true);
     	    }else{

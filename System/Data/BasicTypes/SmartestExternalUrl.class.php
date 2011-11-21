@@ -23,6 +23,10 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
         return ''.$this->_value;
     }
     
+    public function isPresent(){
+        return (bool) strlen($this->_value);
+    }
+    
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_value;
@@ -35,13 +39,13 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
     
     // and two from SmartestSubmittableValue
     
-    public function renderInput($params){
-        
-    }
-    
     public function hydrateFromFormData($v){
         $this->setValue($v);
         return true;
+    }
+    
+    public function renderInput($params){
+        
     }
     
     public function offsetExists($offset){

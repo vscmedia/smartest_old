@@ -36,7 +36,7 @@
 </div>
 {foreachelse}
 <div class="warning">
-  There are no properties yet, so this model will likely be of only limited use. Why not try <a href="{$domain}{$section}datamanager/addPropertyToClass?class_id={$model.id}">adding some properties</a> and then come back here?
+  There are no properties yet, so this model will likely be of only limited use. Why not try <a href="{$domain}{$section}/addPropertyToClass?class_id={$model.id}">adding some properties</a> and then come back here?
 </div>
 {/foreach}
 

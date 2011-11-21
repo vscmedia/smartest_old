@@ -36,6 +36,10 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
         }
     }
     
+    public function isPresent(){
+        return (bool) count($this->_data);
+    }
+    
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return serialize($this->_value);

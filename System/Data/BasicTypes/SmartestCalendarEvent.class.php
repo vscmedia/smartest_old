@@ -30,6 +30,10 @@ class SmartestCalendarEvent implements SmartestBasicType, ArrayAccess, SmartestS
         return ($this->_start_time <= $time && $time < $this->_end_time);
     }
     
+    public function isPresent(){
+        return ($this->_start_time->isPresent() && $this->_end_time->isPresent());
+    }
+    
     public function __toString(){
         if($this->_is_all_day){
             return "All day on ".date($this->_day_format, $this->_start_time);

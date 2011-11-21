@@ -33,6 +33,10 @@ class Smartest8BitInteger implements SmartestBasicType, SmartestStorableValue, S
         }
     }
     
+    public function isPresent(){
+        return !is_null($this->_value);
+    }
+    
     public function getValue(){
         return $this->_value;
     }

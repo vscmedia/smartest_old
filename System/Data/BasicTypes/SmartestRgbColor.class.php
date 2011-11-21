@@ -83,6 +83,10 @@ class SmartestRgbColor implements ArrayAccess, SmartestBasicType, SmartestStorab
         return $this->toHex();
     }
     
+    public function isPresent(){
+        return $this->_red->isPresent() && $this->_green->isPresent() && $this->_blue->isPresent();
+    }
+    
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return '#'.$this->toHex();

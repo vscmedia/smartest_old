@@ -3769,16 +3769,18 @@ class Pages extends SmartestSystemApplication{
 		
 		$url = new SmartestPageUrl;
 		
-		if($url->existsOnSite($this->getRequestParameter('page_url'), $this->getSite()->getId())){
-		    $this->addUserMessageToNextRequest("That URL already exists for another page.", SmartestUserMessage::WARNING);
+		if(!$this->getRequestParameter('page_url')){
+		    $this->addUserMessage("You didn't enter a URL.", SmartestUserMessage::WARNING);
+		    $this->forward('websitemanager', 'addPageUrl');
+		}else if($url->existsOnSite($this->getRequestParameter('page_url'), $this->getSite()->getId())){
+		    $this->addUserMessage("That URL already exists for another page.", SmartestUserMessage::WARNING);
+		    $this->forward('websitemanager', 'addPageUrl');
 		}else{
 		    
 		    $page = new SmartestPage;
 		    
 		    if($page->hydrate($this->getRequestParameter('page_id'))){
-		        // $page->setDraftMode(true);
-		        // $page->addUrl($this->getRequestParameter('page_url'));
-		        // $page->save();
+		        
 		        $url = new SmartestPageUrl;
 		        $url->setPageId($page->getId());
 		        $url->setIsDefault(0);

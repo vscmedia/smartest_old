@@ -16,6 +16,10 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess, SmartestStorabl
         return $this->_value;
     }
     
+    public function isPresent(){
+        return !is_null($this->_value);
+    }
+    
     public function __toString(){
         return $this->_value ? 'TRUE' : 'FALSE';
     }

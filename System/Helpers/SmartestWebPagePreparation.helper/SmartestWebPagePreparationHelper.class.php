@@ -54,6 +54,7 @@ class SmartestWebPagePreparationHelper{
         $b->assign('domain', $this->_request->getDomain());
         $b->assign('method', $this->_request->getAction());
         $b->assign('section', $this->_request->getModule());
+        $b->assign('now', new SmartestDateTime(time()));
         
         if($ua = SmartestPersistentObject::get('userAgent')){
             $b->assign('sm_user_agent_json', $ua->getSimpleClientSideObjectAsJson());

@@ -23,6 +23,10 @@ a img{
     border:0px;
 }
 
+a{
+  outline: none;
+}
+
 div#top-strip{
 	background-color:#333;
 	color:#eee;

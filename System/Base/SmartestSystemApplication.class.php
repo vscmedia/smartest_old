@@ -45,6 +45,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
     public function __post(){
         
         $this->send($this->getFormReturnUri(), 'sm_cancel_uri');
+        $this->getPresentationLayer()->assign("_site", SmartestSession::get('current_open_project'));
         parent::__post();
         
     }

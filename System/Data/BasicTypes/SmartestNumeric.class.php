@@ -40,6 +40,10 @@ class SmartestNumeric implements SmartestBasicType, ArrayAccess, SmartestStorabl
         
     }
     
+    public function isPresent(){
+        return is_numeric($this->_value);
+    }
+    
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_value;

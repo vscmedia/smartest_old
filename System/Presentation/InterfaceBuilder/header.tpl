@@ -59,7 +59,7 @@
     </div>
     
     <div id="user-info">
-      {if $show_left_nav_options}Signed into {if $_user_allow_site_edit}<a href="{$domain}smartest/settings">{$sm_currentSite.internal_label|summary:"20"}</a>{else}<strong>{$sm_currentSite.internal_label|summary:"20"}</strong>{/if}{else}Signed in{/if} as <strong>{$_user.firstname} {$_user.lastname}</strong>{* if $show_left_nav_options} | <a href="{$domain}smartest/todo" id="sm-signout-link">To-do list</a>{/if *}&nbsp;&nbsp;<a href="{$domain}smartest/profile" id="sm-button-profile" class="sm-top-bar-button">&nbsp;</a>{if $show_left_nav_options && ($_user.num_allowed_sites > 1 || $_user_allow_site_create)}<a href="{$domain}smartest/close" id="sm-button-close" class="sm-top-bar-button">&nbsp;</a>{/if}<a href="{$domain}smartest/logout" id="sm-button-exit" class="sm-top-bar-button">&nbsp;</a>&nbsp;&nbsp;
+      {if $show_left_nav_options}Signed into {if $_user_allow_site_edit}<a href="{$domain}smartest/settings">{$_site.internal_label|summary:"20"}</a>{else}<strong>{$_site.internal_label|summary:"20"}</strong>{/if}{else}Signed in{/if} as <strong>{$_user.firstname} {$_user.lastname}</strong>{* if $show_left_nav_options} | <a href="{$domain}smartest/todo" id="sm-signout-link">To-do list</a>{/if *}&nbsp;&nbsp;<a href="{$domain}smartest/profile" id="sm-button-profile" class="sm-top-bar-button">&nbsp;</a>{if $show_left_nav_options && ($_user.num_allowed_sites > 1 || $_user_allow_site_create)}<a href="{$domain}smartest/close" id="sm-button-close" class="sm-top-bar-button">&nbsp;</a>{/if}<a href="{$domain}smartest/logout" id="sm-button-exit" class="sm-top-bar-button">&nbsp;</a>&nbsp;&nbsp;
     </div>
     
     <div id="help" style="display:none">

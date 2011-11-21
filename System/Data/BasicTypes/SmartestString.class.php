@@ -36,6 +36,10 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
         return SmartestStringHelper::getWordCount($this->_string);
     }
     
+    public function isPresent(){
+        return (bool) strlen($this->_string);
+    }
+    
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_string;

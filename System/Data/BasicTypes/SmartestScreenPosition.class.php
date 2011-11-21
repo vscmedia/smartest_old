@@ -25,6 +25,10 @@ class SmartestScreenPosition implements SmartestBasicType, ArrayAccess, Smartest
         return $this->_x.','.$this->_y;
     }
     
+    public function isPresent(){
+        return is_numeric($this->_x) && is_numeric($this->_y);
+    }
+    
     // The next two methods are for the SmartestStorableValue interface
     
     public function getStorableFormat(){

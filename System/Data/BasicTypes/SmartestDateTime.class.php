@@ -38,6 +38,10 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
         }
     }
     
+    public function isPresent(){
+        return (bool) $this->_value;
+    }
+    
     public function setValueFromUserInputArray($v){
         $this->hydrateFromFormData($v);
     }

@@ -1015,22 +1015,21 @@ class SmartestModel extends SmartestBaseModel{
 		    $constants .= $new_constant;
 		
 		}
-	
-		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt')){
+	    
+	    $file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt');
 		
-			$functions = $this->buildAutoClassFunctionCode();
-			$varnames_lookup = $this->buildAutoClassVarnameLookupCode();
-		
-			$file = str_replace('__THISCLASSNAME__', $this->getAutoClassName(), $file);
-			$file = str_replace('__THECONSTANTS__', $constants, $file);
-			$file = str_replace('__THEFUNCTIONS__', $functions, $file);
-			$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);
-			$file = str_replace('__MODEL_ID__', $this->getId(), $file);
-			$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
+		$functions = $this->buildAutoClassFunctionCode();
+		$varnames_lookup = $this->buildAutoClassVarnameLookupCode();
 	
-			file_put_contents($this->getAutoClassFilePath(), $file);
+		$file = str_replace('__THISCLASSNAME__', $this->getAutoClassName(), $file);
+		$file = str_replace('__THECONSTANTS__', $constants, $file);
+		$file = str_replace('__THEFUNCTIONS__', $functions, $file);
+		$file = str_replace('__THEVARNAMELOOKUPS__', $varnames_lookup, $file);
+		$file = str_replace('__MODEL_ID__', $this->getId(), $file);
+		$file = str_replace('__TIME__', date("Y-m-d h:i:s"), $file);
+	    
+	    if(file_put_contents($this->getAutoClassFilePath(), $file)){
 			return true;
-		
 		}else{
 			return false;
 		}

@@ -73,12 +73,12 @@
       </tr>
       <tr>
         <td class="field-name">Original site:</td>
-        <td>{$asset.site.label}</td>
+        <td>{$asset.site.internal_label}</td>
       </tr>
       <tr>
         <td class="field-name">Shared with other sites:</td>
         <td>
-          <input type="checkbox" id="asset-shared" name="asset_shared" value="1"{if $asset.shared==1} checked="checked"{/if} />
+          <input type="checkbox" id="asset-shared" name="asset_shared" value="1"{if $asset.shared==1} checked="checked"{if $asset.site_id!=$_site.id} disabled="disabled"{/if}{/if} />{if $asset.site_id!=$_site.id}<span class="form-hint">File cannot be un-shared because it belongs to a different site. To set sharing, edit the file in the site where it was created.</span>{/if}
           <script type="text/javascript">
           {literal}
           $('asset-shared').observe('click', function(){
