@@ -41,6 +41,28 @@ class SmartestSystemHelper{
         
     }
     
+    public static function getSmartestVersionInfo(){
+        
+        $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+        
+        $info = new SmartestParameterHolder("Smartest Version Information");
+        $info->setParameter('revision', $sys['system']['info']['revision']);
+        $info->setParameter('version', $sys['system']['info']['version']);
+        $info->setParameter('minimum_database_version', $sys['system']['info']['minimum_database_version']);
+        $info->setParameter('minimum_php_version', $sys['system']['info']['minimum_php_version']);
+        
+        // calculate build
+        $revision = (int) $sys['system']['info']['revision'];
+        $lastversion_last_revision = (int) $sys['system']['info']['lastversion_last_revision'];
+        $build_int = $revision-$lastversion_last_revision;
+        $info->setParameter('build_int', $build_int);
+        $build = ($sys['system']['info']['version']*10).'.'.$build_int;
+        $info->setParameter('build', $build);
+        
+        return $info;
+        
+    }
+    
     public static function getWebServerSoftware(){
         // TODO: When Smartest has been tested on other web serers, this function will need to be amended
         preg_match('/(Apache\/(1|2.\d.\d))/', $_SERVER['SERVER_SOFTWARE'], $matches);

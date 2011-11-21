@@ -479,10 +479,11 @@ class Desktop extends SmartestSystemApplication{
         $this->send($server, 'platform');
         
         // Version, Build and Revision
-        $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+        /* $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
         $this->send($sys['system']['info']['revision'], 'revision');
         $this->send($sys['system']['info']['version'], 'version');
-        $this->send($sys['system']['info']['build'], 'build');
+        $this->send($sys['system']['info']['revision']-$sys['system']['info']['lastversion_last_revision'], 'build'); */
+        $this->send(SmartestSystemHelper::getSmartestVersionInfo(), 'smartest_info');
         
         // Memory Limit
         $this->send(SmartestSystemHelper::getPhpMemoryLimit(true), 'memory_limit');

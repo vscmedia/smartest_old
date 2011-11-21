@@ -8,8 +8,8 @@
       <img src="{$domain}Resources/System/Images/info_logo.png" alt="Smartest Logo" />
     </div>
 
-      <p><strong>Version</strong>: Smartest {$version} (Revision {$revision})</p>
-      <p><strong>Build</strong>: {$build}</p>
+      <p><strong>Version</strong>: Smartest {$smartest_info.version} (Revision {$smartest_info.revision})</p>
+      <p><strong>Build</strong>: {$smartest_info.build}</p>
       <p><strong>Installed</strong>: {if $system_installed_timestamp > 0}{$system_installed_timestamp|date_format:"%A %B %e, %Y, %l:%M%p"}{else}<em>Unknown</em>{/if}</p>
       <p><strong>PHP Version</strong>: {$php_version}</p>
       <p><strong>Available Memory</strong>: {if $memory_limit < 32}<span style="color:#e20">{/if}{$memory_limit} MB{if $memory_limit < 32} - Please allocate more memory to PHP</span>{/if}</p>
@@ -19,7 +19,7 @@
       <p><strong>Install ID</strong>: <code>{$system_install_id}</code> {help id="desktop:install_ids" buttonize="true"}What's this?{/help}</p>
       <p><strong>Operating System</strong>: {$linux_version}</p>
       <p><strong>Is SVN checkout</strong>: {$is_svn_checkout.english}</p>
-      <p style="margin-top:15px">Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Chris Brauer, Eddie Tejeda, Alex Wood, Sereen Joseph, Nancy Arnold, Matt Asay, the wisdom of Professor Lawrence Lessig, PG, VW, a few brave MA Journalism students at City University London, and early adopters everywhere. Smartest exists because you believed in it.</p>
+      <p style="margin-top:15px"><strong>Credits</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Chris Brauer, Eddie Tejeda, Alex Wood, Sereen Joseph, Nancy Arnold, Matt Asay, the wisdom of Professor Lawrence Lessig, PG, VW, a few brave MA Journalism students at City University London, and early adopters everywhere. Smartest exists because you believed in it.</p>
       <p>This is {help id="desktop:freesoftware"}Free &amp; Open Source Software{/help} and always will be.</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="donate-form">
         <input type="hidden" name="cmd" value="_s-xclick" />
