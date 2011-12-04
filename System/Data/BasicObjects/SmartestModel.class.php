@@ -179,6 +179,14 @@ class SmartestModel extends SmartestBaseModel{
 	        // Delete items, now bereft of any property values
 	        // $sql = "DELETE FROM ManyToManyLookups WHERE (Items.item_id=ManyToManyLookups.mtmlookup_entity_1_foreignkey AND ManyToManyLookups.mtmlookup_type='".SM_MTMLOOKUP_RECENTLY_EDITED_ITEMS."')item_itemclass_id='".$this->getId()."'";
     	    // $this->database->rawQuery($sql);
+    	    
+    	    if(is_file($this->getAutoClassFilePath())){
+    	        unlink($this->getAutoClassFilePath());
+    	    }
+    	    
+    	    if(is_file($this->getClassFilePath())){
+    	        SmartestFileSystemHelper::move($this->getClassFilePath(), SmartestFileSystemHelper::getUniqueFileName(SM_ROOT_DIR.'Documents/Deleted/'.$this->getClassName().'.class.php'));
+    	    }
 	        
     	    // Delete items, now bereft of any property values
     	    $sql = "DELETE FROM Items WHERE item_itemclass_id='".$this->getId()."'";
@@ -893,7 +901,7 @@ class SmartestModel extends SmartestBaseModel{
         			// include SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php';
         			include $this->getAutoClassFilePath();
         		}else{
-        			throw new SmartestException('Could not auto-generate model class: '.$this->getName(), SM_ERROR_MODEL);
+        			throw new SmartestException('Could not auto-generate model base class: '.$this->getName(), SM_ERROR_MODEL);
         		}
         	}
 	    }
@@ -976,18 +984,18 @@ class SmartestModel extends SmartestBaseModel{
     public function buildClassFile(){
 		
 		$className = $this->getClassName();
+		$file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/object_template.txt');
 		    
-		if($file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/object_template.txt')){
+		if(strlen($file)){
 	
 			$file = str_replace('__THISCLASSNAME__', $className, $file);
 			$file = str_replace('__AUTOCLASSNAME__', 'auto'.$className, $file);
 			$file = str_replace('__TIME__', date("Y-m-d H:i:s"), $file);
 			
-			// var_dump($this->isShared());
-			// echo 'Built: '.$this->getClassFilePath();
 			if(file_put_contents($this->getClassFilePath(), $file)){
 			    // change the permissions so that FTP users can edit without messing about with permissions
 			    chmod($this->getClassFilePath(), 0666);
+			    return true;
 			}
 		
 		}else{

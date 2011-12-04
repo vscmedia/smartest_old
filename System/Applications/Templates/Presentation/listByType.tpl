@@ -22,8 +22,8 @@
 
 <div id="options-view-chooser">
 Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
-<a href="javascript:templates.setView('list', 'list_by_type_view')">List</a> /
-<a href="javascript:templates.setView('grid', 'list_by_type_view')">Icons</a>
+<a href="#" onclick="return templates.setView('list', 'list_by_type_view')">List</a> /
+<a href="#" onclick="return templates.setView('grid', 'list_by_type_view')">Icons</a>
 </div>
 
 <ul class="options-{$list_style}" style="margin-top:0px" id="options_grid">

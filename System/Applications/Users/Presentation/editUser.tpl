@@ -88,7 +88,7 @@ return true;
 {if $require_password_changes && $user.id != $_user.id}
 <tr>
 	<td class="text" style="width:100px" valign="top"> Require password change </td>
-    <td align="left">{$user.password_change_required}
+    <td align="left">
     	<input type="checkbox" name="require_password_change" value="1"{if $user.password_change_required} checked="checked"{/if} /> (takes effect next time they log in)
     	</td>
  </tr>

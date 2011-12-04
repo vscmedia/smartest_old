@@ -102,6 +102,7 @@ class Templates extends SmartestSystemApplication{
             $this->setFormReturnDescription('unassigned templates');
         }
         
+        $this->send($this->getApplicationPreference('list_by_type_view', 'grid'), 'list_style');
         $this->send($this->getUser()->getRecentlyEditedTemplates($this->getSite()->getId()), 'recently_edited');
         $this->send($model, 'model');
         $this->send(new SmartestArray($tlh->getTemplatesByModelId($model_id, $this->getSIte()->getId())), 'templates');
