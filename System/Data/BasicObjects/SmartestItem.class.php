@@ -83,7 +83,10 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
     	    }
 	        
 	        case 'created':
-            return new SmartestDateTime($this->getCreated());
+	        return new SmartestDateTime($this->getCreated());
+	        
+	        case 'modified':
+	        return new SmartestDateTime($this->getModified());
 	        
 	        case "class":
 	        return $this->getModel()->getClassName();

@@ -21,7 +21,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
             $this->setValueFromUserInputArray($v);
             return true;
         }else if(is_numeric($v)){
-            $this->_value = $v;
+            $this->_value = (int) $v;
             return true;
         }else if(strlen($v) == 19){ // this is the fastest way to check for the format YYYY-MM-DD hh:ii:ss
             $this->setValueFromUserInputArray(array(
@@ -84,8 +84,6 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_value;
-        // MySQL Native date format
-        // return date('Y-m-d H:i:s', $this->_value);
     }
     
     public function hydrateFromStorableFormat($v){

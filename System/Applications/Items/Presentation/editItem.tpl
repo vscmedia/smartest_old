@@ -134,5 +134,12 @@
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/addSet?class_id={$item._model.id}';" class="right-nav-link">Create a new set of {$item._model.plural_name}</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$item._model.id}';" class="right-nav-link">Edit the properties of this model</a></li>
   </ul>
+
+  <ul class="actions-list" id="non-specific-actions">
+    <li><span style="color:#999">Recently edited {$item._model.plural_name|strtolower}</span></li>
+    {foreach from=$recent_items item="recent_item"}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_item.action_url}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label|summary:"28"}</a></li>
+    {/foreach}
+  </ul>
   
 </div>

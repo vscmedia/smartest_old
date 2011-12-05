@@ -32,20 +32,24 @@
      </div>
   {if $has_page}
   <div class="edit-form-row">
-    <div class="form-section-label">Link code</div>
+    <div class="form-section-label">Link code (Default URL)</div>
     <code>[[{$item._model.name|varname}:{$item.slug}]]</code> <em>OR</em> <code>&lt;?sm:link to="metapage:id={$page.id}:id={$item.id}":?&gt;</code>
   </div>
+  <div class="edit-form-row">
+      <div class="form-section-label">QR code (Default URL)</div>
+      {$item.absolute_uri.qr_code_image.width_100}
+    </div>
   {/if}
   {if $item.created > 0}
   <div class="edit-form-row">
     <div class="form-section-label">Created:</div>
-    {$item.created|date_format:"%A %B %e, %Y, %l:%M%p"}
+    {$item.created}
   </div>
   {/if}
   {if $item.modified > 0}
   <div class="edit-form-row">
     <div class="form-section-label">Modified:</div>
-    {$item.modified|date_format:"%A %B %e, %Y, %l:%M%p"}
+    {$item.modified}
   </div>
   {/if}
   <div class="edit-form-row">
@@ -76,6 +80,13 @@
     <li><b>{$item._model.name} Options</b></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassMembers?class_id={$item._model.id}';" class="right-nav-link">Back to {$item._model.plural_name}</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$item._model.id}';" class="right-nav-link">New {$item._model.name}</a></li>
+  </ul>
+  
+  <ul class="actions-list" id="non-specific-actions">
+    <li><span style="color:#999">Recently edited {$item._model.plural_name|strtolower}</span></li>
+    {foreach from=$recent_items item="recent_item"}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_item.action_url}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label|summary:"28"}</a></li>
+    {/foreach}
   </ul>
   
 </div>

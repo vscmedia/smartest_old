@@ -240,6 +240,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
             
             $result = fwrite($handle, $data);
             fclose($handle);
+            chmod(utf8_decode($path), 0777);
             return $result;
             
         }else{
@@ -344,6 +345,26 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	public static function baseName($file_path, $separator='/'){
 	    $parts = explode($separator, $file_path);
 	    return end($parts);
+	}
+	
+	public static function saveRemoteBinaryFile($file_uri, $local_path){
+	    
+	    if(!function_exists('curl_init')){
+            throw new SmartestException('Tried to create an image from a remote URL, but failed because cURL is not installed.');
+        }
+	    
+	    $ch = curl_init($file_uri);
+    
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
+    
+        $rawdata = curl_exec($ch);
+    
+        curl_close ($ch);
+    
+        return self::save($local_path, $rawdata);
+        
 	}
 	
 	// note that this function will return directories that end with /, while PHP's dirname function does not

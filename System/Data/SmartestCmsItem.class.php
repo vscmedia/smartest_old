@@ -242,6 +242,9 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            return $this->getUrl();
 	            break;
 	            
+	            case 'absolute_uri':
+	            return $this->getAbsoluteUri();
+	            
 	            case 'description':
 	            case '_description':
 	            return $this->getDescriptionFieldContents();
@@ -249,10 +252,6 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            
 	            case '_auto_date':
 	            return $this->getDate();
-	            break;
-	            
-	            case 'created':
-	            return new SmartestDateTime($this->getItem()->getCreated());
 	            break;
 	            
 	            case '_is_published':
@@ -661,6 +660,12 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    }else{
 	        return $link->getUrl();
         }
+	    
+	}
+	
+	public function getAbsoluteUri(){
+	    
+	    return $this->getLinkObject()->getAbsoluteUrlObject();
 	    
 	}
 	

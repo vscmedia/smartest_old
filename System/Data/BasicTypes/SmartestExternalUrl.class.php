@@ -63,6 +63,10 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
             case "encoded":
             case "urlencoded":
             return urlencode($this->getValue());
+            case 'qr_code_url':
+            return $this->getQrCodeUri();
+            case 'qr_code_image':
+            return $this->getQrCodeImage();
         }
     }
     
@@ -92,6 +96,36 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
     public function getHttpStatusCode(){
         $info = $this->getCurlInfo();
         return $info->g('http_code');
+    }
+    
+    public function getQrCodeUri($encode=true, $size=200){
+        if($encode){
+            return 'http://chart.apis.google.com/chart?chs='.$size.'x'.$size.'&cht=qr&chld='.urlencode('L|0').'&chl='.urlencode($this->_value);
+        }else{
+            return 'http://chart.apis.google.com/chart?chs='.$size.'x'.$size.'&cht=qr&chld=L|0&chl='.$this->_value;
+        }
+    }
+    
+    public function getQrCodeImage($size=200){
+        
+        $local_filename = SM_ROOT_DIR.'Public/Resources/System/Cache/Images/qr_code_'.md5($this->_value).'.png';
+        
+        if(!is_file($local_filename)){
+        
+            try{
+                SmartestFileSystemHelper::saveRemoteBinaryFile($this->getQrCodeUri(true, $size), $local_filename);
+            }catch(SmartestException $e){
+                SmartestLog::getInstance('system')->log('Remote PNG file could not be saved: '.$e->getMessage());
+                return false;
+            }
+        
+        }
+        
+        $img = new SmartestImage;
+        $img->loadFile($local_filename);
+        
+        return $img;
+        
     }
     
 }

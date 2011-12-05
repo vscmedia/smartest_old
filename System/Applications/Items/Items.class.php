@@ -483,7 +483,7 @@ class Items extends SmartestSystemApplication{
 	    
 	    if($item->find($this->getRequestParameter('item_id'))){
 	        
-	        if(($item->getCreatebyUserid() != $this->getUser()->getId()) && !$this->getUser()->hasToken('modify_items')){
+	        if(($item->getCreatedbyUserid() != $this->getUser()->getId()) && !$this->getUser()->hasToken('modify_items')){
 	            $this->addUserMessageToNextRequest('You didn\'t create this item and do not have permission to edit it.', SmartestUserMessage::ACCESS_DENIED);
 	            SmartestLog::getInstance('site')->log('Suspicious activity: '.$this->getUser()->__toString().' tried to edit '.strtolower($item->getModel()->getName()).' \''.$item->getName().'\' via direct URL entry.');
     		    $this->formForward();
@@ -1335,6 +1335,7 @@ class Items extends SmartestSystemApplication{
             $byline = '';
 
             if($num_authors){
+                
                 for($i=0;$i<$num_authors;$i++){
 
                     $byline .= $authors[$i]['full_name'];
@@ -1349,7 +1350,7 @@ class Items extends SmartestSystemApplication{
 
                 $this->send($byline, 'byline');
             }else{
-                $this->send('Anonymous', 'byline');
+                $this->send('No Authors', 'byline');
             }
 		    
 		    if($page = $item->getMetaPage()){
@@ -1365,6 +1366,9 @@ class Items extends SmartestSystemApplication{
 		    
 		    $this->setTitle($item->getModel()->getName().' Information | '.$item->getName());
 		    $this->send($item, 'item');
+		    
+		    $recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $item->getItem()->getItemclassId());
+		    $this->send($recent, 'recent_items');
 	        
 	    }else{
 	        
@@ -1406,7 +1410,7 @@ class Items extends SmartestSystemApplication{
 		
 	    if(is_object($item)){
 	        
-	        if(($item->getItem()->getCreatebyUserid() != $this->getUser()->getId()) && !$this->getUser()->hasToken('modify_items')){
+	        if(($item->getItem()->getCreatedbyUserid() != $this->getUser()->getId()) && !$this->getUser()->hasToken('modify_items')){
 	            $this->addUserMessageToNextRequest('You didn\'t create this item and do not have permission to edit it.', SmartestUserMessage::ACCESS_DENIED);
 	            SmartestLog::getInstance('site')->log('Suspicious activity: '.$this->getUser()->__toString().' tried to edit '.strtolower($item->getModel()->getName()).' \''.$item->getName().'\' via direct URL entry.');
     		    $this->redirect('/'.$this->getRequest()->getModule().'/getItemClassMembers?class_id='.$item->getItem()->getItemclassId());
@@ -1444,6 +1448,9 @@ class Items extends SmartestSystemApplication{
 		    }else if($metapage->find($item->getModel()->getDefaultMetapageId($this->getSite()->getId()))){
 		        $this->send($metapage->getWebid(), 'default_metapage_id');
 		    }
+		    
+		    $recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $item->getItem()->getItemclassId());
+		    $this->send($recent, 'recent_items');
 		    
 		    if($this->getRequestParameter('page_id')){
 		        

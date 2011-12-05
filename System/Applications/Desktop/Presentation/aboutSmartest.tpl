@@ -19,7 +19,7 @@
       <p><strong>Install ID</strong>: <code>{$system_install_id}</code> {help id="desktop:install_ids" buttonize="true"}What's this?{/help}</p>
       <p><strong>Operating System</strong>: {$linux_version}</p>
       <p><strong>Is SVN checkout</strong>: {$is_svn_checkout.english}</p>
-      <p style="margin-top:15px"><strong>Credits</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Chris Brauer, Eddie Tejeda, Alex Wood, Sereen Joseph, Nancy Arnold, Matt Asay, the wisdom of Professor Lawrence Lessig, PG, VW, a few brave MA Journalism students at City University London, and early adopters everywhere. Smartest exists because you believed in it.</p>
+      <p style="margin-top:15px"><strong>Credits</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Chris Brauer, Eddie Tejeda, Sereen Joseph, Nancy Arnold, Matt Asay, the wisdom of Professor Lawrence Lessig, PG, VW, many dear friends, and a few brave MA Journalism students at City University London, and early adopters everywhere. Smartest exists because you believed in it.</p>
       <p>This is {help id="desktop:freesoftware"}Free &amp; Open Source Software{/help} and always will be.</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="donate-form">
         <input type="hidden" name="cmd" value="_s-xclick" />
