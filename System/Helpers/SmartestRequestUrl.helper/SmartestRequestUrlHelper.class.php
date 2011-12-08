@@ -270,13 +270,9 @@ class SmartestRequestUrlHelper{
 
         					foreach($template_url_parts as $key => $url_placeholder){
     					    
-        					    // if($i = count($template_url_parts) - 1){
-        					    //     $regex = '/^(\$|:)([\w_]+)(\.\w+)?/';
-        					    // }else{
-        					        $regex = '/^(\$|:)([\w_]+)/';
-        					    // }
-    					    
-        						if(preg_match($regex, $url_placeholder, $url_var_matches)){
+        					    $regex = '/^(\$|:)([\w_]+)/';
+    					        
+    					        if(preg_match($regex, $url_placeholder, $url_var_matches)){
     							
         							if($url_placeholder == ":id"){
         							    $page->setIdentifyingFieldName("id");
@@ -310,9 +306,8 @@ class SmartestRequestUrlHelper{
     					        }
     					        
         					}else{
-        					    // echo "item not acceptable";
         					    // the item was not in the set, so I guess it's a 404
-        					    return false;
+        					    continue;
         					}
     					
         					if(!$page->getIdentifyingFieldName()){
