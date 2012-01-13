@@ -14,6 +14,7 @@ class SmartestBasicRenderer extends SmartestEngine{
         $this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/WebPageBuilder/";
 	    $this->left_delimiter = '<'.'?sm:';
 		$this->right_delimiter = ':?'.'>';
+		$this->caching = true;
         
     }
     
@@ -249,19 +250,20 @@ class SmartestBasicRenderer extends SmartestEngine{
             return $eo;
         }
         
-        $render_process_id = 'dynamic_link_'.substr(md5($link->getUrl($this->draft_mode)), 0, 8);
+        $link_params = array();
         
-        $child = $this->startChildProcess($render_process_id);
-        $child->setContext(SM_CONTEXT_HYPERLINK);
-        $child->assign('_link_url', $link->getUrl($this->draft_mode));
-        $child->assign('_link_use_span', SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('span')));
-        $child->assign('_link_span_invisible', ($link->getRenderData()->hasParameter('spanvisible') && !SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('spanvisible'))));
-        $child->assign('_link_contents', $link->getContent($this->draft_mode));
-        $child->assign('_link_parameters', SmartestStringHelper::toAttributeString($link->getMarkupAttributes()->getParameters()));
-        $child->assign('_link_show_anchor', !$link->shouldOmitAnchorTag($this->draft_mode));
+        $link_params['_link_url'] = $link->getUrl($this->draft_mode);
+        $link_params['_link_use_span'] = SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('span'));
+        $link_params['_link_span_invisible'] = ($link->getRenderData()->hasParameter('spanvisible') && !SmartestStringhelper::toRealBool($link->getRenderData()->getParameter('spanvisible')));
+        $link_params['_link_contents'] = $link->getContent($this->draft_mode);
+        $link_params['_link_parameters'] = SmartestStringHelper::toAttributeString($link->getMarkupAttributes()->getParameters());
+        $link_params['_link_show_anchor'] = !$link->shouldOmitAnchorTag($this->draft_mode);
         
-        $html = $child->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/basic_link.tpl");
-        $this->killChildProcess($child->getProcessId());
+        $this->_tpl_vars['_linkparameters'] = $link_params;
+        
+        $this->caching = false;
+        $html = $this->fetch(SM_ROOT_DIR."System/Presentation/WebPageBuilder/basic_link.tpl");
+        $this->caching = true;
         
         return $html;
         

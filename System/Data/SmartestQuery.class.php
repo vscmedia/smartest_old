@@ -92,8 +92,10 @@ class SmartestQuery{
 	}
 	
 	public function add($property_id, $value, $operator=0){
+	    
 	    if(isset($this->_properties[$property_id])){
 	        $p = $this->_properties[$property_id];
+	        
 	        try{
 	            if($value_obj = SmartestDataUtility::objectize($value, $p->getDataType())){
 	                $c = new SmartestQueryCondition($value_obj, $p, $operator);
@@ -107,18 +109,34 @@ class SmartestQuery{
 	        }catch(SmartestException $e){
 	            // value not understood - log and skip?
 	        }
+	        
 	    }else if($property_id == SmartestCmsItem::NAME){
+	        
 	        $value_obj = new SmartestString($value);
 	        $p = new SmartestPseudoItemProperty;
 	        $p->setId(SmartestCmsItem::NAME);
 	        $c = new SmartestQueryCondition($value_obj, $p, $operator);
 	        $this->conditions[] = $c;
+	        
 	    }else if($property_id == SmartestCmsItem::ID || $property_id == SmartestCmsItem::NUM_COMMENTS || $property_id == SmartestCmsItem::NUM_HITS || $property_id == SmartestCmsItem::AVERAGE_RATING){
+	        
 	        $value_obj = new SmartestNumeric($value);
 	        $p = new SmartestPseudoItemProperty;
 	        $p->setId($property_id);
 	        $c = new SmartestQueryCondition($value_obj, $p, $operator);
 	        $this->conditions[] = $c;
+	        
+	    }else if($operator == self::TAGGEDWITH || $operator == self::NOTTAGGEDWITH){
+	        
+	        $p = new SmartestPseudoItemProperty;
+	        $p->setId($property_id);
+	        $c = new SmartestQueryCondition(new SmartestString($value), $p, $operator);
+	        $this->conditions[] = $c;
+	        
+	        /* echo $property_id.' ';
+	        echo $value.' ';
+	        echo $operator.' '; */
+	        
         }else{
 	        // unknown property ID - throw exception?
 	    }
@@ -211,7 +229,7 @@ class SmartestQuery{
 
         			$sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_num_hits ";
 
-                }else if($condition->getProperty()->getId() == self::TAGGED_WITH){
+                }else if($condition->getOperator() == self::TAGGED_WITH){
 			        
 			        $tag_name = SmartestStringHelper::toSlug($condition->getValueAsString());
     				$tag = new SmartestTag;

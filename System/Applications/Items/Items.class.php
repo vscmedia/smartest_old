@@ -1540,6 +1540,11 @@ class Items extends SmartestSystemApplication{
 		        $this->send(false, 'page_is_editable');
 		    }
 		    
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The item ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/models');
+	        
 	    }
 		
 	}

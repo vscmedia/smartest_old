@@ -309,6 +309,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
                         $tf->setCreated(time());
                         $this->setField('fragment_id', $tf->getId());
                         $this->_save_textfragment_on_save = true;
+                        SmartestLog::getInstance('system')->log("Text asset '".$this->getLabel()."' with ID ".$this->getId()." did not have an associated TextFragment. A new one was created.");
                     }
                     
                     $this->_text_fragment = $tf;
@@ -321,6 +322,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
                         $tf->setCreated(time());
                         $this->_save_textfragment_on_save = true;
 	                    $this->_text_fragment = $tf;
+	                    SmartestLog::getInstance('system')->log("Text asset '".$this->getLabel()."' with ID ".$this->getId()." did not have an associated TextFragment. A new one was created.");
                     }else{
                         // this is a new text asset, so it doesn't have an id yet.
                         $this->_text_fragment = $tf;

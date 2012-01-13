@@ -29,6 +29,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		if(!defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS')){
 		    define('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS', true);
 		}
+		
+		$this->caching = true;
 	    
 	}
 	
@@ -723,6 +725,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     
     public function getRepeatBlockData($params){
         
+        $this->caching = false;
         if(count(explode(':', $params['from'])) > 1){
             $parts = explode(':', $params['from']);
             $type = $parts[0];
@@ -783,7 +786,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         		}else{
         		    $items = array();
         		}
-
+                
+                // $this->caching = true;
          		return $items;
          		
         }
