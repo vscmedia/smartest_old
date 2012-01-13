@@ -38,6 +38,7 @@
     <label>Main feature - article text, movie, audio or SVG graphic</label>
     <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+    <accept>SM_ASSETTYPE_TEXTILE_TEXT</accept>
     <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
     <accept>SM_ASSETTYPE_YOUTUBE_CLIP</accept>

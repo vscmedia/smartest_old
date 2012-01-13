@@ -126,8 +126,6 @@ class SmartestBasicRenderer extends SmartestEngine{
                         $attachments = array();
                     }
                     
-                    
-                    
                     // If draft, check that a temporary preview copy has been created, and creat it if not
                     if($this->getDraftMode()){
                         if($this->_asset->getTextFragment()->ensurePreviewFileExists()){
@@ -164,11 +162,11 @@ class SmartestBasicRenderer extends SmartestEngine{
                         }
                     }
                     
-                    $parser = new SmartestDataBaseStoredTextAssetToolkit($this);
+                    $parser = new SmartestDataBaseStoredTextAssetToolkit();
                     $method = $this->_asset->getParseMethodName();
                     
                     if(method_exists($parser, $method)){
-                        $content = $parser->$method($content, $this->_asset, $this->getDraftMode());
+                        $content = $parser->$method($content, $this->_asset, $this);
                     }
                     
                 }else{

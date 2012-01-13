@@ -16,6 +16,14 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
     }
     
     public function getAsset(){
+        
+        if(!$this->_asset){
+            $a = new SmartestAsset;
+            if($a->find($this->getAssetId())){
+                $this->_asset = $a;
+            }
+        }
+        
         return $this->_asset;
     }
     
@@ -121,6 +129,7 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
     }
     
     public function containsAttachmentTags(){
+        
         if($this->_asset->getType() == 'SM_ASSETTYPE_TEXTILE_TEXT'){
             $c = !(strpos($this->_properties['content'], '{attach:') === FALSE);
         }else{
@@ -177,7 +186,18 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	}
 	
 	public function publish(){
-	    return SmartestFileSystemHelper::save($this->getParsableFilePath(), $this->getContent(), true);
+	    
+	    $content = $this->getContent();
+	    
+	    $parser = new SmartestDataBaseStoredTextAssetToolkit();
+	    $method = $this->getAsset()->getConvertMethodName();
+	    
+	    if(method_exists($parser, $method)){
+            $content = $parser->$method($content, $this->_asset);
+        }
+	    
+	    return SmartestFileSystemHelper::save($this->getParsableFilePath(), $content, true);
+	    
 	}
 	
 	public function isPublished(){
@@ -185,8 +205,17 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	}
 	
 	public function createPreviewFile(){
-	    $parser = new SmartestDataBaseStoredTextAssetToolkit($this);
-	    $result = SmartestFileSystemHelper::save($this->getParsableFilePath(true), stripslashes($this->getContent()), true);
+	    // $parser = new SmartestDataBaseStoredTextAssetToolkit($this);
+	    $content = stripslashes($this->getContent());
+	    
+	    $parser = new SmartestDataBaseStoredTextAssetToolkit();
+	    $method = $this->getAsset()->getConvertMethodName();
+	    
+	    if(method_exists($parser, $method)){
+            $content = $parser->$method($content, $this->_asset);
+        }
+	    
+	    $result = SmartestFileSystemHelper::save($this->getParsableFilePath(true), $content, true);
 	    return $result;
 	}
 	

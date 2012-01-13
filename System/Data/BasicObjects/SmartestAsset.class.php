@@ -467,6 +467,10 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    return 'parse'.SmartestStringHelper::toCamelCase(substr($this->getType(), 13)).'Asset';
 	}
 	
+	public function getConvertMethodName(){
+	    return 'convert'.SmartestStringHelper::toCamelCase(substr($this->getType(), 13)).'AssetToSmartyFile';
+	}
+	
 	public function getDefaultParams(){
 	    
 	    $info = $this->getTypeInfo();

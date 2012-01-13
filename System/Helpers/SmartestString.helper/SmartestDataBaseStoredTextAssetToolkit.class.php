@@ -6,11 +6,11 @@ class SmartestDataBaseStoredTextAssetToolkit{
     
     protected $_renderer;
     
-    public function __construct($renderer){
-        $this->_renderer = $renderer;
+    public function __construct(){
+        // $this->_renderer = $renderer;
     }
     
-    public function parseTextileTextAsset($content, $asset, $draft_mode=false){
+    public function parseTextileTextAsset($content, $asset, $renderer){
         
         if(stripos($content, 'NewColumn') !== false){
             $content = SmartestStringHelper::parseTextileIntoColumns($content);
@@ -25,12 +25,19 @@ class SmartestDataBaseStoredTextAssetToolkit{
             $link = new SmartestCmsLink($l, array());
             
             if($link->hasError()){
-                $content = str_replace($l->getParameter('original'), $this->_renderer->raiseError($link->getErrorMessage(), $draft_mode), $content);
+                $content = str_replace($l->getParameter('original'), $renderer->raiseError($link->getErrorMessage(), $renderer->getDraftMode()), $content);
             }else{
-                $content = str_replace($l->getParameter('original'), $link->render($this->_renderer->getDraftMode()), $content);
+                $content = str_replace($l->getParameter('original'), $link->render($renderer->getDraftMode()), $content);
             }
         }
         
+        return $content;
+        
+    }
+    
+    public function convertTextileTextAssetToSmartyFile($content, $asset){
+        
+        $content = preg_replace('/\{attach:([\w_]+)\}/', "<?sm:attachment name=\"$1\":?>", $content);
         return $content;
         
     }
@@ -41,7 +48,7 @@ class SmartestDataBaseStoredTextAssetToolkit{
         
     }
     
-    public function parseRichTextAsset($raw_contents){
+    public function parseRichTextAsset($raw_contents, $asset, $renderer){
         
         $content = $raw_contents;
         
@@ -52,9 +59,9 @@ class SmartestDataBaseStoredTextAssetToolkit{
             $link = new SmartestCmsLink($l, array());
             
             if($link->hasError()){
-                $content = str_replace($l->getParameter('original'), $this->_renderer->raiseError($link->getErrorMessage(), $draft_mode), $content);
+                $content = str_replace($l->getParameter('original'), $renderer->raiseError($link->getErrorMessage(), $renderer->getDraftMode()), $content);
             }else{
-                $content = str_replace($l->getParameter('original'), $link->render($this->_renderer->getDraftMode()), $content);
+                $content = str_replace($l->getParameter('original'), $link->render($renderer->getDraftMode()), $content);
             }
         }
         
@@ -72,7 +79,7 @@ class SmartestDataBaseStoredTextAssetToolkit{
         
     }
     
-    public function parsePlainTextAsset($raw_contents, $asset, $draft_mode=false){
+    public function parsePlainTextAsset($raw_contents, $asset, $renderer){
         
        $rd = $asset->getRenderData();
        
