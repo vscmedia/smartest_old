@@ -6,6 +6,7 @@ system:
     minimum_database_version: 19
     default_timezone: Europe/London
     lastversion_last_revision: 473
+    self_hosted: true
   reserved_classes:
     - Assets
     - CmsFrontEnd
@@ -57,6 +58,7 @@ system:
     config: Configuration/
   places:
     templates_dir: System/Presentation/
+    public_dir: Public/
   writable_locations:
     always:
       - Sites/

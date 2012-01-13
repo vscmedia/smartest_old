@@ -398,6 +398,9 @@ class Assets extends SmartestSystemApplication{
     		        break;
     		        
     		        case "SM_ASSETINPUTTYPE_BROWSER_UPLOAD":
+    		        $mr = ini_get('upload_max_filesize');
+            		preg_match('/(\d+)M$/', $mr, $m);
+            		$this->send(new SmartestNumeric($m[1]), 'max_upload_size_in_megs');
     		        break;
     		        
     		        case "SM_ASSETINPUTTYPE_URL_INPUT":
@@ -1453,6 +1456,21 @@ class Assets extends SmartestSystemApplication{
 	    }
 	    
 	}
+	
+	public function assetCommentStream(){
+        
+        $asset = new SmartestAsset;
+        $asset_id = $this->getRequestParameter('asset_id');
+
+		if($asset->find($asset_id) || $asset->findBy('stringid', $asset_id)){
+		    
+		    $this->send($asset, 'asset');
+		    $comments = $asset->getComments();
+		    $this->send($comments, 'comments');
+		
+		}
+        
+    }
     
     public function editAsset($get, $post){
         
@@ -2394,7 +2412,7 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 	
-	public function attachCommentToAsset($get, $post){
+	/* public function attachCommentToAsset($get, $post){
 	    
 	    $asset_id = $this->getRequestParameter('asset_id');
 
@@ -2412,7 +2430,7 @@ class Assets extends SmartestSystemApplication{
 		    $this->redirect('/smartest/assets');
 		}
 	    
-	}
+	} */
 	
 	public function useAsset(){
 	    

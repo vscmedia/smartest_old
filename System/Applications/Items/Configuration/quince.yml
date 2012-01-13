@@ -23,6 +23,11 @@ module:
       url: /smartest/items/:plural_name
       params:
         use_plural_name: true
+    new_item:
+      action: addItem
+      url: /smartest/items/:plural_name/new
+      params:
+        use_plural_name: true
     edit_item:
       action: editItem
       url: /smartest/item/edit/:item_id

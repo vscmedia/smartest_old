@@ -183,6 +183,7 @@ class SmartestInstallationStatusHelper{
                         $sql = str_replace('%ERRORPAGEWEBID%', SmartestStringHelper::random(32), $sql);
                         $sql = str_replace('%SEARCHPAGEWEBID%', SmartestStringHelper::random(32), $sql);
                         $sql = str_replace('%TAGPAGEWEBID%', SmartestStringHelper::random(32), $sql);
+                        $sql = str_replace('%USERPAGEWEBID%', SmartestStringHelper::random(32), $sql);
                         
                         // Attempt to create site dir
                         $site_dir = SM_ROOT_DIR.'Sites/'.substr(SmartestStringHelper::toCamelCase($sitename), 0, 64).'/';

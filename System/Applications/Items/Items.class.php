@@ -1207,6 +1207,81 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
+	public function modelInfo($get){
+	    
+	    $model_id = (int) $this->getRequestParameter('class_id');
+	    $model = new SmartestModel();
+	    
+	    if($model->find($model_id)){
+	        
+	        $this->send($model, 'model');
+	        $this->send($model->getMetaPages(), 'metapages');
+	        
+	        $num_items_on_site = count($model->getSimpleItems($this->getSite()->getId()));
+	        $num_items_all_sites = count($model->getSimpleItems());
+	        
+	        $file_path = substr($model->getClassFilePath(), strlen(SM_ROOT_DIR));
+	        $this->send($file_path, 'class_file');
+	        
+	        $this->send(($num_items_on_site > 0) ? number_format($num_items_on_site) : 'none', 'num_items_on_site');
+	        $this->send(number_format($num_items_all_sites), 'num_items_all_sites');
+	        $this->send($this->getUser()->hasToken('edit_model_plural_name'), 'allow_plural_name_edit');
+	        $this->send($this->getUser()->hasToken('edit_model'), 'allow_infn_edit');
+	        
+	        $sites_where_used = $model->getSitesWhereUsed();
+	        $multiple_sites = (count($sites_where_used) > 1);
+	        
+	        $site_ids = array();
+	        foreach($sites_where_used as $s){
+	            $site_ids[] = $s->getId();
+	        }
+	        
+	        $shared = ($model->isShared() || $multiple_sites);
+	        $this->send($shared, 'shared');
+	        
+	        $this->send(SmartestFileSystemHelper::getFileSizeFormatted($model->getClassFilePath()), 'class_file_size');
+	        
+	        $is_movable = $model->isMovable();
+	        
+	        if($shared){
+	            $ast = (!$multiple_sites && $model->getSiteId() == $this->getSite()->getId() && $is_movable);
+            }else{
+                $ast = ($model->hasSameNameAsModelOnOtherSite() || !$is_movable) ? false : true;
+            }
+            
+            $this->send($ast, 'allow_sharing_toggle');
+            $this->send($is_movable, 'is_movable');
+            
+            if(!$is_movable){
+                $this->send($model->getFilesThatMustBeWrtableForSharingToggleButAreNot(), 'unwritable_files');
+            }
+            
+	        $this->send($this->getSite()->getId(), 'current_site_id');
+	        
+	        if($model->getSiteId() == '0'){
+	            $this->send('Not set', 'main_site_name');
+            }else{
+                $this->send($model->getMainSite()->getName(), 'main_site_name');
+            }
+	        
+	        $this->send($model->getAvailableDescriptionProperties(), 'description_properties');
+	        $this->send($model->getAvailableSortProperties(), 'sort_properties');
+	        $this->send($model->getAvailableThumbnailProperties(), 'thumbnail_properties');
+	        
+	        $recent = $this->getUser()->getRecentlyEditedItems($this->getSite()->getId(), $model_id);
+  	        $this->send($recent, 'recent_items');
+  	        
+  	        $allow_create_new = $this->getUser()->hasToken('add_items');
+  	        $this->send($allow_create_new, 'allow_create_new');
+  	        
+  	        $this->send($model->getAvailablePrimaryProperties(), 'available_primary_properties');
+	        
+	    }else{
+	        
+	    }
+	    
+	}
+	
 	public function updateModel($get, $post){
 	    
 	    if($this->getUser()->hasToken('edit_model')){
@@ -2058,8 +2133,15 @@ class Items extends SmartestSystemApplication{
             }
             
             $model = new SmartestModel;
+            // echo $this->getRequestParameter('use_plural_name');
             
-            if($model->find($model_id)){
+            if($this->getRequestParameter('use_plural_name')){
+                $found_model = $model->findBy('varname', $this->getRequestParameter('plural_name'));
+            }else{
+                $found_model = $model->find($model_id);
+            }
+            
+            if($found_model){
                 
                 if($model->hasPrimaryProperty() && $model->getPrimaryProperty()->getDatatype() == 'SM_DATATYPE_ASSET'){
                     $this->redirect('/smartest/file/new?for=ipv&property_id='.$model->getPrimaryPropertyId());

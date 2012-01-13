@@ -2,11 +2,6 @@
     Upload file: <input type="file" name="new_file" /><br /><a href="javascript:hideUploader()">never mind</a>
   </div>
   
-  <div class="edit-form-row">
-    <div class="form-section-label">Name this file</div>
-    <input type="text" name="string_id" />.html
-  </div>
-  
   <div style="width:100%" id="text_window" class="textarea-holder">
     <div class="textarea-holder">
       <textarea name="content" id="tpl_textArea" wrap="virtual"></textarea>

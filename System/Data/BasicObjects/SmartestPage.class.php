@@ -1543,7 +1543,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    }
 	    
 	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->_properties['id']."', 'SM_PAGE_TAG_LINK')";
-	    echo $sql;
 	    $this->database->rawQuery($sql);
 	    return true;
 	    

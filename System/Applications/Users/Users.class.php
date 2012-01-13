@@ -26,7 +26,10 @@ class Users extends SmartestSystemApplication{
 	    $this->setTitle('Add a user');
 	    
 	    if($this->getUser()->hasToken('create_users')){
+	        
+	        $this->send(new SmartestArray($this->getUser()->getSitesWhereUserHasToken('create_users')), 'sites');
 	        $this->send($roles, 'roles');
+	        
 	    }else{
 	        $this->addUserMessageToNextRequest("You don't have permission to add new user accounts", SmartestUserMessage::ACCESS_DENIED);
 	        $this->redirect('/smartest/users');
@@ -46,7 +49,9 @@ class Users extends SmartestSystemApplication{
             $this->forward('users', 'addUser');
             
         }else{
-        
+            
+            // print_r($_POST);
+            
 		    $password = $this->getRequestParameter('password');
     		$firstname = $this->getRequestParameter('user_firstname');
     		$lastname = $this->getRequestParameter('user_lastname');
@@ -69,12 +74,10 @@ class Users extends SmartestSystemApplication{
     		$user->setRegisterDate(time());
     		
     		$user->save();
-		
+		    
     		// add user tokens
-            
-            $site_id = $this->getSite()->getId();
-            
-            if(is_numeric($this->getRequestParameter('user_role'))){
+    		
+    		if(is_numeric($this->getRequestParameter('user_role'))){
                 
                 // User-created role is being used to assign tokens
                 $role = new SmartestRole;
@@ -109,14 +112,37 @@ class Users extends SmartestSystemApplication{
                 $tokens = array();
                 
             }
-            
-            foreach($tokens as $t){
-                $user->addTokenById($t->getId(), $site_id);
-            }
+    		
+    		if($this->getRequestParameter('global_site_access')){
+    		    if($this->getUser()->hasToken('grant_global_permissions')){
+    		        
+    		        // Add tokens from role globally
+    		        foreach($tokens as $t){
+                        $user->addTokenById($t->getId(), 'GLOBAL');
+                    }
+                    
+    		    }else{
+    		        $this->addUserMessageToNextRequest('You do not have permission to grant global site access or other tokens');
+    		    }
+		    }else{
+		        $site_ids = $this->getRequestParameter('user_sites');
+		        
+		        if(is_array($site_ids)){
+		            
+		            // Add tokens from role for each site
+		            foreach($site_ids as $site_id){
+		                // print_r($site_id);
+		                foreach($tokens as $t){
+                            $user->addTokenById($t->getId(), $site_id);
+                        }
+		                
+		            }
+		        }
+		    }
         
         }
     
-		$this->formForward();
+		// $this->formForward(); 
 		
 	}
 
@@ -406,6 +432,16 @@ class Users extends SmartestSystemApplication{
 	}
 	
 	public function insertRole($get, $post){
+	    
+	    $h = new SmartestUsersHelper;
+	    
+	    if($h->roleNameExists($post['role_label'])){
+	        $this->addUserMessage('A role with that name already exists', SmartestUserMessage::WARNING);
+	        $this->forward('users', 'addRole');
+	    }else if(!strlen($post['role_label'])){
+	        $this->addUserMessage('You must enter a name for the role', SmartestUserMessage::WARNING);
+	        $this->forward('users', 'addRole');
+	    }
 	    
 	    if(strlen($post['role_label'])){
 	        

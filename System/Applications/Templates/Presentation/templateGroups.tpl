@@ -19,7 +19,9 @@
     <input type="hidden" name="group_id" id="item_id_input" value="" />
   </form>
 
-
+  {if empty($groups)}
+  <div class="special-box">There are no template groups yet. <a href="{$domain}{$section}/addTemplateGroup">Click here</a> to create one.</div>
+  {else}
   <ul class="{if count($groups) > 10}options-list{else}options-grid{/if}" id="{if count($groups) > 10}options_list{else}options_grid{/if}">
   {foreach from=$groups key="key" item="group"}
     <li style="list-style:none;" 
@@ -29,6 +31,7 @@
   			  {$group.label}</a></li>
   {/foreach}
   </ul>
+  {/if}
   
 </div>
 

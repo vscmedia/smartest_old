@@ -92,7 +92,7 @@ class SmartestMysql{
 	
 	public function getTables($refresh=false){
 		
-		$sql = "SHOW TABLES FROM ".$this->connection_config['database'];
+		$sql = "SHOW TABLES FROM `".$this->connection_config['database'].'`';
 		$tables = $this->queryToArray($sql, $refresh);
 		$table_names = array();
 		

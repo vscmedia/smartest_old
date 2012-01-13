@@ -422,8 +422,8 @@ class SmartestUser extends SmartestBaseUser{
         
     }
     
-    public function setPasswordWithSalt($raw_password, $salt){
-        if($this->passwordIs($raw_password)){
+    public function setPasswordWithSalt($raw_password, $salt, $ignore_repeat_password=false){
+        if($this->passwordIs($raw_password) && !$ignore_repeat_password){
             return false;
         }else{
             $this->setPasswordSalt($salt);

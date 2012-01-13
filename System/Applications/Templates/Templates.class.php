@@ -987,6 +987,13 @@ class Templates extends SmartestSystemApplication{
     	        $this->send($show_suggested_models, 'show_suggested_models');
 	        
             }else{
+                
+                $model = new SmartestModel;
+                
+                if($model->find($template->getModelId())){
+                    $this->send($model, 'model');
+                }
+                
                 $this->send(false, 'show_suggested_models');
             }
 	        

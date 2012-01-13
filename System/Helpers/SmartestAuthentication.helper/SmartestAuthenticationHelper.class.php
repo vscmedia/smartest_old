@@ -67,7 +67,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 			        if($userObj->getPassword() == md5($password)){
 			            
 			            $userObj->getTokens();
-			            $userObj->setPasswordWithSalt($password, SmartestStringHelper::random(40));
+			            $userObj->setPasswordWithSalt($password, SmartestStringHelper::random(40), true);
 			            $userObj->save();
 			            
     			        SmartestSession::set('user:isAuthenticated', true);

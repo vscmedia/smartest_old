@@ -6,6 +6,10 @@
       {if $allow_username_change}<input type="text" name="username" value="{$user.username}" />{else}{$user.username}{/if}
     </div>
     <div class="edit-form-row">
+      <div class="form-section-label">Password</div>
+      <a href="{$domain}smartest/account/password">Click here to change your password</a>
+    </div>
+    <div class="edit-form-row">
       <div class="form-section-label">First name</div>
       <input type="text" name="user_firstname" value="{$user.firstname}" />
     </div>
@@ -34,11 +38,12 @@
       <input type="submit" value="Save" />
     </div>
   </form>
+  <div class="breaker"></div>
 </div>
 
 <div id="actions-area">
   <ul class="actions-list">
-       <li><b>Options</b></li>
-       <li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/account/password'; return false;" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/lock.png"> Change your password</a></li>
-    </ul>
+    <li><b>Options</b></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/account/password'; return false;" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/lock.png" /> Change your password</a></li>
+  </ul>
 </div>

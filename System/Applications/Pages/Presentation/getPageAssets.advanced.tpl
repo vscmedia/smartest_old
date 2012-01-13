@@ -91,7 +91,7 @@ var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'pa
       <img src="{$domain}Resources/System/Images/blank.gif" alt="" border="0" />
       {/if}
       
-      <a id="{$assetclass.info.type|lower}_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="#" onclick="{if $version == "draft"}elementTree.setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}return false;{/if}">		 
+      <a id="{$assetclass.info.type|lower}_{$assetclass.info.assetclass_name|escape:quotes}" class="option" href="#" onclick="{if $version == "draft"}return elementTree.setSelectedItem('{$assetclass.info.assetclass_name|escape:quotes}', '{$assetclass.info.type|lower}');{else}return false;{/if}">		 
     {if $assetclass.info.exists == 'true'}
         
 		{if $assetclass.info.defined == "PUBLISHED"}

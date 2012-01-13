@@ -1,3 +1,25 @@
+<script type="text/javascript">
+
+  /* function savePageUrlChanges(){ldelim}
+    
+    $('saver-gif').show();
+
+    $('editUrl').request({ldelim}
+      onComplete: function(){ldelim}
+        // $('page-urls').update('');
+        new Ajax.Updater('page-urls', '{$domain}ajax:websitemanager/pageUrls', {ldelim}
+          parameters: {ldelim}page_id: '{$page.webid}'{if $item.id}, item_id: {$item.id}{/if}{rdelim}
+        {rdelim});
+        MODALS.hideViewer();
+      {rdelim}
+    {rdelim});
+
+    return true;
+
+  {rdelim} */
+
+</script>
+
 <h3 id="pageName">Page Details: {$page.static_title}</h3>
 
 <form id="getForm" method="get" action="">
@@ -14,8 +36,8 @@
 
 <form id="updatePage" name="updatePage" action="{$domain}{$section}/updatePage" method="post" style="margin:0px">
   
-  <input type="hidden" name="page_id" value="{$page.id}">
-  <input type="hidden" name="page_webid" value="{$page.webid}">
+  <input type="hidden" name="page_id" value="{$page.webid}">
+  <input type="hidden" name="page_webid" value="">
 
 <div id="edit-form-layout">
   
@@ -111,42 +133,46 @@
   <div class="edit-form-row">
     <div class="form-section-label">URL</div>
 		
-	  <table width="100%" style="border:1px solid #ccc;padding:2px;" cellpadding="0" cellspacing="0">
+		<div id="page-urls">
+		  
+  	  <table width="100%" style="border:1px solid #ccc;padding:2px;" cellpadding="0" cellspacing="0">
   	  
-  	  {if $ishomepage == "true"}
-    	<tr style="background-color:#{cycle values="ddd,fff"};height:20px">
-    	  <td>
-    		  <div style="display:inline" id="siteDomainField_0">
-    		    <strong>{if $page.is_published == "TRUE"}<a href="http://{$site.domain}{$domain}" target="_blank">{/if}http://{$site.domain}{$domain}{if $page.is_published == "TRUE"}</a>{/if}</strong> (default)</div></td>
-    	  <td style="width:30%">&nbsp;</td>
-      </tr>
-      {/if}
+    	  {if $ishomepage == "true"}
+      	<tr style="background-color:#{cycle values="ddd,fff"};height:20px">
+      	  <td>
+      		  <div style="display:inline" id="siteDomainField_0">
+      		    <strong>{if $page.is_published == "TRUE"}<a href="http://{$site.domain}{$domain}" target="_blank">{/if}http://{$site.domain}{$domain}{if $page.is_published == "TRUE"}</a>{/if}</strong> (default)</div></td>
+      	  <td style="width:30%">&nbsp;</td>
+        </tr>
+        {/if}
       
-  	  {if count($page.urls)}
+    	  {if count($page.urls)}
   	  
-  	  {foreach from=$page.urls item=pageurl}
-  	    {capture name="pageUrl" assign="pageUrl"}http://{$site.domain}{$domain}{$pageurl.url}{/capture}
-  	  <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
-  	    <td>
-  		    <div style="display:inline" id="siteDomainField_{$pageurl.id}">
-  		      {if $pageurl.is_default == 1}<strong>{/if}{if $page.is_published == "TRUE" && ($page.type == 'NORMAL' || ($page.type == 'ITEMCLASS' && $item.public == 'TRUE'))}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}{if $pageurl.is_default == 1}</strong> (default){/if}</div></td>
-  	    <td style="width:30%">
-  		    <input type="button" name="edit" value="Edit" onclick="window.location='{$domain}{$section}/editPageUrl?url_id={$pageurl.id}'" />
-  		    {if $ishomepage != "true"}<input type="button" name="mkdefault" value="Make Default" onclick="window.location='{$domain}{$section}/setPageDefaultUrl?page_id={$page.webid}&amp;url={$pageurl.id}'"{if $pageurl.is_default == 1 || $pageurl.type == 'SM_PAGEURL_INTERNAL_FORWARD' || $pageurl.type == 'SM_PAGEURL_ITEM_FORWARD'} disabled="disabled"{/if} />{/if}
-  		    {if count($page.urls) > 1 || $ishomepage == "true"}<input type="button" name="delete" value="Delete" onclick="if(confirm('Are you sure you want to delete this URL?')) window.location='{$domain}{$section}/deletePageUrl?page_id={$page.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage};'"/>{/if}</td></tr> 
-      {/foreach}
+    	  {foreach from=$page.urls item=pageurl}
+    	    {capture name="pageUrl" assign="pageUrl"}http://{$site.domain}{$domain}{$pageurl.url}{/capture}
+    	  <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
+    	    <td>
+    		    <div style="display:inline" id="siteDomainField_{$pageurl.id}">
+    		      {if $pageurl.is_default == 1}<strong>{/if}{if $page.is_published == "TRUE" && ($page.type == 'NORMAL' || ($page.type == 'ITEMCLASS' && $item.public == 'TRUE'))}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}{if $pageurl.is_default == 1}</strong> (default){/if}</div></td>
+    	    <td style="width:30%">
+    		    <input type="button" name="edit" value="Edit" onclick="MODALS.load('{$section}/editPageUrl?url_id={$pageurl.id}', 'Edit page URL');" />
+    		    {if $ishomepage != "true"}<input type="button" name="mkdefault" value="Make Default" onclick="window.location='{$domain}{$section}/setPageDefaultUrl?page_id={$page.webid}&amp;url={$pageurl.id}'"{if $pageurl.is_default == 1 || $pageurl.type == 'SM_PAGEURL_INTERNAL_FORWARD' || $pageurl.type == 'SM_PAGEURL_ITEM_FORWARD'} disabled="disabled"{/if} />{/if}
+    		    {if count($page.urls) > 1 || $ishomepage == "true"}<input type="button" name="delete" value="Delete" onclick="if(confirm('Are you sure you want to delete this URL?')) window.location='{$domain}{$section}/deletePageUrl?page_id={$page.webid}&amp;url={$pageurl.id}&amp;ishomepage={$ishomepage};'"/>{/if}</td></tr> 
+        {/foreach}
       
-	    {else}
+  	    {else}
   	    
-  	  {/if}
+    	  {/if}
   	  
-  	  <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
-          <td>
-            <div style="display:inline" id="siteDomainField">
-            {if $page.is_published == "TRUE"}<a href="http://{$site.domain}{$domain}{$page.fallback_url}" target="_blank">http://{$site.domain}{$domain}{$page.fallback_url|truncate:50:"..."}</a>{else}http://{$site.domain}{$domain}{$page.fallback_url|truncate:100:"..."}{/if}</div></td>
-    	    <td style="width:30%"></td></tr>
-  	  
-  	</table>
+    	  <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
+            <td>
+              <div style="display:inline" id="siteDomainField">
+              {if $page.is_published == "TRUE"}<a href="http://{$site.domain}{$domain}{$page.fallback_url}" target="_blank">http://{$site.domain}{$domain}{$page.fallback_url|truncate:50:"..."}</a>{else}http://{$site.domain}{$domain}{$page.fallback_url|truncate:100:"..."}{/if}</div></td>
+      	    <td style="width:30%"></td></tr>
+
+    	</table>
+    	
+  	</div>
 	
   	<a href="{$domain}{$section}/addPageUrl?page_id={$page.webid}{if $page.type != "NORMAL"}&amp;item_id={$item.id}{/if}">{if count($page.urls) || $ishomepage == "true"}Add another url{else}Give this page a nicer URL{/if}</a><br />
   	<img src="{$domain}Resources/Images/spacer.gif" width="1" height="10" />

@@ -24,6 +24,12 @@
     <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
   {/if}
   
+  {if $model}
+  <div class="special-box">
+    This template is paired with the <strong>{$model.plural_name|strtolower}</strong> model <a href="#" onclick="return MODALS.load('datamanager/modelInfo?class_id={$model.id}', 'Model info')"><img src="{$domain}Resources/Icons/information.png" alt="" /></a>. {help id="templates:data_in_templates"}What does this mean?{/help}
+  </div>
+  {/if}
+  
   <div style="width:100%" id="editTMPL" class="textarea-holder">
     <textarea name="template_content" id="tpl_textArea" style="display:block">{$template_content}</textarea>
     <div style="height:14px"><span class="form-hint">Editor powered by CodeMirror</span></div>

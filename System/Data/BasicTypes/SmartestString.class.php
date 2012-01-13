@@ -125,6 +125,15 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
             return htmlspecialchars($this->_string, ENT_QUOTES, 'UTF-8', false);
             case "empty":
             return (strlen($this->_string) == 0);
+            case "lower":
+            case "lowercase":
+            return strtolower($this->_string);
+            case "upper":
+            case "uppercase":
+            return strtoupper($this->_string);
+            case "title":
+            case "titlecase":
+            return SmartestStringHelper::toTitleCase($this->_string);
         }
     }
     

@@ -87,7 +87,7 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
 <ul class="actions-list" id="item-specific-actions" style="display:none">
   <li><b><span class="item_name_field">{$model.name}</span></b></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/pencil.png"> <a href="{dud_link}" onclick="itemList.workWithItem('openItem');">Open</a></li>
-  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/information.png"> <a href="{dud_link}" onclick="itemList.workWithItem('itemInfo');">{$model.name} info</a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/information.png"> <a href="{dud_link}" onclick="MODALS.load('datamanager/itemInfo?item_id='+itemList.lastItemId, '{$model.name} info');">{$model.name} info</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/lock_open.png"> <a href="{dud_link}" onclick="itemList.workWithItem('releaseItem');">Release</a></li>
   {if $has_metapages}<li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/eye.png"> <a href="{dud_link}" onclick="itemList.workWithItem('preview');">Preview</a></li>{/if}
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_lightning.png"> <a href="{dud_link}" onclick="itemList.workWithItem('publishItem');">Publish</a></li>
@@ -101,9 +101,9 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Model Options</b></li>
   {if $allow_create_new}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/add.png" /> Create a new {$model.name}</a></li>{/if}
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/releaseUserHeldItems?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/lock_open.png" /> Release all {$model.plural_name}</a></li>
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editModel?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/information.png" /> Model info</a></li>
-  {if $can_edit_properties}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/pencil.png" /> Edit model properties</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/releaseUserHeldItems?class_id={$model.id}';"><img border="0" src="{$domain}Resources/Icons/lock_open.png" /> Release all {$model.plural_name}</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="MODALS.load('datamanager/modelInfo?class_id={$model.id}', 'Model info');"><img border="0" src="{$domain}Resources/Icons/information.png" /> Model info</a></li>
+  {if $can_edit_properties}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/tag_blue_edit.png" /> Edit model properties</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editItemClassPropertyOrder?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/arrow_switch.png" /> Edit property order</a></li>{/if}
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/addSet?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png" /> Create a new set from this model</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder_old.png" /> View data sets for this model</a></li>

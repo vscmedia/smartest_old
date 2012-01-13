@@ -6,13 +6,27 @@
   </div>
   <div class="edit-form-row">
     <div class="form-section-label">Name</div>
-    {$item.slug}
+    <code>{$item.slug}</code>
   </div>
-  <div class="edit-form-row">
-    <div class="form-section-label">Model</div>
-    {$item._model.name}
-  </div>
-  <div id="sets" class="special-box">
+  {if $item.created.unix > 0}
+    <div class="edit-form-row">
+      <div class="form-section-label">Created:</div>
+      {$item.created}
+    </div>
+    {/if}
+    {if $item.modified.unix > 0}
+    <div class="edit-form-row">
+      <div class="form-section-label">Modified:</div>
+      {$item.modified}
+    </div>
+    {/if}
+    {if $item.last_published.unix > 0}
+    <div class="edit-form-row">
+      <div class="form-section-label">Last published:</div>
+      {$item.last_published}
+    </div>
+    {/if}
+  {* <div id="sets" class="special-box">
        Sets: {if count($sets)}{foreach from=$sets item="set"}<a href="{$domain}sets/previewSet?set_id={$set.id}">{$set.label}</a> (<a href="{$domain}sets/transferSingleItem?item_id={$item.id}&amp;set_id={$set.id}&amp;transferAction=remove">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
    {if count($possible_sets)}
            <div>
@@ -29,41 +43,33 @@
              </form>
            </div>
    {/if}
-     </div>
+     </div> *}
+<div class="edit-form-row">
+   <div class="form-section-label">Author(s)</div>
+   {if $item.authors._count > 0}{$item.authors}{else}No authors{/if}
+ </div>
+ <div class="edit-form-row">
+     <div class="form-section-label">Tags</div>
+     {if $item.tags._empty}<em>No tags selected</em>{else}{$item.tags}{/if}
+   </div>
+ <div class="edit-form-row">
+   <div class="form-section-label">Workflow Status</div>
+   {$item._workflow_status}
+ </div>
   {if $has_page}
   <div class="edit-form-row">
+      <div class="form-section-label">Default URL</div>
+      {$item.absolute_uri}
+    </div>
+  <div class="edit-form-row">
     <div class="form-section-label">Link code (Default URL)</div>
-    <code>[[{$item._model.name|varname}:{$item.slug}]]</code> <em>OR</em> <code>&lt;?sm:link to="metapage:id={$page.id}:id={$item.id}":?&gt;</code>
+    <code>[[{$item._model.name|varname}:{$item.slug}]]</code>
   </div>
   <div class="edit-form-row">
       <div class="form-section-label">QR code (Default URL)</div>
       {$item.absolute_uri.qr_code_image.width_100}
     </div>
   {/if}
-  {if $item.created > 0}
-  <div class="edit-form-row">
-    <div class="form-section-label">Created:</div>
-    {$item.created}
-  </div>
-  {/if}
-  {if $item.modified > 0}
-  <div class="edit-form-row">
-    <div class="form-section-label">Modified:</div>
-    {$item.modified}
-  </div>
-  {/if}
-  <div class="edit-form-row">
-    <div class="form-section-label">Author(s)</div>
-    {$byline}
-  </div>
-  <div class="edit-form-row">
-      <div class="form-section-label">Tags</div>
-      {if $item.tags._empty}<em>No tags selected</em>{else}{$item.tags}{/if}
-    </div>
-  <div class="edit-form-row">
-    <div class="form-section-label">Workflow Status</div>
-    {$item._workflow_status}
-  </div>
   
   </div>
 

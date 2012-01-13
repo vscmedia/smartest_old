@@ -420,7 +420,7 @@ class SmartestDataObject implements ArrayAccess{
 			
 			// Magic Quotes is deprecated but if switched on can still fuck things up.
 			if(!SM_OPTIONS_MAGIC_QUOTES){
-			    $value = addslashes($value);
+			    $value = mysql_real_escape_string($value);
 		    }
 			
 			$this->_modified_properties[$field_name] = SmartestStringHelper::sanitize($value);
@@ -558,10 +558,13 @@ class SmartestDataObject implements ArrayAccess{
 		}else{
 			$column_name = $this->_table_prefix.$field;
 		}
+		
+		$value = mysql_real_escape_string($value);
 	    
 	    $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$column_name." = '".$value."'";
 	    
 	    if(is_numeric($site_id) && isset($this->_properties['site_id'])){
+	        $site_id = (int) $site_id;
             if(isset($this->_properties['shared'])){
                 $sql .= " AND (".$this->_table_prefix."site_id='".$site_id."' OR ".$this->_table_prefix."shared='1')";
             }else{
@@ -575,9 +578,6 @@ class SmartestDataObject implements ArrayAccess{
 	
 	public function clearRetrievalSqlQueryFromCache(){
 	    
-	    // $this->database->clearQueryFromCache($this->);
-	    // echo get_class($this)." ";
-	    // echo $this->getRetrievalSqlQuery($this->_properties['id']);
 	    return $this->database->clearQueryFromCache($this->getRetrievalSqlQuery($this->_properties['id']), 'id');
 	    
 	}

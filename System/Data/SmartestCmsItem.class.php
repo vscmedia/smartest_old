@@ -243,6 +243,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            break;
 	            
 	            case 'absolute_uri':
+	            case 'absolute_url':
 	            return $this->getAbsoluteUri();
 	            
 	            case 'description':
@@ -644,7 +645,8 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	
 	public function getLinkObject(){
 	    
-	    $link = SmartestCmsLinkHelper::createLink($this->getLinkContents(), array());
+	    // $link = SmartestCmsLinkHelper::createLink($this->getLinkContents(), array());
+	    $link = SmartestCmsLinkHelper::createLinkFromCmsItem($this, array());
 	    return $link;
 	    
 	}
@@ -658,7 +660,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        echo $link->getError();
 	        return '#';
 	    }else{
-	        return $link->getUrl();
+	        return $link->getUrl(false, true);
         }
 	    
 	}

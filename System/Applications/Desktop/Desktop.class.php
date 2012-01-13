@@ -37,7 +37,7 @@ class Desktop extends SmartestSystemApplication{
         		$this->send($sites, 'sites');
         		$this->send('sites', 'display');
         		$this->send(count($sites), 'num_sites');
-        		$this->send($this->getUser()->hasToken('create_sites'), 'show_create_button');
+        		$this->send(($this->getUser()->hasToken('create_sites') || $this->getUser()->hasToken('create_users')), 'show_create_button');
     		
 		    }
     		
@@ -472,6 +472,18 @@ class Desktop extends SmartestSystemApplication{
         
     }
     
+    public function createDialog(){
+        $this->send($this->getUser()->hasToken('add_new_pages') && $this->getSite(), 'allow_create_pages');
+        $this->send($this->getUser()->hasToken('create_models') && $this->getSite(), 'allow_create_models');
+        $this->send($this->getUser()->hasToken('add_items') && $this->getSite(), 'allow_create_items');
+        $this->send($this->getUser()->hasToken('create_sites'), 'allow_create_sites');
+        $this->send($this->getUser()->hasToken('create_assets') && $this->getSite(), 'allow_create_files');
+        $this->send($this->getUser()->hasToken('create_users'), 'allow_create_users');
+        $du = new SmartestDataUtility;
+        $models = $this->getSite() ? $du->getModels(false, $this->getSite()->getId(), true) : array();
+		$this->send($models, 'models');
+    }
+    
     public function aboutSmartest(){
         
         // Web server
@@ -483,7 +495,7 @@ class Desktop extends SmartestSystemApplication{
         $this->send($sys['system']['info']['revision'], 'revision');
         $this->send($sys['system']['info']['version'], 'version');
         $this->send($sys['system']['info']['revision']-$sys['system']['info']['lastversion_last_revision'], 'build'); */
-        $this->send(SmartestSystemHelper::getSmartestVersionInfo(), 'smartest_info');
+        $this->send(SmartestSystemHelper::getSmartestLocalVersionInfo(), 'smartest_info');
         
         // Memory Limit
         $this->send(SmartestSystemHelper::getPhpMemoryLimit(true), 'memory_limit');

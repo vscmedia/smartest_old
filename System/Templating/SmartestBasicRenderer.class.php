@@ -114,7 +114,8 @@ class SmartestBasicRenderer extends SmartestEngine{
             }else if($path == 'full'){
                 $content = $this->_asset->getFullWebPath();
             }else{
-                if($this->_asset->usesTextFragment() && $this->_asset->isParsable()){
+                
+                if($this->_asset->usesTextFragment()){
                     
                     $render_process_id = SmartestStringHelper::toVarName('textfragment_'.$this->_asset->getStringid().'_'.substr(microtime(true), -6));
                     
@@ -123,6 +124,8 @@ class SmartestBasicRenderer extends SmartestEngine{
                     }else{
                         $attachments = array();
                     }
+                    
+                    
                     
                     // If draft, check that a temporary preview copy has been created, and creat it if not
                     if($this->getDraftMode()){
@@ -160,21 +163,11 @@ class SmartestBasicRenderer extends SmartestEngine{
                         }
                     }
                     
-                    $links = SmartestLinkParser::parseEasyLinks($content);
+                    $parser = new SmartestDataBaseStoredTextAssetToolkit($this);
+                    $method = $this->_asset->getParseMethodName();
                     
-                    foreach($links as $l){
-                        
-                        $link = new SmartestCmsLink($l, array());
-                        
-                        if($link->hasError()){
-                            $content = str_replace($l->getParameter('original'), $this->raiseError($link->getErrorMessage()), $content);
-                        }else{
-                            $content = str_replace($l->getParameter('original'), $link->render($this->getDraftMode()), $content);
-                        }
-                    }
-                    
-                    if(stripos($content, 'NewColumn') !== false){
-                        $content = SmartestStringHelper::separateIntoColumns($content);
+                    if(method_exists($parser, $method)){
+                        $content = $parser->$method($content, $this->_asset, $this->getDraftMode());
                     }
                     
                 }else{
@@ -228,7 +221,6 @@ class SmartestBasicRenderer extends SmartestEngine{
 	        }
 		    
 		    $content .= $edit_link;
-            
             return $content;
             
         }else{

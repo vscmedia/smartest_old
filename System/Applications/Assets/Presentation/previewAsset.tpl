@@ -4,6 +4,7 @@
  <div class="instruction">The file will look something like this:</div>
  <div id="html-preview">
   {$html}
+  <div class="breaker"></div>
  </div>
 </div>
 

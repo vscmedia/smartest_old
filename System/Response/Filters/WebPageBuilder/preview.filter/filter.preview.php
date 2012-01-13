@@ -38,7 +38,7 @@ function smartest_filter_preview($html, $filter){
         $heartbeat_id = SmartestPersistentObject::get('request_data')->getParameter('request_parameters')->getParameter('heartbeat_id');
         
         if($heartbeat_id == SM_CMS_PAGE_SITE_UNIQUE_ID){
-            $html = str_replace('</head>', "<meta name=\"smartest:siteid\" content=\"".$heartbeat_id."\">\n</head>", $html);
+            $html = str_replace('</head>', "<meta name=\"smartest:siteid\" content=\"".$heartbeat_id."\" />\n</head>", $html);
             $html = str_replace('</body>', "<!--SMARTEST HEARTBEAT-->\n</body>", $html);
         }
       

@@ -3,8 +3,6 @@
   <input type="hidden" name="asset_type" value="{$asset.type}" />
   <input type="hidden" name="asset_id" value="{$asset.id}" />
   
-  <div class="special-box">You are editing file: <code> Public/Resources/Stylesheets/</code><strong><code>{$asset.url}</code></strong></div>
-  
   <div class="special-box">
     <span class="heading">Language</span>
     <select name="asset_language">

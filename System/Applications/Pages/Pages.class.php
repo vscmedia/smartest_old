@@ -279,8 +279,13 @@ class Pages extends SmartestSystemApplication{
                     $this->send('websitemanager/editPage', 'continue_action');
                 }
                 
+                $this->send($this->getUser()->hasToken('edit_page_name'), 'allow_edit_page_name');
                 $editable = $page->isEditableByUserId($this->getUser()->getId());
         		$this->send($editable, 'page_is_editable');
+        		$parent_pages = $page->getOkParentPages();
+        		$this->send($parent_pages, "parent_pages");
+        		$this->send($this->getSite(), "site");
+        		$this->send(new SmartestBoolean(false), 'link_urls');
             
             }else{
     	        
@@ -293,22 +298,16 @@ class Pages extends SmartestSystemApplication{
     	        
     	        $this->send(false, 'require_item_select');
     	        $editorContent = $page;
+    	        $this->send(new SmartestBoolean(true), 'link_urls');
     		
             	if($this->getUser()->hasToken('modify_page_properties')){
 		
             		$site_id = $this->getSite()->getId();
             		$page_id = $page->getId();
 		
-            		if($site_id){
-			
-            			if($this->getSite()->getTopPageId() == $page->getId()){
-            				$ishomepage = true;
-            			}else{
-            				$ishomepage = false;
-            			}
-            		}
-		        
-    		        $parent_pages = $page->getOkParentPages();
+            		$ishomepage = ($this->getSite()->getTopPageId() == $page->getId());
+            			
+		            $parent_pages = $page->getOkParentPages();
     		        
             		if($page->getIsHeld() == '1' && $page->getHeldBy() == $this->getUser()->getId()){
             		    $allow_release = true;
@@ -459,6 +458,7 @@ class Pages extends SmartestSystemApplication{
         	        $this->send(false, 'allow_edit');
 	        
         	    }
+        	    
         	}
 	    
         }else{
@@ -3878,6 +3878,11 @@ class Pages extends SmartestSystemApplication{
     		    $this->send($site, 'site');
     		    $this->send($page->isHomepage(), "ishomepage");
     		    $this->send($page, "pageInfo");
+    		    
+    		    $b = (($this->getRequestParameter('responseTableLinks') && !SmartestStringHelper::toRealBool($this->getRequestParameter('responseTableLinks'))) ? false : true);
+    		    // var_dump($b);
+    		    // $this->send(new SmartestBoolean($b), 'responseTableLinks');
+    		    
     	    }
 	    }
 	}

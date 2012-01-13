@@ -88,7 +88,8 @@ function viewLivePage(parameters){
 
 <ul class="invisible-actions-list" id="asset-specific-actions" style="display:none">
   <li><b>File Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('editFile');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit This File</a></li>
+  <li class="permanent-action"><a href="#" onclick="return elementTree.workWithItem('editFile');" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Edit this file</a></li>
+  <li class="permanent-action"><a href="#" onclick="return MODALS.load('assets/assetCommentStream?asset_id='+elementTree.lastItemId, 'File notes');" class="right-nav-link"><img src="{$domain}Resources/Icons/note.png" border="0" alt=""> View notes on this File</a></li>
 </ul>
 
 <ul class="invisible-actions-list" id="template-specific-actions" style="display:none">

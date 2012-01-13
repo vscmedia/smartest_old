@@ -1,3 +1,83 @@
+<style type="text/css">
+{literal}
+  #select_two_container {  
+      position:relative;  
+  } 
+
+  .select_multiple_submit {  
+      background-image:url("/stylesheets/popup_footer.gif");  
+      background-image:top center;  
+      background-repeat:repeat-x;  
+      padding:10px;  
+      height:22px;  
+      text-align:rightright;  
+  } 
+
+  .select_multiple_label {  
+      margin-left:5px;  
+      font-family:"Lucida Grande",Verdana;  
+      font-size:11px;  
+  } 
+
+  .select_multiple_container {  
+      width:300px;  
+      position:absolute;  
+      top:0;  
+      left:0;  
+      z-index:500;  
+      border:1px solid #222;  
+      border-top:none;  
+  } 
+
+  .select_multiple_container .select_multiple_header {  
+      background-image:url("/stylesheets/black_background.gif");  
+      background-repeat:repeat-x;  
+      background-position:top center;  
+      color:#eee;  
+      font-family:"Lucida Grande",Verdana;  
+      font-weight:bold;  
+      font-size:12px;  
+      margin:0;  
+      padding:7px 0 8px 10px;  
+      background-color:#000;  
+  } 
+
+  table.select_multiple_table td {  
+      height:27px;  
+      border-bottom:1px solid #ddd;  
+      font-family:"Lucida Grande",Verdana;  
+      color:#333;  
+      font-size:11px;  
+  } 
+
+  table.select_multiple_table tr.even {  
+      background-color:#FCFCFC;  
+  } 
+
+  table.select_multiple_table tr.odd {  
+      background-color:#F7F7F7;  
+  } 
+
+  table.select_multiple_table tr.selected {  
+      background-image:none;  
+      background-color:#D9E9FE;  
+  } 
+
+  .select_multiple_name {  
+      padding-left:15px;  
+      font-weight:bold;  
+  } 
+
+  .select_multiple_checkbox {  
+      text-align:rightright;  
+  } 
+
+  .select_multiple_checkbox input {  
+      margin-right:15px;  
+  }
+{/literal}
+</style>
+
 <script type="text/javascript">
 
 {literal}
@@ -63,6 +143,60 @@
 <h3 id="user">Add new User</h3>
 
 <form id="addUser" name="addUser" action="{$domain}{$section}/insertUser" method="post" style="margin:0px">
+
+{if $sites._count > 1}
+  <div class="edit-form-row">
+    <div class="form-section-label">Site</div>
+{foreach from=$sites item="site"}
+    
+    <input type="checkbox" name="user_sites[]" value="{$site.id}" id="site-checkbox-{$site.id}" style="display:none" class="site-checkbox" />
+    <label for="site-checkbox-{$site.id}" class="checkbox-array" id="site-checkbox-{$site.id}-label">{$site.internal_label}</label>
+    <script type="text/javascript">
+    
+    $('site-checkbox-{$site.id}').observe('click', function(e){literal}{
+      
+      if($(Event.element(e).id).checked){
+        $(Event.element(e).id+'-label').addClassName('selected');
+      }else{
+        $(Event.element(e).id+'-label').removeClassName('selected');
+      }
+      
+    }{/literal});
+    
+    </script>
+{/foreach}
+    
+    <input type="checkbox" name="global_site_access" id="site-checkbox-global" value="1" style="display:none" />
+    <label for="site-checkbox-global" class="checkbox-array" id="site-checkbox-global-label">Global</label>
+    
+    <script type="text/javascript">
+    {literal}
+    
+    $('site-checkbox-global').observe('click', function(e){
+      
+      if($(Event.element(e).id).checked){
+        $(Event.element(e).id+'-label').addClassName('selected');
+        $$('input.site-checkbox').find(function(e){
+          e.checked = true;
+          $(e.id+'-label').addClassName('selected');
+          $(e.id+'-label').fade({duration:0.5});
+        });
+      }else{
+        $(Event.element(e).id+'-label').removeClassName('selected');
+        $$('input.site-checkbox').find(function(e){
+          e.checked = false;
+          $(e.id+'-label').removeClassName('selected');
+          $(e.id+'-label').appear({duration:0.5});
+        }); 
+      }
+    
+    });
+    
+    {/literal}
+    </script>
+    
+  </div>
+{/if}
   
   <div class="edit-form-row">
     <div class="form-section-label">First name </div>
@@ -208,3 +342,49 @@
      <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Go back to users</a></li>
   </ul>
 </div>
+
+<script type="text/javascript">
+{* {literal}
+//complex example, note how we need to pass in different CSS selectors because of the complex HTML structure  
+var select_multiple_two = new Control.SelectMultiple('select_multiple_two','select_multiple_two_options',{  
+    checkboxSelector: 'table.select_multiple_table tr td input[type=checkbox]',  
+    nameSelector: 'table.select_multiple_table tr td.select_multiple_name',  
+    afterChange: function(){  
+        if(select_multiple_two && select_multiple_two.setSelectedRows)  
+            select_multiple_two.setSelectedRows();  
+    }  
+});  
+  
+//adds and removes highlighting from table rows  
+select_multiple_two.setSelectedRows = function(){  
+    this.checkboxes.each(function(checkbox){  
+        var tr = $(checkbox.parentNode.parentNode);  
+        tr.removeClassName('selected');  
+        if(checkbox.checked)  
+            tr.addClassName('selected');  
+    });  
+}.bind(select_multiple_two);  
+select_multiple_two.checkboxes.each(function(checkbox){  
+    $(checkbox).observe('click',select_multiple_two.setSelectedRows);  
+});  
+select_multiple_two.setSelectedRows();  
+  
+//link open and closing  
+$('select_multiple_two_open').observe('click',function(event){  
+    $(this.select).style.visibility = 'hidden';  
+    new Effect.BlindDown(this.container,{  
+        duration: 0.3  
+    });  
+    Event.stop(event);  
+    return false;  
+}.bindAsEventListener(select_multiple_two));  
+$('select_multiple_two_close').observe('click',function(event){  
+    $(this.select).style.visibility = 'visible';  
+    new Effect.BlindUp(this.container,{  
+        duration: 0.3  
+    });  
+    Event.stop(event);  
+    return false;  
+}.bindAsEventListener(select_multiple_two));
+{/literal} *}
+</script>

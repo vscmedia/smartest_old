@@ -2,28 +2,13 @@
   
   {load_interface file="edit_model_tabs.tpl"}
   
-  <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Model info</h3>
+  <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Edit model</h3>
   
   {if $can_edit_model}<form action="{$domain}{$section}/updateModel" method="post">{/if}
     
     <input type="hidden" name="class_id" value="{$model.id}" />
     
     <div class="edit-form-layout">
-      
-      <div class="edit-form-row">
-        <div class="form-section-label">Model Name</div>
-        {$model.name}
-      </div>
-      
-      <div class="edit-form-row">
-        <div class="form-section-label">Number of items</div>
-        This site: <strong>{$num_items_on_site}</strong>; All sites: <strong>{$num_items_all_sites}</strong>
-      </div>
-      
-      <div class="edit-form-row">
-        <div class="form-section-label">Model class</div>
-        <code>{$class_file}</code> <span style="color:#999">({$class_file_size})</span>
-      </div>
       
       <div class="edit-form-row">
         <div class="form-section-label">Model plural name</div>
@@ -86,8 +71,8 @@
           {/foreach}
         </select><span class="form-hint">The model's main site is the one that can use it if the model is not shared.</span>
         {else}
-        {foreach from=$sites item="s"}
-          {if $current_site_id_id==$s.id}{$s.name}{/if}
+          {foreach from=$sites item="s"}
+            {if $current_site_id_id==$s.id}{$s.name}{/if}
           {/foreach}
         {/if}
       </div>
@@ -219,9 +204,10 @@
     
     <ul class="actions-list" id="non-specific-actions">
       <li><b>Model Options</b></li>
+      <li class="permanent-action"><a href="{dud_link}" onclick="MODALS.load('datamanager/modelInfo?class_id={$model.id}', 'Model info');"><img border="0" src="{$domain}Resources/Icons/information.png" /> Model info</a></li>
       {if $allow_create_new}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addItem?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/add.png" /> Add a new {$model.name}</a></li>{/if}
+      {if $can_edit_properties}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/tag_blue_edit.png" /> Edit model properties</a></li>{/if}
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/releaseUserHeldItems?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/lock_open.png" /> Release all {$model.plural_name}</a></li>
-      {if $can_edit_properties}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/pencil.png" /> Edit model properties</a></li>{/if}
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/addSet?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png" /> Create a new set from this model</a></li>
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder_old.png" /> View data sets for this model</a></li>
     {* <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/importData?class_id={$itemBaseValues.itemclass_id}';"><img border="0" src="{$domain}Resources/Icons/page_code.png" /> Import data from CSV</a></li> *}

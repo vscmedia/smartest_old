@@ -39,6 +39,15 @@
         </script></li>
     {/if}
     
+    {if $value.id}
+      <li><a href="#file-notes" id="edit-file-notes-button-{$property.id}" title="View and make notes this file"><img src="{$domain}Resources/Icons/note.png" alt="" /></a>
+        <script type="text/javascript">
+        $('edit-file-notes-button-{$property.id}').observe('mouseover', function(){literal}{{/literal}$('file-property-tooltip-{$property.id}').update('View and make notes this file');{literal}}{/literal});
+        $('edit-file-notes-button-{$property.id}').observe('mouseout', function(){literal}{{/literal}$('file-property-tooltip-{$property.id}').update('');{literal}}{/literal});
+        $('edit-file-notes-button-{$property.id}').observe('click', function(e){literal}{{/literal}MODALS.load('assets/assetCommentStream?asset_id='+{$value.id}, 'Notes on file {$value.label}'); e.stop();{literal}}{/literal});
+        </script></li>
+    {/if}
+    
     <li style="padding-top:6px"><span class="form-hint" id="file-property-tooltip-{$property.id}"></span></li>
     
   </ul>

@@ -556,11 +556,11 @@ class SmartestCmsLink extends SmartestHelper{
     
     public function getAbsoluteUrlObject(){
         // Returns a SmartestExternalUrl object pointing to the absolute uri of the 
-        $url = 'http://'.$this->getSite()->getDomain().$this->getUrl();
+        $url = 'http://'.$this->getSite()->getDomain().$this->getUrl(false, true);
         return new SmartestExternalUrl($url);
     }
     
-    public function getUrl($draft_mode=false){
+    public function getUrl($draft_mode=false, $ignore_status=false){
         
         switch($this->getType()){
 
@@ -569,7 +569,7 @@ class SmartestCmsLink extends SmartestHelper{
             if($draft_mode){
                 return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId();
             }else{
-                if($this->_destination->getIsPublishedAsBoolean()){
+                if($this->_destination->getIsPublishedAsBoolean() || $ignore_status){
                     return $this->_request->getDomain().$this->_destination->getDefaultUrl();
                 }else{
                     return '#';
@@ -583,7 +583,7 @@ class SmartestCmsLink extends SmartestHelper{
             if($draft_mode){ 
                 return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
             }else{
-                if($this->_destination->getIsPublishedAsBoolean() && $this->_destination->getPrincipalItem()->isPublished()){
+                if(($this->_destination->getIsPublishedAsBoolean() && $this->_destination->getPrincipalItem()->isPublished()) || $ignore_status){
                     $template_url = $this->_request->getDomain().$this->_destination->getDefaultUrl();
                     $url = str_replace(':id', $this->_destination->getPrincipalItem()->getId(), $template_url);
                     $url = str_replace(':long_id', $this->_destination->getPrincipalItem()->getWebid(), $url);

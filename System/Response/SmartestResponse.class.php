@@ -544,15 +544,20 @@ class SmartestResponse{
 		$this->_ui_template = (strlen($this->_controller->getCurrentRequest()->getAction())) ? $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$subfolder.$this->_controller->getCurrentRequest()->getAction().".tpl" : null;
 			
 		if(is_file($this->_ui_template)){
-			$this->_smarty->assign("sm_interface", $this->_ui_template);
+			
 		}else{
+		    
+		    $this->_smarty->assign("sm_intended_interface", $this->_ui_template);
+		    
 		    if($this->_controller->getCurrentRequest()->getAction() == "preferences"){
-			    $this->_smarty->assign("sm_interface", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_prefsTemplateNotFound.tpl");
+			    $this->_ui_template = SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_prefsTemplateNotFound.tpl";
 		    }else{
-		        $this->_smarty->assign("sm_interface", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_subTemplateNotFound.tpl");
+		        $this->_ui_template = SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."Error/_subTemplateNotFound.tpl";
 		    }
-			$this->_smarty->assign("sm_intended_interface", $this->_ui_template);
+			
 		}
+		
+		$this->_smarty->assign("sm_interface", $this->_ui_template);
 		
 		if($this->_controller->getCurrentRequest()->getMeta('template') == 'none'){
 		    $this->_display_enabled = false;
@@ -560,7 +565,11 @@ class SmartestResponse{
 		    $default_tpl = '_default.tpl';
 		}
 		
-		$this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$subfolder.$default_tpl;
+		if($this->_controller->getCurrentRequest()->getNamespace() == 'plain' || $this->_controller->getCurrentRequest()->getNamespace() == 'modal'){
+		    $this->_main_template = $this->_ui_template;
+		}else{
+		    $this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$subfolder.$default_tpl;
+		}
 		
 		/* if(!is_file($this->_main_template)){
 			$this->_smarty->assign("sm_main_interface", $this->_main_template);

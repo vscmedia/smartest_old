@@ -1,14 +1,39 @@
 <div id="work-area">
 
+  <script type="text/javascript">
+
+    // Smartest.AjaxModalViewer.variables.responseTableLinks = {$link_urls.truefalse}
+    
+    var savePageUrlChanges = function(){ldelim}
+
+      $('saver-gif').show();
+
+      $('editUrl').request({ldelim}
+        onComplete: function(){ldelim}
+          // $('page-urls').update('');
+          new Ajax.Updater('page-urls', '{$domain}ajax:websitemanager/pageUrls', {ldelim}
+            parameters: {ldelim}page_id: '{$page.webid}'{if $item.id}, item_id: {$item.id}{/if}, responseTableLinks: {$link_urls.truefalse}{rdelim}
+          {rdelim});
+          MODALS.hideViewer();
+        {rdelim}
+      {rdelim});
+
+      return true;
+
+    {rdelim}
+
+  </script>
+
 {if $allow_edit}
   
   {load_interface file="edit_tabs.tpl"}
   
   {if $require_item_select}
-  <h3>Meta-Page Overview</h3>
-  {load_interface file="choose_item.tpl"}
+    <h3>Meta-Page Overview: <span id="page-name-in-h3">{$page.title}</span></h3>
+    {load_interface file="choose_item.tpl"}
+    {load_interface file="editMetaPageWithoutItem.tpl"}
   {else}
-  {load_interface file="editPage.form.tpl"}
+    {load_interface file="editPage.form.tpl"}
   {/if}
 
 {else}

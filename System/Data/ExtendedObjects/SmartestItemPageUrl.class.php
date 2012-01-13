@@ -22,6 +22,18 @@ class SmartestItemPageUrl extends SmartestPageUrl{
         
     }
     
+    public function usesName(){
+        return strpos($this->getUrl(), ':name') !== false;
+    }
+    
+    public function usesId(){
+        return strpos($this->getUrl(), ':id') !== false;
+    }
+    
+    public function usesLongId(){
+        return strpos($this->getUrl(), ':long_id') !== false;
+    }
+    
     public function offsetGet($offset){
         
         switch($offset){

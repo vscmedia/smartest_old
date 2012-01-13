@@ -11,10 +11,11 @@ class SmartestSystemUser extends SmartestUser{
 	    // Retrieves a list of sites where the user is allowed to edit the permissins of other users
 	    
 	    if($this->hasGlobalPermission('modify_user_permissions')){
+	        
             $sql = "SELECT * FROM Sites";
         }else{
             // modify_user_permissions token ID is ALWAYS 13
-            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UsersTokensLookup.utlookup_token_id = '13' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
+            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND (UsersTokensLookup.utlookup_token_id = '13' OR UsersTokensLookup.utlookup_token_id = '0') AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
         }   
         
         $this->_site_ids = array();
@@ -61,7 +62,7 @@ class SmartestSystemUser extends SmartestUser{
             }
         }else{
             // site_access token is ALWAYS ID 21
-            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UsersTokensLookup.utlookup_token_id = '21' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
+            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND (UsersTokensLookup.utlookup_token_id = '21' OR UsersTokensLookup.utlookup_token_id = '0') AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
             if(is_array($limit_ids) && count($limit_ids)){
                 $sql .= " AND Sites.site_id IN ('".implode("','", $limit_ids)."')";
             }
@@ -95,6 +96,33 @@ class SmartestSystemUser extends SmartestUser{
 	    }
 	    
 	    return $this->_site_ids;
+	    
+	}
+	
+	public function getSitesWhereUserHasToken($token){
+	    
+	    if($this->hasGlobalToken($token)){
+            $sites = $this->getAllowedSites();
+        }else{
+            
+            $h = new SmartestUsersHelper;
+            $token_id = $h->getTokenId($token);
+            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UsersTokensLookup.utlookup_token_id = '".$token_id."' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
+            
+            $result = $this->database->queryToArray($sql);
+    	    $sites = array();
+
+    	    foreach($result as $site_array){
+
+    	        $site = new SmartestSite;
+    	        $site->hydrate($site_array);
+    	        $sites[] = $site;
+    	        
+    	    }
+            
+        }
+        
+        return $sites;
 	    
 	}
 	
@@ -139,9 +167,9 @@ class SmartestSystemUser extends SmartestUser{
         }
 	}
 	
-	public function hasGlobalPermission($permission){
+	public function hasGlobalToken($token){
 	    
-	    $token_code = SmartestStringHelper::toVarName($permission);
+	    $token_code = SmartestStringHelper::toVarName($token);
 	    $h = new SmartestUsersHelper;
 	    
 	    $token_id = $h->getTokenId($token_code);
@@ -154,6 +182,13 @@ class SmartestSystemUser extends SmartestUser{
 	    }else{
 	        return false;
 	    }
+	    
+	}
+	
+	public function hasGlobalPermission($permission){
+	    
+	    return $this->hasGlobalToken($permission);
+	    
 	}
 	
 	// STRICT parameter excludes globally granted tokens and only returns tokens or ids granted on the side having he ID provided

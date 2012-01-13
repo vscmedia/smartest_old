@@ -158,7 +158,7 @@ function validateUploadSuffix(){
       </div>
       
     {load_interface file="$interface_file"}
-      
+    
     <div class="edit-form-row">
       <div class="form-section-label">Language</div>
       <select name="asset_language">

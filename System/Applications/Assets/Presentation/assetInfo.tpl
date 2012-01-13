@@ -1,5 +1,6 @@
 <script type="text/javascript">
   var asset_id = {$asset.id};
+  var asset_label = '{$asset.label}';
 </script>
 
 <div id="work-area">
@@ -28,8 +29,19 @@
       </tr>
       <tr>
         <td style="width:150px;background-color:#fff" class="field-name">Name on disk:</td>
-        <td>{$asset.full_path}</td>
+        <td><code>{$asset.full_path}</code></td>
       </tr>
+      {if $asset.is_web_accessible}
+      <tr>
+        <td style="width:150px;background-color:#fff" class="field-name">Direct URL</td>
+        <td><code>{$asset.absolute_uri}</code></td>
+      </tr>
+      {else}
+      <tr>
+        <td style="width:150px;background-color:#fff" class="field-name">Download URL</td>
+        <td><code>{$asset.download_uri}</code></td>
+      </tr>
+      {/if}
       <tr>
         <td class="field-name">Size:</td>
         <td>{$asset.size}{if $asset.is_image}, ({$asset.width} x {$asset.height} pixels){/if}</td>
@@ -72,7 +84,7 @@
         </td>
       </tr>
       <tr>
-        <td class="field-name">Original site:</td>
+        <td class="field-name">Main website:</td>
         <td>{$asset.site.internal_label}</td>
       </tr>
       <tr>
@@ -88,6 +100,20 @@
               method: 'post',
               parameters: {'asset_id': asset_id, 'is_shared': checked}
             });
+          });
+          {/literal}
+          </script>
+        </td>
+      </tr>
+      <tr>
+        <td class="field-name">&nbsp;</td>
+        <td>
+          <a href="#open-file-notes" id="file-notes-link"><img src="{$domain}Resources/Icons/note.png"> Notes</a>
+          <script type="text/javascript">
+          {literal}
+          $('file-notes-link').observe('click', function(e){
+            MODALS.load('assets/assetCommentStream?asset_id='+asset_id, 'Notes on file: \''+asset_label+'\'');
+            e.stop();
           });
           {/literal}
           </script>
@@ -116,27 +142,6 @@
   </div>
       
 {*      <h4 style="margin-top:15px">Usage of this file</h4> *}
-      
-      <h4 style="margin-top:15px">Comments on this file</h4>
-      
-      <ul style="padding:0px;margin:0px;list-style-type:none">
-  {foreach from=$comments item="comment"}
-        <li style="padding:5px;background-color:#{cycle values="fff,ddd"}">
-          <b>{$comment.user.full_name}</b>, {$comment.posted_at|date_format:"%A %e %B, %Y"}<br />
-          <p>{$comment.content}</p>
-        </li>
-  {foreachelse}
-        <li style="padding:5px;"><div class="instruction">No comments yet</div></li>
-  {/foreach}
-      </ul>
-
-      <div class="instruction">Leave a comment</div>
-
-      <form action="{$domain}{$section}/attachCommentToAsset" method="post">
-        <input type="hidden" name="asset_id" value="{$asset.id}" />
-        <textarea name="comment_content" style="width:500px;height:90px"></textarea><br />
-        <input type="submit" value="Save" />
-      </form>
   
 </div>
 

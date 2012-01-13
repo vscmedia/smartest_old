@@ -76,6 +76,14 @@ div#work-area h3, div#work-area-full h3{
     padding:9px;
 }
 
+div#modal-work-area{
+    
+}
+
+div#modal-work-area h3{
+    /* margin:0 0 10px 0; */
+}
+
 div#work-area h4, div#work-area-full h4{
 	margin:0px;
 	margin-bottom:7px;
@@ -337,4 +345,48 @@ ul.apps li a.icon{
 
 ul.apps li a.icon:hover{
     margin-top:0px;
+}
+
+ul.modal-options-grid{
+    margin:0px!important;
+    padding:0px!important;
+}
+
+ul.modal-options-grid li{
+    width:120px;
+    height:120px;
+    display:inline-block;
+    margin:0 0 3px 3px;
+}
+
+ul.modal-options-grid li a{
+    width:120px;
+    height:20px;
+    display:block;
+    padding-top:100px;
+}
+
+#html-preview div.smartest-column{
+    float:left;
+    margin-right:10px;
+}
+
+#html-preview h1, #html-preview h2, #html-preview h3, #html-preview h4, #html-preview h5, #html-preview h6, #html-preview p{
+    margin-top:0px;
+}
+
+#html-preview div.smartest-column.last{
+    margin-right:0px;
+}
+
+#html-preview div.column-width-2{
+    width:48%;
+}                
+                 
+#html-preview div.column-width-3{
+    width:31%;  
+}                
+                 
+#html-preview div.column-width-4{
+    width:23%;
 }

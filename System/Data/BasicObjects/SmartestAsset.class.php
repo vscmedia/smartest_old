@@ -10,6 +10,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
     protected $_image;
     protected $_save_textfragment_on_save = false;
     protected $_set_textfragment_asset_id_on_save = false;
+    protected $_absolute_uri_object;
     
     public function __toArray($include_object=false, $include_owner=false){
         
@@ -76,6 +77,10 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
     	        return $this->getFullPathOnDisk();
             }
             
+            case "absolute_uri":
+            case "absolute_url":
+            return $this->getAbsoluteUri();
+            
             case "storage_location":
             return $this->getStorageLocation();
             
@@ -97,6 +102,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             
             case "is_image":
             return $this->isImage();
+            
+            case "is_web_accessible":
+            return $this->isWebAccessible();
             
             case "image":
             return $this->isImage() ? $this->getImage() : null;
@@ -134,6 +142,14 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             
             case "download_link_contents":
             return 'download:'.$this->getUrl();
+            
+            case "download_uri":
+            case "download_url":
+            return $this->getAbsoluteDownloadUri();
+            
+            case "secure_download_uri":
+            case "secure_download_url":
+            return $this->getAbsoluteDownloadUri(true);
             
             case "link_contents":
             if($this->isImage()){
@@ -261,8 +277,6 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    
 	    $info = $this->getTypeInfo();
 	    
-	    // print_r($info);
-	    
 	    if($info['storage']['type'] == 'database'){
 	        return true;
 	    }else{
@@ -313,6 +327,8 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
                         $this->_set_textfragment_asset_id_on_save = true;
                     }
     	        }
+    	        
+    	        $this->_text_fragment->setAsset($this);
     	        
     	    }else{
     	        return null;
@@ -402,14 +418,27 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    
 	}
 	
+	public function isWebAccessible(){
+	    $info = $this->getTypeInfo();
+	    return $this->usesLocalFile() && substr($info['storage']['location'], 0, strlen('Public/')) == 'Public/';
+	}
+	
 	public function getFullWebPath(){
 	    
 	    $info = $this->getTypeInfo();
 	    
-	    if($this->usesLocalFile() && substr($info['storage']['location'], 0, strlen('Public/')) == 'Public/'){
+	    if($this->isWebAccessible()){
 	        return $this->_request->getDomain().substr($info['storage']['location'], strlen('Public/')).$this->getUrl();
 	    }else{
 	        return null;
+	    }
+	    
+	}
+	
+	public function getAbsoluteUri(){
+	    
+	    if($this->isWebAccessible()){
+	        return new SmartestExternalUrl('http://'.$this->getSite()->getDomain().$this->getFullWebPath());
 	    }
 	    
 	}
@@ -426,6 +455,14 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	        }
 		    return $this->_image;
 		}
+	}
+	
+	public function getStoreMethodName(){
+	    return 'store'.SmartestStringHelper::toCamelCase(substr($this->getType(), 13)).'Asset';
+	}
+	
+	public function getParseMethodName(){
+	    return 'parse'.SmartestStringHelper::toCamelCase(substr($this->getType(), 13)).'Asset';
 	}
 	
 	public function getDefaultParams(){
@@ -493,6 +530,18 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	        return $file_name;
 	        
 	    }
+	}
+	
+	public function getDownloadUrl(){
+	    return $this->_request->getDomain().'download/'.$this->getUrl().'?key='.$this->getWebid();
+	}
+	
+	public function getAbsoluteDownloadUri($secure=false){
+	    if(!$this->_absolute_uri_object){
+	        $protocol = $secure ? 'https://' : 'http://';
+	        $this->_absolute_uri_object = new SmartestExternalUrl($protocol.$this->getSite()->getDomain().$this->getDownloadUrl());
+        }
+        return $this->_absolute_uri_object;
 	}
 	
 	public function save(){

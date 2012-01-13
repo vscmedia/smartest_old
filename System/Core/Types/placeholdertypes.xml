@@ -5,6 +5,7 @@
   <type id="SM_ASSETCLASS_RICH_TEXT">
     <label>Formatted text files</label>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+    <accept>SM_ASSETTYPE_TEXTILE_TEXT</accept>
     <setfrompreview>true</setfrompreview>
     <descriptive>true</descriptive>
   </type>
@@ -23,6 +24,7 @@
     <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_RICH_TEXT</accept>
     <accept>SM_ASSETTYPE_PLAIN_TEXT</accept>
+    <accept>SM_ASSETTYPE_TEXTILE_TEXT</accept>
     <descriptive>true</descriptive>
   </type>
   

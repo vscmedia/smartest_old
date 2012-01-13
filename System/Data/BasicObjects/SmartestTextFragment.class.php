@@ -2,6 +2,8 @@
 
 class SmartestTextFragment extends SmartestBaseTextFragment{
     
+    protected $_asset;
+    
     protected function __objectConstruct(){
         
         $this->_table_prefix = 'textfragment_';
@@ -9,12 +11,18 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
         
     }
     
+    public function setAsset(SmartestAsset $a){
+        $this->_asset = $a;
+    }
+    
+    public function getAsset(){
+        return $this->_asset;
+    }
+    
     public function getAttachments(){
         
         $attachment_names = $this->parseAttachmentNames();
         $attachments = array();
-        
-        // print_r($attachment_names);
         
         foreach($attachment_names as $a){
             $attachments[$a] = '';
@@ -93,7 +101,13 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
     }
     
     public function parseAttachmentNames(){
-        $regexp = preg_match_all('/<\?sm:attachment.+?name="([\w_-]+)"/', $this->_properties['content'], $matches);
+        
+        if($this->_asset->getType() == 'SM_ASSETTYPE_TEXTILE_TEXT'){
+            $regexp = preg_match_all('/\{attach:([\w_-]+)\}/', $this->_properties['content'], $matches);
+        }else{
+            $regexp = preg_match_all('/<\?sm:attachment.+?name="([\w_-]+)"/', $this->_properties['content'], $matches);
+        }
+        
         $attachment_names = array();
         
         foreach($matches[1] as $an){
@@ -107,7 +121,12 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
     }
     
     public function containsAttachmentTags(){
-        $c = !(strpos($this->_properties['content'], '<?sm:att') === FALSE);
+        if($this->_asset->getType() == 'SM_ASSETTYPE_TEXTILE_TEXT'){
+            $c = !(strpos($this->_properties['content'], '{attach:') === FALSE);
+        }else{
+            $c = !(strpos($this->_properties['content'], '<?sm:att') === FALSE);
+        }
+        
         return $c;
     }
     
@@ -166,6 +185,7 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	}
 	
 	public function createPreviewFile(){
+	    $parser = new SmartestDataBaseStoredTextAssetToolkit($this);
 	    $result = SmartestFileSystemHelper::save($this->getParsableFilePath(true), stripslashes($this->getContent()), true);
 	    return $result;
 	}

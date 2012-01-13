@@ -82,4 +82,41 @@ class AssetsAjax extends SmartestSystemApplication{
         
     }
     
+    public function assetComments(){
+        
+        $asset = new SmartestAsset;
+        $asset_id = $this->getRequestParameter('asset_id');
+
+		if($asset->find($asset_id)){
+		    
+		    $this->send($asset, 'asset');
+		    $comments = $asset->getComments();
+		    $this->send($comments, 'comments');
+		
+		}
+        
+    }
+    
+    public function submitAssetComment(){
+        
+        $asset = new SmartestAsset;
+		$asset_id = $this->getRequestParameter('asset_id');
+
+		if($asset->find($asset_id)){
+            
+            $asset->addComment($this->getRequestParameter('comment_content'), $this->getUser()->getId());
+
+		}
+    }
+    
+    public function removeAssetComment(){
+        
+        $comment = new SmartestAssetComment;
+        
+        if($comment->find($this->getRequestParameter('comment_id'))){
+            $comment->delete();
+        }
+        
+    }
+    
 }

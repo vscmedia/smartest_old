@@ -35,6 +35,14 @@ module:
     new_securimage_captcha_image:
       url: /captcha/new
       action: getCaptchaImage
+    json_set:
+      url: /json/set/:set_name/:set_mode
+      action: getSetAsJson
+    json_set_default_mode:
+      url: /json/set/:set_name
+      action: getSetAsJson
+      params:
+        use_default_mode: true
 #    sitemap:
 #      url: /sitemap.xml
 #      action: buildXmlSitemap

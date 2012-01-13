@@ -34,4 +34,15 @@ class SmartestAssetComment extends SmartestComment{
         
     }
     
+    public function offsetGet($offset){
+        
+        switch($offset){
+            case "posted_at":
+            return new SmartestDateTime($this->getPostedAt());
+        }
+        
+        return parent::offsetGet($offset);
+        
+    }
+    
 }

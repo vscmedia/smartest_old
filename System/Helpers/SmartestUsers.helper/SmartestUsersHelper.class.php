@@ -380,4 +380,16 @@ class SmartestUsersHelper extends SmartestHelper{
         
     }
     
+    public function roleNameExists($role){
+        
+        $role_names = array();
+        
+        foreach($this->getRoles() as $r){
+            $role_names[] = $r->getLabel();
+        }
+        
+        return in_array($role, $role_names);
+        
+    }
+    
 }

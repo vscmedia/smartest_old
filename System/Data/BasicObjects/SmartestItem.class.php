@@ -88,17 +88,21 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        case 'modified':
 	        return new SmartestDateTime($this->getModified());
 	        
+	        case 'last_published':
+	        return new SmartestDateTime($this->getLastPublished());
+	        
 	        case "class":
 	        return $this->getModel()->getClassName();
 	        
 	        case "model":
+	        case "_model":
 	        return $this->getModel();
 	        
 	        case "tags":
 	        return $this->getTags();
 	        
 	        case "authors":
-	        return $this->getAuthors();
+	        return new SmartestArray($this->getAuthors());
 	        
 	        case "small_icon":
             return $this->getSmallIcon();
@@ -120,7 +124,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	
 	public function offsetExists($offset){
 	    
-	    return parent::offsetExists($offset) || in_array($offset, array('title', 'url', 'link_contents', 'class', 'model', 'tags', 'authors'));
+	    return parent::offsetExists($offset) || in_array($offset, array('created', 'modified', 'last_published', 'title', 'link_contents', 'class', 'model', 'tags', 'authors'));
 	    
 	}
 	
@@ -759,13 +763,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	    if($lc = $this->getCmsLinkContents()){
 	        
-	        /* $lh = new SmartestCmsLinkHelper;
-    	    $lh->parse($lc); */
-    	    
-    	    // $link = new SmartestCmsLink($lc, array());
-    	    // return $link->getUrl();
-    	    
-    	    $link = SmartestCmsLinkHelper::createLink($this->getCmsLinkContents(), array());
+	        $link = SmartestCmsLinkHelper::createLink($this->getCmsLinkContents(), array());
     	    
     	    if($link->hasError()){
     	        return '#';
@@ -781,8 +779,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	
 	public function getCmsLinkContents(){
 	    
-	    if($this->getMetapageId()){
-	        $page_id = $this->getMetapageId();
+	    if($page_id = $this->getMetapageId()){
 	        return 'metapage:id='.$page_id.':id='.$this->_properties['id'];
 	    }else{
 	        return null;

@@ -10,20 +10,29 @@ class SmartestAuthenticationException extends SmartestException{
     
     public function lockOut(){
         
-        header("HTTP/1.1 401 Unauthorized");
-        
         $this->setReturnCookie();
         $this->setPostVarsCookie();
         $e = new SmartestRedirectException();
         
-        if($this->_controller->getCurrentRequest()->getRequestString() == 'smartest'){
-		    $e->setRedirectUrl($this->_controller->getCurrentRequest()->getDomain().'smartest/login');
-	    }else{
-	        $e->setRedirectUrl($this->_controller->getCurrentRequest()->getDomain().'smartest/login#session');
-	    }
+        $c = SmartestPersistentObject::get('controller');
+        
+        if($c->getCurrentRequest()->getNamespace() == 'ajax' || $c->getCurrentRequest()->getNamespace() == 'modal'){
+            
+            header('HTTP/1.1 401 Unauthorized');
+            exit;
+            
+        }else{
+        
+            if($this->_controller->getCurrentRequest()->getRequestString() == 'smartest'){
+    		    $e->setRedirectUrl($this->_controller->getCurrentRequest()->getDomain().'smartest/login');
+    	    }else{
+    	        $e->setRedirectUrl($this->_controller->getCurrentRequest()->getDomain().'smartest/login#session');
+    	    }
 	    
-		$e->redirect();
-		exit;
+    		$e->redirect(array(401, 303), true);
+		
+	    }
+		
     }
     
     public function setPostVarsCookie(){

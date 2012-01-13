@@ -4,6 +4,7 @@ class SmartestModel extends SmartestBaseModel{
 
 	protected $_model_properties = array();
 	protected $_model_settings;
+	protected $_site;
 	
 	protected function __objectConstruct(){
 		
@@ -218,6 +219,14 @@ class SmartestModel extends SmartestBaseModel{
 	        
 	        case "item_name_field_visible":
 	        return $this->getItemNameFieldVisible();
+	        
+	        case "properties":
+	        return new SmartestArray($this->getProperties());
+	        
+	        case '_english_indefinite_article':
+	        $n = $this->getName();
+            $p = in_array(strtolower($n{0}), array('a', 'e', 'i', 'o', 'u')) ? 'An' : 'A';
+            return new SmartestString($p);
 	        
 	    }
 	    
@@ -722,6 +731,13 @@ class SmartestModel extends SmartestBaseModel{
         
         return $sites;
     }
+    
+    /* public function getMainSite(){
+        $n = new SmartestSite;
+        if($n->find($this->getSiteId())){
+            return $n;
+        }
+    } */
     
     public function getNumberOfSitesWhereUsed(){
         return count($this->getSitesWhereUsed());

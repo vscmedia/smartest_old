@@ -41,7 +41,7 @@ class SmartestSystemHelper{
         
     }
     
-    public static function getSmartestVersionInfo(){
+    public static function getSmartestLocalVersionInfo(){
         
         $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
         
@@ -50,6 +50,7 @@ class SmartestSystemHelper{
         $info->setParameter('version', $sys['system']['info']['version']);
         $info->setParameter('minimum_database_version', $sys['system']['info']['minimum_database_version']);
         $info->setParameter('minimum_php_version', $sys['system']['info']['minimum_php_version']);
+        $info->setParameter('is_self_hosted', $sys['system']['info']['self_hosted']);
         
         // calculate build
         $revision = (int) $sys['system']['info']['revision'];

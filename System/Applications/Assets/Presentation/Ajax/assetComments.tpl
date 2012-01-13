@@ -1,0 +1,1 @@
+{load_interface file="asset_comments.tpl"}

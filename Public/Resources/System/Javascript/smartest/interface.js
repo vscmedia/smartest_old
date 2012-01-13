@@ -563,3 +563,67 @@ Smartest.UI.UserMessageSystem.Message = Class.create({
     }
     
 });
+
+Smartest.AjaxModalScroller = {};
+
+Smartest.AjaxModalViewer = Class.create({
+    
+    isVisible: false,
+    history: [],
+    current: null,
+    
+    load: function(url, title){
+        
+        url = sm_domain+'modal:'+url;
+        
+        if(!this.isVisible){
+            this.showNew();
+        }
+        
+        this.updateTo(url, title);
+        
+        return false;
+        
+    },
+    
+    showNew: function(){
+        if(!this.isVisible){
+            $('modal-outer').appear({duration: 0.4, to: 0.9});
+            this.isVisible = true;
+            if(HELP.isVisible){
+                HELP.hideViewer();
+            }
+        }
+    },
+    
+    updateTo: function(url, title){
+        
+        $('modal-updater').hide();
+        var loading = new Element('img', {src: sm_domain+'Resources/System/Images/ajax-loader.gif', id: 'modal-loader'});
+        $('modal-updater').appendChild(loading);
+        $('modal-title').update(title);
+        
+        new Ajax.Updater($('modal-updater'), url, {evalScripts: true, onComplete: function(){
+            Smartest.AjaxModalScroller = new Control.ScrollBar('modal-updater', 'modal-scrollbar-track');
+            var t = setTimeout(function(){Smartest.AjaxModalScroller = new Control.ScrollBar('modal-updater', 'modal-scrollbar-track');}, 30);
+            $('modal-loader').hide();
+        }});
+        
+        $('modal-updater').appear({duration: 0.4, delay: 0.3});
+    },
+    
+    hideViewer: function(){
+        if(this.isVisible){
+            $('modal-outer').fade({duration: 0.3});
+            this.isVisible = false;
+        }
+        setTimeout(function(){$('modal-updater').update("");}, 302);
+    },
+    
+    back: function(){
+        
+    }
+
+});
+
+Smartest.AjaxModalViewer.variables = {};

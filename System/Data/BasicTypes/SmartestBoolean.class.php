@@ -66,6 +66,8 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess, SmartestStorabl
             return $this->__toString();
             case 'english':
             return $this->getValue() ? 'Yes' : 'No';
+            case 'truefalse':
+            return $this->getValue() ? 'true' : 'false';
             case 'int':
             case 'numeric':
             return (int) $this->_value;
@@ -73,6 +75,9 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess, SmartestStorabl
             return 'display:'.$this->_value ? 'block' : 'none';
             case 'cssdisplayinline':
             return 'display:'.$this->_value ? 'inline' : 'none';
+            case 'not':
+            case 'invert':
+            return new SmartestBoolean(!$this->_value);
         }
     }
     

@@ -55,11 +55,6 @@
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Created</div>
-  {$item.created}
-</div>
-
-<div class="edit-form-row">
   <div class="form-section-label">Status</div>
   {if $item.public == "TRUE"}
     Live <input type="button" value="Re-Publish" onclick="window.location='{$domain}{$section}/publishItem?item_id={$item.id}{if $request_parameters.page_id}&amp;page_id={$request_parameters.page_id}{/if}'" />&nbsp;<input type="button" value="Un-Publish" onclick="window.location='{$domain}{$section}/unpublishItem?item_id={$item.id}{if $request_parameters.page_id}&amp;page_id={$request_parameters.page_id}{/if}'" />
@@ -117,7 +112,7 @@
 
   <ul class="actions-list" id="non-specific-actions">
     <li><b>This {$item._model.name}</b></li>
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/itemInfo?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" />&nbsp;About this {$item._model.name}</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="MODALS.load('datamanager/itemInfo?item_id={$item.id}', '{$item._model.name} info');" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" />&nbsp;About this {$item._model.name}</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/releaseItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/lock_open.png" border="0" />&nbsp;Release for others to edit</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/approveItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" />&nbsp;Approve changes</a></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addTodoItem?item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" />&nbsp;Assign To-do</a></li>

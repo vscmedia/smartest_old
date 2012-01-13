@@ -4,7 +4,11 @@ SmartestHelper::register('String');
 
 define("SM_OPTIONS_MAGIC_QUOTES", (bool) ini_get('magic_quotes_gpc'));
 
+require_once(SM_ROOT_DIR.'Library/Textile/classTextile.php');
+
 class SmartestStringHelper extends SmartestHelper{
+    
+    const EMAIL_ADDRESS = '/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/i';
     
     public static function convertObject($data){
         if(is_object($data)){
@@ -170,7 +174,6 @@ class SmartestStringHelper extends SmartestHelper{
 	
 		$page_name = self::toAscii(strtolower($normal_string));
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");
-		// $page_name = str_replace("-", "", $page_name);
 		$page_name = preg_replace("/[^\w\._]+/", "", $page_name);
 		return $page_name;
 	
@@ -544,7 +547,7 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	public static function isEmailAddress($string){
-		return preg_match('/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/i', $string);
+		return preg_match(self::EMAIL_ADDRESS, $string);
 	}
 	
 	public static function isValidExternalUri($string){
@@ -743,6 +746,56 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	}
 	
+	public static function parseEmailAddresses($content){
+	    
+	    preg_match_all(self::EMAIL_ADDRESS, $content, $matches);
+	    
+	}
+	
+	public static function parseTextile($content){
+	    
+	    $content = str_replace(' (R)', ' ®', $content);
+        $content = str_replace(' (C)', ' ©', $content);
+	    
+	    $textile = new Textile();
+        $content = $textile->TextileThis($content);
+        $content = str_replace('<3', '♥', $content);
+        
+        return $content;
+	    
+	}
+	
+	public static function parseTextileIntoColumns($content){
+	    
+	    $text = str_ireplace('~~NewColumn~~', '~~NewColumn~~', $content);
+	    $columns = preg_split('/~~NewColumn~~/i', $text);
+	    $num_columns = count($columns);
+	    
+	    if($num_columns > 1){
+	        
+	        $newtext = '';
+	        $column_open = '<div class="smartest-column column-width-'.$num_columns.'">';
+	        $last_column_open = '<div class="smartest-column column-width-'.$num_columns.' last">';
+	        $column_close = "</div>\n";
+	        $i = 1;
+	        
+	        foreach($columns as $c){
+	            if($i<$num_columns){
+	                $newtext .= $column_open.self::parseTextile($c).$column_close;
+                }else{
+                    $newtext .= $last_column_open.self::parseTextile($c).$column_close;
+                }
+	            ++$i;
+	        }
+	        
+	        return $newtext;
+	        
+	    }else{
+	        return $content;
+	    }
+	    
+	}
+	
 	public static function separateIntoColumns($text){
 	    
 	    $text = str_ireplace('<p><!--NewColumn--></p>', '<!--NewColumn-->', $text);
@@ -752,8 +805,8 @@ class SmartestStringHelper extends SmartestHelper{
 	    if($num_columns > 1){
 	        
 	        $newtext = '';
-	        $column_open = '<div class="smartest-column '.$num_columns.'-column-width">';
-	        $last_column_open = '<div class="smartest-column '.$num_columns.'-column-width last">';
+	        $column_open = '<div class="smartest-column column-width-'.$num_columns.'">';
+	        $last_column_open = '<div class="smartest-column column-width-'.$num_columns.' last">';
 	        $column_close = "</div>\n";
 	        $i = 1;
 	        
