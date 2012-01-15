@@ -2070,7 +2070,10 @@ class Assets extends SmartestSystemApplication{
 			
     			if(array_key_exists($assettype_code, $types_data)){
                 
-                    $attachable_files = $this->manager->getAttachableFiles($this->getSite()->getId());
+                    // $attachable_files = $this->manager->getAttachableFiles($this->getSite()->getId());
+                    $helper = new SmartestAssetsLibraryHelper;
+            	    $attachable_files = $helper->getAttachableFiles($this->getSite()->getId());
+            	    
                     $this->send($attachable_files, 'files');
                 
                     $textfragment = $asset->getTextFragment();

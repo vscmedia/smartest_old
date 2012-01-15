@@ -314,6 +314,7 @@ type:
     input_options:
       - SM_ASSETINPUTTYPE_FTP_UPLOAD
       - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+    attachable: true
     storage:
       type: file
       location: Public/Resources/Assets/
@@ -335,8 +336,8 @@ type:
     input_options:
       - SM_ASSETINPUTTYPE_URL_INPUT
     url_translation:
-      format: "^https?:\/\/(www\.)?youtube\.com\/watch\?v=([\w]+).*"
-      id_position: 2
+      format: "^https?:\/\/(((www\.)?youtube\.com\/watch\?v=)|(youtu\.be\/))([\w]+).*"
+      id_position: 5
     storage:
       type: external_translated
     render:
