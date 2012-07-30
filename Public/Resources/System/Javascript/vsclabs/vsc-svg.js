@@ -15,13 +15,18 @@ VSC.SVGToolkit = Class.create({
     
     getHSBColorString: function(params){
         return "hsb("+params.hue/360*100+"%,"+params.saturation+"%,"+params.brightness+"%)";
+    },
+    
+    destroyShapeElement: function(element){
+        element.raphael.remove();
+        delete element;
     }
 
 });
 
 VSC.SVG = Class.create({
     
-    initialize: function(canvasDivName, width, height){
+    initialize: function(canvasDivName, width, height, varName){
         
         // alert(canvasDivName);
         this.paper = Raphael(canvasDivName, width, height);
@@ -29,6 +34,9 @@ VSC.SVG = Class.create({
         this.width = width;
         this.height = height;
         this.elements = new Array();
+        if(varName){
+            this.varName = varName;
+        }
         
     },
     
@@ -36,13 +44,18 @@ VSC.SVG = Class.create({
         return this.elements[name];
     },
     
-    addCircle: function(name, x, y, r){
-        var c = this.paper.circle(x+r, y+r, r);
+    addCircle: function(name, x, y, r, useCentre){
+        if(useCentre){
+            var c = this.paper.circle(x, y, r);
+        }else{
+            var c = this.paper.circle(x+r, y+r, r);
+        }
         c.hide();
         c.attr({"stroke-width": 0, fill: "#fff"});
         c.show();
         if(!this.elements[name]){
-            this.elements[name] = new VSCJSArtCircle(name, c);
+            this.elements[name] = new VSC.SVG.Circle(name, c, 'Circle');
+            this.elements[name].vscCanvasVarName = this.varName;
             return this.elements[name];
         }
     },
@@ -52,19 +65,46 @@ VSC.SVG = Class.create({
         rect.hide();
         rect.attr({"stroke-width": 0, fill: "#fff"});
         rect.show();
-        this.elements[name] = new VSC.SVG.Rectangle(name, rect);
+        this.elements[name] = new VSC.SVG.Rectangle(name, rect, 'Rectangle');
+        this.elements[name].vscCanvasVarName = this.varName;
         return this.elements[name];
     },
     
-    fadeOutAndDestroy: function(name){}
+    addText: function(content, name, x, y){
+        
+        var text = this.paper.text(x, y, content);
+        text.hide();
+        this.elements[name] = new VSC.SVG.Text(name, text, 'Text');
+        this.elements[name].vscCanvasVarName = this.varName;
+        return this.elements[name];
+        
+    },
+    
+    fadeOutAndDestroy: function(name){},
+    
+    path: function(name, data){
+        this.elements[name] = this.paper.path(data);
+        this.elements[name][0].id = name;
+        return this.elements[name];
+    },
+    
+    addLine: function(name, x1, y1, x2, y2){
+        var d = "M"+x1+','+y1+'L'+x2+','+y2;
+        return this.path(name, d);
+    },
+    
+    getRawElement: function(name){
+        return this.elements[name][0];
+    }
     
 });
 
 VSC.SVG.Shape = Class.create({
 
-    initialize: function(name, raphaelShapeObject){
+    initialize: function(name, raphaelShapeObject, shapeName){
         
         this.name = name;
+        this.className = shapeName ? shapeName : 'Shape';
         this.raphael = raphaelShapeObject;
         this.defaultTransitionTime = 300;
         this.defaultTransition = "linear";
@@ -99,7 +139,7 @@ VSC.SVG.Shape = Class.create({
     fadeOutAndDestroy: function(){
         this.setOpacity(0, true);
         var elmnt = this;
-        setTimeout(function(){destroyShapeElement(elmnt);}, this.defaultTransitionTime+50);
+        setTimeout(function(){VSC.SVGToolkit.destroyShapeElement(elmnt);}, this.defaultTransitionTime+50);
     },
     
     hide: function(){
@@ -113,6 +153,30 @@ VSC.SVG.Shape = Class.create({
     destroy: function(){
         this.raphael.remove();
         delete this;
+    },
+    
+    attr: function(args){
+        return this.raphael.attr(args);
+    },
+    
+    animate: function(args, ms, easing){
+        return this.raphael.animate(args, ms, easing);
+    },
+    
+    addLabel: function(text, position, textAttributes, visibleAtStart){
+        // alert(this.vscCanvasVarName);
+        /* var v = this.vscCanvasVarName;
+        var c = window['LS.VARS']; */
+        // alert(c);
+        // this.label = new VSC.SVG.Text(this.name+'-label');
+    },
+    
+    hideLabel: function(animate){
+        
+    },
+    
+    showLabel: function(animate){
+        
     }
 
 });
@@ -146,5 +210,7 @@ VSC.SVG.Circle = Class.create(VSC.SVG.Shape, {
     }
     
 });
+
+VSC.SVG.Text = Class.create(VSC.SVG.Shape, {});
 
 VSC.SVG.Rectangle = Class.create(VSC.SVG.Shape, {});

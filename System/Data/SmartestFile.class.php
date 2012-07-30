@@ -31,6 +31,10 @@ class SmartestFile implements ArrayAccess, SmartestStorableValue{
         }
     }
     
+    public function delete(){
+        return unlink($this->_current_file_path);
+    }
+    
     // The next three methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
         return $this->_current_file_path;
