@@ -796,6 +796,10 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	        case "_count":
 	        return count($this->getMembers());
 	        
+	        case "_count_zerostart":
+	        case "_last_loopindex":
+	        return (count($this->getMembers()) - 1); // For comparison in loops which start counting at zero if you want to do something on the last iteration.
+	        
 	        case "_first":
 	        $this->getMembers();
 	        return reset($this->_set_members);

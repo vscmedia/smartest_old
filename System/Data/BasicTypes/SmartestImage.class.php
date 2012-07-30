@@ -7,6 +7,7 @@ class SmartestImage extends SmartestFile{
     protected $_width;
     protected $_height;
     protected $_thumbnail_resource;
+    protected $_render_data;
     // these vars are already declared in SmartestFile:
     // protected $_original_file_path;
     // protected $_current_file_path;
@@ -22,6 +23,7 @@ class SmartestImage extends SmartestFile{
     
     public function __construct(){
         parent::__construct();
+        $this->_render_data = new SmartestParameterHolder('Image render data');
     }
     
     public function __toString(){
@@ -116,6 +118,26 @@ class SmartestImage extends SmartestFile{
         return SmartestStringHelper::getDotSuffix($this->_current_file_path);
         
     }
+    
+    public function setAdditionalRenderData($info, $not_empty_only=false){
+	    
+	    if($info instanceof SmartestParameterHolder){
+	        $info = $info->getParameters();
+	    }
+	    
+	    if(is_array($info)){
+	        foreach($info as $key=>$value){
+	            if(!$not_empty_only || ($not_empty_only && strlen($value))){
+	                $this->_render_data->setParameter($key, $value);
+                }
+	        }
+	    }
+	    
+	}
+	
+	public function setSingleRenderDataParameter($name, $value){
+	    $this->_render_data->setParameter($name, $value);
+	}
     
     public function getOrientation(){
         if($this->getHeight() == $this->getWidth()){
@@ -538,6 +560,9 @@ class SmartestImage extends SmartestFile{
 	        
 	        case "web_path":
 	        return $this->getWebPath();
+	        
+	        case "empty":
+	        return !is_file($this->_current_file_path);
 	        
 	    }
 	    

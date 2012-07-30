@@ -34,6 +34,8 @@ class SmartestTwitterAccountName extends SmartestString{
             $p = new SmartestParameterHolder('Twitter account secure link parameters: @'.$this->_string);
             $p->setParameter('with', '@'.$this->_string);
             return SmartestCmsLinkHelper::createLink($this->getUrl(true), $p)->render();
+            case "empty":
+            return !strlen($this->_string);
         }
         
         return parent::offsetGet($offset);

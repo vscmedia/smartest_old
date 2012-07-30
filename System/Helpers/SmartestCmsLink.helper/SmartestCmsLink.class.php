@@ -475,20 +475,61 @@ class SmartestCmsLink extends SmartestHelper{
         if($this->_render_data->hasParameter('with')){
             // if the with="" attribute is specified
             
-            if($this->_render_data->getParameter('with') instanceof SmartestImage){
-                return $this->_render_data->getParameter('with')->render();
-            }
-            
-            if(substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
+            if($this->_render_data->getParameter('with') instanceof SmartestImage || substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
+                // return $this->_render_data->getParameter('with')->render();
                 
-                $a = new SmartestRenderableAsset;
+                /* $a = new SmartestRenderableAsset;
                 $a->findBy('url', substr($this->_render_data->getParameter('with'), 6));
                 
                 if($this->_render_data->hasParameter('alt')){
                     $a->setAdditionalRenderData(array('alt_text'=>$this->_render_data->getParameter('alt')));
+                } */
+                
+                // return $a->render($draft_mode);
+                
+                // echo SM_ROOT_DIR.'Public/Resources/Images/'.substr($this->_render_data->getParameter('with'), 6).' ';
+                
+                // print_r($this->_render_data->getParameters());
+                
+                if($this->_render_data->getParameter('with') instanceof SmartestImage){
+                    
+                    $img = $this->_render_data->getParameter('with');
+                    
+                }else{
+                
+                    $img = new SmartestImage;
+                
+                    if(!$img->loadFile(SM_ROOT_DIR.'Public/Resources/Images/'.substr($this->_render_data->getParameter('with'), 6))){
+                    
+                        // Image not recognised - error
+                        return;
+                    
+                    }
+                    
                 }
                 
-                return $a->render($draft_mode);
+                if(is_numeric($this->_render_data->getParameter('img_width')) && is_numeric($this->_render_data->getParameter('img_height'))){
+                    
+                    $img = $img->resizeAndCrop($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
+                    
+                }else if(is_numeric($this->_render_data->getParameter('img_width'))){
+                    
+                    if($this->_render_data->getParameter('img_square')){
+                        $img = $img->getSquareVersion($this->_render_data->getParameter('img_width'));
+                    }else{
+                        $img = $img->restrictToWidth($this->_render_data->getParameter('img_width'));
+                    }
+                    
+                }else if(is_numeric($this->_render_data->getParameter('img_height'))){
+                    
+                    if($this->_render_data->getParameter('img_square')){
+                        $img = $img->getSquareVersion($this->_render_data->getParameter('img_height'));
+                    }else{
+                        $img = $img->restrictToWidth($this->_render_data->getParameter('img_height'));
+                    }
+                }
+            
+                return $img->render();
                 
             }else{
                 return $this->_render_data->getParameter('with');

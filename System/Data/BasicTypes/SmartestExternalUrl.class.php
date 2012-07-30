@@ -67,6 +67,10 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
             return $this->getQrCodeUri();
             case 'qr_code_image':
             return $this->getQrCodeImage();
+            case 'empty':
+            return !strlen($this->getValue());
+            case 'string':
+            return $this->__toString();
         }
     }
     
