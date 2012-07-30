@@ -408,7 +408,7 @@ class SmartestImage extends SmartestFile{
     public function getResizedVersionFromPercentage($percentage){
         
         $file = $this->getResizeFilenameFromPercentage($percentage);
-        $url = 'Resources/System/Cache/Images/'.$this->getResizeFilenameFromPercentage($percentage);
+        $url = 'Resources/System/Cache/Images/'.$file;
         $full_path = SM_ROOT_DIR.'Public/'.$url;
         
         // check the work hasn't already been done
@@ -438,6 +438,67 @@ class SmartestImage extends SmartestFile{
             }
         
         }
+        
+    }
+    
+    public function getConstrainedVersionWithin($width, $height){
+        
+        $width_change = $width/$this->getWidth();
+        $height_change = $height/$this->getHeight();
+        
+        if($width_change >= 1 && $height_change >= 1){
+            return $this;
+        }
+        
+        if($width_change < $height_change){
+            $percentage = ceil($width_change * 100);
+        }else{
+            $percentage = ceil($height_change * 100);
+        }
+        
+        return $this->getResizedVersionFromPercentage($percentage);
+        
+    }
+    
+    public function getResizedVersionNoScale($width, $height){
+        
+        $file = $this->getResizeFilenameNoScale($width, $height);
+        $url = 'Resources/System/Cache/Images/'.$file;
+        $full_path = SM_ROOT_DIR.'Public/'.$url;
+        
+        // check the work hasn't already been done
+        if(file_exists($full_path)){
+            
+            $thumbnail = new SmartestImage;
+            $thumbnail->loadFile($full_path);
+            return $thumbnail;
+            
+        }else{
+        
+            /* $new_width = ceil($percentage/100*$this->getWidth());
+            $new_height = ceil($percentage/100*$this->getHeight()); */
+            $thumbnail_resource = ImageCreateTrueColor($width, $height);
+            
+            if($this->getImageType() == self::PNG){
+                imagealphablending($thumbnail_resource, false);
+                imagesavealpha($thumbnail_resource, true);
+            }
+            
+            imagecopyresampled($thumbnail_resource, $this->getResource(), 0,0,0,0, $width, $height, $this->getWidth(), $this->getHeight());
+            $thumbnail = new SmartestImage;
+            
+            if($this->saveToFile($thumbnail_resource, $full_path)){
+                $thumbnail->loadFile($full_path);
+                return $thumbnail;
+            }
+        
+        }
+        
+    }
+    
+    public function getResizeFilenameNoScale($width, $height){
+        
+        return $filename = SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix(basename($this->_current_file_path))).'_resize_noscale_'.$width.'x'.$height.'.'.SmartestStringHelper::getDotSuffix($this->_current_file_path);
         
     }
     
@@ -574,7 +635,11 @@ class SmartestImage extends SmartestFile{
 	        return $this->restrictToWidth($m[1]);
 	    }elseif(preg_match('/height_(\d+)/', $offset, $m)){
 	        return $this->restrictToHeight($m[1]);
-	    }
+	    }elseif(preg_match('/constrain_(\d+)x(\d+)/', $offset, $m)){
+	        return $this->getConstrainedVersionWithin($m[1], $m[2]);
+	    }elseif(preg_match('/stretch_(\d+)x(\d+)/', $offset, $m)){
+            return $this->getResizedVersionNoScale($m[1], $m[2]);
+        }
 	    
 	    return parent::offsetGet($offset);
 	    

@@ -1372,6 +1372,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             case "placeholders":
             if(!$this->_placeholders) $this->loadAssetClassDefinitions();
             return $this->_placeholders;
+            
+            case "section":
+            return $this->getSectionPage();
 	        
 	    }
 	    

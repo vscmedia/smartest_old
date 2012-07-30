@@ -510,11 +510,17 @@ class SmartestCmsLink extends SmartestHelper{
                 
                 if(is_numeric($this->_render_data->getParameter('img_width')) && is_numeric($this->_render_data->getParameter('img_height'))){
                     
-                    $img = $img->resizeAndCrop($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
+                    if($this->_render_data->hasParameter('img_scale') && !SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_scale'))){
+                        $img = $img->getResizedVersionNoScale($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
+                    }else if($this->_render_data->hasParameter('img_scale') && $this->_render_data->getParameter('img_scale') == 'constrain'){
+                        $img = $img->getConstrainedVersionWithin($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
+                    }else{
+                        $img = $img->resizeAndCrop($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
+                    }
                     
                 }else if(is_numeric($this->_render_data->getParameter('img_width'))){
                     
-                    if($this->_render_data->getParameter('img_square')){
+                    if($this->_render_data->getParameter('img_square') && SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_square'))){
                         $img = $img->getSquareVersion($this->_render_data->getParameter('img_width'));
                     }else{
                         $img = $img->restrictToWidth($this->_render_data->getParameter('img_width'));
@@ -522,10 +528,10 @@ class SmartestCmsLink extends SmartestHelper{
                     
                 }else if(is_numeric($this->_render_data->getParameter('img_height'))){
                     
-                    if($this->_render_data->getParameter('img_square')){
+                    if($this->_render_data->getParameter('img_square') && SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_square'))){
                         $img = $img->getSquareVersion($this->_render_data->getParameter('img_height'));
                     }else{
-                        $img = $img->restrictToWidth($this->_render_data->getParameter('img_height'));
+                        $img = $img->restrictToHeight($this->_render_data->getParameter('img_height'));
                     }
                 }
             

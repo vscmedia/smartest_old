@@ -400,7 +400,7 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	public static function isFalse($string){
-	    if(strlen($string) == 0 || in_array(strtolower($string), array('false', 'off', '0')) || $string === false){
+	    if(strlen($string) == 0 || in_array(strtolower($string), array('false', 'off', '0', 'none')) || $string === false){
 	        return true;
 	    }else{
 	        return false;
