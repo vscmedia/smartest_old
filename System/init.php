@@ -66,7 +66,7 @@ class SmartestInit{
             // If PHP error messages can be logged, they should be.
             ini_set('error_log', SM_ROOT_DIR.'System/Logs/php_errors_no_date.log');
             ini_set('log_errors', true);
-            ini_set('display_errors', true);
+            ini_set('display_errors', false);
         }
 	    
 	    require SM_ROOT_DIR.'System/Base/constants.php';
