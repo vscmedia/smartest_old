@@ -64,6 +64,24 @@ class AssetsAjax extends SmartestSystemApplication{
         
     }
     
+    public function setAssetLanguage(){
+        
+        $asset = new SmartestAsset;
+	    
+	    if($asset->find($this->getRequestParameter('asset_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $asset->setLanguage($this->getRequestParameter('asset_language'));
+	        $asset->save();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+        
+    }
+    
     public function setAssetShared(){
         
         $asset = new SmartestAsset;

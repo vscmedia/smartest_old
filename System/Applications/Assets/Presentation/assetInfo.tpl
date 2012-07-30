@@ -65,7 +65,7 @@
       <tr>
         <td valign="middle" class="field-name">Owner:</td>
         <td>
-          <select name="asset_user_id" id="asset-owner">
+          <select name="asset_user_id" id="asset-owner" style="width:300px">
   {foreach from=$potential_owners item="p_owner"}
             <option value="{$p_owner.id}"{if $asset.owner.id == $p_owner.id} selected="selected"{/if}>{$p_owner.fullname} ({$p_owner.id})</option>
   {/foreach}
@@ -84,7 +84,31 @@
         </td>
       </tr>
       <tr>
-        <td class="field-name">Main website:</td>
+        <td valign="middle" class="field-name">Language:</td>
+        <td>
+
+          <select name="asset_language" id="asset-language" style="width:300px">
+        {foreach from=$_languages item="lang" key="langcode"}
+            <option value="{$langcode}"{if $asset.language == $langcode} selected="selected"{/if}>{$lang.label}</option>
+        {/foreach}
+          </select>
+          
+          <script type="text/javascript">
+          {literal}
+          $('asset-language').observe('change', function(){
+            var url = sm_domain+'ajax:assets/setAssetLanguage';
+            new Ajax.Request(url, {
+              method: 'post',
+              parameters: {'asset_id': asset_id, 'asset_language': $('asset-language').value}
+            });
+          });
+          {/literal}
+          </script>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="field-name">Original site:</td>
         <td>{$asset.site.internal_label}</td>
       </tr>
       <tr>

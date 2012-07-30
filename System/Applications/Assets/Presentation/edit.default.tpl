@@ -2,16 +2,6 @@
   
   <input type="hidden" name="asset_id" value="{$asset.id}" />
   
-  <div class="special-box">
-    <span class="heading">Language</span>
-    <select name="asset_language">
-      <option value="">{$lang.label}</option>
-  {foreach from=$_languages item="lang" key="langcode"}
-      <option value="{$langcode}"{if $asset.language == $langcode} selected="selected"{/if}>{$lang.label}</option>
-  {/foreach}
-    </select>
-  </div>
-  
   <div id="edit-form-layout">
     
     {foreach from=$asset.default_parameters key="parameter_name" item="parameter_value"}
