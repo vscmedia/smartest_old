@@ -131,7 +131,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     }
                     
                     if($class == 'SmartestRenderableSingleItemTemplateAsset'){
-                        $this->_item->disableTemplateProperty($this->_properties['property_id']);
+                        // $this->_item->disableTemplateProperty($this->_properties['property_id']); // disabled because it was causing fatal error - $this->_item not always being found
                         $obj->setItem(&$this->_item);
                     }
                     

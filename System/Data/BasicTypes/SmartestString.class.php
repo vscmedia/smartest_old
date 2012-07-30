@@ -134,6 +134,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
             case "title":
             case "titlecase":
             return SmartestStringHelper::toTitleCase($this->_string);
+            default:
+            return $this->_string;
         }
     }
     

@@ -186,7 +186,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		}
 	    
 	    if($offset == 'name'){
-	        return $this->getName();
+	        return new SmartestString($this->getName());
 	    }
 	    
 	    if($this->_item->offsetExists($offset)){

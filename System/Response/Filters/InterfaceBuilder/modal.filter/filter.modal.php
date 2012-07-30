@@ -7,7 +7,7 @@ function smartest_filter_modal($html, $filter){
         // If Tidy is installed, use it
         if(function_exists('tidy_get_output')){
             // Specify configuration
-            $config = array(
+            /* $config = array(
                 'indent'         => true,
                 'output-xhtml'   => true,
                 'wrap'           => 200
@@ -19,7 +19,10 @@ function smartest_filter_modal($html, $filter){
             $tidy->cleanRepair();
 
             // Output
-            $html = (string) $tidy;
+            $html = (string) $tidy; */
+            
+            //$html;
+            
         }
         
         if($element = simplexml_load_string(html_entity_decode('<div>'.$html.'</div>', ENT_COMPAT, 'UTF-8'))){
@@ -30,6 +33,8 @@ function smartest_filter_modal($html, $filter){
         }else{
             return $html;
         }
+        
+        // return $html;
         
     }else{
         return $html;
