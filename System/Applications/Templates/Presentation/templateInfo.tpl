@@ -70,7 +70,7 @@
       </tr>
       <tr>
         <td class="field-name">Shared with other sites:</td>
-        <td><input type="checkbox" name="asset_shared"{if $asset.shared==1} checked="checked"{/if} /></td>
+        <td><input type="checkbox" name="template_shared"{if $template.shared==1} checked="checked"{/if} /></td>
       </tr>
     </table>
   

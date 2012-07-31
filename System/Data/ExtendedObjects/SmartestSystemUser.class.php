@@ -99,26 +99,40 @@ class SmartestSystemUser extends SmartestUser{
 	    
 	}
 	
-	public function getSitesWhereUserHasToken($token){
+	public function getSitesWhereUserHasToken($token, $include_root=false){
 	    
 	    if($this->hasGlobalToken($token)){
             $sites = $this->getAllowedSites();
         }else{
             
             $h = new SmartestUsersHelper;
-            $token_id = $h->getTokenId($token);
-            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UsersTokensLookup.utlookup_token_id = '".$token_id."' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
             
-            $result = $this->database->queryToArray($sql);
-    	    $sites = array();
+            if($token_id = $h->getTokenId($token)){
+                
+                if($include_root){
+                    $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND (UsersTokensLookup.utlookup_token_id = '".$token_id."' OR UsersTokensLookup.utlookup_token_id = '0') AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY Sites.site_internal_label ASC";
+                }else{
+                    $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND UsersTokensLookup.utlookup_token_id = '".$token_id."' AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY Sites.site_internal_label ASC";
+                }
+                
+                $result = $this->database->queryToArray($sql);
+        	    $sites = array();
 
-    	    foreach($result as $site_array){
+        	    foreach($result as $site_array){
 
-    	        $site = new SmartestSite;
-    	        $site->hydrate($site_array);
-    	        $sites[] = $site;
+        	        $site = new SmartestSite;
+        	        $site->hydrate($site_array);
+        	        $sites[] = $site;
     	        
-    	    }
+        	    }
+    	    
+	        }else{
+	            
+	            // token not recognised
+    	        SmartestLog::getInstance('system')->log("Tried to look for sites where user has unrecognized token: '".$token_code."'.", SM_LOG_WARNING);
+    	        return false;
+	            
+	        }
             
         }
         

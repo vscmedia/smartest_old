@@ -96,6 +96,21 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	    
 	}
 	
+	public function offsetGet($offset){
+	    
+	    switch($offset){
+	        case "ipv_object":
+	        return $this->_value;
+	        case "value":
+	        return $this->_value->getContent();
+	        case "info":
+	        return $this->_value->getInfo();
+	    }
+	    
+	    return parent::offsetGet($offset);
+	    
+	}
+	
 	// Todo: if a file has been removed from the group that is used to get possible values for a property, add it back to the list
 	/* public function getPossibleValues(){
 	    $v = parent::getPossibleValues();

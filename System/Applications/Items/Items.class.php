@@ -132,6 +132,10 @@ class Items extends SmartestSystemApplication{
   	        $model_id = $this->getRequestParameter('class_id');
   	        $found_model = $model->find($model_id);
         }
+        
+        if($found_model){
+            $model_id = $model->getId();
+        }
   	    
   	    $query = $this->getRequestParameter('q') ? $this->getRequestParameter('q') : '';
   	    
@@ -2935,7 +2939,26 @@ class Items extends SmartestSystemApplication{
 	
 	public function duplicateItem($get){
 		
-		$id = mysql_real_escape_string($this->getRequestParameter('item_id'));
+		$item_id = $this->getRequestParameter('item_id');
+		$item = SmartestCmsItem::retrieveByPk($item_id);
+		
+		if(is_object($item)){
+		
+		    $sites = $this->getUser()->getSitesWhereUserHasToken('add_items', true);
+		    
+		    $this->setTitle('Duplicate '.$item->getModel()->getName());
+		
+		    $this->send(new SmartestArray($sites), 'sites');
+		    $this->send($item, 'item');
+		    $this->send($item->getPropertiesThatRequireDuplicationDecision(), 'properties');
+		
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest();
+	        
+	    }
+		
+		/* $id = mysql_real_escape_string($this->getRequestParameter('item_id'));
 		$class_id = mysql_real_escape_string($this->getRequestParameter('class_id'));
 		$item_details= $this->manager->getItemValues($id);
 		// get properties and their values
@@ -2952,8 +2975,14 @@ class Items extends SmartestSystemApplication{
 		    $property_id=mysql_real_escape_string($p['itemproperty_id']);	
 		    $content =mysql_real_escape_string($p['itempropertyvalue_content']);	
 		    $this->manager->setItemPropertyValues($item_id,$property_id,$content);
-		}
+		} */
 
+	}
+	
+	public function createItemCopy(){
+	    
+	    $this->formForward();
+	    
 	}
 	
 	/* public function exportData($get){

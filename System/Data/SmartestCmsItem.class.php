@@ -834,6 +834,21 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    return $this->getProperties();
 	}
 	
+	public function getPropertiesThatRequireDuplicationDecision(){
+	    
+	    $properties = array();
+	    
+	    foreach($this->getProperties() as $p){
+	        $info = $p->getTypeInfo();
+	        if($info['valuetype'] == 'foreignkey'){
+	            $properties[] = $p;
+	        }
+	    }
+	    
+	    return $properties;
+	    
+	}
+	
 	public function getPropertiesAsArrays($numeric_keys=false, $get_all_fk_property_options=false){
 	    
 	    $result = array();

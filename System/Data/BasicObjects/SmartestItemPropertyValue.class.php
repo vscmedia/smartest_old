@@ -26,7 +26,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     }
     
     public function __toString(){
-        return $this->getContent();
+        return ''.$this->getContent();
     }
     
     public function getProperty(){
@@ -456,6 +456,8 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
         switch($offset){
             case "storable_format":
             return $this->getValueObject()->getStorableFormat();
+            case "raw":
+            return $this->getRawValue();
         }
         
         return parent::offsetGet($offset);

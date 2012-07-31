@@ -44,7 +44,7 @@ Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
   <li><b>Selected template:</b></li>
 	<li class="permanent-action"><a href="javascript:templates.workWithItem('editTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this template</a></li>
 	<li class="permanent-action"><a href="javascript:templates.workWithItem('templateInfo');" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About this template</a></li>
-	<li class="permanent-action"><a href="javascript:{literal}if(selectedPage){ templates.workWithItem('duplicateTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate this template</a></li>
+	<li class="permanent-action"><a href="javascript:templates.workWithItem('duplicateTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Duplicate this template</a></li>
 	<li class="permanent-action"><a href="javascript:{literal}if(confirm('Really delete this template?')){ templates.workWithItem('deleteTemplate'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete this template</a></li>
 	<li class="permanent-action"><a href="javascript:templates.workWithItem('downloadTemplate');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_put.png" border="0" alt="" /> Download this template</a></li>
 </ul>
