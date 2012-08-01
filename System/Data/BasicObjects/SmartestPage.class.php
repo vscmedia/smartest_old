@@ -1053,6 +1053,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
     	    foreach($result as $pfda){
     	        if(isset($fields[$pfda['pagepropertyvalue_pageproperty_id']])){
     	            if($this->getDraftMode()){
+    	                // echo $pfda['pagepropertyvalue_draft_value'];
     	                $value = SmartestDataUtility::objectize($pfda['pagepropertyvalue_draft_value'], $fields[$pfda['pagepropertyvalue_pageproperty_id']]->getType());
                     }else{
                         $value = SmartestDataUtility::objectize($pfda['pagepropertyvalue_live_value'], $fields[$pfda['pagepropertyvalue_pageproperty_id']]->getType());
@@ -1375,6 +1376,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             
             case "section":
             return $this->getSectionPage();
+            
 	        
 	    }
 	    
@@ -2087,10 +2089,20 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		
 		$page = $this;
 		
+		if($this->getType() == 'ITEMCLASS'){
+		    $bits[] = ':name';
+		    
+		    $model = new SmartestModel;
+		    if($model->find($this->getDatasetId())){
+		        // SmartestSession::get('__newPage')->setDatasetId($this->getRequestParameter('page_model'));
+	        }
+		    
+		}
+		
 		while($limit > 0){
 		    
 		    $pp = $page->getParentPage();
-		    $bits[] = SmartestStringHelper::toSlug($page->getTitle());
+		    $bits[] = SmartestStringHelper::toSlug($page->getTitleForStrictUrl());
 		    
 		    if($pp->getId() != $home_page->getId()){
 		    
@@ -2192,6 +2204,23 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function getTitle(){
         return $this->_properties['title'];
+    }
+    
+    public function getTitleForStrictUrl(){
+        if($this->_properties['type'] == 'ITEMCLASS'){
+            if(is_numeric($this->_properties['dataset_id'])){
+                $model = new SmartestModel;
+                if($model->find($this->_properties['dataset_id'])){
+                    return $model->getName();
+                }else{
+                    return $this->_properties['title'];
+                }
+            }else{
+                return $this->_properties['title'];
+            }
+        }else{
+            return $this->_properties['title'];
+        }
     }
 	
 	public function getFormattedTitle(){

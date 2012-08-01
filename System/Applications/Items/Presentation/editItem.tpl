@@ -66,7 +66,7 @@
 {foreach from=$item._editable_properties key="pid" item="property"}
 <div class="edit-form-row">
   <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}{if $can_edit_properties}<a style="float:right" href="{$domain}datamanager/editItemClassProperty?from=item_edit&amp;item_id={$item.id}&amp;itemproperty_id={$property.id}"><img src="{$domain}Resources/System/Images/edit_setting_minimal.png" alt="Edit this property" /></a>{/if}</div>
-  {item_field property=$property value=$item[$pid]} <a href="{$domain}test:datamanager/ipv?item_id={$item.id}&amp;property_id={$property.id}">Test</a>
+  {item_field property=$property value=$item[$pid]} {* <a href="{$domain}test:datamanager/ipv?item_id={$item.id}&amp;property_id={$property.id}">Test</a> *}
 </div>
 {/foreach}
 

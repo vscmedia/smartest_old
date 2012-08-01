@@ -44,7 +44,7 @@ class SmartestEngine extends Smarty{
 		
 	}
 	
-	public function startChildProcess($pid, $type=''){
+	public function startChildProcess($pid, $type='', $caching=false){
 	    
 	    $pid = SmartestStringHelper::toVarName($pid);
 	    
@@ -70,6 +70,7 @@ class SmartestEngine extends Smarty{
 		$cp->assign('sm_admin_email', $this->_tpl_vars['sm_admin_email']);
 		$cp->assign('sm_user_agent', $this->_tpl_vars['sm_user_agent']);
 		$cp->assign('request_parameters', $this->_request_data->getParameter('request_parameters'));
+		$cp->caching = (bool) $caching;
 		
 		$this->_child_processes[$pid] = $cp;
         return $cp;

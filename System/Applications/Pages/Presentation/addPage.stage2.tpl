@@ -18,19 +18,6 @@
   	    <br /><span class="form-hint">You will be able to change this and add more URLs later</span>
   	  </div>
   	
-  	{if $newPage.type == "ITEMCLASS"}
-  	
-      <div class="edit-form-row">
-  	    <div class="form-section-label">Select a Model</div>
-  	    <select name="page_model">
-  	      {foreach from=$models item="model"}
-  	      <option value="{$model.id}"{if $newPage.dataset_id == $model.id} selected="selected"{/if}>{$model.plural_name}</option>
-  	      {/foreach}
-  	    </select>
-  	  </div>
-  	
-  	{/if}
-  	
   	{if $newPage.type == "TAG"}
   	
   	<div class="edit-form-row">
@@ -83,6 +70,7 @@
   	    </select>
   	  </div>
   	
+  	{if $newPage.type == 'NORMAL'}
     	<div class="edit-form-row">
         <div class="form-section-label">Search terms</div>
         <textarea name="page_search_field" style="width:500px;height:60px">{$newPage.search_field}</textarea>
@@ -102,6 +90,7 @@
         <div class="form-section-label">Meta Keywords</div>
         <textarea name="page_keywords" style="width:500px;height:100px">{$newPage.keywords}</textarea>
       </div>
+    {/if}
     
       <div class="edit-form-row">
         <div class="buttons-bar"><input type="submit" value="Next &gt;&gt;" /></div>

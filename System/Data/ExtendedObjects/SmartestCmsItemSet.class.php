@@ -247,7 +247,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getMembers($mode='DEF', $query_data=''){
+	public function getMembers($mode='DEF', $query_data=null, $site_id=null){
 	    
 	    if(!is_numeric($mode)){
 	        $mode = $this->_retrieve_mode;
@@ -266,14 +266,14 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	        if($this->getType() == 'STATIC'){
 	            
 	            if(!$this->_fetch_attempted){
-    	            $this->_set_members = $this->getRawStaticSetMembers($mode);
+    	            $this->_set_members = $this->getRawStaticSetMembers($mode, $site_id);
 	                $this->_fetch_attempted = true;
                 }
 	        
     	    }else if($this->getType() == 'DYNAMIC'){
     	        
     	        if(!$this->_fetch_attempted){
-    	            $this->_set_members = $this->getRawDynamicSetMembers($mode, $query_data);
+    	            $this->_set_members = $this->getRawDynamicSetMembers($mode, $query_data, $site_id);
 	                $this->_fetch_attempted = true;
 	            }
 	            
@@ -370,7 +370,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getRawStaticSetMemberIds($mode){
+	public function getRawStaticSetMemberIds($mode, $site_id=null){
 	    
 	    if(!is_numeric($mode)){
 	        $mode = $this->_retrieve_mode;
@@ -394,6 +394,10 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
             
         }
         
+        if(is_numeric($site_id)){
+            $sql .= " AND item_site_id='".$site_id."'";
+        }
+        
         $sql .= " ORDER BY SetsItemsLookup.setlookup_order ASC";
         
         $results = $this->database->queryToArray($sql);
@@ -409,13 +413,13 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getRawStaticSetMembers($mode='DEF'){
+	public function getRawStaticSetMembers($mode='DEF', $site_id=null){
 	    
 	    if(!is_numeric($mode)){
 	        $mode = $this->_retrieve_mode;
 	    }
 	    
-	    $ids = $this->getRawStaticSetMemberIds($mode);
+	    $ids = $this->getRawStaticSetMemberIds($mode, $site_id);
 	    $members = $this->getItemsFromIds($ids, $mode);
         return $members;
         
@@ -427,7 +431,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
         }
 	}
 	
-	public function getRawDynamicSetResultSet($mode='DEF', $query_data=''){
+	public function getRawDynamicSetResultSet($mode='DEF', $query_data=null, $site_id=null){
 	    
 	    if(!is_numeric($mode)){
 	        $mode = $this->_retrieve_mode;
@@ -438,8 +442,10 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    $q = new SmartestQuery($model->getId());
     
         $data_source = $this->getDataSourceSiteId();
-    
-        $site_id = $this->getCurrentSiteId();
+        
+        if(!is_numeric($site_id)){
+            $site_id = $this->getCurrentSiteId();
+        }
         
         if($data_source){
             if(is_numeric($data_source)){
@@ -488,13 +494,13 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getRawDynamicSetMembers($mode='DEF', $query_data=''){
+	public function getRawDynamicSetMembers($mode='DEF', $query_data=null, $site_id){
 	    
 	    if(!is_numeric($mode)){
 	        $mode = $this->_retrieve_mode;
 	    }
 	    
-	    $rs = $this->getRawDynamicSetResultSet($mode, $query_data);
+	    $rs = $this->getRawDynamicSetResultSet($mode, $query_data, $site_id);
 	    return $rs->getItems();
 	    
 	}
@@ -659,9 +665,9 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    return $this->_set_members_simple;
 	}
 	
-	public function getMemberIds($mode='DEF', $refresh=false){
+	public function getMemberIds($mode='DEF', $refresh=false, $site_id=null){
 	    
-	    $this->getMembers($mode);
+	    $this->getMembers($mode, null, $site_id);
 	    return $this->_set_member_ids;
 	    
 	}

@@ -142,7 +142,7 @@ class Users extends SmartestSystemApplication{
         
         }
     
-		// $this->formForward(); 
+		$this->formForward(); 
 		
 	}
 

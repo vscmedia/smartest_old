@@ -30,7 +30,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		    define('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS', true);
 		}
 		
-		$this->caching = true;
+		$this->caching = false;
 	    
 	}
 	
@@ -252,6 +252,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         if($file_found){
 	        $render_process_id = SmartestStringHelper::toVarName('template_'.SmartestStringHelper::removeDotSuffix($requested_file).'_'.substr(microtime(true), -6));
 	        $child = $this->startChildProcess($render_process_id);
+	        $child->caching = false;
 	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
 	        $child->assign('this', $this->_tpl_vars['this']);
 	        $content = $child->fetch($template);
@@ -583,6 +584,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         	        $child->assign('title', $list->getTitle());
         	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
         	        $child->setDraftMode($this->getDraftMode());
+        	        $child->caching = false;
         	        $content = $child->fetch($list->getRepeatingTemplate($this->getDraftMode()));
         	        $this->killChildProcess($child->getProcessId());
                     

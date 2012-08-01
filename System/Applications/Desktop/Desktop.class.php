@@ -137,6 +137,8 @@ class Desktop extends SmartestSystemApplication{
 	        $site->setAdminEmail($this->getRequestParameter('site_admin_email'));
 	        $site->save();
 	        
+	        $site->setLanguageCode($this->getRequestParameter('site_language'));
+	        
 	        if(SmartestUploadHelper::uploadExists('site_logo')){
 	            
 	            $alh = new SmartestAssetsLibraryHelper;

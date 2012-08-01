@@ -14,7 +14,7 @@ class SmartestBasicRenderer extends SmartestEngine{
         $this->plugins_dir[] = SM_ROOT_DIR."System/Templating/Plugins/WebPageBuilder/";
 	    $this->left_delimiter = '<'.'?sm:';
 		$this->right_delimiter = ':?'.'>';
-		$this->caching = true;
+		$this->caching = false;
         
     }
     

@@ -309,8 +309,10 @@ class Assets extends SmartestSystemApplication{
 		        $this->send($group, 'group');
 		    }
 	    }
-		
-        if($this->getRequestParameter('asset_type')){
+	    
+	    $this->send($this->getSite()->getLanguageCode(), 'site_language');
+	    
+	    if($this->getRequestParameter('asset_type')){
             
             $this->send(false, 'require_type_selection');
             

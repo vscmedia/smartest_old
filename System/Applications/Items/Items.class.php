@@ -2992,12 +2992,12 @@ class Items extends SmartestSystemApplication{
 		    $site = new SmartestSite;
 		    
 		    if(!$site->find($site_id)){
-		        $this->addUserMessageToNextRequest('The destination site ID was not recognized', SmartestUserMesssage::ERROR);
+		        $this->addUserMessageToNextRequest('The destination site ID was not recognized', SmartestUserMessage::ERROR);
 		        $this->formForward();
 		    }
 		    
-		    // $sites = $this->getUser()->getSitesWhereUserHasToken('add_items', true);
 		    $duplicate = $item->duplicateFactory($this->getRequestParameter('duplicate_name', $item->getName().' copy'));
+		    $duplicate->setSiteId($site_id);
 		    
 		    $properties = $item->getPropertiesThatRequireDuplicationDecision();
 		    
@@ -3007,29 +3007,25 @@ class Items extends SmartestSystemApplication{
 		        $info = $property_decisions[$p->getId()];
 		        
 		        if($info['copy_decision'] == 'share'){
-		            /* $p->getData()->getContent()->setShared(1);
+		            $p->getData()->getContent()->setShared(1);
 		            $p->getData()->getContent()->save();
-		            $duplicate->setPropertyValueByNumericKey($p->getId(), $p->getData()->getContent()->getId()); */
+		            $duplicate->setPropertyValueByNumericKey($p->getId(), $p->getData()->getContent()->getId());
 		        }else if($info['copy_decision'] == 'duplicate'){
 		            $asset = $p->getData()->getContent()->duplicate($info['duplicate_asset_name'], $site_id);
-		            // echo $asset->getId().' ';
-		            // echo $p->getId().' ';
 		            $duplicate->setPropertyValueByNumericKey($p->getId(), $asset->getId());
 		        }
 		        
 		    }
 		    
 		    $duplicate->save();
-		    
-		    // print_r($duplicate->getItem()->getDbQueryHistory());
-		    
-		    // $item->getPropertiesThatRequireDuplicationDecision();
+		    $this->addUserMessageToNextRequest('The item has been duplicated', SmartestUserMessage::SUCCESS);
 		
 	    }else{
 	        
 	        $this->addUserMessageToNextRequest("The item ID was not recognized", SmartestUserMessage::ERROR);
 	        
 	    }
+	    
 	    
 	    // 
 	    $this->formForward();

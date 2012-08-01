@@ -9,6 +9,10 @@
   <input type="hidden" name="item_id" id="item_id_input" value="" />
 </form>
 
+{if empty($items)}
+  <div class="warning">There are currently no items in this set. <a href="{$domain}{$section}/editSet?set_id={$set.id}">Click here</a> to add some.</div>
+{else}
+
 {if $set.type == 'STATIC' || $count > 0}
 <div class="instruction">Found {$count} item{if $count != 1}s{/if} in this data set</div>
 {else}
@@ -57,6 +61,7 @@ View as:
         <img border="0" src="{$domain}Resources/Icons/item.png">{$item.name}</a></li>
   {/foreach}
   </ul>
+{/if}
 
 </div>
 

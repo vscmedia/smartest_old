@@ -11,12 +11,12 @@
       </tr>
       <tr>
         <td style="background-color:#fff" valign="top">URL:</td>
-        <td style="background-color:#fff" valign="top">{$domain}{$newPage.url}</td>
+        <td style="background-color:#fff" valign="top">{$domain}{$new_page_url}</td>
       </tr>
       {if is_numeric($newPage.dataset_id) && $newPage.type == "ITEMCLASS"}
       <tr>
         <td style="background-color:#fff" valign="top">Represents model:</td>
-        <td style="background-color:#fff" valign="top">{$newPage.model_plural}</td>
+        <td style="background-color:#fff" valign="top">{$new_page_model.plural_name}</td>
       </tr>
       {/if}
       {if is_numeric($newPage.dataset_id) && $newPage.type == "TAG"}
@@ -43,6 +43,7 @@
         <td style="background-color:#fff" valign="top">Main Template:</td>
         <td style="background-color:#fff" valign="top">{$newPage.draft_template}</td>
       </tr>
+  	{if $newPage.type == 'NORMAL'}
       <tr>
         <td style="background-color:#fff" valign="top">Description:</td>
         <td style="background-color:#fff" valign="top">{$newPage.description}</td>
@@ -59,6 +60,7 @@
         <td style="background-color:#fff" valign="top">Meta Keywords:</td>
         <td style="background-color:#fff" valign="top">{$newPage.keywords}</td>
       </tr>
+    {/if}
     </table>
     
     <p>After the page has been built, take me:

@@ -73,6 +73,15 @@ var section = '{$section}';
 </div>
 
 <div class="edit-form-row">
+  <div class="form-section-label">Site language</div>
+  <select name="site_language">
+  {foreach from=$_languages item="lang" key="langcode"}
+    {if $langcode != "zxx"}<option value="{$langcode}"{if $site.language_code == $langcode} selected="selected"{/if}>{$lang.label}</option>{/if}
+  {/foreach}
+  </select>
+</div>
+
+<div class="edit-form-row">
   <div class="form-section-label">Site status</div>
   <label for="enable-site">Enabled</label> <input type="radio" id="enable-site" name="site_is_enabled" value="1"{if $site.is_enabled == 1} checked="checked"{/if} />
   <label for="disable-site">Disabled</label> <input type="radio" id="disable-site" name="site_is_enabled" value="0"{if $site.is_enabled == 0} checked="checked"{/if} /><span class="form-hint">This will take effect immediately</span>

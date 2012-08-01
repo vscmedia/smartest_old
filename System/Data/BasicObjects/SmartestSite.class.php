@@ -379,6 +379,20 @@ class SmartestSite extends SmartestBaseSite{
         
     }
     
+    public function getLanguageCode(){
+        
+        $ph = new SmartestPreferencesHelper;
+        return $ph->getGlobalPreference('site_language', 0, $this->getId());
+        
+    }
+    
+    public function setLanguageCode($code){
+        
+        $ph = new SmartestPreferencesHelper;
+        return $ph->setGlobalPreference('site_language', $code, 0, $this->getId());
+        
+    }
+    
     public function getLogoAsset(){
         
         $a = new SmartestSiteLogoAsset;
@@ -415,6 +429,8 @@ class SmartestSite extends SmartestBaseSite{
             return $this->getSearchPageId();
             case "logo":
             return $this->getLogoAsset();
+            case "language_code":
+            return $this->getLanguageCode();
         }
         
         return parent::offsetGet($offset);

@@ -17,6 +17,7 @@ class SmartestDataObject implements ArrayAccess{
 	protected $_last_query = '';
 	protected $_dbTableHelper;
 	protected $_request;
+	protected $_escape_values_on_save = false;
 	
 	public function __construct(){
 		
@@ -108,6 +109,7 @@ class SmartestDataObject implements ArrayAccess{
         // echo $classname;
         // echo $obj->getSaveSql();
         $obj->hydrate($this->getOriginalDbRecord(true), null, true); // null passed for site id, true passed for $duplicate parameter, which avoids link to existing record or preservation of primary key
+        $obj->escapeValuesOnNextSave();
         // echo "duplicate mode is: true";
         // print_r($this->getOriginalDbRecord(true));
         // echo $obj->getSaveSql();
@@ -620,6 +622,10 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	}
 	
+	public function escapeValuesOnNextSave(){
+	    $this->_escape_values_on_save = true;
+	}
+	
 	public function getSaveSql(){
 	    
 	    if($this->_came_from_database){
@@ -654,8 +660,13 @@ class SmartestDataObject implements ArrayAccess{
 			if($i > 0){
 				$sql .= ', ';
 			}
-		
-			$sql .= "'".$value."'";
+		    
+		    if($this->_escape_values_on_save){
+			    $sql .= "'".addslashes($value)."'";
+		    }else{
+		        $sql .= "'".$value."'";
+		    }
+		    
 			$i++;
 		}
 	
@@ -680,7 +691,11 @@ class SmartestDataObject implements ArrayAccess{
 			if(!isset($this->_no_prefix[$name])){
 				$sql .= $this->_table_prefix.$name."='".$value."'";
 			}else{
-				$sql .= $name."='".$value."'";
+				if($this->_escape_values_on_save){
+    			    $sql .= $name."='".addslashes($value)."'";
+    		    }else{
+    		        $sql .= $name."='".$value."'";
+    		    }
 			}
 		
 			$i++;
@@ -710,13 +725,13 @@ class SmartestDataObject implements ArrayAccess{
 		    
 		    if($this->_came_from_database){
 		        $cc = $this->clearRetrievalSqlQueryFromCache();
-		        // var_dump($cc);
 		    }else{
     			$this->_properties['id'] = $id;
     			$this->_came_from_database = true;
     		}
 		    
 		    $this->_modified_properties = array();
+		    $this->_escape_values_on_save = false;
 		
 	    }
 	}

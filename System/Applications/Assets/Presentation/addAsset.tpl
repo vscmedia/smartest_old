@@ -163,7 +163,7 @@ function validateUploadSuffix(){
       <div class="form-section-label">Language</div>
       <select name="asset_language">
 {foreach from=$_languages item="lang" key="langcode"}
-        <option value="{$langcode}">{$lang.label}</option>
+        <option value="{$langcode}"{if $langcode == $site_language} selected="selected"{/if}>{$lang.label}</option>
 {/foreach}
       </select>
     </div>

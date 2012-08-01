@@ -28,7 +28,6 @@ class Sets extends SmartestSystemApplication{
 	    if(is_numeric($this->getRequestParameter('class_id'))){
 	        
 	        $model_id = $this->getRequestParameter('class_id');
-	        
 	        $model = new SmartestModel;
 	        
 	        if($model->find($model_id)){
@@ -209,11 +208,11 @@ class Sets extends SmartestSystemApplication{
 	                
 	            } */
 	            
-	            $set_members = $set->getMembers(SM_QUERY_ALL_DRAFT);
+	            $set_members = $set->getMembers(SM_QUERY_ALL_DRAFT, null, $this->getSite()->getId());
 	            // $all_items = 
 	            
 	            // fetch all item ids
-	            $all_items = $set->getModel()->getSimpleItems($this->getSite()->getId(), SM_QUERY_ALL_DRAFT, '', $set->getMemberIds());
+	            $all_items = $set->getModel()->getSimpleItems($this->getSite()->getId(), SM_QUERY_ALL_DRAFT, '', $set->getMemberIds(null, null, $this->getSite()->getId()));
 	            
 	            $this->send($set, 'set');
 	            $this->send($set_members, 'members');
@@ -418,7 +417,7 @@ class Sets extends SmartestSystemApplication{
 	        
 	        $this->send($set->getModel(), 'model');
 	        $this->send($set, 'set');
-	        $this->send($set->getMembers(SM_QUERY_ALL_DRAFT), 'items');
+	        $this->send($set->getMembers(SM_QUERY_ALL_DRAFT, null, $this->getSIte()->getId()), 'items');
 	        $this->send($this->getApplicationPreference('reorder_static_set_num_cols'), 'num_cols');
 	        
 	    }else{
@@ -507,7 +506,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	    if($set->find($set_id)){
 	        
-	        $items = $set->getMembers($mode);
+	        $items = $set->getMembers($mode, null, $this->getSite()->getId());
 	    
     	    $this->send($items, 'items');
     	    $this->send(count($items), 'count');
