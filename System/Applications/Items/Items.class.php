@@ -2950,11 +2950,12 @@ class Items extends SmartestSystemApplication{
 		
 		    $this->send(new SmartestArray($sites), 'sites');
 		    $this->send($item, 'item');
+		    $item->setDraftMode(true);
 		    $this->send($item->getPropertiesThatRequireDuplicationDecision(), 'properties');
 		
 	    }else{
 	        
-	        $this->addUserMessageToNextRequest();
+	        $this->addUserMessageToNextRequest("The item ID was not recognized", SmartestUserMessage::ERROR);
 	        
 	    }
 		
@@ -2981,7 +2982,58 @@ class Items extends SmartestSystemApplication{
 	
 	public function createItemCopy(){
 	    
+	    $item_id = $this->getRequestParameter('item_id');
+		$item = SmartestCmsItem::retrieveByPk($item_id);
+		
+		if(is_object($item)){
+		    
+		    $site_id = $this->getRequestParameter('destination_site_id');
+		    
+		    $site = new SmartestSite;
+		    
+		    if(!$site->find($site_id)){
+		        $this->addUserMessageToNextRequest('The destination site ID was not recognized', SmartestUserMesssage::ERROR);
+		        $this->formForward();
+		    }
+		    
+		    // $sites = $this->getUser()->getSitesWhereUserHasToken('add_items', true);
+		    $duplicate = $item->duplicateFactory($this->getRequestParameter('duplicate_name', $item->getName().' copy'));
+		    
+		    $properties = $item->getPropertiesThatRequireDuplicationDecision();
+		    
+		    $property_decisions = $this->getRequestParameter('itemproperty');
+		    
+		    foreach($properties as $p){
+		        $info = $property_decisions[$p->getId()];
+		        
+		        if($info['copy_decision'] == 'share'){
+		            /* $p->getData()->getContent()->setShared(1);
+		            $p->getData()->getContent()->save();
+		            $duplicate->setPropertyValueByNumericKey($p->getId(), $p->getData()->getContent()->getId()); */
+		        }else if($info['copy_decision'] == 'duplicate'){
+		            $asset = $p->getData()->getContent()->duplicate($info['duplicate_asset_name'], $site_id);
+		            // echo $asset->getId().' ';
+		            // echo $p->getId().' ';
+		            $duplicate->setPropertyValueByNumericKey($p->getId(), $asset->getId());
+		        }
+		        
+		    }
+		    
+		    $duplicate->save();
+		    
+		    // print_r($duplicate->getItem()->getDbQueryHistory());
+		    
+		    // $item->getPropertiesThatRequireDuplicationDecision();
+		
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The item ID was not recognized", SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    // 
 	    $this->formForward();
+	    // duplicateFactory
 	    
 	}
 	

@@ -111,6 +111,10 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	    
 	}
 	
+	public function replaceItemPropertyValueWith(SmartestItemPropertyValue $v){
+	    $this->_value = $v;
+	}
+	
 	// Todo: if a file has been removed from the group that is used to get possible values for a property, add it back to the list
 	/* public function getPossibleValues(){
 	    $v = parent::getPossibleValues();

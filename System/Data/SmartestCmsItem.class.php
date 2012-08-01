@@ -281,9 +281,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            case '_meta_page':
 	            if($p = $this->getMetaPage()){
 	                return $p;
-                }else{
-                    
                 }
+                break;
+                
+                case '_site':
+                return $this->getSite();
 	            
 	        }
 	        
@@ -390,6 +392,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    if(is_object($this->_item)){
 	        $this->_item->setSiteId($id);
         }
+	}
+	
+	public function getSite(){
+	    return $this->_item->getHomeSite();
 	}
     
     public function getMetapageId(){
@@ -840,8 +846,55 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    
 	    foreach($this->getProperties() as $p){
 	        $info = $p->getTypeInfo();
-	        if($info['valuetype'] == 'foreignkey'){
+	        if($info['id'] == 'SM_DATATYPE_ASSET' || $info['id'] == 'SM_DATATYPE_TEMPLATE'){
 	            $properties[] = $p;
+	        }
+	    }
+	    
+	    return $properties;
+	    
+	}
+	
+	public function getStringProperties(){
+	    
+	    $type_codes = SmartestDataUtility::getDataTypeCodesByValueType('string');
+	    $sql = "SELECT itemproperty_id, itemproperty_varname FROM ItemProperties WHERE itemproperty_datatype IN ('".implode("','", $type_codes)."') AND itemproperty_itemclass_id='".$this->_item->getItemclassId()."' ORDER BY itemproperty_order_index ASC;";
+	    // $result = $this->database->queryToArray($sql);
+	    
+	    $signifiers = $this->database->queryFieldsToArrays(array('itemproperty_varname', 'itemproperty_id'), $sql);
+	    // print_r($signifiers['itemproperty_id']);
+	    
+	    // return $signifiers['itemproperty_varname'];
+	    
+	    /* $varnames = array();
+	    $ids = array();*/
+	    $properties = array();
+	    
+	    /* foreach($result as $r){
+	        $varnames[] = $r['itemproperty_varname'];
+	        $ids[] = $r['itemproperty_id'];
+	    } */
+	    
+	    foreach($this->_properties as $key => $propertyvalueholder){
+	        // echo $key.' ';
+	        if(in_array($key, $signifiers['itemproperty_id'])){
+	            $properties[] = $propertyvalueholder;
+	        }
+	    }
+	    
+	    return $properties;
+	    
+	}
+	
+	public function getDropdownMenuProperties(){
+	    
+	    $sql = "SELECT itemproperty_id, itemproperty_varname FROM ItemProperties WHERE itemproperty_datatype = 'SM_DATATYPE_DROPDOWN_MENU' AND itemproperty_itemclass_id='".$this->_item->getItemclassId()."' ORDER BY itemproperty_order_index ASC;";
+	    $signifiers = $this->database->queryFieldsToArrays(array('itemproperty_varname', 'itemproperty_id'), $sql);
+	    $properties = array();
+	    
+	    foreach($this->_properties as $key => $propertyvalueholder){
+	        if(in_array($key, $signifiers['itemproperty_id'])){
+	            $properties[] = $propertyvalueholder;
 	        }
 	    }
 	    
@@ -1125,6 +1178,54 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        $this->_item->delete(true);
 	    }
 	    
+	}
+	
+	public function duplicateFactory($name){
+	    
+	    $class = get_class($this);
+	    $dupe = new $class;
+	    $dupe->setItemForDuplicate($this->getItem()->duplicateWithoutSaving());
+	    $dupe->setName($name);
+	    $dupe->getItem()->setWebId(SmartestStringHelper::random(32));
+	    $dupe->getItem()->setSlug($this->getItem()->getSlug());
+	    $dupe->getItem()->save();
+	    
+	    $new_values = array();
+	    
+	    // print_r(array_merge(, SmartestDataUtility::getDataTypeCodesByValueType('foreignkey')));
+	    
+	    foreach($this->getStringProperties() as $p){
+	        $new_values[$p->getId()] = $p->getData()->duplicateWithoutSaving(); // new SmartestItemPropertyValue object the same as the old one
+	        $new_values[$p->getId()]->setItemId($dupe->getItem()->getId());
+	    }
+	    
+	    foreach($this->getDropdownMenuProperties() as $p){
+	        $new_values[$p->getId()] = $p->getData()->duplicateWithoutSaving(); // new SmartestItemPropertyValue object the same as the old one
+	        $new_values[$p->getId()]->setItemId($dupe->getItem()->getId());
+	    }
+	    
+	    $dupe->loadPropertiesForDuplication($new_values);
+	    $dupe->save();
+	    
+	    foreach($this->getAuthors() as $a){
+	        $dupe->addAuthorById($a->getId());
+	    }
+	    
+	    return $dupe;
+	    
+	}
+	
+	public function loadPropertiesForDuplication($properties_from_other_item){
+	    
+	    if(is_array($properties_from_other_item)){
+	        foreach($properties_from_other_item as $k => $p){ // These are ItemPropertyValueHolder objects
+	            $this->_properties[$k]->replaceItemPropertyValueWith($properties_from_other_item[$k]);
+	        }
+	    }
+	}
+	
+	public function setItemForDuplicate(SmartestItem $i){
+	    $this->_item = $i;
 	}
 	
 	public function publish(){

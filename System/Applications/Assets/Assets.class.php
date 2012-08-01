@@ -1393,6 +1393,7 @@ class Assets extends SmartestSystemApplication{
 		    $this->send($comments, 'comments');
 		    $this->send($asset->getGroups(), 'groups');
 		    $this->send($asset->getPossibleGroups(), 'possible_groups');
+		    $this->send(new SmartestArray($asset->getOtherPointers()), 'pointers');
 		    
 		    if(isset($data['type_info']['source_editable']) && SmartestStringHelper::toRealBool($data['type_info']['source_editable'])){
 		        $this->send(true, 'allow_source_edit');
@@ -1502,6 +1503,7 @@ class Assets extends SmartestSystemApplication{
                 $assettype_code = $asset->getType();
     			$types_data = SmartestDataUtility::getAssetTypes();
     			$default_params = $asset->getDefaultParams();
+    			$this->send(new SmartestArray($asset->getOtherPointers()), 'pointers');
 
     			if(array_key_exists($assettype_code, $types_data)){
 
@@ -2264,69 +2266,36 @@ class Assets extends SmartestSystemApplication{
 		    
 	}
 
-	function duplicateAsset($get){
+	public function duplicateAsset(){
 
-		/*$assettype_code=$this->getRequestParameter('assettype_code');
-		$asset_id=$this->manager->getNumericAssetId($this->getRequestParameter('asset_id'));
-		$stringid=$this->manager->getStringId($asset_id);
-		$name=$this->manager->getUniqueStringId($stringid);
-		$assettypeid=$this->manager->getAssetTypeId($assettype_code);
+		$asset_id = $this->getRequestParameter('asset_id');
+		
+		$asset = new SmartestAsset;
 
-		if($assettype_code=='LINE' || $assettype_code=='TEXT' || $assettype_code=='HTML' ){
-
-			$fragment_content=$this->manager->getFragment($asset_id);
-			$textfragment_created=strtotime('now');
-			$fragment_id = $this->database->query("INSERT INTO TextFragments(textfragment_content,textfragment_created) VALUE ('$fragment_content','$textfragment_created')");
-			$textfragment_asset_id = $this->manager->insertAsset(SmartestStringHelper::random(32), SmartestStringHelper::toVarName($name), '', '', $assettypeid, $fragment_id);
-			$this->database->query("UPDATE TextFragments SET textfragment_asset_id='$textfragment_asset_id' WHERE textfragment_id='$fragment_id'");
-
+		if($asset->find($asset_id)){
+		    
+		    $dup = $asset->duplicate($this->getRequestParameter('duplicate_asset_name', $asset->getLabel().' copy'));
+		    $dup->setUserId($this->getUser()->getId()); // Connect the new asset to the current user, rather than the user who created the original
+		    $dup->save();
+		    $this->addUserMessageToNextRequest("The file has been duplicated as ".$dup->getLabel().".", SmartestUserMessage::SUCCESS);
+		    
 		}else{
-
-			$oldfilename=$this->manager->getFileName($asset_id);
-			$newfilename=$this->manager->getUniqueName($oldfilename);
-
-			if($assettype_code=='TMPL'){
-				$path = SM_ROOT_DIR.'Presentation/Layouts/';
-			}
-
-			if($assettype_code=='JPEG' || $assettype_code=='GIF' || $assettype_code=='PNG'){
-				$path = SM_ROOT_DIR.'Public/Resources/Images/';
-			}
-
-			if($assettype_code=='CSS'){
-				$path = SM_ROOT_DIR.'Public/Resources/Stylesheets/';
-			}
-
-			if($assettype_code=='JSCR'){
-				$path = SM_ROOT_DIR.'Public/Resources/Javascript/';
-			}
-
-			if($assettype_code=='QTMV' || $assettype_code=='MPEG' || $assettype_code=='SWF'){
-				$path = SM_ROOT_DIR.'Public/Resources/Assets/';
-			}
-
-			if(copy($path.$oldfilename, $path.$newfilename)){
-				$this->manager->insertAsset(SmartestStringHelper::random(32), SmartestStringHelper::toVarName($name), $newfilename, '', $assettypeid, '');
-				$this->setFormReturnVar('savedTheCopy', 'true');
-			}else{
-				$this->setFormReturnVar('savedTheCopy', 'false');
-			}
-			
-			header("HTTP/1.1 201 Created");
-			
-		} */
+		    
+		    $this->addUserMessageToNextRequest("The asset ID was not recognized.", SmartestUserMessage::ERROR);
+		    
+		}
 
 		$this->formForward();
 	}
 
-	function downloadAsset($get){
+	public function downloadAsset($get){
 
 		$asset_id = $this->getRequestParameter('asset_id');
 
 		// echo $asset_id;
 		$asset = new SmartestAsset;
 
-		if($asset->hydrate($asset_id)){
+		if($asset->find($asset_id)){
 
 		    if($asset->usesLocalFile()){
 		        $download = new SmartestDownloadHelper($asset->getFullPathOnDisk());

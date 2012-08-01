@@ -115,6 +115,9 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 
             case "action_url":
             return $this->getActionUrl();
+            
+            case "site":
+            return $this->getHomeSite();
 	        
 	    }
 	    
@@ -126,6 +129,10 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	    return parent::offsetExists($offset) || in_array($offset, array('created', 'modified', 'last_published', 'title', 'link_contents', 'class', 'model', 'tags', 'authors'));
 	    
+	}
+	
+	public function getHomeSite(){
+	    return $this->getSiteWhereObjectCreated();
 	}
 	
 	public function getParentItemForMetaPage($metapage_id){

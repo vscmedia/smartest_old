@@ -221,6 +221,15 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    
 	}
 	
+	public function assignSiteFromObject(SmartestSite $site){
+	    if($this->getSiteId() == $site->getId()){
+	        $this->_site = $site;
+	        return true;
+	    }else{
+	        return false;
+	    }
+	}
+	
 	public function getWidth(){
 	    
 	    if($this->isImage()){
@@ -714,6 +723,115 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    }
 	    
 	    parent::save();
+	    
+	}
+	
+	public function duplicate($name, $site_id=null, $pointer_only=false){
+	    
+	    $dup = $this->duplicateWithoutSaving();
+	    
+	    // Check the name is unique
+	    if(is_numeric($site_id)){
+	        $sql = "SELECT asset_stringid, asset_label from Assets WHERE asset_site_id='".$site_id."' OR asset_shared='1'";
+	    }else{
+	        $sql = "SELECT asset_stringid, asset_label from Assets WHERE asset_site_id='".$this->getSiteId()."' OR asset_shared='1'";
+	    }
+	    
+	    $dup->setWebId(SmartestStringHelper::random(32));
+	    $existing_names_labels = $this->database->queryFieldsToArrays(array('asset_label', 'asset_stringid'), $sql);
+	    
+	    $stringid = SmartestStringHelper::guaranteeUnique(SmartestStringHelper::toVarName($name), $existing_names_labels['asset_stringid'], '_');
+	    $label    = SmartestStringHelper::guaranteeUnique($name, $existing_names_labels['asset_label'], ' ');
+	    
+	    $dup->setStringId($stringid);
+	    $dup->setLabel($label);
+	    
+	    $info = $this->getTypeInfo();
+	    
+	    if($info['storage']['type'] == 'file'){
+	        // if the storage is a file on the disk, copy that file and get the new file's name on disk
+	        if($pointer_only){
+	            
+	        }else{
+	            $new_filename_full = SmartestFileSystemHelper::getUniqueFileName($this->getFullPathOnDisk());
+	            
+	            if(SmartestFileSystemHelper::copy($this->getFullPathOnDisk(), $new_filename_full)){
+	                $new_filename = basename($new_filename_full);
+	                $dup->setUrl($new_filename);
+	            }else{
+	                return false;
+	            }
+	            
+	        }
+	        
+	    }else if($info['storage']['type'] == 'database'){
+	        
+	        // otherwise if the file is stored as a text fragment, copy that and get the new text fragment's ID
+	        $textfragment = $this->getTextFragment()->duplicate();
+	        
+	        // Set the new textfragment ID
+	        $this->setFragmentId($textfragment->getId());
+	        $dup->setUrl($dup->getStringId().'.'.$info['suffix'][0]['_content']);
+	        
+	    }
+	    
+	    if(is_numeric($site_id) && $site_id != $this->getSiteid()){
+	        $dup->setSiteId($site_id);
+	    }
+	    
+	    // copy many-to-many data, such as authors
+	    
+	    // save the duplicate
+	    $dup->save();
+	    
+	    if($info['storage']['type'] == 'database'){
+	        $textfragment->setAssetId($dup->getId());
+	        $textfragment->save();
+        }
+	    
+	    // print_r($this->getGroupMemberships());
+	    foreach($this->getGroupMemberships() as $membership){
+	        
+	        if($group = $membership->getGroup()){
+	            if($group->getSiteId() != $site_id){
+	                $group->setShared(1);
+	            }
+	        }
+	        
+	        $nm = $membership->duplicateWithoutSaving();
+	        $nm->setAssetId($dup->getId());
+	        $nm->save();
+	        
+	    }
+	    
+	    return $dup;
+	    
+	}
+	
+	public function getOtherPointers(){
+	    
+	    $info = $this->getTypeInfo();
+	    
+	    if($info['storage']['type'] == 'file'){
+	        $sql = "SELECT Assets.*, Sites.* FROM Assets, Sites WHERE Sites.site_id=Assets.asset_site_id AND Assets.asset_id != '".$this->getId()."' AND Assets.asset_url = '".$this->getUrl()."' AND Assets.asset_type = '".$this->getType()."' AND Assets.asset_deleted != '1' AND Assets.asset_is_hidden != '1'";
+	        $result = $this->database->queryToArray($sql);
+	        
+	        $pointers = array();
+	        
+	        foreach($result as $r){
+	            $a = new SmartestAsset;
+	            $s = new SmartestSite;
+	            $a->hydrate($r);
+	            $s->hydrate($r);
+	            $a->assignSiteFromObject($s);
+	            $pointers[] = $a;
+	        }
+	        
+	        return $pointers;
+	        
+	    }else{
+	        return array();
+	    }
 	    
 	}
 	

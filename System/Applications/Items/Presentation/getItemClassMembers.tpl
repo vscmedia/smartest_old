@@ -68,13 +68,13 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
 </div>
 
     <ul class="options-{$list_view}" id="options_list">
-  {foreach from=$items key="key" item="item"}
+{foreach from=$items key="key" item="item"}
 	
     <li ondblclick="window.location='{$domain}{$section}/openItem?item_id={$item.id}'" class="item {if $item.public=='FALSE'}unpublished{else}published{/if} {if $item.is_archived=='1'}archived{else}current{/if}">
       <a href="#" class="option" id="item_{$item.id}" onclick="return itemList.setSelectedItem('{$item.id}', 'item', {literal}{{/literal}updateFields: {literal}{{/literal}item_name_field: '{$item.name|summary:"29"|escape:quotes|trim}', archive_action_name: '{if $item.is_archived}Unarchive{else}Archive{/if}'{literal}}{/literal}{literal}}{/literal});">
         <img src="{$domain}Resources/Icons/item.png" border="0" class="grid" /><img border="0" src="/Resources/Icons/package_small.png" class="list" />{$item.name}</a>{* if $item.public=='FALSE'}&nbsp;(hidden){/if *}</li>
 
-  {/foreach}
+{/foreach}
   
   {* <object id="head-logo" data="{$domain}Resources/Icons/item.svg" type="image/svg+xml"> *}
   </ul>
@@ -94,6 +94,7 @@ Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('unpublishItem');">Un-Publish</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/accept.png"> <a href="{dud_link}" onclick="itemList.workWithItem('addTodoItem');">Add new to-do</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('toggleItemArchived');"><span class="archive_action_name">Archive/Un-archive<span></a></li>
+  <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_white_copy.png"> <a href="{dud_link}" onclick="itemList.workWithItem('duplicateItem');">Duplicate</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> <a href="{dud_link}" onclick="itemList.workWithItem('deleteItem', {ldelim}confirm: 'Are you sure you want to delete this {$model.name|lower} ?'{rdelim});">Delete</a></li>
 {* <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('duplicateItem');">Duplicate</a></li> *}
 </ul>

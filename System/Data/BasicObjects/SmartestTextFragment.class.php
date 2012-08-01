@@ -200,6 +200,16 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	    
 	}
 	
+	public function duplicate(){
+	    
+	    $dup = $this->copy();
+	    $dup->save();
+	    SmartestFileSystemHelper::copy($this->getParsableFilePath(), $dup->getParsableFilePath());
+	    SmartestFileSystemHelper::copy($this->getParsableFilePath(true), $dup->getParsableFilePath(true));
+	    return $dup;
+	    
+	}
+	
 	public function isPublished(){
 	    return file_exists($this->getParsableFilePath());
 	}
@@ -225,6 +235,10 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
 	    }else{
 	        return true;
 	    }
+	}
+	
+	public function getPreviewFilePath(){
+	    return $this->getParsableFilePath(true);
 	}
 	
 	public function getContent(){

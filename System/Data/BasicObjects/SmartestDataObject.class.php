@@ -101,6 +101,18 @@ class SmartestDataObject implements ArrayAccess{
         $obj->hydrate($this->getOriginalDbRecord());
         return $obj;
     }
+    
+    public function duplicateWithoutSaving(){
+        $classname = get_class($this);
+        $obj = new $classname;
+        // echo $classname;
+        // echo $obj->getSaveSql();
+        $obj->hydrate($this->getOriginalDbRecord(true), null, true); // null passed for site id, true passed for $duplicate parameter, which avoids link to existing record or preservation of primary key
+        // echo "duplicate mode is: true";
+        // print_r($this->getOriginalDbRecord(true));
+        // echo $obj->getSaveSql();
+        return $obj;
+    }
 	
 	protected function calculateFieldsHash($array){
 	    if(is_array($array)){
@@ -165,6 +177,9 @@ class SmartestDataObject implements ArrayAccess{
 	        
 	        case "_print_r":
 	        return '<code>'.print_r($this, true).'</code>';
+	        
+	        case "empty":
+	        return !is_numeric($this->getId());
 	        
 	    }
 	    
@@ -271,11 +286,14 @@ class SmartestDataObject implements ArrayAccess{
 	    $messy_data = array();
 	    
 	    foreach($neat_data as $key => $value){
-	        if(isset($this->_no_prefix[$key])){
-	            $new_key = $key;
-            }else{
-                $new_key = $this->_table_prefix.$key;
-            }
+	        
+	        // if(!$exclude_id || $key != 'id'){
+    	        if(isset($this->_no_prefix[$key])){
+    	            $new_key = $key;
+                }else{
+                    $new_key = $this->_table_prefix.$key;
+                }
+            // }
             
             $messy_data[$new_key] = $value;
             
@@ -437,7 +455,7 @@ class SmartestDataObject implements ArrayAccess{
 	
 	public function __postHydrationAction(){}
 	
-	public function hydrate($id, $site_id=''){
+	public function hydrate($id, $site_id='', $dup=false){
 		
 		if(is_array($id)){
 		        
@@ -451,16 +469,29 @@ class SmartestDataObject implements ArrayAccess{
 	                    $this->_properties[$fn] = $id[$fn];
 	                }else{
 	                    // this needs to be made faster
-	                    $this->_properties[substr($fn, $offset)] = $id[$fn];
+	                    $k = substr($fn, $offset);
+	                    $this->_properties[$k] = $id[$fn];
+                        
+                        if($dup && $k != 'id'){
+                            $this->_modified_properties[$k] = $id[$fn];
+                        }
+                        
+                        if($dup && $k == 'id'){
+                            $this->_properties['id'] = null;
+                        }
 	                }
 	            }
 	        }
 	        
 	        $this->__postHydrationAction();
-				
-			$this->_came_from_database = true;
 			
-			return true;
+			if($dup){
+			    $this->_came_from_database = false;
+		    }else{
+		        $this->_came_from_database = true;
+		    }
+		    
+		    return true;
 		
 		}else if(is_object($id) && (!method_exists($id, '__toString') || !is_numeric($id->__toString()))){
 		    
@@ -661,6 +692,14 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	}
 	
+	public function getCameFromDatabase(){
+	    return $this->_came_from_database;
+	}
+	
+	public function getDbQueryHistory(){
+	    return $this->database->getDebugInfo();
+	}
+	
 	public function save(){
 		
 		if(count($this->_modified_properties)){
@@ -711,6 +750,15 @@ class SmartestDataObject implements ArrayAccess{
         }
         
         return $site_id;
+	}
+	
+	public function getSiteWhereObjectCreated(){
+	    if(isset($this->_properties['site_id']) && is_numeric($this->_properties['site_id'])){
+	        $s = new SmartestSite;
+	        if($s->find($this->_properties['site_id'])){
+	            return $s;
+	        }
+	    }
 	}
 	
 	public function getLastQuery(){

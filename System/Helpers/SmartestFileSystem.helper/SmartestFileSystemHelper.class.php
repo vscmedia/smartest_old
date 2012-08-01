@@ -218,6 +218,14 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    }
 	}
 	
+	static function copy($old_path, $new_path){
+	    if(@copy(utf8_decode($old_path), $new_path)){
+	        return true;
+	    }else{
+	        return false;
+	    }
+	}
+	
 	static function move($old_path, $new_path){
 	    if(@copy(utf8_decode($old_path), $new_path)){
 	        return unlink($old_path);

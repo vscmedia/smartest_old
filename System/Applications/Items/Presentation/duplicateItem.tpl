@@ -12,18 +12,51 @@
       </select>
     </div>
     {else}
-    <input type="hidden" name="destination_site_id" value="{$item.site.id}" />
+    <input type="hidden" name="destination_site_id" value="{$item._site.id}" style="width:500px" />
     {/if}
-    <h4>What to do with attached objects</h4>
+    <div class="edit-form-row">
+      <div class="form-section-label">Duplicate {$item._model.name|strtolower} name</div>
+      <input type="text" name="duplicate_name" value="{$item.name} copy" id="duplicate-name" />
+    </div>
+    <h4>What to do with attached files:</h4>
 {foreach from=$properties item="property"}
       <div class="edit-form-row">
-        <div class="form-section-label">{$property.name} ({$property.datatype})</div>
+        <div class="form-section-label">{$property.name}{* ({$property.datatype}) *}</div>
+        {if $property.value.empty}
+        No file selected<br />
+        <select name="copy_decision[{$property.id}]" id="copy-decision-{$property.id}" class="copy-decision-select" disabled="disabled">
+          <option value="empty" selected="selected">Leave empty</option>
+        </select>
+        {else}
+        
         Current definition: {if $property.datatype == "SM_DATATYPE_ASSET"}{$property.value.url}{else}{$property.value}{/if}<br />
-        <select name="copy_decision[{$property.id}]">
+        
+        <select name="itemproperty[{$property.id}][copy_decision]" id="copy-decision-{$property.id}" class="copy-decision-select">
           <option value="share">Use current, share if necessary</option>
-          <option value="duplicate">Duplicate</option>
+          <option value="duplicate">Duplicate{if $property.value.type_info.storage.type == "file"} (requires an additional {$property.value.size}){/if}</option>
           <option value="empty">Leave behind and leave this property empty</option>
         </select>
+        
+        <div id="duplicate-asset-name-{$property.id}-holder" style="display:none;padding-top:5px">
+          Name the duplicate file:<br />
+          <input type="text" name="itemproperty[{$property.id}][duplicate_asset_name]" id="duplicate-asset-name-{$property.id}" value="{$property.value.label} copy" style="width:500px" />
+        </div>
+        
+        <script type="text/javascript">
+        $('copy-decision-{$property.id}').observe('change', function(e){ldelim}
+          
+          var element = Event.element(e);
+          
+          if(element.value == 'duplicate'){ldelim}
+            $('duplicate-asset-name-{$property.id}-holder').show();
+            $('duplicate-asset-name-{$property.id}').activate();
+          {rdelim}else{ldelim}
+            $('duplicate-asset-name-{$property.id}-holder').hide();
+          {rdelim}
+          
+        {rdelim});
+        </script>
+        {/if}
       </div>
 {/foreach}
   <div class="buttons-bar">

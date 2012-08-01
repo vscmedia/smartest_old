@@ -11,9 +11,9 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 		
 	}
 	
-	public function hydrate($id, $site_id=''){
+	public function hydrate($id, $site_id='', $dup=false){
 	    
-	    $result = parent::hydrate($id, $site_id);
+	    $result = parent::hydrate($id, $site_id, $dup);
 	    
 	    if($result){
 	        $this->setAdditionalRenderData($this->getDefaultParams());

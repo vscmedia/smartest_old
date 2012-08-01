@@ -5,7 +5,7 @@ class SmartestAssetGroupMembership extends SmartestManyToManyLookup{
     protected $_asset;
     protected $_group;
     
-    public function hydrate($raw_data){
+    public function hydrate($raw_data, $site_id='', $dup=false){
         
         if(isset($raw_data['asset_id'])){
             $asset = new SmartestRenderableAsset;
@@ -19,7 +19,7 @@ class SmartestAssetGroupMembership extends SmartestManyToManyLookup{
             $this->_group = $group;
         }
         
-        return parent::hydrate($raw_data);
+        return parent::hydrate($raw_data, $site_id, $dup);
         
     }
     

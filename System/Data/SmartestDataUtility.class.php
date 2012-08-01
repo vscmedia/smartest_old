@@ -529,6 +529,34 @@ class SmartestDataUtility{
 	    
 	}
 	
+	public static function getDataTypesByValueType($value_type){
+	    
+	    $types = self::getDataTypes();
+	    $matching_types = array();
+	    
+	    foreach($types as $t){
+	        if($t['valuetype'] == $value_type){
+	            $matching_types[] = $t;
+	        }
+	    }
+	    
+	    return $matching_types;
+	    
+	}
+	
+	public static function getDataTypeCodesByValueType($value_type){
+	    
+	    $types = self::getDataTypesByValueType($value_type);
+	    $codes = array();
+	    
+	    foreach($types as $t){
+	        $codes[] = $t['id'];
+	    }
+	    
+	    return $codes;
+	    
+	}
+	
 	/* static function getAssetTypesXmlData(){
 	    
 	    $file_path = SM_ROOT_DIR.'System/Core/Types/assettypes.xml';
