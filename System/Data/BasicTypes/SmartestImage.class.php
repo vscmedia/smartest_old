@@ -211,7 +211,7 @@ class SmartestImage extends SmartestFile{
         
     }
     
-    public function saveToFile($resource, $path){
+    public function saveToFile($resource, $path, $quality=null){
         
         $suffix = strtoupper(SmartestStringHelper::getDotSuffix($path));
 
@@ -219,10 +219,12 @@ class SmartestImage extends SmartestFile{
 
             case "JPG":
             case "JPEG":
+            if(!$quality){$quality == 85;}
             $r = imagejpeg($resource, $path, 85);
             break;
 
             case "PNG":
+            if(!$quality){$quality == 0;}
             $r = imagepng($resource, $path, 0);
             break;
 
@@ -277,8 +279,52 @@ class SmartestImage extends SmartestFile{
         
     }
     
-    public function getSquareVersionFilename($side){
+    public function getSquareVersionFilename(){
         return SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix(basename($this->_current_file_path))).'_sqthumb_'.$side.'.'.$this->getSuffix();
+    }
+    
+    public function getSquarePreviewForUI(){
+        // converts into a medium-quality jpg regardless of file type
+        
+        $url = 'Resources/System/Cache/Images/'.$this->getSquarePreviewForUIFilename();
+        $full_path = SM_ROOT_DIR.'Public/'.$url;
+        $side = 73;
+        
+        if(file_exists($full_path)){
+            
+            $thumbnail = new SmartestImage;
+            $thumbnail->loadFile($full_path);
+            return $thumbnail;
+            
+        }else{
+            
+            if($this->isLandscape()){
+                $shortside = $this->getHeight();
+                $vcopystart = 0;
+                $hcopystart = ($this->getWidth() - $this->getHeight())/2;
+            }else{
+                $shortside = $this->getWidth();
+                $hcopystart = 0;
+                $vcopystart = ($this->getHeight() - $this->getWidth())/2;
+            }
+            
+            $this->_thumbnail_resource = ImageCreateTrueColor($side, $side);
+            imagecopyresampled($this->_thumbnail_resource, $this->getResource(), 0,0, $hcopystart, $vcopystart, $side, $side, $shortside, $shortside);
+            
+            $thumbnail = new SmartestImage;
+            
+            if($this->saveToFile($this->_thumbnail_resource, $full_path, 70)){
+                // saveToFile() automatically destroys image resource, making the following commented line unnecessary
+                $thumbnail->loadFile($full_path);
+                return $thumbnail;
+            }
+            
+        }
+        
+    }
+    
+    public function getSquarePreviewForUIFilename(){
+        return SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix(basename($this->_current_file_path))).'_squiprv.jpg';
     }
     
     public function restrictToWidth($width){
@@ -621,6 +667,13 @@ class SmartestImage extends SmartestFile{
 	        
 	        case "web_path":
 	        return $this->getWebPath();
+	        
+	        case "_ui_preview":
+	        $prev = $this->getSquarePreviewForUI();
+	        if($this->_resource){
+	            imagedestroy($this->_resource);
+            }
+	        return $prev;
 	        
 	        case "empty":
 	        return !is_file($this->_current_file_path);

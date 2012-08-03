@@ -7,6 +7,7 @@ module:
   aliases:
     - {url: /smartest/assets, action: startPage}
     - {url: /smartest/assets/groups, action: assetGroups}
+    - {url: /smartest/assets/galleries, action: assetGalleries}
   routes:
     home:
       action: startPage
@@ -17,6 +18,9 @@ module:
     groups:
       action: assetGroups
       url: /smartest/files/groups
+    galleries:
+      action: assetGalleries
+      url: /smartest/files/galleries
     new_file:
       action: addAsset
       url: /smartest/file/new

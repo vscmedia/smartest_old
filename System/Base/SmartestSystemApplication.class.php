@@ -350,4 +350,10 @@ class SmartestSystemApplication extends SmartestBaseApplication{
     	$this->_errorStack->recordError($message, $type, true);
     }
     
+    /// Localisation ///
+    
+    protected function getLocalisationFilePath(){
+	    return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/eng/Interface/strings.yml';
+	}
+    
 }

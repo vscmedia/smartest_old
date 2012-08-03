@@ -64,21 +64,22 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
 <a href="#" onclick="return assets.setView('grid', 'asset_list_style')">Icons</a>
 </div>
 
-<ul class="options-{$list_view}" style="margin-top:0px" id="options_grid">
+<ul class="options-{$list_view}{if $contact_sheet_view} images{/if}" style="margin-top:0px" id="options_grid">
 {foreach from=$assets item="asset"}
 
 <li>
-    <a href="#" class="option" id="{$sidebartype}_{$asset.id}" onclick="return assets.setSelectedItem('{$asset.id}', '{$sidebartype}');" ondblclick="assets.workWithItem('editAsset');">
+    <a href="#select-file" class="option" id="{$sidebartype}_{$asset.id}" onclick="return assets.setSelectedItem('{$asset.id}', '{$sidebartype}');" ondblclick="assets.workWithItem('editAsset');">
 
 {if in_array($type_code, array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'))}
-    <img border="0" src="{$domain}Resources/Images/ImageAssetThumbnails/{$asset.url}" class="grid" />
+    {* <img border="0" src="{$domain}Resources/Images/ImageAssetThumbnails/{$asset.url}" class="grid" /> *}
+    <img border="0" src="{$asset.image._ui_preview.web_path}" class="grid" />
 {else}
     <img border="0" src="{$domain}Resources/Icons/blank_page.png" class="grid" />
 {/if}
 
 <img border="0" src="{$asset.small_icon}" class="list" />
 
-{$asset.label}</a>
+<span class="asset label">{$asset.label}</span></a>
 
 </li>
 

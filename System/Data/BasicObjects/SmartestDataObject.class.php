@@ -439,9 +439,9 @@ class SmartestDataObject implements ArrayAccess{
 			$this->_properties[$field_name] = $value;
 			
 			// Magic Quotes is deprecated but if switched on can still fuck things up.
-			if(!SM_OPTIONS_MAGIC_QUOTES){
+			// if(!SM_OPTIONS_MAGIC_QUOTES){
 			    $value = mysql_real_escape_string($value);
-		    }
+		    //}
 			
 			$this->_modified_properties[$field_name] = SmartestStringHelper::sanitize($value);
 			

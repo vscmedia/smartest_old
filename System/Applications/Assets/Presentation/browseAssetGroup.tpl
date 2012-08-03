@@ -6,10 +6,11 @@
 
 {load_interface file="edit_filegroup_tabs.tpl"}
 
-<h3>Files in group "{$group.label}"</h3>
+<h3>{if $group.is_gallery}{$_l10n_strings.groups.gallery_files}{else}{$_l10n_strings.groups.group_files}{/if}"{$group.label}"</h3>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="asset_id" id="item_id_input" value="" />
+  <input type="hidden" name="group_id" value="{$group.id}" />
 </form>
 
 <div class="special-box">
@@ -23,33 +24,70 @@
   </form>
 </div>
 
+{if $group.is_gallery}<div class="instruction">Drag and drop files in this gallery to change their order.</div>{/if}
+
 <div id="options-view-chooser">
 {$num_assets} file{if $num_assets != 1}s{/if}. View as:
-<a href="#" onclick="return assets.setView('list', 'asset_list_style')">List</a> /
-<a href="#" onclick="return assets.setView('grid', 'asset_list_style')">Icons</a>
+<a href="#display-as-list" onclick="return assets.setView('list', 'asset_list_style')">List</a> /
+<a href="#display-as-icons" onclick="return assets.setView('grid', 'asset_list_style')">Icons</a>
 </div>
 
-<ul class="options-{$list_view}" style="margin-top:0px" id="options_grid">
+<ul class="options-{$list_view}{if $contact_sheet_view} images{/if}" style="margin-top:0px" id="options_grid">
 {foreach from=$assets item="asset"}
 
-<li>
-    <a href="#" class="option" id="editableasset_{$asset.id}" onclick="return assets.setSelectedItem('{$asset.id}', 'editableasset');" ondblclick="assets.workWithItem('editAsset')" >
+<li id="file_{$asset.id}">
+    <a href="#select-file" class="option" id="editableasset_{$asset.id}" onclick="return assets.setSelectedItem('{$asset.id}', 'editableasset');" ondblclick="assets.workWithItem('editAsset')" >
 
 {if in_array($asset.type, array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'))}
-    <img border="0" src="{$domain}Resources/Images/ImageAssetThumbnails/{$asset.url}" class="grid" />
+    <img border="0" src="{$asset.image._ui_preview.web_path}" class="grid" />
 {else}
     <img border="0" src="{$domain}Resources/Icons/blank_page.png" class="grid" />
 {/if}
 <img border="0" src="{$asset.small_icon}" class="list" />
-
-{$asset.label}</a>
-
+<span class="asset label">{$asset.label}</span></a>
 </li>
-
 {/foreach}
 </ul>
+
 {if $error}{$error}{/if}
 
+{if $group.is_gallery}
+
+<script type="text/javascript" src="/Resources/System/Javascript/scriptaculous/src/dragdrop.js"></script>
+<script type="text/javascript">
+
+var url = sm_domain+'ajax:assets/updateGalleryOrder';
+var groupId = {$group.id};
+{literal}
+var IDs;
+var IDs_string;
+
+var itemsList = Sortable.create('options_grid', {
+      
+      onUpdate: function(){
+        IDs = Sortable.sequence('options_grid');
+        IDs_string = IDs.join(',');
+        // alert(IDs_string);
+        // alert(url);
+        // alert(IDs_string);
+        
+        new Ajax.Request(url, {
+          method: 'get',
+          parameters: {group_id: groupId, new_order: IDs_string},
+          onSuccess: function(transport) {
+            
+          }
+        });
+      },
+      
+      constraint: false,
+      scroll: window,
+      scrollSensitivity: 35
+      
+  });
+{/literal}
+</script>
+{/if}
 </div>
 
 <div id="actions-area">
@@ -60,8 +98,7 @@
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('addTodoItem');" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt="" /> Add a new to-do</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('previewAsset');"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Preview This File</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('toggleAssetArchived');" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" style="width:16px;height:16px" border="0" alt="" /> Archive/unarchive this file</a></li>
-	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('deleteAssetConfirm');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete This File</a></li>
-	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('duplicateAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_copy.png" border="0" alt="" /> Duplicate This File</a></li>
+	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('removeAssetFromGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Remove this file from group</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('downloadAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Download This File</a></li>
 </ul>
 
@@ -73,8 +110,7 @@
 	{if $allow_source_edit}<li class="permanent-action"><a href="#" onclick="assets.workWithItem('editTextFragmentSource');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit File Source</a></li>{/if}
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('addTodoItem');" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt="" /> Add a new to-do</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('toggleAssetArchived');" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" style="width:16px;height:16px" border="0" alt="" /> Archive/unarchive this file</a></li>
-	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('deleteAssetConfirm');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Delete This File</a></li>
-	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('duplicateAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_copy.png" border="0" alt="" /> Duplicate This File</a></li>
+	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('removeAssetFromGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Remove this file from group</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('downloadAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/disk.png" border="0" alt="" /> Download This File</a></li>
 </ul>
 

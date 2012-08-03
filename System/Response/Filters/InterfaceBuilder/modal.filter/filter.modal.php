@@ -5,7 +5,7 @@ function smartest_filter_modal($html, $filter){
     if(SmartestPersistentObject::get('request_data')->getParameter('namespace') == "modal"){
         
         // If Tidy is installed, use it
-        if(function_exists('tidy_get_output')){
+        /* if(function_exists('tidy_get_output')){
             // Specify configuration
             /* $config = array(
                 'indent'         => true,
@@ -23,7 +23,7 @@ function smartest_filter_modal($html, $filter){
             
             //$html;
             
-        }
+        // }
         
         if($element = simplexml_load_string(html_entity_decode('<div>'.$html.'</div>', ENT_COMPAT, 'UTF-8'))){
             $work_area_element = $element->xpath("/div/div[1]");

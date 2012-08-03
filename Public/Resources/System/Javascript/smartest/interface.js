@@ -430,11 +430,17 @@ Smartest.UI.OptionSet = Class.create({
     
     setView: function(view, preferenceName){
         
+        // alert(view);
+        
         if(view == 'grid'){
-            $(this.listId).className = 'options-grid';
+            $(this.listId).removeClassName('options-list');
+            $(this.listId).addClassName('options-grid');
         }else if(view == 'list'){
-            $(this.listId).className = 'options-list';
+            $(this.listId).removeClassName('options-grid');
+            $(this.listId).addClassName('options-list');
         }
+        
+        // alert($(this.listId).classNames())
         
         if(preferenceName && PREFS){
             PREFS.setApplicationPreference(preferenceName, view);

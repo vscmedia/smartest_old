@@ -74,6 +74,17 @@ class SmartestBaseApplication extends QuinceBase{
 		    
 		}
 		
+		if(is_file($this->getLocalisationFilePath())){
+	        
+	        $s = SmartestYamlHelper::fastLoad($this->getLocalisationFilePath());
+	        // print_r($s['strings']);
+	        if(isset($s['strings'])){
+	            $this->_l10n_strings = $s['strings'];
+	            $this->send($this->_l10n_strings, '_l10n_strings');
+	        }
+	        
+	    }
+		
 		$this->getPresentationLayer()->assign("now", new SmartestDateTime(time()));
 		$this->getPresentationLayer()->assign("domain", $this->getRequest()->getDomain());
 	    $this->getPresentationLayer()->assign("section", $this->getRequest()->getModule()); // deprecated
@@ -224,6 +235,10 @@ class SmartestBaseApplication extends QuinceBase{
 	
 	protected function getRequestParameters(){
 	    return $this->getRequest()->getRequestParameters();
+	}
+	
+	protected function getLocalisationFilePath(){
+	    return $this->getRequest()->getMeta('_module_dir').'Configuration/strings.yml';
 	}
 	
 	final public function __destruct(){
@@ -387,7 +402,7 @@ class SmartestBaseApplication extends QuinceBase{
             $value = $this->_preferences_helper->getApplicationPreference($name, $this->getRequest()->getMeta('_module_identifier'), $this->getUserIdOrZero(), $this->getSiteIdOrZero());
         }
         
-        if(isset($value)){
+        if(isset($value) && strlen($value)){
             $this->_cached_application_preferences->setParameter($name, $value);
             return $value;
         }else{

@@ -11,12 +11,14 @@ categories:
     label: "Images"
     has_system_files: true
     importable: true
+    gallery: true
   embedded:
     id: SM_ASSETTYPECAT_EMBEDDED_MEDIA
     short_name: embedded
     label: "Movies and stuff"
     has_system_files: true
     importable: true
+    gallery: true
   browser_instructions:
     id: SM_ASSETTYPECAT_BROWSER_INSTRUCTIONS
     short_name: browser_instructions

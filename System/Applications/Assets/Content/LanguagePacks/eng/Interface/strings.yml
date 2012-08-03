@@ -1,0 +1,21 @@
+strings:
+  title: Files repository
+  files:
+    types_instruction: Double click an icon below to see files of that type.
+#    editing:
+#    creating:
+  groups:
+    explanation: "File groups are a basic way to keep your files organised when you have a lot of them."
+    group_tabs:
+      browse: Browse files
+      add_remove_files: "Add &amp; remove files"
+      group_info: Group info
+      gallery_info: Gallery info
+    group_files: "Files in group: "
+    gallery_files: "Files in gallery: "
+#    creating:
+  tabs:
+    file_types: Files by type
+    file_groups: Organise
+  warnings:
+    storage_locations_unwriteable: "For smooth operation of the files repository, the following locations need to be made writable:"

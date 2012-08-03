@@ -1,26 +1,5 @@
 type:
 # Text & static markup
-  SM_ASSETTYPE_RICH_TEXT:
-    id: SM_ASSETTYPE_RICH_TEXT
-    category: user_text
-    label: HTML Text
-    description: Formatted text using HTML.
-    class: SmartestTextAsset
-    source_editable: true
-    editable: true
-    parsable: true
-    smarty_render: true
-    icon: style.png
-    input_options:
-      - SM_ASSETINPUTTYPE_DIRECT_INPUT
-    input_panel: add.rich_text.tpl
-    render:
-      template: System/Presentation/WebPageBuilder/display.rich_text.tpl
-    storage:
-      type: database
-    suffix:
-      - {mime: text/html, _content: html}
-      - {mime: text/html, _content: htm}
   
   SM_ASSETTYPE_TEXTILE_TEXT:
     id: SM_ASSETTYPE_TEXTILE_TEXT
@@ -40,7 +19,28 @@ type:
       type: database
     suffix:
       - {mime: text/plain, _content: txt}
-    
+
+  SM_ASSETTYPE_RICH_TEXT:
+    id: SM_ASSETTYPE_RICH_TEXT
+    category: user_text
+    label: Formatted Text
+    description: Formatted text using HTML.
+    class: SmartestTextAsset
+    source_editable: true
+    editable: true
+    parsable: true
+    smarty_render: true
+    icon: style.png
+    input_options:
+      - SM_ASSETINPUTTYPE_DIRECT_INPUT
+    input_panel: add.rich_text.tpl
+    render:
+      template: System/Presentation/WebPageBuilder/display.rich_text.tpl
+    storage:
+      type: database
+    suffix:
+      - {mime: text/html, _content: html}
+      - {mime: text/html, _content: htm}
   
   SM_ASSETTYPE_PLAIN_TEXT:
     id: SM_ASSETTYPE_PLAIN_TEXT

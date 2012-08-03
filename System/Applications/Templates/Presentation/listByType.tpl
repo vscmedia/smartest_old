@@ -30,7 +30,7 @@ Found {$count} {$type.label|lower}{if $count != 1}s{/if}. View as:
 {foreach from=$templates item="template"}
 <li>
   <a href="#" class="option" id="{if $template.status == 'imported'}imported-template{else}unimported-template{/if}_{if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}" onclick="return templates.setSelectedItem('{if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}', '{if $template.status == 'imported'}imported-template{else}unimported-template{/if}');" ondblclick="window.location='{$domain}{$section}/editTemplate?asset_type={$template.type}&amp;template={if $template.status == 'imported'}{$template.id}{else}{$template.url}{/if}'">
-    <img border="0" src="{$domain}Resources/Icons/{if $template.status == 'imported'}blank{else}mystery{/if}_page.png" />{$template.url}</a>
+    <img border="0" src="{$domain}Resources/Icons/{if $template.status == 'imported'}blank{else}mystery{/if}_page.png" /><span class="label">{$template.url}</span></a>
 </li>
 {/foreach}
 </ul>

@@ -1,10 +1,10 @@
 <div id="work-area">
 
-<h3>Files repository</h3>
+<h3>{$_l10n_strings.title}</h3>
 
 {if count($locations)}
 <div class="warning">
-    <p>For smooth operation of the files repository, the following locations need to be made writable:</p>
+    <p>{$_l10n_strings.warnings.storage_locations_unwriteable}</p>
     <ul>
 {foreach from=$locations item="l"}
       <li><code>{$l}</code></li>
@@ -15,7 +15,7 @@
 
 {load_interface file="file_browse_tabs.tpl"}
 
-<div class="text" style="margin-bottom:10px">Double click an icon below to see files of that type.</div>
+<div class="text" style="margin-bottom:10px">{$_l10n_strings.files.types_instruction}</div>
 
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" id="item_id_input" name="asset_type" value="" />

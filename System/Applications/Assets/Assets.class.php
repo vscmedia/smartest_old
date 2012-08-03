@@ -68,6 +68,12 @@ class Assets extends SmartestSystemApplication{
 		    $type = $types_array[$code];
 		    $this->send('editableasset', 'sidebartype');
 		    
+		    if(in_array($code, array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'))){
+	            $this->send(true, 'contact_sheet_view');
+	        }else{
+	            $this->send(false, 'contact_sheet_view');
+	        }
+		    
 		    if(isset($type['source_editable']) && SmartestStringHelper::toRealBool($type['source_editable'])){
 		        $this->send(true, 'allow_source_edit');
 		    }else{
@@ -963,6 +969,8 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 	
+	/** Start Asset Group Stuff **/
+	
 	public function assetGroups(){
 	    
 	    $this->requireOpenProject();
@@ -979,6 +987,9 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $this->send($groups, 'groups');
 	    $this->send($locations, 'locations');
+	    
+	    $recent = $this->getUser()->getRecentlyEditedAssets($this->getSite()->getId());
+        $this->send($recent, 'recent_assets');
 	    
 	}
 	
@@ -1018,6 +1029,14 @@ class Assets extends SmartestSystemApplication{
 	        $this->send($this->getRequestParameter('asset_type'), 'filter_type');
 	    }
 	    
+	    $this->send($alh->getGalleryPlaceholderTypes(), 'gallery_placeholder_types');
+	    $this->send($alh->getGalleryAssetTypes(), 'gallery_asset_types');
+	    $this->send($alh->getGalleryAssetGroups($this->getSite()->getId()), 'gallery_groups');
+	    
+	    if($this->getRequestParameter('is_gallery')){
+	        $this->send(true, 'gallery_checked');
+	    }
+	    
 	    $this->send($asset_types, 'asset_types');
 	    $this->send($placeholder_types, 'placeholder_types');
 	    
@@ -1052,20 +1071,31 @@ class Assets extends SmartestSystemApplication{
 	    $set->setLabel($this->getRequestParameter('asset_group_label'));
 	    $set->setName(SmartestStringHelper::toVarName($this->getRequestParameter('asset_group_label')));
 	    
-	    if($this->getRequestParameter('asset_group_type') == 'ALL'){
+	    if($this->getRequestParameter('asset_group_mode') == 'SM_SET_ASSETGALLERY'){
+	        $set->setIsGallery(true);
+	        $type_var = $this->getRequestParameter('asset_gallery_type');
+	    }else{
+	        $set->setIsGallery(false);
+	        $type_var = $this->getRequestParameter('asset_group_type');
+	    }
+	    
+	    if($type_var == 'ALL'){
 	        $set->setFilterType('SM_SET_FILTERTYPE_NONE');
 	    }else{
-	        switch(substr($this->getRequestParameter('asset_group_type'), 0, 1)){
+	        switch(substr($type_var, 0, 1)){
 	            case 'A':
 	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETTYPE');
 	            break;
 	            case 'P':
 	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
 	            break;
+	            case 'G':
+	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETGROUP');
+	            break;
 	        }
 	    }
 	    
-	    $set->setFilterValue(($this->getRequestParameter('asset_group_type') == 'ALL') ? null : substr($this->getRequestParameter('asset_group_type'), 2));
+	    $set->setFilterValue(($type_var == 'ALL') ? null : substr($type_var, 2));
 	    $set->setSiteId($this->getSite()->getId());
 	    $set->setShared(0);
 	    $set->save();
@@ -1178,6 +1208,12 @@ class Assets extends SmartestSystemApplication{
 	    $group = new SmartestAssetGroup;
 	    
 	    if($group->find($group_id)){
+	        
+	        if(in_array($group->getFilterValue(), array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE', 'SM_ASSETCLASS_STATIC_IMAGE'))){
+	            $this->send(true, 'contact_sheet_view');
+	        }else{
+	            $this->send(false, 'contact_sheet_view');
+	        }
 	        
 	        $this->send($group->getMembers($mode, $this->getSite()->getId()), 'assets');
 	        $this->send($group, 'group');
@@ -1378,6 +1414,41 @@ class Assets extends SmartestSystemApplication{
 	    $this->formForward();
 	    
 	}
+	
+	public function removeAssetFromGroup(){
+	    
+	    $group_id = $this->getRequestParameter('group_id');
+	    
+	    $group = new SmartestAssetGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        $asset_id = (int) $this->getRequestParameter('asset_id');
+	        $asset = new SmartestAsset;
+	        
+	        if($asset->find($asset_id)){
+	            // TODO: Check that the asset is the right type for this group
+	            /* if($this->getRequestParameter('transferAction') == 'add'){
+	                $group->addAssetById($asset_id);
+                }else{ */
+                    $group->removeAssetById($asset_id);
+                // }
+	        }
+	        
+	        /* if($this->getRequestParameter('from') == 'edit'){
+                $this->redirect('/assets/editAsset?asset_id='.$asset->getId());
+    	    }else{ */
+    	        $this->formForward();
+    	    // }
+	        
+	    }else{
+	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	    }
+	    
+	}
+	
+	/** End Asset Group Stuff **/
 	
 	public function assetInfo($get){
 	    

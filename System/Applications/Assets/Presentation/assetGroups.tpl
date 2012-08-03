@@ -1,10 +1,10 @@
 <div id="work-area">
     
-  <h3>Files repository</h3>
+  <h3>{$_l10n_strings.title}</h3>
   
 {if count($locations)}
   <div class="warning">
-      <p>For smooth operation of the files repository, the following locations need to be made writable:</p>
+      <p>{$_l10n_strings.warnings.storage_locations_unwriteable}</p>
       <ul>
 {foreach from=$locations item="l"}
         <li><code>{$l}</code></li>
@@ -14,6 +14,8 @@
 {/if}
   
   {load_interface file="file_browse_tabs.tpl"}
+  
+  <div class="instruction">{$_l10n_strings.groups.explanation}</div>
   
   <form id="pageViewForm" method="get" action="">
     <input type="hidden" name="group_id" id="item_id_input" value="" />
@@ -43,6 +45,13 @@
     <li><b>Options</b></li>
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_add.png" border="0" alt="" /> Create a new file group</a></li>
   	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/files/types'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all files by type</a></li>
+  </ul>
+  
+  <ul class="actions-list" id="non-specific-actions">
+    <li><span style="color:#999">Recently edited files</span></li>
+    {foreach from=$recent_assets item="recent_asset"}
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_asset.action_url}'"><img border="0" src="{$recent_asset.small_icon}" /> {$recent_asset.label|summary:"30"}</a></li>
+    {/foreach}
   </ul>
   
 </div>

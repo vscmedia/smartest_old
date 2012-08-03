@@ -137,4 +137,20 @@ class AssetsAjax extends SmartestSystemApplication{
         
     }
     
+    public function updateGalleryOrder(){
+        
+        $group = new SmartestAssetGroup;
+        
+        if($group->find($this->getRequestParameter('group_id'))){
+            if($group->getIsGallery()){
+                if($this->getRequestParameter('new_order')){
+                    $group->setNewOrderFromString($this->getRequestParameter('new_order'));
+                    // echo "proceed";
+                    exit;
+                }
+            }
+        }
+        
+    }
+    
 }

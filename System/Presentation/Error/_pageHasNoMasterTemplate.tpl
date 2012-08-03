@@ -11,7 +11,7 @@
 
     <div id="fixed-width">
       <h1>Welcome to Smartest</h1>
-      <p>This page has not been assigned a <strong>Master Template</strong>.</p>
+      <p>No <strong>Master Template</strong> is currently assigned to the <strong>live</strong> version of this page.</p>
       <p>If this is a new site, you may still need to import your html, stylesheets, images and whatever else you have.</p>
       <p>To make this change, please <a href="<?sm:$domain:?>smartest">log in to Smartest</a>.</p>
     </div>

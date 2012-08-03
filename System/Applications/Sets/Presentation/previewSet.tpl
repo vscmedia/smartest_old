@@ -9,16 +9,6 @@
   <input type="hidden" name="item_id" id="item_id_input" value="" />
 </form>
 
-{if empty($items)}
-  <div class="warning">There are currently no items in this set. <a href="{$domain}{$section}/editSet?set_id={$set.id}">Click here</a> to add some.</div>
-{else}
-
-{if $set.type == 'STATIC' || $count > 0}
-<div class="instruction">Found {$count} item{if $count != 1}s{/if} in this data set</div>
-{else}
-<div class="warning">Please note: This saved query is currently empty because there are no items that match its conditions in the current mode. {help id="datamanager:query_modes"}What's a mode{/help}</div>
-{/if}
-
 <form action="{$domain}{$section}/previewSet" method="get" id="mode-form">
   
   <div class="special-box">Show:
@@ -27,10 +17,10 @@
       {if $set.type == 'DYNAMIC'}
       <option value="0"{if $mode == 0} selected="selected"{/if}>All {$model.plural_name|strtolower}, using draft property values</option>
       <option value="1"{if $mode == 1} selected="selected"{/if}>All {$model.plural_name|strtolower}, using draft property values, but only in archive</option>
-      <option value="2"{if $mode == 2} selected="selected"{/if}>All {$model.plural_name|strtolower}, using draft property values, those that are archived</option>
+      <option value="2"{if $mode == 2} selected="selected"{/if}>All {$model.plural_name|strtolower}, using draft property values, excluding those that are archived</option>
       <option value="3"{if $mode == 3} selected="selected"{/if}>All {$model.plural_name|strtolower}, using live property values</option>
       <option value="4"{if $mode == 4} selected="selected"{/if}>All {$model.plural_name|strtolower}, using live property values, but only in archive</option>
-      <option value="5"{if $mode == 5} selected="selected"{/if}>All {$model.plural_name|strtolower}, using live property values, those that are archived</option>
+      <option value="5"{if $mode == 5} selected="selected"{/if}>All {$model.plural_name|strtolower}, using live property values, excluding those that are archived</option>
       <option value="6"{if $mode == 6} selected="selected"{/if}>Published {$model.plural_name|strtolower}, but using draft property values</option>
       <option value="7"{if $mode == 7} selected="selected"{/if}>Published {$model.plural_name|strtolower}, but using draft property values, but only in archive</option>
       <option value="8"{if $mode == 8} selected="selected"{/if}>Published {$model.plural_name|strtolower}, but using draft property values, excluding those that are archived</option>
@@ -49,6 +39,18 @@
     {help id="datamanager:query_modes"}What's this?{/help}
   </div>
 </form>
+
+{if $set.type == 'STATIC' || $count > 0}
+  {if empty($items)}
+    <div class="warning">There are currently no items in this set. <a href="{$domain}{$section}/editSet?set_id={$set.id}">Click here</a> to add some.</div>
+  {else}
+    <div class="instruction">Found {$count} item{if $count != 1}s{/if} in this data set</div>
+  {/if}
+{else}
+<div class="warning">Please note: This saved query is currently empty because there are no items that match its conditions in the current mode. {help id="datamanager:query_modes"}What's a mode{/help}</div>
+{/if}
+
+{if !empty($items)}
 
 View as:
 <a href="{dud_link}" onclick="setView('list', '{if $content.count > 10}options_list{else}options_grid{/if}')">List</a> /

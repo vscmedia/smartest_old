@@ -53,7 +53,7 @@
       // Position.includeScrollOffsets = true;
       var itemsList = Sortable.create('static-set-order', {
           
-          onChange: function(){
+          onUpdate: function(){
             IDs = Sortable.sequence('static-set-order');
             IDs_string = IDs.join(',');
             $('submit-ajax').value = 'Save new order';

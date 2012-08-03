@@ -1,7 +1,7 @@
 system:
   info:
     version: "0.5"
-    revision: 507
+    revision: 509
     minimum_php_version: 5.2
     minimum_database_version: 19
     default_timezone: Europe/London

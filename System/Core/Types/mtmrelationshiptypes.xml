@@ -138,7 +138,7 @@
     <phased>true</phased>
   </type>
   
-  <type id="SM_MTMLOOKUP_ASSET_GALLERY_MEMBERSHIP" return="class:SmartestAssetGroupMembership" method="SM_MTMLOOKUPMETHOD_MAP">
+  <type id="SM_MTMLOOKUP_ASSET_GALLERY_MEMBERSHIP" return="class:SmartestAssetGalleryMembership" method="SM_MTMLOOKUPMETHOD_MAP">
     <label>Organise files in the repository into galleries.</label>
     <entity table="Assets" class="SmartestAsset" foreignkey="asset_id" index="1" required="true" />
     <entity table="Sets" class="SmartestAssetGroup" foreignkey="set_id" index="2" required="true" />

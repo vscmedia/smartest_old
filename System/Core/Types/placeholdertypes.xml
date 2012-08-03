@@ -17,6 +17,7 @@
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
+    <gallery>true</gallery>
   </type>
   
   <type id="SM_ASSETCLASS_TEXT">
@@ -45,6 +46,7 @@
     <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
     <accept>SM_ASSETTYPE_MP3</accept>
+    <gallery>true</gallery>
   </type>
   
   <type id="SM_ASSETCLASS_MAIN_FEATURE_NOTEXT">
@@ -56,6 +58,7 @@
     <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
     <accept>SM_ASSETTYPE_MP3</accept>
+    <gallery>true</gallery>
   </type>
   
   <type id="SM_ASSETCLASS_MOVIE">
@@ -67,6 +70,7 @@
     <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
     <accept>SM_ASSETTYPE_MPEG_MOVIE</accept>
     <accept>SM_ASSETTYPE_WMV</accept>
+    <gallery>true</gallery>
   </type>
   
    <type id="SM_ASSETCLASS_HOMEPAGE_SPLASH">
@@ -78,6 +82,7 @@
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
+    <gallery>true</gallery>
   </type>
   
   <!--<type id="SM_ASSETCLASS_VECTOR_GRAPHIC">

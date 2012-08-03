@@ -107,6 +107,63 @@ ul.options-grid li a.normal{
 	background-image:none;
 }
 
+/** New options grid for Images **/
+
+ul.options-grid.images{
+	padding:0 0 10px 0;
+	height:440px;
+	background-color:#666;
+	-moz-box-shadow:    inset 2px 2px 8px #000000;
+  -webkit-box-shadow: inset 2px 2px 8px #000000;
+  box-shadow:         inset 2px 2px 8px #000000;
+}
+
+ul.options-grid.images li{
+  background-color:transparent;
+  margin:10px 0 0 10px;
+  width:112px ! important;
+	height:112px! important;
+}
+
+ul.options-grid.images li a{
+  -moz-box-shadow:    3px 3px 6px 0px rgba(0,0,0,0.4);
+  -webkit-box-shadow: 3px 3px 6px 0px rgba(0,0,0,0.4);
+  box-shadow:         3px 3px 6px 0px rgba(0,0,0,0.4);
+}
+
+ul.options-grid.images li a.option{
+  width:100px ! important;
+	height:100px! important;
+	border:6px solid #fff;
+	background-color:#fff;
+}
+
+ul.options-grid.images li a.option:hover{
+  background-image:none;
+}
+
+ul.options-grid.images li a.selected-option{
+  border:6px solid #3f85dc;
+  background-image:none;
+  width:100px ! important;
+	height:100px! important;
+}
+
+ul.options-grid.images li a.selected-option:hover{
+
+}
+
+ul.options-grid.images li a img{
+	margin-top:0px;
+	width:100px;
+	height:100px;
+}
+
+ul.options-grid.images li a.selected-option img{
+	width:100px;
+	height:100px;
+}
+
 /* Grid View Without Scrollbar*/
 
 ul.options-grid-no-scroll{

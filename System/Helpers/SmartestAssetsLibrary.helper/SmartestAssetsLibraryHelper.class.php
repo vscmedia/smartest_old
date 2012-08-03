@@ -84,6 +84,142 @@ class SmartestAssetsLibraryHelper{
         return $names;
     }
     
+    public function getGalleryAssetCategories(){
+        
+        $cats = $this->getCategories();
+        $gallery_cats = array();
+        
+        foreach($cats as $c){
+            if(isset($c['gallery']) && SmartestStringHelper::toRealBool($c['gallery'])){
+                $gallery_cats[] = $c;
+            }
+        }
+        
+        return $gallery_cats;
+        
+    }
+    
+    public function getGalleryAssetCategoryShortNames(){
+        
+        $gallery_cats = $this->getGalleryAssetCategories();
+        $gallery_cat_ids = array();
+        
+        foreach($gallery_cats as $g){
+            $gallery_cat_ids[] = $g['short_name'];
+        }
+        
+        return $gallery_cat_ids;
+        
+    }
+    
+    public function getGalleryAssetTypes(){
+        
+        return $this->getTypesInCategories($this->getGalleryAssetCategoryShortNames());
+        
+    }
+    
+    public function getGalleryAssetTypeIds(){
+        
+        return $this->getTypeIdsInCategories($this->getGalleryAssetCategoryShortNames());
+        
+    }
+    
+    public function getGalleryPlaceholderTypes(){
+        
+        $types = SmartestDataUtility::getAssetClassTypes();
+        $gallery_types = array();
+        
+        foreach($types as $t){
+            if(isset($t['gallery']) && SmartestStringHelper::toRealBool($t['gallery'])){
+                $gallery_types[] = $t;
+            }
+        }
+        
+        return $gallery_types;
+        
+    }
+    
+    public function getGalleryPlaceholderTypeCodes(){
+        
+        $types = $this->getGalleryPlaceholderTypes();
+        $codes = array();
+        
+        foreach($types as $t){
+            $codes[] = $t['id'];
+        }
+        
+        return $codes;
+        
+    }
+    
+    public function getTypesInCategories($category_codes){
+        
+        $types = $this->getTypes();
+        $matching_types = array();
+        
+        if(is_array($category_codes)){
+            // an array of categories was provided
+            foreach($types as $t){
+                if(in_array($t['category'], $category_codes)){
+                    $matching_types[] = $t;
+                }
+            }
+        }else{
+            // a single category was provided
+            foreach($types as $t){
+                if($t['category'] == $category_codes){
+                    $matching_types[] = $t;
+                }
+            }
+        }
+        
+        return $matching_types;
+        
+    }
+    
+    public function getTypeIdsInCategories($category_codes){
+        
+        $types = $this->getTypes();
+        $matching_types = array();
+        
+        if(is_array($category_codes)){
+            // an array of categories was provided
+            foreach($types as $t){
+                if(in_array($t['category'], $category_codes)){
+                    $matching_types[] = $t['id'];
+                }
+            }
+        }else{
+            // a single category was provided
+            foreach($types as $t){
+                if($t['category'] == $category_codes){
+                    $matching_types[] = $t['id'];
+                }
+            }
+        }
+        
+        return $matching_types;
+        
+    }
+    
+    public function getGalleryAssetGroups($site_id){
+        
+        $sql = "SELECT * FROM Sets WHERE Sets.set_type='SM_SET_ASSETGROUP' AND (Sets.set_site_id = '".$site_id."' OR Sets.set_shared = '1') AND set_is_hidden != '1' AND set_is_system != '1'";
+        $sql .= " AND ((Sets.set_filter_type = 'SM_SET_FILTERTYPE_ASSETCLASS' AND Sets.set_filter_value IN ('".implode("','", $this->getGalleryPlaceholderTypeCodes())."')) OR (Sets.set_filter_type = 'SM_SET_FILTERTYPE_ASSETTYPE' AND Sets.set_filter_value IN ('".implode("','", $this->getGalleryAssetTypeIds())."')))";
+        $result = $this->database->queryToArray($sql);
+        
+        $groups = array();
+        
+        foreach($result as $r){
+            $g = new SmartestAssetGroup;
+            $g->hydrate($r);
+            $groups[] = $g;
+        }
+        
+        return $groups;
+        
+    }
+    
     public function getTypesByCategory($exclude_categories=''){
 		
 		/* $types = array(
@@ -480,7 +616,7 @@ class SmartestAssetsLibraryHelper{
 	    }
 	    
 	    if(is_numeric($site_id)){
-		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_url";
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_stringid";
 		}
 		
 		$result = $this->database->queryToArray($sql);
@@ -534,7 +670,7 @@ class SmartestAssetsLibraryHelper{
 		}
 	    
 	    if(is_numeric($site_id)){
-		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_url";
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_stringid ASC";
 		}
 		
 		$result = $this->database->queryToArray($sql);
@@ -571,6 +707,12 @@ class SmartestAssetsLibraryHelper{
 	    
 	}
 	
+	public function getGalleryUsableAssetTypeCodes(){
+	    
+	}
+	
+	
+	
 	public function getAssetsByModelId($model_id=0, $site_id='', $mode=1, $avoid_ids='', $code){
 		
 		$sql = "SELECT * FROM Assets WHERE asset_model_id='".$model_id."' AND asset_deleted != 1";
@@ -594,7 +736,7 @@ class SmartestAssetsLibraryHelper{
         }
 	    
 	    if(is_numeric($site_id)){
-		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_url";
+		    $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1) ORDER BY asset_label, asset_stringid";
 		}
 		
 		$result = $this->database->queryToArray($sql);
@@ -633,7 +775,7 @@ class SmartestAssetsLibraryHelper{
 	
 	public function getAssetGroups($site_id=''){
 	    
-	    $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP' AND set_is_hidden = '0'";
+	    $sql = "SELECT * FROM Sets WHERE (set_type='SM_SET_ASSETGROUP' OR set_type='SM_SET_ASSETGALLERY') AND set_is_hidden = '0'";
 	    
 	    if(is_numeric($site_id)){
 	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared=1)";

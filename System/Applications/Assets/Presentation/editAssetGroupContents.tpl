@@ -28,7 +28,7 @@ function executeTransfer(){
   
   {load_interface file="edit_filegroup_tabs.tpl"}
   
-  <h3>Files in group "{$group.label}"</h3>
+  <h3>{if $group.is_gallery}{$_l10n_strings.groups.gallery_files}{else}{$_l10n_strings.groups.group_files}{/if}"{$group.label}"</h3>
   
   <form action="{$domain}{$section}/transferAssets" method="post" name="transferForm">
 
@@ -40,7 +40,7 @@ function executeTransfer(){
         <td align="center">
           <div style="text-align:left">Files that <strong>aren't</strong> in this group</div>
 
-  		    <select name="available_assets[]"  id="available_assets" size="2" multiple="multiple" style="width:270px; height:300px;"  onclick="setMode('add')"  >
+  		    <select name="available_assets[]"  id="available_assets" size="2" multiple="multiple" style="width:270px; height:400px;"  onclick="setMode('add')"  >
 
 {foreach from=$non_members key="key" item="asset"}
   		      <option value="{$asset.id}" >{$asset.label}</option>
@@ -57,12 +57,19 @@ function executeTransfer(){
         
         <td align="center">
           <div style="text-align:left">Files that <strong>are</strong> in this group</div>
-   	      
-   	      <select name="used_assets[]"  id='used_assets' size="2" multiple="multiple" style="width:270px; height:300px" onclick="setMode('remove')" >	
+{if $group.is_gallery}
+   	      <select name="used_assets[]"  id='used_assets' size="2" multiple="multiple" style="width:270px; height:400px" onclick="setMode('remove')" >	
+{foreach from=$group.members key="key" item="asset"}
+  		      <option value="{$asset.asset.id}" >{$asset.asset.label} {$asset.order_index}</option>
+{/foreach}
+          </select>
+{else}
+   	      <select name="used_assets[]"  id='used_assets' size="2" multiple="multiple" style="width:270px; height:400px" onclick="setMode('remove')" >	
 {foreach from=$members key="key" item="asset"}
   		      <option value="{$asset.id}" >{$asset.label}</option>
 {/foreach}
           </select>
+{/if}
           
   	    </td>
       </tr>

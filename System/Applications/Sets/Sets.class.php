@@ -493,20 +493,29 @@ class Sets extends SmartestSystemApplication{
 	
 	public function previewSet($get){     
 	    
-	    if($this->getRequestParameter('mode') != null){
-	        $mode = (int) $this->getRequestParameter('mode');
-	    }else{
-	        $mode = SM_QUERY_PUBLIC_DRAFT;
-	    }
-	    
-	    $this->send($mode, 'mode');
-	    
 	    $set_id = $this->getRequestParameter('set_id');
 	    $set = new SmartestCmsItemSet;
 	    
 	    if($set->find($set_id)){
 	        
-	        $items = $set->getMembers($mode, null, $this->getSite()->getId());
+	        if(strlen($this->getRequestParameter('mode'))){
+    	        if($set->getType() == 'DYNAMIC'){
+    	            $this->setApplicationPreference('preview_dynamic_set_mode', $this->getRequestParameter('mode'));
+  	            }else{
+  	                $this->setApplicationPreference('preview_static_set_mode', $this->getRequestParameter('mode'));
+  	            }
+  	            $mode = (int) $this->getRequestParameter('mode');
+    	    }else{
+    	        if($set->getType() == 'DYNAMIC'){
+    	            $mode = $this->getApplicationPreference('preview_dynamic_set_mode', SM_QUERY_ALL_DRAFT_CURRENT);
+  	            }else{
+  	                $mode = $this->getApplicationPreference('preview_static_set_mode', SM_QUERY_ALL_DRAFT_CURRENT);
+  	            }
+    	    }
+    	    
+    	    $this->send($mode, 'mode');
+    	    
+    	    $items = $set->getMembers($mode, null, $this->getSite()->getId());
 	    
     	    $this->send($items, 'items');
     	    $this->send(count($items), 'count');

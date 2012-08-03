@@ -3,7 +3,7 @@
 class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, SmartestStorableValue, SmartestSubmittableValue{
     
     public function __objectConstruct(){
-        $this->_membership_type = 'SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP';
+        $this->setMembershipTypeFromInternalAttributes();
     }
     
     public function delete(){
@@ -15,7 +15,7 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         }else{
         
             // delete memberships
-            $q = new SmartestManyToManyQuery($this->_membership_type);
+            $q = new SmartestManyToManyQuery($this->getMembershipType());
             $q->setTargetEntityByIndex(1);
             $q->addQualifyingEntityByIndex(2, $this->getId());
             $q->delete();
@@ -26,11 +26,69 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
     }
     
+    public function getIsGallery(){
+        return $this->getType() == 'SM_SET_ASSETGALLERY';
+    }
+    
+    public function setIsGallery($bool){
+        
+        if($bool){
+            $this->setType('SM_SET_ASSETGALLERY');
+            $this->setMembershipType('SM_MTMLOOKUP_ASSET_GALLERY_MEMBERSHIP');
+        }else{
+            $this->setType('SM_SET_ASSETGROUP');
+            $this->setMembershipType('SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP');
+        }
+        
+    }
+    
+    public function setMembershipTypeFromInternalAttributes(){
+        if($this->getIsGallery()){
+            $this->_membership_type = 'SM_MTMLOOKUP_ASSET_GALLERY_MEMBERSHIP';
+        }else{
+            $this->_membership_type = 'SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP';
+        }
+    }
+    
+    public function getMembershipType(){
+        $this->setMembershipTypeFromInternalAttributes();
+        return $this->_membership_type;
+    }
+    
+    public function setMembershipType($type){
+        if(in_array($type, array('SM_MTMLOOKUP_ASSET_GALLERY_MEMBERSHIP','SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP'))){
+            $this->_membership_type = $type;
+        }else{
+            $this->_membership_type = 'SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP';
+        }
+    }
+    
+    public function getNextMembershipOrderIndex(){
+        if($this->getIsGallery()){
+            // $memberships = $this->getMemberships();
+            $sql = "SELECT ManyToManyLookups.mtmlookup_order_index FROM Assets, Sets, ManyToManyLookups WHERE ManyToManyLookups.mtmlookup_type='SM_MTMLOOKUP_ASSET_GALLERY_MEMBERSHIP' AND ManyToManyLookups.mtmlookup_entity_1_foreignkey=Assets.asset_id AND (ManyToManyLookups.mtmlookup_entity_2_foreignkey='".$this->getId()."' AND ManyToManyLookups.mtmlookup_entity_2_foreignkey=Sets.set_id) AND Assets.asset_deleted ='0' AND Assets.asset_is_hidden ='0' AND Assets.asset_is_archived ='0' AND (Assets.asset_site_id ='".$this->getSiteId()."' OR Assets.asset_shared='1') ORDER BY ManyToManyLookups.mtmlookup_order_index DESC";
+            $result = $this->database->queryToArray($sql);
+            // echo $sql;
+            if(count($result)){
+                $current_highest = (int) $result[0]['mtmlookup_order_index'];
+                return $current_highest+1;
+            }else{
+                return 0;
+            }
+        }else{
+            return 0;
+        }
+    }
+    
     public function getMembers($mode=1, $site_id='', $refresh=false){
+        
+        if($this->getIsGallery()){
+            // return $this->getMemberships();
+        }
         
         if($refresh || !count($this->_members)){
         
-            $memberships = $this->getMemberShips($mode, $site_id, $refresh);
+            $memberships = $this->getMemberships($mode, $site_id, $refresh);
 	        
 	        $assets = array();
 	        
@@ -46,9 +104,9 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
     }
     
-    public function getMemberships($mode=1, $site_id='', $refresh=false, $approved_only=false){
+    public function getMemberships($mode=1, $site_id='', $refresh=false, $approved_only=false, $numeric_indices=true){
         
-        $q = new SmartestManyToManyQuery($this->_membership_type);
+        $q = new SmartestManyToManyQuery($this->getMembershipType());
         $q->setTargetEntityByIndex(1);
         $q->addQualifyingEntityByIndex(2, $this->getId());
 	    $q->addForeignTableConstraint('Assets.asset_deleted', 0);
@@ -63,22 +121,26 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
 	        $q->addForeignTableConstraint('Assets.asset_is_archived', '1');
 	    }
 	    
-	    if(is_numeric($site_id)){
-	        $q->addForeignTableOrConstraints(
-	            array('field'=>'Assets.asset_site_id', 'value'=>$site_id),
-	            array('field'=>'Assets.asset_shared', 'value'=>'1')
-	        );
+	    if(!$this->getIsGallery()){
+	        if(is_numeric($site_id)){
+	            $q->addForeignTableOrConstraints(
+	                array('field'=>'Assets.asset_site_id', 'value'=>$site_id),
+	                array('field'=>'Assets.asset_shared', 'value'=>'1')
+	            );
+	        }
 	    }
 	    
-	    $q->addSortField(SM_MTM_SORT_GROUP_ORDER);
+	    if($this->getIsGallery()){
+	        $q->addSortField(SM_MTM_SORT_GROUP_ORDER);
+        }else{
+            $q->addSortField('Assets.asset_label');
+        }
 	    
 	    if($approved_only){
 	        $q->addForeignTableConstraint('Asset.asset_is_approved', 'TRUE');
 	    }
 	    
-	    $q->addSortField('Assets.asset_label');
-    
-        $result = $q->retrieve(true);
+	    $result = $q->retrieve($numeric_indices);
         
         return $result;
         
@@ -134,6 +196,29 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
     }
     
+    public function &getIterator(){
+        if($this->getIsGallery()){
+            return new ArrayIterator($this->getMemberships());
+        }else{
+            return new ArrayIterator($this->getMembers());
+        }
+    }
+    
+    public function setNewOrderFromString($string){
+        
+        $ids = explode(',', $string);
+        
+        $memberships = $this->getMemberships(1, $this->getSiteId(), false, false, false);
+        
+        foreach($ids as $key => $value){
+            if(isset($memberships[$value])){
+                $memberships[$value]->setOrderIndex($key);
+                $memberships[$value]->save();
+            }
+        }
+        
+    }
+    
     public function getOptions($site_id=''){
         
         $member_ids = $this->getMemberIds();
@@ -141,11 +226,22 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
         // only gets non-archived assets
         if($this->getFilterType() == 'SM_SET_FILTERTYPE_NONE'){
-            $options = $alh->getAssets($site_id, 1, $member_ids, true); 
+            if($this->getIsGallery()){
+                $options = $alh->getAssetsByTypeCode($alh->getGalleryAssetTypeIds(), $site_id, 1, $member_ids, true);
+            }else{
+                $options = $alh->getAssets($site_id, 1, $member_ids, true);
+            }
         }else if($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETCLASS'){
             $options = $alh->getAssetClassOptions($this->getFiltervalue(), $site_id, 1, $member_ids);
         }else if($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETTYPE'){
             $options = $alh->getAssetsByTypeCode($this->getFiltervalue(), $site_id, 1, $member_ids);
+        }else if($this->getFilterType() == 'SM_SET_FILTERTYPE_ASSETGROUP'){
+            $g = new SmartestAssetGroup;
+            if($g->find($this->getFiltervalue())){
+                return $g->getMembers();
+            }else{
+                return array();
+            }
         }
         
         return $options;
@@ -206,9 +302,17 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
         if(!$strict_checking || !in_array($id, $this->getMemberIds())){
             
-            $m = new SmartestAssetGroupMembership;
+            if($this->getIsGallery()){
+                $m = new SmartestAssetGalleryMembership;
+                $next_order_index = $this->getNextMembershipOrderIndex();
+            }else{
+                $m = new SmartestAssetGroupMembership;
+                $next_order_index = 0;
+            }
+            
             $m->setAssetId($id);
             $m->setGroupId($this->getId());
+            $m->setOrderIndex($next_order_index);
             $m->save();
             
         }
@@ -221,7 +325,7 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
         if(in_array($id, $this->getMemberIds(0, null))){
             
-            $sql = "DELETE FROM ManyToManyLookups WHERE mtmlookup_type='SM_MTMLOOKUP_ASSET_GROUP_MEMBERSHIP' AND mtmlookup_entity_1_foreignkey='".$id."' AND mtmlookup_entity_2_foreignkey='".$this->getId()."' LIMIT 1";
+            $sql = "DELETE FROM ManyToManyLookups WHERE mtmlookup_type='".$this->getMembershipType()."' AND mtmlookup_entity_1_foreignkey='".$id."' AND mtmlookup_entity_2_foreignkey='".$this->getId()."' LIMIT 1";
             $this->database->rawQuery($sql);
             
         }
@@ -272,10 +376,23 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
     public function offsetGet($offset){
         
         switch($offset){
+            
             case "types":
             return $this->getTypes();
+            
             case "type_labels_list":
             return $this->getFileTypeLabel();
+            
+            case "is_gallery":
+            return $this->getIsGallery();
+            
+            case "members":
+            if($this->getIsGallery()){
+                return new SmartestArray($this->getMemberships());
+            }else{
+                return new SmartestArray($this->getMembers());
+            }
+            break;
         }
         
         return parent::offsetGet($offset);

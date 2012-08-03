@@ -57,6 +57,10 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             case "text_content":
             return $this->getContent();
             
+            case "description":
+            case "caption":
+            return $this->getDescription();
+            
             case "text_fragment":
             return $this->getTextFragment();
             
@@ -164,6 +168,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             
             case "raw_file_size":
             return $this->getSize(true);
+            
+            case "empty":
+            return !is_numeric($this->getId()) || !strlen($this->getId());
             
         }
         
@@ -523,6 +530,14 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    
 	    return $params;
 	    
+	}
+	
+	public function getDescription(){
+	    return $this->getField('search_field');
+	}
+	
+	public function setDescription($description){
+	    return $this->setField('search_field', $description);
 	}
 	
 	public function getDownloadableFilename(){
