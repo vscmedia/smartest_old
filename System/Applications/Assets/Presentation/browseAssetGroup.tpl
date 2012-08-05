@@ -32,7 +32,7 @@
 <a href="#display-as-icons" onclick="return assets.setView('grid', 'asset_list_style')">Icons</a>
 </div>
 
-<ul class="options-{$list_view}{if $contact_sheet_view} images{/if}" style="margin-top:0px" id="options_grid">
+<ul class="options-{$list_view}{if $contact_sheet_view} images{/if}{if $group.is_gallery} reorderable{/if}" style="margin-top:0px" id="options_grid">
 {foreach from=$assets item="asset"}
 
 <li id="file_{$asset.id}">
@@ -98,7 +98,7 @@ var itemsList = Sortable.create('options_grid', {
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('addTodoItem');" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt="" /> Add a new to-do</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('previewAsset');"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Preview This File</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('toggleAssetArchived');" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" style="width:16px;height:16px" border="0" alt="" /> Archive/unarchive this file</a></li>
-	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('removeAssetFromGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Remove this file from group</a></li>
+	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('removeAssetFromGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Remove this file from {if $group.is_gallery}gallery{else}group{/if}</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('downloadAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt="" /> Download This File</a></li>
 </ul>
 
@@ -106,11 +106,12 @@ var itemsList = Sortable.create('options_grid', {
   <li><b>Selected File</b></li>
   <li class="permanent-action"><a href="#" onclick="assets.workWithItem('assetInfo');" class="right-nav-link"><img src="{$domain}Resources/Icons/information.png" border="0" alt="" /> About This File...</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('editAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit This File</a></li>
+	{if $group.is_gallery}<li class="permanent-action"><a href="#" onclick="assets.workWithItem('editAssetGalleryMembership');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_edit.png" border="0" alt=""> Edit gallery membership</a></li>{/if}
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('previewAsset');"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Preview This File</a></li>
 	{if $allow_source_edit}<li class="permanent-action"><a href="#" onclick="assets.workWithItem('editTextFragmentSource');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_edit.png" border="0" alt=""> Edit File Source</a></li>{/if}
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('addTodoItem');" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt="" /> Add a new to-do</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('toggleAssetArchived');" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" style="width:16px;height:16px" border="0" alt="" /> Archive/unarchive this file</a></li>
-	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('removeAssetFromGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Remove this file from group</a></li>
+	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('removeAssetFromGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_delete.png" border="0" alt="" /> Remove this file from {if $group.is_gallery}gallery{else}group{/if}</a></li>
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('downloadAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/disk.png" border="0" alt="" /> Download This File</a></li>
 </ul>
 

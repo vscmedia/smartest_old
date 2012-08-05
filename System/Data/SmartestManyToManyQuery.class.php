@@ -471,11 +471,12 @@ class SmartestManyToManyQuery{
         
     }
     
-    public function retrieve($use_numeric_indices=false, $all_phases=false){
+    public function retrieve($use_numeric_indices=false, $all_phases=false, $refresh=false){
         
-        $result = $this->database->queryToArray($this->buildQuery());
+        $result = $this->database->queryToArray($this->buildQuery(), $refresh);
         $objects = array();
         $object_type = $this->getReturnClassName();
+        // NOTE: All phases seems to not currently be used ??
         
         foreach($result as $r){
             

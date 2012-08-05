@@ -1388,9 +1388,7 @@ class Assets extends SmartestSystemApplication{
 	            $asset_ids = ($this->getRequestParameter('available_assets') && is_array($this->getRequestParameter('available_assets'))) ? $this->getRequestParameter('available_assets') : array();
 	            
 	            foreach($asset_ids as $aid){
-	            
 	                $group->addAssetById($aid);
-	            
 	            }
 	            
 	        }else{
@@ -1398,9 +1396,11 @@ class Assets extends SmartestSystemApplication{
 	            $asset_ids = ($this->getRequestParameter('used_assets') && is_array($this->getRequestParameter('used_assets'))) ? $this->getRequestParameter('used_assets') : array();
 	            
 	            foreach($asset_ids as $aid){
-	            
 	                $group->removeAssetById($aid);
+	            }
 	            
+	            if($group->getIsGallery()){
+	                $group->fixOrderIndices();
 	            }
 	            
 	        }
@@ -1432,6 +1432,7 @@ class Assets extends SmartestSystemApplication{
 	                $group->addAssetById($asset_id);
                 }else{ */
                     $group->removeAssetById($asset_id);
+                    $group->fixOrderIndices();
                 // }
 	        }
 	        
@@ -1446,6 +1447,53 @@ class Assets extends SmartestSystemApplication{
 	        $this->formForward();
 	    }
 	    
+	}
+	
+	public function editAssetGalleryMembership(){
+	    
+	    $group_id = $this->getRequestParameter('group_id');
+	    $group = new SmartestAssetGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        if($group->getIsGallery()){
+	            
+	            if($membership = $group->getMembershipByAssetId($this->getRequestParameter('asset_id'))){
+	                
+	                $this->send($membership, 'membership');
+	                $this->send($group, 'gallery');
+	                
+	            }else{
+	                
+	                $this->addUserMessageToNextRequest('This gallery does not include that file', SmartestUserMessage::WARNING);
+	                $this->formForward();
+	                
+	            }
+	            
+	        }else{
+	            $this->addUserMessageToNextRequest('This file group is not a gallery', SmartestUserMessage::WARNING);
+	            $this->formForward();
+	        }
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest('The specified gallery was not found', SmartestUserMessage::ERROR);
+	        $this->formForward();
+	        
+	    }
+	    
+	}
+	
+	public function updateAssetGalleryMembership(){
+	    
+	    $membership = new SmartestAssetGalleryMembership;
+	    if($membership->find($this->getRequestParameter('membership_id'))){
+	        $membership->setCaption($this->getRequestParameter('membership_caption'));
+	        $membership->save();
+	    }else{
+	        $this->addUserMessageToNextRequest('The membership ID was not found');
+	    }
+	    $this->formForward();
 	}
 	
 	/** End Asset Group Stuff **/

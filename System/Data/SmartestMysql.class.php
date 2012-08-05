@@ -284,7 +284,9 @@ class SmartestMysql{
 	}
 	
 	protected function queryReturnsData($querystring){
-	    return in_array($this->getQueryType($querystring), $this->retrievalQueryTypes);
+	    // return in_array($this->getQueryType($querystring), $this->retrievalQueryTypes);
+	    $qstart = strtoupper(substr($querystring, 0, 4));
+	    return ($qstart == 'SELE' || $qstart == 'SHOW');
 	}
 	
 	protected function loadQueryDataFromCache($query){

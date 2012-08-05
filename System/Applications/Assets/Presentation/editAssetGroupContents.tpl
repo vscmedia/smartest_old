@@ -59,8 +59,8 @@ function executeTransfer(){
           <div style="text-align:left">Files that <strong>are</strong> in this group</div>
 {if $group.is_gallery}
    	      <select name="used_assets[]"  id='used_assets' size="2" multiple="multiple" style="width:270px; height:400px" onclick="setMode('remove')" >	
-{foreach from=$group.members key="key" item="asset"}
-  		      <option value="{$asset.asset.id}" >{$asset.asset.label} {$asset.order_index}</option>
+{foreach from=$group.members key="key" item="lookup"}
+  		      <option value="{$lookup.asset.id}" >{$lookup.position}. {$lookup.asset.label}</option>
 {/foreach}
           </select>
 {else}

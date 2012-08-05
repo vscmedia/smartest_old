@@ -131,6 +131,10 @@ ul.options-grid.images li a{
   box-shadow:         3px 3px 6px 0px rgba(0,0,0,0.4);
 }
 
+ul.options-grid.reorderable li a, ul.options-list.reorderable li a{
+  cursor:move;
+}
+
 ul.options-grid.images li a.option{
   width:100px ! important;
 	height:100px! important;

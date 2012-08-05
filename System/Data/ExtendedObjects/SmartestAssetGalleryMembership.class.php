@@ -63,6 +63,14 @@ class SmartestAssetGalleryMembership extends SmartestManyToManyLookup{
         return $this->setEntityForeignKeyValue(2, (int) $id);
     }
     
+    public function getCaption(){
+        return $this->getContextDataField('caption');
+    }
+    
+    public function setCaption($caption){
+        return $this->setContextDataField('caption', $caption);
+    }
+    
     public function save(){
         
         if(!$this->getType()){
@@ -81,7 +89,10 @@ class SmartestAssetGalleryMembership extends SmartestManyToManyLookup{
             return $this->getAsset();
             
             case "caption":
-            return new SmartestString($this->getContextDataField('caption'));
+            return new SmartestString($this->getCaption());
+            
+            case "position":
+            return new SmartestNumeric($this->getOrderIndex() + 1);
             
         }
         
