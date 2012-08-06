@@ -76,6 +76,8 @@ class SmartestNumeric implements SmartestBasicType, ArrayAccess, SmartestStorabl
             return number_format($this->_value, 2, '.', ',');
             case "currency_eur":
             return number_format($this->_value, 2, ',', '.');
+            case "raw":
+            return $this->_value;
         }
         
         // if(preg_match('/d([\d_]+)/', $offset, $matches)){} // Divide the value by x

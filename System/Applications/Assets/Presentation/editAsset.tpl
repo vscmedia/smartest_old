@@ -11,6 +11,8 @@
     <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
   {/if}
   
+  {* if $asset.is_too_large}<div class="warning">At {$asset.dimensions} pixels and {$asset.size}, this image seems quite large to use on a website. <a href="{$domain}assets/resizeImageAsset?asset_id={$asset.id}">Click here</a> to resize it.</div>{/if *}
+  
   <div class="instruction">You are editing {$asset.type_info.label}: <code>{$asset.type_info.storage.location}</code><strong><code>{$asset.url}</code></strong></div>
   
   <div id="groups" class="special-box">

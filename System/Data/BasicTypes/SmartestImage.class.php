@@ -115,7 +115,7 @@ class SmartestImage extends SmartestFile{
     
     public function getSuffix(){
         
-        return SmartestStringHelper::getDotSuffix($this->_current_file_path);
+        return strtolower(SmartestStringHelper::getDotSuffix($this->_current_file_path));
         
     }
     
@@ -159,6 +159,49 @@ class SmartestImage extends SmartestFile{
     
     public function isLandscape(){
         return $this->getOrientation() == self::LANDSCAPE;
+    }
+    
+    public function isTooLarge(){
+        $info = $this->getTypeInfo();
+        if($this->getSize(true) > $info['maximum_filesize_before_warning']){
+            return true;
+        }else if($this->isPortrait() && $this->getHeight() > 800){
+            return true;
+        }else if($this->isLandscape() && $this->getWidth() > 2000){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    public function getTypeInfo(){
+        
+        if(!$this->_type_info){
+	        
+	        $asset_types = SmartestDataUtility::getAssetTypes();
+	        
+	        if(array_key_exists($this->getAssetTypeFromSuffix(), $asset_types)){
+	            $this->_type_info = $asset_types[$this->getAssetTypeFromSuffix()];
+	        }else{
+	            // some sort of error? unsupported type
+	        }
+	        
+	    }
+	    
+	    return $this->_type_info;
+        
+    }
+    
+    public function getAssetTypeFromSuffix(){
+        switch($this->getSuffix()){
+            case "jpeg":
+            case "jpg":
+            return "SM_ASSETTYPE_JPEG_IMAGE";
+            case "png":
+            return "SM_ASSETTYPE_PNG_IMAGE";
+            case "gif":
+            return "SM_ASSETTYPE_GIF_IMAGE";
+        }
     }
     
     public function resizeAndCrop($width, $height){
@@ -664,6 +707,15 @@ class SmartestImage extends SmartestFile{
 	        
 	        case "height":
 	        return $this->getHeight();
+	        
+	        case "is_portrait":
+	        return $this->isPortrait();
+	        
+	        case "is_landscape":
+	        return $this->isLandscape();
+	        
+	        case "is_square":
+	        return $this->isSquare();
 	        
 	        case "web_path":
 	        return $this->getWebPath();

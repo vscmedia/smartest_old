@@ -1579,6 +1579,10 @@ class Assets extends SmartestSystemApplication{
 	    
 	}
 	
+	public function resizeImageAsset(){
+	    
+	}
+	
 	public function assetCommentStream(){
         
         $asset = new SmartestAsset;
@@ -1701,7 +1705,7 @@ class Assets extends SmartestSystemApplication{
         			$this->send($formTemplateInclude, "formTemplateInclude");
         			$this->setTitle('Edit File | '.$asset_type['label']);
         			$this->send($asset_type, 'asset_type');
-        			$this->send($asset->__toArray(), 'asset');
+        			$this->send($asset, 'asset');
     			
         			$this->send($asset->getGroups(), 'groups');
         		    $this->send($asset->getPossibleGroups(), 'possible_groups');
@@ -1731,7 +1735,7 @@ class Assets extends SmartestSystemApplication{
 		
 	}
 	
-	function editTextFragmentSource($get, $post){
+	public function editTextFragmentSource($get, $post){
 
 		$asset_id = $this->getRequestParameter('asset_id');
 

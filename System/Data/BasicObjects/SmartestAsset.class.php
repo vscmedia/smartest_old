@@ -119,6 +119,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             case "height":
             return $this->isImage() ? $this->getHeight() : null;
             
+            case "dimensions":
+            return $this->isImage() ? $this->getWidth().' x '.$this->getHeight() : null;
+            
             case "word_count":
             case "wordcount":
             return $this->getWordCount();
@@ -171,6 +174,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             
             case "empty":
             return !is_numeric($this->getId()) || !strlen($this->getId());
+            
+            case "is_too_large":
+            return $this->isTooLarge();
             
         }
         
@@ -463,6 +469,12 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	
 	public function isImage(){
 	    return in_array($this->getType(), array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'));
+	}
+	
+	public function isTooLarge(){
+	    if($this->isImage()){
+	        return $this->getImage()->isTooLarge();
+	    }
 	}
 	
 	public function getImage(){

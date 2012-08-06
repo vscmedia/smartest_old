@@ -3,10 +3,11 @@
 
 VSC.Slideshow = Class.create({
     
-    initialize: function(holderId){
+    initialize: function(holderId, options){
         this.options = {};
         this.name = 'slideshow';
         this.options.holderId = holderId;
+        this.options.frequency = options.frequency ? options.frequency : 4;
         this.goToSlide($$('#'+holderId+' #slides .slide').first().id);
         this.currentPosition = 0;
         var IDs = [];
@@ -22,8 +23,10 @@ VSC.Slideshow = Class.create({
             if($$('#'+this.options.holderId+' #slides #'+slideId).size() > 0){
                 
                 if(this.currentSlideId){
-                    $$('#'+this.options.holderId+' #slides #'+this.currentSlideId)[0].fade({duration:0.28});
-                    $$('#'+this.options.holderId+' #slides #'+slideId)[0].appear({delay:0.3, duration:0.6});
+                    // $$('#'+this.options.holderId+' #slides #'+this.currentSlideId)[0].fade({duration:0.28});
+                    $$('#'+this.options.holderId+' #slides #'+this.currentSlideId)[0].fade({duration:0.7, transition: Effect.Transitions.sinoidal});
+                    // $$('#'+this.options.holderId+' #slides #'+slideId)[0].appear({delay:0.3, duration:0.6});
+                    $$('#'+this.options.holderId+' #slides #'+slideId)[0].appear({duration:0.7, transition: Effect.Transitions.sinoidal});
                     this.updateNav(slideId);
                 }else{
                     $$('#'+this.options.holderId+' #slides #'+slideId)[0].appear({duration:0.6});
@@ -42,12 +45,12 @@ VSC.Slideshow = Class.create({
     },
     
     updateNav: function(slideId){
-        
-        $$('#'+this.options.holderId+' #slides-nav li').each(function(b){
-            b.removeClassName('current');
-        });
-        $$('#'+this.options.holderId+' #slides-nav li')[this.getSlideIndexFromId(slideId)].addClassName('current');
-        
+        if($('#'+this.options.holderId+' #slides-nav')){
+            $$('#'+this.options.holderId+' #slides-nav li').each(function(b){
+                b.removeClassName('current');
+            });
+            $$('#'+this.options.holderId+' #slides-nav li')[this.getSlideIndexFromId(slideId)].addClassName('current');
+        }
     },
     
     getSlideIndexFromId: function(slideId){
@@ -70,10 +73,15 @@ VSC.Slideshow = Class.create({
         this.goToSlideByPosition(nextSlidePos);
     },
     
+    getAutoAdvanceFrequency: function(){
+        return this.options.frequency;
+    },
+    
     startAutoAdvance: function(){
         // periodicalexecuter on nextslide
         var ns = this.nextSlide.bind(this);
-        this.heartbeat = new PeriodicalExecuter(ns, 4);
+        var freq = this.getAutoAdvanceFrequency.bind(this);
+        this.heartbeat = new PeriodicalExecuter(ns, freq());
     },
     
     goToSlideFromClick: function(slideId){
@@ -89,6 +97,15 @@ VSC.Slideshow = Class.create({
         this.heartbeat.stop();
         this.goToSlideByPosition(pos);
         this.startAutoAdvance();
-    }
+    },
+    
+    goToNextSlideFromClick: function(){
+        // stop periodical executer if it is running
+        this.heartbeat.stop();
+        // go to the requested slide
+        this.nextSlide();
+        // set a new timeout on starting the periodicalexecuter
+        this.startAutoAdvance();
+    },
     
 });

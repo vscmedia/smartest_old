@@ -99,6 +99,7 @@ type:
     captionable: true
     parsable: false
     supports_exif: true
+    maximum_filesize_before_warning: 1048576
     storage:
       type: file
       location: Public/Resources/Images/
@@ -130,6 +131,7 @@ type:
     attachable: true
     captionable: true
     parsable: false
+    maximum_filesize_before_warning: 1048576
     storage:
       type: file
       location: Public/Resources/Images/
@@ -160,6 +162,7 @@ type:
     attachable: true
     captionable: true
     parsable: false
+    maximum_filesize_before_warning: 1048576
     storage:
       type: file
       location: Public/Resources/Images/

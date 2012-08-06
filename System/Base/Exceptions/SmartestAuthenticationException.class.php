@@ -19,6 +19,9 @@ class SmartestAuthenticationException extends SmartestException{
         if($c->getCurrentRequest()->getNamespace() == 'ajax' || $c->getCurrentRequest()->getNamespace() == 'modal'){
             
             header('HTTP/1.1 401 Unauthorized');
+            if($c->getCurrentRequest()->getNamespace() == 'modal'){
+                echo '<script type="text/javascript">window.location="'.$this->_controller->getCurrentRequest()->getDomain().'smartest/login#session";</script>';
+            }
             exit;
             
         }else{
@@ -42,8 +45,10 @@ class SmartestAuthenticationException extends SmartestException{
     public function setReturnCookie(){
         
         if($this->_controller->getCurrentRequest()->getRequestString() != 'smartest'){
-            $domain = $this->_controller->getCurrentRequest()->getDomain();
-            SmartestCookiesHelper::setCookie('SMARTEST_RET', $this->_controller->getCurrentRequest()->getRequestStringWithVars(), 1); // The user has a day to log back in before this information is lost
+            if($this->_controller->getCurrentRequest()->getNamespace() != 'modal'){
+                $domain = $this->_controller->getCurrentRequest()->getDomain();
+                SmartestCookiesHelper::setCookie('SMARTEST_RET', $this->_controller->getCurrentRequest()->getRequestStringWithVars(), 1); // The user has a day to log back in before this information is lost
+            }
         }
         
     }
