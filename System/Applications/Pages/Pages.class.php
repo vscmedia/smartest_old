@@ -1395,6 +1395,8 @@ class Pages extends SmartestSystemApplication{
     		    $page = new SmartestPage;
     		}
     		
+    		// echo $page_webid;
+    		
     		if($page->hydrate($page_webid)){
 	            
 	            if($page->getDeleted() == 'TRUE'){
@@ -1438,9 +1440,9 @@ class Pages extends SmartestSystemApplication{
         	                
         	                if($default_metapage_id){
         	                    if($default_metapage_id != $page->getId()){
-        	                        $page = new SmartestPage;
-            	                    $page->find($default_metapage_id);
-            	                    $default_metapage_webid = $page->getWebId();
+        	                        $default_metapage = new SmartestPage;
+            	                    $default_metapage->find($default_metapage_id);
+            	                    $default_metapage_webid = $default_metapage->getWebId();
             	                    $this->send($default_metapage_webid, 'default_metapage_webid');
         	                        $this->send(true, 'show_metapage_warning');
         	                    }else{
@@ -1461,7 +1463,7 @@ class Pages extends SmartestSystemApplication{
 	                
     		        $this->setFormReturnUri();
     		        $this->setFormReturnDescription('page elements tree');
-		
+		            
             		$version = ($this->getRequestParameter('version') && $this->getRequestParameter('version') == "live") ? "live" : "draft";
             		$field = ($version == "live") ? "page_live_template" : "page_draft_template";
 		            
@@ -1498,8 +1500,8 @@ class Pages extends SmartestSystemApplication{
             		$mode = 'advanced';
     		
             		$sub_template = "getPageAssets.advanced.tpl";
-		            
-		            $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+            		
+            		$this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
             		$this->send($assetClasses["tree"], "assets");
             		$this->send($definedAssets, "definedAssets");
             		$this->send($page, "page");
