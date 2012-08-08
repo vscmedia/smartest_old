@@ -1971,6 +1971,72 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
+	public function publishManager(){
+	    
+	    $model_id = $this->getRequestParameter('class_id');
+	    $model = new SmartestModel();
+	    
+	    if($model->find($model_id)){
+	        
+	        $this->send($this->getApplicationPreference('item_list_style', 'grid'), 'list_view');
+	        
+	        if($this->getUser()->hasToken('publish_approved_items') || $this->getUser()->hasToken('publish_all_items')){
+	            
+	            $this->send($model, 'model');
+	            
+	            if($this->getUser()->hasToken('publish_all_items')){
+	                $items = $model->getPublishableSimpleItems($this->getSite()->getId(), $this->getUser()->getId(), true);
+	            }else{
+	                $items = $model->getPublishableSimpleItems($this->getSite()->getId(), $this->getUser()->getId(), false);
+	            }
+	            
+	            $this->send($items, 'items');
+	            $this->send(count($items), 'num_items');
+	            
+    	    }else{
+    	        $this->addUserMessageToNextRequest('You don\'t have permission to publish items.', SmartestUserMessage::ACCESS_DENIED);
+    	        $this->formForward();
+    	    }
+	    
+        }
+	    
+	}
+	
+	public function publishManagerAction(){
+	    
+	    $model_id = $this->getRequestParameter('class_id');
+	    $model = new SmartestModel();
+	    
+	    if($model->find($model_id)){
+	    
+    	    if($this->getUser()->hasToken('publish_approved_items') || $this->getUser()->hasToken('publish_all_items')){
+	            
+	            if($this->getUser()->hasToken('publish_all_items')){
+	                $ids = $model->getPublishableItemIds($this->getSite()->getId(), $this->getUser()->getId(), true);
+	            }else{
+	                $ids = $model->getPublishableItemIds($this->getSite()->getId(), $this->getUser()->getId(), false);
+	            }
+	            
+	            $sql = "UPDATE Items SET item_public='TRUE', item_last_published='".time()."' WHERE item_id IN (".implode(',', $ids).")";
+                $ipvs_sql = "UPDATE ItemPropertyValues SET itempropertyvalue_content=itempropertyvalue_draft_content, itempropertyvalue_live_info=itempropertyvalue_draft_info WHERE itempropertyvalue_item_id IN (".implode(',', $ids).")";
+	            
+	            $this->database->rawQuery($sql);
+	            $this->database->rawQuery($ipvs_sql);
+	            
+	            $this->formForward();
+	            
+	            // echo $sql;
+	            // echo $ipvs_sql;
+	            
+    	    }else{
+    	        $this->addUserMessageToNextRequest('You don\'t have permission to publish items.', SmartestUserMessage::ACCESS_DENIED);
+    	        $this->formForward();
+    	    }
+	    
+        }
+	    
+	}
+	
 	public function unpublishItem($get){
 	    
 	    $item_id = $this->getRequestParameter('item_id');
