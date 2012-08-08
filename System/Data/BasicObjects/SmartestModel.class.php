@@ -472,7 +472,7 @@ class SmartestModel extends SmartestBaseModel{
     
     public function getPublishableSimpleItems($site_id, $user_id='', $include_unapproved_items=false){
         
-        $sql = "SELECT DISTINCT Items.* FROM Items, ItemPropertyValues WHERE (Items.item_public='FALSE' OR (ItemPropertyValues.itempropertyvalue_content != ItemPropertyValues.itempropertyvalue_draft_content AND ItemPropertyValues.itempropertyvalue_item_id = Items.item_id)) AND Items.item_deleted='0' AND Items.item_site_id='".$site_id."' AND Items.item_itemclass_id='".$this->getId()."'";
+        $sql = "SELECT DISTINCT Items.* FROM Items, ItemPropertyValues WHERE (Items.item_public='FALSE' OR (ItemPropertyValues.itempropertyvalue_content != ItemPropertyValues.itempropertyvalue_draft_content)) AND ItemPropertyValues.itempropertyvalue_item_id = Items.item_id AND Items.item_deleted='0' AND Items.item_site_id='".$site_id."' AND Items.item_itemclass_id='".$this->getId()."'";
         
         if(!$include_unapproved_items){
             $sql .= 'AND Items.item_changes_approved=\'1\'';
