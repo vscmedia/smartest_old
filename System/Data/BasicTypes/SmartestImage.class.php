@@ -732,7 +732,7 @@ class SmartestImage extends SmartestFile{
 	        
 	    }
 	    
-	    if(preg_match('/(\d+)x(\d+)/', $offset, $m)){
+	    if(preg_match('/^(\d+)x(\d+)/', $offset, $m)){
 	        return $this->resizeAndCrop($m[1], $m[2]);
 	    }elseif(preg_match('/square_(\d+)/', $offset, $m)){
 	        return $this->getSquareVersion($m[1]);

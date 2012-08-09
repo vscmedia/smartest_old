@@ -168,7 +168,7 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	        $request_filename = reset(explode("?", $_SERVER["REQUEST_URI"]));
         }
         
-        if(isset($request_vars['from']) && isset($request_vars['from']{0})){
+        if($this->getRequest()->getNamespace() == 'modal' || (isset($request_vars['from']) && isset($request_vars['from']{0}))){
 	        // do nothing
 	    }else{
 		    SmartestSession::set("form:return:location", $request_filename);
