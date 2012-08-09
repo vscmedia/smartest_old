@@ -774,15 +774,16 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     $limit = null;
                 }
                 
-                if($set->findBy('name', $name, constant('SM_CMS_PAGE_SITE_ID')) || $this->getDataSetsHolder()->h($name)){
+                if($set->findBy('name', $name, $this->page->getSiteId()) || $this->getDataSetsHolder()->h($name)){
         		    
+        		    // echo "site ".$this->page->getSiteId();
         		    $dah = new SmartestDataAppearanceHelper;
                     $dah->setDataSetAppearsOnPage($set->getId(), $this->getPage()->getId());
                     $start = (isset($params['start']) && is_numeric($params['start'])) ? $params['start'] : 1;
                     
                     $set_mode = $this->getDraftMode() ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT ;
         		    // $items = $set->getMembers($set_mode, $limit, $start, $query_vars);
-        		    $items = $set->getMembersPaged($set_mode, $limit, $start, $query_vars);
+        		    $items = $set->getMembersPaged($set_mode, $limit, $start, $query_vars, $this->page->getSiteId());
         		    
         		    
         		}else{

@@ -372,6 +372,10 @@ class QuinceRequest{
         return $this->_metas[$m];
     }
     
+    final public function getModuleDirectory(){
+        return $this->getMeta('_module_dir');
+    }
+    
     final public function setMeta($name, $value){
         $this->_metas[$name] = $value;
     }

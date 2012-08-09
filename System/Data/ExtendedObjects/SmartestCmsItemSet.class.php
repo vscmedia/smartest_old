@@ -317,7 +317,9 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
-	public function getMembersPaged($mode='DEF', $limit=0, $start=1, $query_data=''){
+	public function getMembersPaged($mode='DEF', $limit=0, $start=1, $query_data='', $site_id=null){
+	    
+	    // echo $site_id;
 	    
 	    // if static
 	      // get ids
@@ -334,7 +336,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     	        $mode = $this->_retrieve_mode;
     	    }
 	        
-	        $ids = $this->getRawStaticSetMemberIds($mode);
+	        $ids = $this->getRawStaticSetMemberIds($mode, $site_id);
 	        
 	        if($start > 1){
     		    $key = $start-1;
@@ -353,7 +355,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     	        $mode = $this->_retrieve_mode;
     	    }
   	        
-            $items = $this->getRawDynamicSetResultSet($mode)->getItems($limit, $start);
+            $items = $this->getRawDynamicSetResultSet($mode, $query_data, $site_id)->getItems($limit, $start);
 	            
   	    }
   	    
