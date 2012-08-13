@@ -3,3 +3,7 @@ help:
     title: Using Highslide
     keywords: categorisation, organisation
     content: highslide.tpl
+  textile:
+    title: Easy texts
+    keywords: formatting, text
+    content: textile.tpl
