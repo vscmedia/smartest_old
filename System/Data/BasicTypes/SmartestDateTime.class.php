@@ -163,6 +163,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
 	        return date('s', $this->_value);
 	        
 	        case 'Y':
+	        case 'year':
 	        return date('Y', $this->_value);
 	        
 	        case 'M':
@@ -189,6 +190,13 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
 	        
 	        case 'month_only':
 	        return date('F Y', $this->_value);
+	        
+	        case 'in_past':
+	        case 'has_passed':
+	        return new SmartestBoolean(time() > $this->_value);
+	        
+	        case 'in_future':
+	        return new SmartestBoolean(time() < $this->_value);
 	        
 	        default:
 	        return date($offset, $this->_value);

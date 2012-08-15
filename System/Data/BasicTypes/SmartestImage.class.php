@@ -322,7 +322,7 @@ class SmartestImage extends SmartestFile{
         
     }
     
-    public function getSquareVersionFilename(){
+    public function getSquareVersionFilename($side){
         return SmartestStringHelper::toVarName(SmartestStringHelper::removeDotSuffix(basename($this->_current_file_path))).'_sqthumb_'.$side.'.'.$this->getSuffix();
     }
     

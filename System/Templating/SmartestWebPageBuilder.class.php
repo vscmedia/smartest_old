@@ -7,6 +7,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	protected $_page_rendering_data = array();
 	protected $_page_rendering_data_retrieved = false;
 	protected $_items = array();
+	protected $_single_item_template_path;
 	
 	public function __construct($pid){
 	    
@@ -486,7 +487,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     public function renderItemEditButton($item_id){
         
         if($this->getDraftMode()){
-            $html = '<a href="'.$this->_request_data->g('domain').'datamanager/openItem?item_id='.$item_id.'&amp;from=pagePreview&amp;page_webid='.$this->page->getWebid().'" target="_top" title="Edit item ID '.$item_id.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/package_small.png" alt="Edit item ID '.$item_id.'" /></a>';
+            $url = $this->_request_data->g('domain').'datamanager/openItem?item_id='.$item_id;
+            if($this->page){
+                $url .= '&amp;from=pagePreview&amp;page_webid='.$this->page->getWebid();
+            }else if($this->_request_data->g('request_parameters')->g('page_id')){
+                $url .= '&amp;from=pagePreview&amp;page_webid='.$this->_request_data->g('request_parameters')->g('page_id');
+            }
+            // print_r($this->_request_data);
+            $html = '<a href="'.$url.'" target="_top" title="Edit item ID '.$item_id.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/package_small.png" alt="Edit item ID '.$item_id.'" /></a>';
         }else{
             $html = '';
         }
@@ -756,6 +764,21 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 break;
             
+            case "gallery":
+            
+            $g = new SmartestAssetGroup;
+            if($g->findBy('name', $name, $this->page->getSiteId())){
+                if($g->getIsGallery()){
+                    return $g->getMemberships();
+                }else{
+                    // the file group is not a gallery
+                }
+            }else{
+                // no file group with that name
+            }
+            
+            break;
+            
             case "set":
             case "dataset":
             default:
@@ -785,7 +808,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         		    // $items = $set->getMembers($set_mode, $limit, $start, $query_vars);
         		    $items = $set->getMembersPaged($set_mode, $limit, $start, $query_vars, $this->page->getSiteId());
         		    
-        		    
+        		}else if(preg_match('/^all_/', $name)){
+        		    $model_varname = substr($name, 4);
         		}else{
         		    $items = array();
         		}
@@ -1255,7 +1279,34 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
 	}
 	
-	public function getListData($listname){
+	public function assignSingleItemTemplate($tpl_path){
+        $this->_single_item_template_path = $tpl_path;
+    }
+    
+    public function renderSingleItemTemplate(){
+        
+        ob_start();
+        $this->run($this->_single_item_template_path, array());
+        $content = ob_get_contents();
+        ob_end_clean();
+        
+        if($this->_request_data->g('action') == "renderEditableDraftPage" && $path == 'none' && $show_preview_edit_link){
+		    
+		    if(isset($asset_type_info['editable']) && SmartestStringHelper::toRealBool($asset_type_info['editable'])){
+		        $edit_link .= "<a title=\"Click to edit file: ".$this->_asset->getUrl()." (".$this->_asset->getType().")\" href=\"".$this->_request_data->g('domain')."assets/editAsset?asset_id=".$this->_asset->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this asset--></a>";
+		    }else{
+		        $edit_link = "<!--edit link-->";
+	        }
+	    
+        }
+	    
+	    $content .= $edit_link;
+	    
+	    return $content;
+        
+    }
+	
+	/* public function getListData($listname){
 		$result = $this->templateHelper->getList($listname);
 		return $result;
 	}
@@ -1291,9 +1342,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		}
 		
 		return $result['html'];
-	}
+	} */
 	
-	public function getLink($params){
+	/* public function getLink($params){
 		return $this->templateHelper->getLink($params);
 	}
 	
@@ -1307,6 +1358,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	
 	public function getImagePath($params){
 		return $this->templateHelper->getImagePath($params);
-	}
+	} */
     
 }

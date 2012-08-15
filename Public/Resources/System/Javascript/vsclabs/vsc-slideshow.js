@@ -1,5 +1,5 @@
 // Written by Marcus Gilroy-Ware
-// © VSC Creative Ltd. 2011
+// © VSC Creative Ltd. 2012
 
 VSC.Slideshow = Class.create({
     
@@ -8,28 +8,40 @@ VSC.Slideshow = Class.create({
         this.name = 'slideshow';
         this.options.holderId = holderId;
         this.options.frequency = options.frequency ? options.frequency : 4;
-        this.goToSlide($$('#'+holderId+' #slides .slide').first().id);
+        this.goToSlide($$('#'+holderId+' .slides .slide').first().id);
         this.currentPosition = 0;
         var IDs = [];
-        $$('#'+holderId+' #slides .slide').each(function(s){
+        $$('#'+holderId+' .slides .slide').each(function(s){
             IDs.push(s.id);
         });
         this.IDs = IDs;
-        this.startAutoAdvance();
+        
+        if(options.hasOwnProperty('autostart')){
+            this.options.autostart = options.autostart;
+        }else{
+            this.options.autostart = false;
+        }
+        
+        if(this.options.autostart){
+            this.startAutoAdvance();
+        }
+        
+        // this.startAutoAdvance();
+        // alert(holderId);
     },
     
     goToSlide: function(slideId){
         if(this.currentSlideId != slideId){
-            if($$('#'+this.options.holderId+' #slides #'+slideId).size() > 0){
+            if($$('#'+this.options.holderId+' .slides #'+slideId).size() > 0){
                 
                 if(this.currentSlideId){
-                    // $$('#'+this.options.holderId+' #slides #'+this.currentSlideId)[0].fade({duration:0.28});
-                    $$('#'+this.options.holderId+' #slides #'+this.currentSlideId)[0].fade({duration:0.7, transition: Effect.Transitions.sinoidal});
-                    // $$('#'+this.options.holderId+' #slides #'+slideId)[0].appear({delay:0.3, duration:0.6});
-                    $$('#'+this.options.holderId+' #slides #'+slideId)[0].appear({duration:0.7, transition: Effect.Transitions.sinoidal});
+                    // $$('#'+this.options.holderId+' .slides #'+this.currentSlideId)[0].fade({duration:0.28});
+                    $$('#'+this.options.holderId+' .slides #'+this.currentSlideId)[0].fade({duration:0.7, transition: Effect.Transitions.sinoidal});
+                    // $$('#'+this.options.holderId+' .slides #'+slideId)[0].appear({delay:0.3, duration:0.6});
+                    $$('#'+this.options.holderId+' .slides #'+slideId)[0].appear({duration:0.7, transition: Effect.Transitions.sinoidal});
                     this.updateNav(slideId);
                 }else{
-                    $$('#'+this.options.holderId+' #slides #'+slideId)[0].appear({duration:0.6});
+                    $$('#'+this.options.holderId+' .slides #'+slideId)[0].appear({duration:0.6});
                 }
                 
                 this.currentSlideId = slideId;
@@ -45,11 +57,11 @@ VSC.Slideshow = Class.create({
     },
     
     updateNav: function(slideId){
-        if($('#'+this.options.holderId+' #slides-nav')){
-            $$('#'+this.options.holderId+' #slides-nav li').each(function(b){
+        if($('#'+this.options.holderId+' .slides-nav')){
+            $$('#'+this.options.holderId+' .slides-nav li').each(function(b){
                 b.removeClassName('current');
             });
-            $$('#'+this.options.holderId+' #slides-nav li')[this.getSlideIndexFromId(slideId)].addClassName('current');
+            $$('#'+this.options.holderId+' .slides-nav li')[this.getSlideIndexFromId(slideId)].addClassName('current');
         }
     },
     
@@ -86,26 +98,38 @@ VSC.Slideshow = Class.create({
     
     goToSlideFromClick: function(slideId){
         // stop periodical executer if it is running
-        this.heartbeat.stop();
+        this.pause();
         // go to the requested slide
         this.goToSlide(slideId);
         // set a new timeout on starting the periodicalexecuter
-        this.startAutoAdvance();
+        if(this.options.autostart){
+            this.startAutoAdvance();
+        }
     },
     
     goToSlideFromClickByPosition: function(pos){
-        this.heartbeat.stop();
+        this.pause();
         this.goToSlideByPosition(pos);
-        this.startAutoAdvance();
+        if(this.options.autostart){
+            this.startAutoAdvance();
+        }
     },
     
     goToNextSlideFromClick: function(){
         // stop periodical executer if it is running
-        this.heartbeat.stop();
+        this.pause();
         // go to the requested slide
         this.nextSlide();
         // set a new timeout on starting the periodicalexecuter
-        this.startAutoAdvance();
+        if(this.options.autostart){
+            this.startAutoAdvance();
+        }
     },
+    
+    pause: function(){
+        if(this.hasOwnProperty('heartbeat')){
+            this.heartbeat.stop();
+        }
+    }
     
 });

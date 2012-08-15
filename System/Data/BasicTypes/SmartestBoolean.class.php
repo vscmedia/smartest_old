@@ -60,6 +60,7 @@ class SmartestBoolean implements SmartestBasicType, ArrayAccess, SmartestStorabl
         switch($offset){
             case "value":
             case "bool":
+            case "raw":
             return $this->getValue();
             case 'storedValue':
             case 'string':

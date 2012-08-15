@@ -965,8 +965,13 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	                $this->_properties[$key]->getData()->setItem($this);
 	            }
     	        
+    	        if($this->_properties[$key]->getDatatype() == 'SM_DATATYPE_TEMPLATE'){
+    	            // var_dump($this->getDraftMode());
+    	        }
+    	        
     	        if($this->getDraftMode()){
     	            $raw_value = $this->_properties[$key]->getData()->getDraftContent();
+    	            // $raw_value->setDraftMode(true);
                 }else{
                     $raw_value = $this->_properties[$key]->getData()->getContent();
                 }

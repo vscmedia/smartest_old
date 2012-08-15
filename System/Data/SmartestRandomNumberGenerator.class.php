@@ -12,11 +12,24 @@ class SmartestRandomNumberGenerator implements ArrayAccess{
         
     }
     
+    public function getRandomAmongst($vals){
+        
+        $length = count($vals);
+        $key = mt_rand(0, $length-1);
+        $val = $vals[$key];
+        return $val;
+        
+    }
+    
     public function getSameAgain(){
         return $this->_last;
     }
     
     public function offsetGet($offset){
+        
+        // echo $offset;
+        /* var_dump((bool) $vals = explode(',', $offset));
+        var_dump(count($vals) > 1); */
         
         switch($offset){
             case "again":
@@ -24,9 +37,13 @@ class SmartestRandomNumberGenerator implements ArrayAccess{
         }
         
         if(is_numeric($offset)){
-            return new SmartestNumeric($this->getRandomBetween($offset));
+            return new SmartestNumeric($this->getRandomBetween(0, $offset));
         }else if(preg_match('/(\d+)_(\d+)/', $offset, $matches)){
             return $this->getRandomBetween(min(array($matches[1], $matches[2])), max(array($matches[1], $matches[2])));
+        }else if(preg_match('/^\d+(,(\d+))+$/', $offset)){
+            // echo "worked";
+            $vals = explode(',', $offset);
+            return new SmartestNumeric($this->getRandomAmongst($vals));
         }else if(preg_match('/([\d-]+)/', $offset, $matches)){
             $values = explode('-', $matches[1]);
             $numbers = array();

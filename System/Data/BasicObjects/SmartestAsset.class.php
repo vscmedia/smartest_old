@@ -92,6 +92,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             if($this->usesLocalFile()){
                 return $this->getFullWebPath();
             }
+            break;
             
             case "size":
             return $this->getSize();
@@ -1067,7 +1068,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    }
 	    
 	    $fields = $this->database->queryFieldsToArrays(array('asset_stringid'), $sql);
-        $stringid = SmartestStringHelper::guaranteeUnique($stringid, $fields['asset_stringid']);
+        $stringid = SmartestStringHelper::guaranteeUnique($stringid, $fields['asset_stringid'], '_');
         
         return parent::setStringId($stringid);
 	    

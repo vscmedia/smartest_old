@@ -10,7 +10,16 @@
       </div>
       <div class="edit-form-row">
         <div class="form-section-label">File</div>
-        {$membership.asset.label}
+        <a href="{$domain}assets/editAsset?asset_id={$membership.asset.id}">{$membership.asset.label}</a>
+      </div>
+      <div class="edit-form-row">
+        <div class="form-section-label">Thumbnail image</div>
+        <select name="membership_thumbnail_image_id">
+          <option value="0"{if !$membership.thumbnail_asset_id} selected="selected"{/if}>No thumbnail</option>
+{foreach from=$thumbnails item="thumbnail_image"}
+          <option value="{$thumbnail_image.id}"{if $thumbnail_image.id == $membership.thumbnail_asset_id} selected="selected"{/if}>{$thumbnail_image.label}</option>
+{/foreach}
+        </select>
       </div>
       <div class="edit-form-row">
         <div class="form-section-label">Caption</div>

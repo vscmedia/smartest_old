@@ -7,7 +7,7 @@ class SmartestEngineCompiler extends Smarty_Compiler{
 	public function SmartestEngineCompiler(){
 	
 		parent::Smarty_Compiler();
-		$this->_var_bracket_regexp = '\[\$?[\w\.\s:_-]+\]';
+		$this->_var_bracket_regexp = '\[\$?[\w\.\s:_,-]+\]';
 		// $this->_var_bracket_regexp = '\[\$[\w\.\s:_]+\]';
 		$this->_dvar_guts_regexp = '\w+(?:' . $this->_var_bracket_regexp
                 . ')*(?:\.\$?\w+(?:' . $this->_var_bracket_regexp . ')*)*(?:' . $this->_dvar_math_regexp . '(?:' . $this->_num_const_regexp . '|' . $this->_dvar_math_var_regexp . ')*)?';

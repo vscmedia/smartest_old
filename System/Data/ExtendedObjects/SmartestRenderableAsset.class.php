@@ -123,6 +123,10 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	        $this->_render_data->setParameter('remote_id', $this->extractId());
 	    }
 	    
+	    if(!($this->_render_data->hasParameter('html_id') && strlen($this->_render_data->getParameter('html_id')))){
+	        $this->_render_data->setParameter('html_id', SmartestStringHelper::toSlug($this->_type_info['label']).'-'.substr($this->getWebId(), 0, 8));
+	    }
+	    
 	    if($this->getId()){
 	        
 	        $sm = new SmartyManager('BasicRenderer');

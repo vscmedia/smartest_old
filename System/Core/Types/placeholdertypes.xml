@@ -46,6 +46,7 @@
     <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
     <accept>SM_ASSETTYPE_MP3</accept>
+    <accept>SM_ASSETTYPE_OGG_VORBIS</accept>
     <gallery>true</gallery>
   </type>
   
@@ -58,6 +59,7 @@
     <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
     <accept>SM_ASSETTYPE_MP3</accept>
+    <accept>SM_ASSETTYPE_OGG_VORBIS</accept>
     <gallery>true</gallery>
   </type>
   
@@ -104,11 +106,18 @@
     <accept>SM_ASSETTYPE_STYLESHEET</accept>
   </type>
   
+  <type id="SM_ASSETCLASS_CUFON_FONT">
+    <label>Font (using Cufón)</label>
+    <setfrompreview>false</setfrompreview>
+    <accept>SM_ASSETTYPE_CUFON_FONT</accept>
+  </type>
+  
   <type id="SM_ASSETCLASS_BROWSER_INSTRUCTION">
     <label>CSS or Javascript</label>
     <setfrompreview>false</setfrompreview>
     <accept>SM_ASSETTYPE_JAVASCRIPT</accept>
     <accept>SM_ASSETTYPE_STYLESHEET</accept>
+    <accept>SM_ASSETTYPE_CUFON_FONT</accept>
   </type>
   
   <type id="SM_ASSETCLASS_SHOCKWAVE_FLASH">
@@ -121,6 +130,7 @@
     <label>Audio files</label>
     <setfrompreview>true</setfrompreview>
     <accept>SM_ASSETTYPE_MP3</accept>
+    <accept>SM_ASSETTYPE_OGG_VORBIS</accept>
   </type>
   
   <type id="SM_ASSETCLASS_DOWNLOAD">

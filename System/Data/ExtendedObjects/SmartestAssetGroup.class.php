@@ -294,6 +294,21 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
     }
     
+    public function getThumbnailOptions(){
+        
+        if($this->getIsGallery()){
+            // if($this->getThumbnailFileGroupId()){
+                // If it were possible to attach asset groups to sets via a foreign key
+            // }else{
+                $alh = new SmartestAssetsLibraryHelper;
+                return $alh->getAssetsByTypeCode(array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'), $this->getSiteId(), 1);
+            // }
+        }else{
+            return array();
+        }
+        
+    }
+    
     public function getTypes(){
         
         $du = new SmartestAssetsLibraryHelper;

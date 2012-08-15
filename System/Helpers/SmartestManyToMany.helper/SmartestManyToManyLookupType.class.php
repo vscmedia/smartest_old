@@ -22,7 +22,7 @@ class SmartestManyToManyLookupType{
         
         $entities = $type['entity'];
         
-        if(is_array($entities) && $type['method'] != 'SM_MTMLOOKUPMETHOD_NETWORK'){
+        if(is_array($entities) && $type['method'] == 'SM_MTMLOOKUPMETHOD_MAP'){
             
             foreach($entities as $e){
                 $this->_entities[$e['index']] = new SmartestManyToManyEntity($e['table'], $e['foreignkey'], $e['index'], $e['class'], SmartestStringHelper::toRealBool($e['required']));

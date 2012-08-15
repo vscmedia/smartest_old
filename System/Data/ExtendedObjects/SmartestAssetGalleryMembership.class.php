@@ -4,6 +4,7 @@ class SmartestAssetGalleryMembership extends SmartestManyToManyLookup{
     
     protected $_asset;
     protected $_group;
+    protected $_thumbnail_asset;
     
     public function hydrate($raw_data){
         
@@ -35,12 +36,32 @@ class SmartestAssetGalleryMembership extends SmartestManyToManyLookup{
         return $this->_asset;
     }
     
+    public function getThumbnailAsset(){
+        
+        if(!$this->_thumbnail_asset){
+            $asset = new SmartestRenderableAsset;
+            if($asset->find($this->getThumbnailAssetId())){
+                $this->_thumbnail_asset = $asset;
+            }
+        }
+        
+        return $this->_thumbnail_asset;
+    }
+    
     public function getAssetId(){
         return $this->getEntityForeignKeyValue(1);
     }
     
     public function setAssetId($id){
         return $this->setEntityForeignKeyValue(1, (int) $id);
+    }
+    
+    public function getThumbnailAssetId(){
+        return $this->getEntityForeignKeyValue(3);
+    }
+    
+    public function setThumbnailAssetId($id){
+        return $this->setEntityForeignKeyValue(3, (int) $id);
     }
     
     public function getGroup(){
@@ -87,6 +108,13 @@ class SmartestAssetGalleryMembership extends SmartestManyToManyLookup{
             case "file":
             case "asset":
             return $this->getAsset();
+            
+            case "thumbnail_file":
+            case "thumbnail_asset":
+            return $this->getThumbnailAsset();
+            
+            case "thumbnail_asset_id":
+            return $this->getThumbnailAssetId();
             
             case "caption":
             return new SmartestString($this->getCaption());

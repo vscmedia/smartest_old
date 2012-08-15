@@ -1463,6 +1463,9 @@ class Assets extends SmartestSystemApplication{
 	                $this->send($membership, 'membership');
 	                $this->send($group, 'gallery');
 	                
+	                $this->send($group->getThumbnailOptions(), 'thumbnails');
+	                $this->setTItle('Edit file gallery membership');
+	                
 	            }else{
 	                
 	                $this->addUserMessageToNextRequest('This gallery does not include that file', SmartestUserMessage::WARNING);
@@ -1489,6 +1492,7 @@ class Assets extends SmartestSystemApplication{
 	    $membership = new SmartestAssetGalleryMembership;
 	    if($membership->find($this->getRequestParameter('membership_id'))){
 	        $membership->setCaption($this->getRequestParameter('membership_caption'));
+	        $membership->setThumbnailAssetId($this->getRequestParameter('membership_thumbnail_image_id'));
 	        $membership->save();
 	    }else{
 	        $this->addUserMessageToNextRequest('The membership ID was not found');

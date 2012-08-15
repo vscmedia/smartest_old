@@ -139,7 +139,7 @@
   </type>
   
   <type id="SM_MTMLOOKUP_ASSET_GALLERY_MEMBERSHIP" return="class:SmartestAssetGalleryMembership" method="SM_MTMLOOKUPMETHOD_MAP">
-    <label>Organise files in the repository into galleries.</label>
+    <label>Organise files in the repository into galleries and choose a thumbnail image for each.</label>
     <entity table="Assets" class="SmartestAsset" foreignkey="asset_id" index="1" required="true" />
     <entity table="Sets" class="SmartestAssetGroup" foreignkey="set_id" index="2" required="true" />
   </type>

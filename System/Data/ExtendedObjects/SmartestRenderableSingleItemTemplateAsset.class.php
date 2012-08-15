@@ -1,10 +1,11 @@
 <?php 
 
-class SmartestRenderableSingleItemTemplateAsset extends SmartestAsset{
+class SmartestRenderableSingleItemTemplateAsset extends SmartestAsset implements SmartestDualModedObject{
     
     protected $_template_file;
     protected $_base_dir = '';
     protected $_item;
+    protected $_draft_mode = false;
     
     public function __toString(){
         
@@ -12,11 +13,23 @@ class SmartestRenderableSingleItemTemplateAsset extends SmartestAsset{
         
     }
     
-    public function render(){
+    public function setDraftMode($m){
+	    $this->_draft_mode = (bool) $m;
+	}
+	
+	public function getDraftMode(){
+	    return $this->_draft_mode;
+	}
+    
+    public function render($draft_mode='unset'){
         
         if($this->_item){
             
-            $sm = new SmartyManager('SingleItemTemplateRenderer');
+            if($draft_mode === 'unset'){
+    	        $draft_mode = $this->_draft_mode;
+    	    }
+            
+            $sm = new SmartyManager('WebPageBuilder');
             $r = $sm->initialize($this->getStringId());
             $r->assign('item', $this->_item);
             
@@ -24,9 +37,9 @@ class SmartestRenderableSingleItemTemplateAsset extends SmartestAsset{
                 $r->assign('this', $GLOBALS['CURRENT_PAGE']->fetchRenderingData());
             }
             
-            $r->assignTemplate($this->getFullPathOnDisk());
+            $r->assignSingleItemTemplate($this->getFullPathOnDisk());
             $r->setDraftMode($draft_mode);
-    	    $content = $r->renderTemplate();
+    	    $content = $r->renderSingleItemTemplate();
     	    
     	    return $content;
             

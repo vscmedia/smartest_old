@@ -156,7 +156,7 @@ type:
     id: SM_ASSETTYPE_GIF_IMAGE
     category: image
     label: GIF image
-    description: An image in GIF format.
+    description: "An image in GIF format, including animated GIFs"
     class: SmartestImageAsset
     icon: picture.png
     attachable: true
@@ -310,7 +310,7 @@ type:
     id: SM_ASSETTYPE_MP3
     category: embedded
     label: MP3 Audio
-    description: A sound file in MPEG Layer-3 formt
+    description: A sound file in MPEG Layer-3 format
     class: SmartestAsset
     parsable: false
     icon: music.png
@@ -328,6 +328,50 @@ type:
       - {mime: audio/mpeg, _content: mp3}
     param:
       - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: false}
+      
+  SM_ASSETTYPE_OGG_VORBIS:
+    id: SM_ASSETTYPE_OGG_VORBIS
+    category: embedded
+    label: OGG Vorbis audio file
+    description: A sound file in OGG Vorbis format
+    class: SmartestAsset
+    parsable: false
+    icon: music.png
+    input_options:
+      - SM_ASSETINPUTTYPE_FTP_UPLOAD
+      - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
+    attachable: true
+    storage:
+      type: file
+      location: Public/Resources/Assets/
+      system_location: Public/Resources/System/Assets/
+    render:
+      template: System/Presentation/WebPageBuilder/display.ogg_audio.tpl
+    suffix:
+      - {mime: audio/ogg, _content: ogg}
+    param:
+      - {name: html_id, label: "HTML ID", type: SM_DATATYPE_SL_TEXT, required: false}
+  
+#  SM_ASSETTYPE_HTML5_AUDIO:
+#    id: SM_ASSETTYPE_HTML5_AUDIO
+#    category: embedded
+#    label: "HTML 5 Audio"
+#    description: "OGG, MP3 and/or WAV files collected together for use in the HTML 5 <audio> tag"
+#    class: SmartestAsset
+#    parsable: false
+#    icon: music.png
+#    input_options:
+#      - SM_ASSETINPUTTYPE_CREATE_FROM_CONSTITUENTS
+#    attachable: true
+#    storage:
+#      type: compound
+#      constituents:
+#        mp3: {type: SM_ASSETTYPE_MP3}
+#        ogg: {type: SM_ASSETTYPE_OGG_VORBIS}
+#    render:
+#      template: System/Presentation/WebPageBuilder/display.html5_audio.tpl
+#    param:
+#      - {name: html_id, label: "HTML ID", type: SM_DATATYPE_SL_TEXT, required: false}
       
   SM_ASSETTYPE_YOUTUBE_CLIP:
     id: SM_ASSETTYPE_YOUTUBE_CLIP

@@ -1,0 +1,1 @@
+<object data="<?sm:$domain:?>Resources/Assets/<?sm:$asset_info.url:?>" type="application/ogg" id="<?sm:$render_data.html_id:?>" /><a href="javascript:if(window.HTMLAudioElement){(function(){var e=new HTMLAudioElement;e.src=document.getElementById('<?sm:$render_data.html_id:?>').data;e.play()})();}else{}">Play</a>
