@@ -594,6 +594,14 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		return $this->getItem()->setName($name);
 	}
 	
+	public function setSlug($slug, $site_id=''){
+	    return $this->getItem()->setSlug(SmartestStringHelper::toSlug($name), $site_id);
+	}
+	
+	public function setIsPublic($p){
+	    return $this->getItem()->setIsPublic($p);
+	}
+	
 	public function setLanguage($lang_code){
 		return $this->getItem()->setLanguage($lang_code);
 	}

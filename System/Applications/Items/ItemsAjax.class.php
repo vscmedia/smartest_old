@@ -164,5 +164,61 @@ class ItemsAjax extends SmartestSystemApplication{
 	    exit;
 	    
 	}
+	
+	public function createNewItemFromItemEditForm(){
+	    
+	    $item_id = $this->getRequestParameter('host_item_id');
+	    $property_id = $this->getRequestParameter('property_id');
+	    $new_item_name = $this->getRequestParameter('name');
+	    
+	    $item = SmartestCmsItem::retrieveByPk($item_id);
+        
+        if(is_object($item)){
+	        
+	        $property = new SmartestItemProperty;
+	        
+	        if($property->find($property_id)){
+	            
+	            $input_data = new SmartestParameterHolder('Edit item field '.$property->getName());
+	            $input_data->setParameter('id', 'item_property_'.$property->getId());
+                $input_data->setParameter('name', 'item['.$property->getId().']');
+                
+                $property_model_id = $property->getForeignKeyFilter();
+                $model = new SmartestModel;
+                
+                if($model->find($property_model_id)){
+                    
+                    $classname = $model->getClassName();
+                    
+                    if(class_exists($classname)){
+                        
+                        $new_item = new $classname;
+                        $new_item->setName($new_item_name);
+                        $new_item->setSlug(SmartestStringHelper::toSlug($new_item_name), $this->getSite()->getId());
+                        $new_item->setSiteId($this->getSite()->getId());
+                        $new_item->setIsPublic(false);
+                        $new_item->save();
+                        
+                        if($this->getUser()->hasToken('author_credit')){
+                            $new_item->addAuthorById($this->getUser()->getId());
+                        }
+                        
+                        $item->setPropertyValueByNumericKey($property->getId(), $new_item->getId());
+                        
+                    }
+                }
+                
+                $this->send($input_data, '_input_data');
+                $this->send($new_item, 'value');
+                $this->send($property, 'property');
+	            
+	            $test_string = "create a new item called '".$new_item_name."' and assign it as the draft value for property ".$property->getName()." of item ".$item->getName();
+                $this->send($test_string, 'string');
+    	        
+	        }
+	    
+        }
+	    
+	}
 
 }

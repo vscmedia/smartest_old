@@ -43,7 +43,11 @@ class SmartestSystemHelper{
     
     public static function getSmartestLocalVersionInfo(){
         
-        $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+        if(is_file(SM_ROOT_DIR.'System/Core/Info/system.yml')){
+            $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+        }else if(is_file(SM_ROOT_DIR.'System/Core/Info/.system.yml')){
+            $sys = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/.system.yml');
+        }
         
         $info = new SmartestParameterHolder("Smartest Version Information");
         $info->setParameter('revision', $sys['system']['info']['revision']);
@@ -158,7 +162,7 @@ class SmartestSystemHelper{
 	public function checkRequiredFilesExist(){
 		
 		$needed_files = array(
-			"System Information File" => SM_ROOT_DIR."System/Core/Info/system.yml",
+			"System Information File" => SYSTEM_INFO_FILE,
 			"Database Configuration File" => SM_ROOT_DIR."Configuration/database.ini"
 		);
 		
@@ -186,7 +190,7 @@ class SmartestSystemHelper{
 	
 	public function checkWritablePermissions(){
 		
-		$system_data = SmartestYamlHelper::toParameterHolder(SM_ROOT_DIR.'System/Core/Info/system.yml');
+		$system_data = SmartestYamlHelper::toParameterHolder(SYSTEM_INFO_FILE);
 		$writable_files = $system_data->g('system')->g('writable_locations')->g('always')->getParameters();
 		
 		$errors = array();

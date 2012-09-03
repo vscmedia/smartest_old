@@ -1,0 +1,1 @@
+{item_select name=$_input_data.name id=$_input_data.id value=$value options=$property._options property_id=$property.id}

@@ -62,6 +62,12 @@ class SmartestResponse{
 	    
 	    $this->_error_stack = new SmartestErrorStack();
 	    
+	    if(is_file(SM_ROOT_DIR."System/Core/Info/system.yml")){
+	        define('SYSTEM_INFO_FILE', SM_ROOT_DIR."System/Core/Info/system.yml");
+	    }else if(is_file(SM_ROOT_DIR."System/Core/Info/.system.yml")){
+	        define('SYSTEM_INFO_FILE', SM_ROOT_DIR."System/Core/Info/.system.yml");
+	    }
+	    
 	    try{
             SmartestHelper::loadAll();
         }catch(SmartestException $e){
@@ -144,7 +150,7 @@ class SmartestResponse{
         );
         
         // General system information
-    	$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+    	$sd = SmartestYamlHelper::fastLoad(SYSTEM_INFO_FILE);
     	// Constants need to be phased out as they are slow!!
 		define('SM_INFO_REVISION_NUMBER', $sd['system']['info']['revision']);
 		SmartestInfo::$revision = $sd['system']['info']['revision'];
@@ -184,7 +190,7 @@ class SmartestResponse{
 	public function init(){
 	    
 	    session_start();
-		$sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+		$sd = SmartestYamlHelper::fastLoad(SYSTEM_INFO_FILE);
 		
         if(version_compare(PHP_VERSION, $sd['system']['info']['minimum_php_version']) === -1){
             $this->error("This version of PHP is too old to run Smartest. You need to have version ".$sd['system']['info']['minimum_php_version'].' or later.');
@@ -492,7 +498,7 @@ class SmartestResponse{
 	
 	public function isPublicMethod(){
 	    
-	    $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+	    $sd = SmartestYamlHelper::fastLoad(SYSTEM_INFO_FILE);
 		$publicMethodNames = $sd['system']['public_methods'];
 		$method = $this->_controller->getCurrentRequest()->getModule().'/'.$this->_controller->getCurrentRequest()->getAction();
 		return in_array($method, $publicMethodNames);
@@ -501,7 +507,7 @@ class SmartestResponse{
 	
 	public function isWebsitePage(){
 	    
-	    $sd = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml");
+	    $sd = SmartestYamlHelper::fastLoad(SYSTEM_INFO_FILE);
 		$websiteMethodNames = $sd['system']['content_interaction_methods'];
 		$method = $this->_controller->getCurrentRequest()->getModule().'/'.$this->_controller->getCurrentRequest()->getAction();
 		return in_array($method, $websiteMethodNames);
@@ -538,7 +544,7 @@ class SmartestResponse{
 		}
 		
 		define('SM_CONTROLLER_MODULE_PRES_DIR', $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/');
-		$sc = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Core/Info/system.yml');
+		$sc = SmartestYamlHelper::fastLoad(SYSTEM_INFO_FILE);
 		define('SM_SYSTEM_SYS_TEMPLATES_DIR', $sc['system']['places']['templates_dir']);
 		
 		$this->_ui_template = (strlen($this->_controller->getCurrentRequest()->getAction())) ? $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$subfolder.$this->_controller->getCurrentRequest()->getAction().".tpl" : null;

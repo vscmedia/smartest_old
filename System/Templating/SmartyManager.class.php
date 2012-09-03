@@ -30,13 +30,13 @@ class SmartyManager{
 	private $smartyObj;
 	
 	public function __construct($context=null){
-		if($options = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Core/Info/system.yml")){
+		if($options = SmartestYamlHelper::fastLoad(SYSTEM_INFO_FILE)){
 		    $this->options = $options['system']['smarty_config'];
 			if($context){
 			    $this->context = $context;
 			}
 		}else{
-			throw new SmartestException("Config file ".SM_ROOT_DIR.'System/Core/Info/system.yml'." could not be parsed.", 104);
+			throw new SmartestException("Config file ".SYSTEM_INFO_FILE." could not be parsed.", 104);
 		}
 	}
 

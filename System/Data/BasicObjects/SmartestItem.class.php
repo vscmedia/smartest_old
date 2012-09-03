@@ -1087,6 +1087,13 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	}
 	
+	public function setIsPublic($p){
+	    
+	    $state = $p ? 'TRUE' : 'FALSE';
+	    $this->setPublic($state);
+	    
+	}
+	
 	public function setSlug($slug, $site_id=''){
 	    
 	    if($this->_properties['id']){

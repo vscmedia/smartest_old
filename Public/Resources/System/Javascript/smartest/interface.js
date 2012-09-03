@@ -570,6 +570,35 @@ Smartest.UI.UserMessageSystem.Message = Class.create({
     
 });
 
+Smartest.IPVItemCreator = Class.create({
+    
+    initialize: function(parameters){
+        
+        // alert(parameters.name);
+        if(parameters.name && parameters.property_id && parameters.host_item_id){
+            
+            var div_id = 'item_property_'+parameters.property_id+'-container-'+parameters.host_item_id;
+            $(div_id+'-loading').update('Loading...');
+            
+            new Ajax.Updater(div_id, sm_domain+'ajax:datamanager/createNewItemFromItemEditForm', {
+                method: 'get',
+                parameters: {property_id: parameters.property_id, name: parameters.name, host_item_id: parameters.host_item_id}
+            });
+            
+            /* new Ajax.Request(sm_domain+'ajax:datamanager/createNewItemFromItemEditForm', {
+                method: 'get',
+                parameters: {property_id: parameters.property_id, name: parameters.name, host_item_id: parameters.host_item_id},
+                onSuccess: function(transport){
+                    
+                }
+            }); */
+            
+        }
+        
+    }
+    
+});
+
 Smartest.AjaxModalScroller = {};
 
 Smartest.AjaxModalViewer = Class.create({
