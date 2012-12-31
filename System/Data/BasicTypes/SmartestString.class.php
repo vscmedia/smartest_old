@@ -2,7 +2,7 @@
 
 class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorableValue, SmartestSubmittableValue{
 	
-	protected $_string;
+	protected $_string = '';
 	
     public function __construct($string=''){
         $this->setValue($string);
@@ -98,6 +98,7 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
     }
     
     public function offsetGet($offset){
+        
         switch(strtolower($offset)){
             case "slug":
             return $this->toSlug();
@@ -119,6 +120,8 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
             return urlencode($this->_string);
             case "wordcount":
             return $this->getWordCount();
+            case "textile":
+            return SmartestStringHelper::parseTextile($this->_string);
             case "xmlentities":
             return (string) SmartestStringHelper::toXmlEntities($this->_string);
             case "html_escape":

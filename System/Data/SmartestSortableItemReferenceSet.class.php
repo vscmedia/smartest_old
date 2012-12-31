@@ -60,7 +60,7 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
         		    }
         		    
         		    if(isset($property_type_info['quantity']) && SmartestStringHelper::toRealBool($property_type_info['quantity'])){
-    		            $sql = "SELECT DISTINCT CONVERT(".$content_field.",DECIMAL(10,5)) AS content,";
+    		            $sql = "SELECT DISTINCT CONVERT(".$content_field.", DECIMAL(15,5)) AS content,";
 		            }else{
 		                $sql = "SELECT DISTINCT ".$content_field." AS content,";
 		            }
@@ -125,7 +125,7 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
             		$sql .= $direction;
     		
     		    }
-    		
+    		    
         		$result = $this->database->queryToArray($sql);
         		
         		$ids = array();

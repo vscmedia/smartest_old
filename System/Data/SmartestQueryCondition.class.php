@@ -70,10 +70,20 @@ class SmartestQueryCondition{
 			return " LIKE '%".$this->_value->getStorableFormat()."'";
 		
 			case 6:
-			return " > '".$this->_value->getStorableFormat()."'";
+			// for dates that are always now
+			if($this->_value->getStorableFormat() == '%NOW%'){
+			    return " > '".time()."'";
+		    }else{
+		        return " > '".$this->_value->getStorableFormat()."'";
+		    }
 		
 			case 7:
-			return " < '".$this->_value->getStorableFormat()."'";
+			// for dates that are always now
+			if($this->_value->getStorableFormat() == '%NOW%'){
+			    return " < '".time()."'";
+		    }else{
+		        return " < '".$this->_value->getStorableFormat()."'";
+		    }
 			
         }
         

@@ -88,6 +88,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             case "storage_location":
             return $this->getStorageLocation();
             
+            case "is_external":
+            return $this->isExternal();
+            
             case "web_path":
             if($this->usesLocalFile()){
                 return $this->getFullWebPath();
@@ -109,7 +112,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             return $this->isImage();
             
             case "is_web_accessible":
-            return $this->isWebAccessible();
+            return ($this->isExternal() || $this->isWebAccessible());
             
             case "image":
             return $this->isImage() ? $this->getImage() : null;
@@ -460,10 +463,19 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    
 	}
 	
+	public function isExternal(){
+	    $info = $this->getTypeInfo();
+	    return ($info['storage']['type'] == 'external_translated');
+	}
+	
 	public function getAbsoluteUri(){
-	    
-	    if($this->isWebAccessible()){
-	        return new SmartestExternalUrl('http://'.$this->getSite()->getDomain().$this->getFullWebPath());
+	  
+	    if($this->isExternal()){
+	        return new SmartestExternalUrl($this->getUrl());
+	    }else{
+	        if($this->isWebAccessible()){
+	            return new SmartestExternalUrl('http://'.$this->getSite()->getDomain().$this->getFullWebPath());
+	        }
 	    }
 	    
 	}
@@ -582,7 +594,11 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	public function getAbsoluteDownloadUri($secure=false){
 	    if(!$this->_absolute_uri_object){
 	        $protocol = $secure ? 'https://' : 'http://';
-	        $this->_absolute_uri_object = new SmartestExternalUrl($protocol.$this->getSite()->getDomain().$this->getDownloadUrl());
+	        if($this->isExternal()){
+    	        $this->_absolute_uri_object = new SmartestExternalUrl($this->getUrl());
+    	    }else{
+	            $this->_absolute_uri_object = new SmartestExternalUrl($protocol.$this->getSite()->getDomain().$this->getDownloadUrl());
+            }
         }
         return $this->_absolute_uri_object;
 	}

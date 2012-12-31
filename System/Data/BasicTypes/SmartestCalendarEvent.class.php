@@ -17,6 +17,20 @@ class SmartestCalendarEvent implements SmartestBasicType, ArrayAccess, SmartestS
         }
     }
     
+    public function loadFromTwoDates(SmartestDateTime $start, SmartestDateTime $end, $all_day=false){
+        $this->_start_time = $start;
+        $this->_end_time = $end;
+        $this->_is_all_day = (bool) $all_day;
+    }
+    
+    public function setDateFormat($f){
+        $this->_day_format = $f;
+    }
+    
+    public function setTimeFormat($f){
+        $this->_time_format = $f;
+    }
+    
     public function getValue(){
         
     }
@@ -36,7 +50,15 @@ class SmartestCalendarEvent implements SmartestBasicType, ArrayAccess, SmartestS
     
     public function __toString(){
         if($this->_is_all_day){
-            return "All day on ".date($this->_day_format, $this->_start_time);
+            if($this->_start_time->getUnixFormat() == $this->_end_time->getUnixFormat()){
+                return "All day on ".date($this->_day_format, $this->_start_time->getUnixFormat());
+            }else{
+                if(date('Y', $this->_start_time->getUnixFormat()) == date('Y', $this->_end_time->getUnixFormat())){
+                    return date($this->_day_format, $this->_start_time->getUnixFormat())." until ".date($this->_day_format, $this->_end_time->getUnixFormat());
+                }else{
+                    return date($this->_day_format, $this->_start_time->getUnixFormat())." until ".date($this->_day_format, $this->_end_time->getUnixFormat());
+                }
+            }
         }else{
             if(date('dmY', $this->_start_time->getUnixFormat()) == date('dmY', $this->_end_time->getUnixFormat())){
                 return "From ".date($this->_time_format, $this->_start_time->getUnixFormat())." until ".date($this->_time_format.' \o\n '.$this->_day_format, $this->_end_time->getUnixFormat());

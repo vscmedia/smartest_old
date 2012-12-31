@@ -60,7 +60,7 @@ function updateSetConditionsFormFromOperator(condition, value){
         <td>
           <select name="set_data_source_site_id">
             {foreach from=$sites item="site"}
-				    <option value="{$site.id}" {if $site.id == $set.data_source_site_id} selected="selected"{/if}>{$site.name}</option>
+				    <option value="{$site.id}" {if $site.id == $set.data_source_site_id} selected="selected"{/if}>{$site.internal_label}</option>
             {/foreach}
             {if count($sites) > 1}<option value="ALL" {if $set.data_source_site_id == "ALL"} selected="selected"{/if}>All Sites</option>{/if}
             <option value="CURRENT"{if $set.data_source_site_id == "CURRENT"} selected="selected"{/if}>The site where it is used (contextual)</option>

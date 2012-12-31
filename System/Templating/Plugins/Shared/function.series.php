@@ -37,6 +37,10 @@ function smarty_function_series($params, &$smartest_engine){
         
         break;
         
+        case "iterate":
+        
+        break;
+        
     }
     
 }

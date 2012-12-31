@@ -292,7 +292,7 @@ class SmartestQuery{
 			    if(is_numeric($limit)){
 			        $sql .= ' LIMIT '.$limit;
 			    }
-			    
+			    // echo $sql;
 			    $result = $this->database->queryToArray($sql);
 			    $condition->setIdsArray($this->getSimpleIdsArray($result));
 			

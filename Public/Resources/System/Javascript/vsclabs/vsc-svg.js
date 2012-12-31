@@ -44,6 +44,12 @@ VSC.SVG = Class.create({
         return this.elements[name];
     },
     
+    webkit: function(){
+        
+        this.paper.safari();
+        
+    },
+    
     addCircle: function(name, x, y, r, useCentre){
         if(useCentre){
             var c = this.paper.circle(x, y, r);

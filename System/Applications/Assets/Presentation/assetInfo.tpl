@@ -27,10 +27,12 @@
           </script>
         </td>
       </tr>
+      {if !$asset.is_external}
       <tr>
         <td style="width:150px;background-color:#fff" class="field-name">Name on disk:</td>
         <td><code>{$asset.full_path}</code></td>
       </tr>
+      {/if}
       {if $asset.is_web_accessible}
       <tr>
         <td style="width:150px;background-color:#fff" class="field-name">Direct URL</td>
@@ -42,10 +44,12 @@
         <td><code>{$asset.download_uri}</code></td>
       </tr>
       {/if}
+      {if !$asset.is_external}
       <tr>
         <td class="field-name">Size:</td>
         <td>{$asset.size}{if $asset.is_image}, ({$asset.width} x {$asset.height} pixels){/if}</td>
       </tr>
+      {/if}
       <tr>
         <td class="field-name">Type:</td>
         <td><a href="{$domain}{$section}/getAssetTypeMembers?asset_type={$asset.type}">{$asset.type_info.label}</a> <span style="color:#666">({$asset.type})</span></td>

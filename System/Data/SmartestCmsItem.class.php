@@ -199,7 +199,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            return "Recursion disallowed";
 	        }else{
 	            $v = $this->getPropertyValueByNumericKey($this->_varnames_lookup[$offset], $this->getDraftMode(), true);
-	            return $v;
+	            if(is_null($v)){
+	                return new SmartestString('');
+	            }else{
+	                return $v;
+                }
             }
 	        
 	    }else{
