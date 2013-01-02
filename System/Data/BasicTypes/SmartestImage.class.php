@@ -138,6 +138,14 @@ class SmartestImage extends SmartestFile{
 	public function setSingleRenderDataParameter($name, $value){
 	    $this->_render_data->setParameter($name, $value);
 	}
+	
+	public function setAltText($alt){
+	    $this->setSingleRenderDataParameter('alt_text', $alt);
+	}
+	
+	public function getAltText(){
+	    return $this->_render_data->getParameter('alt_text');
+	}
     
     public function getOrientation(){
         if($this->getHeight() == $this->getWidth()){

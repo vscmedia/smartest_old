@@ -534,6 +534,14 @@ class SmartestCmsLink extends SmartestHelper{
                         $img = $img->restrictToHeight($this->_render_data->getParameter('img_height'));
                     }
                 }
+                
+                if($this->_render_data->hasParameter('img_alt')){
+                    $img->setAltText($this->_render_data->getParameter('img_alt'));
+                }
+                
+                if($this->_render_data->hasParameter('alt')){
+                    $img->setAltText($this->_render_data->getParameter('alt'));
+                }
             
                 return $img->render();
                 
