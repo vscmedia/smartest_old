@@ -7,12 +7,12 @@ class Sets extends SmartestSystemApplication{
 
 	var $itemsManager;
 	
-	function __smartestApplicationInit(){
+	public function __smartestApplicationInit(){
 		$this->itemsManager = new ItemsHelper();
 		$this->SchemasManager = new SchemasManager();	
 	}
 	
-	function startPage($get){
+	public function startPage($get){
 		// $sets = $this->manager->getSets($this->getSite()->getId());   
 		
 		$du = new SmartestDataUtility;
@@ -20,7 +20,6 @@ class Sets extends SmartestSystemApplication{
 		$this->setTitle("Data Sets");
 		$this->send($sets, 'sets');
 		
-		// return array("sets"=> $sets);
 	}
 	
 	public function getItemClassSets($get){
@@ -32,7 +31,7 @@ class Sets extends SmartestSystemApplication{
 	        
 	        if($model->find($model_id)){
 	        
-	            $sets = $model->getDataSets();
+	            $sets = $model->getDataSets($this->getSite()->getId());
 	        
 	            $this->setTitle("Data Sets");
     		    $this->send($sets, 'sets');
@@ -62,7 +61,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	}
 	
-	function deleteSet(){
+	public function deleteSet(){
 	    
 	    $set = new SmartestCmsItemSet;
 	    
@@ -79,7 +78,7 @@ class Sets extends SmartestSystemApplication{
 		// return $this->manager->deleteSet($set_id);		
 	}
 	
-	function addSet($get){		
+	public function addSet($get){		
 
         $du = new SmartestDataUtility;
         
@@ -123,7 +122,7 @@ class Sets extends SmartestSystemApplication{
 		// return array("type"=>$this->getRequestParameter('type') ,"model_id"=>$this->getRequestParameter('model_id') ,"set_name"=>$set_name ,"models"=> $models, "properties"=>$properties);		
 	}
 	
-	function insertSet($get, $post){
+	public function insertSet($get, $post){
 	    
 	    $new_set_name = SmartestStringHelper::toVarName($post['set_name']);
 	    
@@ -311,7 +310,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	}
 	
-	function removeConditionFromSet($get){
+	public function removeConditionFromSet($get){
 	    
 	    $c = new SmartestDynamicDataSetCondition;
 	    
@@ -324,7 +323,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	}
 	
-	function transferItem($get, $post){
+	public function transferItem($get, $post){
 		
 		$set_id = (int) $post['set_id'];
 		$set = new SmartestCmsItemSet;
@@ -350,6 +349,7 @@ class Sets extends SmartestSystemApplication{
 	        }
 	        
 		    $this->redirect('/sets/editSet?set_id='.$set_id);
+		    exit;
 		    
 	    }else{
 	        
@@ -357,8 +357,8 @@ class Sets extends SmartestSystemApplication{
 	        
 	    }
 		
+		$this->formForward();
 		
-		// $this->formForward();
 	}
 	
 	public function transferSingleItem($get, $post){
@@ -538,7 +538,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	}
 	
-	function copySet($get){
+	public function copySet($get){
 		
 		$id=$this->getRequestParameter('set_id');	
 		$set = $this->manager->getSet($id);
@@ -571,21 +571,21 @@ class Sets extends SmartestSystemApplication{
 		}
 	}
 
-	function removeRule($get){
+	public function removeRule($get){
 		
 	}
 	
 	
 	//database queries
-	function insertRuleSet($get, $post){
+	public function insertRuleSet($get, $post){
 	}
 
-	function deleteRule($get, $post){
+	public function deleteRule($get, $post){
 		$setrule_id=$post['setrule_id'];
 		$this->manager->deleteSetRule($setrule_id);
 	}
 
-	function insertRule($get, $post){
+	public function insertRule($get, $post){
 		$set_id=$post['set_id'];
 		$itemproperty_id=$post['itemproperty_id'];
 		$condition=$post['condition'];
@@ -593,7 +593,7 @@ class Sets extends SmartestSystemApplication{
 		$this->manager->addSetRule($set_id, "", $itemproperty_id, strtoupper($condition),$value);	 
 	}
 	
-	function deleteRuleSet($get, $post){
+	public function deleteRuleSet($get, $post){
 		
 	}
 	
@@ -603,7 +603,7 @@ class Sets extends SmartestSystemApplication{
 //     		$this->manager->updateSet($set_id,$items);   
 // 	}
 
-	function getSet($get="", $post=""){
+	public function getSet($get="", $post=""){
 		
 		//this is from feed.class.php
 		/* $const['EQUALS'] = 0;
@@ -646,7 +646,7 @@ class Sets extends SmartestSystemApplication{
 		*/
 	}
 
-	function chooseSchemaForExport($get){
+	/* public function chooseSchemaForExport($get){
 		
 		$set_id=$this->getRequestParameter('set_id');			
 		$set = $this->manager->getSet($set_id);		
@@ -655,7 +655,7 @@ class Sets extends SmartestSystemApplication{
 		
 	}
 
-	function exportDataOptions($get){
+	public function exportDataOptions($get){
 		
 		$set_id=$this->getRequestParameter('set_id');
 		$schema_id=$this->getRequestParameter('schema_id');
@@ -671,7 +671,7 @@ class Sets extends SmartestSystemApplication{
 		return(array("set"=>$set,"schema_id"=>$schema_id,"count"=>$count,"schema_name"=>$schema_name,"name"=>$name));
 	}
 
-	function exportData($get){
+	public function exportData($get){
 		
 		$set_id=$this->getRequestParameter('set_id');	
 		$schema_id=$this->getRequestParameter('schema_id');	
@@ -689,7 +689,7 @@ class Sets extends SmartestSystemApplication{
 		return(array("set"=>$set,"Properties"=>$definition,"schemas"=>$this->itemsManager->getSchemas(),"schema_id"=>$schema_id,"schemsDefinition"=>$repeatingDefinition,"name"=>$name,"msg"=>$msg,"Settings"=>$array));
 	}	
 
-  	function exportDataInsert($get,$post){
+  	public function exportDataInsert($get,$post){
 		
 		$class_id=$post["class_id"];	
 		$set_id=$post["set_id"];
@@ -728,7 +728,7 @@ class Sets extends SmartestSystemApplication{
 		}
 	}	
 
-	function editExportData($get){
+	public function editExportData($get){
 		
 		$set_id=$this->getRequestParameter('set_id');	
 		$schema_id=$this->getRequestParameter('schema_id');
@@ -767,7 +767,8 @@ class Sets extends SmartestSystemApplication{
 		return(array("set"=>$set,"Properties"=>$definition,"schema_id"=>$schema_id,"pairing_id"=>$pair_id,"schemsDefinition"=>$repeatingDefinition,"name"=>$name,"msg"=>$msg,"Settings"=>$settings));
 	}
 
-	function updateExportData($get,$post){
+	public function updateExportData($get,$post){
+		
 		$pairing_id=$post["pairing_id"];
 		$class_id=$post["class_id"];
 		$set_id=$post["set_id"];
@@ -794,7 +795,7 @@ class Sets extends SmartestSystemApplication{
 		$this->redirect($this->domain.$this->module."exportSuccess?set_id=$set_id&schema=$schema_varname&dataexport=$varname");
 	}
 
-	function choosePairingForExport($get){
+	public function choosePairingForExport($get){
 		$set_id=$get["set_id"];	$schema_id=$get["schema_id"];	
 		$set = $this->manager->getSet($set_id);	
 		$pairing=$this->manager->getparing($set_id,$schema_id);
@@ -802,20 +803,20 @@ class Sets extends SmartestSystemApplication{
 		return(array("set"=>$set,"pairing"=>$pairing,"schema"=>$schema_varname,"schema_id"=>$schema_id));
 	}
 	
-	function exportSuccess($get){
+	public function exportSuccess($get){
 		$set_id=$get["set_id"];$set = $this->manager->getSet($set_id);
 		$schema_varname=$get["schema"];
 		$varname=$get["dataexport"];
 		return(array("set"=>$set,"pairing"=>$pairing,"schema_varname"=>$schema_varname,"dataexport_varname"=>$varname));
 	}
 	
-	function getDataExports($get){
+	public function getDataExports($get){
 		$pairing=$this->manager->getDataExports();
 		$count=count($pairing);
 		return(array("pairing"=>$pairing,"count"=>$count));
 	}
 	
-	function editDataExportFeed($get){
+	public function editDataExportFeed($get){
 		$export_id=$get["export_id"];
 		$name=$get["pairing_name"];
 		$sets=$this->manager->chooseSetForDataExport($export_id);
@@ -824,9 +825,9 @@ class Sets extends SmartestSystemApplication{
 		return(array("export_id"=>$export_id,"pairing_name"=>$name,"sets"=>$sets,"pairing"=>$pairing));
 	}
 	
-	function updateDataExportFeed($get,$post){
+	public function updateDataExportFeed($get,$post){
 		$export_id=$post["export_id"];
 		$set=$post["set"];$pair=$post["pair"];
 		$this->manager->updateDataExportFeed($export_id,$set,$pair);
-	}
+	} */
 }
