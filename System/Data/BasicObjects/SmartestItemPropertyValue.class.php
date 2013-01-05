@@ -56,6 +56,18 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
         $this->_item = $item;
     }
     
+    public function getItem(){
+        if($this->hasItem()){
+            return $this->_item;
+        }else{
+            if($this->getItemId()){
+                $this->_item = SmartestCmsItem::retrieveByPk($this->getItemId());
+            }else{
+                // item not provided and IPV has no item ID so can't work it out for itself
+            }
+        }
+    }
+    
     public function getRawValue($draft=false){
         
         if($draft){
@@ -131,8 +143,11 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     }
                     
                     if($class == 'SmartestRenderableSingleItemTemplateAsset'){
-                        // $this->_item->disableTemplateProperty($this->_properties['property_id']); // disabled because it was causing fatal error - $this->_item not always being found
-                        $obj->setItem(&$this->_item);
+                        $this->getItem();
+                        if($this->hasItem()){
+                            $this->getItem()->disableTemplateProperty($this->_properties['property_id']);
+                            $obj->setItem($this->getItem());
+                        }
                     }
                     
                     if($class == 'SmartestCmsItemSet'){
