@@ -8,6 +8,8 @@
     <title>Smartest&trade; Web Platform{if $_interface_title} | {$_interface_title}{/if}</title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="icon" href="{$domain}Resources/System/Images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{$domain}Resources/System/Images/favicon.ico" type="image/x-icon">
     
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_style.css" />
     <link rel="stylesheet" type="text/css" href="{$domain}Resources/System/Stylesheets/sm_layout.css" />

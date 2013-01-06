@@ -41,6 +41,11 @@ class SmartestWebPagePreparationHelper{
         
     }
     
+    public function fetchContainer($container_name, $draft_mode=false){
+        return $this->buildFromContainerDownwards($container_name, $draft_mode);
+        
+    }
+    
     public function cachedPagesAllowed(){
         
         return (file_exists(SM_ROOT_DIR.'System/Cache/Pages/'.$this->_page->getCacheFileName()) && $this->_page->getCacheAsHtml() == "TRUE" && $this->_page->getDraftMode() == false && ($this->_request->getAction() == 'renderPageFromId' || $this->_request->getAction() == 'renderPageFromUrl'));
@@ -80,6 +85,52 @@ class SmartestWebPagePreparationHelper{
 	    }
 		
 		return $content;
+        
+    }
+    
+    public function buildFromContainerDownwards($container_name, $draft_mode=''){
+        // echo "build";
+        $b = $this->createBuilder();
+        
+        $b->assign('domain', $this->_request->getDomain());
+        $b->assign('method', $this->_request->getAction());
+        $b->assign('section', $this->_request->getModule());
+        $b->assign('now', new SmartestDateTime(time()));
+        $b->assignPage($this->_page);
+        
+        if($ua = SmartestPersistentObject::get('userAgent')){
+            $b->assign('sm_user_agent_json', $ua->getSimpleClientSideObjectAsJson());
+            $b->assign('sm_user_agent', $ua->__toArray());
+        }
+        
+        if($draft_mode === true || $draft_mode === false){
+            $b->setDraftMode($draft_mode);
+        }else{
+            $draft_mode = $this->_page->getDraftMode();
+        }
+        
+        $b->prepareForRender();
+        
+        // echo $container_name;
+        
+        if($this->_page->hasContainerDefinition($container_name)){
+            
+            // echo $container_name;
+            $container_def = $this->_page->getContainerDefinition($container_name, $draft_mode);
+            
+            ob_start();
+            $b->run($container_def->getTemplateFilePath(), array());
+            $content = ob_get_contents();
+            ob_end_clean();
+            
+            return $content;
+            
+        }else{
+            
+            echo "Container not defined";
+            exit;
+            
+        }
         
     }
     

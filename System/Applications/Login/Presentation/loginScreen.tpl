@@ -6,6 +6,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     
     <link rel="stylesheet" href="{$domain}Resources/System/Stylesheets/sm_login.css" />
+    <link rel="icon" href="{$domain}Resources/System/Images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{$domain}Resources/System/Images/favicon.ico" type="image/x-icon">
     
     <style type="text/css">
       /* {literal}div#login{{/literal}

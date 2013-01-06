@@ -43,6 +43,9 @@ module:
       action: getSetAsJson
       params:
         use_default_mode: true
+    page_fragment:
+      url: /pagefragment/:page_id/:container_name
+      action: pageFragment
 #    sitemap:
 #      url: /sitemap.xml
 #      action: buildXmlSitemap
@@ -52,8 +55,7 @@ module:
   meta:
     system: true
   namespaces:
-    info:
+    ajax:
       class: CmsFrontEndAjax
       meta:
         template: blank.tpl
-      content_type: text/json

@@ -61,6 +61,12 @@
     color:#666;
 }
 
+.modal p.editable{
+    font-size: 18px;
+    width:auto;
+    overflow:hidden;
+}
+
 .modal-updater{
     height:320px;
     width:525px;

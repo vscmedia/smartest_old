@@ -1,13 +1,54 @@
 <div id="work-area">
   <h3>{$item._model.name} Info</h3>
+  {if $item._model.item_name_field_visible}
   <div class="edit-form-row">
-    <div class="form-section-label">Title</div>
+    <div class="form-section-label">{$item._model.name} {$item._model.item_name_field_name}</div>
+    {if $user_can_modify_items}
+    <p class="editable" id="item-name">{$item.name|escape_double_quotes}</p>
+    <script type="text/javascript">
+    // <!--
+    new Ajax.InPlaceEditor('item-name', sm_domain+'ajax:datamanager/setItemNameFromInPlaceEditField', {ldelim}
+      callback: function(form, value) {ldelim}
+        return 'item_id={$item.id}&new_name='+encodeURIComponent(value);
+      {rdelim},
+      highlightColor: '#ffffff',
+      hoverClassName: 'editable-hover',
+      savingClassName: 'editable-saving'
+    {rdelim});
+    // -->
+    </script>
+    {else}
     {$item.name}
+    {/if}
   </div>
+  {/if}
   <div class="edit-form-row">
-    <div class="form-section-label">Name</div>
+    <div class="form-section-label">{$item._model.name} short name (Used in links and URLS)</div>
+    {if $user_can_modify_items}
+    {if $item.public == "TRUE" && count($metapages)}<div class="warning">Warning: This {$item._model.name|strtolower} is live. Editing this value may cause links to it to break.</div>{/if}
+    <p class="editable" id="item-slug">{$item.slug|escape_double_quotes}</p>
+    <script type="text/javascript">
+    // <!--
+    new Ajax.InPlaceEditor('item-slug', sm_domain+'ajax:datamanager/setItemSlugFromInPlaceEditField', {ldelim}
+      callback: function(form, value) {ldelim}
+        return 'item_id={$item.id}&new_slug='+encodeURIComponent(value);
+      {rdelim},
+      highlightColor: '#ffffff',
+      hoverClassName: 'editable-hover',
+      savingClassName: 'editable-saving'
+    {rdelim});
+    // -->
+    </script>
+    {else}
     <code>{$item.slug}</code>
+    {/if}
   </div>
+  {if $has_page}
+    <div class="edit-form-row">
+        <div class="form-section-label">Default URL</div>
+        {$item.absolute_uri}
+      </div>
+  {/if}
   {if $item.created.unix > 0}
     <div class="edit-form-row">
       <div class="form-section-label">Created:</div>
@@ -58,17 +99,13 @@
  </div>
   {if $has_page}
   <div class="edit-form-row">
-      <div class="form-section-label">Default URL</div>
-      {$item.absolute_uri}
-    </div>
-  <div class="edit-form-row">
     <div class="form-section-label">Link code (Default URL)</div>
     <code>[[{$item._model.name|varname}:{$item.slug}]]</code>
   </div>
-  <div class="edit-form-row">
+  {* <div class="edit-form-row">
       <div class="form-section-label">QR code (Default URL)</div>
       {$item.absolute_uri.qr_code_image.width_100}
-    </div>
+    </div> *}
   {/if}
   
   </div>

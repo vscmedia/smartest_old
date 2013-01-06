@@ -625,7 +625,11 @@ class SmartestCmsLink extends SmartestHelper{
                 return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId();
             }else{
                 if($this->_destination->getIsPublishedAsBoolean() || $ignore_status){
-                    return $this->_request->getDomain().$this->_destination->getDefaultUrl();
+                    /* if(defined('SM_LINK_URLS_ABSOLUTE') && constant('SM_LINK_URLS_ABSOLUTE')){
+                        'http://'.$this->getSite()->getDomain().$this->_request->getDomain().$this->_destination->getDefaultUrl();
+                    }else{ */
+                        return $this->_request->getDomain().$this->_destination->getDefaultUrl();
+                    // }
                 }else{
                     return '#';
                 }

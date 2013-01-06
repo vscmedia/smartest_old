@@ -31,6 +31,7 @@ class QuinceAction{
 	        
 	        // Set the class and action names, accounting for any modifications from the namespace
             if($this->_request->getNamespace() != 'default' || isset($this->_module_info['namespaces']['default'])){
+                
                 /* if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['affect'])){
                     $affect = $this->_module_info['namespaces'][$this->_request->getNamespace()]['affect'];
                     $this->_class = ($affect == 'class') ? $this->_request->getNamespace().'_'.$this->_module_info['class'] : $this->_module_info['class'];
@@ -44,11 +45,18 @@ class QuinceAction{
                 } */
                 // echo "test";
                 
+                // echo $this->_request->getNamespace();
+                
                 if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['class'])){
                     $this->_class = $this->_module_info['namespaces'][$this->_request->getNamespace()]['class'];
                     $class_modified_by_namespace = true;
                 }else{
                     $this->_class = $this->_module_info['class'];
+                }
+                
+                if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['default_action'])){
+                    $this->_module_info['default_action'] = $this->_module_info['namespaces'][$this->_request->getNamespace()]['default_action'];
+                    $default_action_modified_by_namespace = true;
                 }
                 
                 if(isset($this->_module_info['namespaces'][$this->_request->getNamespace()]['action_prefix'])){
@@ -58,7 +66,10 @@ class QuinceAction{
                     $this->_action = $this->_request->getAction();
                 }
                 
+                $default_action = $this->_module_info['default_action'];
+                
                 // echo $this->_class;
+                // echo "not default";
             }else{
                 $this->_class = $this->_module_info['class'];
                 $this->_action = $this->_request->getAction();
@@ -1413,7 +1424,7 @@ class Quince{
         
         if($prepare || !$this->_current_action){
             $this->prepare($url);
-            echo $this->getCurrentRequest()->getDomain();
+            // echo $this->getCurrentRequest()->getDomain();
         }
 	    
 	    try{

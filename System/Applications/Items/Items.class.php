@@ -1407,6 +1407,8 @@ class Items extends SmartestSystemApplication{
 	        $this->setFormReturnUri();
 	        
 	        $this->send($item->getModel()->getMetaPages(), 'metapages');
+	        $this->send(($this->getUser()->hasToken('modify_items') && $this->getRequestParameter('enable_ajax')), 'user_can_modify_items');
+	        $this->send(($this->getUser()->hasToken('edit_item_name') && $this->getRequestParameter('enable_ajax')), 'user_can_modify_item_slugs');
 		    
 		    $authors = $item->getItem()->getAuthors();
 		    
@@ -1645,15 +1647,15 @@ class Items extends SmartestSystemApplication{
 	    $item_id = (int) $this->getRequestParameter('item_id');
 	    $item = new SmartestItem;
 	    
-	    if($item->hydrate($item_id)){
+	    if($item->find($item_id)){
 	        
 	        $uhelper = new SmartestUsersHelper;
 	        $users = $uhelper->getUsersOnSiteAsArrays($this->getSite()->getId());
 	        
 	        $this->send($users, 'users');
-	        $this->send($item->__toArray(), 'item');
-	        $this->send($item->getModel()->__toArray(), 'model');
-	        $this->send($this->getUser()->__toArray(), 'user');
+	        $this->send($item, 'item');
+	        $this->send($item->getModel(), 'model');
+	        $this->send($this->getUser(), 'user');
 	        
 	        $todo_types = SmartestTodoListHelper::getTypesByCategoryAsArrays('SM_TODOITEMCATEGORY_ITEMS', true);
 	        $this->send($todo_types, 'todo_types');

@@ -2,7 +2,7 @@
   
   {load_interface file="edit_tabs.tpl"}
   
-  <h3>Authors of this page</h3>
+  <h3>Authors of this {$item._model.name}</h3>
     
     <div class="instruction">Check the boxes next to the users you'd like to link to this page as authors.</div>
     

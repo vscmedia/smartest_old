@@ -220,5 +220,58 @@ class ItemsAjax extends SmartestSystemApplication{
         }
 	    
 	}
+	
+	public function setItemNameFromInPlaceEditField(){
+	    
+	    $item_id = $this->getRequestParameter('item_id');
+	    $item = SmartestCmsItem::retrieveByPk($item_id);
+        
+        if(is_object($item)){
+            if($this->getUser()->hasToken('modify_items')){
+                
+                if(strlen($this->getRequestParameter('new_name'))){
+                    $item->getItem()->setName($this->getRequestParameter('new_name'));
+                }
+                
+                $item->getItem()->setModified(time());
+                $item->getItem()->save();
+            }
+            
+            header('HTTP/1.1 200 OK');
+            echo $item->getItem()->getName();
+            
+        }
+        
+        exit;
+	    
+	}
+	
+	public function setItemSlugFromInPlaceEditField(){
+	    
+	    $item_id = $this->getRequestParameter('item_id');
+	    $item = SmartestCmsItem::retrieveByPk($item_id);
+        
+        if(is_object($item)){
+            
+            if($this->getUser()->hasToken('edit_item_name')){
+                if(strlen($this->getRequestParameter('new_slug'))){
+                    $item->getItem()->setSlug(SmartestStringHelper::toSlug($this->getRequestParameter('new_slug')));
+                }else{
+                    if(!strlen($item->getItem()->getSlug())){
+                        $item->getItem()->setSlug(SmartestStringHelper::toSlug($item->getItem()->getName()), true);
+                    }
+                }
+                $item->getItem()->setModified(time());
+                $item->getItem()->save();
+            }
+            
+            header('HTTP/1.1 200 OK');
+            echo $item->getItem()->getSlug();
+            
+        }
+        
+        exit;
+	    
+	}
 
 }
