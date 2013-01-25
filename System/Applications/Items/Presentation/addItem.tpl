@@ -28,6 +28,12 @@
   <input type="text" name="item[_name]" value="Untitled {$model.name}" id="item-name" />
 </div>{/if}
 
+<div class="edit-form-row">
+  <div class="form-section-label">Add tags</div>
+  <input type="text" name="item_tags" value="" id="item-tags" />
+  <span class="form-hint">Separate tags with commas</span>
+</div>
+
 {foreach from=$properties key="pid" item="property"}
 
 <div class="edit-form-row">

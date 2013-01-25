@@ -2270,6 +2270,28 @@ class Items extends SmartestSystemApplication{
                             $item->addAuthorById($this->getUser()->getId());
                         }
                         
+                        // Insert any tags entered, creating them if necessary
+                        if($this->getRequestParameter('item_tags')){
+                            
+                            $tag_labels = explode(',', $this->getRequestParameter('item_tags'));
+                            
+                            foreach($tag_labels as $tag_label){
+                                
+                                $tag_label = trim($tag_label);
+                                $tag_slug = SmartestStringHelper::toSlug($tag_label);
+                                $tag_object = new SmartestTag;
+                                
+                                if(!$tag_object->findBy('name', $tag_slug)){
+                                    $tag_object->setName($tag_slug);
+                                    $tag_object->setLabel($tag_label);
+                                    $tag_object->setLanguage($this->getRequestParameter('_language'));
+                                    $tag_object->save();
+                                }
+                                
+                                $item->getItem()->tag($tag_object->getId());
+                            }
+                        }
+                        
                         if($this->getRequestParameter('for') == 'ipv'){
                             
                             $parent_item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'));

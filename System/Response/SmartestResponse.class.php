@@ -101,7 +101,8 @@ class SmartestResponse{
 
         	'System/Data/ExtendedTypes/SmartestCmsItemsCollection.class.php',
         	'System/Data/ExtendedTypes/SmartestAssetsCollection.class.php',
-        	'System/Data/ExtendedTypes/SmartestTwitterAccountName.class.php'
+        	'System/Data/ExtendedTypes/SmartestTwitterAccountName.class.php',
+        	'System/Data/ExtendedTypes/SmartestExternalFeed.class.php'
 
         );
         
