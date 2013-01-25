@@ -68,6 +68,8 @@ class SmartestSystemUser extends SmartestUser{
             }
         }   
         
+        $sql .= " ORDER BY Sites.site_internal_label ASC";
+        
         $this->_site_ids = array();
         
 	    $result = $this->database->queryToArray($sql);

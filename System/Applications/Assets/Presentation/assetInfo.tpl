@@ -40,7 +40,7 @@
       </tr>
       {else}
       <tr>
-        <td style="width:150px;background-color:#fff" class="field-name">Download URL</td>
+        <td style="width:150px;background-color:#fff" class="field-name">Public download URL</td>
         <td><code>{$asset.download_uri}</code></td>
       </tr>
       {/if}

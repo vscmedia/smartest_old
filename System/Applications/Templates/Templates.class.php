@@ -717,6 +717,7 @@ class Templates extends SmartestSystemApplication{
 	                $t->setType($post['new_type']);
 	                $t->save();
 	                $this->addUserMessageToNextRequest("The template was successfully converted to type: \"".$types[$post['new_type']]['label']."\"", SmartestUserMessage::SUCCESS);
+	                SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} changed template '{$template->getLabel()}' to type '".$types[$post['new_type']]['label']."'.", SmartestLog::USER_ACTION);
                 }else{
                     $this->addUserMessageToNextRequest("The new type was not recognized", SmartestUserMessage::ERROR);
                 }
@@ -867,6 +868,7 @@ class Templates extends SmartestSystemApplication{
     		if($post['add_type'] == "DIRECT"){
 			
     			if(SmartestFileSystemHelper::save($full_filename, stripslashes($this->getRequestParameter('template_content')), true)){
+    			    SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} created a new template '{$new_template->getLabel()}' (".$full_filename.").", SmartestLog::USER_ACTION);
     				$this->addUserMessageToNextRequest('The file was saved successfully.', SmartestUserMessage::SUCCESS);
     				$file_success = true;
     			}else{
@@ -1200,6 +1202,8 @@ class Templates extends SmartestSystemApplication{
     		
     		SmartestFileSystemHelper::save($template->getFullPathOnDisk(), $template_content, true);
     		
+    		SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} made a change to template '{$template->getLabel()}'.", SmartestLog::USER_ACTION);
+    		
     		if($edit_type == 'imported'){
     		    $template->setModified(time());
     		    $template->save();
@@ -1427,10 +1431,12 @@ class Templates extends SmartestSystemApplication{
 		
 		    $new_file = SmartestFileSystemHelper::getUniqueFileName($template->getFullPathOnDisk());
 		    
+		    SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} deleted template '{$template->getLabel()}'.", SmartestLog::USER_ACTION);
+		    
 		    if($template->delete()){
                 $this->addUserMessageToNextRequest('The template was deleted successfully.', SmartestUserMessage::SUCCESS);
     		}else{
-    			$this->addUserMessageToNextRequest('Couldn\'t create new copy. Please check file permissions.', SmartestUserMessage::WARNING);
+    			$this->addUserMessageToNextRequest('Couldn\'t move template to trash. Please check file permissions.', SmartestUserMessage::WARNING);
     		}
 		
 	    }
@@ -1584,6 +1590,7 @@ class Templates extends SmartestSystemApplication{
 			    }
 
     			$this->addUserMessageToNextRequest('Your new copy was created successfully as '.basename($new_file).'.', SmartestUserMessage::SUCCESS);
+    			SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} duplicated template '{$template->getLabel()}' to new file ".basename($new_file).".", SmartestLog::USER_ACTION);
 
     		}else{
     			$this->addUserMessageToNextRequest('Couldn\'t create new copy. Please check file permissions.', SmartestUserMessage::WARNING);

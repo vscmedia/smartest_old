@@ -3205,7 +3205,7 @@ class Pages extends SmartestSystemApplication{
 	        if(((boolean) $page->getChangesApproved() || $this->getUser()->hasToken('approve_page_changes')) && ($this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
 		        
 		        $page->publish($item_id);
-		        SmartestLog::getInstance('site')->log("{$this->getUser()} published page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
+		        SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} published page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        
 		        if($this->getRequestParameter('item_id') && $item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
                     
@@ -3251,6 +3251,8 @@ class Pages extends SmartestSystemApplication{
 		    
 		    $page->setDraftMode(true);
 		    $page->unpublish();
+		    
+		    SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} un-published page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		    
 		}
 		
@@ -3359,10 +3361,12 @@ class Pages extends SmartestSystemApplication{
             if($list->load($list_name, $page, true)){
                 // this list was already defined
                 $this->addUserMessageToNextRequest("The list \"".$list_name."\" was updated successfully.", SmartestUserMessage::SUCCESS);
+                $log_message = "{$this->getUser()->getFullname()} updated list '{$list->getName()}' on page '{$page->getTitle()}'.";
             }else{
                 // this is a new list
                 $list->setName($this->getRequestParameter('list_name'));
                 $list->setPageId($page->getId());
+                $log_message = "{$this->getUser()->getFullname()} created a list entitled '{$list->getName()}' on page '{$page->getTitle()}'.";
                 $this->addUserMessageToNextRequest("The list \"".$list_name."\" was defined successfully.", SmartestUserMessage::SUCCESS);
             }
             
@@ -3401,6 +3405,8 @@ class Pages extends SmartestSystemApplication{
                 $list->setDraftTemplateFile($this->getRequestParameter('art_main_template'));
                 
             }
+            
+            SmartestLog::getInstance('site')->log($log_message, SmartestLog::USER_ACTION);
             
             $list->save();
             
@@ -3542,6 +3548,8 @@ class Pages extends SmartestSystemApplication{
 	                $template_id = (int) $this->getRequestParameter('itemspace_template_id');
     	            $item_space->setTemplateAssetId($template_id);
 	            }
+	            
+	            SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} created an itemspace with the name '{$item_space->getName()}'.", SmartestLog::USER_ACTION);
 	        
 	            $this->addUserMessageToNextRequest('An itemspace called \''.$new_name.'\' has been created.', SmartestUserMessage::SUCCESS);
 	            $item_space->save();
@@ -3586,21 +3594,28 @@ class Pages extends SmartestSystemApplication{
 	    $id = SmartestStringHelper::toVarName($this->getRequestParameter('itemspace_id'));
 	    
 	    if($item_space->find($id)){
+	        
 	        if(strlen($this->getRequestParameter('itemspace_label'))){
 	            $item_space->setLabel($this->getRequestParameter('itemspace_label'));
 	        }
+	        
 	        if($this->getRequestParameter('itemspace_template_id') == "NONE"){
 	            $item_space->setUsesTemplate(false);
 	        }else if(is_numeric($this->getRequestParameter('itemspace_template_id'))){
 	            $item_space->setUsesTemplate(true);
 	            $item_space->setTemplateAssetId($this->getRequestParameter('itemspace_template_id'));
 	        }
+	        
 	        if(is_numeric($this->getRequestParameter('itemspace_dataset_id'))){
 	            $item_space->setDataSetId($this->getRequestParameter('itemspace_dataset_id'));
 	        }
+	        
+	        SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} updated itemspace '{$item_space->getName()}'", SmartestLog::USER_ACTION);
+	        
 	        $item_space->save();
 	        $this->addUserMessageToNextRequest('The itemspace was sucessfully updated.', SmartestUserMessage::SUCCESS);
 	        $this->formForward();
+	        
 	    }else{
             $this->addUserMessageToNextRequest("The itemspace ID wasn't recognized", SmartestUserMessage::ERROR);
             $this->formForward();
@@ -3678,6 +3693,8 @@ class Pages extends SmartestSystemApplication{
                     $this->addUserMessageToNextRequest("The itemspace wasn't defined in the first place", SmartestUserMessage::INFO);
                 }
                 
+                SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} cleared the definition of itemspace '{$item_space->getName()}' on page {$page->getTitle()}", SmartestLog::USER_ACTION);
+                
                 // $definition->setDraftItemId($this->getRequestParameter('item_id'));
                 
                 $definition->save();
@@ -3719,6 +3736,8 @@ class Pages extends SmartestSystemApplication{
                 }
                 
                 $definition->setDraftItemId($this->getRequestParameter('item_id'));
+                
+                SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} updated the definition of itemspace '{$item_space->getName()}' on page {$page->getTitle()}", SmartestLog::USER_ACTION);
                 
                 $this->addUserMessageToNextRequest("The itemspace ID was successfully updated", SmartestUserMessage::SUCCESS);
                 $definition->save();
@@ -3858,7 +3877,9 @@ class Pages extends SmartestSystemApplication{
 		            $url->setType($this->getRequestParameter('forward_to_default') ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
 		        
 	            }
-	               
+	            
+	            SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} added the URL '{$url->getUrl()}' for page '{$page->getTitle()}'.", SmartestLog::USER_ACTION);
+	            
 		        $url->save();
 		        SmartestLog::getInstance('site')->log("{$this->getUser()} added URL '{$this->getRequestParameter('page_url')}' to page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        $this->addUserMessageToNextRequest("The new URL was successully added.", SmartestUserMessage::SUCCESS);

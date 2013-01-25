@@ -2421,11 +2421,10 @@ class Assets extends SmartestSystemApplication{
 
 		$asset_id = $this->getRequestParameter('asset_id');
 
-		// echo $asset_id;
 		$asset = new SmartestAsset;
 
 		if($asset->find($asset_id)){
-
+            
 		    if($asset->usesLocalFile()){
 		        $download = new SmartestDownloadHelper($asset->getFullPathOnDisk());
 		    }else{
@@ -2433,17 +2432,13 @@ class Assets extends SmartestSystemApplication{
 		        $download->setDownloadFilename($asset->getDownloadableFilename());
 		    }
 
-		    // echo $download->getDownloadSize();
-
-    		$ua = $this->getUserAgent()->getAppName();
+		    $ua = $this->getUserAgent()->getAppName();
 
     		if($ua == 'Explorer' || $ua == 'Opera'){
     		    $mime_type = 'application/octetstream';
     		}else{
     		    $mime_type = 'application/octet-stream';
     		}
-
-    		// echo $download->getType();
 
     		$download->setMimeType($mime_type);
     		$download->send();

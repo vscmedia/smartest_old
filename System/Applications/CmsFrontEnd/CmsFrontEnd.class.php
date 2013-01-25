@@ -77,9 +77,11 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        // this is the home page
 		        $this->_page = new SmartestPage;
 		        $this->_page->find($this->_site->getTopPageId());
+		        
 		        if($this->_page->getLastPublished()){
 		            header("Last-Modified: ".date('D, j M Y H:i:s e', $this->_page->getLastPublished())); // Tue, 15 Nov 1994 12:45:26 GMT
 		        }
+		        
 		        $this->renderPage();
 		        
 		    }
@@ -303,6 +305,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	    if($this->lookupSiteDomain()){
 	        
+	        if($this->_site->getIsEnabled()){
+	        
 	        $database = SmartestDatabase::getInstance('SMARTEST');
 	        
 	        $asset_url = urldecode($this->getRequestParameter('url'));
@@ -335,6 +339,12 @@ class CmsFrontEnd extends SmartestSystemApplication{
         		$download->send();
 	            
 	        }
+	        
+            }else{
+                
+                echo "Site not enabled";
+                
+            }
 	    
         }
         
@@ -397,7 +407,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        
         }else{
             
-            
+            // site domain not recognised, so we don't even knkow whether a page with this URL exists or not!
             
         }
 		
