@@ -107,8 +107,6 @@
 <body>
 
 <div id="login">
-  
-  <!--<img src="{$domain}Resources/System/Images/login_box_top_corners.png" alt="" style="display:block" />-->
 
   <div id="login-inner">
 
@@ -146,7 +144,7 @@
         <input type="hidden" name="service" value="smartest" />
 
         <p class="submit">
-          <a href="#" id="submit-button"><img src="/Resources/System/Images/login_button.png" alt="Log In" /></a>
+          <a href="#" id="submit-button"><img src="{$domain}Resources/System/Images/login_button.png" alt="Log In" /></a>
         </p>
 
       </form>
@@ -154,8 +152,6 @@
     </div>
 
   </div>
-  
-  <!--<img src="{$domain}Resources/System/Images/login_box_bottom_corners.png" alt="" style="display:block" />-->
 
 </div>
 

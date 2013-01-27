@@ -7,7 +7,7 @@ body	{
   color: #000;
   margin: 0;
   padding: 0;
-  background:url(/Resources/System/Images/login_form_bg_hgrad.png);
+  background:url(../Images/login_form_bg_hgrad.png);
 }
 
 a img{
