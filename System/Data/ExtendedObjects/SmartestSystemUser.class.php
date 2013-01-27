@@ -62,7 +62,7 @@ class SmartestSystemUser extends SmartestUser{
             }
         }else{
             // site_access token is ALWAYS ID 21
-            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND (UsersTokensLookup.utlookup_token_id = '21' OR UsersTokensLookup.utlookup_token_id = '0') AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id ORDER BY UsersTokensLookup.utlookup_granted_timestamp ASC";
+            $sql = "SELECT DISTINCT Sites.* FROM Users, UsersTokensLookup, Sites WHERE Users.user_id = '".$this->getId()."' AND (UsersTokensLookup.utlookup_token_id = '21' OR UsersTokensLookup.utlookup_token_id = '0') AND Users.user_id = UsersTokensLookup.utlookup_user_id AND Sites.site_id = UsersTokensLookup.utlookup_site_id";
             if(is_array($limit_ids) && count($limit_ids)){
                 $sql .= " AND Sites.site_id IN ('".implode("','", $limit_ids)."')";
             }
