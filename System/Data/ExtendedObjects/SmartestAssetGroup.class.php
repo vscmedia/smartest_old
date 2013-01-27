@@ -444,6 +444,9 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
             case "type_labels_list":
             return $this->getFileTypeLabel();
             
+            case "label":
+            return new SmartestString($this->getLabel());
+            
             case "is_gallery":
             return $this->getIsGallery();
             

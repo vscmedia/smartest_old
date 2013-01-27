@@ -1,3 +1,47 @@
+<script type="text/javascript">
+    var itemNameFieldDefaultValue = '{$start_name}';
+    var itemNameFieldName = '{$model.item_name_field_name}';
+    var modelName = '{$model.name}';
+{literal}
+    document.observe('dom:loaded', function(){
+        
+        $('item-name').observe('focus', function(){
+            if($('item-name').getValue() == itemNameFieldDefaultValue || $('item-name').getValue() == ''){
+                $('item-name').removeClassName('unfilled');
+                $('item-name').setValue('');
+            }
+        });
+        
+        $('item-name').observe('blur', function(){
+            if($('item-name').getValue() == itemNameFieldDefaultValue || $('item-name').getValue() == ''){
+                $('item-name').addClassName('unfilled');
+                $('item-name').setValue(itemNameFieldDefaultValue);
+            }else{
+                $('item-name').removeClassName('error');
+            }
+        });
+        
+        $('new-item-form').observe('submit', function(e){
+            
+            document.fire('smartest:newItemFormSubmit');
+            e.stop();
+            
+        });
+        
+        document.observe('smartest:newItemFormSubmit', function(){
+            if($('item-name').getValue() == itemNameFieldDefaultValue || $('item-name').getValue() == ''){
+                $('item-name').addClassName('error');
+                e.stop();
+            }else{
+                $('new-item-form').submit();
+            }
+        });
+        
+    });
+    
+{/literal}
+</script>
+
 <div id="work-area">
 
 {* <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Add a new {$model.name|strtolower}</h3> *}
@@ -25,7 +69,8 @@
 {if $model.item_name_field_visible}
 <div class="edit-form-row">
   <div class="form-section-label">{$model.name} {$model.item_name_field_name}</div>
-  <input type="text" name="item[_name]" value="Untitled {$model.name}" id="item-name" />
+  <input type="text" name="item[_name]" value="{$start_name}" id="item-name" class="unfilled" />
+  <div class="form-hint">Enter a {$model.item_name_field_name|lower} for this {$model.name|lower}</div>
 </div>{/if}
 
 <div class="edit-form-row">
@@ -37,7 +82,7 @@
 {foreach from=$properties key="pid" item="property"}
 
 <div class="edit-form-row">
-  <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}{if $can_edit_properties}<a style="float:right" href="{$domain}datamanager/editItemClassProperty?from=item_edit&amp;item_id={$item.id}&amp;itemproperty_id={$property.id}"><img src="{$domain}Resources/System/Images/edit_setting_minimal.png" alt="Edit this property" /></a>{/if}</div>
+  <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name}{if $property.required == 'TRUE'}</strong> *{/if}{if $can_edit_properties}<a style="float:left" title="Edit this property" href="{$domain}datamanager/editItemClassProperty?from=item_edit&amp;item_id={$item.id}&amp;itemproperty_id={$property.id}"><img src="{$domain}Resources/System/Images/edit_setting_minimal.png" alt="Edit this property" /></a>{/if}</div>
   {item_field property=$property value=$property.default_value}
 </div>
 {foreachelse}
@@ -50,7 +95,7 @@
   <div class="form-section-label">Language</div>
   <select name="_language">
 {foreach from=$_languages item="lang" key="langcode"}
-    <option value="{$langcode}">{$lang.label}</option>
+    <option value="{$langcode}"{if $langcode == $site_language} selected="selected"{/if}>{$lang.label}</option>
 {/foreach}
   </select>
 </div>

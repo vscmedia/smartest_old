@@ -23,7 +23,7 @@
   
 {foreach from=$assetTypeCats item="assetTypeCategory"}
 
-<div class="form-section-label">{$assetTypeCategory.label}</div>
+<div class="form-section-label-full">{$assetTypeCategory.label}</div>
 
 <ul class="options-grid-no-scroll" style="margin-top:0px">
 
@@ -52,7 +52,8 @@
   	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/file/new'" class="right-nav-link"><img src="{$domain}Resources/Icons/add.png" border="0" alt="" /> Create a new file</a></li>
   	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/detectNewUploads'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_magnify.png" border="0" alt="" /> Detect newly uploaded files</a></li>
   	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/assetGroups'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" border="0" alt="" style="width:16px;height:16px" /> View file groups</a></li>
-  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Create a new file group</a></li>
+  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_add.png" border="0" alt="" /> Create a new file group</a></li>
+  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/newAssetGroup?is_gallery=true&amp;asset_type=SM_ASSETCLASS_STATIC_IMAGE&amp;group_label=Unnamed+image+gallery'" class="right-nav-link"><img src="{$domain}Resources/Icons/photos.png" border="0" alt="" /> Create a new image gallery</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">

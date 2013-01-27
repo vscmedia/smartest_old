@@ -17,7 +17,7 @@
     
       <div class="edit-form-row">
         <div class="form-section-label">Short name</div>
-        {if $allow_name_edit}<input type="text" name="group_name" value="{$group.name}" /><span class="form-hint">letters, numbers and underscored only, please.</span>{else}{$group.name}{/if}
+        {if $allow_name_edit}<input type="text" name="group_name" value="{$group.name}" /><div class="form-hint">Letters, numbers and underscores only, please. E.g. {$group.label.varname}</div>{else}{$group.name}{/if}
       </div>
       
       {if $allow_type_change}

@@ -17,7 +17,7 @@
       
       <div class="edit-form-row">
         <div class="form-section-label">Build-in 'name' field title</div>
-        {if $allow_infn_edit}<input type="text" name="itemclass_item_name_field_name" value="{$model.item_name_field_name}" /><span class="form-hint">Usually something like 'name', 'title', 'headline', 'label'</span>{else}{$model.item_name_field_name}{/if}
+        {if $allow_infn_edit}<input type="text" name="itemclass_item_name_field_name" value="{$model.item_name_field_name}" /><div class="form-hint">Usually something like 'name', 'title', 'headline', 'label'</div>{else}{$model.item_name_field_name}{/if}
       </div>
       
       <div class="edit-form-row">

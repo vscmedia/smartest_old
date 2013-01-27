@@ -170,8 +170,10 @@ class SmartestInstallationStatusHelper{
                         $sitename = SmartestStringHelper::sanitize($_POST['site_name']);
                         $sitename = str_replace("'", "\'", $sitename);
                         $hostname = SmartestStringHelper::sanitize($_POST['site_host']);
-                        $template = ($_POST['site_initial_tpl'] == '_DEFAULT') ? '' : SmartestStringHelper::sanitize($_POST['site_initial_tpl']);
+                        $template = ($_POST['site_initial_tpl'] == '_DEFAULT') ? SmartestStringHelper::toVarName($_POST['site_name']).'.tpl' : SmartestStringHelper::sanitize($_POST['site_initial_tpl']);
                         
+                        // SIte creation SQL
+                        // Todo: This should be replaced with a call to SmartestSIteCreationHelper
                         $sql = file_get_contents(SM_ROOT_DIR.'System/Install/SqlScripts/create_site.sql.txt');
                         $sql = str_replace('%NOW%', time(), $sql);
                         $sql = str_replace('%TEMPLATE%', $template, $sql);
@@ -203,6 +205,7 @@ class SmartestInstallationStatusHelper{
                         
                         // Lastly, execute database queries     
                         $queries = explode(';', $sql);
+                        $siteCreationErrors = false;
 
                         foreach($queries as $query){
                             if(strlen(trim($query))){
@@ -210,8 +213,17 @@ class SmartestInstallationStatusHelper{
                                     $db->rawQuery(trim($query).';');
                                 }catch (SmartestDatabaseException $user_error) {
                                     SmartestLog::getInstance('installer')->log('There was an error creating site data on query: '.$query.'.', SM_LOG_ERROR);
+                                    $siteCreationErrors = true;
                                     continue;
                                 }
+                            }
+                        }
+                        
+                        if($_POST['site_initial_tpl'] == '_DEFAULT' && !$siteCreationErrors){
+                            if(is_writable(SM_ROOT_DIR.'Presentation/Masters/')){
+                                copy(SM_ROOT_DIR.'System/Install/Samples/default.tpl', SM_ROOT_DIR.'Presentation/Masters/'.$template);
+                            }else{
+                                SmartestLog::getInstance('installer')->log('Could not move default template into position because Presentation/Masters/ is not writable.', SM_LOG_ERROR);
                             }
                         }
                         
@@ -358,7 +370,5 @@ class SmartestInstallationStatusHelper{
                 throw new SmartestNotInstalledException(SM_INSTALLSTATUS_NO_CONFIG);
             }
         }
-        
     }
-    
 }

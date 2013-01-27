@@ -168,6 +168,8 @@
       </div>
 {/if}
   </div>
+  
+  <div class="buttons-bar"><input type="button" id="done-button" value="Done" /><script type="text/javascript">{literal}$('done-button').observe('click', cancelForm);{/literal}</script></div>
       
 {*      <h4 style="margin-top:15px">Usage of this file</h4> *}
   

@@ -47,11 +47,11 @@
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} short name (Used in links and URLS)</div>
   {if $allow_edit_item_slug}
-  {if $item.public == "TRUE" && count($metapages)}<div class="warning">Warning: This {$item._model.name|strtolower} is live. Editing this value may cause links to it to break.</div>{/if}
-  <input type="text" name="item_slug" value="{$item.slug}" /><span class="form-hint">Numbers, lowercase letters and hyphens only, please</span>
+  <input type="text" name="item_slug" value="{$item.slug}" /><div class="form-hint">Numbers, lowercase letters and hyphens only, please</div>
   {else}
   {$item.slug}
   {/if}
+  {if $allow_edit_item_slug && $item.public == "TRUE" && count($metapages)}<div class="warning">Warning: This {$item._model.name|strtolower} is live. Editing its short name may cause links to it to break.</div>{/if}
 </div>
 
 <div class="edit-form-row">
@@ -65,7 +65,7 @@
 
 {foreach from=$item._editable_properties key="pid" item="property"}
 <div class="edit-form-row">
-  <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name} ({$property.varname}){if $property.required == 'TRUE'}</strong> *{/if}{if $can_edit_properties}<a style="float:right" href="{$domain}datamanager/editItemClassProperty?from=item_edit&amp;item_id={$item.id}&amp;itemproperty_id={$property.id}"><img src="{$domain}Resources/System/Images/edit_setting_minimal.png" alt="Edit this property" /></a>{/if}</div>
+  <div class="form-section-label">{if $property.required == 'TRUE'}<strong>{/if}{$property.name}{* ({$property.varname}) *}{if $property.required == 'TRUE'}</strong> *{/if}{if $can_edit_properties}<a style="float:left" title="Edit this property" href="{$domain}datamanager/editItemClassProperty?from=item_edit&amp;item_id={$item.id}&amp;itemproperty_id={$property.id}"><img src="{$domain}Resources/System/Images/edit_setting_minimal.png" alt="Edit this property" /></a>{/if}</div>
   {item_field property=$property value=$item[$pid]} {* <a href="{$domain}test:datamanager/ipv?item_id={$item.id}&amp;property_id={$property.id}">Test</a> *}
 </div>
 {/foreach}

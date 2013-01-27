@@ -89,7 +89,7 @@ class Assets extends SmartestSystemApplication{
 		    $this->send('noneditableasset', 'sidebartype');
 		}
 		
-		$this->send($type['label'], 'type_label');
+		$this->send(new SmartestString($type['label']), 'type_label');
 		$this->send($type['id'], 'type_code');
 		$this->send(count($assets), 'num_assets');
 		
@@ -331,6 +331,8 @@ class Assets extends SmartestSystemApplication{
                 $this->setTitle("Add a new ".$type['label']);
     		    $this->send($type['id'], 'type_code');
     		    $this->send($type, 'new_asset_type_info');
+    		    
+    		    $this->send('Unnamed '.addslashes($type['label']), 'start_name');
                 
                 // what input options are available
                 
@@ -1029,6 +1031,17 @@ class Assets extends SmartestSystemApplication{
 	        $this->send($this->getRequestParameter('asset_type'), 'filter_type');
 	    }
 	    
+	    if($this->getRequestParameter('group_label')){
+	        $start_name = strip_tags($this->getRequestParameter('group_label'));
+	    }else{
+	        if($this->getRequestParameter('is_gallery')){
+	            $start_name = 'Unnamed file gallery';
+            }else{
+                $start_name = 'Unnamed file group';
+            }
+	    }
+	    
+	    $this->send($start_name, 'start_name');
 	    $this->send($alh->getGalleryPlaceholderTypes(), 'gallery_placeholder_types');
 	    $this->send($alh->getGalleryAssetTypes(), 'gallery_asset_types');
 	    $this->send($alh->getGalleryAssetGroups($this->getSite()->getId()), 'gallery_groups');

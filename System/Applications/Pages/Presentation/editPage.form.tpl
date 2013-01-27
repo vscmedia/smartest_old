@@ -78,7 +78,7 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">Short Name</div>
-    {if $allow_edit_page_name}<input type="text" name="page_name" value="{$page.name}" /><span class="form-hint">Numbers, lowercase letters and hyphens only, please</span>{else}{$page.name}{/if}
+    {if $allow_edit_page_name}<input type="text" name="page_name" value="{$page.name}" /><div class="form-hint">Numbers, lowercase letters and hyphens only, please</div>{else}{$page.name}{/if}
   </div>
   
   <div class="edit-form-row">
@@ -131,7 +131,7 @@
   
   {if $page.id > 0}
   <div class="edit-form-row">
-    <div class="form-section-label">URL</div>
+    <div class="form-section-label-full">URL</div>
 		
 		<div id="page-urls">
 		  

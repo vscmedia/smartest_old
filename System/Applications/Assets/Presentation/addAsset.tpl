@@ -1,12 +1,44 @@
 <script language="javascript">
 
-var acceptable_suffixes = {$suffixes};
+// var acceptable_suffixes = {$suffixes};
 var input_mode = '{$starting_mode}';
 var show_params_holder = false;
+var itemNameFieldDefaultValue = '{$start_name}';
+var preventDefaultValue = {if $suggested_name}false{else}true{/if};
+
 
 {literal}
 
-function insertAssetClass(){
+document.observe('dom:loaded', function(){
+    
+    $('new-asset-name').observe('focus', function(){
+        if(($('new-asset-name').getValue() == itemNameFieldDefaultValue)|| $('new-asset-name').getValue() == ''){
+            $('new-asset-name').removeClassName('unfilled');
+            $('new-asset-name').setValue('');
+        }
+    });
+    
+    $('new-asset-name').observe('blur', function(){
+        if(($('new-asset-name').getValue() == itemNameFieldDefaultValue) || $('new-asset-name').getValue() == ''){
+            $('new-asset-name').addClassName('unfilled');
+            $('new-asset-name').setValue(itemNameFieldDefaultValue);
+        }else{
+            $('new-asset-name').removeClassName('error');
+        }
+    });
+    
+    $('new-asset-form').observe('submit', function(e){
+        
+        if(($('new-asset-name').getValue() == itemNameFieldDefaultValue) || $('new-asset-name').getValue() == ''){
+            $('new-asset-name').addClassName('error');
+            e.stop();
+        }
+        
+    });
+    
+});
+
+/* function insertAssetClass(){
 	var assetClassName = prompt("Enter the asset class name");
 	var html = '{assetclass get="'+assetClassName+'"}';
 	insertElement(html);
@@ -56,7 +88,7 @@ function validateUploadSuffix(){
     return true;
   }
 
-}
+} */
 
 {/literal}
 </script>
@@ -102,7 +134,7 @@ function validateUploadSuffix(){
   
     {if $allow_save}
       
-    <form action="{$domain}smartest/file/new/save" method="post" enctype="multipart/form-data">  
+    <form action="{$domain}smartest/file/new/save" method="post" enctype="multipart/form-data" id="new-asset-form">  
     
       {if $for=='placeholder'}
         <input type="hidden" name="for" value="placeholder" />
@@ -154,7 +186,7 @@ function validateUploadSuffix(){
       
       <div class="edit-form-row">
         <div class="form-section-label">{$name_instruction}</div>
-        <input type="text" name="asset_label" value="{$suggested_name}" />
+        <input type="text" name="asset_label" value="{if $suggested_name}{$suggested_name}{else}{$start_name}{/if}" {if !$suggested_name}class="unfilled"{/if} id="new-asset-name" />
       </div>
       
     {load_interface file="$interface_file"}

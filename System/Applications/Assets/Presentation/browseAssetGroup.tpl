@@ -24,7 +24,7 @@
   </form>
 </div>
 
-{if $group.is_gallery}<div class="instruction">Drag and drop files in this gallery to change their order.</div>{/if}
+{if $group.is_gallery}<div class="instruction">Drag and drop files in this gallery to change their order. The new order is saved automatically.</div>{/if}
 
 <div id="options-view-chooser">
 {$num_assets} file{if $num_assets != 1}s{/if}. View as:
@@ -65,11 +65,9 @@ var IDs_string;
 var itemsList = Sortable.create('options_grid', {
       
       onUpdate: function(){
+          
         IDs = Sortable.sequence('options_grid');
         IDs_string = IDs.join(',');
-        // alert(IDs_string);
-        // alert(url);
-        // alert(IDs_string);
         
         new Ajax.Request(url, {
           method: 'get',

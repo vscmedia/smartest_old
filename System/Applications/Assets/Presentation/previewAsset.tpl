@@ -6,6 +6,7 @@
   {$html}
   <div class="breaker"></div>
  </div>
+ <div class="buttons-bar"><input type="button" id="done-button" value="Done" /><script type="text/javascript">{literal}$('done-button').observe('click', cancelForm);{/literal}</script></div>
 </div>
 
 <div id="actions-area">

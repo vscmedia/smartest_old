@@ -62,7 +62,7 @@ class ItemsAjax extends SmartestSystemApplication{
 	    $p = new SmartestItemProperty;
 	    
 	    if($p->find($this->getRequestParameter('property_id'))){
-	        $this->send($p->getSuggestionsForFormBasedOnIncomplete($this->getRequestParameter('str'), $this->getSite()->getId()), 'values');
+	        $this->send($p->getSuggestionsForFormBasedOnIncomplete(addslashes($this->getRequestParameter('str')), $this->getSite()->getId()), 'values');
 	    }else{
 	        $this->send(array(), 'values');
 	    }

@@ -75,6 +75,7 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
     }
     
     public function getValueObject(){
+        // Todo: Once dropdown menus are types, different classes will need to be returned here depending on type
         return new SmartestString($this->_properties['value']);
     }
     

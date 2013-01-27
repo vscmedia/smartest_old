@@ -1504,6 +1504,18 @@ class Items extends SmartestSystemApplication{
 	            SmartestLog::getInstance('site')->log('Suspicious activity: '.$this->getUser()->__toString().' tried to edit '.strtolower($item->getModel()->getName()).' \''.$item->getName().'\' via direct URL entry.');
     		    $this->redirect('/'.$this->getRequest()->getModule().'/getItemClassMembers?class_id='.$item->getItem()->getItemclassId());
 	        }
+	        
+	        $dud_properties = false;
+	        
+	        foreach($item->getProperties() as $k=>$p){
+	            if(!is_object($p)){
+	                $dud_properties = true;
+	            }
+	        }
+	        
+	        if($dud_properties){
+	            $item->getModel()->refresh();
+	        }
 		    
 		    $this->send($item->getModel()->getMetaPages(), 'metapages');
 		    $this->send((bool) count($item->getModel()->getMetaPages()), 'has_metapages');
@@ -2224,10 +2236,13 @@ class Items extends SmartestSystemApplication{
                     $this->redirect('/smartest/file/new?for=ipv&property_id='.$model->getPrimaryPropertyId());
                 }
                 
+                $start_name = 'Unnamed '.$model->getName();
+                $this->send($start_name, 'start_name');
                 $this->send($this->getUser()->hasToken('create_assets'), 'can_create_assets');
                 $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
                 $this->send($model->getProperties(), 'properties');
                 $this->send($model, 'model');
+                $this->send($this->getSite()->getLanguageCode(), 'site_language');
             
             }else{
                 

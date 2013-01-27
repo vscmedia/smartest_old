@@ -1,14 +1,74 @@
+<script type="text/javascript">
+    var itemNameFieldDefaultValue = '{$start_name}';
+{literal}
+    document.observe('dom:loaded', function(){
+        
+        $('asset-group-label').observe('focus', function(){
+            if($('asset-group-label').getValue() == itemNameFieldDefaultValue || $('asset-group-label').getValue() == ''){
+                $('asset-group-label').removeClassName('unfilled');
+                $('asset-group-label').setValue('');
+            }
+        });
+        
+        $('asset-group-label').observe('blur', function(){
+            if($('asset-group-label').getValue() == itemNameFieldDefaultValue || $('asset-group-label').getValue() == ''){
+                $('asset-group-label').addClassName('unfilled');
+                $('asset-group-label').setValue(itemNameFieldDefaultValue);
+            }else{
+                $('asset-group-label').removeClassName('error');
+            }
+        });
+        
+        $('file-group-mode-select').observe('change', function(e){
+          if(this.value == "SM_SET_ASSETGALLERY"){
+
+            $('file-gallery-select-holder').show();
+            $('file-group-select-holder').hide();
+            $('h3-group-type').update('gallery');
+            $('filegroup-type-hint').update('A gallery allows you to arrange certain files in order to display them together'); 
+
+            if($F('asset-group-label') == 'Unnamed file group'){
+              $('asset-group-label').value = 'Unnamed gallery';
+            }
+            
+          }else{
+
+            $('file-gallery-select-holder').hide();
+            $('file-group-select-holder').show();
+            $('h3-group-type').update('file group');
+            $('filegroup-type-hint').update('An ordinary file group simply allows you to group a subset of your files together');
+
+            if($F('asset-group-label') == 'Unnamed gallery'){
+              $('asset-group-label').value = 'Unnamed file group';
+            }
+          }
+        });
+        
+        $('new-group-form').observe('submit', function(e){
+            
+            if($('asset-group-label').value == 'Unnamed file group' || $('asset-group-label').value == 'Unnamed gallery' || $('asset-group-label').value == itemNameFieldDefaultValue){
+                $('asset-group-label').addClassName('error');
+                e.stop();
+            }
+            
+        });
+        
+    });
+    
+{/literal}
+</script>
+
 <div id="work-area">
   
-  <h3>Create a file group</h3>
+  <h3>Create a <span id="h3-group-type">{if $gallery_checked}gallery{else}file group{/if}</span></h3>
   
-  <form action="{$domain}{$section}/createAssetGroup" method="post" enctype="multipart/form-data">
+  <form action="{$domain}{$section}/createAssetGroup" method="post" enctype="multipart/form-data" id="new-group-form">
   
     <div id="edit-form-layout">
       
       <div class="edit-form-row">
-        <div class="form-section-label">Name this group</div>
-        <input type="text" name="asset_group_label" value="Untitled file group" id="asset-group-label" />
+        <div class="form-section-label">Name this {if $gallery_checked}gallery{else}group{/if}</div>
+        <input type="text" name="asset_group_label" value="{$start_name}" id="asset-group-label" class="unfilled" />
       </div>
       
       <div class="edit-form-row">
@@ -16,7 +76,8 @@
         <select name="asset_group_mode" id="file-group-mode-select">
           <option value="SM_SET_ASSETGROUP">Ordinary file group</option>
           <option value="SM_SET_ASSETGALLERY"{if $gallery_checked} selected="selected"{/if}>Gallery</option>
-        </select><span class="form-hint" id="filegroup-type-hint">{if $gallery_checked}A file gallery allows you to order and caption certain files so they can be displayed together{else}An ordinary file group simply allows you to group a subset of your files together{/if}</span>
+        </select>
+        <div class="form-hint" id="filegroup-type-hint">{if $gallery_checked}A file gallery allows you to order and caption certain files so they can be displayed together{else}An ordinary file group simply allows you to group a subset of your files together{/if}</div>
       </div>
       
       <div class="edit-form-row">
@@ -80,28 +141,6 @@
   </form>
   
 </div>
-
-<script type="text/javascript">
-{literal}
-  $('file-group-mode-select').observe('change', function(e){
-    if(this.value == "SM_SET_ASSETGALLERY"){
-      $('file-gallery-select-holder').show();
-      $('file-group-select-holder').hide();
-      if($F('asset-group-label') == 'Untitled file group'){
-        $('asset-group-label').value = 'Untitled gallery';
-        $('filegroup-type-hint').update('A gallery allows you to arrange certain files in order to display them together');
-      }
-    }else{
-      $('file-gallery-select-holder').hide();
-      $('file-group-select-holder').show();
-      if($F('asset-group-label') == 'Untitled gallery'){
-        $('asset-group-label').value = 'Untitled file group';
-        $('filegroup-type-hint').update('An ordinary file group simply allows you to group a subset of your files together');
-      }
-    }
-  });
-{/literal}
-</script>
 
 <div id="actions-area">
 

@@ -120,20 +120,6 @@ div#actions-area{
     
 #actions-area .special-box p{margin:3px}
 
-div.edit-form-row{
-    padding:5px;
-    margin-bottom:8px;
-}
-
-p.editable{
-    margin:0px;
-    padding:4px;
-}
-
-p.editable-hover{
-    border:1px solid #F4842A;
-}
-
 div.top-pad{
 	width:100%;
 	height:30px;
@@ -191,6 +177,23 @@ div#preview-actions-menu{
 	z-index:100;
 }
 
+/*** Forms stuff ***/
+
+div.edit-form-row{
+    padding:5px;
+    margin-bottom:8px;
+    clear:both;
+}
+
+p.editable{
+    margin:0px;
+    padding:4px;
+}
+
+p.editable-hover{
+    border:1px solid #F4842A;
+}
+
 div.instruction{
 	margin-bottom:10px;
 	margin-left:0px;
@@ -198,8 +201,35 @@ div.instruction{
 
 div.form-section-label{
 	margin:0px;
-	margin-bottom:4px;
-	padding:3px;
+	margin-bottom:5px;
+	padding:5px;
+	width:183px;
+	float:left;
+	clear:left;
+	text-align:right;
+	margin-right:10px;
+}
+
+div.form-section-label-full{
+	margin:0px;
+	margin-bottom:8px;
+	padding:5px;
+	clear:both;
+}
+
+div.form-edit-components-container{
+    float:left;
+    margin-bottom:8px;
+}
+
+span.form-hint{
+    padding-left:6px;
+}
+
+div.form-hint{
+    float:left;
+    padding:1px 6px 6px 205px;
+    clear:both;
 }
 
 div.buttons-bar{
@@ -303,8 +333,9 @@ ul._new-desktop-square-buttons li a{
 
 ul.item_property_actions{
     margin:0px;
-    padding:0px;
+    padding:0 0 0 203px;
     height:31px;
+    clear:left;
 }
 
 ul.item_property_actions li{

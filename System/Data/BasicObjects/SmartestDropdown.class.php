@@ -4,12 +4,12 @@ class SmartestDropdown extends SmartestBaseDropdown{
     
     protected $_options = array();
     
-    public function getOptions(){
+    public function getOptions($refresh=false){
         
-        if(!count($this->_options)){
+        if(!count($this->_options) || $refresh){
         
             $sql = "SELECT * FROM DropDownValues WHERE dropdownvalue_dropdown_id='".$this->getId()."' ORDER BY dropdownvalue_order, dropdownvalue_label ASC";
-            $result = $this->database->queryToArray($sql);
+            $result = $this->database->queryToArray($sql, true);
         
             $options = array();
         
@@ -37,6 +37,18 @@ class SmartestDropdown extends SmartestBaseDropdown{
         }
         
         return $arrays;
+        
+    }
+    
+    public function getOptionSlugs(){
+        
+        $slugs = array();
+        
+        foreach($this->getOptions() as $option){
+            $slugs[] = $option->getvalue();
+        }
+        
+        return $slugs;
         
     }
     
@@ -119,6 +131,28 @@ class SmartestDropdown extends SmartestBaseDropdown{
         }
         
         return parent::offsetGet($offset);
+        
+    }
+    
+    public function addOption($label, $slug=null){
+        
+        $slugs = $this->getSlugs();
+        
+        if(!$slug){
+            $slug = SmartestStringHelper::toSlug($label);
+        }
+        
+        if(in_array($slug, $slugs)){
+            return false;
+        }else{
+            $option = new SmartestDropdownOption;
+            $option->setLabel($label);
+            $option->setValue($slug);
+            $option->setDropdownId($this->getId());
+            $option->setOrderIndex($this->getNextOptionOrderIndex());
+            $option->save();
+            return $option();
+        }
         
     }
     

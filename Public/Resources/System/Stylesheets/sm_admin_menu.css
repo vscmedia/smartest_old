@@ -1,13 +1,18 @@
 /*** Style ***/
 
 div#admin-menu{
+	/* background-color:#a5b4bc; */
 	background-color:#fff;
 	border-right:1px solid #aaa;
+	/* border-top-right-radius:8px;
+    border-bottom-right-radius:8px; */
 }
 
 div#admin-menu ul{
 	list-style-type:none;
 	border-top:1px solid #aaa;
+	/* border-top-right-radius:8px;
+    border-bottom-right-radius:8px; */
 }
 
 div#admin-menu ul li{
@@ -34,10 +39,12 @@ div#admin-menu ul li.on a:hover{
 div#admin-menu ul li.on{
 	background-image:url('../Images/admin_left_nav_bg_on.gif');
 	background-repeat:repeat-x;
+	/* background:rgba(255,255,255,0.3); */
 }
 
 div#admin-menu ul li.site-top-level{
     font-weight:bold;
+    border-top-right-radius:8px;
 }
 
 /*** Layout ***/
@@ -47,6 +54,7 @@ div#admin-menu{
 	left:0px;
 	top:45px;
 	height:100%;
+	/* min-height:300px; */
 	width:165px;
 	z-index:21;
 }

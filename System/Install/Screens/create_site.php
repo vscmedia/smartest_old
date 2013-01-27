@@ -31,19 +31,22 @@ $master_tpls = SmartestFileSystemHelper::getDirectoryContents(SM_ROOT_DIR.'Prese
         <input type="text" name="site_host" value="<?php echo $_SERVER['HTTP_HOST']; ?>" style="width:240px" />
     </div>
     
-    <?php if(count($master_tpls)): ?>
     <div class="form-row">
-        <div class="form-row-label">Master template to start with</div>
+        <div class="form-row-label">Master template to start with:</div>
+    <?php if(count($master_tpls)): ?>
+    
         <select name="site_initial_tpl">
         <?php foreach($master_tpls as $tpl): ?>
             <option value="<?php echo $tpl; ?>"><?php echo $tpl; ?></option>
         <?php endforeach;?>
-            <option value="_DEFAULT">None for now</option>
+            <option value="_DEFAULT">Create a new one for me</option>
         </select>
-    </div>
+    
     <?php else: ?>
-    <input type="hidden" name="site_initial_tpl" value="_DEFAULT" />
+    Create a new one<input type="hidden" name="site_initial_tpl" value="_DEFAULT" />
     <?php endif; ?>
+    
+    </div>
     
     <div class="button normal-button"><a href="javascript:document.getElementById('installerForm').submit();">Finish &amp; Log In</a></div>
 

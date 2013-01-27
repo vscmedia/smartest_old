@@ -74,7 +74,7 @@ function toggleParamsHolder(){
     
       <div class="edit-form-row">
         <div class="form-section-label">Chosen File:</div>
-        <b>{$asset.stringid}</b> ({if $asset_type.storage.type == 'file'}{$asset_type.storage.location}{/if}{$asset.url}) - {$asset_type.label}{if $asset.is_image} ({$asset.width} x {$asset.height} pixels){/if}
+        <b>{$asset.label}</b> ({if $asset_type.storage.type == 'file'}{$asset_type.storage.location}{/if}{$asset.url}) - {$asset_type.label}{if $asset.is_image} ({$asset.width} x {$asset.height} pixels){/if}
       </div>
       
       {if $show_item_options}

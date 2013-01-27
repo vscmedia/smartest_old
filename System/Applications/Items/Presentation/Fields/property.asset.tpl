@@ -2,7 +2,7 @@
 {capture name="input_id" assign="input_id"}item_property_{$property.id}{/capture}
 
 {asset_select id=$input_id name=$name value=$value options=$property._options required=$property.required}
-{if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}
+{if strlen($property.hint)}<div class="form-hint">{$property.hint}</div>{/if}
 
   <ul class="item_property_actions">
     
@@ -14,10 +14,12 @@
           $('new-asset-button-{$property.id}').observe('mouseout', function(){literal}{{/literal}$('file-property-tooltip-{$property.id}').update('');{literal}}{/literal});
           </script></li>
       {else}
-       <li><a href="{$domain}assets/startNewFileCreationForItemPropertyValue?property_id={$property.id}{if $request_parameters.page_id}&amp;page_id={$request_parameters.page_id}{/if}" title="Use a new file" id="new-asset-button-{$property.id}"><img src="{$domain}Resources/Icons/add.png" alt="" /></a>
+      {* This is a new item *}
+       <li><a href="#save-item-create-file" title="Use a new file" id="new-asset-button-{$property.id}"><img src="{$domain}Resources/Icons/add.png" alt="" /></a>
          <script type="text/javascript">
          $('new-asset-button-{$property.id}').observe('mouseover', function(){literal}{{/literal}$('file-property-tooltip-{$property.id}').update('Define this property with a new file');{literal}}{/literal});
          $('new-asset-button-{$property.id}').observe('mouseout', function(){literal}{{/literal}$('file-property-tooltip-{$property.id}').update('');{literal}}{/literal});
+         $('new-asset-button-{$property.id}').observe('click', function(e){literal}{{/literal}$('next-action').setValue('createAsset'); $('property-id').setValue({$property.id}); e.stop(); document.fire('smartest:newItemFormSubmit'); {literal}}{/literal});
          </script></li>
       {/if}
     {/if}

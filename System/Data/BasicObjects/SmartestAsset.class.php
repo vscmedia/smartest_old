@@ -70,6 +70,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             case "type":
             return $this->_properties['type'];
             
+            case "label":
+            return new SmartestString($this->getLabel());
+            
             case "default_parameters":
             return $this->getDefaultParams();
             
