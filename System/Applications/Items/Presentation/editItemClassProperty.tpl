@@ -1,5 +1,7 @@
 <div id="work-area">
-
+  
+  {load_interface file="edit_property_tabs.tpl"}
+  
   <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Edit Property</h3>
 
   <div id="instruction">You are editing the property &quot;{$property.name}&quot; of model &quot;{$model.plural_name}&quot;</div>
@@ -84,4 +86,8 @@
 
   </form>
 
+</div>
+
+<div id="actions-area">
+  
 </div>

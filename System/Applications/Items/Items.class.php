@@ -5,8 +5,6 @@
 
 class Items extends SmartestSystemApplication{
 
-	// private $SchemasManager;
-  
 	protected function __smartestApplicationInit(){
 	    $this->database = SmartestPersistentObject::get('db:main'); /* usage of the $this->database variable should be phased out in main classes */
 		// $this->SchemasManager = new SchemasManager();
@@ -234,8 +232,8 @@ class Items extends SmartestSystemApplication{
         }
         
     }
-
-	// public function getItemXml($get, $post){
+    
+    // public function getItemXml($get, $post){
 	
 	/* public function getItemClassXml($get){
     		$channel=null;
@@ -2727,6 +2725,25 @@ class Items extends SmartestSystemApplication{
 		
 	}
 	
+	public function viewItemClassPropertyValueSpread(){
+	    
+	    $property_id = $this->getRequestParameter('itemproperty_id');
+	    $property = new SmartestItemProperty;
+	    
+	    if($property->find($property_id)){
+	        
+	        $values = $property->getValueSpread($this->getSite()->getid(), $this->getRequestParameter('version') == 'live');
+	        $this->send(new SmartestArray($values), 'values');
+	        $reuse_rate = $property->getDataReUseRate($this->getSite()->getid(), $this->getRequestParameter('version') == 'live');
+	        $this->send($reuse_rate, 'reuse_rate');
+	        $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
+	        $this->send($property, 'property');
+	        $this->send($property->getValuesCount($this->getSite()->getid()), 'num_stored_values');
+	        
+	    }
+	    
+	}
+	
 	public function editItemClassProperty($get){
 	    
 	    $property_id = $this->getRequestParameter('itemproperty_id');
@@ -2814,8 +2831,9 @@ class Items extends SmartestSystemApplication{
     		    }
 		    
     		    $this->send($data_types, 'data_types');
-    		    $this->send($model->compile(), 'model');
+    		    $this->send($model, 'model');
     		    $this->send($property, 'property');
+    		    $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
 		    
     		}else{
     		    
@@ -2828,6 +2846,19 @@ class Items extends SmartestSystemApplication{
 	        
 	        $this->addUserMessageToNextRequest("You don't have permission to edit item properties.", SmartestUserMessage::ACCESS_DENIED);
 		    $this->formForward();
+	        
+	    }
+	    
+	}
+	
+	public function getItemClassPropertyInfo(){
+	    
+	    $property_id = $this->getRequestParameter('itemproperty_id');
+	    $property = new SmartestItemProperty;
+	    
+	    if($property->find($property_id)){
+	        
+	        $this->send($property, 'property');
 	        
 	    }
 	    

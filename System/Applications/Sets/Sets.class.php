@@ -187,28 +187,7 @@ class Sets extends SmartestSystemApplication{
 	        
 	        }else{
 	            
-	            
-	            
-	            // fetch set member item ids (and create objects for form)
-	            // $set_member_ids = $set->getMemberIds(SM_QUERY_ALL_DRAFT);
-	            
-	            // do the math
-	            // $set_member_arrays = array();
-	            
-	            /* foreach($all_items as $key=>$item){
-	                
-	                // if the item is in the set
-	                if(in_array($item['id'], $set_member_ids)){
-	                    // copy the item to the set members array
-	                    $set_member_arrays[] = $item;
-	                    // unset it in the original list
-	                    unset($all_items[$key]);
-	                }
-	                
-	            } */
-	            
 	            $set_members = $set->getMembers(SM_QUERY_ALL_DRAFT, null, $this->getSite()->getId());
-	            // $all_items = 
 	            
 	            // fetch all item ids
 	            $all_items = $set->getModel()->getSimpleItems($this->getSite()->getId(), SM_QUERY_ALL_DRAFT, '', $set->getMemberIds(null, null, $this->getSite()->getId()));
@@ -224,7 +203,6 @@ class Sets extends SmartestSystemApplication{
 	        
 	        $this->send($set->getModel(), 'model');
 	        $this->send($formTemplateInclude, 'formTemplateInclude');
-	        // $this->setFormReturnUri();
 	        
 	    }else{
 	        $this->send(false, 'show_form');
@@ -528,6 +506,8 @@ class Sets extends SmartestSystemApplication{
     	        $this->setFormReturnUri();
         	    $this->setFormReturnDescription('data set');
     	    }
+    	    
+    	    $this->send($this->getApplicationPreference('item_list_style', 'grid'), 'list_view');
 	    
         }else{
             
@@ -570,8 +550,35 @@ class Sets extends SmartestSystemApplication{
 			}
 		}
 	}
+	
+	public function setExternalFeedAggregator(){
+	    
+	    $set_id = $this->getRequestParameter('set_id');
+	    $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($set_id)){
+	        
+	        $feeds = $set->getFeeds();
+	        
+	        print_r($feeds);
+	        
+	        $feed = new SimplePie();
+            $feed->set_cache_location(SM_ROOT_DIR.'System/Cache/SimplePie/');
+            $feed->set_feed_url($feeds[4]);
+            $feed->set_input_encoding('UTF-8');
+            $feed->set_item_class('SmartestExternalFeedItem');
+            $feed->handle_content_type();
+            $feed->init();
+            
+            $this->send($feed->get_items(), 'items');
+	        
+	    }
+	    
+	    // print_r($feeds);
+	    
+	}
 
-	public function removeRule($get){
+/* 	public function removeRule($get){
 		
 	}
 	
@@ -643,7 +650,7 @@ class Sets extends SmartestSystemApplication{
 		
 		return array('items'=>$items, 'properties'=>$info, 'itemClassMembers'=>$itemClassMembers, 'itemBaseValues'=>$itemBaseValues, 'itemClassPropertyCount'=>$itemClassPropertyCount, 'itemClassMemberCount'=>count($items));   
 		
-		*/
+		
 	}
 
 	/* public function chooseSchemaForExport($get){

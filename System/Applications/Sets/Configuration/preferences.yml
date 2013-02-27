@@ -2,3 +2,4 @@ prefs:
   reorder_static_set_num_cols: {user_specific: true, site_specific: false, description: How many columns should the user see when changing the order of a static set}
   preview_static_set_mode: {user_specific: true, site_specific: false, description: What query mode should the user see when previewing a static set}
   preview_dynamic_set_mode: {user_specific: true, site_specific: false, description: What query mode should the user see when previewing a dynamic set}
+  item_list_style: {user_specific: true, site_specific: false, description: Should the user see an array of listed items in a list or grid style?}

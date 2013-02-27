@@ -95,6 +95,11 @@ class SmartestResponse{
 
         );
         
+        // Temporary
+        // echo "blah";
+        include_once(SM_ROOT_DIR.'Library/SimplePie/autoloader.php');
+        include_once(SM_ROOT_DIR.'Library/SimplePie/idn/idna_convert.class.php');
+        
         SmartestDataUtility::loadBasicTypes();
         
         SmartestFileSystemHelper::include_group(

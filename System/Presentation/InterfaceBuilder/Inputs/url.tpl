@@ -1,1 +1,1 @@
-<input type="text" name="item[{$property.id}]" value="{$value}" />{if strlen($value)}&nbsp;({link to=$value target="_blank" with="Test"}){/if}
+<input type="text" name="item[{$property.id}]" value="{$value}" />{* if strlen($value)}&nbsp;({link to=$value target="_blank" with="Test"}){/if *}

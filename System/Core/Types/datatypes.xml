@@ -174,7 +174,7 @@
         <input template="System/Presentation/InterfaceBuilder/Inputs/twitter_acct.tpl" />
     </type>
     
-    <type id="SM_DATATYPE_Feed" valuetype="string">
+    <type id="SM_DATATYPE_FEED" valuetype="string">
         <label>RSS or Atom feed</label>
         <description>A feed of external content using RSS or Atom</description>
         <usage>itemproperty</usage>

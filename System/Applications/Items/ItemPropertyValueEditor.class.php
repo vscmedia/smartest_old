@@ -240,11 +240,11 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
 	    
 	    $item = new SmartestItem;
 	    
-	    if($item->hydrate($item_id)){
+	    if($item->find($item_id)){
 	        
 	        $property = new SmartestItemPropertyValueHolder;
 	        
-	        if($property->hydrate($property_id)){
+	        if($property->find($property_id)){
 	            
 	            $property->setContextualItemId($item_id);
 	            $asset = $property->getData()->getDraftContent();
@@ -326,11 +326,11 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
 	    
 	    $item = new SmartestItem;
 	    
-	    if($item->hydrate($item_id)){
+	    if($item->find($item_id)){
 	        
 	        $property = new SmartestItemPropertyValueHolder;
 	        
-	        if($property->hydrate($property_id)){
+	        if($property->find($property_id)){
 	            
 	            $property->setContextualItemId($item_id);
 	            $value_object = $property->getData();
@@ -369,8 +369,6 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
             	    
             	    $asset_params = $asset->getDefaultParameterValues();
             	    
-            	    // print_r($values);
-            	    
             	    foreach($params as $key=>$p){
             	        // default values from xml are set above.
             	        
@@ -387,8 +385,6 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
             	        if(isset($values[$key])){
             	            $v = $values[$key];
             	        }
-            	        
-            	        // print_r($v);
             	        
             	        $value_object->setInfoField($key, $v);
             	        
@@ -419,5 +415,72 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
 	    $this->formForward();
 	    
 	}
+	
+	public function previewFeedItemPropertyValue(){
+        
+        if(is_numeric($this->getRequestParameter('item_id'))){
+            
+            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+                
+                $item->setDraftMode(true);
+                
+                if(is_numeric($this->getRequestParameter('property_id'))){
+                
+                    if($item->getModel()->hasPropertyWithId($this->getRequestParameter('property_id'))){
+                        
+                        $property = new SmartestItemProperty;
+                        
+                        if($property->find($this->getRequestParameter('property_id'))){
+                            
+                            $feed_ipv_object = $item->getPropertyValueByNumericKey($property->getId());
+                            $feed_ipv_object->getItems();
+                            
+                            $this->send($feed_ipv_object, 'feed');
+                            
+                            /* if(is_array($this->getRequestParameter('items'))){
+                                $ids = array_keys($this->getRequestParameter('items'));
+                            }else{
+                                $ids = array();
+                            }
+                            
+                            $item->setPropertyValueByNumericKey($property->getId(), $ids);
+                            $item->save();
+                            $this->addUserMessageToNextRequest("The attached files for this property were successfully updated.", SmartestUserMessage::SUCCESS);
+                            $this->redirect('/datamanager/editItem?item_id='.$item->getId()); */
+                        
+                        }else{
+                            
+                            $this->addUserMessageToNextRequest("The property ID was not recognized.", SmartestUserMessage::ERROR);
+                            $this->redirect('/datamanager/editItem?item_id='.$item->getId());
+                        }
+                        
+                    }else{
+                        
+                        $this->addUserMessageToNextRequest("The model '".$item->getModel()->getName()."' does not have a property with that ID.", SmartestUserMessage::ERROR);
+                        $this->redirect('/datamanager/editItem?item_id='.$item->getId());
+                    }
+                
+                }else{
+                    
+                    $this->addUserMessageToNextRequest("The property ID was in an invalid format.", SmartestUserMessage::ERROR);
+                    $this->redirect('/smartest/models');
+                    
+                }
+                
+                
+                
+            }else{
+                
+                $this->addUserMessageToNextRequest("The item ID was not recognized.", SmartestUserMessage::ERROR);
+                $this->redirect('/smartest/models');
+            }
+            
+        }else{
+            
+            $this->addUserMessageToNextRequest("The item ID was in an invalid format.", SmartestUserMessage::ERROR);
+            $this->redirect('/smartest/models');
+        }
+        
+    }
     
 }

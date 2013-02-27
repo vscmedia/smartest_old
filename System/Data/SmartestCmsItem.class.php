@@ -229,6 +229,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             	
 	            break;
 	            
+	            case 'label':
+	            return $this->getItem()->getName();
+	            break;
+	            
 	            case 'comments':
 	            return $this->getItem()->getPublicComments();
 	            break;

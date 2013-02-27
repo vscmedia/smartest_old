@@ -125,17 +125,20 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    return $info['valuetype'] == 'manytomany';
 	}
 	
-	public function getDraftValues($site_id, $raw=false){
+	public function getDraftValues($site_id, $raw=false, $unique=true){
 	    
-	    $sql = "SELECT itempropertyvalue_draft_content FROM ItemPropertyValues, Items WHERE itempropertyvalue_property_id='".$this->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Itens.item_id AND (Items.item_site_id='".$site_id."' OR Items.item_shared=1)";
-	    $result = $this->queryToArray($sql);
+	    $site_id = (int) $site_id;
+	    $sql = "SELECT itempropertyvalue_draft_content FROM ItemPropertyValues, Items WHERE itempropertyvalue_property_id='".$this->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND (Items.item_site_id='".$site_id."' OR Items.item_shared=1) AND Items.item_deleted=0";
+	    $result = $this->database->queryToArray($sql);
 	    $raw_values = array();
 	    
 	    foreach($result as $r){
 	        $raw_values[] = $r['itempropertyvalue_draft_content'];
 	    }
 	    
-	    $raw_values = array_unique($raw_values);
+	    if($unique){
+	        $raw_values = array_unique($raw_values);
+        }
 	    
 	    if($raw){
 	        return $raw_values;
@@ -151,17 +154,20 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	}
 	
-	public function getLiveValues($site_id, $raw=false){
+	public function getLiveValues($site_id, $raw=false, $unique=true){
 	    
-	    $sql = "SELECT itempropertyvalue_content FROM ItemPropertyValues, Items WHERE itempropertyvalue_property_id='".$this->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Itens.item_id AND (Items.item_site_id='".$site_id."' OR Items.item_shared=1)";
-	    $result = $this->queryToArray($sql);
+	    $site_id = (int) $site_id;
+	    $sql = "SELECT itempropertyvalue_content FROM ItemPropertyValues, Items WHERE itempropertyvalue_property_id='".$this->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND (Items.item_site_id='".$site_id."' OR Items.item_shared=1) AND Items.item_deleted=0";
+	    $result = $this->database->queryToArray($sql);
 	    $raw_values = array();
 	    
 	    foreach($result as $r){
 	        $raw_values[] = $r['itempropertyvalue_content'];
 	    }
 	    
-	    $raw_values = array_unique($raw_values);
+	    if($unique){
+	        $raw_values = array_unique($raw_values);
+        }
 	    
 	    if($raw){
 	        return $raw_values;
@@ -177,9 +183,73 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	}
 	
+	public function getValuesCount($site_id){
+	    
+	    $site_id = (int) $site_id;
+	    $sql = "SELECT itempropertyvalue_id FROM ItemPropertyValues, Items WHERE itempropertyvalue_property_id='".$this->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND (Items.item_site_id='".$site_id."' OR Items.item_shared=1) AND Items.item_deleted=0";
+	    return count($this->database->queryToArray($sql));
+	    
+	}
+	
 	public function getAllValues($site_id, $raw=false){
 	    
 	    $all_raw_values = array_unique(array_merge($this->getDraftValues($site_id, true), $this->getLiveValues($site_id, true)));
+	    
+	}
+	
+	public function getValueSpread($site_id, $live=true){
+	    
+	    if($this->isForeignKey()){
+	        
+	        if($live){
+	            $raw_values = $this->getLiveValues($site_id, true, false);
+	        }else{
+	            $raw_values = $this->getDraftValues($site_id, true, false);
+	        }
+	        
+	        $value_counter = array();
+	        $total_values = count($raw_values);
+	        
+	        foreach($raw_values as $v){
+	            if(isset($value_counter[$v])){
+	                $value_counter[$v]['count']++;
+	            }else{
+	                $value_counter[$v]['count'] = 1;
+	                if(strlen($v)){
+	                    $value_counter[$v]['value'] = SmartestDataUtility::objectize($v, $this->getDatatype());
+	                    $value_counter[$v]['is_null'] = false;
+                    }else{
+                        $value_counter[$v]['value'] = new SmartestString("No Value");
+                        $value_counter[$v]['is_null'] = true;
+                    }
+	            }
+	        }
+	        
+	        foreach($value_counter as $k=>$v){
+	            $value_counter[$k]['percent'] = round($v['count']/$total_values, 4)*100;
+	        }
+	        
+	        return $value_counter;
+	        
+	    }
+	    
+	}
+	
+	public function getDataReUseRate($site_id, $live=true){
+	    
+	    if($this->isForeignKey()){
+	        
+	        if($live){
+	            $all_values = $this->getLiveValues($site_id, true, false);
+	            $unique_values = $this->getLiveValues($site_id, true, true);
+	        }else{
+	            $all_values = $this->getDraftValues($site_id, true, false);
+	            $unique_values = $this->getDraftValues($site_id, true, true);
+	        }
+	        
+	        return round(count($all_values)/count($unique_values), 4);
+	        
+	    }
 	    
 	}
 	
@@ -553,6 +623,14 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	        
 	        case "default_value":
 	        return $this->getDefaultValue();
+	        
+	        case "is_foreign_key":
+	        case "is_fk":
+	        return $this->isForeignKey();
+	        
+	        case "is_many_to_many":
+	        case "is_m2m":
+	        return $this->isManyToMany();
 	        
 	    }
 	    

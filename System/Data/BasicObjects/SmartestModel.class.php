@@ -724,6 +724,24 @@ class SmartestModel extends SmartestBaseModel{
         
     }
     
+    public function hasFeedProperties(){
+        return (bool) count($this->getFeedProperties());
+    }
+    
+    public function getFeedProperties(){
+        
+        $properties = $this->getProperties();
+        $feed_properties = array();
+    
+        foreach($properties as $p){
+            if($p->getDatatype() == 'SM_DATATYPE_FEED'){
+                $feed_properties[] = $p;
+            }
+        }
+    
+        return $feed_properties;
+    }
+    
     public function getReferringProperties(){
         
         $sql = "SELECT ItemProperties.* FROM ItemProperties, ItemClasses WHERE ItemProperties.itemproperty_itemclass_id=ItemClasses.itemclass_id AND ItemProperties.itemproperty_datatype='SM_DATATYPE_CMS_ITEM' AND ItemProperties.itemproperty_foreign_key_filter='".$this->getId()."' ORDER BY ItemClasses.itemclass_plural_name";

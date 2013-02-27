@@ -1,3 +1,9 @@
+<script type="text/javascript">
+
+var itemList = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'item', 'options_list');
+
+</script>
+
 <div id="work-area">
 
 {load_interface file="edit_set_tabs.tpl"}
@@ -53,14 +59,14 @@
 {if !empty($items)}
 
 View as:
-<a href="{dud_link}" onclick="setView('list', '{if $content.count > 10}options_list{else}options_grid{/if}')">List</a> /
-<a href="{dud_link}" onclick="setView('grid', '{if $content.count > 10}options_list{else}options_grid{/if}')">Icons</a>
+<a href="{dud_link}" onclick="return itemList.setView('list', 'item_list_style')">List</a> /
+<a href="{dud_link}" onclick="return itemList.setView('grid', 'item_list_style')">Icons</a>
   
-  <ul class="{if $content.count > 10}options-list{else}options-grid{/if}" id="{if $content.count > 10}options_list{else}options_grid{/if}">
+  <ul class="options-{$list_view}" id="options_list">
   {foreach from=$items key="key" item="item"}
     <li>
       <a href="{dud_link}" class="option" id="item_{$item.id}" onclick="setSelectedItem('{$item.id}', '{$item.name|escape:quotes}');" ondblclick="window.location='{$domain}datamanager/openItem?item_id={$item.id}'">
-        <img border="0" src="{$domain}Resources/Icons/item.png">{$item.name}</a></li>
+        {if $item.public == 'TRUE'}<img src="{$domain}Resources/Icons/item.png" border="0" class="grid" /><img border="0" src="/Resources/Icons/package_small.png" class="list" />{$item.name}{else}<img src="{$domain}Resources/Icons/item_grey.png" border="0" class="grid" /><img border="0" src="/Resources/Icons/package_small_grey.png" class="list" />{/if}{$item.name}</a></li>
   {/foreach}
   </ul>
 {/if}

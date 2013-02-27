@@ -856,5 +856,28 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	public function getConstituentItemChaining(){
 	    return $this->_constituent_item_chaining;
 	}
+	
+	public function getFeeds(){
+	    
+	    $feeds = array();
+	    
+	    if($this->isAggregable()){
+	        
+	        foreach($this->getModel()->getFeedProperties() as $property){
+	            
+	            foreach($this->getMembers(SM_QUERY_ALL_DRAFT) as $item){
+	                $feeds[$property->getId()][$item->getId()] = $item->getPropertyValueByNumericKey($property->getId())->getValue();
+	            }
+	            
+	        }
+	    }
+	    
+	    return $feeds;
+	    
+	}
+	
+	public function isAggregable(){
+	    return $this->getModel()->hasFeedProperties();
+	}
 
 }

@@ -98,6 +98,7 @@ system:
       - System/Core/Info/
       - Configuration/
       - Presentation/Masters/
+      - Public/Resources/Stylesheets/
   regularizable_types:
     - SM_DATATYPE_DROPDOWN_MENU
     - SM_DATATYPE_DATE
