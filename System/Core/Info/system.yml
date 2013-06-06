@@ -1,7 +1,7 @@
 system:
   info:
     version: "0.5"
-    revision: 526
+    revision: 533
     minimum_php_version: 5.2
     minimum_database_version: 19
     default_timezone: Europe/London
@@ -40,6 +40,7 @@ system:
     - website/getAuthorProfile
     - website/getCaptchaImage
     - website/pageFragment
+    - website/pageInfo
   content_interaction_methods:
     - website/renderPageFromUrl
     - website/renderPageFromId
@@ -53,6 +54,7 @@ system:
     - website/buildXmlSitemap
     - website/getAuthorProfile
     - website/pageFragment
+    - website/pageInfo
   smarty_config:
     default_templates_dir: Presentation/
     templates_cache: System/Cache/Smarty/

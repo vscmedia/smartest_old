@@ -77,6 +77,7 @@ Control.ScrollBar = Class.create({
         }
     },
     scrollLength: function(){
+        // alert(this.container.scrollHeight+' '+this.container.offsetHeight);
         return (this.options.scroll_axis == 'vertical') ? this.container.scrollHeight : this.container.scrollWidth;
     },
     offsetLength: function(){

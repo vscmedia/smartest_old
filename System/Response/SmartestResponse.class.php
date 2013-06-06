@@ -366,6 +366,7 @@ class SmartestResponse{
 		$rp->setParameter('action', $this->_controller->getCurrentRequest()->getAction());
 		$rp->setParameter('domain', $this->_controller->getCurrentRequest()->getDomain());
 		$rp->setParameter('namespace', $this->_controller->getCurrentRequest()->getNamespace());
+		$rp->setParameter('request_string', $_SERVER['REQUEST_URI']);
 		
 		$params = new SmartestParameterHolder('Request parameters');
 		$params->loadArray($this->_controller->getCurrentRequest()->getRequestParameters());

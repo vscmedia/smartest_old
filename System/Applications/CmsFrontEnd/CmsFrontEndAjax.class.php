@@ -19,14 +19,86 @@ class CmsFrontEndAjax extends SmartestSystemApplication{
         
     }
     
+    public function pageInfo(){
+        
+        if($this->lookupSiteDomain()){
+            
+            define('SM_AJAX_CALL', true);
+            
+            $helper = new SmartestPageManagementHelper;
+    		$type_index = $helper->getPageTypesIndex($this->_site->getId()); // ID needed
+    		$page_webid = $this->getRequestParameter('page_id');
+    		
+    		if($this->getRequestParameter('draft') && SmartestStringHelper::toRealBool($this->getRequestParameter('draft')) && $this->_auth->getUserIsLoggedIn()){
+    		    $draft_mode = true;
+    		}else{
+    		    $draft_mode = false;
+    		}
+    		
+    		if(isset($type_index[$page_webid])){
+    		    if($type_index[$page_webid] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+    		        $page = new SmartestItemPage;
+    		    }else{
+    		        $page = new SmartestPage;
+    		    }
+    		}else{
+    		    $page = new SmartestPage;
+    		}
+    		
+    		if($page->hydrate($page_webid)){
+    		    
+    		    $page->setDraftMode($draft_mode);
+    		    
+    		    if($page->getType() == 'ITEMCLASS'){
+    		        
+    		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+    		            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+    		                $item->setDraftMode($draft_mode);
+    		                $page->setPrincipalItem($item);
+    		                header('Content-type: application/json');
+    		                echo $page->__toJson();;
+    		                exit;
+    		            }else{
+    		                // item could not be found
+    		                header('Content-type: application/json');
+    		                echo '{error: \'Item could not be found\'}';
+    		                exit;
+    		            }
+    		        }else{
+    		            // no item id
+    		            header('Content-type: application/json');
+		                echo '{error: \'No valid item ID provided\'}';
+		                exit;
+    		        }
+    		        
+    		    }else{
+    		        header('Content-type: application/json');
+	                echo $page->__toJson();;
+	                exit;
+    		    }
+    		    
+    		}
+            
+        }
+        
+    }
+    
     public function pageFragment(){
         
         if($this->lookupSiteDomain()){
-        
+            
+            define('SM_AJAX_CALL', true);
+            
             // echo "hello world";
             $helper = new SmartestPageManagementHelper;
     		$type_index = $helper->getPageTypesIndex($this->_site->getId()); // ID needed
     		$page_webid = $this->getRequestParameter('page_id');
+    		
+    		if($this->getRequestParameter('draft') && SmartestStringHelper::toRealBool($this->getRequestParameter('draft')) && $this->_auth->getUserIsLoggedIn()){
+    		    $draft_mode = true;
+    		}else{
+    		    $draft_mode = false;
+    		}
 
     		if(isset($type_index[$page_webid])){
     		    if($type_index[$page_webid] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
@@ -39,11 +111,14 @@ class CmsFrontEndAjax extends SmartestSystemApplication{
     		}
 		
     		if($page->hydrate($page_webid)){
-		    
+		        
+		        $page->setDraftMode($draft_mode);
+		        
     		    if($page->getType() == 'ITEMCLASS'){
 		        
     		        if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
     		            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+    		                $item->setDraftMode($draft_mode);
     		                $page->setPrincipalItem($item);
     		                $ph = new SmartestWebPagePreparationHelper($page);
     		            }else{

@@ -60,6 +60,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         $this->draft_mode = SmartestStringHelper::toRealBool($mode);
         
+        $this->_tpl_vars['sm_draft_mode'] = SmartestStringHelper::toRealBool($mode);
+        
         if($this->page){
             $this->page->setDraftMode($mode);
         }

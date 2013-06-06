@@ -713,6 +713,7 @@ class Pages extends SmartestSystemApplication{
 		
 		if($page->hydrate($page_webid)){
 		    
+		    $page->setDraftMode(true);
 		    $this->send($page, 'page');
 		    
 		    $domain = 'http://'.$page->getParentSite()->getDomain();

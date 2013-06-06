@@ -181,6 +181,7 @@ class Sets extends SmartestSystemApplication{
 	            $this->send($set, 'set');
 	            $this->send(true, 'show_form');
 	            $this->send($set->getModel()->getProperties(), 'properties');
+	            $this->send(SmartestQuery::RANDOM, 'random_value');
 	            $this->setTitle('Edit Dynamic Set');
 	            
 	            $formTemplateInclude = "editSet.dynamic.tpl";

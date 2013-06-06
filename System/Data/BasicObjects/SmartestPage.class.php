@@ -827,8 +827,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        }else if($draft_mode == 'AUTO'){
 	            $parent->setDraftMode($this->getDraftMode());
             }
-	        
-	        // if($get_item_page || $parent->getType() != 'ITEMCLASS'){
+            
+            // if($get_item_page || $parent->getType() != 'ITEMCLASS'){
 	            $this->_parent_page = $parent;
 	        // }
 	        
@@ -1203,6 +1203,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    $data->setParameter('fields', $this->getPageFieldDefinitions());
 	    $data->setParameter('navigation', $this->getNavigationStructure());
 	    $data->setParameter('site', $this->getSite());
+	    $data->setParameter('request', SmartestPersistentObject::get('request_data'));
+	    
+	    // print_r(SmartestPersistentObject::get('request_data'));
 	    
 	    return $data;
 	}
@@ -1276,6 +1279,49 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
         
         return $array;
         
+	}
+	
+	public function __toSimpleObject(){
+	    
+	    $obj = parent::__toSimpleObject();
+	    return $obj;
+	    
+	}
+	
+	public function __toJson(){
+	    
+	    $obj = $this->__toSimpleObject();
+	    
+	    // The data need moulding slightly
+	    unset($obj->is_held);
+	    unset($obj->held_by);
+	    unset($obj->url);
+	    unset($obj->dataset_id);
+	    unset($obj->cache_interval);
+	    unset($obj->cache_as_html);
+	    unset($obj->changes_approved);
+	    $obj->is_section = (bool) $this->getIsSection();
+	    $obj->is_published = SmartestStringHelper::toRealBool($this->getIsPublished());
+	    $obj->deleted = SmartestStringHelper::toRealBool($this->getDeleted());
+	    $obj->created = (int) $this->getCreated();
+	    $obj->modified = (int) $this->getModified();
+	    $obj->last_published = (int) $this->getLastPublished();
+	    $obj->tags = $this->getTagNames();
+	    
+	    $obj->formatted_title = $this->getFormattedTitle();
+	    if($this->isHomePage()){
+	        $obj->is_home = true;
+	        unset($obj->parent);
+	    }else{
+	        $obj->is_home = false;
+	        $obj->parent_webid = $this->getParentPage()->getWebid();
+	        $obj->parent_id = $this->getParentPage()->getId();
+	        $obj->parent_title = $this->getParentPage()->getTitle();
+	        $obj->parent_formatted_title = $this->getParentPage()->getFormattedTitle();
+	    }
+	    
+	    return json_encode($obj);
+	    
 	}
 	
 	public function offsetGet($offset){

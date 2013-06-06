@@ -45,6 +45,10 @@ VSC.Effect.DisplayProgressively = Class.create({
         
     },
     
+    cancel: function(){
+        clearInterval(this.executer);
+    },
+    
     showNextElement: function(){
         
         if(this.finalElementsIndex < this.finalElements.length){

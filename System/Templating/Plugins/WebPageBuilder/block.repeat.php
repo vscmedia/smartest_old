@@ -53,7 +53,19 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	    $smartest_engine->assign("repeated_item_object", $item); // legacy support
 	    $smartest_engine->assign("key", $index);
 	    
-	    if(isset($items[$index+1]) && $limit > $items[$index+1]){
+	    // var_dump(array_keys($items));
+	    // var_dump($index);
+	    // var_dump($limit > $items[$index+1]);
+	    
+	    $smartest_engine->assign("first", $items[0]);
+	    
+	    if($limit){
+	        $smartest_engine->assign("last", $items[$limit-1]);
+        }else{
+            $smartest_engine->assign("last", $items[count($items)-1]);
+        }
+	    
+	    if(isset($items[$index+1]) || $limit == $index+1){
 	        $smartest_engine->assign("next_key", $index+1);
 	        $smartest_engine->assign("is_last", false);
         }else{

@@ -193,6 +193,8 @@ class SmartestTemplateAsset extends SmartestAsset{
 	    
 	    $file = $this->getFullPathOnDisk();
 	    
+	    // echo $file;
+	    
 	    if(is_file($file)){
 		    $contents = SmartestFileSystemHelper::load($file, true);
 		    return $contents;

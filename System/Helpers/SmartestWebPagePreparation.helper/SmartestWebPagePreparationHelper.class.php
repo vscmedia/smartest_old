@@ -59,6 +59,7 @@ class SmartestWebPagePreparationHelper{
         $b->assign('domain', $this->_request->getDomain());
         $b->assign('method', $this->_request->getAction());
         $b->assign('section', $this->_request->getModule());
+        $b->assign('is_ajax', defined('SM_AJAX_CALL') ? constant('SM_AJAX_CALL') : false);
         $b->assign('now', new SmartestDateTime(time()));
         
         if($ua = SmartestPersistentObject::get('userAgent')){
@@ -90,11 +91,14 @@ class SmartestWebPagePreparationHelper{
     
     public function buildFromContainerDownwards($container_name, $draft_mode=''){
         // echo "build";
+        $container_name = SmartestStringHelper::toVarName($container_name);
+        
         $b = $this->createBuilder();
         
         $b->assign('domain', $this->_request->getDomain());
         $b->assign('method', $this->_request->getAction());
         $b->assign('section', $this->_request->getModule());
+        $b->assign('is_ajax', defined('SM_AJAX_CALL') ? constant('SM_AJAX_CALL') : false);
         $b->assign('now', new SmartestDateTime(time()));
         $b->assignPage($this->_page);
         
@@ -127,7 +131,9 @@ class SmartestWebPagePreparationHelper{
             
         }else{
             
-            echo "Container not defined";
+            if($draft_mode){
+                echo "Smartest: Container '".$container_name."' not defined";
+            }   
             exit;
             
         }

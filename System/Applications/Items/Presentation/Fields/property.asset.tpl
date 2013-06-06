@@ -46,7 +46,7 @@
         <script type="text/javascript">
         $('edit-file-notes-button-{$property.id}').observe('mouseover', function(){literal}{{/literal}$('file-property-tooltip-{$property.id}').update('View and make notes this file');{literal}}{/literal});
         $('edit-file-notes-button-{$property.id}').observe('mouseout', function(){literal}{{/literal}$('file-property-tooltip-{$property.id}').update('');{literal}}{/literal});
-        $('edit-file-notes-button-{$property.id}').observe('click', function(e){literal}{{/literal}MODALS.load('assets/assetCommentStream?asset_id='+{$value.id}, 'Notes on file {$value.label}'); e.stop();{literal}}{/literal});
+        $('edit-file-notes-button-{$property.id}').observe('click', function(e){literal}{{/literal}MODALS.load('assets/assetCommentStream?asset_id='+{$value.id}, 'Notes on file {$value.label|addslashes}'); e.stop();{literal}}{/literal});
         </script></li>
     {/if}
     

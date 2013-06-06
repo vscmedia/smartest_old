@@ -47,7 +47,9 @@ VSC.ShowHide = Class.create({
             
         }else{
             this.options.onChange = function(){};
+            this.options.onChangeTo = function(){};
             this.options.onShow = function(){};
+            this.options.onHide = function(){};
         }
         
         this.currentFocusElementId = null;

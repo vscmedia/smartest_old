@@ -74,6 +74,7 @@ function updateSetConditionsFormFromOperator(condition, value){
           <select name="set_sort_field">
             <option value="_SMARTEST_ITEM_NAME" {if $set.sort_field == '_SMARTEST_ITEM_NAME'} selected="selected"{/if}>{$model.item_name_field_name}</option>
             <option value="_SMARTEST_ITEM_ID" {if $set.sort_field == '_SMARTEST_ITEM_ID'} selected="selected"{/if}>ID</option>
+            <option value="{$random_value}" {if $set.sort_field == $random_value} selected="selected"{/if}>Random order</option>
 {foreach from=$properties item="property"}
 			      <option value="{$property.id}" {if $property.id == $set.sort_field} selected="selected"{/if}>{$property.name}</option>
 {/foreach}

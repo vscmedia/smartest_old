@@ -294,6 +294,9 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
                 
                 case '_site':
                 return $this->getSite();
+                
+                case 'empty':
+                return !is_numeric($this->_item->getId());
 	            
 	        }
 	        
