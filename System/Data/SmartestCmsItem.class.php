@@ -596,7 +596,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	public function getName(){
 		$n = $this->getItem()->getName();
 		if($this->_draft_mode && $this->getItem()->getPublic() != 'TRUE' && $this->getRequest()->getAction() == "renderEditableDraftPage"){
-		    $n .= ' (not published)';
+		    $n = '*'.$n;
 		}
 		return $n;
 	}

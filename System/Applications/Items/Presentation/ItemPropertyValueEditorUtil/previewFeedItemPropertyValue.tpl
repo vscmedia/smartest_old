@@ -9,7 +9,7 @@
   
   <ul>
   {foreach from=$feed.items item="item"}
-    <li>{$item}</li>
+    <li><a href="{$item.url}" target="_blank">{$item}</li>
   {/foreach}
   </ul>
   

@@ -2,6 +2,8 @@
 
 class SmartestExternalFeedItem extends SimplePie_Item implements SmartestGenericListedObject, SmartestBasicType, ArrayAccess, SmartestStorableValue{
     
+    public $bf; // Backup feed container
+    
     public function setValue($v){
         
     }
@@ -9,6 +11,14 @@ class SmartestExternalFeedItem extends SimplePie_Item implements SmartestGeneric
     public function getValue(){
         
     }
+    
+    public function get_base($element = array()){
+		if(is_object($this->feed)){
+		    return $this->feed->get_base($element);
+		}else if(is_object($this->bf)){
+		    return $this->bf->get_base($element);
+		}
+	}
     
     public function __toString(){
         return ''.$this->getTitle();
@@ -55,12 +65,14 @@ class SmartestExternalFeedItem extends SimplePie_Item implements SmartestGeneric
             case "label":
             //print_r($this);
             //break;
-            return $this->getTitle();
+            return new SmartestString($this->get_title());
             
             case "url":
+            return new SmartestExternalUrl($this->get_permalink());
             break;
             
             case "description":
+            return new SmartestString($this->get_description());
             break;
         }
     }
@@ -79,5 +91,7 @@ class SmartestExternalFeedItem extends SimplePie_Item implements SmartestGeneric
     public function hydrateFromStorableFormat($v){
         
     }
+    
+    public function __destruct(){}
     
 }

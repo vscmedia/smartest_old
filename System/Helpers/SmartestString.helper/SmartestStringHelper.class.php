@@ -194,8 +194,43 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
-	public static function toVarName($normal_string, $clean_non_ascii=false){
+	public static function toValidExternalUrl($url){
+	    
+	    if(!strlen(trim($url, ' /.,:htps'))) return '';
+	    
+	    if(preg_match('/^((htt?ps?):\/\/?\/?)?(.+)\/?$/', $url, $matches)){
+            
+            if(isset($matches[2]{4})){
+                return 'https://'.$matches[3];
+            }else{
+                return 'http://'.$matches[3];
+            }
+        
+        }else{
+            
+            return 'http://'.$url;
+            
+        }
+	    
+	}
 	
+	public static function toUrlStringWithoutProtocol($url){
+	    
+	    $url = self::toValidExternalUrl($url);
+	    preg_match('/^((htt?ps?):\/\/?)?(.+)\/?$/', $url, $matches);
+	    return $matches[3];
+	    
+	}
+	
+	public static function toVarName($normal_string, $clean_non_ascii=false){
+	    
+	    if(is_object($normal_string)){
+		    $was_object = true;
+		    $normal_string = self::convertObject($normal_string);
+		}else{
+		    $was_object = false;
+		}
+	    
 		$page_name = strtolower($normal_string);
 		
 		if($clean_non_ascii && !self::isAscii($page_name)){
@@ -203,9 +238,11 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 		
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");
+		$page_name = preg_replace('/\s&(amp;)?\s/', '_and_', $page_name);
 		$page_name = preg_replace("/[\"'\.,\(\)]+/", "", $page_name);
 		$page_name = preg_replace("/[^\w_]+/", "_", $page_name);
-		return $page_name;
+		
+		return $was_object ? new SmartestString($page_name) : $page_name;
 	
 	}
 	
@@ -314,7 +351,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    return $string;
 	}
 	
-	public static function toTitleCase($string){
+	public static function toTitleCase($string, $strict=false){
 	    
 	    if(is_object($string)){
 		    $was_object = true;
@@ -330,7 +367,11 @@ class SmartestStringHelper extends SmartestHelper{
         
         foreach($words as $key=>$word){
             
-            if(in_array($word, $non_capitalised_words)){
+            if($strict){
+                $word = strtolower($word);
+            }
+            
+            if(in_array($word, $non_capitalised_words) && $k!=0){
                 $modified_words[] = $word;
             }else{
                 $modified_words[] = self::capitalizeFirstLetter($word);
@@ -708,6 +749,12 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	public static function fromCommaSeparatedList($string){
 	    return preg_split('/[\s]*[,][\s]*/', $string);
+	}
+	
+	public static function spanify($string, $spaces=false){
+	    $s = $spaces ? ' ' : '';
+	    $parts = explode(' ', $string);
+        return '<span>'.implode('</span>'.$s.'<span>', $parts).'</span>';
 	}
 	
 	public static function guaranteeUnique($string, $taken_strings, $separator='-'){

@@ -699,7 +699,7 @@ class Pages extends SmartestSystemApplication{
 	    $this->formForward();
 	}
 	
-	function preview($get){
+	public function preview($get){
 		
 		// if(!$this->getRequestParameter('from')){
 		    $this->setFormReturnUri();
@@ -725,14 +725,51 @@ class Pages extends SmartestSystemApplication{
 		    if($page->getDraftTemplate() && is_file(SM_ROOT_DIR.'Presentation/Masters/'.$page->getDraftTemplate())){
 		    
 		        if($page->getType() == 'NORMAL'){
-		        
-    		        $this->send(true, 'show_iframe');
-    		        $this->send($domain, 'site_domain');
-    		        $this->setTitle('Page Preview | '.$page->getTitle());
-    		        $this->send(false, 'show_edit_item_option');
-                    $this->send(false, 'show_publish_item_option');
-                    // $this->send($page->getMasterTemplate()->getImportedStylesheets(), 'stylesheets');
-                    $this->send($page->getStylesheets(), 'stylesheets');
+		            
+		            if($page->getId() == $this->getSite()->getTagPageId()){
+                        
+                        if($this->getRequestParameter('tag')){
+                            $tag = new SmartestTag;
+                            if($tag->findBy('name', $this->getRequestParameter('tag'))){
+                                $this->send(true, 'show_iframe');
+                		        $this->send($domain, 'site_domain');
+                		        $this->setTitle('Page Preview | Tag | '.$tag->getLabel());
+                		        $this->send(false, 'show_edit_item_option');
+                                $this->send(false, 'show_publish_item_option');
+                                $this->send(false, 'show_item_list');
+                                $this->send(false, 'show_tag_list');
+                            }else{
+                                // tag does not exist - require tag select
+                                $this->send('The selected tag does not exists. Please choose another tag to preview on this page.', 'chooser_message');
+                                $this->send(false, 'show_item_list');
+                                $this->send(true, 'show_tag_list');
+                                $this->send('websitemanager/preview', 'continue_action');
+                                $du  = new SmartestDataUtility;
+                	            $tags = $du->getTags();
+                	            $this->send($tags, 'tags');
+                            }
+                        }else{
+                            // require tag select
+                            $this->send('Please choose a tag to preview on this page.', 'chooser_message');
+                            $this->send(false, 'show_item_list');
+                            $this->send(true, 'show_tag_list');
+                            $this->send('websitemanager/preview', 'continue_action');
+                            $du  = new SmartestDataUtility;
+            	            $tags = $du->getTags();
+            	            $this->send($tags, 'tags');
+                        }
+                        
+        		    }else{
+        		        
+        		        $this->send(true, 'show_iframe');
+        		        $this->send($domain, 'site_domain');
+        		        $this->setTitle('Page Preview | '.$page->getTitle());
+        		        $this->send(false, 'show_edit_item_option');
+                        $this->send(false, 'show_publish_item_option');
+                        // $this->send($page->getMasterTemplate()->getImportedStylesheets(), 'stylesheets');
+                        $this->send($page->getStylesheets(), 'stylesheets');
+        		        
+        		    }
 		        
     		    }else if($page->getType() == 'ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_ITEMCLASS' || $page->getType() == 'SM_PAGETYPE_DATASET'){
 		        
@@ -824,7 +861,8 @@ class Pages extends SmartestSystemApplication{
     	                
     	                $this->setTitle('Meta-Page Preview | Choose '.$model->getName().' to Continue');
     	            }
-    		    }    	    
+    		    }
+    		    
     	    }else{
     	        
     	        $this->send(false, 'show_iframe');
@@ -1547,14 +1585,14 @@ class Pages extends SmartestSystemApplication{
                 if($model->hydrate($page->getDatasetId())){
                     $items  = $model->getSimpleItemsAsArrays($this->getSite()->getId());
                     $this->send($items, 'items');
-                    $this->send($model->__toArray(), 'model');
+                    $this->send($model, 'model');
                     $this->send('Please choose which '.$model->getName().' you would like to tag:', 'chooser_message');
                     $this->send('datamanager/itemTags', 'continue_action');
                 }else{
                     $this->send(array(), 'items');
                 }
                 
-                $this->send($page->__toArray(), 'page');
+                $this->send($page, 'page');
                 
                 $this->setTitle('Meta-Page Tags | Choose '.$model->getName().' to Continue');
 	            

@@ -107,6 +107,7 @@ class Sets extends SmartestSystemApplication{
     		    $this->send($models, 'models');
     		    $this->send(true, 'allow_choose_model');
 	        }
+	        
 		}else{
 		    $models = $du->getModels(false, $this->getSite()->getId());
 		    $this->send($models, 'models');
@@ -559,9 +560,7 @@ class Sets extends SmartestSystemApplication{
 	    
 	    if($set->find($set_id)){
 	        
-	        $feeds = $set->getFeeds();
-	        
-	        print_r($feeds);
+	        /* $feeds = $set->getFeeds();
 	        
 	        $feed = new SimplePie();
             $feed->set_cache_location(SM_ROOT_DIR.'System/Cache/SimplePie/');
@@ -570,8 +569,17 @@ class Sets extends SmartestSystemApplication{
             $feed->set_item_class('SmartestExternalFeedItem');
             $feed->handle_content_type();
             $feed->init();
+            $items = $feed->get_items();
             
-            $this->send($feed->get_items(), 'items');
+            foreach($items as $item){
+                $item->bf = $item->get_feed();
+                /* $t = $item->get_title();
+                $p = $item->get_permalink(); 
+            }
+            
+            $this->send($items, 'items');*/
+            
+             $this->send($set->getFeedItems(), 'items');
 	        
 	    }
 	    

@@ -876,6 +876,29 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    
 	}
 	
+	public function getFeedItems(){
+	    
+	    $feeds = $this->getFeeds();
+        
+        $feed = new SimplePie();
+        $feed->set_cache_location(SM_ROOT_DIR.'System/Cache/SimplePie/');
+        $feed->set_feed_url($feeds[4]);
+        $feed->set_input_encoding('UTF-8');
+        $feed->set_item_class('SmartestExternalFeedItem');
+        $feed->handle_content_type();
+        $feed->init();
+        $items = $feed->get_items();
+        
+        foreach($items as $item){
+            $item->bf = $item->get_feed();
+            /* $t = $item->get_title();
+            $p = $item->get_permalink(); */
+        }
+        
+        return $items;
+	    
+	}
+	
 	public function isAggregable(){
 	    return $this->getModel()->hasFeedProperties();
 	}

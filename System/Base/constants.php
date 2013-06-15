@@ -120,6 +120,7 @@ define('SM_LINK_TYPE_METAPAGE', 2);
 define('SM_LINK_TYPE_IMAGE', 4);
 define('SM_LINK_TYPE_DOWNLOAD', 8);
 define('SM_LINK_TYPE_TAG', 16);
+define('SM_LINK_TYPE_AUTHOR', 32);
 define('SM_LINK_TYPE_EXTERNAL', 256);
 define('SM_LINK_TYPE_MAILTO', 512);
 

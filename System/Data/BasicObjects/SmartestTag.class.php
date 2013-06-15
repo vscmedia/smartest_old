@@ -151,7 +151,7 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getItems($site_id=''){
+    public function getItems($site_id=null, $model_id=null){
         
         if(!$this->_item_lookup_attempted){
         
@@ -159,6 +159,10 @@ class SmartestTag extends SmartestBaseTag{
             
             if($site_id && is_numeric($site_id)){
                 $sql .= ' AND Items.item_site_id=\''.$site_id.'\'';
+            }
+            
+            if($model_id && is_numeric($model_id)){
+                $sql .= ' AND Items.item_itemclass_id=\''.$model_id.'\'';
             }
             
             $result = $this->database->queryToArray($sql);
@@ -170,9 +174,14 @@ class SmartestTag extends SmartestBaseTag{
             }
             
             $h = new SmartestCmsItemsHelper;
-            $items = $h->hydrateMixedListFromIdsArray($ids);
-        
-            $this->_item_lookup_attempted = true;
+            
+            if($model_id && is_numeric($model_id)){
+                $items = $h->hydrateUniformListFromIdsArray($ids, $model_id);
+            }else{
+                $items = $h->hydrateMixedListFromIdsArray($ids);
+                $this->_item_lookup_attempted = true;
+            }
+            
             $this->_items = $items;
         
         }
@@ -284,6 +293,7 @@ class SmartestTag extends SmartestBaseTag{
             
             if(isset($models[$offset])){
                 // TODO: Model-specific tagged objects retrieval by model name
+                
             }else{
                 return parent::offsetGet($offset);
             }

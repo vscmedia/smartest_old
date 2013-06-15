@@ -19,6 +19,7 @@ class SmartestCmsLink extends SmartestHelper{
     const IMAGE = 4;
     const DOWNLOAD = 8;
     const TAG = 16;
+    const AUTHOR = 32;
     const EXTERNAL = 256;
     const MAILTO = 512;
     
@@ -54,6 +55,10 @@ class SmartestCmsLink extends SmartestHelper{
             
             $this->setDestinationFromProvidedPage($this->_destination_properties->getParameter('page'));
             
+        }else if($this->_destination_properties->getParameter('from_tag')){
+            
+            $this->setDestinationFromProvidedTag($this->_destination_properties->getParameter('tag'));
+            
         }else{
         
             $this->setTypeFromNameSpace($this->_destination_properties->getParameter('namespace'));
@@ -74,7 +79,7 @@ class SmartestCmsLink extends SmartestHelper{
             $du = new SmartestDataUtility;
             $model_names = array_keys($du->getModelNamesLowercase());
         
-            if(in_array($ns, array('page', 'metapage', 'item', 'image', 'img', 'download', 'dl', 'tag', 'tag', 'tag_page', 'mailto'))){
+            if(in_array($ns, array('page', 'metapage', 'item', 'image', 'img', 'download', 'dl', 'tag', 'tag_page', 'user', 'author', 'mailto'))){
             
                 switch($ns){
                 
@@ -101,6 +106,11 @@ class SmartestCmsLink extends SmartestHelper{
                     case "tag":
                     case "tag_page":
                     $this->setType(SM_LINK_TYPE_TAG);
+                    break;
+                    
+                    case "user":
+                    case "author":
+                    $this->setType(SM_LINK_TYPE_AUTHOR);
                     break;
                     
                     case "mailto":
@@ -256,6 +266,26 @@ class SmartestCmsLink extends SmartestHelper{
         
     }
     
+    public function setDestinationFromProvidedTag(SmartestTag $tag){
+        
+        $this->setType(SM_LINK_TYPE_TAG);
+        $this->setNamespace('tag');
+        $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_AUTO);
+        
+        $this->_destination = $tag;
+        
+    }
+    
+    public function setDestinationFromProvidedAuthor(SmartestUser $user){
+        
+        $this->setType(SM_LINK_TYPE_AUTHOR);
+        $this->setNamespace('author');
+        $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_AUTO);
+        
+        $this->_destination = $user;
+        
+    }
+    
     public function getSiteId(){
         
         if(defined('SM_CMS_PAGE_SITE_ID')){
@@ -378,6 +408,11 @@ class SmartestCmsLink extends SmartestHelper{
             $this->_destination = $d;
             break;
             
+            case SM_LINK_TYPE_AUTHOR:
+            $d = new SmartestUser;
+            $this->_destination = $d;
+            break;
+            
             case SM_LINK_TYPE_MAILTO:
             $d = new SmartestString($this->_destination_properties->getParameter('destination'));
             $this->_destination = $d;
@@ -416,7 +451,7 @@ class SmartestCmsLink extends SmartestHelper{
     
     public function shouldOmitAnchorTag($draft_mode=false){
         // return !$this->_preview_mode && ($this->isInternalPage() && $this->shouldGoCold() && is_object($this->_host_page) && $this->_page->getId() == $this->_host_page->getId());
-        if(!$this->_destination_properties->getParameter('from_item') && (!$this->_destination_properties->getParameter('destination') || $this->_destination_properties->getParameter('destination') == '#')){
+        if(!$this->_destination_properties->getParameter('from_item') && !$this->_destination_properties->getParameter('from_page') && !$this->_destination_properties->getParameter('from_tag') && (!$this->_destination_properties->getParameter('destination') || $this->_destination_properties->getParameter('destination') == '#')){
             return true;
         }else{
             if($this->getHostPage()){
@@ -557,7 +592,11 @@ class SmartestCmsLink extends SmartestHelper{
             
             if($this->getType() == SM_LINK_TYPE_EXTERNAL){
                 
-                return $this->_destination_properties->getParameter('destination');
+                if($this->_render_data->hasParameter('hide_protocol') && SmartestStringHelper::toRealBool($this->_render_data->hasParameter('hide_protocol'))){
+                    return SmartestStringHelper::toUrlStringWithoutProtocol($this->_destination_properties->getParameter('destination'));
+                }else{
+                    return $this->_destination_properties->getParameter('destination');
+                }
                 
             }else{
                 
@@ -588,7 +627,7 @@ class SmartestCmsLink extends SmartestHelper{
                         break;
                 
                         case SM_LINK_TYPE_TAG:
-                        return $this->_destination->getTitle();
+                        return $this->_destination->getLabel();
                         break;
                 
                         case SM_LINK_TYPE_DOWNLOAD:
@@ -622,7 +661,11 @@ class SmartestCmsLink extends SmartestHelper{
             case SM_LINK_TYPE_PAGE:
             
             if($draft_mode){
-                return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId();
+                if($this->_request->getRequestParameter('hide_newwin_link')){
+                    return $this->_request->getDomain().'website/renderEditableDraftPage?page_id='.$this->_destination->getWebId().'&amp;hide_newwin_link=true';
+                }else{
+                    return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId();
+                }
             }else{
                 if($this->_destination->getIsPublishedAsBoolean() || $ignore_status){
                     /* if(defined('SM_LINK_URLS_ABSOLUTE') && constant('SM_LINK_URLS_ABSOLUTE')){
@@ -640,7 +683,11 @@ class SmartestCmsLink extends SmartestHelper{
             case SM_LINK_TYPE_METAPAGE:
             
             if($draft_mode){ 
-                return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
+                if($this->_request->getRequestParameter('hide_newwin_link')){
+                    return $this->_request->getDomain().'website/renderEditableDraftPage?page_id='.$this->_destination->getWebId().'&amp;hide_newwin_link=true&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
+                }else{
+                    return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
+                }
             }else{
                 if(($this->_destination->getIsPublishedAsBoolean() && $this->_destination->getPrincipalItem()->isPublished()) || $ignore_status){
                     $template_url = $this->_request->getDomain().$this->_destination->getDefaultUrl();
@@ -660,7 +707,21 @@ class SmartestCmsLink extends SmartestHelper{
             break;
     
             case SM_LINK_TYPE_TAG:
-            return $this->_destination->getTitle();
+            
+            if($draft_mode){
+                if($this->_request->getRequestParameter('hide_newwin_link')){
+                    return $this->_request->getDomain().'website/renderEditableDraftPage?page_id='.$this->getSite()->getTagPage()->getWebId().'&amp;hide_newwin_link=true&amp;tag_name='.$this->_destination->getName();
+                }else{
+                    return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->getSite()->getTagPage()->getWebId().'&amp;tag='.$this->_destination->getName();
+                }
+            }else{
+                if($this->_destination){
+                    return $this->_request->getDomain().'tags/'.$this->_destination->getName().'.html';
+                }else{
+                    return '#';
+                }
+            }
+            
             break;
     
             case SM_LINK_TYPE_DOWNLOAD:
@@ -708,7 +769,7 @@ class SmartestCmsLink extends SmartestHelper{
         $url = $this->getUrl($draft_mode);
         $contents = $this->getContent();
         
-        if($draft_mode && ($this->getType() == SM_LINK_TYPE_PAGE || $this->getType() == SM_LINK_TYPE_METAPAGE) && $url != '#'){
+        if($draft_mode && ($this->getType() == SM_LINK_TYPE_PAGE || $this->getType() == SM_LINK_TYPE_METAPAGE || $this->getType() == SM_LINK_TYPE_TAG) && $url != '#'){
             $this->_markup_attributes->setParameter('target', '_top');
         }
         

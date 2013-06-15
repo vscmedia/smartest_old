@@ -6,6 +6,7 @@ module:
   default_action: renderPageFromUrl
   aliases:
     - {url: /tag/:tag_name/feed, action: renderSiteTagSimpleRssFeed}
+    - {url: /tag/:tag_name, action: renderPageFromId, params: {tag: true}}
   routes:
     tag_page:
       url: /tags/:tag_name.html

@@ -60,8 +60,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         $this->draft_mode = SmartestStringHelper::toRealBool($mode);
         
-        $this->_tpl_vars['sm_draft_mode'] = SmartestStringHelper::toRealBool($mode);
-        
         if($this->page){
             $this->page->setDraftMode($mode);
         }
@@ -428,6 +426,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             
                 $def = $this->getPage()->getItemSpaceDefinition($itemspace_name, $this->getDraftMode());
                 
+                $item_name = isset($params['item_name']) ? $params['item_name'] : 'item';
+                
                 // Tell Smartest that this particular item appears on this page.
                 // Strictly speaking, this information is already stored as the itemspace def, 
                 // but we want to standardise this information so that it can be processed efficiently
@@ -448,9 +448,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             	        $child->setContext(SM_CONTEXT_ITEMSPACE_TEMPLATE);
             	        $item = $def->getItem(false, $this->getDraftMode());
             	        $item->setDraftMode($this->getDraftMode());
-            	        $child->assign('item', $item);
+            	        $child->assign($item_name, $item); // set above
             	        $content = '<!--rendering itemspace: '.$itemspace_name."-->\n\n";
             	        $content .= $this->renderItemEditButton($item->getId());
+            	        $content .= $this->renderItemSpaceDefineButton($itemspace_name);
             	        $content .= $child->fetch($template_path);
             	        $this->killChildProcess($child->getProcessId());
             	        
@@ -467,7 +468,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     $item = $def->getItem(false, $this->getDraftMode());
         	        $item->setDraftMode($this->getDraftMode());
         	        $this->assign($itemspace_name.'_item', $item);
-        	        return $this->renderItemEditButton($item->getId());
+        	        return $this->renderItemEditButton($item->getId()).$this->renderItemSpaceDefineButton($itemspace_name);
                 
                 }
             
@@ -505,6 +506,27 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
     }
     
+    public function renderItemSpaceDefineButton($itemspace_name){
+        
+        if($this->getDraftMode()){
+            
+            $url = $this->_request_data->g('domain').'websitemanager/defineItemspace?assetclass_id='.$itemspace_name;
+            
+            if($this->page){
+                $url .= '&amp;from=pagePreview&amp;page_id='.$this->page->getWebid();
+            }else if($this->_request_data->g('request_parameters')->g('page_id')){
+                $url .= '&amp;from=pagePreview&amp;page_id='.$this->_request_data->g('request_parameters')->g('page_id');
+            }
+            
+            $html = '<a href="'.$url.'" target="_top" title="Edit itemspace '.$itemspace_name.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/arrow_refresh_blue.png" alt="Edit itemspace'.$itemspace_name.'" /></a>';
+        }else{
+            $html = '';
+        }
+        
+        return $html;
+        
+    }
+    
     public function renderField($field_name, $params){
         
         // if($this->_page_rendering_data['fields']->hasParameter($field_name)){
@@ -531,17 +553,21 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     
     public function renderEditFieldButton($field_name, $params){
         
-        $markup = '<!--edit link-->';
+        if($this->_page_rendering_data['fields'] instanceof SmartestParameterHolder){
         
-        if($this->_page_rendering_data['fields']->hasParameter($field_name)){
+            $markup = '<!--edit link-->';
         
-            if($this->_request_data->g('action') == "renderEditableDraftPage"){
-		        $markup = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".$this->_request_data->g('domain')."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
-	        }
+            if($this->_page_rendering_data['fields']->hasParameter($field_name)){
+        
+                if($this->_request_data->g('action') == "renderEditableDraftPage"){
+    		        $markup = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".$this->_request_data->g('domain')."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+    	        }
 	    
-        }
+            }
         
-        return $markup;
+            return $markup;
+        
+        }
         
     }
     
@@ -738,6 +764,12 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     public function getRepeatBlockData($params){
         
         $this->caching = false;
+        $this->_repeat_char_length_aggr = 0;
+        
+        if(is_array($params['from']) || $params['from'] instanceof SmartestArray){
+            return $params['from'];
+        }
+        
         if(count(explode(':', $params['from'])) > 1){
             $parts = explode(':', $params['from']);
             $type = $parts[0];
@@ -777,6 +809,35 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 }
             }else{
                 // no file group with that name
+            }
+            
+            break;
+            
+            case "set_feed_Items":
+            
+            $set = new SmartestCmsItemSet;
+            
+            if($set->findBy('name', $name, $this->page->getSiteId()) || $this->getDataSetsHolder()->h($name)){
+                if($set->isAggregable()){
+                    
+                    if(isset($params['limit']) && is_numeric($params['limit'])){
+                        
+                        $limit = $params['limit'];
+                        $items = $set->getFeedItems();
+                        
+                        if(is_array($items)){
+                            return array_slice($items, 0, $limit);
+                        }else{
+                            return array();
+                        }
+                        
+                    }else{
+                        return $set->getFeedItems();
+                    }
+                    
+                }else{
+                    return $this->raiseError("Data set with name '".$name."' does not have feed properties.");
+                }
             }
             
             break;
@@ -821,6 +882,25 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
          		
         }
  		
+    }
+    
+    public function getDataSetItemsByName($name){
+        
+        $set = new SmartestCmsItemSet;
+        
+        if($set->findBy('name', $name, $this->page->getSiteId()) || $this->getDataSetsHolder()->h($name)){
+		    
+		    $set_mode = $this->getDraftMode() ? SM_QUERY_ALL_DRAFT_CURRENT : SM_QUERY_PUBLIC_LIVE_CURRENT ;
+		    $items = $set->getMembersPaged($set_mode, null, 0, $query_vars, $this->page->getSiteId());
+		    return $items;
+		    
+		}else{
+		    
+		    $this->raiseError("Data set with name '".$name."' could not be found.");
+		    return array();
+		    
+		}
+        
     }
     
     public function renderAssetById($asset_id, $params, $path='none'){

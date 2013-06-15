@@ -12,7 +12,7 @@ class SmartestExternalUrl implements SmartestBasicType, ArrayAccess, SmartestSto
     }
     
     public function setValue($v){
-        $this->_value = $v;
+        $this->_value = SmartestStringHelper::toValidExternalUrl($v);
     }
     
     public function getValue(){

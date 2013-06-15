@@ -468,6 +468,13 @@ class SmartestSite extends SmartestBaseSite{
         return $ph->setGlobalPreference('site_tag_page_id', $id, null, $this->getId());
     }
     
+    public function getTagPage(){
+        $tpid = $this->getTagPageId();
+        $p = new SmartestPage;
+        $p->find($tpid);
+        return $p;
+    }
+    
     /** Search Page **/
     
     public function getSearchPageId(){

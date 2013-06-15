@@ -212,7 +212,11 @@ class SmartestItemPage extends SmartestPage{
         if($this->_properties['force_static_title'] || $force_static || !is_object($this->_simple_item)){
             return $this->_properties['title'];
         }else{
-            return $this->_simple_item->getName();
+            if(is_object($this->_principal_item)){
+                return $this->_principal_item->getName();
+            }else{
+                return $this->_simple_item->getName();
+            }
         }
     }
     

@@ -35,7 +35,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    
 	    if(!is_object($this_model)){
 	        $m = new SmartestModel;
-	        $m->hydrate($this->_properties['itemclass_id']);
+	        $m->find($this->_properties['itemclass_id']);
 	        $this->_model = $m;
 	    }
 	    
@@ -99,7 +99,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        return $this->getModel();
 	        
 	        case "tags":
-	        return $this->getTags();
+	        return new SmartestArray($this->getTags());
 	        
 	        case "authors":
 	        return new SmartestArray($this->getAuthors());
@@ -241,7 +241,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    $sql = "SELECT * FROM Tags, TagsObjectsLookup WHERE TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id='".$this->_properties['id']."' AND TagsObjectsLookup.taglookup_type='SM_ITEM_TAG_LINK' ORDER BY Tags.tag_name";
 	    $result = $this->database->queryToArray($sql);
 	    $ids = array();
-	    $tags = new SmartestArray;
+	    $tags = array();
 	    
 	    foreach($result as $ta){
 	        if(!in_array($ta['taglookup_tag_id'], $ids)){

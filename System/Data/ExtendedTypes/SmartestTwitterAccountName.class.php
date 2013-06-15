@@ -36,6 +36,8 @@ class SmartestTwitterAccountName extends SmartestString{
             return SmartestCmsLinkHelper::createLink($this->getUrl(true), $p)->render();
             case "empty":
             return !strlen($this->_string);
+            case "tweets_json_decoded":
+            return $this->getTweetsJson();
         }
         
         return parent::offsetGet($offset);
@@ -44,6 +46,21 @@ class SmartestTwitterAccountName extends SmartestString{
     
     public function __toString(){
         return (string) $this->_string;
+    }
+    
+    public function getTweetsJson(){
+        
+        $url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name='.$this->_string;
+        $result = SmartestHttpRequestHelper::rawCurlRequest($url);
+        
+        // var_dump($result);
+        
+        if($json = @json_decode($result)){
+            return $json;
+        }else{
+            return false;
+        }
+        
     }
   
 }

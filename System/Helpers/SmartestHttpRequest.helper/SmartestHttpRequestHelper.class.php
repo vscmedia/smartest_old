@@ -4,24 +4,26 @@ SmartestHelper::register('HttpRequest');
 
 class SmartestHttpRequestHelper extends SmartestHelper{
 	
-	static function getContent($address, $correctResources=true, $type='GET', $variables=''){
+	public static function getContent($address, $correctResources=true, $type='GET', $variables=''){
 		
 		if(substr($address, 0, 7) != 'http://' && substr($address, 0, 8) != 'https://'){
 			$address = 'http://'.$address;
 		}
 		
-		$ch = curl_init();
+		$page = self::rawCurlRequest($address, $type, $variables);
+		
+		/* $ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $address);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, 'Smartest PageGrab [HTTP Request Helper], (Version'.SM_SYSTEM_VERSION.')');
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Smartest PageGrab [HTTP Request Helper], (Version '.SM_SYSTEM_VERSION.')');
 		
 		if($type == 'POST'){
 			curl_setopt($ch, CURLOPT_POST, 1);
 		}
 		
 		$page = curl_exec($ch);
-		curl_close($ch);
+		curl_close($ch); */
 		
 		
 		if($correctResources){
@@ -81,19 +83,39 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		
 	}
 	
-	static function getHostName($address){
+	public static function rawCurlRequest($url, $type='GET', $variables=''){
+	    
+	    $ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Smartest PageGrab [HTTP Request Helper], (Version '.SM_SYSTEM_VERSION.')');
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		
+		if($type == 'POST'){
+			curl_setopt($ch, CURLOPT_POST, 1);
+		}
+		
+		$page = curl_exec($ch);
+		curl_close($ch);
+		
+		return $page;
+	    
+	}
+	
+	public static function getHostName($address){
 		
 		preg_match('/^https?:\/\/([\w\.]{7,})\//', $address, $matches);
 		return $matches[1];
 	}
 	
-	static function getHostAddress($address){
+	public static function getHostAddress($address){
 		
 		// $host = self::getHostName($address);
 		// return `host $host`;
 	}
 	
-	static function getExternalResources($page){
+	public static function getExternalResources($page){
 		
 		if(substr($page, 0, 7) == 'http://' || substr($page, 0, 8) == 'https://'){
 			$html = self::getContent($page, false);
@@ -118,7 +140,7 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		return $res;
 	}
 	
-	static function getLinkUrls($page){
+	public static function getLinkUrls($page){
 	    
 	    if(substr($page, 0, 7) == 'http://' || substr($page, 0, 8) == 'https://'){
 			$html = self::getContent($page, false);
@@ -142,7 +164,7 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		
 	}
 	
-	static function getTitle($page){
+	public static function getTitle($page){
 		
 		if(substr($page, 0, 7) == 'http://' || substr($page, 0, 8) == 'https://'){
 			$html = self::getContent($page, false);
@@ -156,7 +178,7 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		
 	}
 	
-	static function getMetas($page){
+	public static function getMetas($page){
 		
 		if(substr($page, 0, 7) == 'http://' || substr($page, 0, 8) == 'https://'){
 			$html = self::getContent($page, false);
@@ -178,7 +200,7 @@ class SmartestHttpRequestHelper extends SmartestHelper{
 		
 	}
 	
-	static function isSecure($address){
+	public static function isSecure($address){
 		return (substr($address, 0, 8) == 'https://');
 	}
 	

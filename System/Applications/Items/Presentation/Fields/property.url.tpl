@@ -3,6 +3,6 @@
 
 {url_input name=$name id=$property_id value=$value}
 
-{if strlen($property.hint)}<span class="form-hint">{$property.hint}</span>{/if}
+{if strlen($property.hint)}<div class="form-hint">{$property.hint}</div>{/if}
 {* if strlen($value)}<img src="{$value.qr_code_url}" style="width:100px;float:right" alt="{$value}" class="ipv-qr-code" /><div style="clear:both"></div>{/if *}
 {* $value.qr_code_image.width_100 *}

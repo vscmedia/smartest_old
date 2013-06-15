@@ -36,7 +36,7 @@ class SmartestExternalFeed extends SmartestExternalUrl implements SmartestBasicT
     public function setValue($v){
         $v = str_replace('feed://', 'http://', $v);
         $v = str_replace('feed:https://', 'https://', $v);
-        $this->_value = $v;
+        $this->_value = SmartestStringHelper::toValidExternalUrl($v);
     }
     
     public function getFeedData($refresh=false){

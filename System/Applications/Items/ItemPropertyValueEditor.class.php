@@ -483,4 +483,45 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
         
     }
     
+    public function previewTwitterAccountItemPropertyValue(){
+        
+        if(is_numeric($this->getRequestParameter('item_id'))){
+            
+            if($item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
+                
+                $item->setDraftMode(true);
+                
+                if(is_numeric($this->getRequestParameter('property_id'))){
+                
+                    if($item->getModel()->hasPropertyWithId($this->getRequestParameter('property_id'))){
+                        
+                        $property = new SmartestItemProperty;
+                        
+                        if($property->find($this->getRequestParameter('property_id'))){
+                            
+                            $twitter_ipv_object = $item->getPropertyValueByNumericKey($property->getId());
+                            $this->send($twitter_ipv_object, 'acct');
+                            // print_r($twitter_ipv_object->getTweetsJson());
+                        
+                        }else{
+                            $this->addUserMessage('property ID not recognised');
+                            
+                        }
+                    }else{
+                        $this->addUserMessage('property ID is wrong for model');
+                    }
+                    
+                }else{
+                    $this->addUserMessage('property ID isn\'t numeric');
+                }
+                
+            }else{
+                $this->addUserMessage('Item with that ID not found');
+            }
+        }else{
+            $this->addUserMessage('Item ID not set or not numeric');
+        }
+        
+    }
+    
 }

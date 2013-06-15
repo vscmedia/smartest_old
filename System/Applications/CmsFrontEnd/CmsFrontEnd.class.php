@@ -106,13 +106,15 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		    define('SM_CMS_PAGE_SITE_ID', $this->_site->getId());
 		    define('SM_CMS_PAGE_SITE_UNIQUE_ID', $this->_site->getUniqueId());
 		    
-		    if($this->getRequestParameter('tag_name')){
+		    // var_dump($this->getRequestParameter('tag'));
+		    
+		    if($this->getRequestParameter('tag_name') && $this->getRequestParameter('tag')){
 		        
 		        // Page is a list of tagged content, not a real page.
 		        
 		        $tag_identifier = SmartestStringHelper::toSlug($this->getRequestParameter('tag_name'));
         	    $tag = new SmartestTag;
-
+        	    
         	    if($tag->findBy('name', $tag_identifier)){
         	        
         	        $tag_page_id = $this->_site->getTagPageId();
@@ -184,13 +186,13 @@ class CmsFrontEnd extends SmartestSystemApplication{
                         $this->_page = $p;
                     }
                     
-                    if($this->_page->getId() == $this->_site->getSpecialPageIds()->g('tag_page_id') && $this->getRequestParameter('tag')){
+                    if($this->_page->getId() == $this->_site->getSpecialPageIds()->g('tag_page_id') && $this->getRequestParameter('tag_name')){
                         
                         // Tag page
                         $p = $this->_page->copy('SmartestTagPage');
                         $t = new SmartestTag;
                         
-                        if($t->hydrateBy('name', $this->getRequestParameter('tag'))){
+                        if($t->hydrateBy('name', $this->getRequestParameter('tag_name'))){
                             $p->assignTag($t);
                             $this->_page = $p;
                         }
@@ -211,11 +213,21 @@ class CmsFrontEnd extends SmartestSystemApplication{
                     }
                 }
                 
+                if($this->getRequestParameter('hide_newwin_link')){
+    	            $this->setFormReturnUri();
+    	            $this->setFormReturnDescription('page preview');
+    	        }
+                
     	        $this->_page->setDraftMode(true);
     	        $this->renderPage(true);
 
     	    }else if($get['item_id'] && $this->_page = $this->manager->getItemClassPageByWebId($page_webid, $get['item_id'], true)){
-
+                
+                if($this->getRequestParameter('hide_newwin_link')){
+    	            $this->setFormReturnUri();
+    	            $this->setFormReturnDescription('page preview');
+    	        }
+                
     	        $this->_page->setDraftMode(true);
     	        $this->renderPage(true);
 

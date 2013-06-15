@@ -6,17 +6,37 @@ function smartest_filter_preview($html, $filter){
         
         $request_data = SmartestPersistentObject::get('request_data');
         
-        $preview_url = '/website/renderEditableDraftPage?page_id='.$request_data->getParameter('request_parameters')->getParameter('page_id').'&amp;liberate_link=false';
+        $preview_url = '/website/renderEditableDraftPage?page_id='.$request_data->getParameter('request_parameters')->getParameter('page_id').'&amp;hide_newwin_link=true';
         if($request_data->getParameter('request_parameters')->hasParameter('item_id')) $preview_url .= '&amp;item_id='.$request_data->getParameter('request_parameters')->getParameter('item_id');
         if($request_data->getParameter('request_parameters')->hasParameter('search_query')) $preview_url .= '&amp;q='.$request_data->getParameter('request_parameters')->getParameter('search_query');
         if($request_data->getParameter('request_parameters')->hasParameter('author_id')) $preview_url .= '&amp;author_id='.$request_data->getParameter('request_parameters')->getParameter('author_id');
-        if($request_data->getParameter('request_parameters')->hasParameter('tag')) $preview_url .= '&amp;tag='.$request_data->getParameter('request_parameters')->getParameter('tag');
+        if($request_data->getParameter('request_parameters')->hasParameter('tag_name')) $preview_url .= '&amp;tag_name='.$request_data->getParameter('request_parameters')->getParameter('tag_name');
         
-        $phtml = SmartestFileSystemHelper::load($filter->getDirectory().'previewbar.html.txt');
-        $phtml = str_replace('%PREVIEWURL%', $preview_url, $phtml);
-        $phtml = str_replace('%OVERHEAD%', SmartestPersistentObject::get('timing_data')->getParameter('overhead_time_taken'), $phtml);
-        $phtml = str_replace('%BUILDTIME%', SmartestPersistentObject::get('timing_data')->getParameter('smarty_time_taken'), $phtml);
-        $phtml = str_replace('%TOTAL%', SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken'), $phtml);
+        $sm = new SmartyManager('BasicRenderer');
+        $r = $sm->initialize('preview_bar_html');
+        $r->setDraftMode(true);
+        
+        $r->assign('overhead_time', SmartestPersistentObject::get('timing_data')->getParameter('overhead_time_taken'));
+        $r->assign('build_time', SmartestPersistentObject::get('timing_data')->getParameter('smarty_time_taken'));
+        $r->assign('total_time', SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken'));
+        $r->assign('liberate_link_url', $preview_url);
+        $r->assign('hide_liberate_link', SmartestStringHelper::toRealBool(SmartestPersistentObject::get('request_data')->getParameter('request_parameters')->getParameter('hide_newwin_link')));
+        
+        if($request_data->getParameter('request_parameters')->hasParameter('item_id')){
+            $item_id = (int) $request_data->getParameter('request_parameters')->getParameter('item_id');
+            $item = new SmartestItem;
+            if($item->find($item_id)){
+                $r->assign('item_id', $item_id);
+                $r->assign('model_name', $item->getModel()->getName());
+                $r->assign('show_item_edit_link', true);
+            }else{
+                $r->assign('show_item_edit_link', false);
+            }
+        }else{
+            $r->assign('show_item_edit_link', false);
+        }
+        
+        $phtml = $r->fetch($filter->getDirectory().'previewbar.tpl');
         
         preg_match('/<body[^>]*?'.'>/i', $html, $match);
 		
