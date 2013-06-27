@@ -12,6 +12,12 @@ function smartest_filter_preview($html, $filter){
         if($request_data->getParameter('request_parameters')->hasParameter('author_id')) $preview_url .= '&amp;author_id='.$request_data->getParameter('request_parameters')->getParameter('author_id');
         if($request_data->getParameter('request_parameters')->hasParameter('tag_name')) $preview_url .= '&amp;tag_name='.$request_data->getParameter('request_parameters')->getParameter('tag_name');
         
+        $smartest_preview_url = '/websitemanager/preview?page_id='.$request_data->getParameter('request_parameters')->getParameter('page_id');
+        if($request_data->getParameter('request_parameters')->hasParameter('item_id')) $smartest_preview_url .= '&amp;item_id='.$request_data->getParameter('request_parameters')->getParameter('item_id');
+        if($request_data->getParameter('request_parameters')->hasParameter('search_query')) $smartest_preview_url .= '&amp;q='.$request_data->getParameter('request_parameters')->getParameter('search_query');
+        if($request_data->getParameter('request_parameters')->hasParameter('author_id')) $smartest_preview_url .= '&amp;author_id='.$request_data->getParameter('request_parameters')->getParameter('author_id');
+        if($request_data->getParameter('request_parameters')->hasParameter('tag_name')) $smartest_preview_url .= '&amp;tag='.$request_data->getParameter('request_parameters')->getParameter('tag_name');
+        
         $sm = new SmartyManager('BasicRenderer');
         $r = $sm->initialize('preview_bar_html');
         $r->setDraftMode(true);
@@ -20,6 +26,7 @@ function smartest_filter_preview($html, $filter){
         $r->assign('build_time', SmartestPersistentObject::get('timing_data')->getParameter('smarty_time_taken'));
         $r->assign('total_time', SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken'));
         $r->assign('liberate_link_url', $preview_url);
+        $r->assign('preview_link_url', $smartest_preview_url);
         $r->assign('hide_liberate_link', SmartestStringHelper::toRealBool(SmartestPersistentObject::get('request_data')->getParameter('request_parameters')->getParameter('hide_newwin_link')));
         
         if($request_data->getParameter('request_parameters')->hasParameter('item_id')){
