@@ -54,6 +54,7 @@ class AssetsAjax extends SmartestSystemApplication{
 	        
 	        header('HTTP/1.1 200 OK');
 	        $asset->setUserId($this->getRequestParameter('owner_id'));
+	        SmartestLog::getInstance('site')->log($this->getUser()->getFullName().' set the owner id of file '.$asset->getLabel().' to'.$this->getRequestParameter('owner_id').'.');
 	        $asset->save();
 	        
 	    }else{
@@ -90,6 +91,13 @@ class AssetsAjax extends SmartestSystemApplication{
 	        
 	        header('HTTP/1.1 200 OK');
 	        $asset->setShared($this->getRequestParameter('is_shared'));
+	        
+	        if($this->getRequestParameter('is_shared')){
+	            SmartestLog::getInstance('site')->log($this->getUser()->getFullName().' shared file '.$asset->getLabel().' with other sites.');
+	        }else{
+	            SmartestLog::getInstance('site')->log($this->getUser()->getFullName().' made file '.$asset->getLabel().' no longer with other sites.');
+	        }
+	        
 	        $asset->save();
 	        
 	    }else{
@@ -123,6 +131,7 @@ class AssetsAjax extends SmartestSystemApplication{
 		if($asset->find($asset_id)){
             
             $asset->addComment($this->getRequestParameter('comment_content'), $this->getUser()->getId());
+            SmartestLog::getInstance('site')->log($this->getUser()->getFullName().' left a comment on file '.$asset->getLabel().'.');
 
 		}
     }

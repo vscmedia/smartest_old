@@ -274,6 +274,10 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
         return SmartestStringHelper::getWordCount($this->_properties['content']);
     }
     
+    public function getLength(){
+        return strlen($this->_properties['content']);
+    }
+    
     public function offsetGet($offset){
         
         switch($offset){
@@ -281,6 +285,10 @@ class SmartestTextFragment extends SmartestBaseTextFragment{
             case "word_count":
             case "wordcount":
             return $this->getWordCount();
+            
+            case "length":
+            case "text_length":
+            return $this->getLength();
             
             case "object":
             return $this->getContentAsObject();

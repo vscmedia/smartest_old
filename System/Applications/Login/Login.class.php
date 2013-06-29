@@ -60,6 +60,10 @@ class Login extends SmartestSystemApplication{
 		    $service = 'SMARTEST';
 		}
 		
+		if($this->getUser() && $this->getUser()->isAuthenticated()){
+		    $this->redirect('/smartest');
+		}
+		
 		if($user = $this->_auth->newLogin($this->getRequestParameter('user'), $this->getRequestParameter('passwd'), $service)){
 		    
 		    SmartestSession::set('user', $user);

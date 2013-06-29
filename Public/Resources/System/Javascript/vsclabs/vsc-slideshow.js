@@ -1,9 +1,10 @@
 // Written by Marcus Gilroy-Ware
-// © VSC Creative Ltd. 2012
+// © VSC Creative Ltd. 2013
 
 VSC.Slideshow = Class.create({
     
     initialize: function(holderId, options){
+        
         this.options = {};
         this.name = 'slideshow';
         this.options.holderId = holderId;
@@ -11,9 +12,11 @@ VSC.Slideshow = Class.create({
         this.goToSlide($$('#'+holderId+' .slides .slide').first().id);
         this.currentPosition = 0;
         var IDs = [];
+        
         $$('#'+holderId+' .slides .slide').each(function(s){
             IDs.push(s.id);
         });
+        
         this.IDs = IDs;
         
         if(options.hasOwnProperty('autostart')){
@@ -26,8 +29,6 @@ VSC.Slideshow = Class.create({
             this.startAutoAdvance();
         }
         
-        // this.startAutoAdvance();
-        // alert(holderId);
     },
     
     goToSlide: function(slideId){
@@ -35,11 +36,22 @@ VSC.Slideshow = Class.create({
             if($$('#'+this.options.holderId+' .slides #'+slideId).size() > 0){
                 
                 if(this.currentSlideId){
-                    // $$('#'+this.options.holderId+' .slides #'+this.currentSlideId)[0].fade({duration:0.28});
-                    $$('#'+this.options.holderId+' .slides #'+this.currentSlideId)[0].fade({duration:0.7, transition: Effect.Transitions.sinoidal});
-                    // $$('#'+this.options.holderId+' .slides #'+slideId)[0].appear({delay:0.3, duration:0.6});
-                    $$('#'+this.options.holderId+' .slides #'+slideId)[0].appear({duration:0.7, transition: Effect.Transitions.sinoidal});
+                    
+                    // $$('#'+this.options.holderId+' .slides #'+this.currentSlideId)[0].fade({duration:0.7, transition: Effect.Transitions.sinoidal});
+                    if(this.hasOwnProperty('fadeEffect')){
+                        // this.fadeEffect.cancel();
+                    }
+                    
+                    this.fadeEffect = new Effect.Fade($$('#'+this.options.holderId+' .slides #'+this.currentSlideId)[0], {duration:0.7, transition: Effect.Transitions.sinoidal, to:0});
+                    
+                    // $$('#'+this.options.holderId+' .slides #'+slideId)[0].appear({duration:0.7, transition: Effect.Transitions.sinoidal});
+                    if(this.hasOwnProperty('appearEffect')){
+                        this.appearEffect.cancel();
+                    }
+                    
+                    this.appearEffect = new Effect.Appear($$('#'+this.options.holderId+' .slides #'+slideId)[0], {duration:0.7, transition: Effect.Transitions.sinoidal, to:1});
                     this.updateNav(slideId);
+                    
                 }else{
                     $$('#'+this.options.holderId+' .slides #'+slideId)[0].appear({duration:0.6});
                 }

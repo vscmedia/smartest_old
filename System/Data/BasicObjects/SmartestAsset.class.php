@@ -133,6 +133,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             case "wordcount":
             return $this->getWordCount();
             
+            case "text_length":
+            return $this->getTextLength();
+            
             case "credit":
             return $this->isImage() ? $data['default_parameters']['credit'] : null;
             
@@ -278,6 +281,16 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    
 	    if($this->usesTextFragment()){
 	        return $this->getTextFragment()->getWordCount();
+	    }else{
+	        return 0;
+	    }
+	    
+	}
+	
+	public function getTextLength(){
+	    
+	    if($this->usesTextFragment()){
+	        return $this->getTextFragment()->getLength();
 	    }else{
 	        return 0;
 	    }

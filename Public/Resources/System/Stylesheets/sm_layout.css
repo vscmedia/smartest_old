@@ -116,6 +116,11 @@ div#actions-area{
 	padding:5px;
 }
 
+#modal-actions-area{
+    /* This is a hack */
+    display:none;
+}
+
 #actions-area .special-box{}
     
 #actions-area .special-box p{margin:3px}

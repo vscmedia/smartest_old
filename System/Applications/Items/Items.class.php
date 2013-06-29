@@ -1263,7 +1263,7 @@ class Items extends SmartestSystemApplication{
 	        if($model->getSiteId() == '0'){
 	            $this->send('Not set', 'main_site_name');
             }else{
-                $this->send($model->getMainSite()->getName(), 'main_site_name');
+                $this->send(new SmartestString($model->getMainSite()->getName()), 'main_site_name');
             }
 	        
 	        $this->send($model->getAvailableDescriptionProperties(), 'description_properties');
