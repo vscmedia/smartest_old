@@ -30,6 +30,10 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         return $this->getType() == 'SM_SET_ASSETGALLERY';
     }
     
+    public function isGallery(){
+        return $this->getIsGallery();
+    }
+    
     public function setIsGallery($bool){
         
         if($bool){

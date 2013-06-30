@@ -347,8 +347,12 @@ class SmartestStringHelper extends SmartestHelper{
 	}
 	
 	public static function capitalizeFirstLetter($string){
-	    $string{0} = strtoupper($string{0});
-	    return $string;
+	    if(strlen($string)){
+	        $string{0} = strtoupper($string{0});
+	        return $string;
+        }else{
+            return '';
+        }
 	}
 	
 	public static function toTitleCase($string, $strict=false){
@@ -362,6 +366,7 @@ class SmartestStringHelper extends SmartestHelper{
 	    
         $non_capitalised_words = array('to', 'the', 'and', 'in', 'of', 'with', 'a', 'an');
         $words = explode(' ', $string);
+        
         $new_string = '';
         $modified_words = array();
         
@@ -379,7 +384,7 @@ class SmartestStringHelper extends SmartestHelper{
                 
         }
         
-        $final = implode(' ', $modified_words);
+        $final = trim(implode(' ', $modified_words));
         return $was_object ? new SmartestString($final) : $final;
 	}
 	

@@ -1265,11 +1265,17 @@ class Assets extends SmartestSystemApplication{
 	        
 	        if($is_empty){
 	        
-    	        $asset_types = SmartestDataUtility::getAssetTypes();
-        	    $placeholder_types = SmartestDataUtility::getAssetClassTypes(true);
-
-        	    $this->send($asset_types, 'asset_types');
-        	    $this->send($placeholder_types, 'placeholder_types');
+    	        if($group->getIsGallery()){
+    	            $alh = new SmartestAssetsLibraryHelper;
+        	        $this->send($alh->getGalleryPlaceholderTypes(), 'placeholder_types');
+        	        $this->send($alh->getGalleryAssetTypes(), 'asset_types');
+        	    }else{
+        	        $asset_types = SmartestDataUtility::getAssetTypes();
+            	    $placeholder_types = SmartestDataUtility::getAssetClassTypes(true);
+        	        
+        	        $this->send($asset_types, 'asset_types');
+            	    $this->send($placeholder_types, 'placeholder_types');
+        	    }
     	    
 	        }
 	        
