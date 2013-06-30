@@ -14,7 +14,7 @@
       <div class="form-section-label">Chosen Item</div>
       <select name="item_id">
         {foreach from=$options item="option"}
-        <option value="{$option.id}"{if $option.id == $definition_id} selected="sselected"{/if}>{$option.name}</option>
+        <option value="{$option.id}"{if $option.id == $definition_id} selected="sselected"{/if}>{$option.label}</option>
         {/foreach}
       </select>
     </div>

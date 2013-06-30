@@ -363,6 +363,10 @@ class QuinceRequest{
         return isset($this->_module);
     }
     
+    final public function isAjax(){
+        return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+    }
+    
     final public function getResult(){
         return $this->_result;
     }

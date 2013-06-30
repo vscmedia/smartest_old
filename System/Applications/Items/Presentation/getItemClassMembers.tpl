@@ -56,15 +56,36 @@ function openPage(pageAction){
       <option value="0"{if $mode == 0} selected="selected"{/if}>All {$model.plural_name|strtolower}</option>
       <option value="8"{if $mode == 8} selected="selected"{/if}>All archived {$model.plural_name|strtolower}</option>
     </select>
-    containing <input type="text" name="q" value="{$query}" />
+    containing <input type="text" name="q" id="items-search-name" value="{$query}" />
     <input type="submit" value="Go" />
   </form>
 </div>
 
+<!--<div id="autocomplete_choices" class="autocomplete"></div>-->
+  
+  <script type="text/javascript">
+    {literal}
+    
+    function getSelectionId(text, li) {
+        var bits = li.id.split('-');
+        window.location=sm_domain+'datamanager/openItem?item_id='+bits[1];
+    }
+    
+    /* new Ajax.Autocompleter("items-search-name", "autocomplete_choices", "/ajax:datamanager/simpleItemTextSearch", {
+        paramName: "query", 
+        minChars: 2,
+        delay: 50,
+        width: 300,
+        afterUpdateElement : getSelectionId
+    }); */
+    
+    {/literal}
+  </script>
+
 <div id="options-view-chooser">
-Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/if}. View as:
-<a href="#" onclick="return itemList.setView('list', 'item_list_style')">List</a> /
-<a href="#" onclick="return itemList.setView('grid', 'item_list_style')">Icons</a>
+  Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/if}. View as:
+  <a href="#" onclick="return itemList.setView('list', 'item_list_style')">List</a> /
+  <a href="#" onclick="return itemList.setView('grid', 'item_list_style')">Icons</a>
 </div>
 
   <ul class="options-{$list_view}" id="options_list">

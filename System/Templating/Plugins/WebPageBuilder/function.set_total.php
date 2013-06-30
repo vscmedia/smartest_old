@@ -9,7 +9,7 @@ function smarty_function_set_total($params, &$smartest_engine){
         
     }else{
         
-        return $smartest_engine->raiseError('Function set_total');
+        return $smartest_engine->raiseError('Function set_total needs a set_name parameter');
         
     }
     

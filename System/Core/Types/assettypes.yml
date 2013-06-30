@@ -23,8 +23,8 @@ type:
   SM_ASSETTYPE_RICH_TEXT:
     id: SM_ASSETTYPE_RICH_TEXT
     category: user_text
-    label: Formatted Text
-    description: Formatted text using HTML.
+    label: HTML Text
+    description: "Text with rich formatting, using HTML."
     class: SmartestTextAsset
     source_editable: true
     editable: true
@@ -68,8 +68,8 @@ type:
   SM_ASSETTYPE_HTML_FRAGMENT:
     id: SM_ASSETTYPE_HTML_FRAGMENT
     category: user_text
-    label: HTML Fragment
-    description: "A piece of HTML for whatever you like."
+    label: Embed code
+    description: "A piece of HTML usually provided by another site or service."
     class: SmartestAsset
     source_editable: false
     parsable: true

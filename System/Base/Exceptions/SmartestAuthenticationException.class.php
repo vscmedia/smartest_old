@@ -45,7 +45,7 @@ class SmartestAuthenticationException extends SmartestException{
     public function setReturnCookie(){
         
         if($this->_controller->getCurrentRequest()->getRequestString() != 'smartest'){
-            if($this->_controller->getCurrentRequest()->getNamespace() != 'modal'){
+            if($this->_controller->getCurrentRequest()->getNamespace() != 'modal' && $this->_controller->getCurrentRequest()->getNamespace() != 'ajax' && !$this->_controller->getCurrentRequest()->isAjax()){
                 $domain = $this->_controller->getCurrentRequest()->getDomain();
                 SmartestCookiesHelper::setCookie('SMARTEST_RET', $this->_controller->getCurrentRequest()->getRequestStringWithVars(), 1); // The user has a day to log back in before this information is lost
             }

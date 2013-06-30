@@ -1,5 +1,6 @@
 <script type="text/javascript">
     var itemNameFieldDefaultValue = '{$start_name}';
+    var nameFieldFocussed = false;
 {literal}
     document.observe('dom:loaded', function(){
         
@@ -8,6 +9,7 @@
                 $('asset-group-label').removeClassName('unfilled');
                 $('asset-group-label').setValue('');
             }
+            nameFieldFocussed = true;
         });
         
         $('asset-group-label').observe('blur', function(){
@@ -17,6 +19,7 @@
             }else{
                 $('asset-group-label').removeClassName('error');
             }
+            nameFieldFocussed = false;
         });
         
         $('file-group-mode-select').observe('change', function(e){
@@ -49,6 +52,19 @@
             if($('asset-group-label').value == 'Unnamed file group' || $('asset-group-label').value == 'Unnamed gallery' || $('asset-group-label').value == itemNameFieldDefaultValue){
                 $('asset-group-label').addClassName('error');
                 e.stop();
+            }
+            
+        });
+        
+        document.observe('keypress', function(e){
+            
+            if(e.keyCode == 13){
+            
+                if(nameFieldFocussed && ($('asset-group-label').value == 'Unnamed file group' || $('asset-group-label').value == 'Unnamed gallery' || $('asset-group-label').value == itemNameFieldDefaultValue || !$('asset-group-label').value.charAt(0))){
+                    $('asset-group-label').addClassName('error');
+                    e.stop();
+                }
+            
             }
             
         });

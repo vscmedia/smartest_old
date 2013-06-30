@@ -1080,41 +1080,54 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $this->requireOpenProject();
 	    
-	    $set = new SmartestAssetGroup;
-	    $set->setLabel($this->getRequestParameter('asset_group_label'));
-	    $set->setName(SmartestStringHelper::toVarName($this->getRequestParameter('asset_group_label')));
+	    if(strlen($this->getRequestParameter('asset_group_label'))){
 	    
-	    if($this->getRequestParameter('asset_group_mode') == 'SM_SET_ASSETGALLERY'){
-	        $set->setIsGallery(true);
-	        $type_var = $this->getRequestParameter('asset_gallery_type');
-	    }else{
-	        $set->setIsGallery(false);
-	        $type_var = $this->getRequestParameter('asset_group_type');
-	    }
+    	    $set = new SmartestAssetGroup;
+    	    $set->setLabel($this->getRequestParameter('asset_group_label'));
+    	    $set->setName(SmartestStringHelper::toVarName($this->getRequestParameter('asset_group_label')));
 	    
-	    if($type_var == 'ALL'){
-	        $set->setFilterType('SM_SET_FILTERTYPE_NONE');
-	    }else{
-	        switch(substr($type_var, 0, 1)){
-	            case 'A':
-	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETTYPE');
-	            break;
-	            case 'P':
-	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
-	            break;
-	            case 'G':
-	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETGROUP');
-	            break;
-	        }
-	    }
+    	    if($this->getRequestParameter('asset_group_mode') == 'SM_SET_ASSETGALLERY'){
+    	        $set->setIsGallery(true);
+    	        $type_var = $this->getRequestParameter('asset_gallery_type');
+    	        $message = 'The gallery has been created.';
+    	    }else{
+    	        $set->setIsGallery(false);
+    	        $type_var = $this->getRequestParameter('asset_group_type');
+    	        $message = 'The file group has been created.';
+    	    }
 	    
-	    $set->setFilterValue(($type_var == 'ALL') ? null : substr($type_var, 2));
-	    $set->setSiteId($this->getSite()->getId());
-	    $set->setShared(0);
-	    $set->save();
+    	    if($type_var == 'ALL'){
+    	        $set->setFilterType('SM_SET_FILTERTYPE_NONE');
+    	    }else{
+    	        switch(substr($type_var, 0, 1)){
+    	            case 'A':
+    	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETTYPE');
+    	            break;
+    	            case 'P':
+    	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETCLASS');
+    	            break;
+    	            case 'G':
+    	            $set->setFilterType('SM_SET_FILTERTYPE_ASSETGROUP');
+    	            break;
+    	        }
+    	    }
 	    
-	    header("HTTP/1.1 201 Created");
-	    $this->redirect('/assets/editAssetGroupContents?group_id='.$set->getId());
+    	    $set->setFilterValue(($type_var == 'ALL') ? null : substr($type_var, 2));
+    	    $set->setSiteId($this->getSite()->getId());
+    	    $set->setShared(0);
+    	    $set->save();
+	    
+    	    header("HTTP/1.1 201 Created");
+    	    $this->redirect('/assets/editAssetGroupContents?group_id='.$set->getId());
+    	    $this->addUserMessageToNextRequest($message, SmartestUserMessage::SUCCESS);
+	    
+        }else{
+            
+            $this->forward('assets', 'newAssetGroup');
+            
+        }
+        
+	    
 	    
 	}
 	
