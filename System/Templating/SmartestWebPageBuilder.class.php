@@ -450,9 +450,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             	        $item->setDraftMode($this->getDraftMode());
             	        $child->assign($item_name, $item); // set above
             	        $content = '<!--rendering itemspace: '.$itemspace_name."-->\n\n";
+            	        $content .= $child->fetch($template_path);
             	        $content .= $this->renderItemEditButton($item->getId());
             	        $content .= $this->renderItemSpaceDefineButton($itemspace_name);
-            	        $content .= $child->fetch($template_path);
             	        $this->killChildProcess($child->getProcessId());
             	        
             	        return $content;

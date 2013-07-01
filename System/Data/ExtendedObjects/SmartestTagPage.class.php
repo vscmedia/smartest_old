@@ -6,6 +6,7 @@ class SmartestTagPage extends SmartestPage{
     
     public function assignTag(SmartestTag $tag){
         $this->_tag = $tag;
+        $this->_tag->setDraftMode($this->getDraftMode());
     }
     
     public function getTitle($force_static=false){
@@ -29,6 +30,7 @@ class SmartestTagPage extends SmartestPage{
         
         $data = parent::fetchRenderingData();
         // $data['tagged_objects'] = $this->_tag->getObjectsOnSiteAsArrays($this->getSite()->getId(), false);
+        $this->_tag->setDraftMode($this->getDraftMode());
         $data->setParameter('tag', $this->_tag);
         return $data;
         

@@ -160,7 +160,12 @@ class Dropdowns extends SmartestSystemApplication{
 	public function insertDropDownValue($get, $post){
 	    
 	    $label = $post['dropdownvalue_label'];
-	    $value = SmartestStringHelper::toVarName($post['dropdownvalue_value']);
+	    
+	    if(strlen($post['dropdownvalue_value'])){
+	        $value = SmartestStringHelper::toVarName($post['dropdownvalue_value']);
+        }else{
+            $value = SmartestStringHelper::toVarName($post['dropdownvalue_label']);
+        }
 	    
 	    $dropdown_id = (int) $this->getRequestParameter('dropdown_id');
 	    $dropdown = new SmartestDropdown;

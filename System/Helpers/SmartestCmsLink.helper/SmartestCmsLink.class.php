@@ -609,15 +609,15 @@ class SmartestCmsLink extends SmartestHelper{
                     switch($this->getType()){
 
                         case SM_LINK_TYPE_PAGE:
-                        return $this->_destination->getTitle();
+                        return SmartestStringHelper::toXmlEntities($this->_destination->getTitle());
                         break;
 
                         case SM_LINK_TYPE_METAPAGE:
                 
                         if($this->_destination->getForceStaticTitle() == 1){
-                            return $this->_destination->getTitle(true);
+                            return SmartestStringHelper::toXmlEntities($this->_destination->getTitle(true));
                         }else{
-                            return $this->_destination->getTitle();
+                            return SmartestStringHelper::toXmlEntities($this->_destination->getTitle());
                         }
                 
                         break;
@@ -627,7 +627,7 @@ class SmartestCmsLink extends SmartestHelper{
                         break;
                 
                         case SM_LINK_TYPE_TAG:
-                        return $this->_destination->getLabel();
+                        return SmartestStringHelper::toXmlEntities($this->_destination->getLabel());
                         break;
                 
                         case SM_LINK_TYPE_DOWNLOAD:

@@ -1,15 +1,15 @@
 <?php
 
-include_once 'System/Helpers/ItemsHelper.class.php';
-include_once "Managers/SchemasManager.class.php";
+// include_once 'System/Helpers/ItemsHelper.class.php';
+// include_once "Managers/SchemasManager.class.php";
 
 class Sets extends SmartestSystemApplication{
 
 	var $itemsManager;
 	
 	public function __smartestApplicationInit(){
-		$this->itemsManager = new ItemsHelper();
-		$this->SchemasManager = new SchemasManager();	
+		// $this->itemsManager = new ItemsHelper();
+		// $this->SchemasManager = new SchemasManager();	
 	}
 	
 	public function startPage($get){

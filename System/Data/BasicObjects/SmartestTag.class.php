@@ -2,6 +2,8 @@
 
 class SmartestTag extends SmartestBaseTag{
     
+    protected $_draft_mode = false;
+    
     protected $_pages = array();
     protected $_page_ids = array();
     protected $_page_lookup_attempted = array();
@@ -18,7 +20,9 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getPages($site_id='', $draft=false){
+    public function getPages($site_id='', $d='USE_DEFAULT'){
+        
+        $draft = ($d == 'USE_DEFAULT') ? $this->_draft_mode : $d;
         
         if(!$site_id || !is_numeric($site_id)){
             $site_id = 'all';
@@ -68,7 +72,9 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getPageIds($site_id='', $draft=false){
+    public function getPageIds($site_id='', $d='USE_DEFAULT'){
+        
+        $draft = ($d == 'USE_DEFAULT') ? $this->_draft_mode : $d;
         
         if(!$site_id || !is_numeric($site_id)){
             $site_id = 'all';
@@ -79,7 +85,9 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getSimpleItems($site_id=false, $draft=false, $model_id=false){
+    public function getSimpleItems($site_id=false, $d='USE_DEFAULT', $model_id=false){
+        
+        $draft = ($d == 'USE_DEFAULT') ? $this->_draft_mode : $d;
         
         if(!$site_id || !is_numeric($site_id)){
             $site_id = 'all';
@@ -125,7 +133,9 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getSimpleItemsAsArrays($site_id=false, $draft=false, $model_id=false){
+    public function getSimpleItemsAsArrays($site_id=false, $d='USE_DEFAULT', $model_id=false){
+        
+        $draft = ($d == 'USE_DEFAULT') ? $this->_draft_mode : $d;
         
         $items = $this->getSimpleItems($site_id, $draft, $model_id);
         $arrays = array();
@@ -138,7 +148,9 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getSimpleItemIds($site_id=false, $draft=false, $model_id=false){
+    public function getSimpleItemIds($site_id=false, $d='USE_DEFAULT', $model_id=false){
+        
+        $draft = ($d == 'USE_DEFAULT') ? $this->_draft_mode : $d;
         
         $items = $this->getSimpleItems($site_id, $draft, $model_id);
         $ids = array();
@@ -155,7 +167,7 @@ class SmartestTag extends SmartestBaseTag{
         
         if(!$this->_item_lookup_attempted){
         
-            $sql = "SELECT Items.item_id FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK' AND Items.item_public='TRUE' AND Items.item_deleted='0'";
+            $sql = "SELECT Items.item_id FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK' AND Items.item_deleted='0'";
             
             if($site_id && is_numeric($site_id)){
                 $sql .= ' AND Items.item_site_id=\''.$site_id.'\'';
@@ -163,6 +175,10 @@ class SmartestTag extends SmartestBaseTag{
             
             if($model_id && is_numeric($model_id)){
                 $sql .= ' AND Items.item_itemclass_id=\''.$model_id.'\'';
+            }
+            
+            if(!$this->getDraftMode()){
+                $sql .= " AND item_public='TRUE'";
             }
             
             $result = $this->database->queryToArray($sql);
@@ -176,9 +192,9 @@ class SmartestTag extends SmartestBaseTag{
             $h = new SmartestCmsItemsHelper;
             
             if($model_id && is_numeric($model_id)){
-                $items = $h->hydrateUniformListFromIdsArray($ids, $model_id);
+                $items = $h->hydrateUniformListFromIdsArray($ids, $model_id, $this->getDraftMode());
             }else{
-                $items = $h->hydrateMixedListFromIdsArray($ids);
+                $items = $h->hydrateMixedListFromIdsArray($ids, $this->getDraftMode());
                 $this->_item_lookup_attempted = true;
             }
             
@@ -216,7 +232,9 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getObjectsOnSite($site_id, $draft=false){
+    public function getObjectsOnSite($site_id, $d='USE_DEFAULT'){
+        
+        $draft = ($d == 'USE_DEFAULT') ? $this->_draft_mode : $d;
         
         $master_array = array();
         
@@ -260,9 +278,11 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getObjectsOnSiteAsArrays($site_id, $draft){
+    public function getObjectsOnSiteAsArrays($site_id, $d='USE_DEFAULT'){
         
-        $objects = $this->getObjectsOnSite($site_id, $draft);
+        $draft = ($d == 'USE_DEFAULT') ? $this->_draft_mode : $d;
+        
+        $objects = $this->getObjectsOnSite($site_id, $draft_mode);
         $arrays = array();
         
         foreach($objects as $o){
@@ -278,7 +298,7 @@ class SmartestTag extends SmartestBaseTag{
         switch($offset){
             
             case "objects":
-            return $this->getObjectsOnSite($this->getCurrentSiteId(), true);
+            return $this->getObjectsOnSite($this->getCurrentSiteId(), $this->_draft_mode);
             
             case "url":
             return $this->_request->getDomain().'tags/'.$this->getName().'.html';
@@ -302,7 +322,17 @@ class SmartestTag extends SmartestBaseTag{
             
         }
         
+    }
+    
+    public function setDraftMode($mode){
         
+        $this->_draft_mode = (bool) $mode;
+        
+    }
+    
+    public function getDraftMode(){
+        
+        return $this->_draft_mode;
         
     }
     

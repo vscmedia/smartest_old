@@ -533,10 +533,12 @@ class Items extends SmartestSystemApplication{
     	    	            $sql = "SELECT * FROM Pages WHERE page_type='ITEMCLASS' AND page_dataset_id='".$item->getItemclassId()."' AND page_webid='".$this->getRequestParameter('page_webid')."'";
     	    	            $result = $database->queryToArray($sql);
     	    	            if(count($result)){
-    	    	                $destination .= '&page_id='.$this->getRequestParameter('page_webid');
-    	    	            }
+    	    	                $destination .= '?page_id='.$this->getRequestParameter('page_webid').'&from='.$this->getRequestParameter('from');
+    	    	            }else{
+    	    	                $destination .= '?from='.$this->getRequestParameter('from');
+	    	                }
 	    	            }else{
-            		        $destination .= '&from='.$this->getRequestParameter('from');
+            		        $destination .= '?from='.$this->getRequestParameter('from');
         		        }
             		}
 		    
@@ -599,6 +601,7 @@ class Items extends SmartestSystemApplication{
 	    
 	    if(!$this->getRequestParameter('from')){
 	        $this->setFormReturnUri();
+	        $this->setFormReturnDescription('item tags');
         }
 	    
 	    $item_id = $this->getRequestParameter('item_id');

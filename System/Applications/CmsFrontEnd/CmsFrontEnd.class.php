@@ -194,6 +194,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
                         
                         if($t->hydrateBy('name', $this->getRequestParameter('tag_name'))){
                             $p->assignTag($t);
+                            $p->setDraftMode(true);
                             $this->_page = $p;
                         }
                         
