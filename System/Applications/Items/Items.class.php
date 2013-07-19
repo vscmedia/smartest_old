@@ -2244,6 +2244,7 @@ class Items extends SmartestSystemApplication{
                 $this->send($model->getProperties(), 'properties');
                 $this->send($model, 'model');
                 $this->send($this->getSite()->getLanguageCode(), 'site_language');
+                $this->setTitle('Add '.$model->getName());
             
             }else{
                 

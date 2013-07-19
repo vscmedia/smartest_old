@@ -1,6 +1,6 @@
 <?php
 
-class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, SmartestGenericListedObject, SmartestDualModedObject{
+class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, SmartestGenericListedObject, SmartestDualModedObject, SmartestStorableValue{
 
 	protected $_save_url = true;
 	protected $_fields_retrieval_attempted = false;
@@ -2366,6 +2366,26 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
         $q->delete();
 	    
 	}
+	
+	// SmartestStorableValue methods
+	
+	public function getStorableFormat(){
+	    return $this->getId();
+	}
+	
+    public function hydrateFromStorableFormat($v){
+        return $this->find($v);
+    }
+    
+    // SmartestSubmittableValue methods
+    
+    public function hydrateFromFormData($v){
+        return $this->find((int) $v);
+    }
+    
+    public function renderInput($params){
+        // TODO
+    }
 	
 	// System UI calls
 	

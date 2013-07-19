@@ -363,7 +363,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	                    // build in $info['filter']['optionsettype'] as SmartestAssetGroup, SmartestCmsItemSet or whatever
 	                    
 	                    if(isset($info['filter']['entitysource']['class']) && class_exists($info['filter']['entitysource']['class'])){
-	                        
+	                        // echo $info['filter']['entitysource']['class'];
 	                        if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE' || !isset($info['filter']['optionsettype'][$this->getOptionSetType()])){
 	                
         	                    $sql = $this->getForeignKeySelectSql($info, $filter, $site_id);
@@ -375,7 +375,6 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
         	                    foreach($result as $raw_array){
 	                        
         	                        $option = new $class;
-        	                        // $option = new stdClass;
         	                        $option->hydrate($raw_array);
         	                        $options[] = $option;
                         
@@ -610,6 +609,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	        return $p;
 	        
 	        case "_options":
+	        // print_r(count($this->getPossibleValues()));
 	        return $this->getPossibleValues();
 	        
 	        case "_model":

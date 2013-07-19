@@ -69,6 +69,29 @@
         
     </type>
     
+    <type id="SM_DATATYPE_PAGE" valuetype="foreignkey">
+      
+      <label>Page</label>
+      <description>A web page from this website.</description>
+      <usage>itemproperty,field</usage>
+      <long>false</long>
+      
+      <filter>
+        <entitysource type="db" table="Pages" sortfield="page_title" sitefield="page_site_id" class="SmartestPage" label="Page" />
+        <optionsettype id="SM_PROPERTY_FILTERTYPE_PAGEGROUP" class="SmartestPageGroup" table="Sets" sitefield="set_site_id" />
+        <condition field="page_type" value="NORMAL" operator="EQUAL" />
+        <condition field="page_deleted" value="1" operator="NOT_EQUAL" />
+      </filter>
+      
+      <render template="System/Presentation/WebPageBuilder/property.page.tpl" />
+      <input template="System/Presentation/InterfaceBuilder/Inputs/page.tpl" />
+      
+      <menu value="id" display="title" />
+      
+      <class>SmartestPage</class>
+      
+    </type>
+    
     <type id="SM_DATATYPE_NUMERIC" valuetype="string">
         <label>Number</label>
         <description>A numeric value in standard notation such as an integer or decimal. Scientific notation and fractions are not supported.</description>
@@ -315,7 +338,7 @@
           <condition field="set_type" value="SM_SET_ASSETGALLERY" operator="EQUAL" />
         </filter>
         
-        <menu value="id" display="url" />
+        <menu value="id" display="label" />
         
         <render template="System/Presentation/WebPageBuilder/property.default.tpl" />
         <input template="System/Presentation/InterfaceBuilder/Inputs/asset_group.tpl" />

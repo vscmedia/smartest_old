@@ -76,7 +76,7 @@
 <div class="edit-form-row">
   <div class="form-section-label">Add tags</div>
   <input type="text" name="item_tags" value="" id="item-tags" />
-  <span class="form-hint">Separate tags with commas</span>
+  <div class="form-hint">Separate tags with commas</div>
 </div>
 
 {foreach from=$properties key="pid" item="property"}
