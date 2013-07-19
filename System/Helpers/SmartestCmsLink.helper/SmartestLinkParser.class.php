@@ -145,7 +145,7 @@ class SmartestLinkParser{
             
         }else{
         
-            $pattern = '/^(([\w_-]+):)?([^\|]+[^:])(\|([^\]]+))?$/i';
+            $pattern = '/^(([\\w_-]+):)?([^#\\|]+[^:#])(#([\\w\\._-]+))?(\\|([^\\]]+))?$/i';
             preg_match($pattern, $string, $m);
             
             $l = new SmartestParameterHolder("Parsed Link Destination Properties: ".$m[0]);
@@ -162,10 +162,15 @@ class SmartestLinkParser{
                 $l->setParameter('filename', $m[3]);
             }
         
-            if(isset($m[5])){
-                $l->setParameter('text', $m[5]);
+            if(isset($m[7])){
+                $l->setParameter('text', $m[7]);
             }else{
                 $l->setParameter('text', self::LINK_TARGET_TITLE);
+            }
+            
+            if(isset($m[4]) && strlen($m[5])){
+              // echo "Hash: ".$m[5];
+                $l->setParameter('hash', $m[5]);
             }
             
             // echo $m[2];

@@ -74,9 +74,8 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         $sql = "SELECT * FROM Pages WHERE page_".$key."='".$value."' AND page_site_id='".constant('SM_CMS_PAGE_SITE_ID')."' AND page_deleted != 'TRUE'";
         $result = self::getDatabase()->queryToArray($sql);
         
-        
         $helper = new SmartestPageManagementHelper;
-		$type_index = $helper->getPageTypesIndex(constant('SM_CMS_PAGE_SITE_ID'));
+		    $type_index = $helper->getPageTypesIndex(constant('SM_CMS_PAGE_SITE_ID'));
         
     }
     

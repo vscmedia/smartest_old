@@ -13,6 +13,7 @@ class SmartestCmsLink extends SmartestHelper{
     protected $_markup_attributes;
     protected $_render_data;
     protected $_request;
+    protected $_hash = '';
     
     const PAGE = 1;
     const METAPAGE = 2;
@@ -46,6 +47,16 @@ class SmartestCmsLink extends SmartestHelper{
         // Give any HTML attributes passed by SmartestCmsLinkHelper a chance to be included
         $extra_markup_attributes = $this->getSeparatedAttributes($this->_destination_properties)->getParameter('html');
         $this->_markup_attributes->absorb($extra_markup_attributes);
+        
+        if($this->_destination_properties->hasParameter('hash')){
+            // echo "Hash: ".$this->_destination_properties->getParameter('hash');
+            $this->_hash = $this->_destination_properties->getParameter('hash');
+            // var_dump($this->_hash);
+        }
+        
+        if($this->_markup_attributes->hasParameter('hash')){
+            $this->_hash = $this->_markup_attributes->getParameter('hash');
+        }
         
         if($this->_destination_properties->getParameter('from_item')){
             
@@ -662,17 +673,29 @@ class SmartestCmsLink extends SmartestHelper{
             
             if($draft_mode){
                 if($this->_request->getRequestParameter('hide_newwin_link')){
-                    return $this->_request->getDomain().'website/renderEditableDraftPage?page_id='.$this->_destination->getWebId().'&amp;hide_newwin_link=true';
+                    $url = $this->_request->getDomain().'website/renderEditableDraftPage?page_id='.$this->_destination->getWebId().'&amp;hide_newwin_link=true';
+                    if(strlen($this->_hash)){
+                        $url .= '#'.$this->_hash;
+                    }
                 }else{
-                    return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId();
+                    $url = $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId();
+                    if(strlen($this->_hash)){
+                        $url .= '&amp;hash='.$this->_hash;
+                    }
                 }
+                return $url;
             }else{
                 if($this->_destination->getIsPublishedAsBoolean() || $ignore_status){
                     /* if(defined('SM_LINK_URLS_ABSOLUTE') && constant('SM_LINK_URLS_ABSOLUTE')){
                         'http://'.$this->getSite()->getDomain().$this->_request->getDomain().$this->_destination->getDefaultUrl();
                     }else{ */
-                        return $this->_request->getDomain().$this->_destination->getDefaultUrl();
+                        $url = $this->_request->getDomain().$this->_destination->getDefaultUrl();
                     // }
+                    // var_dump($this->_hash);
+                    if(strlen($this->_hash)){
+                        $url .= '#'.$this->_hash;
+                    }
+                    return $url;
                 }else{
                     return '#';
                 }
@@ -684,16 +707,27 @@ class SmartestCmsLink extends SmartestHelper{
             
             if($draft_mode){ 
                 if($this->_request->getRequestParameter('hide_newwin_link')){
-                    return $this->_request->getDomain().'website/renderEditableDraftPage?page_id='.$this->_destination->getWebId().'&amp;hide_newwin_link=true&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
+                    $url = $this->_request->getDomain().'website/renderEditableDraftPage?page_id='.$this->_destination->getWebId().'&amp;hide_newwin_link=true&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
+                    if(strlen($this->_hash)){
+                        $url .= '#'.$this->_hash;
+                    }
                 }else{
-                    return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
+                    $url = $this->_request->getDomain().'websitemanager/preview?page_id='.$this->_destination->getWebId().'&amp;item_id='.$this->_destination->getPrincipalItem()->getId();
+                    if(strlen($this->_hash)){
+                        $url .= '&amp;hash='.$this->_hash;
+                    }
                 }
+                
+                return $url;
             }else{
                 if(($this->_destination->getIsPublishedAsBoolean() && $this->_destination->getPrincipalItem()->isPublished()) || $ignore_status){
                     $template_url = $this->_request->getDomain().$this->_destination->getDefaultUrl();
                     $url = str_replace(':id', $this->_destination->getPrincipalItem()->getId(), $template_url);
                     $url = str_replace(':long_id', $this->_destination->getPrincipalItem()->getWebid(), $url);
                     $url = str_replace(':name', $this->_destination->getPrincipalItem()->getSlug(), $url);
+                    if(strlen($this->_hash)){
+                        $url .= '#'.$this->_hash;
+                    }
                     return $url;
                 }else{
                     return '#';
