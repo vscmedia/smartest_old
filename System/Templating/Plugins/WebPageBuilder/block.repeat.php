@@ -29,6 +29,9 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 		    $items = $items->getValue();
 		}
 		
+		$smartest_engine->assign("first", &$items[0]);
+		$smartest_engine->assign("last", &$items[count($items)-1]);
+		
 		$index = 0;
 		
 		if($limit > 0){
@@ -70,17 +73,16 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	    
 	    // these instructions are executed right before the item is displayed.
 	    $smartest_engine->assign($item_name, $item);
-	    $smartest_engine->assign("repeated_item_object", $item); // legacy support
+	    $smartest_engine->assign("repeated_item_object", &$item); // legacy support
 	    $smartest_engine->assign("key", $index);
-	    
 	    $smartest_engine->assign("iteration", $index+1);
 	    
-	    if(isset($items[$index+1]) && $limit > $items[$index+1]){
-	        $smartest_engine->assign("next_key", $index+1);
-	        $smartest_engine->assign("is_last", false);
-        }else{
-            $smartest_engine->assign("next_key", false);
+	    if(!isset($items[$index+1]) || ($limit && $limit == $index+1)){
+	        $smartest_engine->assign("next_key", false);
             $smartest_engine->assign("is_last", true);
+        }else{
+            $smartest_engine->assign("next_key", $index+1);
+	        $smartest_engine->assign("is_last", false);
         }
         
         if(isset($items[$index-1])){
