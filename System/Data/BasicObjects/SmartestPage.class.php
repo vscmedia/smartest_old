@@ -1423,6 +1423,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             case "section":
             return $this->getSectionPage();
             
+            case "empty":
+            return !$this->getId();
+            
 	        
 	    }
 	    

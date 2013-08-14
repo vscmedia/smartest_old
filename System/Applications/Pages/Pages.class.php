@@ -12,21 +12,21 @@
  */
  
 // include_once "Managers/AssetsManager.class.php";
-include_once "Managers/SetsManager.class.php";
-include_once "Managers/TemplatesManager.class.php";
-include_once "System/Applications/MetaData/MetaDataManager.class.php";
+// include_once "Managers/SetsManager.class.php";
+// include_once "Managers/TemplatesManager.class.php";
+// include_once "System/Applications/MetaData/MetaDataManager.class.php";
 
 class Pages extends SmartestSystemApplication{
 	
-	protected $setsManager;
-	protected $templatesManager;
-	protected $propertiesManager;
+	// protected $setsManager;
+	// protected $templatesManager;
+	// protected $propertiesManager;
 	
 	protected function __smartestApplicationInit(){
-		$this->setsManager = new SetsManager;
-		$this->templatesManager = new TemplatesManager;
-		// $this->propertiesManager = new PagePropertiesManager;
-		// var_dump($this);
+	    // $this->setsManager = new SetsManager;
+	    // $this->templatesManager = new TemplatesManager;
+	    // $this->propertiesManager = new PagePropertiesManager;
+	    // var_dump($this);
 	}
 	
 	public function startPage(){
@@ -1792,6 +1792,8 @@ class Pages extends SmartestSystemApplication{
 	    $page->setDraftMode(true);
 	    $page_webid = $this->getRequestParameter('page_id');
 	    
+	    // print_r($this->getRequestParameter('pages'));
+	    
 	    if($page->hydrate($page_webid)){
 	        
 	        if($this->getRequestParameter('pages') && is_array($this->getRequestParameter('pages'))){
@@ -1824,7 +1826,9 @@ class Pages extends SmartestSystemApplication{
 	            }
     	        
             }else{
-                $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
+                // No pages have been submitted, so remove all related pages
+                $page->removeAllRelatedPages();
+                // $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
             }
         }else{
             $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);

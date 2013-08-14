@@ -408,6 +408,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                         
                         }
                         
+                    }else{
+                        
+                        $edit_link = "<a title=\"Placeholder ".$placeholder_name." does not exist. Click to create.\" href=\"".$this->_request_data->g('domain')."websitemanager/addPlaceholder?placeholder_name=".$placeholder_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/error.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+                        return $edit_link;
+                        
                     }
                 
                 }
@@ -614,15 +619,19 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 }else{
                     
-                    $child = $this->startChildProcess(substr(md5($list->getName().microtime()), 0, 8));
-        	        $child->assign('items', $data);
-        	        $child->assign('num_items', count($data));
-        	        $child->assign('title', $list->getTitle());
-        	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
-        	        $child->setDraftMode($this->getDraftMode());
-        	        $child->caching = false;
-        	        $content = $child->fetch($list->getRepeatingTemplate($this->getDraftMode()));
-        	        $this->killChildProcess($child->getProcessId());
+                    if(isset($params['assign']) && strlen($params['assign'])){
+                        $this->assign(SmartestStringHelper::toVarName($params['assign']), $data);
+                    }else{
+                        $child = $this->startChildProcess(substr(md5($list->getName().microtime()), 0, 8));
+        	            $child->assign('items', $data);
+        	            $child->assign('num_items', count($data));
+        	            $child->assign('title', $list->getTitle());
+        	            $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
+        	            $child->setDraftMode($this->getDraftMode());
+        	            $child->caching = false;
+        	            $content = $child->fetch($list->getRepeatingTemplate($this->getDraftMode()));
+        	            $this->killChildProcess($child->getProcessId());
+    	            }
                     
                 }
             

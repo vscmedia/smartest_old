@@ -80,7 +80,7 @@
         <entitysource type="db" table="Pages" sortfield="page_title" sitefield="page_site_id" class="SmartestPage" label="Page" />
         <optionsettype id="SM_PROPERTY_FILTERTYPE_PAGEGROUP" class="SmartestPageGroup" table="Sets" sitefield="set_site_id" />
         <condition field="page_type" value="NORMAL" operator="EQUAL" />
-        <condition field="page_deleted" value="1" operator="NOT_EQUAL" />
+        <condition field="page_deleted" value="TRUE" operator="NOT_EQUAL" />
       </filter>
       
       <render template="System/Presentation/WebPageBuilder/property.page.tpl" />

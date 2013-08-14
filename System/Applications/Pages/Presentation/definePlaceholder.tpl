@@ -148,7 +148,13 @@ function toggleParamsHolder(){
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
     <li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/startNewFileCreationForPlaceholderDefinition?placeholder_id={$placeholder.id}&amp;page_id={$page.id}{if $show_item_options}&amp;item_id={$item.id}{/if}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Define with a new file</a></li>
-    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/pageAssets?page_id={$page.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Cancel</a></li>
+    {* <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/pageAssets?page_id={$page.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Cancel</a></li> *}
+{if $item}
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}websitemanager/undefinePlaceholder?page_id={$page.id}&amp;assetclass_id={$placeholder.name}';" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear this placeholder</a></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}websitemanager/undefinePlaceholderOnItemPage?page_id={$page.id}&amp;assetclass_id={$placeholder.name}&amp;item_id={$item.id}';" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear or this {$item.model.name|strtolower} only</a></li>
+{else}
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}websitemanager/undefinePlaceholder?page_id={$page.id}&amp;assetclass_id={$placeholder.name}';" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear this placeholder</a></li>
+{/if}
   </ul>
   
 </div>
