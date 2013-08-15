@@ -419,7 +419,7 @@ class XML_Parser extends PEAR
         /**
          * check, if file is a remote file
          */
-        if (eregi('^(http|ftp)://', substr($file, 0, 10))) {
+        if (preg_match('#^(http|ftp)://#i', substr($file, 0, 10))) {// Sergiy: eregi=>preg_match for PHP 5.4 support
             if (!ini_get('allow_url_fopen')) {
                 return $this->
                 raiseError('Remote files cannot be parsed, as safe mode is enabled.',

@@ -247,7 +247,7 @@ class PEAR
      * @access  public
      * @return  bool    true if parameter is an error
      */
-    function isError($data, $code = null)
+    /*static*/ function isError($data, $code = null) // Sergiy: for PHP 5.4 support
     {
         if (is_a($data, 'PEAR_Error')) {
             if (is_null($code)) {
