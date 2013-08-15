@@ -13,7 +13,8 @@ function smarty_function_javascript($params, &$smartest_engine){
             if(substr($file, 0, 4) == 'http'){
                 return '<script type="text/javascript" src="'.$file.'"></script>';
             }else{
-                return '<script type="text/javascript" src="'.$smartest_engine->getRequestData()->getParameter('domain').'Resources/'.$file.'"></script>';
+                // Sergiy: +/Javascript
+                return '<script type="text/javascript" src="'.$smartest_engine->getRequestData()->getParameter('domain').'Resources/Javascript/'.$file.'"></script>';
             }
         }
     }
