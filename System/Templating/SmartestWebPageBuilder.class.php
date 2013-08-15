@@ -32,7 +32,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		}
 		
 		$this->caching = false;
-	    
+		// Sergiy: Deny access to PHP world from frontend tpls
+        // (foolproof and the case of marginally trusted template editor).
+		$this->security = true;
+		$this->security_settings['PHP_HANDLING'] = false;
+		$this->security_settings['PHP_TAGS'] = false;
+		$this->security_settings['MODIFIER_FUNCS'] = array();
+		$this->security_settings['INCLUDE_ANY'] = true;
+
 	}
 	
 	public function __destruct(){
