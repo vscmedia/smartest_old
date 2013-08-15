@@ -188,6 +188,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    if($offset == 'name'){
 	        return new SmartestString($this->getName());
 	    }
+        // Sergiy: +if
+        else if($offset == 'related') {
+            return $this->_item->getRelatedContentForRender($this->getDraftMode());
+        }
 	    
 	    if($this->_item->offsetExists($offset)){
 	        
@@ -508,7 +512,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		        }
 		        
 			    $this->_properties[$property['itemproperty_id']]->hydrate($property);
-			    $this->_properties[$property['itemproperty_id']]->setItem(&$this);
+			    $this->_properties[$property['itemproperty_id']]->setItem($this);// Sergiy: &$this=>$this for PHP 5.4
 			    // $this->_properties[$property['itemproperty_id']]->setContextualItemId($this->_item->getId());
 		    }
 		    
@@ -522,7 +526,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 			    
 			    $ipv = new SmartestItemPropertyValue;
 			    $ipv->hydrate($propertyvalue);
-			    $ipv->setItem(&$this);
+			    $ipv->setItem($this);
 			    
                 // if the property object does not exist, create and hydrate it
                 
@@ -583,7 +587,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        if($this->_model_built){
 	            foreach($this->_properties as &$p){
 	                // $p is an itempropertyvalueholder object
-	                $p->hydrateValueFromIpvArray($record[$p->getId()], &$this);
+	                $p->hydrateValueFromIpvArray($record[$p->getId()], $this); // Sergiy: &$this=>$this for PHP 5.4
 	            }
 	        }
 	    }

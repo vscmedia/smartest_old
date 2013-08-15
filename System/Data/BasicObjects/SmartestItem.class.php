@@ -453,6 +453,30 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    return $ids;
 	    
 	}
+
+    // Sergiy: +func
+    public function getRelatedContentForRender($draft_mode){
+
+        $data = new SmartestParameterHolder('Related Content');
+
+        $du = new SmartestDataUtility;
+        $models = $du->getModels(false, $this->_properties['site_id']);
+
+        foreach($models as $m){
+            $key = SmartestStringHelper::toVarName($m->getPluralName());
+
+            if($m->getId() == $this->getModelId()){
+                $data->setParameter($key, $this->getRelatedItems($draft_mode));
+            }else{
+                $data->setParameter($key, $this->getRelatedForeignItems($draft_mode, $m->getId()));
+            }
+        }
+
+        $data->setParameter('pages', $this->getRelatedPages($draft_mode));
+
+        return $data;
+
+    }
 	
 	public function addRelatedItem($item_id){
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');

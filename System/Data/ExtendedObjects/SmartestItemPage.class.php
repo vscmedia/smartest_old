@@ -219,10 +219,11 @@ class SmartestItemPage extends SmartestPage{
             }
         }
     }
-    
+
     public function getRelatedContentForRender(){
-	    
-	    $data = new SmartestParameterHolder('Related Content');
+        // Sergiy: +1 -/**/
+        return $this->_simple_item->getRelatedContentForRender($this->getDraftMode());
+	    /*$data = new SmartestParameterHolder('Related Content');
 	    
 	    $du = new SmartestDataUtility;
         $models = $du->getModels(false, $this->_properties['site_id']);
@@ -239,7 +240,7 @@ class SmartestItemPage extends SmartestPage{
         
         $data->setParameter('pages', $this->_simple_item->getRelatedPages($this->getDraftMode()));
         
-        return $data;
+        return $data;*/
         
 	}
 	
