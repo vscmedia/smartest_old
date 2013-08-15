@@ -55,6 +55,8 @@ class SmartestBasicRenderer extends SmartestEngine{
                     
                     if($attachment['status'] == 'DEFINED'){
                         
+                        print_r($attachment);
+                        
                         if($attachment['zoom'] && $asset->isImage()){
                             $attachment['div_width'] = (int) $attachment['thumbnail']['width'];
                             $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/zoom_attachment.tpl';

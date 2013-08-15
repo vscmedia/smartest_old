@@ -16,6 +16,10 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
         // }
     }
     
+    public function __toJsonCompatible(){
+        return $this->_string;
+    }
+    
     public function stdObjectOrScalar(){
         return $this->_string;
     }

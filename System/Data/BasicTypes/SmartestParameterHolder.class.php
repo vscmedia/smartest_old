@@ -51,6 +51,18 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
         return 'SmartestParameterHolder: '.$this->_name;
     }
     
+    public function __toSimpleObject(){
+        $obj = new stdClass;
+        foreach($this->_data as $k=>$v){
+            if(method_exists($v, '__toJsonCompatible')){
+                $obj->$k = $v->__toJsonCompatible();
+            }else{
+                $obj->$k = $v;
+            }
+        }
+        return $obj;
+    }
+    
     public function debug(){
         return "<pre>".print_r($this->_data, true)."</pre>";
     }

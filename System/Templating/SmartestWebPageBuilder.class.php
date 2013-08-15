@@ -35,6 +35,19 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	    
 	}
 	
+	public function __destruct(){
+	    
+	    if(!$this->draft_mode){
+	        
+	        // echo "Destruct";
+	        $p = $this->page->copy();
+	        $p->setLastBuilt(time());
+	        $p->save();
+	        
+	    }
+	    
+	}
+	
 	public function getPage(){
         return $this->page;
     }

@@ -1044,7 +1044,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
     	        $property = new SmartestPageField;
     	        $property->hydrate($p);
     	        $fields[$property->getId()] = $property;
-    	        $definitions->setParameter($p['pageproperty_name'], false);
+    	        $definitions->setParameter($p['pageproperty_name'], null);
     	    }
 	    
     	    $sql = "SELECT * FROM `PagePropertyValues` WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
@@ -1300,6 +1300,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    unset($obj->cache_interval);
 	    unset($obj->cache_as_html);
 	    unset($obj->changes_approved);
+	    unset($obj->draft_template);
+	    
 	    $obj->is_section = (bool) $this->getIsSection();
 	    $obj->is_published = SmartestStringHelper::toRealBool($this->getIsPublished());
 	    $obj->deleted = SmartestStringHelper::toRealBool($this->getDeleted());
@@ -1307,6 +1309,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    $obj->modified = (int) $this->getModified();
 	    $obj->last_published = (int) $this->getLastPublished();
 	    $obj->tags = $this->getTagNames();
+	    $obj->fields = $this->getPageFieldDefinitions()->__toSimpleObject();
 	    
 	    $obj->formatted_title = $this->getFormattedTitle();
 	    if($this->isHomePage()){
