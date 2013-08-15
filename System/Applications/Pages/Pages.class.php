@@ -1717,8 +1717,8 @@ class Pages extends SmartestSystemApplication{
     	        $du = new SmartestDataUtility;
     	        $models = $du->getModels(false, $this->getSite()->getId());
 	        
-    	        foreach($models as &$m){
-    	            $m['related_items'] = $page->getRelatedItems($m['id'], true);
+    	        foreach($models as $k=>$m){
+    	            $models[$k]->setTemporaryRelatedItems($page->getRelatedItems($m['id'], true));
     	        }
 	        
     	        $this->send($page, 'page');
@@ -1844,47 +1844,51 @@ class Pages extends SmartestSystemApplication{
 	    $page->setDraftMode(true);
 	    $page_webid = $this->getRequestParameter('page_id');
 	    
-	    if($page->hydrate($page_webid)){
+	    $model = new SmartestModel;
+        
+        if($model->find($this->getRequestParameter('model_id'))){
+	    
+    	    if($page->hydrate($page_webid)){
 	        
-	        if($this->getRequestParameter('items') && is_array($this->getRequestParameter('items'))){
+    	        if($this->getRequestParameter('items') && is_array($this->getRequestParameter('items'))){
 	            
-	            $new_related_ids = array_keys($this->getRequestParameter('items'));
+    	            $new_related_ids = array_keys($this->getRequestParameter('items'));
 	            
-	            $model = new SmartestModel;
-	            
-	            if($model->hydrate($this->getRequestParameter('model_id'))){
-	            
-	                if(count($new_related_ids)){
-	            
+    	            if(count($new_related_ids)){
+            
     	                $old_related_ids = $page->getRelatedItemIds($model->getId());
             	        $items = $model->getSimpleItemsAsArrays($this->getSite()->getId());
-            	        
+        	        
             	        foreach($items as $item){
-    	            
+	            
             	            if(in_array($item['id'], $new_related_ids) && !in_array($item['id'], $old_related_ids)){
             	                // add connection
             	                $page->addRelatedItem($item['id']);
             	            }
-    	            
+	            
             	            if(in_array($item['id'], $old_related_ids) && !in_array($item['id'], $new_related_ids)){
             	                // remove connection
             	                $page->removeRelatedItem($item['id']);
             	            }
             	        }
-    	        
+	        
     	            }else{
-	                
+                
     	                $page->removeAllRelatedItems($model->getId());
-	                
+                
     	            }
-	            
-                }
     	        
+                }else{
+                    // No pages have been submitted, so remove all related items
+                    $page->removeAllRelatedItems($model->getId());
+                    // $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
+                }
             }else{
-                $this->addUserMessageToNextRequest('Incorrect input format: Data should be array of pages', SmartestUserMessage::ERROR);
+                $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
             }
+        
         }else{
-            $this->addUserMessageToNextRequest('The page ID was not recognized', SmartestUserMessage::ERROR);
+            $this->addUserMessageToNextRequest('The model ID was not recognized', SmartestUserMessage::ERROR);
         }
         
         $this->formForward();

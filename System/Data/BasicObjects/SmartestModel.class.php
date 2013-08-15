@@ -5,6 +5,7 @@ class SmartestModel extends SmartestBaseModel{
 	protected $_model_properties = array();
 	protected $_model_settings;
 	protected $_site;
+	protected $_temporary_fields = null;
 	
 	protected function __objectConstruct(){
 		
@@ -227,6 +228,13 @@ class SmartestModel extends SmartestBaseModel{
 	        $n = $this->getName();
             $p = in_array(strtolower($n{0}), array('a', 'e', 'i', 'o', 'u')) ? 'An' : 'A';
             return new SmartestString($p);
+            
+            case '_related_items':
+            // var_dump($this->getTemporaryRelatedItems());
+            if(!is_null($this->getTemporaryRelatedItems())){
+                // var_dump($this->getTemporaryRelatedItems()->count());
+            }
+            return $this->getTemporaryRelatedItems();
 	        
 	    }
 	    
@@ -963,6 +971,37 @@ class SmartestModel extends SmartestBaseModel{
         
         return $this->setSettingValue('item_name_field_visible', $c);
         
+    }
+    
+    public function initTemporaryFields(){
+        if(!is_object($this->_temporary_fields)){
+            $this->_temporary_fields = new SmartestParameterHolder('Temporary fields for model '.$this->getName());
+        }
+    }
+    
+    public function setTemporaryField($name, $value){
+        $this->initTemporaryFields();
+        $this->_temporary_fields->setParameter($name, $value);
+    }
+    
+    public function getTemporaryField($name){
+        $this->initTemporaryFields();
+        return $this->_temporary_fields->getParameter($name);
+    }
+    
+    public function clearTemporaryField($name){
+        $this->initTemporaryFields();
+        $this->_temporary_fields->clearParameter($name);
+    }
+    
+    ///////////////////////////// Temporary fields ////////////////////////////
+    
+    public function setTemporaryRelatedItems($items){
+        $this->setTemporaryField('related_items', $items);
+    }
+    
+    public function getTemporaryRelatedItems(){
+        return $this->getTemporaryField('related_items');
     }
     
     ///////////////////////////// Code for building and including model classes /////////////////////////////////

@@ -28,11 +28,11 @@
     
     <h4>{$model.plural_name}</h4>
     
-    {if empty($model.related_items)}
+    {if $model._related_items._empty}
       <i>No {$model.plural_name|strtolower} are linked to this page.</i><br /><br />
     {else}
       <ul>
-        {foreach from=$model.related_items item="related_item"}
+        {foreach from=$model._related_items item="related_item"}
         <li>{$related_item.name}</li>
         {/foreach}
       </ul>

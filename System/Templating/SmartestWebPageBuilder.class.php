@@ -269,7 +269,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         $assetclass_types = SmartestDataUtility::getAssetClassTypes();
         
-        $display = (isset($params['display']) && in_array($params['display'], array('file', 'full', 'path', 'normal'))) ? $params['display'] : 'normal';
+        $display = (isset($params['display']) && in_array($params['display'], array('file', 'filename', 'full', 'path', 'normal', 'download', 'size'))) ? $params['display'] : 'normal';
         
         if($this->getPage()->hasPlaceholderDefinition($placeholder_name, $this->getDraftMode())){
             
@@ -281,7 +281,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 if(is_object($asset)){
                     
-                    if($display == 'file'){
+                    if($display == 'file' || $display == 'filename'){
                         
                         return $asset->getUrl();
                         
@@ -297,6 +297,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                             
                         }
                         
+                    }else if($display == 'download'){
+                        
+                        return $asset->getAbsoluteDownloadUri();
+                    
+                    }else if($display == 'size'){
+                        
+                        return $asset->getSize();
+                    
                     }else{
                         
                         $render_data = array();
