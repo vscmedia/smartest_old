@@ -139,9 +139,10 @@ var section = '{$section}';
   <div class="form-section-label">Select Error Page (Advanced)</div>
   <select name="site_error_page">
     {foreach from=$pages item="page"}
-      {if $page.info.id != $site.top_page_id}
+      {* Sergiy: Allow top page (why not?), I use this approach on my website already many years *}
+      {* if $page.info.id != $site.top_page_id *}
       <option value="{$page.info.id}"{if $site.error_page_id == $page.info.id} selected="selected"{/if}>+{section name="dashes" loop=$page.treeLevel}-{/section} {$page.info.title}</option>
-      {/if}
+      {* /if *}
     {/foreach}
   </select>
   <br /><span class="form-hint">This page will be loaded when an unknown or unpublished page is requested, eg: http://{$site.domain}{$domain}kigsdfkjhg.</span>
