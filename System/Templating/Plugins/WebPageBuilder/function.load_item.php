@@ -6,7 +6,7 @@ function smarty_function_load_item($params, &$smartest_engine){
         
         if(isset($params['id'])){
         
-            $item = $smartest_engine->loadItemAsArray();
+            $item = $smartest_engine->loadItemAsArray($params['id']);//sss
             $smartest_engine->assign($params['assign'], $item);
         
         }else{
