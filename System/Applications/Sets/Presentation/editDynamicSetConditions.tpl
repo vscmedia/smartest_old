@@ -42,10 +42,15 @@ function updateSetConditionsFormFromOperator(condition, value){
           <h3>Dynamic set conditions</h3>
 
     		  <script type="text/javascript" src="{$domain}Resources/System/Javascript/smartest/dynamic-set-builder.js"></script>
+    		  
     		  <script type="text/javascript">
     		    var newConditionMaker = new Smartest.DynamicSetBuilder;
     		  </script>
-
+              
+              <form id="pageViewForm" method="post" action="{$domain}{$section}/updateDynamicSetConditions">
+                  
+                  <input type="hidden" name="set_id" value="{$set.id}" />
+              
     		  <table id="rules-list">
 
   {if empty($conditions)}			
@@ -99,7 +104,7 @@ function updateSetConditionsFormFromOperator(condition, value){
   			  <td>
 
   				  <select name="new_condition_property_id" id="new-condition-aspect">
-    				  <option value="">Choose...</option>
+    				  <option value="IGNORE">Choose...</option>
     				  <option value="_SMARTEST_ITEM_PIECE_ITSELF" id="nc_name">The {$model.name} itself</option>
     				  <option value="_SMARTEST_ITEM_NAME" id="nc_name">{$model.name} {$model.item_name_field_name}</option>
     				  <option value="_SMARTEST_ITEM_ID" id="nc_id">{$model.name} ID</option>
@@ -130,6 +135,17 @@ function updateSetConditionsFormFromOperator(condition, value){
 
         </tr>
       </table>
+      
+      <div class="edit-form-row">
+        <div class="buttons-bar">
+          {* <input type="button" value="Cancel" />
+          <input type="submit" value="Save Changes" /> *}
+          {save_buttons}
+        </div>
+      </div>
+      
+    </form>
+      
 </div>
 
 <div id="actions-area"></div>

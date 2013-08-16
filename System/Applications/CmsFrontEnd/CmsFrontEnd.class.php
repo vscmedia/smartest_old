@@ -53,9 +53,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		            if($this->_page = $this->manager->getNormalPageByUrl($this->getRequest()->getRequestString(), $this->_site->getId())){
 
         		        // we are viewing a static page
-        		        if($this->_page->getLastPublished()){
-        		            header("Last-Modified: ".date('D, j M Y H:i:s e', $this->_page->getLastPublished())); // Tue, 15 Nov 1994 12:45:26 GMT
-        		        }
         		        $this->renderPage();
 
         		    }else if($this->_page = $this->manager->getItemClassPageByUrl($this->getRequest()->getRequestString(), $this->_site->getId())){
@@ -79,10 +76,6 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		        // this is the home page
 		        $this->_page = new SmartestPage;
 		        $this->_page->find($this->_site->getTopPageId());
-		        
-		        if($this->_page->getLastPublished()){
-		            header("Last-Modified: ".date('D, j M Y H:i:s e', $this->_page->getLastPublished())); // Tue, 15 Nov 1994 12:45:26 GMT
-		        }
 		        
 		        $this->renderPage();
 		        
@@ -402,9 +395,13 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        $html = $fc->execute($html);
 	        
 	        $cth = 'Content-Type: '.$this->getRequest()->getContentType().'; charset='.$this->getRequest()->getCharSet();
+	        header($cth);
 	        
-    	    header($cth);
-	        echo $html;
+	        if($this->_page->getLastPublished()){
+	            header("Last-Modified: ".date('D, j M Y H:i:s e', $this->_page->getLastPublished())); // Tue, 15 Nov 1994 12:45:26 GMT
+	        }
+	        
+    	    echo $html;
 	        exit;
 	    
         }else{

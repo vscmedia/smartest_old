@@ -128,18 +128,18 @@ class Sets extends SmartestSystemApplication{
 	
 	public function insertSet($get, $post){
 	    
-	    $new_set_name = SmartestStringHelper::toVarName($post['set_name']);
+	    $new_set_name = SmartestStringHelper::toVarName($this->getRequestParameter('set_name'));
 	    
 	    $set = new SmartestCmsItemSet;
 	    
 	    if(strlen($new_set_name) && !$set->hydrateBy('name', $new_set_name)){
 	        
 	        $set->setName($new_set_name);
-	        $set->setLabel($post['set_name']);
-	        $set->setType($post['set_type']);
-	        $set->setItemclassId($post['set_model_id']);
+	        $set->setLabel($this->getRequestParameter('set_name'));
+	        $set->setType($this->getRequestParameter('set_type'));
+	        $set->setItemclassId($this->getRequestParameter('set_model_id'));
 	        $set->setSiteId($this->getSite()->getId());
-	        $shared = @$post['set_shared'] ? 1 : 0;
+	        $shared = $this->getRequestParameter('set_shared') ? 1 : 0;
 	        $set->setShared($shared);
 	        $set->save();
 	        
@@ -241,24 +241,24 @@ class Sets extends SmartestSystemApplication{
 	
 	public function updateDynamicSet($get, $post){
 	    
-	    if(isset($post['set_id'])){
+	    if($this->requestParameterIsSet('set_id')){
 	        
-	        $set_id = $post['set_id'];
+	        $set_id = $this->getRequestParameter('set_id');
 	        
 	        $set = new SmartestCmsItemSet;
 	        
 	        if($set->find($set_id)){
 	            
-	            $set->setLabel($post['set_label']);
+	            $set->setLabel($this->getRequestParameter('set_label'));
 	            
 	            if($this->getUser()->hasToken('edit_set_name')){
-	                $set->setName(SmartestStringHelper::toVarName($post['set_name']));
+	                $set->setName(SmartestStringHelper::toVarName($this->getRequestParameter('set_name')));
                 }
                 
-	            $set->setSortField($post['set_sort_field']);
-	            $set->setDataSourceSiteId($post['set_data_source_site_id']);
+	            $set->setSortField($this->getRequestParameter('set_sort_field'));
+	            $set->setDataSourceSiteId($this->getRequestParameter('set_data_source_site_id'));
 	            
-	            $direction = ($post['set_sort_direction'] == 'DESC') ? 'DESC' : 'ASC';
+	            $direction = ($this->getRequestParameter('set_sort_direction') == 'DESC') ? 'DESC' : 'ASC';
 	            
 	            $set->setSortDirection($direction);
 	            $set->save();
@@ -272,9 +272,9 @@ class Sets extends SmartestSystemApplication{
 	        }
 	    }
 	    
-	    /* if(is_array($post['conditions'])){
+	    /* if(is_array($this->getRequestParameter('conditions'))){
 	        
-	        foreach($post['conditions'] as $c_id => $c_post_data){
+	        foreach($this->getRequestParameter('conditions') as $c_id => $c_post_data){
 	            
 	            if($c_post_data['operator'] == 8 || $c_post_data['operator'] == 9){
     	            $property_id = '_SMARTEST_ITEM_TAGGED';
@@ -293,30 +293,98 @@ class Sets extends SmartestSystemApplication{
 	        }
 	    } 
 	    
-	    if(@$post['add_new_condition']){
+	    if(@$this->getRequestParameter('add_new_condition')){
 	        
-	        if($post['new_condition_operator'] == 8 || $post['new_condition_operator'] == 9){
+	        if($this->getRequestParameter('new_condition_operator') == 8 || $this->getRequestParameter('new_condition_operator') == 9){
 	            $property_id = '_SMARTEST_ITEM_TAGGED';
 	        }else{
-	            $property_id = $post['new_condition_property_id'];
+	            $property_id = $this->getRequestParameter('new_condition_property_id');
 	        }
 	        
 	        $c = new SmartestDynamicDataSetCondition;
 	        $c->setSetId($set_id);
 	        $c->setItempropertyId($property_id);
-	        $c->setOperator($post['new_condition_operator']);
-	        $c->setValue($post['new_condition_value']);
+	        $c->setOperator($this->getRequestParameter('new_condition_operator'));
+	        $c->setValue($this->getRequestParameter('new_condition_value'));
 	        $c->save();
 	        
 	    } */
 	    
 	    $this->addUserMessageToNextRequest("Your set has been updated.", SmartestUserMessage::SUCCESS);
 	    
-	    if($post['_submit_action'] == "continue" && $success){
+	    if($this->getRequestParameter('_submit_action') == "continue" && $success){
 	        $this->redirect('/sets/editSet?set_id='.$set->getId());
 	    }else{
 	        $this->formForward();
 	    }
+	    
+	}
+	
+	public function updateDynamicSetConditions(){
+	    
+	    if($this->requestParameterIsSet('set_id')){
+	        
+	        $set_id = $this->getRequestParameter('set_id');
+	        
+	        $set = new SmartestCmsItemSet;
+	        
+	        if($set->find($set_id)){
+	    
+        	    if(is_array($this->getRequestParameter('conditions'))){
+	        
+        	        foreach($this->getRequestParameter('conditions') as $c_id => $c_post_data){
+	            
+        	            if($c_post_data['operator'] == 8 || $c_post_data['operator'] == 9){
+            	            $property_id = '_SMARTEST_ITEM_TAGGED';
+            	        }else{
+            	            $property_id = $c_post_data['property_id'];
+            	        }
+	            
+        	            $c = new SmartestDynamicDataSetCondition;
+	            
+        	            if($c->hydrate($c_id)){
+        	                $c->setItempropertyId($property_id);
+        	                $c->setOperator($c_post_data['operator']);
+        	                $c->setValue($c_post_data['value']);
+        	                $c->save();
+        	            }
+        	        }
+        	    } 
+	    
+        	    if($this->getRequestParameter('new_condition_property_id') != 'IGNORE'){
+	        
+        	        if($this->getRequestParameter('new_condition_operator') == 8 || $this->getRequestParameter('new_condition_operator') == 9){
+        	            $property_id = '_SMARTEST_ITEM_TAGGED';
+        	        }else{
+        	            $property_id = $this->getRequestParameter('new_condition_property_id');
+        	        }
+	        
+        	        $c = new SmartestDynamicDataSetCondition;
+        	        $c->setSetId($set_id);
+        	        $c->setItempropertyId($property_id);
+        	        $c->setOperator($this->getRequestParameter('new_condition_operator'));
+        	        $c->setValue($this->getRequestParameter('new_condition_value'));
+        	        $c->save();
+	        
+        	    }
+        	    
+        	    if($this->getRequestParameter('_submit_action') == "continue"){
+        	        $this->redirect('/sets/editDynamicSetConditions?set_id='.$set->getId());
+        	    }else{
+        	        $this->formForward();
+        	    }
+	    
+            }else{
+                
+                // Set not found
+                
+            }
+            
+        }else{
+            
+            // Set ID not provided
+            
+        }
 	    
 	}
 	
@@ -335,19 +403,19 @@ class Sets extends SmartestSystemApplication{
 	
 	public function transferItem($get, $post){
 		
-		$set_id = (int) $post['set_id'];
+		$set_id = (int) $this->getRequestParameter('set_id');
 		$set = new SmartestCmsItemSet;
 		
 		if($set->find($set_id)){
 		    
 		    if($set->getType() == "STATIC"){
 		    
-		        if($post['transferAction'] == 'add'){
-    			    $item_ids = (isset($post['available_items']) && is_array($post['available_items'])) ? $post['available_items'] : array();
+		        if($this->getRequestParameter('transferAction') == 'add'){
+    			    $item_ids = ($this->requestParameterIsSet('available_items') && is_array($this->getRequestParameter('available_items'))) ? $this->getRequestParameter('available_items') : array();
     			    $set->addItems($item_ids);
     			    $set->fixOrderIndices();
     		    }else{
-    			    $item_ids = (isset($post['used_items']) && is_array($post['used_items'])) ? $post['used_items'] : array();
+    			    $item_ids = ($this->requestParameterIsSet('used_items') && is_array($this->getRequestParameter('used_items'))) ? $this->getRequestParameter('used_items') : array();
     			    $set->removeItems($item_ids);
     			    $set->fixOrderIndices();
     		    }
@@ -373,13 +441,6 @@ class Sets extends SmartestSystemApplication{
 	
 	public function transferSingleItem($get, $post){
 	    
-	    if($post['set_id']){
-	        $request = $post;
-	    }else{
-	        $request = $get;
-	    }
-	    
-	    // $set_id = $request['set_id'];
 	    $set_id = $this->getRequestParameter('set_id');
 	    
 	    $set = new SmartestCmsItemSet;
@@ -627,15 +688,15 @@ class Sets extends SmartestSystemApplication{
 	}
 
 	public function deleteRule($get, $post){
-		$setrule_id=$post['setrule_id'];
+		$setrule_id=$this->getRequestParameter('setrule_id');
 		$this->manager->deleteSetRule($setrule_id);
 	}
 
 	public function insertRule($get, $post){
-		$set_id=$post['set_id'];
-		$itemproperty_id=$post['itemproperty_id'];
-		$condition=$post['condition'];
-		$value=$post['value'];
+		$set_id=$this->getRequestParameter('set_id');
+		$itemproperty_id=$this->getRequestParameter('itemproperty_id');
+		$condition=$this->getRequestParameter('condition');
+		$value=$this->getRequestParameter('value');
 		$this->manager->addSetRule($set_id, "", $itemproperty_id, strtoupper($condition),$value);	 
 	}
 	
@@ -644,8 +705,8 @@ class Sets extends SmartestSystemApplication{
 	}
 	
 // 	function updateSet($get, $post){
-// 		$set_id=$post['set_id'];	
-//     		$items=$post['cmbRole'];
+// 		$set_id=$this->getRequestParameter('set_id');	
+//     		$items=$this->getRequestParameter('cmbRole');
 //     		$this->manager->updateSet($set_id,$items);   
 // 	}
 

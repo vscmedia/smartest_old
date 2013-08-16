@@ -153,8 +153,10 @@ class CmsFrontEndAjax extends SmartestSystemApplication{
         	        $html = $fc->execute($html);
 
         	        $cth = 'Content-Type: '.$this->getRequest()->getContentType().'; charset='.$this->getRequest()->getCharSet();
-
-            	    header($cth);
+                    header($cth);
+        	        
+        	        header('HTTP/1.1 206 Partial content');
+        	        
         	        echo $html;
         	        exit;
 		        

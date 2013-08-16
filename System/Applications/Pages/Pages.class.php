@@ -1389,6 +1389,7 @@ class Pages extends SmartestSystemApplication{
             $page->setCacheAsHtml($this->getRequestParameter('page_cache_as_html'));
             $page->setCacheInterval($this->getRequestParameter('page_cache_interval'));
             $page->setIconImage($this->getRequestParameter('page_icon_image'));
+            $page->setLastModified(time());
             
             if($page->getType() == 'NORMAL'){
                 $page->setSearchField(strip_tags($this->getRequestParameter('page_search_field')));
@@ -3252,6 +3253,9 @@ class Pages extends SmartestSystemApplication{
 	        if(((boolean) $page->getChangesApproved() || $this->getUser()->hasToken('approve_page_changes')) && ($this->getUser()->hasToken('publish_approved_pages')) || $this->getUser()->hasToken('publish_all_pages')){
 		        
 		        $page->publish($item_id);
+		        $page->setLastModified(time());
+		        $page->save();
+		        
 		        SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} published page: {$page->getTitle()}.", SmartestLog::USER_ACTION);
 		        
 		        if($this->getRequestParameter('item_id') && $item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
