@@ -2178,7 +2178,7 @@ class Assets extends SmartestSystemApplication{
     			$this->send($formTemplateInclude, "formTemplateInclude");
     			$this->setTitle('Attached Files');
     			$this->send($asset_type, 'asset_type');
-    			$this->send($asset->__toArray(), 'asset');
+    			$this->send($asset, 'asset');
 
 		    }else{
 		        // asset type is not supported

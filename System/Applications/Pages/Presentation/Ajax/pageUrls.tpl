@@ -4,7 +4,7 @@
 	<tr style="background-color:#{cycle values="ddd,fff"};height:20px">
 	  <td>
 		  <div style="display:inline" id="siteDomainField_0">
-		    <strong>{if $page.is_published == "TRUE"}<a href="http://{$site.domain}{$domain}" target="_blank">{/if}http://{$site.domain}{$domain}{if $page.is_published == "TRUE"}</a>{/if}</strong> (default)</div></td>
+		    <strong>{if $page.is_published == "TRUE" && $site.is_enabled == 1}<a href="http://{$site.domain}{$domain}" target="_blank">{/if}http://{$site.domain}{$domain}{if $page.is_published == "TRUE" && $site.is_enabled == 1}</a>{/if}</strong> (default)</div></td>
 	  <td style="width:32%">&nbsp;</td>
   </tr>
   {/if}
@@ -16,7 +16,7 @@
   <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
     <td>
 	    <div style="display:inline" id="siteDomainField_{$pageurl.id}">
-	      {if $pageurl.is_default == 1}<strong>{/if}{if $link_urls && $page.is_published == "TRUE" && ($page.type == 'NORMAL' || $page._php_class == "SmartestPage" || ($page.type == 'ITEMCLASS' && $item.public == 'TRUE'))}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}{if $pageurl.is_default == 1}</strong> (default){/if}</div></td>
+	      {if $pageurl.is_default == 1}<strong>{/if}{if $link_urls && $page.is_published == "TRUE" && ($page.type == 'NORMAL' || $page._php_class == "SmartestPage" || ($page.type == 'ITEMCLASS' && $item.public == 'TRUE')) && $site.is_enabled == 1}<a href="{$pageUrl}" target="_blank">{$pageUrl|truncate:100:"..."}</a>{else}{$pageUrl|truncate:100:"..."}{/if}{if $pageurl.is_default == 1}</strong> (default){/if}</div></td>
     <td style="width:32%">
 	    <input type="button" name="edit" value="Edit" onclick="MODALS.load('{$section}/editPageUrl?url_id={$pageurl.id}', 'Edit page URL');" />
 	    {if $ishomepage != "true"}<input type="button" name="mkdefault" value="Make Default" onclick="window.location='{$domain}{$section}/setPageDefaultUrl?page_id={$page.webid}&amp;url={$pageurl.id}'"{if $pageurl.is_default == 1 || $pageurl.type == 'SM_PAGEURL_INTERNAL_FORWARD' || $pageurl.type == 'SM_PAGEURL_ITEM_FORWARD'} disabled="disabled"{/if} />{/if}
@@ -31,6 +31,7 @@
   <tr style="background-color:#{cycle values="ddd,fff"};height:20px">
       <td colspan="2">
         <div style="display:inline" id="siteDomainField">
-        {if $link_urls && $page.is_published == "TRUE"}<a href="http://{$site.domain}{$domain}{$page.fallback_url}" target="_blank">http://{$site.domain}{$domain}{$page.fallback_url|truncate:50:"..."}</a>{else}http://{$site.domain}{$domain}{$page.fallback_url|truncate:100:"..."}{/if}</div></td></tr>
+        {if $link_urls && $page.is_published == "TRUE" && $site.is_enabled == 1}<a href="http://{$site.domain}{$domain}{$page.fallback_url}" target="_blank">http://{$site.domain}{$domain}{$page.fallback_url|truncate:50:"..."}</a>{else}http://{$site.domain}{$domain}{$page.fallback_url|truncate:100:"..."}{/if}</div></td></tr>
+
   
 </table>

@@ -715,6 +715,16 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    return $url;
 	}
 	
+	public function getJsonInfoUrl($complete=false){
+	    
+	    if($complete){
+	        return $this->getSite()->getDomain().$this->_request->getDomain().'ajax:website/pageInfo?page_id='.$this->getWebid();
+        }else{
+            return $this->_request->getDomain().'ajax:website/pageInfo?page_id='.$this->getWebId();
+        }
+	    
+	}
+	
 	public function getUrls(){
 		
 		if(!count($this->_urls)){
@@ -1415,6 +1425,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             case "label":
             return $this->getLabel();
             
+            case "meta_keywords":
+            return $this->getKeywords();
+            
             case "is_search":
             return false;
 
@@ -1433,6 +1446,14 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             
             case "empty":
             return !$this->getId();
+            
+            case "absolute_json_info_uri":
+            case "absolute_json_info_url":
+            return $this->getJsonInfoUrl(true);
+            
+            case "json_info_uri":
+            case "json_info_url":
+            return $this->getJsonInfoUrl();
             
 	        
 	    }

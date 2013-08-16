@@ -36,7 +36,7 @@
 
 <div class="menubar">
   <a href="{dud_link}" class="js-menu-activator" id="actions-menu-activator">Actions</a> {*<a href="javascript:showPreview()">Show</a>*}
-  <a href="{dud_link}" class="js-menu-activator" id="files-menu-activator">Stylesheets</a>
+  {if $stylesheets._count > 0}<a href="{dud_link}" class="js-menu-activator" id="files-menu-activator">Stylesheets</a>{/if}
 {* if !empty($stylesheets)}
   {foreach from=$stylesheets item="stylesheet"}
   <a href="{$stylesheet.action_url}"><img src="{$stylesheet.small_icon}" />&nbsp;{$stylesheet.label}</a>
@@ -50,11 +50,13 @@
   <script type="text/javascript"></script>
 </div>
 
+{if $stylesheets._count > 0}
 <div id="preview-files-menu" class="js-menu">
   <ul></ul>
   <ul>{foreach from=$stylesheets item="stylesheet"}<li><a href="{$stylesheet.action_url}">{$stylesheet.label}</a></li>{/foreach}</ul>
   <script type="text/javascript"></script>
 </div>
+{/if}
 
 <div id="preview">
   <iframe class="building" id="preview-iframe" src="{$domain}website/renderEditableDraftPage?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}{if $request_parameters.author_id}&amp;author_id={$request_parameters.author_id}{/if}{if $request_parameters.search_query}&amp;q={$request_parameters.search_query}{/if}{if $request_parameters.tag}&amp;tag_name={$request_parameters.tag}{/if}{if $request_parameters.hash}#{$request_parameters.hash}{/if}" style="height:0px"></iframe>
@@ -89,17 +91,23 @@
 <script type="text/javascript">
 
 var actionsMenu = new Smartest.UI.Menu('preview-actions-menu', 'actions-menu-activator');
-var filesMenu = new Smartest.UI.Menu('preview-files-menu', 'files-menu-activator');
 
 {literal}
   $('actions-menu-activator').observe('click', function(e){
     actionsMenu.toggleVisibility();
     e.stop();
   });
-  
+{/literal}
+
+{if $stylesheets._count > 0}
+var filesMenu = new Smartest.UI.Menu('preview-files-menu', 'files-menu-activator');
+
+{literal}
   $('files-menu-activator').observe('click', function(e){
     filesMenu.toggleVisibility();
     e.stop();
   });
 {/literal}
+{/if}
+
 </script>

@@ -499,11 +499,40 @@ class Pages extends SmartestSystemApplication{
 		$asset_class_types = $h->getTypes();
 		
 		$placeholder_name = SmartestStringHelper::toVarName($this->getRequestParameter('placeholder_name'));
-		$selected_type = ($this->getRequestParameter('placeholder_type') && in_array($this->getRequestParameter('placeholder_type'), $h->getTypeCodes())) ? $this->getRequestParameter('placeholder_type') : 'SM_ASSETCLASS_RICH_TEXT';
+		$selected_type = ($this->getRequestParameter('placeholder_type') && in_array($this->getRequestParameter('placeholder_type'), $h->getTypeCodes())) ? $this->getRequestParameter('placeholder_type') : '';
 		$label = ($this->getRequestParameter('placeholder_label') && strlen($this->getRequestParameter('placeholder_label'))) ? $this->getRequestParameter('placeholder_label') : SmartestStringHelper::toTitleCaseFromVarName($placeholder_name);
 		
-		$groups = $h->getAssetGroupsForPlaceholderType($selected_type, $this->getSite()->getId());
+		if(!$this->requestParameterIsSet('placeholder_type')){
 		
+    		if(strpos($placeholder_name, 'img') !== false || strpos($placeholder_name, 'image') !== false){
+    		    $suggested_type = 'SM_ASSETCLASS_STATIC_IMAGE';
+    		    $this->send(true, 'type_suggestion_automatic');
+    		}else if(strpos($placeholder_name, 'css') !== false || strpos($placeholder_name, 'stylesheet') !== false){
+    		    $suggested_type = 'SM_ASSETCLASS_STYLESHEET';
+    		    $this->send(true, 'type_suggestion_automatic');
+    		}else if(strpos($placeholder_name, '_js') !== false || strpos($placeholder_name, 'javascript') !== false){
+        		$suggested_type = 'SM_ASSETCLASS_JAVASCRIPT';
+        		$this->send(true, 'type_suggestion_automatic');
+        	}else if(strpos($placeholder_name, '_txt') !== false || strpos($placeholder_name, 'text') !== false){
+            	$suggested_type = 'SM_ASSETCLASS_RICH_TEXT';
+            	$this->send(true, 'type_suggestion_automatic');
+            }else{
+        	    $suggested_type = null;
+        	    $this->send(false, 'type_suggestion_automatic');
+        	}
+    	
+	    }else{
+	        $suggested_type = null;
+	        $this->send(false, 'type_suggestion_automatic');
+	    }
+    	
+    	if($selected_type){
+		    $groups = $h->getAssetGroupsForPlaceholderType($selected_type, $this->getSite()->getId());
+	    }else if($suggested_type){
+	        $groups = $h->getAssetGroupsForPlaceholderType($suggested_type, $this->getSite()->getId());
+	    }
+		
+		$this->send($suggested_type, 'suggested_type');
 		$this->send($groups, 'groups');
 		$this->send($label, 'label');
 		$this->send($selected_type, 'selected_type');
@@ -516,7 +545,11 @@ class Pages extends SmartestSystemApplication{
 		
 		$container_name = SmartestStringHelper::toVarName($this->getRequestParameter('name'));
 		$container_label = SmartestStringHelper::toTitleCaseFromVarName($container_name);
-    
+		
+		$tlh = new SmartestTemplatesLibraryHelper;
+		$groups = $tlh->getTemplateGroups('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId());
+        
+        $this->send(new SmartestArray($groups), 'groups');
         $this->send($container_label, 'label');
 		$this->send($container_name, 'name');
 		$this->send($asset_class_types, 'types');
@@ -573,6 +606,14 @@ class Pages extends SmartestSystemApplication{
 		    $container->setName($name);
 		    $container->setSiteId($this->getSite()->getId());
 		    $container->setType('SM_ASSETCLASS_CONTAINER');
+		    
+		    if($this->getRequestParameter('container_group') == 'NONE'){
+		        $container->setFilterType('SM_ASSETCLASS_FILTERTYPE_NONE');
+		    }else if(is_numeric($this->getRequestParameter('container_group'))){
+		        $container->setFilterType('SM_ASSETCLASS_FILTERTYPE_TEMPLATEGROUP');
+		        $container->setFilterValue($this->getRequestParameter('container_group'));
+		    }
+		    
 		    $container->save();
 		    $this->addUserMessageToNextRequest("A new container with the name \"".$name."\" has been created.", SmartestUserMessage::SUCCESS);
 	    }
@@ -595,7 +636,13 @@ class Pages extends SmartestSystemApplication{
 	    $placeholder_id = (int) $this->getRequestParameter('placeholder_id');
 	    $placeholder = new SmartestPlaceholder;
 	    
-	    if($placeholder->find($placeholder_id)){
+	    if($this->requestParameterIsSet('assetclass_id')){
+	        $found = $placeholder->findBy('name', $this->getRequestParameter('assetclass_id'));
+	    }else{
+	        $found = $placeholder->find($placeholder_id);
+	    }
+	    
+	    if($found){
 	        
 	        $this->send($placeholder, 'placeholder');
 	        $this->send($placeholder->getPossibleFileGroups($this->getSite()->getId()), 'possible_groups');
@@ -767,7 +814,7 @@ class Pages extends SmartestSystemApplication{
         		        $this->send(false, 'show_edit_item_option');
                         $this->send(false, 'show_publish_item_option');
                         // $this->send($page->getMasterTemplate()->getImportedStylesheets(), 'stylesheets');
-                        $this->send($page->getStylesheets(), 'stylesheets');
+                        $this->send(new SmartestArray($page->getStylesheets()), 'stylesheets');
         		        
         		    }
 		        
@@ -782,7 +829,10 @@ class Pages extends SmartestSystemApplication{
     		            if(is_object($item)){
     		                $this->send($item, 'item');
     		                $this->send(true, 'show_iframe');
-    		                $this->send($page->getMasterTemplate()->getImportedStylesheets(), 'stylesheets');
+    		                // $this->send(new SmartestArray($page->getMasterTemplate()->getImportedStylesheets()), 'stylesheets');
+    		                // echo "stylesheets";
+    		                // print_r($page->getStylesheets());
+                            $this->send(new SmartestArray($page->getStylesheets()), 'stylesheets');
     		                
     		                $this->send($domain, 'site_domain');
     		                $this->setTitle('Meta-Page Preview | '.$item->getName());
@@ -928,7 +978,6 @@ class Pages extends SmartestSystemApplication{
 		    
     		    // set the page to deleted and save
     		    $page->setDeleted('TRUE');
-    		    // $page->removeUrls();
     		    $page->save();
 		    
     		    // clear cache
@@ -2207,7 +2256,7 @@ class Pages extends SmartestSystemApplication{
 	                $this->send(false, 'is_defined');
 	            }
 	            
-	            $assets = $container->getPossibleAssets();
+	            $assets = $container->getPossibleAssets($this->getSite()->getId());
 	            
 	            $this->send($assets, 'templates');
 	            $this->send($page, 'page');
@@ -3191,6 +3240,8 @@ class Pages extends SmartestSystemApplication{
 		
 		if($page->hydrate($page_webid)){
 		    
+		    $this->send($this->getSite()->getIsEnabled(), 'site_enabled');
+		    
 		    if($page->getType() == 'ITEMCLASS'){
                 if($this->getRequestParameter('item_id') && $item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'))){
                     
@@ -3983,6 +4034,8 @@ class Pages extends SmartestSystemApplication{
     		    $this->send($page, "pageInfo");
     		    
     		    $b = (($this->getRequestParameter('responseTableLinks') && !SmartestStringHelper::toRealBool($this->getRequestParameter('responseTableLinks'))) ? false : true);
+    		    // var_dump($b);
+    		    // $this->send(new SmartestBoolean($b), 'responseTableLinks');
     		    
     	    }
 	    }
@@ -4037,60 +4090,7 @@ class Pages extends SmartestSystemApplication{
 		// $page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
 		// $this->manager->updatePageUrl($page_id,$pageurl_id,$page_url);
 		
-		// $this->formForward();
-	}
-	
-	public function transferPageUrl(){
-	    
-	    $page = new SmartestPage;
-		$url = new SmartestPageUrl;
-		
-		if($url->find($this->getRequestParameter('url_id'))){
-		    
-		    $this->send($url, "url");
-		    
-		    if($page->find($url->getPageId())){
-    		    
-    		    $page->setDraftMode(true);
-    		    $site = $page->getSite();
-    		    
-    		    if($page->getType() == "ITEMCLASS"){
-    		        $model = new SmartestModel;
-    		        $model->find($page->getDatasetId());
-    		        $this->send($model, "model");
-    		    }else{
-    		        $pages = $site->getPagesList();
-    		        $this->send($pages, 'pages');
-    		    }
-    		    
-    		    $this->send($site, 'site');
-    		    $this->send($page->isHomepage(), "ishomepage");
-    		    $this->send($page, "pageInfo");
-    		    
-    		    $b = (($this->getRequestParameter('responseTableLinks') && !SmartestStringHelper::toRealBool($this->getRequestParameter('responseTableLinks'))) ? false : true);
-    		    
-    	    }
-		    
-		}
-	    
-	}
-	
-	public function transferPageUrlAction(){
-	    
-	    $page_webid = $this->getRequestParameter('page_webid');
-		$page_url = $this->getRequestParameter('page_url');
-		$url_id = $this->getRequestParameter('url_id');
-		
-		$url = new SmartestPageUrl;
-		$url->find($url_id);
-		
-		$url->setIsDefault(0);
-		$url->setType(is_numeric($this->getRequestParameter('url_redirect_type')) ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
-		$url->setRedirectType(is_numeric($this->getRequestParameter('url_redirect_type')) ? $this->getRequestParameter('url_redirect_type') : '');
-		$url->setPageId($this->getRequestParameter('url_page_id'));
-		
-		$url->save();
-	    
+		$this->formForward();
 	}
 	
 	public function deletePageUrl($get){

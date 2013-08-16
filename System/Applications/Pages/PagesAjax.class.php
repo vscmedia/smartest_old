@@ -155,5 +155,20 @@ class PagesAjax extends SmartestSystemApplication{
 	    }
 	    
 	}
+	
+	public function loadAssetGroupDropdownForNewPlaceholderForm(){
+	    
+	    $h = new SmartestAssetClassesHelper;
+	    $type_code = $this->getRequestParameter('placeholder_type');
+		
+		if(in_array($type_code, $h->getTypeCodes())){
+		    
+		    $groups = $h->getAssetGroupsForPlaceholderType($type_code, $this->getSite()->getId());
+		    $this->send($groups, 'groups');
+		    $this->send($type_code, 'selected_type');
+		    
+		}
+	    
+	}
 
 }

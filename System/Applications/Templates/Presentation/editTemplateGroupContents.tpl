@@ -76,11 +76,13 @@ function executeTransfer(){
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Group options</b></li>
   	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}templates/browseTemplateGroup?group_id={$group.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_magnify.png" border="0" alt="" style="width:16px;height:16px" /> Browse this group</a></li>
+  	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}templates/addTemplate?type={$group.filter_value}&amp;add_to_group_id={$group.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" style="width:16px;height:16px" /> Add a new template to this group</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Repository options</b></li>
-  	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/templates/groups'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all template groups</a></li>
+  	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}templates/addTemplate'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" style="width:16px;height:16px" /> Add a template</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/templates/groups'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all template groups</a></li>
   	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/templates/types'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_old.png" border="0" alt="" style="width:16px;height:16px" /> View all templates by type</a></li>
   	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}templates/addTemplateGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_add.png" border="0" alt="" style="width:16px;height:16px" /> Create a new template group</a></li>
   </ul>

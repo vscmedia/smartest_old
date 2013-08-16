@@ -2,6 +2,12 @@
 
 <h3>Publish {if $item}Meta-{/if}Page</h3>
 
+{if $site_enabled != '1'}
+
+<div class="warning"><strong>Warning</strong>: This site is not currently enabled. You can give this page the 'published' status, but it will not be available until the site is enabled.</div>
+
+{/if}
+
 <form action="{$domain}{$section}/publishPage" method="post">
 
 <input type="hidden" name="page_id" value="{$page_id}" />
@@ -60,7 +66,7 @@
 {/if}
 
 <div class="buttons-bar">
-  <input type="button" onclick="window.location='{$domain}{$section}/pageAssets?page_id={$page_id}{if $item}&amp;item_id={$item.id}{/if}'" value="Cancel" />
+  <input type="button" onclick="cancelForm();" value="Cancel" />
   {if $allow_publish}<input type="submit" value="Publish" />{/if}
 </div>
 	

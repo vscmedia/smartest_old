@@ -2,26 +2,23 @@
 
 class SmartestContainer extends SmartestAssetClass{
 
-	protected function __objectConstruct(){
+	/* protected function __objectConstruct(){
 		
 		$this->_table_prefix = 'assetclass_';
 		$this->_table_name = 'AssetClasses';
 		
-	}
+	} */
 	
-	public function getPossibleAssets(){
-	    
-	    // print_r($this->getSite());
+	public function getPossibleAssets($site_id=''){
 	    
 	    $type = $this->getTypeInfo();
+	    $group = new SmartestTemplateGroup;
 	    
-	    /*if($this->getType() == 'SM_ASSETTYPE_IMAGE'){
-            $types = array('SM_ASSETTYPE_IMAGE', 'SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE');
-        }else{
-            $types = array($this->getType());
-        } */
-        
-        return $this->getAssetsByType($type['accept']);
+	    if($this->getFilterType() == 'SM_ASSETCLASS_FILTERTYPE_TEMPLATEGROUP' && $group->find($this->getFilterValue())){
+	        return $group->getMembers($site_id);
+	    }else{
+	        return $this->getAssetsByType($type['accept']);
+        }
         
 	}
 	

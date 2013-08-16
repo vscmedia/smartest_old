@@ -248,7 +248,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
             
             $result = fwrite($handle, $data);
             fclose($handle);
-            chmod(utf8_decode($path), 0777);
+            @chmod(utf8_decode($path), 0666);
             return $result;
             
         }else{

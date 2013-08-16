@@ -61,6 +61,7 @@ function viewLivePage(parameters){
   <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('undefinePlaceholderOnItemPage');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear or this {$item.model.name|strtolower} only</a></li>
   {else}
   <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('undefinePlaceholder');" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Clear this placeholder</a></li>
+  <li class="permanent-action"><a href="#" onclick="elementTree.workWithItem('editPlaceholder');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit this placeholder</a></li>
   {/if}
 </ul>
 

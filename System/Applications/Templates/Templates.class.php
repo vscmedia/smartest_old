@@ -359,7 +359,7 @@ class Templates extends SmartestSystemApplication{
 	    $this->setFormReturnUri();
 	    $this->setFormReturnDescription('templates');
 	    $h = new SmartestTemplatesLibraryHelper;
-	    $type_code = $get['type'];
+	    $type_code = $this->getRequestParameter('type');
 	    $types = $h->getTypes();
 	    
 	    if(in_array($type_code, $h->getTypeCodes())){
@@ -601,22 +601,22 @@ class Templates extends SmartestSystemApplication{
 	    $types = $cat['templates']['types'];
 	    $this->send($types, 'template_types');
 	    
-	    $location = $h->getStorageLocationByTypeCode($get['asset_type']);
+	    $location = $h->getStorageLocationByTypeCode($this->getRequestParameter('asset_type'));
 	    
 	    if($location == SmartestAssetsLibraryHelper::ASSET_TYPE_UNKNOWN){
-	        $message = "Template type ".$get['asset_type']." was not recognized.";
+	        $message = "Template type ".$this->getRequestParameter('asset_type')." was not recognized.";
 	        SmartestLog::getInstance('system')->log($message, SmartestLog::WARNING);
 	        $this->addUserMessage($message, SmartestUserMessage::WARNING);
 	        $show_form = false;
 	    }else if($location == SmartestAssetsLibraryHelper::MISSING_DATA){
-	        $message = "Template type ".$get['asset_type']." does not have any storage locations.";
+	        $message = "Template type ".$this->getRequestParameter('asset_type')." does not have any storage locations.";
 	        SmartestLog::getInstance('system')->log($message, SmartestLog::WARNING);
 	        // $this->send($message, 'error_message');
 	        $this->addUserMessage($message, SmartestUserMessage::WARNING);
 	        $show_form = false;
 	    }else{
-	        $template = new SmartestUnimportedTemplate(SM_ROOT_DIR.$location.$get['template']);
-	        $force_shared = ($template->isInUseOnMultipleSites($get['asset_type']) || (count($template->getSitesWhereUsed()) > 0 && !in_array($this->getSite()->getId(), $template->getSiteIdsWhereUsed())));
+	        $template = new SmartestUnimportedTemplate(SM_ROOT_DIR.$location.$this->getRequestParameter('template'));
+	        $force_shared = ($template->isInUseOnMultipleSites($this->getRequestParameter('asset_type')) || (count($template->getSitesWhereUsed()) > 0 && !in_array($this->getSite()->getId(), $template->getSiteIdsWhereUsed())));
 	        $this->send($force_shared, 'force_shared');
 	        $this->send($template, 'template');
 	    }
@@ -681,7 +681,7 @@ class Templates extends SmartestSystemApplication{
 	public function convertTemplateType($get){
 	    
 	    $t = new SmartestTemplateAsset;
-	    $id = (int) $get['template_id'];
+	    $id = (int) $this->getRequestParameter('template_id');
 	    
 	    if($t->find($id)){
 	        $this->send($t, 'template');
@@ -740,16 +740,13 @@ class Templates extends SmartestSystemApplication{
 		$h = new SmartestTemplatesLibraryHelper;
 		$types = $h->getTypes();
 		
-		if(isset($get['type'])){
+		if($this->requestParameterIsSet('type')){
 		
-		    $type_id = $get['type'];
+		    $type_id = $this->getRequestParameter('type');
     		$type = $types[$type_id];
 		
     		$title = "Add a new ".strtolower($type['label']);
     		$path = SM_ROOT_DIR.$type['storage']['location'];
-    		$this->send(true, 'type_specified');
-		    
-		    $this->send($type, 'template_type');
 		    
 		/* switch($type){
 		    case "SM_PAGE_MASTER_TEMPLATE":
@@ -773,14 +770,16 @@ class Templates extends SmartestSystemApplication{
 		
 		    $allow_save = is_writable($path);
 		    $this->send($path, 'path');
-		    $this->send(SmartestStringHelper::toVarName('untitled '.$type['label']), 'default_name');
+		    // $this->send(SmartestStringHelper::toVarName(), 'default_name');
+		    $default_name = SmartestStringHelper::toVarName('untitled '.$type['label']);
 		
 	    }else{
 	        
 	        $this->send($types, 'types');
 	        $title = "Add a new template";
-	        $this->send(false, 'type_specified');
-	        $this->send('untitled_template', 'default_name');
+	        $default_name = 'untitled_template';
+	        
+	        $type = null;
 	        
 	        $allow_save = false;
 	        
@@ -792,6 +791,24 @@ class Templates extends SmartestSystemApplication{
 	        }
 	        
 	    }
+	    
+	    if($this->getRequestParameter('add_to_group_id')){
+	        
+	        $group = new SmartestTemplateGroup;
+	        
+	        if($group->find($this->getRequestParameter('add_to_group_id'))){
+	            $type_id = $group->getFilterValue();
+	            $type = $types[$type_id];
+	            $default_name = SmartestStringHelper::toVarName('untitled '.$type['label']);
+	            $title = "Add a new ".strtolower($type['label']);
+	            $this->send($group, 'add_to_group');
+	        }
+	        
+	    }
+	    
+	    $this->send($default_name, 'default_name');
+	    $this->send($type, 'template_type');
+	    $this->send($type ? true : false, 'type_specified');
 		
 		$this->setTitle($title);
 		
@@ -891,7 +908,22 @@ class Templates extends SmartestSystemApplication{
     	    if($file_success){
     	        // Add the template asset to the database
     	        $new_template->save();
-    	        chmod($full_filename, 0666);
+    	        @chmod($full_filename, 0666);
+    	        
+    	        if($this->requestParameterIsSet('add_to_group_id')){
+    	            
+    	            $group = new SmartestTemplateGroup;
+    	            
+    	            if($group->find($this->getRequestParameter('add_to_group_id'))){
+    	                if($group->getFilterValue() == $new_template->getType()){
+    	                    $group->addTemplateById($new_template->getId());
+    	                }else{
+    	                    $this->addUserMessageToNextRequest('The new template could not be added to group '.$group->getLabel().' because it is the wrong type of template.', SmartestUserMessage::WARNING);
+    	                }
+    	            }
+    	            
+    	        }
+    	        
     	    }
 		
 	    }else{
@@ -905,7 +937,7 @@ class Templates extends SmartestSystemApplication{
 			
 	public function editTemplate($get){
 		
-		$template_type = $get['type'];
+		$template_type = $this->getRequestParameter('type');
 		
 		$h = new SmartestTemplatesLibraryHelper;
 	    $type_code = $this->getRequestParameter('asset_type');
@@ -1012,7 +1044,7 @@ class Templates extends SmartestSystemApplication{
     	        $location = $h->getStorageLocationByTypeCode($type_code);
 
          	    if($location == SmartestAssetsLibraryHelper::MISSING_DATA){
-         	        $message = "Template type ".$get['asset_type']." does not have any storage locations.";
+         	        $message = "Template type ".$this->getRequestParameter('asset_type')." does not have any storage locations.";
          	        SmartestLog::getInstance('system')->log($message, SmartestLog::WARNING);
          	        $this->addUserMessage($message, SmartestUserMessage::ERROR);
          	        $show_form = false;
@@ -1158,7 +1190,7 @@ class Templates extends SmartestSystemApplication{
     	        
          	    if($location == SmartestAssetsLibraryHelper::MISSING_DATA){
          	        
-         	        $message = "Template type ".$get['asset_type']." does not have any storage locations.";
+         	        $message = "Template type ".$this->getRequestParameter('asset_type')." does not have any storage locations.";
          	        SmartestLog::getInstance('system')->log($message, SmartestLog::WARNING);
          	        $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
          	        $allow_update = false;
@@ -1352,7 +1384,7 @@ class Templates extends SmartestSystemApplication{
 	
 	public function templateInfo($get){
 	    
-	    $template_id = $get['template'];
+	    $template_id = $this->getRequestParameter('template');
 	    
 	    $template = new SmartestTemplateAsset;
 
@@ -1374,11 +1406,11 @@ class Templates extends SmartestSystemApplication{
 
 	public function deleteTemplate($get){
 	    
-	    $template_type = $get['type'];
+	    $template_type = $this->getRequestParameter('type');
 		
 		$h = new SmartestTemplatesLibraryHelper;
-	    $type_code = $get['asset_type'];
-	    $template_id = $get['template'];
+	    $type_code = $this->getRequestParameter('asset_type');
+	    $template_id = $this->getRequestParameter('template');
 	    
 	    if(is_numeric($template_id)){
 	        
@@ -1408,7 +1440,7 @@ class Templates extends SmartestSystemApplication{
     	        $location = $h->getStorageLocationByTypeCode($type_code);
 
          	    if($location == SmartestAssetsLibraryHelper::MISSING_DATA){
-         	        $message = "Template type ".$get['asset_type']." does not have any storage locations.";
+         	        $message = "Template type ".$this->getRequestParameter('asset_type')." does not have any storage locations.";
          	        SmartestLog::getInstance('system')->log($message, SmartestLog::WARNING);
          	        $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
          	        $allow_delete = false;
@@ -1516,11 +1548,11 @@ class Templates extends SmartestSystemApplication{
 	
 	function duplicateTemplate($get){
 		
-		$template_type = $get['type'];
+		$template_type = $this->getRequestParameter('type');
 		
 		$h = new SmartestTemplatesLibraryHelper;
-	    $type_code = $get['asset_type'];
-	    $template_id = $get['template'];
+	    $type_code = $this->getRequestParameter('asset_type');
+	    $template_id = $this->getRequestParameter('template');
 	    
 	    if(is_numeric($template_id)){
 	        
@@ -1550,7 +1582,7 @@ class Templates extends SmartestSystemApplication{
     	        $location = $h->getStorageLocationByTypeCode($type_code);
 
          	    if($location == SmartestAssetsLibraryHelper::MISSING_DATA){
-         	        $message = "Template type ".$get['asset_type']." does not have any storage locations.";
+         	        $message = "Template type ".$this->getRequestParameter('asset_type')." does not have any storage locations.";
          	        SmartestLog::getInstance('system')->log($message, SmartestLog::WARNING);
          	        $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
          	        $allow_copy = false;
@@ -1604,11 +1636,11 @@ class Templates extends SmartestSystemApplication{
 	
 	function downloadTemplate($get){
 		
-		$template_type = $get['type'];
+		$template_type = $this->getRequestParameter('type');
 		
 		$h = new SmartestTemplatesLibraryHelper;
-	    $type_code = $get['asset_type'];
-	    $template_id = $get['template'];
+	    $type_code = $this->getRequestParameter('asset_type');
+	    $template_id = $this->getRequestParameter('template');
 	    
 	    if(is_numeric($template_id)){
 	        
@@ -1637,7 +1669,7 @@ class Templates extends SmartestSystemApplication{
     	        $location = $h->getStorageLocationByTypeCode($type_code);
 
          	    if($location == SmartestAssetsLibraryHelper::MISSING_DATA){
-         	        $message = "Template type ".$get['asset_type']." does not have any storage locations.";
+         	        $message = "Template type ".$this->getRequestParameter('asset_type')." does not have any storage locations.";
          	        SmartestLog::getInstance('system')->log($message, SmartestLog::WARNING);
          	        $this->addUserMessageToNextRequest($message, SmartestUserMessage::ERROR);
          	        $allow_download = false;

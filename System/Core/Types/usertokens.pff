@@ -50,3 +50,5 @@ id:type:scope:code:category:description
 45:p:s:edit_template_names:SM_USERTOKEN_ASSETS:Rename templates
 46:p:s:require_user_password_change:SM_USERTOKEN_USERS:Require other users to change their passwords
 47:p:s:edit_set_name:SM_USERTOKEN_ITEMS:Edit set short name
+48:p:s:enable_site:SM_USERTOKEN_SITES:Enable a disabled site
+49:p:s:disable_site:SM_USERTOKEN_SITES:Disable an enabled site

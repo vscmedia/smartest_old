@@ -1,3 +1,3 @@
-<?sm:if $render_data.use_style_tag == 'true' || $render_data.use_style_tag == '1' || $render_data.use_style_tag == 'on' :?><style type="text/css">
+<?sm:if $render_data.use_style_tag == 'true' || $render_data.use_style_tag == '1' || $render_data.use_style_tag == 'on' :?><style type="text/css"<?sm:if strlen($render_data.media):?> media="<?sm:$render_data.media:?>"<?sm:/if:?>>
   @import url('<?sm:$domain:?>Resources/Stylesheets/<?sm:$asset_info.url:?>');
-</style><?sm:else:?><link rel="stylesheet" href="<?sm:$domain:?>Resources/Stylesheets/<?sm:$asset_info.url:?>" /><?sm:/if:?>
+</style><?sm:else:?><link rel="stylesheet" href="<?sm:$domain:?>Resources/Stylesheets/<?sm:$asset_info.url:?>"<?sm:if strlen($render_data.media):?> media="<?sm:$render_data.media:?>"<?sm:/if:?> /><?sm:/if:?>

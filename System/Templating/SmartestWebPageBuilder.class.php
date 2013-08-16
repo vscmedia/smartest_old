@@ -301,6 +301,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 if(is_object($asset)){
                     
+                    $type_info = $asset->getTypeInfo();
+                    print_r($type_info);
+                    
                     if($display == 'file' || $display == 'filename'){
                         
                         return $asset->getUrl();
@@ -333,11 +336,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                             $transform_param_values = SmartestStringHelper::parseNameValueString($params['transform']);
                             // TODO: Allow inline transformations on certain asset types - resize, (rotate?)
                         }
-                    
-                        /* if(!isset($params['width']) && !isset($params['height']) && $asset->isImage()){
-                            $render_data['width'] = $asset->getWidth();
-                            $render_data['height'] = $asset->getHeight();
-                        } */
                     
                         if($this->getDraftMode()){
                             $rd = $placeholder->getDraftRenderData();

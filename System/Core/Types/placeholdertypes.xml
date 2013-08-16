@@ -104,6 +104,7 @@
     <label>CSS Stylesheet</label>
     <setfrompreview>false</setfrompreview>
     <accept>SM_ASSETTYPE_STYLESHEET</accept>
+    <accept>SM_ASSETTYPE_DYNAMIC_CSS</accept>
   </type>
   
   <type id="SM_ASSETCLASS_CUFON_FONT">
@@ -117,6 +118,7 @@
     <setfrompreview>false</setfrompreview>
     <accept>SM_ASSETTYPE_JAVASCRIPT</accept>
     <accept>SM_ASSETTYPE_STYLESHEET</accept>
+    <accept>SM_ASSETTYPE_DYNAMIC_CSS</accept>
     <accept>SM_ASSETTYPE_CUFON_FONT</accept>
   </type>
   

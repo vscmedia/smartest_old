@@ -93,7 +93,6 @@ class Desktop extends SmartestSystemApplication{
                 $this->send($pages, 'pages');
                 
                 $site_logos_group = new SmartestAssetGroup;
-                
                 if($site_logos_group->find(SmartestSystemSettingHelper::getSiteLogosFileGroupId())){
                     $logos = $site_logos_group->getMembers();
                 }else{
@@ -102,9 +101,8 @@ class Desktop extends SmartestSystemApplication{
                 
                 $this->send($logos, 'logo_assets');
             
-                $this->setTitle("Edit Site Parameters");
+                $this->setTitle("Edit Site Settings");
     		    $this->send($sitedetails, 'site');
-    		    // $this->send($sitedetails->getImages(100), 'site_images');
 		    
     	    }else{
 	        
@@ -115,7 +113,7 @@ class Desktop extends SmartestSystemApplication{
 	    
         }else{
             
-            $this->addUserMessageToNextRequest('You don\'t have permission to edit settings.', SmartestUserMessage::ACCESS_DENIED);
+            $this->addUserMessageToNextRequest('You don\'t have permission to edit site settings.', SmartestUserMessage::ACCESS_DENIED);
 	        $this->redirect('/smartest');
             
         }
@@ -127,18 +125,42 @@ class Desktop extends SmartestSystemApplication{
 	    if($this->getSite() instanceof SmartestSite){
 	        
 	        $site = $this->getSite();
-	        $site->setName($this->getRequestParameter('site_name'));
-	        $site->setInternalLabel($this->getRequestParameter('site_internal_label'));
-	        $site->setTitleFormat($this->getRequestParameter('site_title_format'));
-	        $site->setDomain($this->getRequestParameter('site_domain'));
-	        $site->setIsEnabled((int) (bool) $this->getRequestParameter('site_is_enabled'));
-	        $site->setTagPageId($this->getRequestParameter('site_tag_page'));
-	        $site->setSearchPageId($this->getRequestParameter('site_search_page'));
-	        $site->setErrorPageId($this->getRequestParameter('site_error_page'));
-	        $site->setAdminEmail($this->getRequestParameter('site_admin_email'));
-	        $site->save();
+	        
+	        if($this->getUser()->hasToken('modify_site_parameters')){
+	        
+    	        $site->setName($this->getRequestParameter('site_name'));
+    	        $site->setInternalLabel($this->getRequestParameter('site_internal_label'));
+    	        $site->setTitleFormat($this->getRequestParameter('site_title_format'));
+    	        $site->setDomain($this->getRequestParameter('site_domain'));
+    	        $site->setTagPageId($this->getRequestParameter('site_tag_page'));
+    	        $site->setSearchPageId($this->getRequestParameter('site_search_page'));
+    	        $site->setErrorPageId($this->getRequestParameter('site_error_page'));
+    	        $site->setAdminEmail($this->getRequestParameter('site_admin_email'));
+    	        $site->save();
+	        
+            }else{
+                
+                $this->addUserMessageToNextRequest('You don\'t have permission to edit site settings', SmartestUserMessage::ACCESS_DENIED);
+                
+            }
 	        
 	        $site->setLanguageCode($this->getRequestParameter('site_language'));
+	        
+	        if($site->getIsEnabled() == '1' && $this->getRequestParameter('site_is_enabled') == '0'){
+	            if($this->getUser()->hasToken('disable_site')){
+	                $site->setIsEnabled((int) (bool) $this->getRequestParameter('site_is_enabled'));
+                }else{
+                    $this->addUserMessageToNextRequest('You don\'t have permission to disable sites', SmartestUserMessage::ACCESS_DENIED);
+                }
+	        }
+	        
+	        if($site->getIsEnabled() == '0' && $this->getRequestParameter('site_is_enabled') == '1'){
+	            if($this->getUser()->hasToken('enable_site')){
+	                $site->setIsEnabled((int) (bool) $this->getRequestParameter('site_is_enabled'));
+                }else{
+                    $this->addUserMessageToNextRequest('You don\'t have permission to enable sites', SmartestUserMessage::ACCESS_DENIED);
+                }
+	        }
 	        
 	        if(SmartestUploadHelper::uploadExists('site_logo')){
 	            

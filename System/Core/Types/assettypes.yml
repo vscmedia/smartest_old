@@ -248,6 +248,7 @@ type:
     class: SmartestAsset
     parsable: false
     show_preview_edit_link: false
+    hide_preview_edit_button: true
     input_options:
       - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
       - SM_ASSETINPUTTYPE_DIRECT_INPUT
@@ -259,6 +260,7 @@ type:
       system_location: Public/Resources/System/Stylesheets/
     param:
       - {name: use_style_tag, label: "Use &lt;style&gt; tag with @import", type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: media, label: "Specify a medium for this stylesheet, e.g. print only?", type: SM_DATATYPE_SL_TEXT, required: false}
     render:
       template: System/Presentation/WebPageBuilder/display.stylesheet.tpl
       preview_template: System/Presentation/WebPageBuilder/preview.stylesheet.tpl
@@ -274,6 +276,7 @@ type:
     editable: true
     parsable: true
     convert_to_smarty: false
+    hide_preview_edit_button: true
     icon: style.png
     input_options:
       - SM_ASSETINPUTTYPE_DIRECT_INPUT

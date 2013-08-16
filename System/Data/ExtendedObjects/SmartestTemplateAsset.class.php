@@ -697,11 +697,24 @@ class SmartestTemplateAsset extends SmartestAsset{
 	
 	public function getImportedStylesheets(){
 	    
-	    $regex = '/<link rel="stylesheet" href="([^"]+(Resources\/Stylesheets\/([^"]+)))"/mi';
-	    $result = preg_match_all($regex, $this->getContent(), $matches);
+	    $regex1 = '/<link rel="stylesheet" href="([^"]+(Resources\/Stylesheets\/([^"]+)))"/mi';
+	    $result = preg_match_all($regex1, $this->getContent(), $matches1);
+	    
+	    $regex1 = '/<\?sm:stylesheet file="([^"]+)"/mi';
+	    $result = preg_match_all($regex1, $this->getContent(), $matches2);
+	    
 	    $stylesheets = array();
 	    
-	    foreach($matches[3] as $m){
+	    foreach($matches1[3] as $m){
+	        if(is_file(SM_ROOT_DIR.'Public/Resources/Stylesheets/'.$m)){
+	            $a = new SmartestAsset;
+	            if($a->findBy('url', $m)){
+	                $stylesheets[] = $a;
+	            }
+	        }
+	    }
+	    
+	    foreach($matches2[1] as $m){
 	        if(is_file(SM_ROOT_DIR.'Public/Resources/Stylesheets/'.$m)){
 	            $a = new SmartestAsset;
 	            if($a->findBy('url', $m)){
