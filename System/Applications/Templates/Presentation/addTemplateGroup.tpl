@@ -1,19 +1,100 @@
+<script type="text/javascript">
+    var itemNameFieldDefaultValue = 'Unnamed template group';
+    var nameFieldFocussed = false;
+{literal}
+    document.observe('dom:loaded', function(){
+        
+        $('template-group-label').observe('focus', function(){
+            if($('template-group-label').getValue() == itemNameFieldDefaultValue || $('template-group-label').getValue() == ''){
+                $('template-group-label').removeClassName('unfilled');
+                $('template-group-label').setValue('');
+            }
+            nameFieldFocussed = true;
+        });
+        
+        $('template-group-label').observe('blur', function(){
+            if($('template-group-label').getValue() == itemNameFieldDefaultValue || $('template-group-label').getValue() == ''){
+                $('template-group-label').addClassName('unfilled');
+                $('template-group-label').setValue(itemNameFieldDefaultValue);
+            }else{
+                $('template-group-label').removeClassName('error');
+            }
+            nameFieldFocussed = false;
+        });
+        
+        /* $('file-group-mode-select').observe('change', function(e){
+          if(this.value == "SM_SET_ASSETGALLERY"){
+
+            $('file-gallery-select-holder').show();
+            $('file-group-select-holder').hide();
+            $('h3-group-type').update('gallery');
+            $('filegroup-type-hint').update('A gallery allows you to arrange certain files in order to display them together'); 
+
+            if($F('template-group-label') == 'Unnamed file group'){
+              $('template-group-label').value = 'Unnamed gallery';
+            }
+            
+          }else{
+
+            $('file-gallery-select-holder').hide();
+            $('file-group-select-holder').show();
+            $('h3-group-type').update('file group');
+            $('filegroup-type-hint').update('An ordinary file group simply allows you to group a subset of your files together');
+
+            if($F('template-group-label') == 'Unnamed gallery'){
+              $('template-group-label').value = 'Unnamed file group';
+            }
+          }
+        }); */
+        
+        $('new-group-form').observe('submit', function(e){
+            
+            if($('template-group-label').value == 'Unnamed template group' || $('template-group-label').value == itemNameFieldDefaultValue){
+                $('template-group-label').addClassName('error');
+                e.stop();
+            }
+            
+            if($('template-group-type').value == ''){
+                $('template-group-type').addClassName('error');
+                e.stop();
+            }
+            
+        });
+        
+        document.observe('keypress', function(e){
+            
+            if(e.keyCode == 13){
+            
+                if(nameFieldFocussed && ($('template-group-label').value == 'Unnamed template group' || $('template-group-label').value == itemNameFieldDefaultValue || !$('template-group-label').value.charAt(0))){
+                    $('template-group-label').addClassName('error');
+                    e.stop();
+                }
+            
+            }
+            
+        });
+        
+    });
+    
+{/literal}
+</script>
+
 <div id="work-area">
   
   <h3>Create a template group</h3>
   
-  <form action="{$domain}{$section}/insertTemplateGroup" method="post">
+  <form action="{$domain}{$section}/insertTemplateGroup" method="post" id="new-group-form">
   
     <div id="edit-form-layout">
       
       <div class="edit-form-row">
         <div class="form-section-label">Name this group</div>
-        <input type="text" name="template_group_label" value="Untitled template group" />
+        <input type="text" id="template-group-label" name="template_group_label" value="Unnamed template group" class="unfilled" />
       </div>
       
       <div class="edit-form-row">
         <div class="form-section-label">Which templates can go in this group?</div>
-        <select name="template_group_type">
+        <select name="template_group_type" id="template-group-type">
             <option value=""></option>
           {* <option value="ALL">Any type of template</option> *}
 
@@ -28,7 +109,7 @@
           <div class="form-section-label">Cross-site usage</div>
           <input type="checkbox" name="template_group_shared" value="1" id="template_group_shared" />
           <label for="template_group_shared">Share this group</label>
-          <span class="form-hint">Makes this template group available to other sites you create in this Smartest install</span>
+          <div class="form-hint">Makes this template group available to other sites you create in this Smartest install, although files within the group will not be automatically shared with other sites</div>
         </div>
       
       <div class="edit-form-row">

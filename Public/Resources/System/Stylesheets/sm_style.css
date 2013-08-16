@@ -291,6 +291,10 @@ div.edit-form-row input[type="text"].error, div.edit-form-row input[type="passwo
     font-style:italic;
 }
 
+div.edit-form-row select.error{
+    border:2px solid #c30;
+}
+
 p.editable{
     font-size:18px;
     cursor:pointer;
