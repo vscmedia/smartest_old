@@ -93,6 +93,7 @@ class Desktop extends SmartestSystemApplication{
                 $this->send($pages, 'pages');
                 
                 $site_logos_group = new SmartestAssetGroup;
+                
                 if($site_logos_group->find(SmartestSystemSettingHelper::getSiteLogosFileGroupId())){
                     $logos = $site_logos_group->getMembers();
                 }else{

@@ -928,6 +928,7 @@ class Pages extends SmartestSystemApplication{
 		    
     		    // set the page to deleted and save
     		    $page->setDeleted('TRUE');
+    		    // $page->removeUrls();
     		    $page->save();
 		    
     		    // clear cache
@@ -3982,8 +3983,6 @@ class Pages extends SmartestSystemApplication{
     		    $this->send($page, "pageInfo");
     		    
     		    $b = (($this->getRequestParameter('responseTableLinks') && !SmartestStringHelper::toRealBool($this->getRequestParameter('responseTableLinks'))) ? false : true);
-    		    // var_dump($b);
-    		    // $this->send(new SmartestBoolean($b), 'responseTableLinks');
     		    
     	    }
 	    }
@@ -4038,7 +4037,60 @@ class Pages extends SmartestSystemApplication{
 		// $page_id = $this->manager->database->specificQuery("page_id", "page_webid", $page_webid, "Pages");
 		// $this->manager->updatePageUrl($page_id,$pageurl_id,$page_url);
 		
-		$this->formForward();
+		// $this->formForward();
+	}
+	
+	public function transferPageUrl(){
+	    
+	    $page = new SmartestPage;
+		$url = new SmartestPageUrl;
+		
+		if($url->find($this->getRequestParameter('url_id'))){
+		    
+		    $this->send($url, "url");
+		    
+		    if($page->find($url->getPageId())){
+    		    
+    		    $page->setDraftMode(true);
+    		    $site = $page->getSite();
+    		    
+    		    if($page->getType() == "ITEMCLASS"){
+    		        $model = new SmartestModel;
+    		        $model->find($page->getDatasetId());
+    		        $this->send($model, "model");
+    		    }else{
+    		        $pages = $site->getPagesList();
+    		        $this->send($pages, 'pages');
+    		    }
+    		    
+    		    $this->send($site, 'site');
+    		    $this->send($page->isHomepage(), "ishomepage");
+    		    $this->send($page, "pageInfo");
+    		    
+    		    $b = (($this->getRequestParameter('responseTableLinks') && !SmartestStringHelper::toRealBool($this->getRequestParameter('responseTableLinks'))) ? false : true);
+    		    
+    	    }
+		    
+		}
+	    
+	}
+	
+	public function transferPageUrlAction(){
+	    
+	    $page_webid = $this->getRequestParameter('page_webid');
+		$page_url = $this->getRequestParameter('page_url');
+		$url_id = $this->getRequestParameter('url_id');
+		
+		$url = new SmartestPageUrl;
+		$url->find($url_id);
+		
+		$url->setIsDefault(0);
+		$url->setType(is_numeric($this->getRequestParameter('url_redirect_type')) ? 'SM_PAGEURL_INTERNAL_FORWARD' : 'SM_PAGEURL_NORMAL');
+		$url->setRedirectType(is_numeric($this->getRequestParameter('url_redirect_type')) ? $this->getRequestParameter('url_redirect_type') : '');
+		$url->setPageId($this->getRequestParameter('url_page_id'));
+		
+		$url->save();
+	    
 	}
 	
 	public function deletePageUrl($get){

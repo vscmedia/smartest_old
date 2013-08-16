@@ -127,13 +127,12 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	public function delete($remove=false){
 	    if($remove){
 		    
+		    $this->removeUrls();
+		    
 		    $sql = "DELETE FROM PagePropertyValues WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
 		    $this->database->rawQuery($sql);
 		    
 		    $sql = "DELETE FROM AssetIdentifiers WHERE assetidentifier_page_id='".$this->_properties['id']."'";
-		    $this->database->rawQuery($sql);
-		    
-		    $sql = "DELETE FROM PageUrls WHERE pageurl_page_id='".$this->_properties['id']."'";
 		    $this->database->rawQuery($sql);
 		    
 		    $sql = "DELETE FROM ".$this->_table_name." WHERE ".$this->_table_prefix."id='".$this->_properties['id']."' LIMIT 1";
@@ -143,9 +142,15 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		    $this->_came_from_database = false;
 		    
 	    }else{
-	        $this->setField('deleted', 1);
+	        
+	        $this->setField('deleted', 'TRUE');
 	        $this->save();
 	    }
+	}
+	
+	public function removeUrls(){
+	    $sql = "DELETE FROM PageUrls WHERE pageurl_page_id='".$this->_properties['id']."'";
+	    $this->database->rawQuery($sql);
 	}
 	
 	public function getDraftMode(){

@@ -11,7 +11,7 @@ class SmartestPageUrl extends SmartestBasePageUrl{
 	
 	public function existsOnSite($url, $site_id){
 	    
-	    $sql = "SELECT page_id from Pages, PageUrls WHERE pageurl_page_id = page_id AND pageurl_url='".$url."' AND page_site_id='".$site_id."'";
+	    $sql = "SELECT page_id from Pages, PageUrls WHERE pageurl_page_id = page_id AND pageurl_url='".$url."' AND page_site_id='".$site_id."' AND page_deleted='FALSE'";
 	    $result = $this->database->queryToArray($sql);
 	    
 	    return count($result) ? true : false;

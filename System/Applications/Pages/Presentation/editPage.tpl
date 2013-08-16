@@ -21,6 +21,24 @@
       return true;
 
     {rdelim}
+    
+    var effectPageUrlTransfer = function(){ldelim}
+
+      $('saver-gif').show();
+
+      $('transferUrl').request({ldelim}
+        onComplete: function(){ldelim}
+          // $('page-urls').update('');
+          new Ajax.Updater('page-urls', '{$domain}ajax:websitemanager/pageUrls', {ldelim}
+            parameters: {ldelim}page_id: '{$page.webid}'{if $item.id}, item_id: {$item.id}{/if}, responseTableLinks: {$link_urls.truefalse}{rdelim}
+          {rdelim});
+          MODALS.hideViewer();
+        {rdelim}
+      {rdelim});
+
+      return true;
+
+    {rdelim}
 
   </script>
 

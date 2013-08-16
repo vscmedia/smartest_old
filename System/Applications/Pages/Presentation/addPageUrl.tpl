@@ -11,7 +11,7 @@
   <div id="edit-form-layout">
 
     <div class="edit-form-row">
-      <div class="form-section-label">URL</div>
+      <div class="form-section-label-full">URL</div>
       http://{$site.domain}{$domain}<input type="text" name="page_url" value="" />
       <input type="checkbox" name="forward_to_default" id="forward_to_default" value="1" onchange="toggleFormAreaVisibilityBasedOnCheckbox('forward_to_default', 'show-redirect-type');" /><label for="forward_to_default">Forward to default URL</label>
     </div>

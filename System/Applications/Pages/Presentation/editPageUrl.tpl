@@ -1,9 +1,5 @@
 <div id="work-area">
 
-{$responseTableLinks.truefalse}
-
-<h3 id="pageName">Page Details: {$pageInfo.title}</h3>
-
 <form id="editUrl" name="editUrl" action="{$domain}{$section}/updatePageUrl" method="POST" style="margin:0px">
 
   <input type="hidden" name="page_id" value="{$pageInfo.id}" />
@@ -14,8 +10,8 @@
     {if $pageInfo.type == "ITEMCLASS" && ($url.type == "SM_PAGEURL_INTERNAL_FORWARD" || $url.type == "SM_PAGEURL_NORMAL")}<div class="warning">Editing this URL will affect all {$model.plural_name|lower}.</div>{/if}
   
     <div class="edit-form-row">
-      <div class="form-section-label">Address:</div>
-        http://{$site.domain}{$domain}<input type="text" name="page_url" value="{$url.url}" style="width:200px" />
+      <div class="form-section-label-full">URL:</div>
+        http://{$site.domain}{$domain}<input type="text" name="page_url" value="{$url.url}" style="width:250px" />
         <br />{if !$url.is_default}<input type="checkbox" name="forward_to_default" id="forward_to_default" value="1"{if $url.type == "SM_PAGEURL_INTERNAL_FORWARD" || $url.type == 'SM_PAGEURL_ITEM_FORWARD'} checked="checked"{/if} onchange="toggleFormAreaVisibilityBasedOnCheckbox('forward_to_default', 'show-redirect-type');" /><label for="forward_to_default">Forward to default URL</label>{/if}
     </div>
   
