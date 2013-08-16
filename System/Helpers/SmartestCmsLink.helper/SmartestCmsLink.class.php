@@ -168,7 +168,7 @@ class SmartestCmsLink extends SmartestHelper{
             $data = $markup_attributes->getParameters();
         }
         
-        $allowed_attributes = array('title', 'id', 'name', 'style', 'class', 'target', 'rel');
+        $allowed_attributes = array('title', 'id', 'name', 'style', 'class', 'target', 'rel', 'dir', 'accesskey', 'tabindex', 'lang', 'download');
         $deprecated_javascript_attributes = array('onclick', 'ondblclick', 'onmouseover', 'onmouseout');
         $html_attributes_array = array();
         $other_attributes_array = array();
@@ -179,6 +179,9 @@ class SmartestCmsLink extends SmartestHelper{
                 $html_attributes_array[$name] = $value;
             }else if(in_array($name, $allowed_attributes)){
                 // Make sure attributed supplied for display are XML friendly
+                $html_attributes_array[$name] = SmartestStringHelper::toXmlEntities($value);
+            }else if(substr($name, 0, 5) == 'data-'){
+                // Custom non-visible HTML5 attributes
                 $html_attributes_array[$name] = SmartestStringHelper::toXmlEntities($value);
             }else{
                 $other_attributes_array[$name] = $value;
@@ -405,22 +408,31 @@ class SmartestCmsLink extends SmartestHelper{
             case SM_LINK_TYPE_IMAGE:
             $d = new SmartestAsset;
             $d->hydrateBy('url', $this->_destination_properties->getParameter('filename'));
+            $this->_markup_attributes->setParameter('type', $d->getMimeType());
             $this->_destination = $d;
             break;
             
             case SM_LINK_TYPE_DOWNLOAD:
             $d = new SmartestAsset;
             $d->hydrateBy('url', $this->_destination_properties->getParameter('filename'));
+            $mime_type = $d->getMimeType();
+            
+            if($mime_type){
+                $this->_markup_attributes->setParameter('type', $mime_type);
+            }
+            
             $this->_destination = $d;
             break;
             
             case SM_LINK_TYPE_TAG:
             $d = new SmartestTag;
+            $d->hydrateBy('name', $this->_destination_properties->getParameter('tag_name'));
             $this->_destination = $d;
             break;
             
             case SM_LINK_TYPE_AUTHOR:
             $d = new SmartestUser;
+            $d->hydrateBy('username', $this->_destination_properties->getParameter('username'));
             $this->_destination = $d;
             break;
             
@@ -514,6 +526,12 @@ class SmartestCmsLink extends SmartestHelper{
     
     public function getErrorMessage(){
         return $this->_error_message;
+    }
+    
+    public function setImageAsContent(SmartestImage $img){
+        
+        $this->_render_data->setParameter('with', $img);
+        
     }
     
     public function getContent($draft_mode=false){
@@ -660,7 +678,7 @@ class SmartestCmsLink extends SmartestHelper{
     }
     
     public function getAbsoluteUrlObject(){
-        // Returns a SmartestExternalUrl object pointing to the absolute uri of the 
+        // Returns a SmartestExternalUrl object pointing to the absolute uri of the link
         $url = 'http://'.$this->getSite()->getDomain().$this->getUrl(false, true);
         return new SmartestExternalUrl($url);
     }
@@ -759,7 +777,8 @@ class SmartestCmsLink extends SmartestHelper{
             break;
     
             case SM_LINK_TYPE_DOWNLOAD:
-            return $this->_request->getDomain().'download/'.urlencode($this->_destination->getUrl()).'?key='.$this->_destination->getWebid();
+            // return $this->_request->getDomain().'download/'.urlencode($this->_destination->getUrl()).'?key='.$this->_destination->getWebid();
+            return $this->_destination->getAbsoluteDownloadUri();
             break;
             
             case SM_LINK_TYPE_EXTERNAL:

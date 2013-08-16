@@ -5,8 +5,27 @@ class ItemsAjax extends SmartestSystemApplication{
     public function simpleItemTextSearch(){
 	    
 	    $db = SmartestDatabase::getInstance('SMARTEST');
-	    $sql = "SELECT * FROM Items WHERE (item_site_id='".$this->getSite()->getId()."' OR item_shared=1) AND item_deleted='0' AND (item_name LIKE '%".$this->getRequestParameter('query')."%' OR item_search_field LIKE '%".$this->getRequestParameter('query')."%') ORDER BY item_name";
-	    $result = $db->queryToArray($sql);
+	    $sql = "SELECT Items.item_id FROM Items WHERE (item_site_id='".$this->getSite()->getId()."' OR item_shared=1) AND item_deleted='0' AND (item_name LIKE '%".$this->getRequestParameter('query')."%' OR item_search_field LIKE '%".$this->getRequestParameter('query')."%') ORDER BY item_name LIMIT 150";
+	    $result1 = $db->queryToArray($sql);
+	    
+	    $sql2 = "SELECT Items.item_id FROM Items, Tags, TagsObjectsLookup WHERE (item_site_id='".$this->getSite()->getId()."' OR item_shared=1) AND item_deleted='0' AND (Tags.tag_label LIKE '%".$this->getRequestParameter('query')."%' AND TagsObjectsLookup.taglookup_tag_id=Tags.tag_id AND TagsObjectsLookup.taglookup_object_id=Items.item_id AND TagsObjectsLookup.taglookup_type='SM_ITEM_TAG_LINK') ORDER BY item_name LIMIT 150"; 
+	    $result2 = $db->queryToArray($sql2);
+	    
+	    $item_ids = array();
+	    
+	    foreach($result1 as $r){
+	        $item_ids[] = $r['item_id'];
+	    }
+	    
+	    foreach($result2 as $r){
+	        $item_ids[] = $r['item_id'];
+	    }
+	    
+	    $item_ids = array_unique($item_ids);
+	    
+	    $final_sql = "SELECT Items.* FROM Items WHERE Items.item_id IN ('".implode("','", $item_ids)."') ORDER BY item_name LIMIT 150";
+	    $result = $db->queryToArray($final_sql);
+	    
 	    $items = array();
 	    
 	    foreach($result as $r){

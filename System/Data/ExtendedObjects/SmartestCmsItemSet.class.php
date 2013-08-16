@@ -364,7 +364,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
   	    
   	    if($draft){
   	        foreach($items as $k=>$item){
-  	            $items[$k]->setDraftMode(true);
+  	            if(is_object($item)){$items[$k]->setDraftMode(true);}
   	        }
   	    }
   	    

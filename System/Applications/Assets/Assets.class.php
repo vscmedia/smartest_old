@@ -1660,7 +1660,13 @@ class Assets extends SmartestSystemApplication{
     		$asset = new SmartestAsset;
 		
     		if($asset->find($asset_id)){
-            
+                
+                if($asset->isTemplate()){
+                    // The search can yield templates, so if that happens, just forward the user to the template editor without even needing a redirect
+                    $this->setRequestParameter('template', $asset_id);
+                    $this->forward('templates', 'editTemplate');
+                }
+                
                 $assettype_code = $asset->getType();
     			$types_data = SmartestDataUtility::getAssetTypes();
     			$default_params = $asset->getDefaultParams();
@@ -2049,31 +2055,9 @@ class Assets extends SmartestSystemApplication{
 		        $this->send(false, 'allow_approve');
 		    }
 		    
-		    // $page = $this->getSite()->getHomePage();
-    	    
-    	    /* $wpb = new SmartestWebPageBuilder('_preview');
-    	    $wpb->assignPage($page);
-    	    $wpb->setDraftMode(true);
-    	    $wpb->prepareForRender();
-    	    
-    	    $wpb->assign('domain', SM_CONTROLLER_DOMAIN);
-    	    $wpb->template_dir = SM_ROOT_DIR.'Presentation/';
-    		$wpb->compile_dir = SM_ROOT_DIR.'System/Cache/Smarty/';
-    		$wpb->cache_dir = SM_ROOT_DIR.'System/Cache/Smarty/';
-    		$wpb->config_dir = SM_ROOT_DIR.'Configuration/';
-    	    
-    	    ob_start();
-    	    $wpb->_renderAssetObject($asset, array());
-    	    $asset_html = ob_get_contents();
-    	    ob_end_clean();
-    	    // echo $asset_html;
-    	    $this->send($asset_html, 'preview_html'); */
-    	    
-    	    
-    	    // for html reusability
+		    // for html reusability
     	    $this->send($asset['type_info'], 'asset_type');
-    	    
-    	    $html = $asset->render(true);
+    	    $html = $asset->renderPreview();
     	    
     	    $this->send($html, 'html');
     	    $this->send($asset, 'asset');
@@ -2091,6 +2075,48 @@ class Assets extends SmartestSystemApplication{
 	    
 	    $this->getRequest()->setMeta('template', '_blank.tpl');
 	    // print_r($this->getRequest());
+	    
+	}
+	
+	public function assetTags(){
+	    
+	    if(!$this->getRequestParameter('from')){
+	        $this->setFormReturnUri();
+        }
+	    
+	    $asset_id = $this->getRequestParameter('asset_id');
+	    $asset = new SmartestAsset;
+	    
+	    if($asset->find($asset_id)){
+	        
+	        $this->setTitle($asset->getLabel().' | Tags');
+	        
+	        $du  = new SmartestDataUtility;
+	        $tags = $du->getTags();
+	        
+	        $asset_tags = array();
+	        $i = 0;
+	        
+	        foreach($tags as $t){
+	            
+	            $asset_tags[$i] = $t;
+	            
+	            if($t->hasAsset($asset->getId())){
+	                $asset_tags[$i]['attached'] = true;
+	                // echo $t['label'];
+	            }else{
+	                $asset_tags[$i]['attached'] = false;
+	            }
+	            
+	            $i++;
+	        }
+	        
+	        $this->send($asset_tags, 'tags');
+	        $this->send($asset, 'asset');
+	        
+	    }else{
+	        $this->addUserMessage('The item ID has not been recognized.', SmartestUserMessage::ERROR);
+	    }
 	    
 	}
 	

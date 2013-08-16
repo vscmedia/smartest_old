@@ -1,5 +1,6 @@
 <div id="work-area">
   <h3>{$item._model.name} Info</h3>
+  
   {if $item._model.item_name_field_visible}
   <div class="edit-form-row">
     <div class="form-section-label">{$item._model.name} {$item._model.item_name_field_name}</div>
@@ -22,10 +23,10 @@
     {/if}
   </div>
   {/if}
+  
   <div class="edit-form-row">
     <div class="form-section-label">{$item._model.name} short name (Used in links and URLS)</div>
     {if $user_can_modify_items}
-    {if $item.public == "TRUE" && count($metapages)}<div class="warning">Warning: This {$item._model.name|strtolower} is live. Editing this value may cause links to it to break.</div>{/if}
     <p class="editable" id="item-slug">{$item.slug|escape_double_quotes}</p>
     <script type="text/javascript">
     // <!--
@@ -43,6 +44,17 @@
     <code>{$item.slug}</code>
     {/if}
   </div>
+  
+  <div class="edit-form-row">
+      <div class="form-section-label">Numeric ID</div>
+      {$item.id}
+    </div>
+  
+    <div class="edit-form-row">
+        <div class="form-section-label">Long ID</div>
+        <code>{$item.webid}</code>
+      </div>
+  
   {if $has_page}
     <div class="edit-form-row">
         <div class="form-section-label">Default URL</div>

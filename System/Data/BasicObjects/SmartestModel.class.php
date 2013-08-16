@@ -1221,5 +1221,12 @@ class SmartestModel extends SmartestBaseModel{
 		return $code;
 	    
 	}
+	
+	public function getMembersListUrl(){
+	    
+	    $request = SmartestPersistentObject::get('controller')->getCurrentRequest();
+	    
+	    
+	}
     
 }

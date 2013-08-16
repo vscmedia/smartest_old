@@ -85,7 +85,9 @@ class Sets extends SmartestSystemApplication{
         $set_name = $this->getRequestParameter('set_name');
 		
 		if(is_numeric($this->getRequestParameter('class_id'))){
+		    
 		    $model_ids = $du->getModelIds();
+		    
 		    if(in_array($this->getRequestParameter('class_id'), $model_ids)){
 		        
 		        $this->send(false, 'allow_choose_model');
@@ -114,6 +116,7 @@ class Sets extends SmartestSystemApplication{
 		    $this->send(true, 'allow_choose_model');
 		}
 		
+		$this->send('Unnamed data set', 'start_name');
 		$this->setTitle('Create a new item set');
 		
 		/* if(is_numeric($this->getRequestParameter('model_id'))){
@@ -166,7 +169,6 @@ class Sets extends SmartestSystemApplication{
 	public function editSet($get, $post){  
 	
 		$set_id = $this->getRequestParameter('set_id');
-	    
 	    $set = new SmartestCmsItemSet;
 	    
 	    if($set->find($set_id)){
@@ -176,13 +178,13 @@ class Sets extends SmartestSystemApplication{
 	            $du = new SmartestDataUtility;
 	            // $sites = $du->getSites();
 	            $sites = $this->getUser()->getAllowedSites();
-	            $conditions = $set->getConditions();
+	            // $conditions = $set->getConditions();
 	            $this->send($sites, 'sites');
-	            $this->send($conditions, 'conditions');
+	            // $this->send($conditions, 'conditions');
 	            $this->send($set, 'set');
 	            $this->send(true, 'show_form');
-	            $this->send($set->getModel()->getProperties(), 'properties');
 	            $this->send(SmartestQuery::RANDOM, 'random_value');
+	            $this->send($this->getUser()->hasToken('edit_set_name'), 'can_edit_set_name');
 	            $this->setTitle('Edit Dynamic Set');
 	            
 	            $formTemplateInclude = "editSet.dynamic.tpl";
@@ -197,6 +199,7 @@ class Sets extends SmartestSystemApplication{
 	            $this->send($set, 'set');
 	            $this->send($set_members, 'members');
 	            $this->send($all_items, 'non_members');
+	            $this->send($this->getUser()->hasToken('edit_set_name'), 'can_edit_set_name');
 	            $this->setTitle('Edit Static Set');
 	            
 	            $formTemplateInclude = "editSet.static.tpl";
@@ -213,6 +216,29 @@ class Sets extends SmartestSystemApplication{
 	    
 	}
 	
+	public function editDynamicSetConditions(){
+	    
+	    $set_id = $this->getRequestParameter('set_id');
+	    $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($set_id)){
+	        
+	        if($set->getType() == "DYNAMIC"){
+	            $conditions = $set->getConditions();
+	            $this->send($set->getModel(), 'model');
+	            $this->send($conditions, 'conditions');
+	            $this->send($set, 'set');
+	            $this->send($set->getModel()->getProperties(), 'properties');
+	        }else{
+	            $this->addUserMessage('The set is not dynamic', SmartestUserMessage::ERROR);
+	        }
+	        
+	    }else{
+	        $this->addUserMessage('The set ID was not recognised', SmartestUserMessage::ERROR);
+	    }
+	    
+	}
+	
 	public function updateDynamicSet($get, $post){
 	    
 	    if(isset($post['set_id'])){
@@ -223,8 +249,12 @@ class Sets extends SmartestSystemApplication{
 	        
 	        if($set->find($set_id)){
 	            
-	            $set->setLabel($post['set_name']);
-	            // $set->setName(SmartestStringHelper::toVarName($post['set_name']));
+	            $set->setLabel($post['set_label']);
+	            
+	            if($this->getUser()->hasToken('edit_set_name')){
+	                $set->setName(SmartestStringHelper::toVarName($post['set_name']));
+                }
+                
 	            $set->setSortField($post['set_sort_field']);
 	            $set->setDataSourceSiteId($post['set_data_source_site_id']);
 	            
@@ -242,7 +272,7 @@ class Sets extends SmartestSystemApplication{
 	        }
 	    }
 	    
-	    if(is_array($post['conditions'])){
+	    /* if(is_array($post['conditions'])){
 	        
 	        foreach($post['conditions'] as $c_id => $c_post_data){
 	            
@@ -261,7 +291,7 @@ class Sets extends SmartestSystemApplication{
 	                $c->save();
 	            }
 	        }
-	    }
+	    } 
 	    
 	    if(@$post['add_new_condition']){
 	        
@@ -278,7 +308,7 @@ class Sets extends SmartestSystemApplication{
 	        $c->setValue($post['new_condition_value']);
 	        $c->save();
 	        
-	    }
+	    } */
 	    
 	    $this->addUserMessageToNextRequest("Your set has been updated.", SmartestUserMessage::SUCCESS);
 	    

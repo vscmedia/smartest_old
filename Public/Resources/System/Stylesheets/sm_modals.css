@@ -155,6 +155,10 @@ div#modal-work-area div.edit-form-row{
     padding:0px;
 }
 
+div#modal-work-area div.edit-form-row input[type="password"], div#modal-work-area div.edit-form-row input[type="text"]{
+    width:275px!important;
+}
+
 div#modal-work-area div.form-section-label{
     border-radius:4px;
     -moz-border-radius:4px;

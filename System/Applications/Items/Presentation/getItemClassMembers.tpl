@@ -56,7 +56,7 @@ function openPage(pageAction){
       <option value="0"{if $mode == 0} selected="selected"{/if}>All {$model.plural_name|strtolower}</option>
       <option value="8"{if $mode == 8} selected="selected"{/if}>All archived {$model.plural_name|strtolower}</option>
     </select>
-    containing <input type="text" name="q" id="items-search-name" value="{$query}" />
+    filter by {$model.item_name_field_name|lower}: <input type="text" name="q" id="items-search-name" value="{$query}" />
     <input type="submit" value="Go" />
   </form>
 </div>

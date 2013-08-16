@@ -91,10 +91,15 @@ class SmartestBasicRenderer extends SmartestEngine{
         
     }
     
-    public function renderAsset($render_data='', $path='none'){
+    public function renderAsset($render_data='', $path='none', $preview_mode=false){
         
         $asset_type_info = $this->_asset->getTypeInfo();
-        $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
+        
+        if($preview_mode){
+            $render_template = SM_ROOT_DIR.$asset_type_info['render']['preview_template'];
+        }else{
+            $render_template = SM_ROOT_DIR.$asset_type_info['render']['template'];
+        }
         
         if(!is_array($render_data) && !($render_data instanceof SmartestParameterHolder)){
             $render_data = array();
@@ -271,22 +276,14 @@ class SmartestBasicRenderer extends SmartestEngine{
     
     public function renderImage($render_data='', $path='none'){
         
-        // if($this->_asset->isImage()){
-	        
-	        if(!$render_data['width']){
-                $render_data['width'] = $this->_image->getWidth();
-            }
-            
-            if(!$render_data['height']){
-                $render_data['height'] = $this->_image->getHeight();
-            }
-            
-        // }
+        if(!$render_data['width']){
+            $render_data['width'] = $this->_image->getWidth();
+        }
         
-        /* if(isset($params['style']) && strlen($params['style'])){
-            $render_data['style'] = $params['style'];
-        } */
-        
+        if(!$render_data['height']){
+            $render_data['height'] = $this->_image->getHeight();
+        }
+            
         $render_template = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/display.image.tpl';
         
         ob_start();

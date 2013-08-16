@@ -4,12 +4,14 @@ div.menubar a.js-menu-activator{
     color:#333;
     background-color:#eee;
     text-decoration:none;
+    margin-right:5px;
 }
 
 div.menubar a.js-menu-activator-current{
     background-color:#555;
     color:#eee;
     text-decoration:none;
+    margin-right:5px;
 }
 
 div.js-menu{

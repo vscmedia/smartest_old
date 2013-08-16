@@ -52,6 +52,9 @@ class SmartestLinkParser{
                     if(in_array($m[3], array('image', 'asset', 'download'))){
                         $l->setParameter('destination', $m[2].$m[4]);
                         $l->setParameter('filename', $m[4]);
+                    }else if($m[3] == 'tag'){
+                        $l->setParameter('destination', $m[4]);
+                        $l->setParameter('tag_name', $m[4]);
                     }else if($m[3] == 'mailto'){
                         $l->setParameter('destination', $m[4]);
                     }else{
@@ -142,6 +145,10 @@ class SmartestLinkParser{
             $l->setParameter('scope', SM_LINK_SCOPE_EXTERNAL);
             $l->setParameter('text', $m[2]);
             $l->setParameter('format', SM_LINK_FORMAT_URL);
+        
+        }else if(strlen($string) && $string{0} == '@'){
+            
+            // TODO: Integrate with Quince's "URL For" functionality
             
         }else{
         
@@ -161,6 +168,14 @@ class SmartestLinkParser{
             if(in_array($m[2], array('image', 'asset', 'download'))){
                 $l->setParameter('filename', $m[3]);
             }
+            
+            if(in_array($m[2], array('user', 'author'))){
+                $l->setParameter('username', $m[3]);
+            }
+            
+            if($m[2] == 'tag'){
+                $l->setParameter('tag_name', $m[3]);
+            }
         
             if(isset($m[7])){
                 $l->setParameter('text', $m[7]);
@@ -169,11 +184,8 @@ class SmartestLinkParser{
             }
             
             if(isset($m[4]) && strlen($m[5])){
-              // echo "Hash: ".$m[5];
                 $l->setParameter('hash', $m[5]);
             }
-            
-            // echo $m[2];
             
             if($m[2]){
                 $l->setParameter('page_ref_field_name', 'name');

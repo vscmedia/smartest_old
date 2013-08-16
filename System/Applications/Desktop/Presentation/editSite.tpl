@@ -33,7 +33,7 @@ var section = '{$section}';
 
 <div class="edit-form-row">
   <div class="form-section-label">Public title</div>
-  <input type="text" name="site_name" value="{$site.name}"/><span class="form-hint">This will take effect on your pages the next time they are published</span>
+  <input type="text" name="site_name" value="{$site.name}"/><div class="form-hint">This will take effect on your pages the next time they are published</div>
 </div>
 
 <div class="edit-form-row">
@@ -43,12 +43,12 @@ var section = '{$section}';
 
 <div class="edit-form-row">
   <div class="form-section-label">Page title format</div>
-  <input type="text" name="site_title_format" value="{$site.title_format}" /><span class="form-hint">This will take effect on your pages the next time they are published</span>
+  <input type="text" name="site_title_format" value="{$site.title_format}" /><div class="form-hint">This will take effect on your pages the next time they are published</div>
 </div>
 
 <div class="edit-form-row">
   <div class="form-section-label">Hostname</div>
-  <input type="text" name="site_domain" value="{$site.domain}" /><span class="form-hint">Please be careful. The wrong value here will make your site inaccessible.</span>
+  <input type="text" name="site_domain" value="{$site.domain}" /><div class="form-hint">Please be careful. The wrong value here will make your site inaccessible.</div>
 </div>
 
 <div class="edit-form-row">
@@ -107,11 +107,11 @@ var section = '{$section}';
       {/if}
     {/foreach}
   </select>
-  <br /><span class="form-hint">This page will handle search queries made to http://{$site.domain}{$domain}search.</span>
+  <br /><div class="form-hint">This page will handle search queries made to http://{$site.domain}{$domain}search.</div>
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Select Tag Page (Advanced)</div>
+  <div class="form-section-label">Tag Page (Advanced)</div>
   <select name="site_tag_page">
     {foreach from=$pages item="page"}
       {if $page.info.id != $site.error_page_id && $page.info.id != $site.top_page_id}
@@ -119,11 +119,11 @@ var section = '{$section}';
       {/if}
     {/foreach}
   </select>
-  <br /><span class="form-hint">This page will be loaded when a tag is requested, eg: http://{$site.domain}{$domain}tag/elephants.html.</span>
+  <br /><div class="form-hint">This page will be loaded when a tag is requested, eg: http://{$site.domain}{$domain}tag/elephants.html.</div>
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Select User Profile Page (Advanced)</div>
+  <div class="form-section-label">User Profile Page (Advanced)</div>
   <select name="site_user_page">
     {if !$site.user_page_id}<option value="NEW">Create a new page for this purpose</option>{/if}
     {foreach from=$pages item="page"}
@@ -132,11 +132,11 @@ var section = '{$section}';
       {/if}
     {/foreach}
   </select>
-  <br /><span class="form-hint">This page will be loaded when a user profile is requested.</span>
+  <br /><div class="form-hint">This page will be loaded when a user profile is requested.</div>
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Select Error Page (Advanced)</div>
+  <div class="form-section-label">404 Error Page (Advanced)</div>
   <select name="site_error_page">
     {foreach from=$pages item="page"}
       {* Sergiy: Allow top page (why not?), I use this approach on my website already many years *}
@@ -145,8 +145,10 @@ var section = '{$section}';
       {* /if *}
     {/foreach}
   </select>
-  <br /><span class="form-hint">This page will be loaded when an unknown or unpublished page is requested, eg: http://{$site.domain}{$domain}kigsdfkjhg.</span>
+  <br /><div class="form-hint">This page will be loaded when an unknown or unpublished page is requested, eg: http://{$site.domain}{$domain}kigsdfkjhg.</div>
 </div>
+
+<div class="breaker"></div>
 
 <div class="buttons-bar">
   <input type="button" value="Cancel" onclick="window.location='{$domain}smartest'" />

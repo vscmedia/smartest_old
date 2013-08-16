@@ -31,19 +31,21 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 	
 	public function checkLoginDetails($username, $password, $service){
 		
-		$sql = "SELECT * FROM Users WHERE username='".mysql_real_escape_string($username)."'";
-		$user = $this->database->queryToArray($sql);
-		
-		if(count($user) > 0){
-			
-			if($service == 'smartest'){
-			    $userObj = new SmartestSystemUser;
-			}else{
-			    $userObj = new SmartestUser;
-		    }
+		// What kind of user object should be instantiated
+		if($service == 'smartest'){
+		    $userObj = new SmartestSystemUser;
+		}else{
+		    $userObj = new SmartestUser;
+	    }
 	    
-			$userObj->hydrate($user[0]);
-		
+	    if(strpos($username, ' ') !== false){
+	        // there is a space in the username, which Smartest never allows, so this can't be a username. return false for added security
+	        return false;
+	    }
+	    
+	    // Does that username exist?
+		if($userObj->findBy('username', $username)){
+			
 			if($userObj->getActivated()){
 		        
 		        if(strlen($userObj->getPasswordSalt())){
@@ -53,6 +55,11 @@ class SmartestAuthenticationHelper extends SmartestHelper{
     			        $userObj->getTokens();
     			        SmartestSession::set('user:isAuthenticated', true);
     			        $this->userLoggedIn =& SmartestSession::get('user:isAuthenticated');
+    			        
+    			        // Give the user a new password salt every time they log in
+    			        $userObj->setPasswordWithSalt($password, SmartestStringHelper::random(40), true);
+    			        $userObj->setLastVisit(time());
+    			        $userObj->save();
 		
         			    return $userObj;
     			    
@@ -68,6 +75,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 			            
 			            $userObj->getTokens();
 			            $userObj->setPasswordWithSalt($password, SmartestStringHelper::random(40), true);
+			            $userObj->setLastVisit(time());
 			            $userObj->save();
 			            
     			        SmartestSession::set('user:isAuthenticated', true);
@@ -84,7 +92,8 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 			    }
 		
 		    }else{
-	        
+	            
+	            // The user is not activated
 		        return false;
 	        
 		    }
@@ -120,7 +129,6 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 	} */
 	
 	public function logout(){
-		// $this->userLoggedIn = false;
 		SmartestSession::set('user:isAuthenticated', false);
 		SmartestSession::clearAll();
 		$this->user = array();

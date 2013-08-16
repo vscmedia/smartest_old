@@ -13,6 +13,12 @@ class SmartestTag extends SmartestBaseTag{
     protected $_item_ids = array();
     protected $_item_lookup_attempted = false;
     
+    protected $_assets = array();
+    protected $_asset_ids = array();
+    protected $_asset_lookup_attempted = array();
+    
+    protected $_is_attached = false; // Used when building the tags screen
+    
     protected function __objectConstruct(){
         
         $this->_table_prefix = 'tag_';
@@ -165,7 +171,7 @@ class SmartestTag extends SmartestBaseTag{
     
     public function getItems($site_id=null, $model_id=null){
         
-        if(!$this->_item_lookup_attempted){
+        if(!$this->_item_lookup_attempted['site_'.$site_id]){
         
             $sql = "SELECT Items.item_id FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK' AND Items.item_deleted='0'";
             
@@ -195,7 +201,7 @@ class SmartestTag extends SmartestBaseTag{
                 $items = $h->hydrateUniformListFromIdsArray($ids, $model_id, $this->getDraftMode());
             }else{
                 $items = $h->hydrateMixedListFromIdsArray($ids, $this->getDraftMode());
-                $this->_item_lookup_attempted = true;
+                $this->_item_lookup_attempted['site_'.$site_id] = true;
             }
             
             $this->_items = $items;
@@ -203,6 +209,43 @@ class SmartestTag extends SmartestBaseTag{
         }
         
         return $this->_items;
+        
+    }
+    
+    public function getAssets($site_id=null){
+        
+        if(!$this->_asset_lookup_attempted['site_'.$site_id]){
+        
+            $sql = "SELECT Assets.* FROM TagsObjectsLookup, Assets WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=asset_id AND taglookup_type='SM_ASSET_TAG_LINK' AND asset_deleted=0";
+            
+            if(is_numeric($site_id)){
+                $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1)";
+            }
+            
+            // echo $sql.' ';
+            
+            $result = $this->database->queryToArray($sql);
+            
+            $assets = array();
+        
+            foreach($result as $asset_array){
+                
+                $asset = new SmartestAsset;
+                $asset->hydrate($asset_array);
+                $assets[] = $asset;
+                
+                if($asset->getId() && !in_array($asset->getId(), $this->_asset_ids)){
+                    $this->_asset_ids[] = $asset->getId();
+                }
+                
+            }
+            
+            $this->_asset_lookup_attempted['site_'.$site_id] = true;
+            $this->_assets = $assets;
+            
+        }
+        
+        return $this->_assets;
         
     }
     
@@ -225,6 +268,19 @@ class SmartestTag extends SmartestBaseTag{
         $this->getSimpleItems(false, true, false);
         
         if(in_array($item_id, $this->_item_ids)){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+    
+    public function hasAsset($asset_id){
+        
+        // make sure assets have been retrieved
+        $this->getAssets(false, true, false);
+        
+        if(in_array($asset_id, $this->_asset_ids)){
             return true;
         }else{
             return false;
@@ -306,6 +362,9 @@ class SmartestTag extends SmartestBaseTag{
             case "feed_url":
             return $this->_request->getDomain().'tags/'.$this->getName().'/feed';
             
+            case "attached":
+            return $this->_is_attached;
+            
             default:
             
             $du = new SmartestDataUtility;
@@ -324,16 +383,22 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function setDraftMode($mode){
+    public function offsetSet($offset, $value){
+
+        if($offset == 'attached'){
+            $this->_is_attached = (bool) $value;
+        }
         
-        $this->_draft_mode = (bool) $mode;
+        parent::offsetSet($offset, $value);
         
     }
     
+    public function setDraftMode($mode){
+        $this->_draft_mode = (bool) $mode;
+    }
+    
     public function getDraftMode(){
-        
         return $this->_draft_mode;
-        
     }
     
 }

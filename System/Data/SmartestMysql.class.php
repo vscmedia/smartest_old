@@ -42,6 +42,7 @@ class SmartestMysql{
 			
 			$this->queryHistory = array();
 			$this->rawQuery("SET NAMES 'utf8'");
+			mysql_set_charset('utf8');
 			
 			if(!mysql_select_db($this->connection_config['database'], $this->dblink)){
 			    if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);

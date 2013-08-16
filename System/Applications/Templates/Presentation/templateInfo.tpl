@@ -19,7 +19,7 @@
       </tr>
       <tr>
         <td style="width:150px;background-color:#fff" class="field-name">Name on disk:</td>
-        <td>{$template.full_path}</td>
+        <td><code>{$template.full_path}</code></td>
       </tr>
       <tr>
         <td class="field-name">Size:</td>

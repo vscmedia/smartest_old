@@ -369,8 +369,25 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         	            }
         	            
         	            $asset->setAdditionalRenderData($render_data, true);
-        	            // print_r($render_data);
+        	            
         	            $html = $asset->render($this->getDraftMode());
+        	            
+        	            // This code makes sure that if internal link codes are input as values on an image placeholder, the link will be built
+        	            if($asset->isImage() && isset($render_data['link_href']) && strlen($render_data['link_href'])){
+        	                
+        	                $link_properties = SmartestLinkParser::parseSingle($render_data['link_href']);
+        	                $link = new SmartestCmsLink($link_properties, array());
+        	                $image = $asset->getImage();
+        	                $image->setAdditionalRenderData($render_data);
+        	                $link->setImageAsContent($image);
+        	                
+        	                if($GLOBALS['CURRENT_PAGE']){
+                    		    $link->setHostPage($GLOBALS['CURRENT_PAGE']);
+                    		}
+        	                
+        	                $html = $link->render($this->getDraftMode());
+        	                
+        	            }
                     
                     }
                     

@@ -56,8 +56,27 @@ class SetsAjax extends SmartestSystemApplication{
 	        header('HTTP/1.1 200 OK');
 	        $set->setLabel($this->getRequestParameter('new_label'));
 	        $set->save();
-	        // echo 'true';
 	        echo $this->getRequestParameter('new_label');
+	        exit();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+        
+    }
+    
+    public function updateSetNameFromInPlaceEditField(){
+        
+        $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($this->getRequestParameter('set_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $set->setName(SmartestStringHelper::toVarName($this->getRequestParameter('new_name')));
+	        $set->save();
+	        echo $set->getName();
 	        exit();
 	        
 	    }else{

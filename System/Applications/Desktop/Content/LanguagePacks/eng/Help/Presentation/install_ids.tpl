@@ -1,5 +1,9 @@
+<p>Site and install IDs are simply a way for your Smartest install, and the sites you create within it, to be identified alongside other installs and sites.</p>
+<p><strong>Why would this be necessary?</strong></p>
+<p>Any situation where what you publish with Smartest comes into contact with the things other people have published with their Smartest install, in the context of Smartest's actual functionalities, may necessitate that the sites and their content can be distinguished.</p>
 <p>We have big plans to create a suite of <strong>opt-in</strong> cloud-based services and benefits for all Smartest users. This will include content-sharing and distribution for those that want a larger audience.</p>
-<p>With your permission, install and site IDs will be used to identify you in communications with us and that community - that's if you decide to join in.</p>
+<p>When these functionalities have been developed, we'll let you know, and <strong>with your permission</strong>, install and site IDs will be used to identify you in communications with us and that community - again that's if you decide to join in. Otherwise you can keep using Smartest on your own, and that's fine too!</p>
+<p><strong>Our promise</strong></p>
 <p>Smartest is {help id="desktop:freesoftware"}Free Software{/help}, and wholly embraces the {help id="desktop:freesoftware"}four fundamental freedoms{/help} which that entails. No information about you, your content, or your web server - software or hardware - will ever be shared <strong>without your express consent</strong>. And this 'consent' won't be buried in terms and conditions either - you'll be told, like you deserve to be.</p>
 <p>More details will be provided as completion of these features approaches.</p>
 <p><strong>Install IDs</strong> are made of six pairs of characters, generated from a <strong>one-way hashing</strong> of near-unique attributes like your IP address and root directory, but these details are <strong>not calculable</strong> from your install ID.</p>

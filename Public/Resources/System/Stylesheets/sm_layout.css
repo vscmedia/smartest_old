@@ -100,10 +100,12 @@ div#work-area textarea#tpl_textArea, div#work-area-full textarea#tpl_textArea{
 	padding:0;
 	margin:0;
 	display:block;
+	clear:both;
 }
 
 div.textarea-holder{
     height:314px;
+    clear:both;
 }
 
 div#actions-area{
@@ -159,9 +161,8 @@ ul#item-specific-actions{
 }
 
 div#preview{
-	margin:0px;
-	margin-top:4px;
-	margin-right:40px;
+	margin:4px 40px 0 0;
+	clear:both;
 	padding:3px;
 	text-align:right;
 	position:absolute;
@@ -179,7 +180,14 @@ div#preview-actions-menu{
     position:absolute;
 	top:157px;
 	left:175px;
-	z-index:100;
+	z-index:10;
+}
+
+div#preview-files-menu{
+    position:absolute;
+	top:157px;
+	left:231px;
+	z-index:10;
 }
 
 /*** Forms stuff ***/
@@ -400,6 +408,18 @@ ul.modal-options-grid li a{
     height:20px;
     display:block;
     padding-top:100px;
+}
+
+#html-preview{
+    margin-bottom:10px;
+}
+
+#html-preview p:last-child{
+    margin-bottom:0px;
+}
+
+#html-preview pre{
+    margin:0px;
 }
 
 #html-preview div.smartest-column{

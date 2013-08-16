@@ -8,6 +8,7 @@ type:
     description: Formatted text using Textile.
     class: SmartestTextAsset
     editable: true
+    convert_to_smarty: true
     parsable: true
     icon: style.png
     input_options:
@@ -27,6 +28,7 @@ type:
     description: "Text with rich formatting, using HTML."
     class: SmartestTextAsset
     source_editable: true
+    convert_to_smarty: true
     editable: true
     parsable: true
     smarty_render: true
@@ -72,7 +74,8 @@ type:
     description: "A piece of HTML usually provided by another site or service."
     class: SmartestAsset
     source_editable: false
-    parsable: true
+    parsable: false
+    convert_to_smarty: false
     editable: true
     attachable: true
     icon: layout.png
@@ -232,6 +235,7 @@ type:
       system_location: Public/Resources/System/Javascript/
     render:
       template: System/Presentation/WebPageBuilder/display.javascript.tpl
+      preview_template: System/Presentation/WebPageBuilder/preview.javascript.tpl
     suffix:
       - {mime: text/javascript, _content: js}
       
@@ -253,10 +257,35 @@ type:
       type: file
       location: Public/Resources/Stylesheets/
       system_location: Public/Resources/System/Stylesheets/
+    param:
+      - {name: use_style_tag, label: "Use &lt;style&gt; tag with @import", type: SM_DATATYPE_BOOLEAN, required: false}
     render:
       template: System/Presentation/WebPageBuilder/display.stylesheet.tpl
+      preview_template: System/Presentation/WebPageBuilder/preview.stylesheet.tpl
     suffix:
       - {mime: text/css, _content: css}
+
+  SM_ASSETTYPE_DYNAMIC_CSS:
+    id: SM_ASSETTYPE_DYNAMIC_CSS
+    category: browser_instructions
+    label: Sass Dynamic CSS Stylesheet
+    description: Dynamic CSS Stylesheet in the Sass (Syntactically Awesome Stylesheets) metalanguage
+    class: SmartestTextAsset
+    editable: true
+    parsable: true
+    convert_to_smarty: false
+    icon: style.png
+    input_options:
+      - SM_ASSETINPUTTYPE_DIRECT_INPUT
+    input_panel: add.stylesheet.tpl
+    render:
+      template: System/Presentation/WebPageBuilder/display.sass.tpl
+      preview_template: System/Presentation/WebPageBuilder/preview.sass.tpl
+    storage:
+      type: database
+    suffix:
+      - {mime: text/css, _content: scss}
+      - {mime: text/css, _content: sass}
 
   SM_ASSETTYPE_CUFON_FONT:
     id: SM_ASSETTYPE_CUFON_FONT
@@ -278,8 +307,10 @@ type:
       system_location: Public/Resources/System/Javascript/
     render:
       template: System/Presentation/WebPageBuilder/display.javascript.tpl
+      preview_template: System/Presentation/WebPageBuilder/preview.cufon.tpl
     suffix:
       - {mime: text/javascript, _content: js}
+      - {mime: text/javascript, _content: font.js}
 
 # Embedded files
   SM_ASSETTYPE_QUICKTIME_MOVIE:

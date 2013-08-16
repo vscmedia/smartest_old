@@ -27,6 +27,11 @@ module:
     download_file:
       url: /download/:url
       action: downloadAsset
+    view_file:
+      url: /view/:url
+      action: downloadAsset
+      params:
+        use_file_mime: true
     feed:
       url: /feeds/:set_name/rss
       action: getDataSetRssFeed

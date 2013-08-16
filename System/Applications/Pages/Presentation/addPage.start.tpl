@@ -16,7 +16,7 @@
       <div class="form-section-label">Type</div>
       <select name="page_type" id="page-type-selector">
         <option value="NORMAL" selected="selected">Regular Web-page</option>
-        <option value="ITEMCLASS">Object Meta-page</option>
+        <option value="ITEMCLASS">Item Meta-page</option>
         {* <option value="TAG">Tag list-page</option> *}
       </select>
     </div>

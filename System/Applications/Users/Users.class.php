@@ -72,6 +72,7 @@ class Users extends SmartestSystemApplication{
     		$user->setEmail($email);
     		$user->setWebsite($website);
     		$user->setRegisterDate(time());
+    		$user->setIsSmartestAccount(1);
     		
     		$user->save();
 		    

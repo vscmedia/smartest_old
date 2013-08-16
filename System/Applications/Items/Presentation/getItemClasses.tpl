@@ -14,7 +14,7 @@
   
   <div class="special-box">
       <form action="" method="get" id="items-search-form" onsubmit="return false">
-        Search for an item: <input type="text" name="query" id="items-search-name" style="width:250px" />
+        Search for an item: <input type="text" name="query" class="search" id="items-search-name" />
       </form>
       {literal}<script type="text/javascript">$('items-search-form').observe('submit', function(){return false;});</script>{/literal}
   </div>

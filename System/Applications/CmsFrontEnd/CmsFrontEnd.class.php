@@ -326,38 +326,45 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        
 	        if($this->_site->getIsEnabled()){
 	        
-	        $database = SmartestDatabase::getInstance('SMARTEST');
+	            $database = SmartestDatabase::getInstance('SMARTEST');
 	        
-	        $asset_url = urldecode($this->getRequestParameter('url'));
-	        $asset_webid = $this->getRequestParameter('key');
+    	        $asset_url = urldecode($this->getRequestParameter('url'));
+    	        $asset_webid = $this->getRequestParameter('key');
 	        
-	        $sql = "SELECT * FROM Assets WHERE (asset_site_id='".$this->_site->getId()."' OR asset_shared='1') AND asset_url='".$asset_url."' AND asset_webid='".$asset_webid."'";
-	        $result = $database->queryToArray($sql);
+    	        $sql = "SELECT * FROM Assets WHERE (asset_site_id='".$this->_site->getId()."' OR asset_shared='1') AND asset_url='".$asset_url."' AND asset_webid='".$asset_webid."'";
+    	        $result = $database->queryToArray($sql);
 	        
-	        if(count($result)){
+    	        if(count($result)){
 	            
-	            $asset = new SmartestAsset;
-	            $asset->hydrate($result[0]);
+    	            $asset = new SmartestAsset;
+    	            $asset->hydrate($result[0]);
 	            
-	            if($asset->usesLocalFile()){
-    		        $download = new SmartestDownloadHelper($asset->getFullPathOnDisk());
-    		    }else{
-    		        $download = new SmartestDownloadHelper($asset->getTextFragment()->getContent());
-    		        $download->setDownloadFilename($asset->getDownloadableFilename());
-    		    }
-
-    		    $ua = $this->getUserAgent()->getAppName();
-
-        		if($ua == 'Explorer' || $ua == 'Opera'){
-        		    $mime_type = 'application/octetstream';
-        		}else{
-        		    $mime_type = 'application/octet-stream';
-        		}
-
-        		$download->setMimeType($mime_type);
-        		$download->send();
+    	            if($asset->usesLocalFile()){
+        		        $download = new SmartestDownloadHelper($asset->getFullPathOnDisk());
+        		    }else{
+        		        $download = new SmartestDownloadHelper($asset->getTextFragment()->getContent());
+        		        $download->setDownloadFilename($asset->getDownloadableFilename());
+        		    }
+                
+                    $ua = $this->getUserAgent()->getAppName();
+                
+                    if($this->getRequestParameter('use_file_mime')){
+                        $mime_type = $asset->getMimeType();
+                    }else{
+                		if($ua == 'Explorer' || $ua == 'Opera'){
+                		    $mime_type = 'application/octetstream';
+                		}else{
+                		    $mime_type = 'application/octet-stream';
+                		}
+            		}
+        		
+            		$download->setMimeType($mime_type);
+            		$download->send();
 	            
-	        }
+    	        }else{
+    	            // echo "File not found";
+    	            $this->renderNotFoundPage(SM_ERROR_FILE_NOT_FOUND);
+    	        }
 	        
             }else{
                 
@@ -409,7 +416,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
 	}
 	
-	private function renderNotFoundPage(){
+	private function renderNotFoundPage($error=SM_ERROR_PAGE_NOT_FOUND){
 	    
 	    if($this->lookupSiteDomain()){
 	        

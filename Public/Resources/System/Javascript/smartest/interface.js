@@ -545,6 +545,41 @@ Smartest.UI.TagsList = Class.create({
         }
     },
     
+    tagAsset: function(asset_id, tag_id){
+        
+        var url = sm_domain+'ajax:assets/tagAsset?asset_id='+asset_id+'&tag_id='+tag_id;
+        var l = $('tag-link-'+tag_id);
+        l.addClassName('selected');
+        
+        new Ajax.Request(url, {
+            method: 'get',
+            onSuccess: function(transport) {
+                /* var l = $('tag-link-'+tag_id);
+                l.addClassName('selected'); */
+            } 
+        });
+    },
+    
+    unTagAsset: function(asset_id, tag_id){
+        var url = sm_domain+'ajax:assets/unTagAsset?asset_id='+asset_id+'&tag_id='+tag_id;
+        new Ajax.Request(url, {
+            method: 'get',
+            onSuccess: function(transport) {
+                var l = $('tag-link-'+tag_id);
+                l.removeClassName('selected');
+            } 
+        });
+    },
+    
+    toggleAssetTagged: function(asset_id, tag_id){
+        var l = $('tag-link-'+tag_id);
+        if(l.hasClassName('selected')){
+            this.unTagAsset(asset_id, tag_id);
+        }else{
+            this.tagAsset(asset_id, tag_id);
+        }
+    },
+    
 });
 
 Smartest.UI.UserMessageSystem = Class.create({

@@ -342,7 +342,7 @@ class SmartestResponse{
 	        // echo "test";
 	        
 	    }catch(QuinceException $e){
-	        print_r($this->_controller->getCurrentRequest());
+	        // print_r($this->_controller->getCurrentRequest());
 	        $this->_error_stack->recordError(new SmartestException('Quince error: '.$e->getMessage()), false);
 	    }
 	    

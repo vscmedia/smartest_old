@@ -428,8 +428,15 @@ class MetaData extends SmartestSystemApplication{
 	    
 	    if(is_numeric($this->getRequestParameter('page_id'))){
 	        $page = new SmartestPage;
-	        if($item->find($this->getRequestParameter('page_id'))){
+	        if($page->find($this->getRequestParameter('page_id'))){
 	            $this->send($page, 'page');
+	        }
+	    }
+	    
+	    if(is_numeric($this->getRequestParameter('asset_id'))){
+	        $asset = new SmartestAsset;
+	        if($asset->find($this->getRequestParameter('asset_id'))){
+	            $this->send($asset, 'asset');
 	        }
 	    }
 	    
@@ -456,6 +463,13 @@ class MetaData extends SmartestSystemApplication{
 	        }
 	    }
 	    
+	    if($this->getRequestParameter('tag_asset') && is_numeric($this->getRequestParameter('asset_id'))){
+	        $asset = new SmartestAsset;
+	        if($asset->find($this->getRequestParameter('asset_id'))){
+	            $tag_asset = true;
+	        }
+	    }
+	    
 	    foreach($proposed_tags as $tag_label){
 	        
 	        if(strlen($tag_label)){
@@ -477,6 +491,9 @@ class MetaData extends SmartestSystemApplication{
         	        }
         	        if($tag_page){
         	            $page->tag($tag->getId());
+        	        }
+        	        if($tag_asset){
+        	            $asset->tag($tag->getId());
         	        }
         	        $num_new_tags++;
         	    }
@@ -506,13 +523,16 @@ class MetaData extends SmartestSystemApplication{
 	    
 	    if($tag->findBy('name', $tag_identifier)){
 	        $this->send($tag, 'tag');
-	        $objects = $tag->getObjectsOnSite($this->getSite()->getId(), true);
+	        // $objects = $tag->getObjectsOnSite($this->getSite()->getId(), true);
+	        $this->send(new SmartestArray($tag->getSimpleItems($this->getSite()->getId())), 'items');
+	        $this->send(new SmartestArray($tag->getPages($this->getSite()->getId())), 'pages');
+	        $this->send(new SmartestArray($tag->getAssets($this->getSite()->getId())), 'assets');
 	    }else{
 	        $objects = array();
 	        $this->addUserMessage("This tag does not exist.", SmartestUserMessage::WARNING);
 	    }
 	    
-	    $this->send(new SmartestArray($objects), 'objects');
+	    
 	    
 	    
 	}

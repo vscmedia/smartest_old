@@ -1,19 +1,71 @@
 <script language="javascript">
-var domain = '{$domain}';
-var section = '{$section}';
-{literal}
- function updatePageName(newName){
-  	document.getElementById('pageName').innerHTML="Page Details: "+newName;
- }
- 
- function hideNotify(){
- 	// alert('one');
- 	// var hnot = setTimeout("alert('two')",4000); 
-	var hnot = setTimeout("document.getElementById('notify').style.display='none'",3500); 
- }
-}
 
-{/literal}</script>
+// var acceptable_suffixes = {$suffixes};
+// var input_mode = '{$starting_mode}';
+// var show_params_holder = false;
+var SiteNameFieldDefaultValue = 'My Smartest Web Site';
+var SiteDomainFieldDefaultValue = 'example.com'
+var preventDefaultValue = true;
+
+{literal}
+
+document.observe('dom:loaded', function(){
+    
+    $('new-site-name').observe('focus', function(){
+        if(($('new-site-name').getValue() == SiteNameFieldDefaultValue)|| $('new-site-name').getValue() == ''){
+            $('new-site-name').removeClassName('unfilled');
+            $('new-site-name').setValue('');
+        }
+    });
+    
+    $('new-site-name').observe('blur', function(){
+        if(($('new-site-name').getValue() == SiteNameFieldDefaultValue) || $('new-site-name').getValue() == ''){
+            $('new-site-name').addClassName('unfilled');
+            $('new-site-name').setValue(SiteNameFieldDefaultValue);
+        }else{
+            $('new-site-name').removeClassName('error');
+        }
+    });
+    
+    $('new-site-domain').observe('focus', function(){
+        if(($('new-site-domain').getValue() == SiteDomainFieldDefaultValue)|| $('new-site-domain').getValue() == ''){
+            $('new-site-domain').removeClassName('unfilled');
+            $('new-site-domain').setValue('');
+        }
+    });
+    
+    $('new-site-domain').observe('blur', function(){
+        if(($('new-site-domain').getValue() == SiteDomainFieldDefaultValue) || $('new-site-domain').getValue() == ''){
+            $('new-site-domain').addClassName('unfilled');
+            $('new-site-domain').setValue(SiteDomainFieldDefaultValue);
+        }else{
+            $('new-site-domain').removeClassName('error');
+        }
+    });
+    
+    $('new-site-form').observe('submit', function(e){
+        
+        if(($('new-site-name').getValue() == SiteNameFieldDefaultValue) || $('new-site-name').getValue() == ''){
+            $('new-site-name').addClassName('error');
+            e.stop();
+        }
+        
+        if(($('new-site-domain').getValue() == SiteDomainFieldDefaultValue) || $('new-site-domain').getValue() == ''){
+            $('new-site-domain').addClassName('error');
+            e.stop();
+        }
+        
+        if($('site-admin-email').getValue() == ''){
+            $('site-admin-email').addClassName('error');
+            e.stop();
+        }
+        
+    });
+    
+});
+
+{/literal}
+</script>
 
 <div id="work-area">
 
@@ -23,7 +75,7 @@ var section = '{$section}';
 <div class="error">{$error}</div>
 {/foreach}
 
-<form id="updateSiteDetails" name="buildSite" action="{$domain}{$section}/buildSite" method="post" style="margin:0px" enctype="multipart/form-data">
+<form id="new-site-form" name="buildSite" action="{$domain}{$section}/buildSite" method="post" style="margin:0px" enctype="multipart/form-data">
 
 <div id="edit-form-layout">
   
@@ -31,22 +83,22 @@ var section = '{$section}';
 
 <div class="edit-form-row">
   <div class="form-section-label">Site Title</div>
-  <input type="text" style="width:200px" name="site_name" value="My Smartest Web Site"/>
+  <input type="text" name="site_name" class="unfilled" id="new-site-name" value="My Smartest Web Site"/>
 </div>
 
 <div class="edit-form-row">
   <div class="form-section-label">Host name</div>
-  <input type="text" style="width:200px" name="site_domain" value="" />
+  <input type="text" name="site_domain" class="unfilled" id="new-site-domain" value="example.com" />
 </div>
 
 <div class="edit-form-row">
   <div class="form-section-label">Logo</div>
-  <input type="file" name="site_logo" /><span class="form-hint">Optional: Pick an image to represent this site.</span>
+  <input type="file" name="site_logo" /><div class="form-hint">Optional: Pick an image to represent this site when you first log in.</div>
 </div>
 
 <div class="edit-form-row">
   <div class="form-section-label">Admin email</div>
-  <input type="text" style="width:200px" name="site_admin_email" value="{$user.email}" />
+  <input type="text" name="site_admin_email" value="{$user.email}" id="site-admin-email" />
 </div>
 
 <div class="edit-form-row">

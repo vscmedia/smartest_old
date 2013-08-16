@@ -315,6 +315,32 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    
 	}
 	
+	public function getMimeType(){
+	    
+	    $info = $this->getTypeInfo();
+	    
+	    if(!isset($info['suffix'])){
+	        // the file type doesn't have any suffixes, so is probably externally hosted or not a real file type
+	        return null;
+	    }
+	    
+	    $suffixes = $info['suffix'];
+	    $mysuffix = $this->getDotSuffix();
+	    
+	    if(count($suffixes) == 1){
+	        return $info['suffix'][0]['mime'];
+	    }else{
+	        foreach($info['suffix'] as $suffix){
+	            if($suffix['_content'] == $mysuffix){
+	                return $suffix['mime'];
+	            }
+	        }
+	        // if the file's suffix doesn't match any of those listed against its type, there is a problem, but never mind
+	        return $info['suffix'][0]['mime'];
+	    }
+	    
+	}
+	
 	public function usesTextFragment(){
 	    
 	    $info = $this->getTypeInfo();
@@ -500,6 +526,11 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    return in_array($this->getType(), array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'));
 	}
 	
+	public function isTemplate(){
+	    $alh = new SmartestAssetsLibraryHelper;
+	    return in_array($this->getType(), $alh->getTypeIdsInCategories('templates'));
+	}
+	
 	public function isTooLarge(){
 	    if($this->isImage()){
 	        return $this->getImage()->isTooLarge();
@@ -525,7 +556,13 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	}
 	
 	public function getConvertMethodName(){
-	    return 'convert'.SmartestStringHelper::toCamelCase(substr($this->getType(), 13)).'AssetToSmartyFile';
+	    $info = $this->getTypeInfo();
+	    
+	    if($info['convert_to_smarty']){
+	        return 'convert'.SmartestStringHelper::toCamelCase(substr($this->getType(), 13)).'AssetToSmartyFile';
+        }else{
+            return 'convert'.SmartestStringHelper::toCamelCase(substr($this->getType(), 13)).'Asset';
+        }
 	}
 	
 	public function getDefaultParams(){
@@ -601,6 +638,12 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	        return $file_name;
 	        
 	    }
+	}
+	
+	public function getDotSuffix(){
+	    $alh = new SmartestAssetsLibraryHelper;
+	    preg_match($alh->getSuffixTestRegex($this->getType()), $this->getUrl(), $matches);
+	    return substr($matches[1], 1);
 	}
 	
 	public function getDownloadUrl(){
@@ -1132,7 +1175,67 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	
 	public function getActionUrl(){
 	    
-	    return $this->_request->getDomain().'assets/editAsset?asset_id='.$this->getId();
+	    // return $this->_request->getDomain().'assets/editAsset?asset_id='.$this->getId();
+	    return $this->_request->getDomain().'smartest/file/'.$this->getId().'/edit';
+	    
+	}
+	
+	public function tag($tag_identifier){
+	    
+	    if(is_numeric($tag_identifier)){
+	        
+	        $tag = new SmartestTag;
+	        
+	        if(!$tag->find($tag_identifier)){
+	            // kill it off if they are supplying a numeric ID which doesn't match a tag
+	            return false;
+	        }
+	        
+	    }else{
+	        
+	        $tag_name = SmartestStringHelper::toSlug($tag_identifier);
+	        
+	        $tag = new SmartestTag;
+
+    	    if(!$tag->findBy('name', $tag_name)){
+                // create tag
+    	        $tag->setLabel($tag_identifier);
+    	        $tag->setName($tag_name);
+    	        $tag->save();
+    	    }
+	    }
+	    
+	    $sql = "INSERT INTO TagsObjectsLookup (taglookup_tag_id, taglookup_object_id, taglookup_type) VALUES ('".$tag->getId()."', '".$this->_properties['id']."', 'SM_ASSET_TAG_LINK')";
+	    $this->database->rawQuery($sql);
+	    return true;
+	    
+	}
+	
+	public function untag($tag_identifier){
+	    
+	    if(is_numeric($tag_identifier)){
+	        
+	        $tag = new SmartestTag;
+	        
+	        if(!$tag->hydrate($tag_identifier)){
+	            // kill it off if they are supplying a numeric ID which doesn't match a tag
+	            return false;
+	        }
+	        
+	    }else{
+	        
+	        $tag_name = SmartestStringHelper::toSlug($tag_identifier);
+	        
+	        $tag = new SmartestTag;
+
+    	    if(!$tag->hydrateBy('name', $tag_name)){
+                return false;
+    	    }
+	    }
+	    
+	    $sql = "DELETE FROM TagsObjectsLookup WHERE taglookup_object_id='".$this->_properties['id']."' AND taglookup_tag_id='".$tag->getId()."' AND taglookup_type='SM_ASSET_TAG_LINK'";
+	    $this->database->rawQuery($sql);
+	    return true;
 	    
 	}
 

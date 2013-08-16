@@ -145,6 +145,33 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	    
 	}
 	
+	public function renderPreview(){
+	    
+	    if(isset($this->_type_info['render']['preview_template']) && is_file(SM_ROOT_DIR.$this->_type_info['render']['preview_template'])){
+	        
+	        if($this->_type_info['storage']['type'] == 'external_translated'){
+    	        $this->_render_data->setParameter('remote_id', $this->extractId());
+    	    }
+
+    	    if(!($this->_render_data->hasParameter('html_id') && strlen($this->_render_data->getParameter('html_id')))){
+    	        $this->_render_data->setParameter('html_id', SmartestStringHelper::toSlug($this->_type_info['label']).'-'.substr($this->getWebId(), 0, 8));
+    	    }
+	        
+	        $sm = new SmartyManager('BasicRenderer');
+            $r = $sm->initialize($this->getStringId());
+            $r->assign('preview_mode', true);
+            $r->assignAsset($this);
+            $r->setDraftMode(true);
+    	    $content = $r->renderAsset($this->_render_data, null, true);
+    	    
+    	    return $content;
+	        
+        }else{
+            return $this->render(true);
+        }
+	    
+	}
+	
 	public function setDraftMode($m){
 	    $this->_draft_mode = (bool) $m;
 	}

@@ -35,18 +35,25 @@
 {/literal}
 
 <div class="menubar">
-  <a href="{dud_link}" onclick="actionsMenu.toggleVisibility();" class="js-menu-activator" id="actions-menu-activator">Actions</a> {*<a href="javascript:showPreview()">Show</a>*}
-{if !empty($stylesheets)}
+  <a href="{dud_link}" class="js-menu-activator" id="actions-menu-activator">Actions</a> {*<a href="javascript:showPreview()">Show</a>*}
+  <a href="{dud_link}" class="js-menu-activator" id="files-menu-activator">Stylesheets</a>
+{* if !empty($stylesheets)}
   {foreach from=$stylesheets item="stylesheet"}
   <a href="{$stylesheet.action_url}"><img src="{$stylesheet.small_icon}" />&nbsp;{$stylesheet.label}</a>
   {/foreach}
-{/if}
+{/if *}
 </div>
 
 <div id="preview-actions-menu" class="js-menu" style="display:none">
   <ul></ul>
   <ul><li>{if $show_approve_button}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/approvePageChanges?page_id={$page.webid}'">{else}<span>{/if}Approve Changes{if $show_approve_button}</a>{else}</span>{/if}</li><li>{if $show_publish_button}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishPageConfirm?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}'">{else}<span>{/if}Publish This Page{if $show_publish_button}</a>{else}</span>{/if}</li>{if $show_edit_item_option}{if $show_publish_item_option}<li><a href="{dud_link}" onclick="window.location='{$domain}datamanager/publishItem?page_id={$page.webid}&amp;item_id={$item.id}&amp;from=preview'">Publish This {$item._model.name}</a></li>{/if}<li><a href="{dud_link}" onclick="window.location='{$domain}datamanager/editItem?item_id={$item.id}&amp;page_id={$page.webid}&amp;from=pagePreview'">Edit This {$item._model.name}</a></li>{/if}<li>{if $show_release_page_option}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/releasePage?page_id={$page.webid}'">{else}<span>{/if}Release This Page{if $show_release_page_option}</a>{else}</span>{/if}</li></ul>
-  <script type="text/javascript">var actionsMenu = new Smartest.UI.Menu('preview-actions-menu', 'actions-menu-activator');</script>
+  <script type="text/javascript"></script>
+</div>
+
+<div id="preview-files-menu" class="js-menu">
+  <ul></ul>
+  <ul>{foreach from=$stylesheets item="stylesheet"}<li><a href="{$stylesheet.action_url}">{$stylesheet.label}</a></li>{/foreach}</ul>
+  <script type="text/javascript"></script>
 </div>
 
 <div id="preview">
@@ -78,3 +85,21 @@
 {/if}
 
 </div>
+
+<script type="text/javascript">
+
+var actionsMenu = new Smartest.UI.Menu('preview-actions-menu', 'actions-menu-activator');
+var filesMenu = new Smartest.UI.Menu('preview-files-menu', 'files-menu-activator');
+
+{literal}
+  $('actions-menu-activator').observe('click', function(e){
+    actionsMenu.toggleVisibility();
+    e.stop();
+  });
+  
+  $('files-menu-activator').observe('click', function(e){
+    filesMenu.toggleVisibility();
+    e.stop();
+  });
+{/literal}
+</script>

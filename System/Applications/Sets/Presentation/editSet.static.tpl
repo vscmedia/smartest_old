@@ -48,6 +48,28 @@ function executeTransfer(){
   </script>
 </div>
 
+<div class="edit-form-row">
+  <div class="form-section-label">Set name</div>
+  {if $can_edit_set_name}
+  <p class="editable" id="set-name">{$set.name}</p>
+  <div class="form-hint">This value is used in templates and queries.</div>
+  <script type="text/javascript">
+  new Ajax.InPlaceEditor('set-name', sm_domain+'ajax:sets/updateSetNameFromInPlaceEditField', {ldelim}
+    callback: function(form, value) {ldelim}
+      return 'set_id={$set.id}&new_name='+encodeURIComponent(value);
+    {rdelim},
+    highlightColor: '#ffffff',
+    hoverClassName: 'editable-hover',
+    savingClassName: 'editable-saving'
+  {rdelim});
+  </script>
+  {else}
+  {$set.name}
+  {/if}
+</div>
+
+<div class="breaker"></div>
+
 <div class="instruction">Use the arrow buttons below to move {$model.plural_name|lower} in and out of this set.</div>
 
 <form action="{$domain}sets/transferItem" method="post" name="transferForm">

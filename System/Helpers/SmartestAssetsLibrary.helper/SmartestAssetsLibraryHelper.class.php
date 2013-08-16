@@ -1029,13 +1029,13 @@ class SmartestAssetsLibraryHelper{
 	        $suffixes = array();
 	        
 	        foreach($type['suffix'] as $s){
-	            $suffixes[] = $s['_content'];
+	            $suffixes[] = '\.'.str_replace('.', '\.', $s['_content']);
 	        }
 	        
 	        if(count($suffixes) > 1){
-	            $regex = '/\.('.implode('|', $suffixes).')$/';
+	            $regex = '/('.implode('|', $suffixes).')$/';
             }else{
-                $regex = '/\.'.$suffixes[0].'$/';
+                $regex = '/('.$suffixes[0].')$/';
             }
             
             return $regex;
@@ -1044,7 +1044,7 @@ class SmartestAssetsLibraryHelper{
 	    
 	}
 	
-	public function getUnimportedFilesByType($type_code){
+	public function getUnimportedFilesByType($type_code, $include_other_types_with_shared_suffixes=true){
 	    
 	    $types = $this->getTypes();
 	    
@@ -1053,8 +1053,6 @@ class SmartestAssetsLibraryHelper{
 	        $type = $types[$type_code];
 	        
 	        if($type['storage']['type'] == "file"){
-	            
-	            // print_r($type['suffix']);
 	            
 	            $dir = SM_ROOT_DIR.$type['storage']['location'];
 	            $files = SmartestFileSystemHelper::load($dir);

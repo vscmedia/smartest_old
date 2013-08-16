@@ -15,6 +15,40 @@
 
 {load_interface file="file_browse_tabs.tpl"}
 
+<div class="special-box">
+      <form action="" method="get" id="assets-search-form" onsubmit="return false">
+        Search for a file: <input type="text" class="search" name="query" id="assets-search-name" />
+        <!--<select name="query_type">
+          <option value="ALL">Names, Full-text and Tags</option>
+          <option value="NT">Names and Tags</option>
+          <option value="NFT">Names and Full-text</option>
+          <option value="NO">Names only</option>
+        </select>-->
+      </form>
+      <script type="text/javascript">{literal}$('assets-search-name').observe('submit', function(){return false;});{/literal}</script>
+  </div>
+
+<div id="autocomplete_choices" class="autocomplete"></div>
+  
+  <script type="text/javascript">
+    {literal}
+    
+    function getSelectionId(text, li) {
+        var bits = li.id.split('-');
+        window.location=sm_domain+'assets/editAsset?asset_id='+bits[1];
+    }
+    
+    new Ajax.Autocompleter("assets-search-name", "autocomplete_choices", "/ajax:assets/assetSearch", {
+        paramName: "query", 
+        minChars: 2,
+        delay: 50,
+        width: '300px',
+        afterUpdateElement : getSelectionId
+    });
+    
+    {/literal}
+  </script>
+
 <div class="text" style="margin-bottom:10px">{$_l10n_strings.files.types_instruction}</div>
 
 <form id="pageViewForm" method="get" action="">

@@ -133,10 +133,13 @@ class SmartestImage extends SmartestFile{
 	        }
 	    }
 	    
+	    return $this;
+	    
 	}
 	
 	public function setSingleRenderDataParameter($name, $value){
 	    $this->_render_data->setParameter($name, $value);
+	    return $this;
 	}
 	
 	public function setAltText($alt){
@@ -711,19 +714,19 @@ class SmartestImage extends SmartestFile{
 	    switch($offset){
 	        
 	        case "width":
-	        return $this->getWidth();
+	        return (int) $this->getWidth();
 	        
 	        case "height":
-	        return $this->getHeight();
+	        return (int) $this->getHeight();
 	        
 	        case "is_portrait":
-	        return $this->isPortrait();
+	        return (bool) $this->isPortrait();
 	        
 	        case "is_landscape":
-	        return $this->isLandscape();
+	        return (bool) $this->isLandscape();
 	        
 	        case "is_square":
-	        return $this->isSquare();
+	        return (bool) $this->isSquare();
 	        
 	        case "web_path":
 	        return $this->getWebPath();

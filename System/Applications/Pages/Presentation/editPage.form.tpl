@@ -131,7 +131,10 @@
   
   {if $page.id > 0}
   <div class="edit-form-row">
-    <div class="form-section-label-full">URL</div>
+    
+		<div class="instruction">Page URL(s)</div>
+		
+		<div class="special-box">
 		
 		<div id="page-urls">
 		  
@@ -173,20 +176,23 @@
     	</table>
     	
   	</div>
-	
+  	
   	<a href="{$domain}{$section}/addPageUrl?page_id={$page.webid}{if $page.type != "NORMAL"}&amp;item_id={$item.id}{/if}">{if count($page.urls) || $ishomepage == "true"}Add another url{else}Give this page a nicer URL{/if}</a><br />
   	<img src="{$domain}Resources/Images/spacer.gif" width="1" height="10" />
+  	
+  	</div>
+	
   </div>
   
   <div class="edit-form-row">
     <div class="form-section-label">Page Icon</div>
-    <span>This image can be used when referring to a page from another page.</span><br />
     <select name="page_icon_image">
       <option value="">None</option>
       {foreach from=$available_icons item="icon"}
       <option value="{$icon}"{if $page.icon_image == $icon} selected="selected"{/if}>{$icon}</option>
       {/foreach}
     </select>
+    <div class="form-hint">This image can be used when referring to a page from another page.</div>
   </div>
   
   {if !$ishomepage}

@@ -1,0 +1,3 @@
+<?sm:if $render_data.use_style_tag == 'true' || $render_data.use_style_tag == '1' || $render_data.use_style_tag == 'on' :?><pre><code>&lt;style type="text/css"&gt;
+  @import url('<?sm:$domain:?>Resources/Stylesheets/<?sm:$asset_info.url:?>');
+&lt;/style&gt;</code></pre><?sm:else:?><code>&lt;link rel="stylesheet" href="<?sm:$domain:?>Resources/Stylesheets/<?sm:$asset_info.url:?>" /&gt;</code><?sm:/if:?>

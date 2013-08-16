@@ -607,7 +607,7 @@ class Items extends SmartestSystemApplication{
 	    $item_id = $this->getRequestParameter('item_id');
 	    $item = new SmartestItem;
 	    
-	    if($item->hydrate($item_id)){
+	    if($item->find($item_id)){
 	        
 	        $model = new SmartestModel;
 	        $model->hydrate($item->getItemclassId());

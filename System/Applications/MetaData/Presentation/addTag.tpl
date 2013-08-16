@@ -23,6 +23,13 @@
       <input type="hidden" name="page_id" value="{$page.id}" />
     </div>
     {/if}
+    {if $asset.id}
+    <div class="edit-form-row">
+      <input type="checkbox" name="tag_asset" value="1" checked="checked" id="tag_asset_checkbox" />
+      <label for="tag_page_checkbox">Tag '{$asset.label}' with new tags I create here</label>
+      <input type="hidden" name="asset_id" value="{$asset.id}" />
+    </div>
+    {/if}
     <div class="edit-form-row">
       <div class="buttons-bar">
         <input type="button" value="Cancel" onclick="cancelForm();" />

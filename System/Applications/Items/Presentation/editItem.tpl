@@ -55,11 +55,11 @@
 </div>
 
 <div class="edit-form-row">
-  <div class="form-section-label">Status</div>
+  <div class="form-section-label">Current status</div>
   {if $item.public == "TRUE"}
-    Live <input type="button" value="Re-Publish" onclick="window.location='{$domain}{$section}/publishItem?item_id={$item.id}{if $request_parameters.page_id}&amp;page_id={$request_parameters.page_id}{/if}'" />&nbsp;<input type="button" value="Un-Publish" onclick="window.location='{$domain}{$section}/unpublishItem?item_id={$item.id}{if $request_parameters.page_id}&amp;page_id={$request_parameters.page_id}{/if}'" />
+    Live {* <input type="button" value="Re-Publish" onclick="window.location='{$domain}{$section}/publishItem?item_id={$item.id}{if $request_parameters.page_id}&amp;page_id={$request_parameters.page_id}{/if}'" />&nbsp;<input type="button" value="Un-Publish" onclick="window.location='{$domain}{$section}/unpublishItem?item_id={$item.id}{if $request_parameters.page_id}&amp;page_id={$request_parameters.page_id}{/if}'" /> *}
   {else}
-    Not Published <input type="button" value="Publish" onclick="window.location='{$domain}{$section}/publishItem?item_id={$item.id}'" />
+    Not live {* <input type="button" value="Publish" onclick="window.location='{$domain}{$section}/publishItem?item_id={$item.id}'" /> *}
   {/if}
 </div>
 
