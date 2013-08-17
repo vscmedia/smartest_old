@@ -302,7 +302,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 if(is_object($asset)){
                     
                     $type_info = $asset->getTypeInfo();
-                    print_r($type_info);
                     
                     if($display == 'file' || $display == 'filename'){
                         
