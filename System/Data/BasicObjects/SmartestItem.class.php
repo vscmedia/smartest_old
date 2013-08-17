@@ -7,6 +7,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	protected $_meta_page_id;
 	protected $_meta_page;
 	protected $_current_sets = array();
+	protected $_temporary_fields = null;
 	
 	protected function __objectConstruct(){
 		

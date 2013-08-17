@@ -91,9 +91,9 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getSimpleItems($site_id=false, $d='USE_DEFAULT', $model_id=false){
+    public function getSimpleItems($site_id=false, $draft_mode_arg='USE_DEFAULT', $model_id=false){
         
-        $draft = ($d == 'USE_DEFAULT') ? $this->_draft_mode : $d;
+        $draft = ($draft_mode_arg === 'USE_DEFAULT') ? $this->_draft_mode : $draft_mode_arg;
         
         if(!$site_id || !is_numeric($site_id)){
             $site_id = 'all';
@@ -262,10 +262,12 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function hasItem($item_id){
+    public function hasItem($item_id, $draft_mode=false){
         
-        // make sure pages have been retrieved
+        // make sure items have been retrieved
         $this->getSimpleItems(false, true, false);
+        
+        // print_r($this->_item_ids);
         
         if(in_array($item_id, $this->_item_ids)){
             return true;

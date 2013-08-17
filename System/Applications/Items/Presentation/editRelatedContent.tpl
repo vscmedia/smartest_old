@@ -2,9 +2,9 @@
   <h3>Related {if $mode == 'items'}{$model.plural_name}{else}Pages{/if}</h3>
   {if $mode == 'items'}
   
-    {if empty($items)}
+    {if empty($items)} 
     
-    <div class="instruction">There are no {$model.plural_name|strtolower} in the system yet.</div>
+    <div class="instruction">There are no {$model.plural_name|strtolower} in the system yet{if $model.id == $item.itemclass_id} besides this one{/if}.</div>
     
     <div id="edit-form-layout">
       <div class="edit-form-row">
@@ -26,7 +26,7 @@
       <ul class="basic-list scroll-list" style="height:350px;border:1px solid #ccc">
       
         {foreach from=$items item="related_item"}
-          {if $related_item.id == $item.id}<!--Skipped item "{$related_item.name}"-->{else}<li><input type="checkbox" name="items[{$related_item.id}]" id="item_{$related_item.id}"{if in_array($related_item.id, $related_ids)} checked="checked"{/if} /><label for="item_{$related_item.id}">{$related_item.name}</label></li>{/if}
+          {if $related_item.id == $item.id}<!--Skipped item "{$related_item.name}"-->{else}<li><input type="checkbox" name="items[{$related_item.id}]" id="item_{$related_item.id}"{if in_array($related_item.id, $related_ids)} checked="checked"{/if} /> <label for="item_{$related_item.id}">{$related_item.name}</label></li>{/if}
         {/foreach}
       
       </ul>

@@ -1176,7 +1176,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	public function getActionUrl(){
 	    
 	    // return $this->_request->getDomain().'assets/editAsset?asset_id='.$this->getId();
-	    return $this->_request->getDomain().'smartest/file/'.$this->getId().'/edit';
+	    return $this->_request->getDomain().'smartest/file/edit/'.$this->getId();
 	    
 	}
 	

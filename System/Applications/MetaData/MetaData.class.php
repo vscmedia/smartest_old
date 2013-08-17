@@ -512,6 +512,19 @@ class MetaData extends SmartestSystemApplication{
         }
         
         $this->addUserMessageToNextRequest($message, $type);
+        
+        if($tag_item){
+            $this->redirect('/datamanager/itemTags?item_id='.$item->getId());
+        }
+        if($tag_page){
+            // $page->tag($tag->getId());
+            $this->redirect('/websitemanager/pageTags?page_id='.$page->getWebId());
+        }
+        if($tag_asset){
+            // $asset->tag($tag->getId());
+            $this->redirect('/assets/assetTags?asset_id='.$asset->getId());
+        }
+        
         $this->formForward();
 	    
 	}
@@ -524,7 +537,7 @@ class MetaData extends SmartestSystemApplication{
 	    if($tag->findBy('name', $tag_identifier)){
 	        $this->send($tag, 'tag');
 	        // $objects = $tag->getObjectsOnSite($this->getSite()->getId(), true);
-	        $this->send(new SmartestArray($tag->getSimpleItems($this->getSite()->getId())), 'items');
+	        $this->send(new SmartestArray($tag->getSimpleItems($this->getSite()->getId(), true)), 'items');
 	        $this->send(new SmartestArray($tag->getPages($this->getSite()->getId())), 'pages');
 	        $this->send(new SmartestArray($tag->getAssets($this->getSite()->getId())), 'assets');
 	    }else{

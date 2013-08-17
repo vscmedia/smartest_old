@@ -600,8 +600,8 @@ class Items extends SmartestSystemApplication{
 	public function itemTags($get){
 	    
 	    if(!$this->getRequestParameter('from')){
-	        $this->setFormReturnUri();
-	        $this->setFormReturnDescription('item tags');
+	        // $this->setFormReturnUri();
+	        // $this->setFormReturnDescription('item tags');
         }
 	    
 	    $item_id = $this->getRequestParameter('item_id');
@@ -633,6 +633,8 @@ class Items extends SmartestSystemApplication{
 	            
 	            $i++;
 	        }
+	        
+	        // print_r($item_tags);
 	        
 	        $this->send($item_tags, 'tags');
 	        $this->send($item, 'item');
@@ -765,7 +767,7 @@ class Items extends SmartestSystemApplication{
 	            $model_id = (int) $this->getRequestParameter('model_id');
 	            $model = new SmartestModel;
 	            
-	            if($model->hydrate($model_id)){
+	            if($model->find($model_id)){
 	                $mode = 'items';
 	            }else{
 	                $mode = 'pages';
@@ -787,6 +789,15 @@ class Items extends SmartestSystemApplication{
                 }
                 
 	            $all_items  = $model->getSimpleItems($this->getSite()->getId());
+	            
+	            if($item->getModelId() == $this->getRequestParameter('model_id')){
+	                foreach($all_items as $k=>$i){
+	                    if($item_id == $i->getId()){
+	                        unset($all_items[$k]);
+	                    }
+	                }
+                }
+	            
 	            $this->send($all_items, 'items');
 	            $this->send($related_ids, 'related_ids');
 	            

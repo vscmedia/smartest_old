@@ -29,7 +29,7 @@ module:
       url: /smartest/file/new/save
     edit_file:
       action: editAsset
-      url: /smartest/file/:asset_id/edit
+      url: /smartest/file/edit/:asset_id
     file_info:
       action: assetInfo
       url: /smartest/file/:asset_id
