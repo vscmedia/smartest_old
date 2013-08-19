@@ -4,7 +4,7 @@
   {literal}<style type="text/css">p{margin:0 0 5px 0;}</style>{/literal}
   
   <div>
-    <div style="float:left;width:106px;height:550px">
+    <div style="float:left;width:106px;height:600px">
       <img src="{$domain}Resources/System/Images/info_logo.png" alt="Smartest Logo" />
     </div>
 
@@ -31,9 +31,14 @@
       </form>
       <p><strong>If you'd like to make a donation (via PayPal) and help to support Smartest</strong>, <a href="#donate" onclick="$('donate-form').submit();return false;">click here</a>.</p>
       <p><strong>OR - want to give Smartest's developers some props?</strong> just put <code>&lt;?sm:credit:?&gt;</code> in a template to make: <a href="http://sma.rte.st/?ref=scb"><img src="{$domain}Resources/System/Images/smartest_credit_button.png" /></a></p>
+      <p>And, do <strong>like us on Facebook</strong>, if that's your sort of thing:</p>
+      <div class="fb-like" data-href="http://www.facebook.com/SmartestProject" data-width="450" data-show-faces="true" data-send="true"></div>
+      
+      
       <p style="margin-top:15px"><a href="http://www.vsclabs.com/" target="_blank"><img src="{$domain}Resources/System/Images/info_vsc_labs.png" alt="More great software from VSC Labs" /></a></p>
       <p style="margin-top:20px"><span style="font-size:10px;color:#999">Smartest is produced, published and marketed by VSC Creative Ltd., a UK company registered in England &amp; Wales with number 5746683, trading as "VSC Labs". "Smartest" and the Smartest logo are trademarks of and © VSC Creative Ltd 2006-{$now.Y}.</span></p>
-
+      
+      
   </div>
   
 </div>
