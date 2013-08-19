@@ -175,17 +175,13 @@ class Sets extends SmartestSystemApplication{
 	        
 	        if($set->getType() == "DYNAMIC"){
 	            
-	            $du = new SmartestDataUtility;
-	            // $sites = $du->getSites();
-	            $sites = $this->getUser()->getAllowedSites();
-	            // $conditions = $set->getConditions();
-	            $this->send($sites, 'sites');
-	            // $this->send($conditions, 'conditions');
+	            $this->send($this->getUser()->getAllowedSites(), 'sites');
+	            $this->send($set->getModel()->getAvailableSortProperties(), 'properties');
 	            $this->send($set, 'set');
 	            $this->send(true, 'show_form');
 	            $this->send(SmartestQuery::RANDOM, 'random_value');
 	            $this->send($this->getUser()->hasToken('edit_set_name'), 'can_edit_set_name');
-	            $this->setTitle('Edit Dynamic Set');
+	            $this->setTitle('Edit dynamic set');
 	            
 	            $formTemplateInclude = "editSet.dynamic.tpl";
 	        
@@ -200,7 +196,7 @@ class Sets extends SmartestSystemApplication{
 	            $this->send($set_members, 'members');
 	            $this->send($all_items, 'non_members');
 	            $this->send($this->getUser()->hasToken('edit_set_name'), 'can_edit_set_name');
-	            $this->setTitle('Edit Static Set');
+	            $this->setTitle('Edit static set');
 	            
 	            $formTemplateInclude = "editSet.static.tpl";
 	            
