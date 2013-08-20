@@ -63,7 +63,16 @@
           </select>&nbsp;{help id="templates:data_in_templates"}What's this?{/help}
         </td>
       </tr>
-{/if}
+{/if} <tr>
+        <td valign="middle" class="field-name">Language:</td>
+        <td>
+          <select name="template_language" id="template-language">
+        {foreach from=$_languages item="lang" key="langcode"}
+            <option value="{$langcode}"{if $template.language == $langcode} selected="selected"{/if}>{$lang.label}</option>
+        {/foreach}
+          </select>
+        </td>
+      </tr>
       <tr>
         <td class="field-name">Original site:</td>
         <td>{$template.site.label}</td>

@@ -1,10 +1,10 @@
 <?php
   
-include_once SM_ROOT_DIR."System/Applications/Assets/AssetsManager.class.php";
+// include_once SM_ROOT_DIR."System/Applications/Assets/AssetsManager.class.php";
 
 class Templates extends SmartestSystemApplication{
 
-	private $AssetsManager;
+	// private $AssetsManager;
 	
 	public function startPage(){
 	    
@@ -1321,6 +1321,7 @@ class Templates extends SmartestSystemApplication{
 	        $template->setUserId($this->getRequestParameter('template_user_id'));
 	        $template->setShared($this->getRequestParameter('template_shared') ? 1 : 0);
 	        $template->setModelId($this->getRequestParameter('template_model_id', 0));
+	        $template->setLanguage($this->getRequestParameter('template_language'));
 	        $template->save();
 	        
 	        $this->addUserMessageToNextRequest("The template has been updated.", SmartestUserMessage::SUCCESS);
