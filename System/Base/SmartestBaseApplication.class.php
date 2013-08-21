@@ -93,6 +93,26 @@ class SmartestBaseApplication extends QuinceBase{
 	        }
 	        
 	    }
+	    
+	    if(method_exists($this, 'getActionLocalisationFilePath') && is_file($this->getActionLocalisationFilePath())){
+	        
+	        $s = SmartestYamlHelper::fastLoad($this->getActionLocalisationFilePath());
+	        
+	        if(isset($s['strings'])){
+	            $this->_l10n_action_strings = $s['strings'];
+	            $this->send($this->_l10n_action_strings, '_l10n_action_strings');
+	        }
+	        
+	    }else if(is_file($this->getEnglishActionLocalisationFilePath())){
+	        
+	        $s = SmartestYamlHelper::fastLoad($this->getEnglishActionLocalisationFilePath());
+	        
+	        if(isset($s['strings'])){
+	            $this->_l10n_action_strings = $s['strings'];
+	            $this->send($this->_l10n_action_strings, '_l10n_action_strings');
+	        }
+	        
+	    }
 		
 		$this->getPresentationLayer()->assign("now", new SmartestDateTime(time()));
 		$this->getPresentationLayer()->assign("domain", $this->getRequest()->getDomain());

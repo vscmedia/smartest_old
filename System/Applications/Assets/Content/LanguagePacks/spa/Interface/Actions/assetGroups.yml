@@ -1,0 +1,8 @@
+strings:
+  explanation: "Agrupar archivos es la forma más sencilla de mantener los archivos organizados cuando hay muchos."
+  sidebar_options:
+    selected_group_heading: Grupo seleccionado
+    selected_group_info: Información sobre este grupo
+    selected_group_edit_contents: Editar contenido de este grupo
+    selected_group_contents: Mirar contenido de este grupo
+    selected_group_delete: Apagar grupo

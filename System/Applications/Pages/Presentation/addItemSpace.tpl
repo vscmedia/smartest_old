@@ -23,12 +23,16 @@
     
     <div class="edit-form-row">
       <div class="form-section-label">Use specific template?</div>
+      {if empty($templates)}
+      <span class="form-hint">No itemspace templates are currently available</span>
+      {else}
       <input type="checkbox" name="itemspace_use_template" value="1" />
       <select name="itemspace_template_id">
         {foreach from=$templates item="template"}
         <option value="{$template.id}">{$template.url}</option>
         {/foreach}
       </select>
+      {/if}
     </div>
     
     <div class="edit-form-row">

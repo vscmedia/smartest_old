@@ -3,8 +3,6 @@ strings:
   files:
     types_instruction: Double click an icon below to see files of that type.
     search_instruction: Search for a file
-#    editing:
-#    creating:
   general:
     recently_edited_label: Recently edited files
     new_image_gallery_name: Unnamed+image+gallery
@@ -12,7 +10,6 @@ strings:
     selected_file_label: Selected file
     selected_file_type_label: Selected file type
   groups:
-    explanation: "File groups are a basic way to keep your files organised when you have a lot of them."
     group_tabs:
       browse: Browse files
       add_remove_files: "Add &amp; remove files"
@@ -20,7 +17,6 @@ strings:
       gallery_info: Gallery info
     group_files: "Files in group: "
     gallery_files: "Files in gallery: "
-#    creating:
   sidebar_options:
     create_file: Create a new file
     create_file_group: Create a new file group
@@ -31,5 +27,11 @@ strings:
   tabs:
     file_types: Files by type
     file_groups: Organise
+    edit_file: Edit file
+    edit_file_source: Edit file source
+    file_info: File info
+    file_attachments: Attachments
+    file_preview: Preview
+    file_tags: Tags
   warnings:
     storage_locations_unwriteable: "For smooth operation of the files repository, the following locations need to be made writable:"

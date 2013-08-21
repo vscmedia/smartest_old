@@ -1,0 +1,8 @@
+strings:
+  explanation: "File groups are a basic way to keep your files organised when you have a lot of them."
+  sidebar_options:
+    selected_group_heading: Selected group
+    selected_group_info: Group info
+    selected_group_edit_contents: Edit contents
+    selected_group_contents: Browse contents
+    selected_group_delete: Delete group

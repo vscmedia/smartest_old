@@ -76,9 +76,9 @@
   
   <ul class="actions-list" id="item-specific-actions" style="display:none">
     <li><b>{$_l10n_strings.general.selected_file_type_label}</b></li>
-  	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('getAssetTypeMembers'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Show me all of this type</a></li>
-  	<li class="permanent-action"><a href="#" onclick="workWithItem('addAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add a file this type</a></li>
-  	<li class="permanent-action"><a href="#" onclick="workWithItem('newAssetGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Make a new group of these files</a></li>
+  	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('getAssetTypeMembers'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> {$_l10n_action_strings.sidebar_options.selected_type_show_all}</a></li>
+  	<li class="permanent-action"><a href="#" onclick="workWithItem('addAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> {$_l10n_action_strings.sidebar_options.selected_type_add_new}</a></li>
+  	<li class="permanent-action"><a href="#" onclick="workWithItem('newAssetGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_add.png" border="0" alt="" /> {$_l10n_action_strings.sidebar_options.selected_type_make_group}</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">

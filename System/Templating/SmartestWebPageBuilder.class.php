@@ -133,10 +133,12 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	    $this->prepareForRender();
 	    
 	    if($draft_mode){
-	        $template = SM_ROOT_DIR."Presentation/Masters/".$page->getDraftTemplate();
+	        $safe_template = "Presentation/Masters/".$page->getDraftTemplate();
 	    }else{
-	        $template = SM_ROOT_DIR."Presentation/Masters/".$page->getLiveTemplate();
+	        $safe_template = "Presentation/Masters/".$page->getLiveTemplate();
 	    }
+	    
+	    $template = SM_ROOT_DIR.$safe_template;
 	    
 	    if(!defined('SM_CMS_PAGE_ID')){
 		    define('SM_CMS_PAGE_ID', $this->page->getId());
@@ -147,13 +149,13 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	        if(is_dir($template)){
                 
                 // no template is set at all. show "you need to create one" message.
-                $this->assign('required_template', $template);
+                $this->assign('required_template', $safe_template);
 	            $template = SM_ROOT_DIR.'System/Presentation/Error/_pageHasNoMasterTemplate.tpl';
                 
             }else{
                 
                 // page refers to a non-existent template.
-                $this->assign('required_template', $template);
+                $this->assign('required_template', $safe_template);
 	            $template = SM_ROOT_DIR.'System/Presentation/Error/_websiteTemplateNotFound.tpl';
                 
             }

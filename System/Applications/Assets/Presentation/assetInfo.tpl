@@ -6,13 +6,13 @@
 <div id="work-area">
     {load_interface file="edit_asset_tabs.tpl"}
     
-    <h3>File Info</h3>
+    <h3>{$_l10n_action_strings.title}</h3>
     
     <input type="hidden" name="asset_id" value="{$asset.id}" />
     
     <table cellspacing="1" border="0" class="info-table">
       <tr>
-        <td style="width:170px;background-color:#fff" valign="middle" class="field-name">File name:</td>
+        <td style="width:170px;background-color:#fff" valign="middle" class="field-name">{$_l10n_action_strings.field_names.name}:</td>
         <td>
           <p class="editable" id="asset-label">{$asset.label}</p>
           <script type="text/javascript">
@@ -29,7 +29,7 @@
       </tr>
       {if !$asset.is_external}
       <tr>
-        <td style="width:150px;background-color:#fff" class="field-name">Name on disk:</td>
+        <td style="width:150px;background-color:#fff" class="field-name">{$_l10n_action_strings.field_names.file_path}:</td>
         <td><code>{$asset.full_path}</code></td>
       </tr>
       {/if}
@@ -47,7 +47,7 @@
       {if !$asset.is_external}
       <tr>
         <td class="field-name">Size:</td>
-        <td>{$asset.size}{if $asset.is_image}, ({$asset.width} x {$asset.height} pixels){/if}</td>
+        <td>{$asset.size}{if $asset.is_image}, ({$asset.width} x {$asset.height} {$_l10n_action_strings.general.pixels}){/if}</td>
       </tr>
       {/if}
       <tr>
@@ -169,16 +169,14 @@
 {/if}
   </div>
   
-  <div class="buttons-bar"><input type="button" id="done-button" value="Done" /><script type="text/javascript">{literal}$('done-button').observe('click', cancelForm);{/literal}</script></div>
-      
-{*      <h4 style="margin-top:15px">Usage of this file</h4> *}
+  <div class="buttons-bar"><input type="button" id="done-button" value="{$_l10n_global_strings.system_wide_buttons.done}" /><script type="text/javascript">{literal}$('done-button').observe('click', cancelForm);{/literal}</script></div>
   
 </div>
 
 <div id="actions-area">
   <ul class="actions-list" id="non-specific-actions">
-    <li><b>Options</b></li>
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editAsset?asset_type={$asset_type.id}&amp;asset_id={$asset.id}'"><img src="{$domain}Resources/Icons/pencil.png" alt=""/> Edit this file</a></li>
+    <li><b>{$_l10n_action_strings.sidebar.options_label}</b></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editAsset?asset_type={$asset_type.id}&amp;asset_id={$asset.id}'"><img src="{$domain}Resources/Icons/pencil.png" alt=""/> {$_l10n_action_strings.sidebar.edit_file_option}</a></li>
     {if $allow_source_edit}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editTextFragmentSource?assettype_code={$asset_type.id}&amp;asset_id={$asset.id}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}'"><img src="{$domain}Resources/Icons/page_edit.png" alt=""/> Edit This File's Source</a></li>{/if}
     {if $show_attachments}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/textFragmentElements?assettype_code={$asset_type.id}&amp;asset_id={$asset.id}{if $smarty.get.from}&amp;from={$smarty.get.from}{/if}'"><img src="{$domain}Resources/Icons/attach.png" alt=""/> Edit File Attachments</a></li>{/if}
     {if $show_publish}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishTextAsset?assettype_code={$asset_type.id}&amp;asset_id={$asset.id}'"><img src="{$domain}Resources/Icons/page_lightning.png" alt=""/> Publish This Text</a></li>{/if}

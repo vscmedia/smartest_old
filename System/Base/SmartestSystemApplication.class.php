@@ -19,6 +19,8 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		$this->_languages = $language_options['languages'];
 		$this->send($this->_languages, '_languages');
 		
+		$this->send(SmartestStringHelper::toXmlEntities($_SERVER['REQUEST_URI']), '_referring_action');
+		
 		if($this->getUser()){
 		    
     		$global_ui_filename = SM_ROOT_DIR.'System/Languages/SystemLocalizations/'.$this->getUser()->getPreferredUiLanguage().'/global.yml';
@@ -31,12 +33,12 @@ class SmartestSystemApplication extends SmartestBaseApplication{
             }
             
             $global_ui_strings = $global_ui_strings['strings'];
-            $this->send($global_ui_strings, '_i10n_global_strings');
+            $this->send($global_ui_strings, '_l10n_global_strings');
             
         }else{
             $global_ui_strings = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Languages/global.yml');
             $global_ui_strings = $global_ui_strings['strings'];
-            $this->send($global_ui_strings, '_i10n_global_strings');
+            $this->send($global_ui_strings, '_l10n_global_strings');
         }
 	    
 	    if($this->getSite()){
@@ -323,10 +325,21 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 		
 	}
 	
+	// Automatically handles where to go next after saving something, if the {save_buttons} function has been used
+	protected function handleSaveAction(){
+	    
+	    if($this->getRequestParameter('_submit_action') == "continue" && $this->getRequestParameter('_referring_action')){
+	        $this->redirect($this->getRequestParameter('_referring_action'));
+	    }else{
+	        $this->formForward();
+	    }
+	    
+	}
+	
 	final public function getApplicationPreferenceFromAjax(){
         // $preference_name
         $v = $this->getApplicationPreference($this->getRequestParameter('pref_name'));
-        header('Content-Type:text/javascript');
+        header('Content-Type: text/javascript');
         echo json_encode($v);
         exit;
     }
@@ -376,12 +389,24 @@ class SmartestSystemApplication extends SmartestBaseApplication{
         if($this->getUser()){
 	        return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/'.$this->getUser()->getPreferredUiLanguage().'/Interface/strings.yml';
         }else{
-            return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/eng/Interface/strings.yml';
+            return $this->getEnglishLocalisationFilePath();
         }
 	}
 	
 	protected function getEnglishLocalisationFilePath(){
 	    return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/eng/Interface/strings.yml';
+	}
+	
+	protected function getActionLocalisationFilePath(){
+        if($this->getUser()){
+	        return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/'.$this->getUser()->getPreferredUiLanguage().'/Interface/Actions/'.$this->getRequest()->getAction().'.yml';
+        }else{
+            return $this->getEnglishActionLocalisationFilePath();
+        }
+	}
+	
+	protected function getEnglishActionLocalisationFilePath(){
+	    return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/eng/Interface/Actions/'.$this->getRequest()->getAction().'.yml';
 	}
     
 }

@@ -1,0 +1,5 @@
+strings:
+  sidebar_options:
+    selected_type_show_all: Show me all of this type
+    selected_type_add_new: Add a file of this type
+    selected_type_make_group: Make a new group of these files

@@ -12,3 +12,8 @@ strings:
     signed_in_before_site_name: "Sesión iniciada en site "
     signed_in_without_site_name: "Sesión iniciada"
     signed_in_after_site_name: " como usario "
+  system_wide_buttons:
+    save: Salvar
+    save_and_return: Salvar y volver a 
+    cancel: Cancelar
+    done: He acabado

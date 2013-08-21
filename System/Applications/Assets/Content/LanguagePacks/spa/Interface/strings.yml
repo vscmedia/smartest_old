@@ -10,7 +10,6 @@ strings:
     selected_file_label: Archivo seleccionado
     selected_file_type_label: Tipo seleccionado
   groups:
-    explanation: "Agrupar archivos es la forma más sencilla de mantener los archivos organizados cuando hay muchos."
     group_tabs:
       browse: Buscar archivos
       add_remove_files: "Add &amp; eliminar archivos"
@@ -28,5 +27,11 @@ strings:
   tabs:
     file_types: Tipo de archivos
     file_groups: Organizar
+    edit_file: Editar archivo
+    edit_file_source: Edit file source
+    file_info: Información archivo
+    file_attachments: Archivos adjuntos
+    file_preview: Prever archivo
+    file_tags: Etiquetas
   warnings:
     storage_locations_unwriteable: "Para facilitar el comportamiento del almacenamiento de archivos, las siguientes carpetas necesitan poder ser editadas:"

@@ -2229,7 +2229,7 @@ class Assets extends SmartestSystemApplication{
 		
 	    // $this->formForward();
 	    
-	    if($this->getRequestParameter('_submit_action') == "continue" && $success){
+	    /* if($this->getRequestParameter('_submit_action') == "continue" && $success){
 	        if($this->getRequestParameter('editor') && $this->getRequestParameter('editor') == 'source'){
 	            $this->redirect("/assets/editTextFragmentSource?asset_id=".$asset->getId());
 	        }else{
@@ -2238,7 +2238,9 @@ class Assets extends SmartestSystemApplication{
 	    }else{
 	        // $this->addUserMessageToNextRequest($message, $message_type);
 	        $this->formForward();
-	    }
+	    } */
+	    
+	    $this->handleSaveAction();
 
 	}
 	

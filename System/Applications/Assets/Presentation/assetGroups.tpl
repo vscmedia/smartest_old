@@ -15,7 +15,7 @@
   
   {load_interface file="file_browse_tabs.tpl"}
   
-  <div class="instruction">{$_l10n_strings.groups.explanation}</div>
+  <div class="instruction">{$_l10n_action_strings.explanation}</div>
   
   <form id="pageViewForm" method="get" action="">
     <input type="hidden" name="group_id" id="item_id_input" value="" />
@@ -34,11 +34,11 @@
 
 <div id="actions-area">
   <ul class="actions-list" id="item-specific-actions" style="display:none">
-    <li><b>Selected Group</b></li>
-    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editAssetGroup');}{/literal}"><img border="0" src="{$domain}Resources/Icons/information.png"> Group info</a></li>
-    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editAssetGroupContents');}{/literal}"><img border="0" src="{$domain}Resources/Icons/folder_edit.png"> Edit contents</a></li>
-    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('browseAssetGroup');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_magnify.png"> Browse contents</a></li>
-    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('deleteAssetGroupConfirm');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_delete.png"> Delete group</a></li>
+    <li><b>{$_l10n_action_strings.sidebar_options.selected_group_heading}</b></li>
+    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editAssetGroup');}{/literal}"><img border="0" src="{$domain}Resources/Icons/information.png"> {$_l10n_action_strings.sidebar_options.selected_group_info}</a></li>
+    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editAssetGroupContents');}{/literal}"><img border="0" src="{$domain}Resources/Icons/folder_edit.png"> {$_l10n_action_strings.sidebar_options.selected_group_edit_contents}</a></li>
+    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('browseAssetGroup');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_magnify.png"> {$_l10n_action_strings.sidebar_options.selected_group_contents}</a></li>
+    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('deleteAssetGroupConfirm');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_delete.png"> {$_l10n_action_strings.sidebar_options.selected_group_delete}</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">
