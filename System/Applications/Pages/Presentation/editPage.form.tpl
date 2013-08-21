@@ -102,7 +102,7 @@
     <div class="form-section-label">Status</div>
       <div style="display:inline" class="text">
     	{if $page.is_published == "TRUE"}
-    	  <strong>Live</strong> - Last published: {convert_timestamp format="h:i a, l jS F, Y" time=$page.last_published}; Last built: {convert_timestamp format="h:i a, l jS F, Y" time=$page.last_built}
+    	  <strong>Live</strong> - Last published: {convert_timestamp format="h:i a, l jS F, Y" time=$page.last_published}{if $page.last_built}; Last built: {convert_timestamp format="h:i a, l jS F, Y" time=$page.last_built}{/if}
     	  <input type="button" onclick="window.location='{$domain}{$section}/unPublishPage?page_id={$page.webid}'" value="Un-Publish">
     	{else}
     	  {if $page.last_published == 0 }

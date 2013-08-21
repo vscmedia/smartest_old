@@ -74,7 +74,7 @@ class SmartestBaseApplication extends QuinceBase{
 		    
 		}
 		
-		if(is_file($this->getLocalisationFilePath())){
+		if(method_exists($this, 'getLocalisationFilePath') && is_file($this->getLocalisationFilePath())){
 	        
 	        $s = SmartestYamlHelper::fastLoad($this->getLocalisationFilePath());
 	        
