@@ -23,7 +23,7 @@
       <div class="form-hint">This value is used in templates and queries: <code>{$set.name}</code></div>
     </div>
     
-    
+    {* 
     <div class="edit-form-row">
       <div class="form-section-label">Get {$model.plural_name}</div>
       <select name="set_data_source_site_id">
@@ -33,7 +33,7 @@
         {if count($sites) > 1}<option value="ALL" {if $set.data_source_site_id == "ALL"} selected="selected"{/if}>From all Sites</option>{/if}
         <option value="CURRENT"{if $set.data_source_site_id == "CURRENT"} selected="selected"{/if}>From the site where the set is in use at the time (contextual)</option>
 	    </select>
-    </div>
+    </div>  *}
     
     <div class="edit-form-row">
       <div class="form-section-label">Sort by</div>
@@ -56,6 +56,14 @@
 		    <option value="DESC" {if $set.sort_direction == "DESC"} selected{/if}>Descending</option>
 	    </select>
     </div>
+    
+    {if $show_shared}
+    <div class="edit-form-row">
+      <div class="form-section-label">Shared</div>
+      <input type="checkbox" name="set_shared" value="1"{if $set.shared == "1"} checked="checked"{/if} />
+      <span class="form-hint">Check this box to make this set and its rules (but not its contents) shared with other sites.</span>
+    </div>
+    {/if}
   
     <div class="edit-form-row">
       <div class="buttons-bar">

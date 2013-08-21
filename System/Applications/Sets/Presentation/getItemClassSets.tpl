@@ -30,7 +30,7 @@
   <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('previewSet');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_go.png"> Browse items</a></li>
   <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editStaticSetOrder');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/arrow_switch.png"> Change order</a></li>
 {* <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('copySet');}{/literal}"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Duplicate<!--structure, not template because it does not propigate back to template--></a></li> *}
-  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteSet');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_delete.png"> Delete</a></li>
+  <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this set?')){workWithItem('deleteSet');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_delete.png"> Delete</a></li>
 {* <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('chooseSchemaForExport');}{/literal}"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Export</a></li> *}
 </ul>
 

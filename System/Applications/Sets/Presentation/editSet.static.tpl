@@ -22,6 +22,9 @@ function executeTransfer(){
 }
 
 {/literal}
+
+var set_id = {$set.id};
+
 </script>
 
 <div id="work-area">
@@ -67,6 +70,35 @@ function executeTransfer(){
   {$set.name}
   {/if}
 </div>
+
+{if $show_shared}
+<div class="edit-form-row">
+  <div class="form-section-label">Shared</div>
+  <input type="checkbox" name="set_shared" id="set-shared" value="1"{if $set.shared == "1"} checked="checked"{/if} />
+  <span class="form-hint" id="shared-hint">{if $set.shared == "1"}Un-check{else}Check{/if} this box to make this set (but not its contents){if $set.shared == "1"} no longer{/if} shared with other sites.</span>
+</div>
+<script type="text/javascript">
+
+  var shared_text = 'Un-check this box to make this set (but not its contents) no longer shared with other sites.';
+  var unshared_text = 'Check this box to make this set (but not its contents) shared with other sites.';
+
+  {literal}
+  $('set-shared').observe('click', function(){
+    var url = sm_domain+'ajax:sets/updateSetShared';
+    var checked = $('set-shared').checked ? 1 : 0;
+    new Ajax.Request(url, {
+      method: 'post',
+      parameters: {'set_id': set_id, 'is_shared': checked}
+    });
+    if(checked){
+        $('shared-hint').update(shared_text);
+    }else{
+        $('shared-hint').update(unshared_text);
+    }
+  });
+  {/literal}
+</script>
+{/if}
 
 <div class="breaker"></div>
 

@@ -87,4 +87,23 @@ class SetsAjax extends SmartestSystemApplication{
         
     }
     
+    public function updateSetShared(){
+        
+        
+        $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($this->getRequestParameter('set_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $set->setShared((int) (bool) $this->getRequestParameter('is_shared'));
+	        $set->save();
+	        exit();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+    }
+    
 }

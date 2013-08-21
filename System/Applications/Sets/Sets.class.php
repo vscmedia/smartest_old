@@ -202,6 +202,7 @@ class Sets extends SmartestSystemApplication{
 	            
 	        }
 	        
+	        $this->send($set->getModel()->isShared() && ($set->getSiteId() == $this->getSite()->getId()), 'show_shared');
 	        $this->send($set->getModel(), 'model');
 	        $this->send($formTemplateInclude, 'formTemplateInclude');
 	        
@@ -252,7 +253,10 @@ class Sets extends SmartestSystemApplication{
                 }
                 
 	            $set->setSortField($this->getRequestParameter('set_sort_field'));
-	            $set->setDataSourceSiteId($this->getRequestParameter('set_data_source_site_id'));
+	            // $set->setDataSourceSiteId($this->getRequestParameter('set_data_source_site_id'));
+	            if($set->getModel()->isShared()){
+	                $set->setShared(($this->requestParameterIsSet('set_shared') && $this->getRequestParameter('set_shared')) ? 1 : 0);
+                }
 	            
 	            $direction = ($this->getRequestParameter('set_sort_direction') == 'DESC') ? 'DESC' : 'ASC';
 	            
