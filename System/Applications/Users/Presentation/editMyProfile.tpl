@@ -26,6 +26,14 @@
       @<input type="text" name="user_twitter" value="{$twitter_handle}" />
     </div>
     <div class="edit-form-row">
+      <div class="form-section-label">User interface language (where possible)</div>
+      <select name="user_language">
+{foreach from=$_languages item="lang" key="langcode"}
+        {if $langcode != "zxx" && $langcode != "mul"}<option value="{$langcode}"{if $user.ui_language == $langcode} selected="selected"{/if}>{$lang.label}</option>{/if}
+{/foreach}        
+      </select>
+    </div>
+    <div class="edit-form-row">
       <div class="form-section-label">Website</div>
       <input type="text" name="user_website" value="{$user.website}" />
     </div>

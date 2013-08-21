@@ -486,7 +486,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     $template_id = $def->getItemspace()->getTemplateAssetId();
                     $template = new SmartestTemplateAsset;
                     
-                    if($template->hydrate($template_id)){
+                    if($template->find($template_id)){
                         
                         $template_path = SM_ROOT_DIR.'Presentation/Layouts/'.$template->getUrl();
                         $render_process_id = SmartestStringHelper::toVarName('itemspace_template_'.SmartestStringHelper::removeDotSuffix($template->getUrl()).'_'.substr(microtime(true), -6));
@@ -854,12 +854,18 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             $g = new SmartestAssetGroup;
             if($g->findBy('name', $name, $this->page->getSiteId())){
                 if($g->getIsGallery()){
-                    return $g->getMemberships();
+                    if(isset($params['skip_memberships']) && SmartestStringHelper::toRealBool($params['skip_memberships'])){
+                        return $g->getMembers();
+                    }else{
+                        return $g->getMemberships();
+                    }
                 }else{
                     // the file group is not a gallery
+                    return $this->raiseError('Specified file group \''.$name.'\' is not a gallery.');
                 }
             }else{
                 // no file group with that name
+                return $this->raiseError('No file group exists with the name \''.$name.'\'.');
             }
             
             break;

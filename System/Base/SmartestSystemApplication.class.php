@@ -353,6 +353,10 @@ class SmartestSystemApplication extends SmartestBaseApplication{
     /// Localisation ///
     
     protected function getLocalisationFilePath(){
+	    return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/'.$this->getUser()->getPreferredUiLanguage().'/Interface/strings.yml';
+	}
+	
+	protected function getEnglishLocalisationFilePath(){
 	    return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/eng/Interface/strings.yml';
 	}
     

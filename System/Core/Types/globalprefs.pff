@@ -9,3 +9,4 @@ default_user_profile_pic_asset_id:1:0:The image asset which should be used when 
 default_user_profile_pic_asset_group_id:0:0:The file group which holds user profile pics
 default_site_logo_asset_group_id:0:0:The file group which holds site logos
 site_language:1:0:What language is the site in?
+user_language:0:1:What language does the user prefer for the user interface?

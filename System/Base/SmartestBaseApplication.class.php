@@ -77,7 +77,16 @@ class SmartestBaseApplication extends QuinceBase{
 		if(is_file($this->getLocalisationFilePath())){
 	        
 	        $s = SmartestYamlHelper::fastLoad($this->getLocalisationFilePath());
-	        // print_r($s['strings']);
+	        
+	        if(isset($s['strings'])){
+	            $this->_l10n_strings = $s['strings'];
+	            $this->send($this->_l10n_strings, '_l10n_strings');
+	        }
+	        
+	    }else if(is_file($this->getEnglishLocalisationFilePath())){
+	        
+	        $s = SmartestYamlHelper::fastLoad($this->getEnglishLocalisationFilePath());
+	        
 	        if(isset($s['strings'])){
 	            $this->_l10n_strings = $s['strings'];
 	            $this->send($this->_l10n_strings, '_l10n_strings');

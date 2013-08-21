@@ -52,6 +52,9 @@ languages:
   swe:
     label: Swedish
     charset: UTF-8
+  ukr:
+    label: Ukrainian
+    charset: UTF-8
   uzb:
     label: Uzbek (Generic)
     charset: UTF-8

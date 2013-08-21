@@ -8,14 +8,17 @@ class SmartestUser extends SmartestBaseUser{
 	protected $_parameters; // Only useful when the user is being stored in the session
 	
 	protected function __objectConstruct(){
-		$this->_table_prefix = 'user_';
+	    
+		/* $this->_table_prefix = 'user_';
 		$this->_table_name = 'Users';
-		$this->_no_prefix = array('username'=>1, 'password'=>1);
+		$this->_no_prefix = array('username'=>1, 'password'=>1); */
 		
 		if(method_exists($this, '__myConstructor')){
 		    $args = func_get_args();
 		    $this->__myConstructor($args);
 		}
+		
+		$this->_preferences_helper = SmartestPersistentObject::get('prefs_helper');
 		
 	}
 	

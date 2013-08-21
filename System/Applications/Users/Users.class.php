@@ -546,7 +546,8 @@ class Users extends SmartestSystemApplication{
 	        $this->getUser()->setWebsite($this->getRequestParameter('user_website'));
         }
         
-	    $this->getUser()->setBio($this->getRequestParameter('user_bio'));
+        $this->getUser()->setPreferredUiLanguage($this->getRequestParameter('user_language'));
+        $this->getUser()->setBio($this->getRequestParameter('user_bio'));
 	    $this->getUser()->save();
 	    
 	    $this->addUserMessageToNextRequest('Your user profile has been updated.', SmartestUserMessage::SUCCESS);

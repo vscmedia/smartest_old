@@ -3753,7 +3753,7 @@ class Pages extends SmartestSystemApplication{
                 
                 $this->send($definition_id, 'definition_id');
                 $this->send($options, 'options');
-                $this->send($item_space->__toArray(), 'itemspace');
+                $this->send($item_space, 'itemspace');
                 $this->send($page, 'page');
                 
             }else{
