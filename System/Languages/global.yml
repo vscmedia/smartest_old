@@ -8,3 +8,7 @@ strings:
     metadata: "Meta-data"
     about: About Smartest
     sign_out: Sign out
+  top_bar:
+    signed_in_before_site_name: "Signed into"
+    signed_in_without_site_name: "Signed in"
+    signed_in_after_site_name: " as "

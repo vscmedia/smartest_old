@@ -45,7 +45,11 @@ class SmartestExternalFeedItem extends SimplePie_Item implements SmartestGeneric
     }
     
     public function getDate(){
-        
+        return $this->get_date('U');
+    }
+    
+    public function getDateWithFormat($format){
+        return $this->get_date($format);
     }
     
     public function getLinkContents(){
@@ -53,7 +57,7 @@ class SmartestExternalFeedItem extends SimplePie_Item implements SmartestGeneric
     }
     
     public function getDescription(){
-        
+        return $this->get_description();
     }
     
     public function offsetGet($offset){
@@ -70,6 +74,13 @@ class SmartestExternalFeedItem extends SimplePie_Item implements SmartestGeneric
             case "url":
             return new SmartestExternalUrl($this->get_permalink());
             break;
+            
+            case "slug":
+            return $this->getSlug();
+            break;
+            
+            case "date":
+            return new SmartestDateTime($this->getDate('U'));
             
             case "description":
             return new SmartestString($this->get_description());

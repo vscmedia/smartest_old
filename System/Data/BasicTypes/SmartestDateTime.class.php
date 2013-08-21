@@ -203,9 +203,6 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
 	        case 'empty':
 	        return !$this->isPresent();
 	        
-	        case 'londonline':
-	        return date('j F Y', $this->_value);
-	        
 	        case 'day_only':
 	        return date($this->_day_format, $this->_value);
 	        

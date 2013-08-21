@@ -10,3 +10,7 @@ default_user_profile_pic_asset_group_id:0:0:The file group which holds user prof
 default_site_logo_asset_group_id:0:0:The file group which holds site logos
 site_language:1:0:What language is the site in?
 user_language:0:1:What language does the user prefer for the user interface?
+twitter_consumer_key:1:0:Twitter Consumer Key
+twitter_consumer_secret:1:0:Twitter Consumer Secret
+twitter_access_token:1:0:Twitter Access Token
+twitter_access_token_secret:1:0:Twitter Access Token Secret

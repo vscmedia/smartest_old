@@ -433,12 +433,37 @@ class SmartestStringHelper extends SmartestHelper{
 	    
 	    if($type == 'SHA1'){
 	        $hash = sha1($string);
+	    
 	    }else{
 	        $hash = md5($string);
 	    }
 	    
 	    return substr($hash, 0, $length);
 	}
+	
+	public static function toHmacSha1($key, $data){
+	  
+      // Adjust key to exactly 64 bytes
+      if (strlen($key) > 64) {
+          $key = str_pad(sha1($key, true), 64, chr(0));
+      }
+      
+      if (strlen($key) < 64) {
+          $key = str_pad($key, 64, chr(0));
+      }
+
+      // Outter and Inner pad
+      $opad = str_repeat(chr(0x5C), 64);
+      $ipad = str_repeat(chr(0x36), 64);
+
+      // Xor key with opad & ipad
+      for ($i = 0; $i < strlen($key); $i++) {
+          $opad[$i] = $opad[$i] ^ $key[$i];
+          $ipad[$i] = $ipad[$i] ^ $key[$i];
+      }
+
+      return sha1($opad.sha1($ipad.$data, true));
+  }
 	
 	public static function isMd5Hash($string){
 		if(preg_match("/^[0-9a-f]{32}$/", $string)){ // if
@@ -641,6 +666,30 @@ class SmartestStringHelper extends SmartestHelper{
 	        
 	        foreach($array as $key=>$value){
 	            $string .= ' '.$key.'="'.$value.'"';
+	        }
+	        
+	        return $string;
+	    }
+	}
+	
+	public static function toUrlParameterString($array, $encode_values=true){
+	    if(!is_array($array)){
+	        return '';
+	    }else{
+	        
+	        $i = 0;
+	        
+	        foreach($array as $key=>$value){
+	            
+	            if($i > 0) $string .= '&';
+	            
+	            if($encode_values){
+	                $string .= $key.'='.urlencode($value);
+                }else{
+                    $string .= $key.'='.$value;
+                }
+              
+	            $i++;
 	        }
 	        
 	        return $string;
