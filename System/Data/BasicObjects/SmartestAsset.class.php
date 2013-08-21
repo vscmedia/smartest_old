@@ -916,7 +916,7 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
 	    $info = $this->getTypeInfo();
 	    
 	    if($info['storage']['type'] == 'file'){
-	        $sql = "SELECT Assets.*, Sites.* FROM Assets, Sites WHERE Sites.site_id=Assets.asset_site_id AND Assets.asset_id != '".$this->getId()."' AND Assets.asset_url = '".$this->getUrl()."' AND Assets.asset_type = '".$this->getType()."' AND Assets.asset_deleted != '1' AND Assets.asset_is_hidden != '1'";
+	        $sql = "SELECT Assets.*, Sites.* FROM Assets, Sites WHERE Sites.site_id=Assets.asset_site_id AND Assets.asset_id != '".$this->getId()."' AND Assets.asset_url = '".addslashes($this->getUrl())."' AND Assets.asset_type = '".$this->getType()."' AND Assets.asset_deleted != '1' AND Assets.asset_is_hidden != '1'";
 	        $result = $this->database->queryToArray($sql);
 	        
 	        $pointers = array();

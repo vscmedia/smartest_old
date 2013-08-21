@@ -1,0 +1,10 @@
+strings:
+  main_nav:
+    pages: Pages
+    items: Items
+    files: Files
+    templates: Templates
+    users: Users
+    metadata: "Meta-data"
+    about: About Smartest
+    sign_out: Sign out

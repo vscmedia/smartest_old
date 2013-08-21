@@ -17,7 +17,7 @@
 
 <div class="special-box">
       <form action="" method="get" id="assets-search-form" onsubmit="return false">
-        Search for a file: <input type="text" class="search" name="query" id="assets-search-name" />
+        {$_l10n_strings.files.search_instruction}: <input type="text" class="search" name="query" id="assets-search-name" />
         <!--<select name="query_type">
           <option value="ALL">Names, Full-text and Tags</option>
           <option value="NT">Names and Tags</option>
@@ -57,7 +57,7 @@
   
 {foreach from=$assetTypeCats item="assetTypeCategory"}
 
-<div class="form-section-label-full">{$assetTypeCategory.label}</div>
+<div class="form-section-label-full">{$assetTypeCategory.l10n_label}</div>
 
 <ul class="options-grid-no-scroll" style="margin-top:0px">
 
@@ -75,23 +75,23 @@
 <div id="actions-area">
   
   <ul class="actions-list" id="item-specific-actions" style="display:none">
-    <li><b>Selected File Type</b></li>
+    <li><b>{$_l10n_strings.general.selected_file_type_label}</b></li>
   	<li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){ workWithItem('getAssetTypeMembers'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_edit.png" border="0" alt=""> Show me all of this type</a></li>
   	<li class="permanent-action"><a href="#" onclick="workWithItem('addAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add a file this type</a></li>
   	<li class="permanent-action"><a href="#" onclick="workWithItem('newAssetGroup');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Make a new group of these files</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">
-    <li><b>Repository Options</b></li>
-  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/file/new'" class="right-nav-link"><img src="{$domain}Resources/Icons/add.png" border="0" alt="" /> Create a new file</a></li>
-  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/detectNewUploads'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_magnify.png" border="0" alt="" /> Detect newly uploaded files</a></li>
-  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/assetGroups'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" border="0" alt="" style="width:16px;height:16px" /> View file groups</a></li>
-  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_add.png" border="0" alt="" /> Create a new file group</a></li>
-  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/newAssetGroup?is_gallery=true&amp;asset_type=SM_ASSETCLASS_STATIC_IMAGE&amp;group_label=Unnamed+image+gallery'" class="right-nav-link"><img src="{$domain}Resources/Icons/photos.png" border="0" alt="" /> Create a new image gallery</a></li>
+    <li><b>{$_l10n_strings.general.general_options_label}</b></li>
+  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/file/new'" class="right-nav-link"><img src="{$domain}Resources/Icons/add.png" border="0" alt="" /> {$_l10n_strings.sidebar_options.create_file}</a></li>
+  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/detectNewUploads'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_magnify.png" border="0" alt="" /> {$_l10n_strings.sidebar_options.detect_uploads}</a></li>
+  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/assetGroups'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder.png" border="0" alt="" style="width:16px;height:16px" /> {$_l10n_strings.sidebar_options.view_file_groups}</a></li>
+  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/newAssetGroup'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_add.png" border="0" alt="" /> {$_l10n_strings.sidebar_options.create_file_group}</a></li>
+  	<li class="permanent-action"><a href="#" onclick="window.location='{$domain}assets/newAssetGroup?is_gallery=true&amp;asset_type=SM_ASSETCLASS_STATIC_IMAGE&amp;group_label={$_l10n_strings.general.new_image_gallery_name}'" class="right-nav-link"><img src="{$domain}Resources/Icons/photos.png" border="0" alt="" /> {$_l10n_strings.sidebar_options.create_image_gallery}</a></li>
   </ul>
   
   <ul class="actions-list" id="non-specific-actions">
-    <li><span style="color:#999">Recently edited files</span></li>
+    <li><span style="color:#999">{$_l10n_strings.general.recently_edited_label}</span></li>
     {foreach from=$recent_assets item="recent_asset"}
     <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_asset.action_url}'"><img border="0" src="{$recent_asset.small_icon}" /> {$recent_asset.label|summary:"30"}</a></li>
     {/foreach}

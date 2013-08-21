@@ -10,6 +10,9 @@ languages:
   ara:
     label: Arabic
     charset: UTF-8
+  cat:
+    label: Catalan
+    charset: UTF-8
   zho:
     label: Chinese
     charset: UTF-8
@@ -47,7 +50,7 @@ languages:
     label: Russian
     charset: UTF-8
   spa:
-    label: Spanish
+    label: Spanish (Castillian)
     charset: UTF-8
   swe:
     label: Swedish

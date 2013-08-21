@@ -62,6 +62,27 @@ class SmartestAssetsLibraryHelper{
         
         $cats = $this->categories;
         
+        // language stuff
+        $current_user = SmartestSession::get('user');
+        $category_labels_filename = SM_ROOT_DIR.'System/Languages/SystemLocalizations/'.$current_user->getPreferredUiLanguage().'/assetcategorylabels.yml';
+        $category_labels_filename_exists = is_file($category_labels_filename);
+        
+        if($category_labels_filename_exists){
+            $strings = SmartestYamlHelper::fastLoad($category_labels_filename);
+        }
+        
+        foreach($cats as $k=>$cat){
+            if($category_labels_filename_exists){
+                if(isset($strings['strings'][$cats[$k]['short_name']])){
+                    $cats[$k]['l10n_label'] = $strings['strings'][$cats[$k]['short_name']];
+                }else{
+                    $cats[$k]['l10n_label'] = $cats[$k]['label'];
+                }
+            }else{
+                $cats[$k]['l10n_label'] = $cats[$k]['label'];
+            }
+        }
+        
         if($importable_only){
             foreach($cats as $k=>$cat){
                 if(!$cat['importable']){

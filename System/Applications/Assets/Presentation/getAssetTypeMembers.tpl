@@ -115,7 +115,7 @@ Found {$num_assets} file{if $num_assets != 1}s{/if}. View as:
 </ul>
 
 <ul class="actions-list" id="non-specific-actions">
-  <li><b>Repository options</b></li>
+  <li><b>{$_l10n_strings.general.general_options_label}</b></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/addAsset?asset_type={$type_code}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a new file of this type</a></li>
 	{if in_array($type_code, array('SM_ASSETTYPE_JPEG_IMAGE', 'SM_ASSETTYPE_GIF_IMAGE', 'SM_ASSETTYPE_PNG_IMAGE'))}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/newAssetGroup?is_gallery=true&amp;asset_type={$type_code}&amp;group_label=Unnamed+{$type_label.urlencoded}+gallery'" class="right-nav-link"><img src="{$domain}Resources/Icons/photos.png" border="0" alt="" /> Add a new {$type_label} gallery</a></li>{/if}
 	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/newAssetGroup?filter_type={$type_code}'" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt="" /> Add a new group from these files</a></li>

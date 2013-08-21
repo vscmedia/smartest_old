@@ -18,6 +18,26 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	    $language_options = SmartestYamlHelper::fastLoad(SM_ROOT_DIR."System/Languages/options.yml");
 		$this->_languages = $language_options['languages'];
 		$this->send($this->_languages, '_languages');
+		
+		if($this->getUser()){
+		    
+    		$global_ui_filename = SM_ROOT_DIR.'System/Languages/SystemLocalizations/'.$this->getUser()->getPreferredUiLanguage().'/global.yml';
+            $global_ui_filename_exists = is_file($global_ui_filename);
+        
+            if($global_ui_filename_exists){
+                $global_ui_strings = SmartestYamlHelper::fastLoad($global_ui_filename);
+            }else{
+                $global_ui_strings = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Languages/global.yml');
+            }
+            
+            $global_ui_strings = $global_ui_strings['strings'];
+            $this->send($global_ui_strings, '_i10n_global_strings');
+            
+        }else{
+            $global_ui_strings = SmartestYamlHelper::fastLoad(SM_ROOT_DIR.'System/Languages/global.yml');
+            $global_ui_strings = $global_ui_strings['strings'];
+            $this->send($global_ui_strings, '_i10n_global_strings');
+        }
 	    
 	    if($this->getSite()){
 	        $this->setCookie('SMARTEST_LPID', $this->getSite()->getId(), 1);
@@ -353,7 +373,11 @@ class SmartestSystemApplication extends SmartestBaseApplication{
     /// Localisation ///
     
     protected function getLocalisationFilePath(){
-	    return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/'.$this->getUser()->getPreferredUiLanguage().'/Interface/strings.yml';
+        if($this->getUser()){
+	        return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/'.$this->getUser()->getPreferredUiLanguage().'/Interface/strings.yml';
+        }else{
+            return $this->getRequest()->getMeta('_module_dir').'Content/LanguagePacks/eng/Interface/strings.yml';
+        }
 	}
 	
 	protected function getEnglishLocalisationFilePath(){

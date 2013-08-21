@@ -1,21 +1,32 @@
 strings:
-  title: Archivo de almacenamiento
+  title: Almacenamiento de archivos 
   files:
-    types_instruction: Double click an icon below to see files of that type.
-#    editing:
-#    creating:
+    types_instruction: Doble click en cualquier icono inferior para ver los archivos.
+    search_instruction: Buscar archivo
+  general:
+    recently_edited_label: Archivos editados recientemente
+    new_image_gallery_name: Galer%C3%ADa+de+imagenes+sin+nombre
+    general_options_label: Opciones del almacenamiento
+    selected_file_label: Archivo seleccionado
+    selected_file_type_label: Tipo seleccionado
   groups:
-    explanation: "File groups are a basic way to keep your files organised when you have a lot of them."
+    explanation: "Agrupar archivos es la forma más sencilla de mantener los archivos organizados cuando hay muchos."
     group_tabs:
-      browse: Browse files
-      add_remove_files: "Add &amp; remove files"
-      group_info: Group info
-      gallery_info: Gallery info
-    group_files: "Files in group: "
-    gallery_files: "Files in gallery: "
-#    creating:
+      browse: Buscar archivos
+      add_remove_files: "Add &amp; eliminar archivos"
+      group_info: Información del grupo
+      gallery_info: Información de galería
+    group_files: "Archivos en grupo: "
+    gallery_files: "Archivos en galería: "
+  sidebar_options:
+    create_file: Crear nuevo archivo
+    create_file_group: Crear nuevo grupo de archivos
+    create_image_gallery: Crear nueva galería de imagenes
+    view_by_type: Ver todos los tipos de archivo
+    view_file_groups: Ver grupos de archivos
+    detect_uploads: Detectar nuevos archivos subidos
   tabs:
-    file_types: Files by type
-    file_groups: Organise
+    file_types: Tipo de archivos
+    file_groups: Organizar
   warnings:
-    storage_locations_unwriteable: "For smooth operation of the files repository, the following locations need to be made writable:"
+    storage_locations_unwriteable: "Para facilitar el comportamiento del almacenamiento de archivos, las siguientes carpetas necesitan poder ser editadas:"

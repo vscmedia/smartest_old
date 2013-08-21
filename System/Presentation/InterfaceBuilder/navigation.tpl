@@ -2,16 +2,16 @@
   <ul>
     {if $show_left_nav_options}
     {* <li class="site-top-level{if $section == "desktop" && $method != 'aboutSmartest'} on{else} off{/if}"><a href="{$domain}smartest" style="float:left">Home</a> <a href="{$domain}desktop/closeCurrentSite" id="site-exit-button"></a></li> *}
-    <li class="top-level{if $section == "websitemanager"} on{else} off{/if}"><a href="{$domain}smartest/pages">Pages</a></li>
-    <li class="top-level{if $section == "datamanager" || $section == "sets"} on{else} off{/if}"><a href="{$domain}smartest/models">Items</a></li>
-    <li class="top-level{if $section == "assets"} on{else} off{/if}"><a href="{$domain}smartest/files">Files</a></li>
-    <li class="top-level{if $section == "templates"} on{else} off{/if}"><a href="{$domain}smartest/templates">Templates</a></li>
-    <li class="top-level{if $section == "users"} on{else} off{/if}"><a href="{$domain}smartest/users">Users</a></li>
-    <li class="top-level{if $section == "metadata" || $section == "dropdowns"} on{else} off{/if}"><a href="{$domain}smartest/metadata">Meta-data</a></li>
+    <li class="top-level{if $section == "websitemanager"} on{else} off{/if}"><a href="{$domain}smartest/pages">{$_i10n_global_strings.main_nav.pages}</a></li>
+    <li class="top-level{if $section == "datamanager" || $section == "sets"} on{else} off{/if}"><a href="{$domain}smartest/models">{$_i10n_global_strings.main_nav.items}</a></li>
+    <li class="top-level{if $section == "assets"} on{else} off{/if}"><a href="{$domain}smartest/files">{$_i10n_global_strings.main_nav.files}</a></li>
+    <li class="top-level{if $section == "templates"} on{else} off{/if}"><a href="{$domain}smartest/templates">{$_i10n_global_strings.main_nav.templates}</a></li>
+    <li class="top-level{if $section == "users"} on{else} off{/if}"><a href="{$domain}smartest/users">{$_i10n_global_strings.main_nav.users}</a></li>
+    <li class="top-level{if $section == "metadata" || $section == "dropdowns"} on{else} off{/if}"><a href="{$domain}smartest/metadata">{$_i10n_global_strings.main_nav.metadata}</a></li>
     {else}
     <li class="site-top-level{if $section == "desktop" && $method != 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}smartest' >Your websites</a></li>
     {/if}
-    <li class="break top-level{if $section == "desktop" && $method == 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}smartest/about'>About Smartest</a></li>
-    <li class="top-level off"><a href='{$domain}smartest/logout'>Sign out</a></li>
+    <li class="break top-level{if $section == "desktop" && $method == 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}smartest/about'>{$_i10n_global_strings.main_nav.about}</a></li>
+    <li class="top-level off"><a href='{$domain}smartest/logout'>{$_i10n_global_strings.main_nav.sign_out}</a></li>
   </ul>
 </div>

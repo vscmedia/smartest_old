@@ -1,0 +1,14 @@
+strings:
+  main_nav:
+    pages: Páginas
+    items: Dados
+    files: Archivos
+    templates: Plantillas
+    users: Usarios
+    metadata: "Meta-dados"
+    about: Sobre Smartest
+    sign_out: Salir
+  top_bar:
+    signed_in_before_site_name: "Signed into"
+    signed_in_without_site_name: "Signed in"
+    signed_in_after_site_name: " as user "

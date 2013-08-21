@@ -635,19 +635,14 @@ class SmartestSystemUser extends SmartestUser{
 	    $this->_preferences_helper = SmartestPersistentObject::get('prefs_helper');
 	    $lang = $this->_preferences_helper->getGlobalPreference('user_language', $this->getId(), null);
 	    $f_lang = $lang ? $lang : 'eng';
-	    // var_dump($f_lang);
 	    return $f_lang;
 	    
 	}
 	
 	public function setPreferredUiLanguage($langcode){
 	    
-	    // var_dump($langcode);
 	    $this->_preferences_helper = SmartestPersistentObject::get('prefs_helper');
 	    return $this->_preferences_helper->setGlobalPreference('user_language', $langcode, $this->getId(), null);
-	    // $f_lang = $lang ? $lang : 'eng';
-	    // var_dump($f_lang);
-	    // return $f_lang;
 	    
 	}
 	
