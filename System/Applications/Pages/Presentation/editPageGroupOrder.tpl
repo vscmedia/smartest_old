@@ -66,3 +66,12 @@
   {/if}
   
 </div>
+
+<div id="actions-area">
+  <ul class="actions-list" id="non-specific-actions">
+    <li><b>Page groups</b></li>
+    <li class="permanent-action"><a href="{$domain}smartest/pagegroup/new" class="right-nav-link"><img src="{$domain}Resources/Icons/add.png" border="0" alt=""> Create another page group</a></li>
+    <li class="permanent-action"><a href="{$domain}smartest/pagegroups" class="right-nav-link"><img src="{$domain}Resources/Icons/page.png" border="0" alt=""> Back to page groups</a></li>
+    <li class="permanent-action"><a href="{$domain}smartest/pages" class="right-nav-link"><img src="{$domain}Resources/Icons/page.png" border="0" alt=""> Back to pages</a></li>
+  </ul>
+</div>
