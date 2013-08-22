@@ -72,4 +72,20 @@ class SmartestPageGroupMembership extends SmartestManyToManyLookup{
         return parent::save();
     }
     
+    public function offsetGet($offset){
+        
+        switch($offset){
+            
+            case "page":
+            return $this->getPage();
+            
+            case "group":
+            return $this->getGroup();
+            
+        }
+        
+        return parent::offsetGet($offset);
+        
+    }
+    
 }

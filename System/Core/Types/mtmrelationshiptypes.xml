@@ -53,7 +53,7 @@
     <entity table="Sets" class="SmartestTemplateGroup" foreignkey="set_id" index="2" required="true" />
   </type>
   
-  <type id="SM_MTMLOOKUP_PAGE_GROUP_MEMBERSHIP" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+  <type id="SM_MTMLOOKUP_PAGE_GROUP_MEMBERSHIP" return="class:SmartestPageGroupMembership" method="SM_MTMLOOKUPMETHOD_MAP">
     <label>Maps pages into groups.</label>
     <entity table="Pages" class="SmartestPage" foreignkey="page_id" index="1" required="true" />
     <entity table="Sets" class="SmartestPageGroup" foreignkey="set_id" index="2" required="true" />

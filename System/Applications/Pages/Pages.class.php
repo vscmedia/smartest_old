@@ -4271,13 +4271,65 @@ class Pages extends SmartestSystemApplication{
 	    
 	    $group = new SmartestPageGroup;
 	    
+	    $this->setFormReturnUri();
+	    $this->setFormReturnDescription('editing page grouop');
+	    
 	    if($group->find($this->getRequestParameter('group_id'))){
-	        $this->send($group, 'pagegroup');
+	        // $group->fixOrderIndices();
+	        $this->send($group, 'group');
+	        $this->send($group->getNonMembers(), 'non_members');
+	        $this->send($group->getMemberships(true, true), 'members');
 	    }
 	    
 	}
 	
-	public function updatePageGroup(){
+	public function editPageGroupOrder(){
+	    
+	    $group = new SmartestPageGroup;
+	    
+	    if($group->find($this->getRequestParameter('group_id'))){
+	        // $group->fixOrderIndices();
+	        $this->send($group, 'group');
+	        $this->send($group->getMemberships(true, true), 'pages');
+	    }
+	    
+	}
+	
+	public function transferPages(){
+	    
+	    $group_id = $this->getRequestParameter('group_id');
+	    
+	    $group = new SmartestPageGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        if($this->getRequestParameter('transferAction') == 'add'){
+	            
+	            $page_ids = ($this->getRequestParameter('available_pages') && is_array($this->getRequestParameter('available_pages'))) ? $this->getRequestParameter('available_pages') : array();
+	            
+	            foreach($page_ids as $aid){
+	                $group->addPageById($aid);
+	            }
+	            
+	        }else{
+	            
+	            $page_ids = ($this->getRequestParameter('used_pages') && is_array($this->getRequestParameter('used_pages'))) ? $this->getRequestParameter('used_pages') : array();
+	            
+	            foreach($page_ids as $aid){
+	                $group->removePageById($aid);
+	            }
+	            
+	            $group->fixOrderIndices();
+	            
+	        }
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The group ID was not recognized.", SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    $this->formForward();
 	    
 	}
 

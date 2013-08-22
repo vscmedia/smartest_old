@@ -26,14 +26,18 @@ function executeTransfer(){
 
 <div id="work-area">
   <h3>Edit page group</h3>
+  
+  {load_interface file="page_group_tabs.tpl"}
+  
   <div class="edit-form-layout">
+    
     <div class="edit-form-row">
       <div class="form-section-label">Label</div>
-      <p class="editable" id="pagegroup-label">{$pagegroup.label}</p>
+      <p class="editable" id="pagegroup-label">{$group.label}</p>
       <script type="text/javascript">
       new Ajax.InPlaceEditor('pagegroup-label', sm_domain+'ajax:websitemanager/setPageGroupLabelFromInPlaceEditField', {ldelim}
         callback: function(form, value) {ldelim}
-          return 'pagegroup_id={$pagegroup.id}&new_label='+encodeURIComponent(value);
+          return 'pagegroup_id={$group.id}&new_label='+encodeURIComponent(value);
         {rdelim},
         highlightColor: '#ffffff',
         hoverClassName: 'editable-hover',
@@ -42,15 +46,36 @@ function executeTransfer(){
       </script>
     </div>
     
+    <div class="edit-form-row">
+      <div class="form-section-label">Name</div>
+      <p class="editable" id="pagegroup-name">{$group.name}</p>
+      <div class="form-hint">Used to access the page group from templates. Numbers, lowercase letters and underscores only</div>
+      <script type="text/javascript">
+      new Ajax.InPlaceEditor('pagegroup-name', sm_domain+'ajax:websitemanager/setPageGroupNameFromInPlaceEditField', {ldelim}
+        callback: function(form, value) {ldelim}
+          return 'pagegroup_id={$group.id}&new_name='+encodeURIComponent(value);
+        {rdelim},
+        highlightColor: '#ffffff',
+        hoverClassName: 'editable-hover',
+        savingClassName: 'editable-saving'
+      {rdelim});
+      </script>
+    </div>
+    
+    <form action="{$domain}{$section}/transferPages" method="post" name="transferForm">
+    
+    <input type="hidden" id="transferAction" name="transferAction" value="" />
+    <input type="hidden" name="group_id" value="{$group.id}" />
+    
     <table width="100%" border="0" cellpadding="0" cellspacing="5" style="border:1px solid #ccc">
       <tr>
         <td align="center">
           <div style="text-align:left">Pages that <strong>aren't</strong> in this group</div>
 
-  		    <select name="available_items[]"  id="available_items" size="2" multiple style="width:270px; height:300px;"  onclick="setMode('add')">
+  		    <select name="available_pages[]"  id="available_pages" size="2" multiple style="width:270px; height:300px;" onclick="setMode('add')">
 
-{foreach from=$non_members key="key" item="item"}
-  		      <option value="{$item.id}" >{$item.name}</option>
+{foreach from=$non_members key="key" item="page"}
+  		      <option value="{$page.info.id}" >{$page.info.title}</option>
 {/foreach}
 
   		    </select>
@@ -64,14 +89,16 @@ function executeTransfer(){
       
         <td align="center">
           <div style="text-align:left">Pages that <strong>are</strong> in this group</div>
-   	      <select name="used_items[]"  id='used_items' size="2" multiple style="width:270px; height:300px" onclick="setMode('remove')" >	
-{foreach from=$members key="key" item="item"}
-  	      	<option value="{$item.id}" >{$item.name}</option>
+   	      <select name="used_pages[]"  id='used_pages' size="2" multiple style="width:270px; height:300px" onclick="setMode('remove')" >	
+{foreach from=$members key="key" item="lookup"}
+  	      	<option value="{$lookup.page.id}" >{$lookup.order_index}. {$lookup.page.title}</option>
 {/foreach}
           </select>
   	    </td>
       </tr>
     </table>
+    
+    </form>
     
   </div>
 </div>

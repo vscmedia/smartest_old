@@ -22,31 +22,6 @@
             nameFieldFocussed = false;
         });
         
-        /* $('file-group-mode-select').observe('change', function(e){
-          if(this.value == "SM_SET_ASSETGALLERY"){
-
-            $('file-gallery-select-holder').show();
-            $('file-group-select-holder').hide();
-            $('h3-group-type').update('gallery');
-            $('filegroup-type-hint').update('A gallery allows you to arrange certain files in order to display them together'); 
-
-            if($F('template-group-label') == 'Unnamed file group'){
-              $('template-group-label').value = 'Unnamed gallery';
-            }
-            
-          }else{
-
-            $('file-gallery-select-holder').hide();
-            $('file-group-select-holder').show();
-            $('h3-group-type').update('file group');
-            $('filegroup-type-hint').update('An ordinary file group simply allows you to group a subset of your files together');
-
-            if($F('template-group-label') == 'Unnamed gallery'){
-              $('template-group-label').value = 'Unnamed file group';
-            }
-          }
-        }); */
-        
         $('new-group-form').observe('submit', function(e){
             
             if($('template-group-label').value == 'Unnamed template group' || $('template-group-label').value == itemNameFieldDefaultValue){

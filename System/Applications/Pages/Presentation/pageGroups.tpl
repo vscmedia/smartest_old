@@ -7,7 +7,17 @@
 </form>
 
 <div id="work-area">
+
+  {load_interface file="cms_elements_tabs.tpl"}
+    
   <h3>Page groups</h3>
+  
+{if empty($groups)}
+  
+  <div class="special-box">There are currently no page groups in use on this website. <a href="{$domain}smartest/pagegroup/new">Click here</a> to create one.</div>
+  
+{else}
+
   <ul class="{if count($groups) > 10}options-list{else}options-grid{/if}" id="options_grid">
 {foreach from=$groups item="group"}
     <li ondblclick="window.location='{$domain}{$section}/browseAssetGroup?group_id={$group.id}'">
@@ -16,6 +26,8 @@
 {/foreach}
   </ul>
 </div>
+
+{/if}
 
 <div id="actions-area">
   

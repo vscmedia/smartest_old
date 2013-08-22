@@ -1,0 +1,4 @@
+<p>Highslide is licensed for unlimited usage by <strong>non-commercial</strong> websites.</p>
+<p>However, if your website is for the purpose of "generating revenue or cash flow of any type", <a href="http://highsoft.com/" target="_blank">its developers</a> (Highsoft Solutions AS) require that you <strong>purchase</strong> a license <a href="http://highslide.com/#licence" target="_blank">here</a>.</p>
+<p>Please note: Highslide is <strong>NOT</strong> developed by VSC Labs. We have provided and integrated it as a service because we find it useful, but you use it at your own risk and VSC Labs can accept no responsibility for consequences arising from its usage, licensed or unlicensed, nor do we have any affiliation with Highsoft Solutions AS.</p>
+<p>Highslide currently has severe incompatibility with several ad-blocking plugins for Safari and Google Chrome.</p>

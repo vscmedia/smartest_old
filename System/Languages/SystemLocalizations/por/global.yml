@@ -1,0 +1,19 @@
+strings:
+  main_nav:
+    pages: Páginas
+    items: Ítens
+    files: Arquivos
+    templates: Modelos
+    users: Usários
+    metadata: "Meta-dados"
+    about: Sobre a Smartest
+    sign_out: Saír
+  top_bar:
+    signed_in_before_site_name: "Seçao iniciada no site "
+    signed_in_without_site_name: "Seçao iniciada"
+    signed_in_after_site_name: " como usário "
+  system_wide_buttons:
+    save: Salvar
+    save_and_return: Salvar e voltar a 
+    cancel: Cancelar
+    done: Acabei

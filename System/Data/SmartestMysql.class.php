@@ -195,7 +195,7 @@ class SmartestMysql{
 	
 	public function queryToArray($querystring, $refresh=false){
 	    
-		if(!$this->dblink && !$this->reconnect()){
+	    if(!$this->dblink && !$this->reconnect()){
 	        
 	        if($this->connection_config['short_name']) SmartestCache::clear('dbc_'.$this->connection_config['short_name'], true);
 	        throw new SmartestDatabaseException("Lost connection to to MySQL database and could not reconnect", SmartestDatabaseException::LOST_CONNECTION);

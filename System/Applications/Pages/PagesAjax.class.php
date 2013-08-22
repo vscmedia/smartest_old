@@ -62,6 +62,41 @@ class PagesAjax extends SmartestSystemApplication{
 	    
 	}
 	
+	public function setPageGroupNameFromInPlaceEditField(){
+	    
+	    $group = new SmartestPageGroup;
+	    
+	    if($group->find($this->getRequestParameter('pagegroup_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $group->setName(SmartestStringHelper::toVarName($this->getRequestParameter('new_name')));
+	        $group->save();
+	        echo SmartestStringHelper::toVarName($this->getRequestParameter('new_name'));
+	        exit();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+	    
+	}
+	
+	public function updatePageGroupOrder(){
+	    
+	    $group = new SmartestPageGroup;
+
+            if($group->find($this->getRequestParameter('group_id'))){
+                header('HTTP/1.1 200 OK');
+                if($this->getRequestParameter('page_ids')){
+                    $group->setNewOrderFromString($this->getRequestParameter('page_ids'));
+                }
+            }
+
+            exit;
+	    
+	}
+	
 	public function pageUrls(){
 	    
 	    $page_webid = $this->getRequestParameter('page_id');

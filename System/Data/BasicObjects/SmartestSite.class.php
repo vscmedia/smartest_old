@@ -116,11 +116,13 @@ class SmartestSite extends SmartestBaseSite{
 	        
 	        $list = $this->getPagesList($draft_mode, true);
 	        
-    	    foreach($list as $k=>$page){
+	        foreach($list as $k=>$page){
                 if($page['info']['type'] != 'NORMAL' || $this->getSpecialPageIds()->hasValue($page['info']['id'])){
     	            unset($list[$k]);
     	        }
     	    }
+    	    
+    	    // var_dump(gettype($list));
 	    
     	    return array_values($list);
 	    

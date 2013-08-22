@@ -1,0 +1,8 @@
+strings:
+  explanation: "Grupos de arquivos são uma maneira básica para organizar seus arquivos quando você tem muitos."
+  sidebar_options:
+    selected_group_heading: Grupo selecionado
+    selected_group_info: Informaçao sobre este grupo
+    selected_group_edit_contents: Editar conteúdo
+    selected_group_contents: Olhar conteúdo
+    selected_group_delete: Apagar grupo

@@ -12,6 +12,8 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	
 	if($params['from'] == '_authors'){
         $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "author";
+    }else if($params['from'] instanceof SmartestPageGroup || substr($params['from'], 0, 6) == 'pagegr' || substr($params['from'], 0, 6) == 'page_g'){
+        $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_page";
     }else{
 	    $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_item";
     }

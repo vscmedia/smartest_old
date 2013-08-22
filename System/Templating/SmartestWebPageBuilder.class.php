@@ -870,6 +870,17 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 return $this->raiseError('No file group exists with the name \''.$name.'\'.');
             }
             
+            case "pagegroup":
+            case "page_group":
+            
+            $g = new SmartestPageGroup;
+            if($g->findBy('name', $name, $this->page->getSiteId())){
+                return $g->getMembers($this->getDraftMode());
+            }else{
+                // no file group with that name
+                return $this->raiseError('No file group exists with the name \''.$name.'\'.');
+            }
+            
             break;
             
             case "set_feed_Items":

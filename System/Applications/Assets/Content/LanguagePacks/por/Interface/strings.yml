@@ -1,0 +1,37 @@
+strings:
+  title: Repositório de arquivos
+  files:
+    types_instruction: Clique duas vezes em uma das pastas em baixo para ver arquivos do tipo correspondente
+    search_instruction: Procurar um archivo
+  general:
+    recently_edited_label: Arquivos editados recentement
+    new_image_gallery_name: Galeria+sem+nome
+    general_options_label: Opções do repositório 
+    selected_file_label: Arquivo selecionado
+    selected_file_type_label: Tipo selecionado
+  groups:
+    group_tabs:
+      browse: Olhar arquivos
+      add_remove_files: "Addicionar e remover arquivos"
+      group_info: Informação sobre o grupo
+      gallery_info: Informação sobre a galeria
+    group_files: "Arquivos no grupo: "
+    gallery_files: "Arquivos na galeria: "
+  sidebar_options:
+    create_file: Criar um arquivo novo
+    create_file_group: Criar grupo novo de arquivos
+    create_image_gallery: Criar galeria nova de imagens
+    view_by_type: Ver todos archivos por tipo
+    view_file_groups: Ver grupos de arquivos
+    detect_uploads: Detectar arquivos novos
+  tabs:
+    file_types: Arquivos por tipo
+    file_groups: Organizar
+    edit_file: Editar arquivo
+    edit_file_source: Editar fonte do arquivo
+    file_info: Informação sobre o arquivo
+    file_attachments: Attachments
+    file_preview: Preview
+    file_tags: Tags
+  warnings:
+    storage_locations_unwriteable: "For smooth operation of the files repository, the following locations need to be made writable:"

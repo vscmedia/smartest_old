@@ -1,0 +1,14 @@
+strings:
+  title: Informação do arquivo
+  field_names:
+    name: Nome
+    file_path: Caminho de arquivo
+    url: URL direito
+    download_url: URL para baixar
+    size: Tamanho
+    type: Tipo
+  sidebar:
+    options_label: Opções
+    edit_file_option: Editar este arquivo
+  general:
+    pixels: píxeles
