@@ -852,14 +852,15 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 break;
             
             case "gallery":
-            
+            // zxczcxzc
             $g = new SmartestAssetGroup;
             if($g->findBy('name', $name, $this->page->getSiteId())){
+                
                 if($g->getIsGallery()){
-                    if(isset($params['skip_memberships']) && SmartestStringHelper::toRealBool($params['skip_memberships'])){
-                        return $g->getMembers();
-                    }else{
+                    if(isset($params['skip_memberships']) && !SmartestStringHelper::toRealBool($params['skip_memberships'])){
                         return $g->getMemberships();
+                    }else{
+                        return $g->getMembers();
                     }
                 }else{
                     // the file group is not a gallery

@@ -100,6 +100,12 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             }
             break;
             
+            case "bg_css":
+            if($this->isImage()){
+                return 'background-image:url(\''.addslashes($this->getFullWebPath()).'\')';
+            }
+            break;
+            
             case "size":
             return $this->getSize();
             

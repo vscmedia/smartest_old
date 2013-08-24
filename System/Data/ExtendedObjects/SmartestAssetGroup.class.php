@@ -454,6 +454,10 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
             case "is_gallery":
             return $this->getIsGallery();
             
+            case "members_forced":
+            case "gallery_members":
+            return new SmartestArray($this->getMembers());
+            
             case "members":
             if($this->getIsGallery()){
                 return new SmartestArray($this->getMemberships());
