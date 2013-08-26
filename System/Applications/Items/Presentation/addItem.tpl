@@ -91,6 +91,14 @@
 </div>
 {/foreach}
 
+{if !$automatic_sets._empty}
+<div class="edit-form-row">
+  <div class="form-section-label">Data sets</div>
+  This {$model.name|strtolower} will be added to the following sets automatically:
+  {foreach from=$automatic_sets item="set" key="k"}{if $k > 0}, {/if}<strong>{$set.label}</strong>{/foreach}
+</div>
+{/if}
+
 <div class="edit-form-row">
   <div class="form-section-label">Language</div>
   <select name="_language">

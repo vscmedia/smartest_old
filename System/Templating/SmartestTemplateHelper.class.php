@@ -1,6 +1,6 @@
 <?php
 
-include_once 'Managers/SetsManager.class.php';
+// include_once 'Managers/SetsManager.class.php';
 
 class SmartestTemplateHelper{
 

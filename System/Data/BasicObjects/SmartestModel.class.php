@@ -146,14 +146,14 @@ class SmartestModel extends SmartestBaseModel{
         SmartestObjectModelHelper::buildAutoClassFile($this->_properties['id'], SmartestStringHelper::toCamelCase($this->getName()));
 	}
 	
-	//// URL Encoding is being used to work around a bug in PHP's serialize/unserialize. No actual URLS are necessarily in use here
+	
 	public function setSettingValue($field, $new_data){
 	    
 	    $field = SmartestStringHelper::toVarName($field);
+	    // URL Encoding is being used to work around a bug in PHP's serialize/unserialize. No actual URLS are necessarily in use here:
 	    $this->_model_settings->setParameter($field, rawurlencode(utf8_decode($new_data)));
 	    // $this->_model_settings_modified = true;
 	    $this->_modified_properties['settings'] = SmartestStringHelper::sanitize(serialize($this->_model_settings->getArray()));
-	    // $this->setContextData($data);
 	    
 	}
 	
@@ -197,6 +197,86 @@ class SmartestModel extends SmartestBaseModel{
     	    parent::delete();
 	    
         }
+	    
+	}
+	
+	public function getStaticSets($site_id=null){
+	    
+	    $sql = "SELECT * FROM Sets WHERE Sets.set_itemclass_id='{$this->getId()}' AND Sets.set_type='STATIC'";
+	    
+	    if(is_numeric($site_id)){
+	        $sql .= " AND (Sets.set_site_id='".$site_id."' OR Sets.set_shared=1)";
+	    }
+	    
+	    $result = $this->database->queryToArray($sql);
+	    
+	    $sets = array();
+	    
+	    foreach($result as $array){
+	        $set = new SmartestCmsItemSet;
+	        $set->hydrate($array);
+	        $sets[] = $set;
+	    }
+	    
+	    return $sets;
+	    
+	}
+	
+	public function getAutomaticSetsForNewItem($site_id=null){
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_MODELS_STATIC_SETS');
+	    $q->setTargetEntityByIndex(2);
+	    $q->addQualifyingEntityByIndex(1, $this->getId());
+	    $q->addForeignTableConstraint('Sets.set_type', 'STATIC');
+	    
+	    if(is_numeric($site_id)){
+            $q->addForeignTableOrConstraints(
+                array('field'=>'Sets.set_site_id', 'value'=> $site_id),
+                array('field'=>'Sets.set_shared', 'value'=>'1')
+            );
+        }
+        
+        $q->addSortField('Sets.set_label');
+        
+        $result = $q->retrieve(false, null, false);
+	    
+	    return $result;
+	}
+	
+	public function getAutomaticSetIdsForNewItem($site_id=null){
+	    
+	    $sets = $this->getAutomaticSetsForNewItem();
+	    $ids = array();
+	    
+	    foreach($sets as $s){
+	        $ids[] = $s->getId();
+	    }
+	    
+	    return $ids;
+	}
+	
+	public function addAutomaticSetForNewItemById($set_id){
+	    
+	    $set_id = (int) $set_id;
+	    
+	    $link = new SmartestManyToManyLookup;
+	    $link->setEntityForeignKeyValue(1, $this->getId());
+	    $link->setEntityForeignKeyValue(2, $set_id);
+	    $link->setType('SM_MTMLOOKUP_MODELS_STATIC_SETS');
+	    
+	    $link->save();
+	}
+	
+	public function removeAutomaticSetForNewItemById($set_id){
+	    
+	    $set_id = (int) $set_id;
+	    
+	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_MODELS_STATIC_SETS');
+	    $q->setTargetEntityByIndex(2);
+	    $q->addQualifyingEntityByIndex(1, $this->_properties['id']);
+	    $q->addForeignTableConstraint('Sets.set_id', $set_id);
+	    
+	    $q->delete();
 	    
 	}
 	

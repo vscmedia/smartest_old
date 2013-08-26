@@ -1408,6 +1408,48 @@ class Items extends SmartestSystemApplication{
 	    
 	}
 	
+	public function editModelAutomaticSets(){
+	    
+	    $model = new SmartestModel;
+	    
+	    if($model->find($this->getRequestParameter('model_id'))){
+	        
+	        $this->send($model, 'model');
+	        $this->send($model->getAutomaticSetIdsForNewItem(), 'selected_set_ids');
+	        $this->send($model->getStaticSets($this->getSIte()->getId()), 'sets');
+	        
+	    }
+	    
+	}
+	
+	public function updateModelAutomaticSets(){
+	    
+	    $model = new SmartestModel;
+	    
+	    if($model->find($this->getRequestParameter('model_id'))){
+    	    
+    	    if(is_array($this->getRequestParameter('sets'))){
+    	        $chosen_set_ids = array_keys($this->getRequestParameter('sets'));
+    	    }else{
+    	        $chosen_set_ids = array();
+    	    }
+    	        
+	        $existing_set_ids = $model->getAutomaticSetIdsForNewItem();
+	        
+	        foreach($model->getStaticSets($this->getSIte()->getId()) as $set){
+	            $set_id = $set->getId();
+	            if(in_array($set_id, $chosen_set_ids) && !in_array($set_id, $existing_set_ids)){
+	                $model->addAutomaticSetForNewItemById($set_id);
+	            }else if(!in_array($set_id, $chosen_set_ids) && in_array($set_id, $existing_set_ids)){
+	                $model->removeAutomaticSetForNewItemById($set_id);
+	            }
+	        }
+	        
+            $this->handleSaveAction();
+    	    
+	    }
+	}
+	
 	public function itemInfo($get){
 	    
 	    $item_id = (int) $this->getRequestParameter('item_id');
@@ -2258,6 +2300,7 @@ class Items extends SmartestSystemApplication{
                 $this->send($model, 'model');
                 $this->send($this->getSite()->getLanguageCode(), 'site_language');
                 $this->setTitle('Add '.$model->getName());
+                $this->send(new SmartestArray(array_values($model->getAutomaticSetsForNewItem($this->getSite()->getId()))), 'automatic_sets');
             
             }else{
                 
@@ -2322,6 +2365,16 @@ class Items extends SmartestSystemApplication{
                             }
                         }
                         
+                        // If the model is mapped to any static sets, make sure the new item is added to these sets automatically
+                        $automatic_static_sets = $model->getAutomaticSetsForNewItem($this->getSite()->getId());
+                        
+                        if(count($automatic_static_sets)){
+                            foreach($automatic_static_sets as $s){
+                                $s->addItems(array($item->getItem()->getId()));
+                            }
+                        }
+                        
+                        // 
                         if($this->getRequestParameter('for') == 'ipv'){
                             
                             $parent_item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'));

@@ -1,3 +1,27 @@
+<script type="text/javascript">
+
+  // Smartest.AjaxModalViewer.variables.responseTableLinks = {$link_urls.truefalse}
+  
+  var savePageUrlChanges = function(){ldelim}
+
+    $('saver-gif').show();
+
+    $('editUrl').request({ldelim}
+      onComplete: function(){ldelim}
+        // $('page-urls').update('');
+        new Ajax.Updater('page-urls', '{$domain}ajax:websitemanager/pageUrls', {ldelim}
+          parameters: {ldelim}page_id: '{$page.webid}'{if $item.id}, item_id: {$item.id}{/if}, responseTableLinks: {$link_urls.truefalse}{rdelim}
+        {rdelim});
+        MODALS.hideViewer();
+      {rdelim}
+    {rdelim});
+
+    return true;
+
+  {rdelim}
+
+</script>
+
 <div id="work-area">
   
   {load_interface file="edit_model_tabs.tpl"}
@@ -187,10 +211,14 @@
           {/if}
         </div>
       
+        <div class="edit-form-row">
+          <div class="form-section-label">Static sets to which new items should automatically be added</div>
+          <div id="model-set-auto-add-ajax-field">[List of sets] {if $can_edit_model}<a href="{$domain}{$section}/editModelAutomaticSets?model_id={$model.id}">Edit</a>{/if}</div>
+        </div>
+      
       {if $can_edit_model}<div class="edit-form-row">
         <div class="buttons-bar">
-          <input type="button" value="Cancel" onclick="cancelForm()" />
-          <input type="submit" value="Save Changes" />
+          {save_buttons}
         </div>
       </div>{/if}
       

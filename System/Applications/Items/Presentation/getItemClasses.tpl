@@ -69,6 +69,7 @@
   <li class="permanent-action"><a href="{dud_link}" onclick="modelList.workWithItem('getItemClassMembers');"><img border="0" src="{$domain}Resources/Icons/folder_explore.png"> Browse <span class="model_plural_name_field">items</span></a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="return MODALS.load('datamanager/modelInfo?class_id='+modelList.lastItemId, 'Model info')"><img border="0" src="{$domain}Resources/Icons/information.png"> Model info</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="modelList.workWithItem('getItemClassProperties');"><img border="0" src="{$domain}Resources/Icons/tag_blue_edit.png"> Edit Model Properties</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="modelList.workWithItem('editModel');"><img border="0" src="{$domain}Resources/Icons/pencil.png"> Edit Model</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="modelList.workWithItem('getItemClassComments');"><img border="0" src="{$domain}Resources/Icons/comments.png"> Browse comments</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="modelList.workWithItem('getItemClassSets');"><img border="0" src="{$domain}Resources/Icons/package_add.png"> View data sets for this model</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="modelList.workWithItem('addSet');"><img border="0" src="{$domain}Resources/Icons/folder_add.png"> Create a new set from this model</a></li>

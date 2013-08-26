@@ -1,6 +1,6 @@
 <?php
 
-require_once(SM_ROOT_DIR.'System/Applications/Assets/AssetsManager.class.php');
+// require_once(SM_ROOT_DIR.'System/Applications/Assets/AssetsManager.class.php');
 
 class SmartestPageManagementHelper extends SmartestHelper{
 
@@ -17,8 +17,8 @@ class SmartestPageManagementHelper extends SmartestHelper{
 		$this->displayPagesIndex = 0;
 		$this->displayAssetClasses = array();
 		$this->displayAssetClassesIndex = 0;
-		$this->assetsManager = new AssetsManager();
-		$this->setsManager = new SetsManager();
+		// $this->assetsManager = new AssetsManager();
+		// $this->setsManager = new SetsManager();
 		
 	}
 	

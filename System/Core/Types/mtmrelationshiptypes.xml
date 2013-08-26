@@ -144,4 +144,10 @@
     <entity table="Sets" class="SmartestAssetGroup" foreignkey="set_id" index="2" required="true" />
   </type>
   
+  <type id="SM_MTMLOOKUP_MODELS_STATIC_SETS" return="meta:targetEntityClass" method="SM_MTMLOOKUPMETHOD_MAP">
+    <label>Maps models to static sets so that when a new item is added with that model, it is automatically added to any mapped sets.</label>
+    <entity table="ItemClasses" class="SmartestModel" foreignkey="itemclass_id" index="1" required="true" />
+    <entity table="Sets" class="SmartestCmsItemSet" foreignkey="set_id" index="2" required="true" />
+  </type>
+  
 </relationshiptypes>

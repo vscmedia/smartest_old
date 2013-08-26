@@ -18,7 +18,7 @@ class PagesManager{
 		$this->displayAssetClasses = array();
 		$this->displayAssetClassesIndex = 0;
 		$this->assetsManager = new AssetsManager();
-		$this->setsManager = new SetsManager();
+		// $this->setsManager = new SetsManager();
 		
 	}
 	
@@ -1219,7 +1219,7 @@ class PagesManager{
 		return($templates);
 	} */
 	
-	public function setDraftAsset($page_webid, $assetclass_name, $asset_id){
+	/* public function setDraftAsset($page_webid, $assetclass_name, $asset_id){
 		
 		$page_id = $this->getPageIdFromPageWebId($page_webid);
 		$assetclass_id = $this->assetsManager->getAssetClassIdFromAssetClassName($assetclass_name);
@@ -1247,7 +1247,7 @@ class PagesManager{
 		
 		$this->database->rawQuery($sql);
 		
-	}
+	} */
 
 	public function getDefinedPageAssetsList($page_id){
 		

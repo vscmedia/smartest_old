@@ -1,5 +1,5 @@
 strings:
-  title: Información archivo
+  title: File information
   field_names:
     name: File name
     file_path: Name on disk

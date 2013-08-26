@@ -169,8 +169,6 @@ class AssetsAjax extends SmartestSystemApplication{
 		    header('HTTP/1.1 200 OK');
 		
 		}
-		
-		exit;
         
     }
     

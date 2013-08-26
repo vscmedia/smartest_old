@@ -31,7 +31,7 @@ strings:
     edit_file_source: Editar fonte do arquivo
     file_info: Informação sobre o arquivo
     file_attachments: Attachments
-    file_preview: Preview
+    file_preview: Prevista
     file_tags: Tags
   warnings:
     storage_locations_unwriteable: "For smooth operation of the files repository, the following locations need to be made writable:"
