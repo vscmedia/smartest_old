@@ -41,9 +41,11 @@ ul.invisible-actions-list{
 }
 
 ul.actions-list li{
-	height:22px;
+	min-height:18px;
+	padding: 2px 0 2px 0;
 }
 
 ul.invisible-actions-list li{
-	height:22px;
+	min-height:18px;
+	padding: 2px 0 2px 0;
 }

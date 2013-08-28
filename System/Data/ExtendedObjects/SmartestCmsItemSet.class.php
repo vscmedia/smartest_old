@@ -186,8 +186,8 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	            
 	        }
 	        
-	        // TODO: Make ASC/DESC settable
-	        $sql .= " ORDER BY SetsItemsLookup.setlookup_order ASC";
+	        $sort = (in_array($this->getSortDirection(), array('ASC', 'DESC')) && !$force_ascending) ? $this->getSortDirection() : 'ASC';
+            $sql .= " ORDER BY SetsItemsLookup.setlookup_order ".$sort;
 	        
 	        $results = $this->database->queryToArray($sql);
             $lookups = array();
@@ -220,8 +220,13 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	public function fixOrderIndices(){
 	    
 	    if($this->getType() == 'STATIC'){
-	    
-    	    $lookups = $this->getLookups(0);
+	        
+	        if($this->getSortDirection() == 'DESC'){
+    	        $lookups = array_reverse($this->getLookups(0));
+	        }else{
+	            $lookups = $this->getLookups(0);
+	        }
+    	    
     	    $c = count($lookups);
 	    
     	    for($i=0;$i<$c;$i++){
@@ -400,7 +405,8 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
             $sql .= " AND item_site_id='".$site_id."'";
         }
         
-        $sql .= " ORDER BY SetsItemsLookup.setlookup_order ASC";
+        $sort = in_array($this->getSortDirection(), array('ASC', 'DESC')) ? $this->getSortDirection() : 'ASC';
+        $sql .= " ORDER BY SetsItemsLookup.setlookup_order ".$sort;
         
         $results = $this->database->queryToArray($sql);
         

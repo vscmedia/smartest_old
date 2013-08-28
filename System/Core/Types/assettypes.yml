@@ -605,7 +605,8 @@ type:
       type: file
       location: Documents/Downloads/
     suffix:
-      - {mime: application/vnd.ms-word, _content: doc}
+      - {mime: application/msword, _content: doc}
+      - {mime: application/vnd.openxmlformats-officedocument.wordprocessingml.document, _content: docx}
     render:
       template: System/Presentation/WebPageBuilder/display.download.tpl
       
@@ -625,6 +626,7 @@ type:
       location: Documents/Downloads/
     suffix:
       - {mime: application/vnd.ms-excel, _content: xls}
+      - {mime: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, _content: xlsx}
     render:
       template: System/Presentation/WebPageBuilder/display.download.tpl
       
@@ -644,6 +646,7 @@ type:
       location: Documents/Downloads/
     suffix:
       - {mime: application/vnd.ms-powerpoint, _content: ppt}
+      - {mime: application/vnd.openxmlformats-officedocument.presentationml.presentation, _content: pptx}
     render:
       template: System/Presentation/WebPageBuilder/display.download.tpl
       
@@ -692,6 +695,7 @@ type:
     model_specific: always
     icon: layout.png
     class: SmartestTemplateAsset
+    allow_convert_to: [SM_ASSETTYPE_CONTAINER_TEMPLATE, SM_ASSETTYPE_COMPOUND_LIST_TEMPLATE]
     storage: 
       type: file
       location: Presentation/Layouts/
@@ -708,6 +712,7 @@ type:
     model_specific: always
     icon: layout.png
     class: SmartestTemplateAsset
+    allow_convert_to: [SM_ASSETTYPE_ITEMSPACE_TEMPLATE, SM_ASSETTYPE_CONTAINER_TEMPLATE]
     storage: 
       type: file
       location: Presentation/Layouts/

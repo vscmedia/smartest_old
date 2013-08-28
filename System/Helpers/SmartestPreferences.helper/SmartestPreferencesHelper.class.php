@@ -159,7 +159,7 @@ class SmartestPreferencesHelper extends SmartestHelper{
             $this->_global_prefs[$name] = $this->fetchGlobalPreferenceInfo($name);
         }
         
-        $sql = "SELECT setting_value FROM Settings WHERE setting_name='".$name."' AND setting_application_id='_GLOBAL' AND setting_type='SM_SETTINGTYPE_GLOBAL_PREFERENCE'";
+        $sql = "SELECT setting_value FROM Settings WHERE setting_name='".$name."' AND (setting_application_id='_GLOBAL' OR setting_application_id='com.smartest.global') AND setting_type='SM_SETTINGTYPE_GLOBAL_PREFERENCE'";
         
         if($this->_global_prefs[$name]->isUserSpecific()){
             $sql .= " AND setting_user_id='".$user_id."'";

@@ -39,8 +39,11 @@ class SetsAjax extends SmartestSystemApplication{
 	            exit;
 	        }
 	        
-	        // $set->fixOrderIndices();
-	        $set->updateOrderFromItemIdsList(explode(',', $this->getRequestParameter('item_ids')));
+	        if($set->getSortDirection() == 'DESC'){
+	            $set->updateOrderFromItemIdsList(array_reverse(explode(',', $this->getRequestParameter('item_ids'))));
+            }else{
+                $set->updateOrderFromItemIdsList(explode(',', $this->getRequestParameter('item_ids')));
+            }
 	        
         }
         
@@ -89,7 +92,6 @@ class SetsAjax extends SmartestSystemApplication{
     
     public function updateSetShared(){
         
-        
         $set = new SmartestCmsItemSet;
 	    
 	    if($set->find($this->getRequestParameter('set_id'))){
@@ -104,6 +106,25 @@ class SetsAjax extends SmartestSystemApplication{
 	        header('HTTP/1.1 404 Not Found');
 	        
 	    }
+    }
+    
+    public function updateSetSortDirection(){
+        
+        $set = new SmartestCmsItemSet;
+	    
+	    if($set->find($this->getRequestParameter('set_id'))){
+	        
+	        header('HTTP/1.1 200 OK');
+	        $set->setSortDirection($this->getRequestParameter('sort_direction'));
+	        $set->save();
+	        exit();
+	        
+	    }else{
+	        
+	        header('HTTP/1.1 404 Not Found');
+	        
+	    }
+        
     }
     
 }

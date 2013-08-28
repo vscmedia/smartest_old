@@ -71,6 +71,29 @@ var set_id = {$set.id};
   {/if}
 </div>
 
+<div class="edit-form-row">
+  <div class="form-section-label">Order</div>
+  <select name="set_sort" id="set-sort-direction-dropdown">
+    <option value="ASC"{if $set.sort_direction == "ASC"} selected="selected"{/if}>Start with first item added</option>
+    <option value="DESC"{if $set.sort_direction == "DESC"} selected="selected"{/if}>Start with most recently added item</option>
+  </select>
+</div>
+
+<script type="text/javascript">
+{literal}
+
+  $('set-sort-direction-dropdown').observe('change', function(){
+    var url = sm_domain+'ajax:sets/updateSetSortDirection';
+    var direction = $('set-sort-direction-dropdown').value;
+    new Ajax.Request(url, {
+      method: 'post',
+      parameters: {'set_id': set_id, 'sort_direction': direction}
+    });
+  });
+
+{/literal}
+</script>
+
 {if $show_shared}
 <div class="edit-form-row">
   <div class="form-section-label">Shared</div>
@@ -112,24 +135,24 @@ var set_id = {$set.id};
   <table width="100%" border="0" cellpadding="0" cellspacing="5" style="border:1px solid #ccc">
     <tr>
       <td align="center">
-      <div style="text-align:left">{$model.plural_name} that <strong>aren't</strong> in this set</div>
+        
+        <div style="text-align:left">{$model.plural_name} that <strong>aren't</strong> in this set</div>
 
-		<select name="available_items[]"  id="available_items" size="2" multiple style="width:270px; height:300px;"  onclick="setMode('add')">
-    
-    {foreach from=$non_members key="key" item="item"}
+		<select name="available_items[]"  id="available_items" size="2" multiple style="width:270px; height:300px;">
+        {foreach from=$non_members key="key" item="item"}
 		<option value="{$item.id}" >{$item.name}</option>
 		{/foreach}
-		
 		</select>
 		
-		</td>
+	 </td>
+     
      <td valign="middle" style="width:40px">
 		<input type="button" value="&gt;&gt;" id="add_button" disabled="disabled" onclick="executeTransfer();" /><br /><br />
     <input type="button" value="&lt;&lt;" id="remove_button" disabled="disabled" onclick="executeTransfer();" />
      </td>
      <td align="center">
         <div style="text-align:left">{$model.plural_name} that <strong>are</strong> in this set</div>
- 	<select name="used_items[]"  id='used_items' size="2" multiple style="width:270px; height:300px" onclick="setMode('remove')" >	
+ 	<select name="used_items[]"  id='used_items' size="2" multiple style="width:270px; height:300px" >	
 	  {foreach from=$members key="key" item="item"}
 		<option value="{$item.id}" >{$item.name}</option>
 		{/foreach}
@@ -137,6 +160,12 @@ var set_id = {$set.id};
 	</td>
    </tr>
 </table>
+
+<script type="text/javascript">
+  {literal}$('available_items').observe('change', function(){setMode('add')});{/literal}
+  {literal}$('used_items').observe('change', function(){setMode('remove')});{/literal}
+</script>
+
 </form>
 
 </div>
