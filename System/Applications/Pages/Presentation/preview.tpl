@@ -6,16 +6,23 @@
 
 {if $show_iframe}
 
-{literal}
+
 <script language="javascript">
-    
+{literal}  
     var t1, t2;
     
     function showPreview(){
         $('preview-iframe').style.height = '500px';
-        $('preview-iframe').className = 'built';
+        $('preview-iframe').removeClassName('building');
+        $('preview-iframe').addClassName('built');
         clearTimeout(t1);
         clearTimeout(t2);
+    }
+    
+    function hidePreview(){
+        $('preview-iframe').style.height = '0px';
+        $('preview-iframe').removeClassName('built');
+        $('preview-iframe').addClassName('building');
     }
     
     function previewSlow(){
@@ -28,11 +35,12 @@
         $('preview-failed').style.display = 'block';
     }
     
-    t1 = setTimeout('previewSlow()', 8000);
-    t2 = setTimeout('previewTimedOut()', 20000);
-    
+    t1 = setTimeout(function(){previewSlow();}, 8000);
+    t2 = setTimeout(function(){previewTimedOut();}, 20000);
+
+{/literal}    
 </script>
-{/literal}
+
 
 <div class="menubar">
   <a href="{dud_link}" class="js-menu-activator" id="actions-menu-activator">Actions</a> {*<a href="javascript:showPreview()">Show</a>*}
@@ -46,8 +54,17 @@
 
 <div id="preview-actions-menu" class="js-menu" style="display:none">
   <ul></ul>
-  <ul><li>{if $show_approve_button}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/approvePageChanges?page_id={$page.webid}'">{else}<span>{/if}Approve Changes{if $show_approve_button}</a>{else}</span>{/if}</li><li>{if $show_publish_button}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishPageConfirm?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}'">{else}<span>{/if}Publish This Page{if $show_publish_button}</a>{else}</span>{/if}</li>{if $show_edit_item_option}{if $show_publish_item_option}<li><a href="{dud_link}" onclick="window.location='{$domain}datamanager/publishItem?page_id={$page.webid}&amp;item_id={$item.id}&amp;from=preview'">Publish This {$item._model.name}</a></li>{/if}<li><a href="{dud_link}" onclick="window.location='{$domain}datamanager/editItem?item_id={$item.id}&amp;page_id={$page.webid}&amp;from=pagePreview'">Edit This {$item._model.name}</a></li>{/if}<li>{if $show_release_page_option}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/releasePage?page_id={$page.webid}'">{else}<span>{/if}Release This Page{if $show_release_page_option}</a>{else}</span>{/if}</li></ul>
-  <script type="text/javascript"></script>
+  <ul><li><a href="#reload-preview" id="reload-preview">Reload preview</a></li><li>{if $show_approve_button}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/approvePageChanges?page_id={$page.webid}'">{else}<span>{/if}Approve changes{if $show_approve_button}</a>{else}</span>{/if}</li><li>{if $show_publish_button}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/publishPageConfirm?page_id={$page.webid}{if $item}&amp;item_id={$item.id}{/if}'">{else}<span>{/if}Publish this page{if $show_publish_button}</a>{else}</span>{/if}</li>{if $show_edit_item_option}{if $show_publish_item_option}<li><a href="{dud_link}" onclick="window.location='{$domain}datamanager/publishItem?page_id={$page.webid}&amp;item_id={$item.id}&amp;from=preview'">Publish this {$item._model.name}</a></li>{/if}<li><a href="{dud_link}" onclick="window.location='{$domain}datamanager/editItem?item_id={$item.id}&amp;page_id={$page.webid}&amp;from=pagePreview'">Edit this {$item._model.name}</a></li>{/if}<li>{if $show_release_page_option}<a href="{dud_link}" onclick="window.location='{$domain}{$section}/releasePage?page_id={$page.webid}'">{else}<span>{/if}Release this page{if $show_release_page_option}</a>{else}</span>{/if}</li></ul>
+  <script type="text/javascript">
+  {literal}
+  $('reload-preview').observe('click', function(e){
+      hidePreview();
+      document.getElementById('preview-iframe').contentWindow.location.reload(true);
+      t1 = setTimeout(function(){previewSlow();}, 8000);
+      t2 = setTimeout(function(){previewTimedOut();}, 20000);
+      e.stop();
+  });
+  {/literal}</script>
 </div>
 
 {if $stylesheets._count > 0}

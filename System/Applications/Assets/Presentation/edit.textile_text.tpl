@@ -20,7 +20,7 @@
     </div>
     {/foreach}
     
-    <div class="special-box">You are creating an Easy Text file. {help id="assets:textile"}Click here{/help} to learn more about how these are formatted.</div>
+    <div class="special-box">You are editing an Easy Text file. {help id="assets:textile"}Click here{/help} to learn more about how these are formatted.</div>
     
     <div id="textarea-holder" style="width:100%">
         <textarea name="asset_content" id="tpl_textArea" wrap="virtual" style="width:100%;padding:0;font-family:monospace;font-size:14px">{$textfragment_content}</textarea>

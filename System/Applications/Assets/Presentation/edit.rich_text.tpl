@@ -13,10 +13,10 @@
       </select>
     </div>
     
-    {foreach from=$asset.type_info.param item="parameter"}
+    {foreach from=$asset._editor_parameters key="parameter_name" item="parameter"}
     <div class="edit-form-row">
-      <div class="form-section-label">{$parameter.name}</div>
-      <input type="text" name="params[{$parameter.name}]" value="{$parameter.value}" />
+      <div class="form-section-label">{$parameter.label}</div>
+      <input type="text" name="params[{$parameter_name}]" value="{$parameter.value}" style="width:250px" />
     </div>
     {/foreach}
     

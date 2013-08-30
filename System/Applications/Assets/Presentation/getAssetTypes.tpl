@@ -31,14 +31,17 @@
 <div id="autocomplete_choices" class="autocomplete"></div>
   
   <script type="text/javascript">
+  
+    var url = sm_domain+'ajax:assets/assetSearch';
+  
     {literal}
     
     function getSelectionId(text, li) {
         var bits = li.id.split('-');
-        window.location=sm_domain+'assets/editAsset?asset_id='+bits[1];
+        window.location=sm_domain+'smartest/file/edit/'+bits[1];
     }
     
-    new Ajax.Autocompleter("assets-search-name", "autocomplete_choices", "/ajax:assets/assetSearch", {
+    new Ajax.Autocompleter("assets-search-name", "autocomplete_choices", url, {
         paramName: "query", 
         minChars: 2,
         delay: 50,

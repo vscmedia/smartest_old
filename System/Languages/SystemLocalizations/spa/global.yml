@@ -9,7 +9,7 @@ strings:
     about: Sobre Smartest
     sign_out: Salir
   top_bar:
-    signed_in_before_site_name: "Sesión iniciada en site "
+    signed_in_before_site_name: "Sesión iniciada en proyecto "
     signed_in_without_site_name: "Sesión iniciada"
     signed_in_after_site_name: " como usario "
   system_wide_buttons:

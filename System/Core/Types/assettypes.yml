@@ -116,10 +116,10 @@ type:
       - {mime: image/jpeg, _content: jpg}
       - {mime: image/jpeg, _content: jpeg}
     param:
-      - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: alt_text, label: "Text alternative", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: source_url, label: "Source URL", type: SM_DATATYPE_URL, required: false}
-      - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: id, label: "DOM ID", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
       - {name: link_href, label: Link destination, type: SM_DATATYPE_URL, required: false}
@@ -147,10 +147,10 @@ type:
     suffix:
       - {mime: image/png, _content: png}
     param:
-      - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: alt_text, label: "Text alternative", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: source_url, label: "Source URL", type: SM_DATATYPE_URL, required: false}
-      - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: id, label: "DOM ID", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
       - {name: link_href, label: Link destination, type: SM_DATATYPE_URL, required: false}
@@ -178,10 +178,10 @@ type:
     suffix:
       - {mime: image/gif, _content: gif}
     param:
-      - {name: alt_text, label: "Text alternative" type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: alt_text, label: "Text alternative", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: credit, label: "Credit", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: source_url, label: "Source URL", type: SM_DATATYPE_URL, required: false}
-      - {name: id, label: "ID", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: id, label: "DOM ID", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: class, label: "CSS class attribute", type: SM_DATATYPE_SL_TEXT, required: false}
       - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
       - {name: link_href, label: Link destination, type: SM_DATATYPE_URL, required: false}
@@ -259,8 +259,8 @@ type:
       location: Public/Resources/Stylesheets/
       system_location: Public/Resources/System/Stylesheets/
     param:
-      - {name: use_style_tag, label: "Use &lt;style&gt; tag with @import", type: SM_DATATYPE_BOOLEAN, required: false}
-      - {name: media, label: "Specify a medium for this stylesheet, e.g. print only?", type: SM_DATATYPE_SL_TEXT, required: false}
+      - {name: use_style_tag, label: "Use &lt;style&gt; tag and @import", type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: media, label: "Specify a medium for this stylesheet?", type: SM_DATATYPE_SL_TEXT, required: false}
     render:
       template: System/Presentation/WebPageBuilder/display.stylesheet.tpl
       preview_template: System/Presentation/WebPageBuilder/preview.stylesheet.tpl
@@ -284,6 +284,9 @@ type:
     render:
       template: System/Presentation/WebPageBuilder/display.sass.tpl
       preview_template: System/Presentation/WebPageBuilder/preview.sass.tpl
+    param:
+      - {name: use_style_tag, label: "Use &lt;style&gt; tag and @import", type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: media, label: "Specify a medium for this stylesheet?", type: SM_DATATYPE_SL_TEXT, required: false}
     storage:
       type: database
     suffix:
@@ -542,10 +545,10 @@ type:
     suffix:
       - {mime: application/x-ms-wmv, _content: wmv}
     param:
-      - {name: width, type: SM_DATATYPE_NUMERIC, required: false}
-      - {name: height, type: SM_DATATYPE_NUMERIC, required: false}
-      - {name: auto_start, type: SM_DATATYPE_BOOLEAN, required: false}
-      - {name: auto_rewind, type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: width, label: Width in pixels, type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: height, label: Height in pixels, type: SM_DATATYPE_NUMERIC, required: false}
+      - {name: auto_start, label: Start automatically?, type: SM_DATATYPE_BOOLEAN, required: false}
+      - {name: auto_rewind, label: Rewind automatically?, type: SM_DATATYPE_BOOLEAN, required: false}
       - {name: show_display, type: SM_DATATYPE_BOOLEAN, required: false}
       - {name: show_controller, type: SM_DATATYPE_BOOLEAN, required: false}
       - {name: show_status_bar, type: SM_DATATYPE_BOOLEAN, required: false}

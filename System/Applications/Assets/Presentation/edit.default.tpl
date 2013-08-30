@@ -4,10 +4,10 @@
   
   <div id="edit-form-layout">
     
-    {foreach from=$asset.default_parameters key="parameter_name" item="parameter_value"}
+    {foreach from=$asset._editor_parameters key="parameter_name" item="parameter"}
     <div class="edit-form-row">
-      <div class="form-section-label">{$parameter_name}</div>
-      <input type="text" name="params[{$parameter_name}]" value="{$parameter_value}" style="width:250px" />
+      <div class="form-section-label">{$parameter.label}</div>
+      <input type="text" name="params[{$parameter_name}]" value="{$parameter.value}" style="width:250px" />
     </div>
     {/foreach}
   

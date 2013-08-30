@@ -28,7 +28,7 @@ strings:
     file_types: Tipo de archivos
     file_groups: Organizar
     edit_file: Editar archivo
-    edit_file_source: Edit file source
+    edit_file_source: Editar código fuente
     file_info: Información archivo
     file_attachments: Archivos adjuntos
     file_preview: Prever archivo

@@ -76,6 +76,9 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
             case "default_parameters":
             return $this->getDefaultParams();
             
+            case "_editor_parameters":
+            return $this->getEditorParams();
+            
             case "full_path":
             $type_info = $this->getTypeInfo();
             if($type_info['storage']['type'] == 'database'){
@@ -601,6 +604,58 @@ class SmartestAsset extends SmartestBaseAsset implements SmartestSystemUiObject,
     	            foreach($asset_params as $key => $value){
     	                if($params[$key] !== null){
     	                    $params[$key] = $value;
+                        }
+    	            }
+	            
+                }
+	            
+	        } // data not found, or not unserializable. just use defaults from 
+	        
+	        
+	        
+	    }
+	    
+	    return $params;
+	    
+	}
+	
+	public function getEditorParams(){
+	    
+	    $info = $this->getTypeInfo();
+	    
+	    $params = array();
+	    
+	    if(isset($info['param'])){
+	        
+	        // echo 'param';
+	        
+	        $raw_xml_params = $info['param'];
+	        
+	        foreach($raw_xml_params as $rxp){
+	            if(isset($rxp['default'])){
+	                $params[$rxp['name']]['value'] = $rxp['default'];
+                }else{
+                    $params[$rxp['name']]['value'] = '';
+                }
+                
+                if(isset($rxp['label'])){
+                    $params[$rxp['name']]['label'] = $rxp['label'];
+                }else{
+                    $params[$rxp['name']]['label'] = $rxp['name'];
+                }
+                // TODO: Insert L10N stuff here
+	        }
+	        
+	        $default_serialized_data = $this->getParameterDefaults();
+	        
+	        if($asset_params = @unserialize($default_serialized_data)){
+	            
+	            if(is_array($asset_params)){
+	            
+	                // data found. loop through params from xml, replacing values with those from asset
+    	            foreach($asset_params as $key => $value){
+    	                if($params[$key] !== null){
+    	                    $params[$key]['value'] = $value;
                         }
     	            }
 	            
