@@ -248,7 +248,6 @@ type:
     class: SmartestAsset
     parsable: false
     show_preview_edit_link: false
-    hide_preview_edit_button: true
     input_options:
       - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
       - SM_ASSETINPUTTYPE_DIRECT_INPUT
@@ -276,7 +275,7 @@ type:
     editable: true
     parsable: true
     convert_to_smarty: false
-    hide_preview_edit_button: true
+    show_preview_edit_link: false
     icon: style.png
     input_options:
       - SM_ASSETINPUTTYPE_DIRECT_INPUT

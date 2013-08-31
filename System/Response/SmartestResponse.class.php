@@ -147,6 +147,8 @@ class SmartestResponse{
         	'System/Data/SmartestDataObjectHelper.class.php',
         	'System/Data/SmartestRandomNumberGenerator.class.php',
         	'System/Base/SmartestSiteActions.class.php',
+        	'System/Data/SmartestPageRenderingDataRequestHandler.class.php',
+        	'System/Data/SmartestPageNavigationDataRequestHandler.class.php',
         	'System/Templating/SmartestBasicRenderer.class.php',
         	'System/Templating/SmartestSingleItemTemplateRenderer.class.php',
         	'System/Templating/SmartestWebPageBuilder.class.php',

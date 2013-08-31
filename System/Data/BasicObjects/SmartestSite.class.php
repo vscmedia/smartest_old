@@ -21,10 +21,12 @@ class SmartestSite extends SmartestBaseSite{
 	
 	public function getHomePage($draft_mode=false){
 	    
-	    $page = new SmartestPage;
-	    $page->find($this->getTopPageId());
-	    $page->setDraftMode($draft_mode);
-	    $this->_home_page = $page;
+	    if($this->_home_page === null){
+	        $page = new SmartestPage;
+    	    $page->find($this->getTopPageId());
+    	    $page->setDraftMode($draft_mode);
+    	    $this->_home_page = $page;
+        }
 	    
 	    return $this->_home_page;
 	    

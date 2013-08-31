@@ -1,6 +1,6 @@
 {if $_include_slider_js}<script language="javascript" src="{$domain}Resources/System/Javascript/scriptaculous/src/slider.js"></script>{/if}
 
-<div id="track_{$_slider_input_data.name}" style="width:300px; background-color:#ccc; height:10px;">
+<div id="track_{$_slider_input_data.name}" style="width:300px; background-color:#ccc; height:10px; display:inline-block">
 	<div id="handle_{$_slider_input_data.name}" style="width:10px; height:15px; background-color:#f60; cursor:move;"></div>
 </div>
 

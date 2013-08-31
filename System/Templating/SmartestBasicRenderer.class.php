@@ -55,9 +55,7 @@ class SmartestBasicRenderer extends SmartestEngine{
                     
                     if($attachment['status'] == 'DEFINED'){
                         
-                        // print_r($attachment);
-                        
-                        if($attachment['zoom'] && $asset->isImage()){
+                        if($attachment['zoom'] && $attachment['asset']->isImage()){
                             $attachment['div_width'] = (int) $attachment['thumbnail']['width'];
                             $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/zoom_attachment.tpl';
                         }else{
@@ -213,6 +211,10 @@ class SmartestBasicRenderer extends SmartestEngine{
             
             $show_preview_edit_link = (!isset($asset_type_info['show_preview_edit_link']) || SmartestStringHelper::toRealBool($asset_type_info['show_preview_edit_link']));
             
+            if($render_data->hasParameter('show_preview_edit_link')){
+                $show_preview_edit_link = SmartestStringHelper::toRealBool($render_data->getParameter('show_preview_edit_link'));
+            }
+            
             if($this->_request_data->g('action') == "renderEditableDraftPage" && $path == 'none' && $show_preview_edit_link){
 			    
 			    if(isset($asset_type_info['editable']) && SmartestStringHelper::toRealBool($asset_type_info['editable'])){
@@ -224,6 +226,8 @@ class SmartestBasicRenderer extends SmartestEngine{
 			        $edit_link = "<!--edit link-->";
 		        }
 		    
+	        }else{
+	            $edit_link = "<!--no edit link-->";
 	        }
 		    
 		    $content .= $edit_link;

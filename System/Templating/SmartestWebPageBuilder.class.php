@@ -67,8 +67,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     }
     
     public function setPageRenderingData($data){
-        $this->_page_rendering_data = &$data;
-        $this->_tpl_vars['this'] = $this->_page_rendering_data;
+        // $this->_page_rendering_data = &$data;
+        $this->_tpl_vars['this'] = new SmartestPageRenderingDataRequestHandler($this->page); // $this->_page_rendering_data;
         $this->_page_rendering_data_retrieved = true;
     }
     
@@ -98,7 +98,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         $pid = SmartestStringHelper::toVarName($pid);
         
-        if($this->_page_rendering_data_retrieved){
+        // if($this->_page_rendering_data_retrieved){
         
 	        $cp = parent::startChildProcess($pid);
 	        $cp->setDraftMode($this->getDraftMode());
@@ -107,15 +107,15 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	        
             return $this->_child_processes[$pid];
         
-        }
+        // }
 	}
 	
 	public function prepareForRender(){
         
         $this->page->loadAssetClassDefinitions();
 	    $this->page->loadItemSpaceDefinitions();
-	    $this->setPageRenderingData($this->page->fetchRenderingData());
-	    $this->_tpl_vars['this'] = $this->_page_rendering_data;
+	    // $this->setPageRenderingData($this->page->fetchRenderingData());
+	    $this->_tpl_vars['this'] = new SmartestPageRenderingDataRequestHandler($this->page);
 	    
     }
     
@@ -276,6 +276,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	        $render_process_id = SmartestStringHelper::toVarName('template_'.SmartestStringHelper::removeDotSuffix($requested_file).'_'.substr(microtime(true), -6));
 	        $child = $this->startChildProcess($render_process_id);
 	        $child->caching = false;
+	        // echo get_class($this);
 	        $child->setContext(SM_CONTEXT_COMPLEX_ELEMENT);
 	        $child->assign('this', $this->_tpl_vars['this']);
 	        $content = $child->fetch($template);

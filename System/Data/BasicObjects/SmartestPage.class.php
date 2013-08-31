@@ -6,11 +6,12 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	protected $_fields_retrieval_attempted = false;
 	protected $_child_pages = array();
 	protected $_child_pages_retrieved = false;
-	protected $_child_web_pages = array();
+	protected $_child_web_pages = null;
 	protected $_child_web_pages_retrieved = false;
 	protected $_grandparent_page;
 	protected $_parent_page;
 	protected $_section_page;
+	protected $_is_home_page = null;
 	protected $_urls = array();
 	
 	protected $_draft_mode = false;
@@ -919,83 +920,61 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	}
 	
 	public function getPageChildrenForWeb($sections_only=false){
-	    // echo $this->getId();
-	    $special_page_ids = array();
 	    
-	    if($this->getParentSite()->getTagPageId()){
-	        $special_page_ids[] = $this->getParentSite()->getTagPageId();
-	    }
-        
-        // these values should not be the same as the ids of the other special pages, 
-        // but just in case they are, prevent them from being in the SQL query twice:
-        if($this->getParentSite()->getErrorPageId() && !in_array($this->getParentSite()->getErrorPageId(), $special_page_ids)){
-            $special_page_ids[] = $this->getParentSite()->getErrorPageId();
-        }
-        
-        if($this->getParentSite()->getSearchPageId() && !in_array($this->getParentSite()->getSearchPageId(), $special_page_ids)){
-            $special_page_ids[] = $this->getParentSite()->getSearchPageId();
-        }
-        
-        $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->_properties['id']."' AND page_site_id='".$this->_properties['site_id']."' AND page_deleted != 'TRUE'";
-		
-		if(!$this->getDraftMode()){
-		    $sql .= " AND page_is_published = 'TRUE'";
-		}
-		
-		if($sections_only){
-		    $sql .= " AND page_is_section = '1'";
-		}
-		
-		$sql .= " AND page_type = 'NORMAL'";
-		
-		if(count($special_page_ids)){
-		    $sql .= " AND page_id NOT IN('".implode("', '", $special_page_ids)."')";
-	    }
-		
-		$sql .= " ORDER BY page_order_index, page_id ASC";
-		
-		$result = $this->database->queryToArray($sql);
-	    $i = 0;
+	    if($this->_child_web_pages === null){
+	        
+    	    // echo $this->getId();
+    	    $special_page_ids = array();
 	    
-	    if(is_array($result)){
+    	    if($this->getParentSite()->getTagPageId()){
+    	        $special_page_ids[] = $this->getParentSite()->getTagPageId();
+    	    }
+        
+            // these values should not be the same as the ids of the other special pages, 
+            // but just in case they are, prevent them from being in the SQL query twice:
+            if($this->getParentSite()->getErrorPageId() && !in_array($this->getParentSite()->getErrorPageId(), $special_page_ids)){
+                $special_page_ids[] = $this->getParentSite()->getErrorPageId();
+            }
+        
+            if($this->getParentSite()->getSearchPageId() && !in_array($this->getParentSite()->getSearchPageId(), $special_page_ids)){
+                $special_page_ids[] = $this->getParentSite()->getSearchPageId();
+            }
+        
+            $sql = "SELECT DISTINCT * FROM Pages WHERE page_parent='".$this->_properties['id']."' AND page_site_id='".$this->_properties['site_id']."' AND page_deleted != 'TRUE'";
+		
+    		if(!$this->getDraftMode()){
+    		    $sql .= " AND page_is_published = 'TRUE'";
+    		}
+		
+    		if($sections_only){
+    		    $sql .= " AND page_is_section = '1'";
+    		}
+		
+    		$sql .= " AND page_type = 'NORMAL'";
+		
+    		if(count($special_page_ids)){
+    		    $sql .= " AND page_id NOT IN('".implode("', '", $special_page_ids)."')";
+    	    }
+		
+    		$sql .= " ORDER BY page_order_index ASC";
+		
+    		$result = $this->database->queryToArray($sql);
+    	    $i = 0;
 	    
-	        foreach($result as $page_record){
-	            // if($page_record['page_type'] == 'NORMAL'){
+    	    if(is_array($result)){
+	    
+    	        foreach($result as $page_record){
+
 	                $child_page = new SmartestPage;
 	                $child_page->hydrate($page_record);
 	                $this->_child_web_pages[$i] = $child_page;
 	                $i++;
-                // }
-                
-                /* else if($page_record['page_type'] == 'ITEMCLASS'){
-                    
-                    $model = new SmartestModel;
-                    
-                    if($model->hydrate($page_record['page_dataset_id'])){
-                        foreach($model->getSimpleItems() as $item){
-                            
-                            $child_page = new SmartestItemPage;
-                            $child_page->hydrate($page_record);
-                            $child_page->setSimpleItem($item);
-                            $child_page->setIdentifyingFieldName('id');
-                            $child_page->setIdentifyingFieldValue($item->getId());
-                            $child_page->assignPrincipalItem();
-                            
-                            $is_acceptable = $child_page->isAcceptableItem($this->getDraftMode());
-                            
-                            // var_dump($is_acceptable);
-                            
-                            if($is_acceptable){
-                                $this->_child_web_pages[$i] = $child_page;
-        	                    $i++;
-    	                    }
-                        }
-                    }
-                } */
-	        }
+    	        }
 	    
-	        $this->_child_web_pages_retrieved = true;
+    	        $this->_child_web_pages_retrieved = true;
 	    
+            }
+        
         }
         
         return $this->_child_web_pages;
@@ -1234,7 +1213,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	}
 	
 	public function isHomePage(){
-	    return ($this->getParentSite()->getTopPageId() == $this->_properties['id']);
+	    if($this->_is_home_page === null){
+	        $this->_is_home_page = $this->getParentSite()->getTopPageId() == $this->_properties['id'];
+	    }
+	    return $this->_is_home_page;
 	}
 	
 	public function isApproved(){
@@ -2236,6 +2218,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        }else{
 	            return $this->_section_page;
 	        }
+	        
         }else{
             return $this;
         }
@@ -2258,10 +2241,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function getParentSite(){
 	    
-	    if(!$this->getSiteId()){
-	        // echo "getParentSite() called without hydration.";
-	        $e = new Exception;
-	        echo nl2br($e->getTraceAsString());
+	    if(SmartestPersistentObject::get('__current_host_site')){
+	        return SmartestPersistentObject::get('__current_host_site');
 	    }
 	    
 	    if(!$this->_parent_site){
@@ -2272,6 +2253,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        if(count($result)){
                 $s = new SmartestSite;
                 $s->hydrate($result[0]);
+                SmartestPersistentObject::set('__current_host_site', $s);
                 $this->_parent_site = $s;
             }
         }

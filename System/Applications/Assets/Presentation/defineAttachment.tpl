@@ -19,7 +19,7 @@ function toggleZoomImageOption(){
   <div id="edit-form-layout">
     <div class="edit-form-row">
       <div class="form-section-label">Attachment Name</div>
-      {$attachment_name}<input type="hidden" name="attachment_name" value="{$attachment_name}" />
+      <code style="display:inline-block;padding-top:3px;font-size:14px">{$attachment_name}</code><input type="hidden" name="attachment_name" value="{$attachment_name}" />
     </div>
     <div class="edit-form-row">
       <div class="form-section-label">Text File</div>
