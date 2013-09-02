@@ -27,9 +27,9 @@ function viewLivePage(parameters){
 
 <div id="work-area">
 
-{if $allow_edit}
+{load_interface file="edit_tabs.tpl"}
 
-  {load_interface file="edit_tabs.tpl"}
+{if $allow_edit}
 
   {if $require_item_select}
     <h3>Page Elements</h3>

@@ -1605,12 +1605,40 @@ class Pages extends SmartestSystemApplication{
     		
     		    }
 		    
+	        }else{
+	            
+	            $this->addUserMessageToNextRequest("The page ID was not recognized", SmartestUserMessage::ERROR);
+	            
 	        }
 		
 	    }else{
 	        
-	        $this->addUserMessage('You don\'t have permission to modify pages.', SmartestUserMessage::ACCESS_DENIED);
-	        $this->send(false, 'allow_edit');
+	        $page_webid = $this->getRequestParameter('page_id');
+	        
+	        $helper = new SmartestPageManagementHelper;
+    		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+
+    		if(isset($type_index[$page_webid])){
+    		    if($type_index[$page_webid] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+    		        $page = new SmartestItemPage;
+    		    }else{
+    		        $page = new SmartestPage;
+    		    }
+    		}else{
+    		    $page = new SmartestPage;
+    		}
+    		
+    		if($page->hydrate($page_webid)){
+    		    $this->send($page, "page");
+    		    $this->addUserMessage('You don\'t have permission to modify page elements.', SmartestUserMessage::ACCESS_DENIED);
+    		    $this->send(true, 'allow_edit');
+    		    $this->send('getPageAssets.disallowed.tpl', "sub_template");
+    		    $this->send($page->isEditableByUserId($this->getUser()->getId()), 'page_is_editable');
+    		    $this->send($this->getUser()->hasToken('modify_user_permissions'), 'provide_tokens_link');
+    		}else{
+    		    $this->addUserMessageToNextRequest("The page ID was not recognized", SmartestUserMessage::ERROR);
+    		    $this->formForward();
+    		}
 	        
 	    }
 	}
@@ -4279,6 +4307,7 @@ class Pages extends SmartestSystemApplication{
 	        $this->send($group, 'group');
 	        $this->send($group->getNonMembers(), 'non_members');
 	        $this->send($group->getMemberships(true, true), 'members');
+	        $this->send($this->getUser()->hasToken('edit_pagegroup_name'), 'allow_name_edit');
 	    }
 	    
 	}

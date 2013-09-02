@@ -82,6 +82,9 @@ class SmartestPageGroupMembership extends SmartestManyToManyLookup{
             case "group":
             return $this->getGroup();
             
+            case "order_position":
+            return $this->getOrderIndex() + 1;
+            
         }
         
         return parent::offsetGet($offset);

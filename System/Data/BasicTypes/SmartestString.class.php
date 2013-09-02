@@ -9,11 +9,11 @@ class SmartestString implements SmartestBasicType, ArrayAccess, SmartestStorable
     }
     
     public function __toString(){
-        /* if(defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && constant('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && defined('SM_CMS_PAGE_ID')){
+        if(defined('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && constant('SM_CMS_PAGE_CONSTRUCTION_IN_PROGRESS') && defined('SM_CMS_PAGE_ID')){
             return (string) SmartestStringHelper::toXmlEntities($this->_string);
-        }else{ */
+        }else{
             return (string) $this->_string;
-        // }
+        }
     }
     
     public function __toJsonCompatible(){

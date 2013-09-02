@@ -48,6 +48,9 @@ function executeTransfer(){
     
     <div class="edit-form-row">
       <div class="form-section-label">Name</div>
+      
+      {if $allow_name_edit}
+      
       <p class="editable" id="pagegroup-name">{$group.name}</p>
       <div class="form-hint">Used to access the page group from templates. Numbers, lowercase letters and underscores only</div>
       <script type="text/javascript">
@@ -60,6 +63,11 @@ function executeTransfer(){
         savingClassName: 'editable-saving'
       {rdelim});
       </script>
+      
+      {else}
+        <code>{$group.name}</code>
+      {/if}
+      
     </div>
     
     <form action="{$domain}{$section}/transferPages" method="post" name="transferForm">
@@ -91,7 +99,7 @@ function executeTransfer(){
           <div style="text-align:left">Pages that <strong>are</strong> in this group</div>
    	      <select name="used_pages[]"  id='used_pages' size="2" multiple style="width:270px; height:300px" onclick="setMode('remove')" >	
 {foreach from=$members key="key" item="lookup"}
-  	      	<option value="{$lookup.page.id}" >{$lookup.order_index}. {$lookup.page.title}</option>
+  	      	<option value="{$lookup.page.id}" >{$lookup.order_position}. {$lookup.page.title}</option>
 {/foreach}
           </select>
   	    </td>

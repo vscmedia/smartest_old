@@ -52,3 +52,4 @@ id:type:scope:code:category:description
 47:p:s:edit_set_name:SM_USERTOKEN_ITEMS:Edit set short name
 48:p:s:enable_site:SM_USERTOKEN_SITES:Enable a disabled site
 49:p:s:disable_site:SM_USERTOKEN_SITES:Disable an enabled site
+50:p:s:edit_pagegroup_name:SM_USERTOKEN_PAGES:Edit page group short name

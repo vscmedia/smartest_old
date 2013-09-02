@@ -1,0 +1,1 @@
+<div class="warning">You aren't currently able to edit page elements. For this, you'll need the 'Update placeholders, containers, itemspaces &amp; lists' {help id="users:tokens"}token{/help}. {if $provide_tokens_link} <a href="{$domain}smartest/users">Click here</a> to edit user tokens.{/if}</div>
