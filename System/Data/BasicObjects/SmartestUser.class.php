@@ -196,9 +196,8 @@ class SmartestUser extends SmartestBaseUser{
 	        
 	        case "website":
 	        case "website_url":
-	        $url = $this->_properties['website'];
-	        // TODO: check this value
-	        return new SmartestExternalUrl($url);
+	        $url = new SmartestExternalUrl($this->_properties['website']);
+	        return $url;
 	        
 	    }
 	    

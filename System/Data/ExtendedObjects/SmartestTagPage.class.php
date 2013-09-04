@@ -9,6 +9,11 @@ class SmartestTagPage extends SmartestPage{
         $this->_tag->setDraftMode($this->getDraftMode());
     }
     
+    public function getTag(){
+        $this->_tag->setDraftMode($this->getDraftMode());
+        return $this->_tag;
+    }
+    
     public function getTitle($force_static=false){
         if(is_object($this->_tag) && !$force_static){
             return $this->_tag->getLabel();

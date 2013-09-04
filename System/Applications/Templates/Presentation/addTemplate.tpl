@@ -60,8 +60,7 @@ function hideUploader(){
     <div class="edit-form-row">
       <div class="form-section-label">Template contents: </div>
       <div style="width:100%" class="textarea-holder">
-        <textarea name="template_content" id="tpl_textArea" wrap="virtual">
-&lt;!-- Created by {$_user.full_name} --&gt;</textarea>
+        <textarea name="template_content" id="tpl_textArea" wrap="virtual">&lt;!-- Created by {$_user.full_name} --&gt;</textarea>
       </div>
     </div>
   

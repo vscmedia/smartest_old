@@ -56,7 +56,7 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">Object Model</div>
-    &quot;{$page.model.plural_name}&quot;
+    <a href="{$domain}smartest/items/{$page.model.varname}">{$page.model.plural_name}</a>
   </div>
   {/if}
   

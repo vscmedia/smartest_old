@@ -116,6 +116,12 @@
   
   var firstName, firstNameEntered, lastName, lastNameEntered, usernameSuggested;
   
+  var defaultFirstName = 'Enter first name';
+  var defaultUserName = 'Enter a username';
+  var defaultEmailAddress = 'Enter an email address';
+  
+  var emailAddressRegex = /^[\w\._-]+@[\w-]+(\.[\w]+)+$/;
+  
   function finishFirstName(){
       if(!firstNameEntered){
           firstNameEntered = true;
@@ -147,10 +153,12 @@
 {if $sites._count > 1}
   <div class="edit-form-row">
     <div class="form-section-label">Site</div>
+    
+    <div style="display:inline-block;width:auto">
 {foreach from=$sites item="site"}
     
-    <input type="checkbox" name="user_sites[]" value="{$site.id}" id="site-checkbox-{$site.id}" style="display:none" class="site-checkbox" />
-    <label for="site-checkbox-{$site.id}" class="checkbox-array" id="site-checkbox-{$site.id}-label">{$site.internal_label}</label>
+    <input type="checkbox" name="user_sites[]" value="{$site.id}" id="site-checkbox-{$site.id}" style="display:none" class="site-checkbox"{if $site.id == $_site.id} checked="checked"{/if} />
+    <label for="site-checkbox-{$site.id}" class="checkbox-array{if $site.id == $_site.id} selected{/if}" id="site-checkbox-{$site.id}-label">{$site.internal_label}</label>
     <script type="text/javascript">
     
     $('site-checkbox-{$site.id}').observe('click', function(e){literal}{
@@ -160,6 +168,8 @@
       }else{
         $(Event.element(e).id+'-label').removeClassName('selected');
       }
+      
+      // alert($$('label.checkbox-array.selected').length);
       
     }{/literal});
     
@@ -194,48 +204,117 @@
     
     {/literal}
     </script>
-    
+    </div>
   </div>
+{else}
+  <input type="checkbox" name="user_sites[]" value="{$_site.id}" id="site-checkbox-{$_site.id}" style="display:none" class="site-checkbox" checked="checked" />
 {/if}
   
   <div class="edit-form-row">
     <div class="form-section-label">First name </div>
-    <input type="text" name="user_firstname" id="ifn" />
-    {literal}<script type="text/javascript">
-      $('ifn').observe('blur', function(event){
-        if(!firstNameEntered){
-            firstNameEntered = true;
-            firstName = $('ifn').value;
+    <input type="text" name="user_firstname" id="ifn" value="Enter first name" class="unfilled" />
+    <div class="form-hint">A first name is required</div>
+    <script type="text/javascript">
+    {literal}
+      
+      $('ifn').observe('focus', function(event){
+        if($('ifn').value == defaultFirstName){
+          $('ifn').value = '';
+          $('ifn').removeClassName('unfilled');
         }
       });
-    </script>{/literal}
+      
+      $('ifn').observe('blur', function(event){
+        if($('ifn').value && !firstNameEntered && $('ifn').value != defaultFirstName){
+            
+            firstNameEntered = true;
+            firstName = $('ifn').value;
+            $('ifn').removeClassName('error');
+            
+        }else if($('ifn').value == ''){
+          $('ifn').addClassName('unfilled');
+          $('ifn').value = defaultFirstName;
+        }
+        
+      });
+      
+    {/literal}
+    </script>
   </div>
   
   <div class="edit-form-row">
     <div class="form-section-label">Last name </div>
     <input type="text" name="user_lastname" id="iln" />
-    {literal}<script type="text/javascript">
+    <script type="text/javascript">
+    {literal}
       $('iln').observe('blur', function(event){
+        
         if(firstNameEntered && !lastNameEntered){
             lastNameEntered = true;
             lastName = $('iln').value;
-            if(!usernameSuggested){
+            if(!usernameSuggested && (!$('username').value || $('username').value == defaultUserName)){
                 $('username').value = firstName.toUserName()+'.'+lastName.toUserName();
+                $('username').removeClassName('unfilled');
                 usernameSuggested = true;
             }
         }
+        
       });
-    </script>{/literal}
+    {/literal}
+    </script>
   </div>
 
   <div class="edit-form-row">
     <div class="form-section-label">Username </div>
-    <input type="text" style="width:200px" name="username" id="username" /><span class="form-hint">letters, numbers and underscores only please</span>
+    <input type="text" style="width:200px" name="username" id="username" autocomplete="off" value="Enter a username" class="unfilled" /><div class="form-hint">Pick something cool. Letters, numbers, dots and underscores only please</div>
+    <script type="text/javascript">
+    {literal}
+    
+      $('username').observe('blur', function(e){
+        if($('username').value && $('username').value != defaultUserName){
+          $('username').removeClassName('error');
+        }else if($('username').value == defaultUserName){
+          $('username').addClassName('unfilled');
+        }else if(!$('username').value){
+          $('username').value = defaultUserName;
+          $('username').addClassName('unfilled');
+        }
+      });
+      
+      $('username').observe('focus', function(e){
+        if($('username').value == defaultUserName){
+          $('username').value = '';
+          $('username').removeClassName('unfilled');
+        }
+      });
+      
+    {/literal}
+    </script>
   </div>
   
   <div class="edit-form-row">
     <div class="form-section-label">Password </div>
-    <input type="password" style="width:200px" name="password" />
+    <input type="password" style="width:200px" name="password" id="password" autocomplete="off" /><div class="form-hint">Try to make this at least eight characters, and include letters, mixed uppercase and lowercase, and punctuation</div>
+  
+    <script type="text/javascript">
+    {literal}
+    
+      $('password').observe('blur', function(e){
+        if($('password').value){
+          $('password').removeClassName('error');
+        }
+      });
+      
+      $('password').observe('focus', function(e){
+        // if($('username').value == defaultUserName){
+          $('password').removeClassName('error');
+          $('password').removeClassName('unfilled');
+        // }
+      });
+      
+    {/literal}
+    </script>
+  
   </div>
   
   <div class="edit-form-row">
@@ -249,12 +328,36 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">Email address </div>
-    <input type="text" name="user_email" />
+    <input type="text" name="user_email" id="user_email" value="Enter an email address" class="unfilled" />
+    <script type="text/javascript">
+    {literal}
+    
+      $('user_email').observe('blur', function(e){
+        if($('user_email').value && $('user_email').value != defaultEmailAddress && $('user_email').value.match(emailAddressRegex)){
+          $('user_email').removeClassName('error');
+        }else if($('user_email').value == defaultEmailAddress){
+          $('user_email').addClassName('unfilled');
+        }else if(!$('user_email').value){
+          $('user_email').value = defaultEmailAddress;
+          $('user_email').addClassName('unfilled');
+        }
+        
+      });
+      
+      $('user_email').observe('focus', function(e){
+        if($('user_email').value == defaultEmailAddress){
+          $('user_email').value = '';
+          $('user_email').removeClassName('unfilled');
+        }
+      });
+      
+    {/literal}
+    </script>
   </div>
   
   <div class="edit-form-row">
-    <div class="form-section-label">Website address </div>
-    http://<input type="text" style="width:278px" name="user_website" />
+    <div class="form-section-label">User's website address, if not this website </div>
+    http://<input type="text" style="width:360px" name="user_website" />
   </div>
   
   <div class="edit-form-row">
@@ -262,129 +365,56 @@
     <textarea name="user_bio" style="width:500px;height:60px">Share a little biographical information to fill out your profile. This may be shown publicly.</textarea>
   </div>
 
-{* <table width="100%" style="border:1px solid #ccc;padding:2px;" cellpadding="0" cellspacing="2" >
-  
-  <tr>
-    <td class="text" valign="top">Role </td>
-    <td align="left">
-      <select name="user_role" style="width:200px">
-        {foreach from=$roles item="role"}
-        <option value="{$role.id}">{$role.label}</option>
-        {/foreach}
-      </select>
-    </td>
-  </tr> 
-  
+  <div class="edit-form-row">
+    <div class="buttons-bar">
+      <input type="submit" value="Create new user" />
+    </div>
+  </div>  
 
-  
-  <tr>
-    <td class="text" valign="top">Username </td>
-    <td align="left"><input type="text" style="width:200px" name="username" />
-      </td>
-  </tr>
-  
-  <tr>
-    <td class="text" valign="top">Password </td>
-    <td align="left"><input type="password" style="width:200px" name="password" />
-      </td>
-  </tr>
-	
-	<tr>
-	<td class="text" style="width:100px" valign="top">First name </td>
-    <td align="left">
-    	<input type="text" style="width:200px" name="user_firstname" />
-    	</td>
-  </tr>
-  
-  <tr>
-	  <td class="text" style="width:100px" valign="top">Last name </td>
-    <td align="left">
-    	<input type="text"  style="width:200px" name="user_lastname" />
-    	</td>
-  </tr>
-
-  <tr>
-	<td class="text" style="width:100px" valign="top">E-mail </td>
-    <td align="left">
-     <input type="text"  style="width:200px" name="user_email" />
-    	</td>
-  </tr>
-  
-  <tr>
-	<td class="text" style="width:100px" valign="top">Website </td>
-    <td align="left">
-    	 http://<input type="text" style="width:200px" name="user_website" />
-    	</td>
-  </tr>
-  
-  <tr>
-	  <td class="text" style="width:100px" valign="top">About the user</td>
-    <td align="left">
-    	<textarea name="user_bio" style="width:500px;height:60px">Share a little biographical information to fill out your profile. This may be shown publicly.</textarea></td>
-  </tr>
-  
-</table> *}
-
-<div class="edit-form-row">
-  <div class="buttons-bar">
-    <input type="submit" value="Create new user" />
-  </div>
-</div>    
-
-</form>
+  </form>
 
 </div>
 
 <div id="actions-area">
   <ul class="actions-list">
      <li><b>Users &amp; Tokens</b></li>
-     {* <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addRole'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add Role</a></li> *}
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}{$section}/addRole'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/vcard_add.png"> Add Role</a></li>
      <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Go back to users</a></li>
   </ul>
 </div>
 
+{if $sites._count > 1}
 <script type="text/javascript">
-{* {literal}
-//complex example, note how we need to pass in different CSS selectors because of the complex HTML structure  
-var select_multiple_two = new Control.SelectMultiple('select_multiple_two','select_multiple_two_options',{  
-    checkboxSelector: 'table.select_multiple_table tr td input[type=checkbox]',  
-    nameSelector: 'table.select_multiple_table tr td.select_multiple_name',  
-    afterChange: function(){  
-        if(select_multiple_two && select_multiple_two.setSelectedRows)  
-            select_multiple_two.setSelectedRows();  
-    }  
-});  
+{literal}
   
-//adds and removes highlighting from table rows  
-select_multiple_two.setSelectedRows = function(){  
-    this.checkboxes.each(function(checkbox){  
-        var tr = $(checkbox.parentNode.parentNode);  
-        tr.removeClassName('selected');  
-        if(checkbox.checked)  
-            tr.addClassName('selected');  
-    });  
-}.bind(select_multiple_two);  
-select_multiple_two.checkboxes.each(function(checkbox){  
-    $(checkbox).observe('click',select_multiple_two.setSelectedRows);  
-});  
-select_multiple_two.setSelectedRows();  
+  $('addUser').observe('submit', function(e){
+    
+    if($('ifn').value == '' || $('ifn').value == defaultFirstName){
+        $('ifn').addClassName('error');
+        e.stop();
+    }
+    
+    if($('username').value == '' || $('username').value == defaultUserName){
+        $('username').addClassName('error');
+        e.stop();
+    }
+    
+    if($('user_email').value == '' || $('user_email').value == defaultEmailAddress || !$('user_email').value.match(emailAddressRegex)){
+        $('user_email').addClassName('error');
+        e.stop();
+    }
+    
+    if($('password').value == ''){
+        $('password').addClassName('error');
+        e.stop();
+    }
+    
+    if($$('label.checkbox-array.selected').length == 0){
+        e.stop();
+    }
+    
+  });
   
-//link open and closing  
-$('select_multiple_two_open').observe('click',function(event){  
-    $(this.select).style.visibility = 'hidden';  
-    new Effect.BlindDown(this.container,{  
-        duration: 0.3  
-    });  
-    Event.stop(event);  
-    return false;  
-}.bindAsEventListener(select_multiple_two));  
-$('select_multiple_two_close').observe('click',function(event){  
-    $(this.select).style.visibility = 'visible';  
-    new Effect.BlindUp(this.container,{  
-        duration: 0.3  
-    });  
-    Event.stop(event);  
-    return false;  
-}.bindAsEventListener(select_multiple_two));
-{/literal} *}
+{/literal}
 </script>
+{/if}

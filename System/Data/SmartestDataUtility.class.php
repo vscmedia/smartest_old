@@ -157,6 +157,27 @@ class SmartestDataUtility{
 	    
 	}
 	
+	public function getModelIdsWIthMetapageOnSiteId($site_id){
+	    
+	    $sql = "SELECT DISTINCT page_dataset_id FROM Pages WHERE page_type = 'ITEMCLASS' AND page_deleted != 'TRUE' AND page_site_id = '{$site_id}'";
+	    $result = $this->database->queryToArray($sql);
+	    $ids = array();
+	    
+	    foreach($result as $r){
+	        $ids[] = $r['page_dataset_id'];
+	    }
+	    
+	    return $ids;
+	    
+	}
+	
+	public function getModelsWIthMetapageOnSiteId($site_id){
+	    
+	    $ids = $this->getModelIdsWIthMetapageOnSiteId($site_id);
+	    // print_r($ids);
+	    
+	}
+	
 	public function getDataSets($simple = false, $site_id=''){
 		
 		if($simple){

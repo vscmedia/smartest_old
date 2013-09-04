@@ -614,7 +614,7 @@ class SmartestModel extends SmartestBaseModel{
     
     public function getMetaPages(){
         
-        $sql = "SELECT * FROM Pages WHERE page_type='ITEMCLASS' AND page_dataset_id='".$this->_properties['id']."' and page_deleted != 1";
+        $sql = "SELECT * FROM Pages WHERE page_type='ITEMCLASS' AND page_dataset_id='".$this->_properties['id']."' and page_deleted != 'TRUE'";
         
         if(is_object($this->getSite())){
             $sql .= " AND page_site_id='".$this->getSite()->getId()."'";
@@ -643,6 +643,15 @@ class SmartestModel extends SmartestBaseModel{
         }
         
         return $arrays;
+        
+    }
+    
+    public function hasMetaPageOnSiteId($site_id){
+        
+        $site_id = (int) $site_id;
+        $sql = "SELECT page_id FROM Pages WHERE page_type='ITEMCLASS' AND page_dataset_id='".$this->_properties['id']."' AND page_deleted != 'TRUE' AND page_site_id='".$site_id."'";
+        $result = $this->database->queryToArray($sql);
+        return (bool) count($result);
         
     }
     

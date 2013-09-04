@@ -8,7 +8,7 @@ require_once(SM_ROOT_DIR.'Library/Textile/classTextile.php');
 
 class SmartestStringHelper extends SmartestHelper{
     
-    const EMAIL_ADDRESS = '/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/i';
+    const EMAIL_ADDRESS = '/[A-Z0-9._%-]+@[A-Z0-9-]+\.[\w]{2,4}/i';
     
     public static function convertObject($data){
         if(is_object($data)){
@@ -173,7 +173,7 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	}
 	
-	public static function toUsername($normal_string, $clean_non_ascii=false){
+	public static function toUsername($normal_string){
 	
 		$page_name = self::toAscii(strtolower($normal_string));
 		$page_name = trim($page_name, " ?!%$#&£*|()/\\-");

@@ -26,24 +26,17 @@
 
 <div id="actions-area">
 
-<td valign="top" style="width:250px">
-<ul class="actions-list" id="item-specific-actions" style="display:none">
-  <li><b>Selection Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="workWithItem('editUser'); return false;" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/pencil.png"> Edit User Details</a></li>
+  <ul class="actions-list" id="item-specific-actions" style="display:none">
+    <li><b>Selected user</b></li>
+    <li class="permanent-action"><a href="#" onclick="workWithItem('editUser'); return false;" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/pencil.png"> Edit User Details</a></li>
+    <li class="permanent-action"><a href="#" onclick="workWithItem('editUserTokens'); return false;" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_edit.png"> Edit User Tokens</a></li>
+    <li class="permanent-action"><a href="#" onclick="{literal}if(confirm('Are you sure you want to delete this user?')){workWithItem('deleteUser');}{/literal} return false;"><img border="0" src="{$domain}Resources/Icons/user_delete.png"> Delete User</a></li>
+  </ul>
 
-<li class="permanent-action"><a href="#" onclick="workWithItem('editUserTokens'); return false;" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Edit User Tokens</a></li>
-
- <li class="permanent-action"><a href="#" onclick="{literal}if(confirm('Are you sure you want to delete this user?')){workWithItem('deleteUser');}{/literal} return false;"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> Delete User</a></li>
-
-
-</ul>
-<ul class="actions-list">
-   <li><b>Users &amp; Tokens</b></li>
-   <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users/add'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add User</a></li>
-   <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/user_roles'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> Roles</a></li>
-</ul></td>
-
-</tr>
-</table>
+  <ul class="actions-list">
+     <li><b>Users &amp; Tokens</b></li>
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users/add'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add User</a></li>
+     <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/user_roles'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/vcard.png"> Roles</a></li>
+  </ul>
 
 </div>

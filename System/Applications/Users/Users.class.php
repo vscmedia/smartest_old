@@ -39,108 +39,117 @@ class Users extends SmartestSystemApplication{
 	
 	public function insertUser($get, $post){
 		
-		$user = new SmartestSystemUser;
+		if($this->getUser()->hasToken('create_users')){
+		
+    		$user = new SmartestSystemUser;
         
-        $username = SmartestStringHelper::toUsername($this->getRequestParameter('username'));
+            $username = SmartestStringHelper::toUsername($this->getRequestParameter('username'));
         
-        if($user->findBy('username', $username)){
+            if($user->findBy('username', $username)){
             
-            $this->addUserMessage("The username you entered is already is use.", SmartestUserMessage::WARNING);
-            $this->forward('users', 'addUser');
+                $this->addUserMessage("The username you entered is already is use.", SmartestUserMessage::WARNING);
+                $this->forward('users', 'addUser');
             
-        }else{
-            
-            // print_r($_POST);
-            
-		    $password = $this->getRequestParameter('password');
-    		$firstname = $this->getRequestParameter('user_firstname');
-    		$lastname = $this->getRequestParameter('user_lastname');
-    		$email = $this->getRequestParameter('user_email');
-    		$website = $this->getRequestParameter('user_website');
-    		$salt = SmartestStringHelper::random(40);
-    		$hash = md5($this->getRequestParameter('password').$salt);
-    		
-    		if(!SmartestStringHelper::isValidExternalUri($website)){
-    		    $website = 'http://'.$website;
-    		}
-		    
-		    $user->setUsername($username);
-    		$user->setPassword($hash);
-    		$user->setPasswordSalt($salt);
-    		$user->setFirstname($firstname);
-    		$user->setLastname($lastname);
-    		$user->setEmail($email);
-    		$user->setWebsite($website);
-    		$user->setRegisterDate(time());
-    		$user->setIsSmartestAccount(1);
-    		
-    		$user->save();
-		    
-    		// add user tokens
-    		
-    		if(is_numeric($this->getRequestParameter('user_role'))){
-                
-                // User-created role is being used to assign tokens
-                $role = new SmartestRole;
-                
-                if($role->find($this->getRequestParameter('user_role'))){
-                    $tokens = $role->getTokens();
-                }else{
-                    $tokens = array();
-                }
-                
-                $l = new SmartestManyToManyLookup;
-    	        $l->setType('SM_MTMLOOKUP_USER_INITIAL_ROLE');
-    	        $l->setEntityForeignKeyValue(1, $user->getId());
-    	        $l->setEntityForeignKeyValue(2, $this->getRequestParameter('user_role'));
-    	        $l->save();
-            
-            }else if(substr($this->getRequestParameter('user_role'), 0, 7) == 'system:'){
-                
-                $role_id = substr($this->getRequestParameter('user_role'), 7);
-                $h = new SmartestUsersHelper;
-                $system_roles = $h->getSystemRoles();
-                
-                if(isset($system_roles[$role_id])){
-                    $role = $system_roles[$role_id];
-                    $tokens = $role->getTokens();
-                }else{
-                    $tokens = array();
-                }
-                
             }else{
-                
-                $tokens = array();
-                
-            }
+            
+                // print_r($_POST);
+            
+    		    $password = $this->getRequestParameter('password');
+        		$firstname = $this->getRequestParameter('user_firstname');
+        		$lastname = $this->getRequestParameter('user_lastname');
+        		$email = $this->getRequestParameter('user_email');
+        		$website = $this->getRequestParameter('user_website');
+        		$salt = SmartestStringHelper::random(40);
+        		$hash = md5($this->getRequestParameter('password').$salt);
     		
-    		if($this->getRequestParameter('global_site_access')){
-    		    if($this->getUser()->hasToken('grant_global_permissions')){
-    		        
-    		        // Add tokens from role globally
-    		        foreach($tokens as $t){
-                        $user->addTokenById($t->getId(), 'GLOBAL');
+        		if(!SmartestStringHelper::isValidExternalUri($website)){
+        		    $website = 'http://'.$website;
+        		}
+		    
+    		    $user->setUsername($username);
+        		$user->setPassword($hash);
+        		$user->setPasswordSalt($salt);
+        		$user->setFirstname($firstname);
+        		$user->setLastname($lastname);
+        		$user->setEmail($email);
+        		$user->setWebsite($website);
+        		$user->setRegisterDate(time());
+        		$user->setIsSmartestAccount(1);
+    		
+        		$user->save();
+		    
+        		// add user tokens
+    		
+        		// print_r($this->getRequestParameter('user_role'));
+    		
+        		if(is_numeric($this->getRequestParameter('user_role'))){
+                
+                    // User-created role is being used to assign tokens
+                    $role = new SmartestRole;
+                
+                    if($role->find($this->getRequestParameter('user_role'))){
+                        $tokens = $role->getTokens();
+                    }else{
+                        $tokens = array();
                     }
-                    
-    		    }else{
-    		        $this->addUserMessageToNextRequest('You do not have permission to grant global site access or other tokens');
-    		    }
-		    }else{
-		        $site_ids = $this->getRequestParameter('user_sites');
-		        
-		        if(is_array($site_ids)){
-		            
-		            // Add tokens from role for each site
-		            foreach($site_ids as $site_id){
-		                // print_r($site_id);
-		                foreach($tokens as $t){
-                            $user->addTokenById($t->getId(), $site_id);
+                
+                    $l = new SmartestManyToManyLookup;
+        	        $l->setType('SM_MTMLOOKUP_USER_INITIAL_ROLE');
+        	        $l->setEntityForeignKeyValue(1, $user->getId());
+        	        $l->setEntityForeignKeyValue(2, $this->getRequestParameter('user_role'));
+        	        $l->save();
+            
+                }else if(substr($this->getRequestParameter('user_role'), 0, 7) == 'system:'){
+                
+                    $role_id = substr($this->getRequestParameter('user_role'), 7);
+                    $h = new SmartestUsersHelper;
+                    $system_roles = $h->getSystemRoles();
+                
+                    if(isset($system_roles[$role_id])){
+                        $role = $system_roles[$role_id];
+                        $tokens = $role->getTokens();
+                    }else{
+                        $tokens = array();
+                    }
+                
+                }else{
+                
+                    $tokens = array();
+                
+                }
+    		
+        		if($this->getRequestParameter('global_site_access')){
+        		    if($this->getUser()->hasToken('grant_global_permissions')){
+    		        
+        		        // Add tokens from role globally
+        		        foreach($tokens as $t){
+                            $user->addTokenById($t->getId(), 'GLOBAL');
                         }
+                    
+        		    }else{
+        		        $this->addUserMessageToNextRequest('You do not have permission to grant global site access or other tokens');
+        		    }
+    		    }else{
+		        
+    		        $site_ids = $this->getRequestParameter('user_sites');
+		        
+    		        if(is_array($site_ids)){
+		            
+    		            // Add tokens from role for each site
+    		            foreach($site_ids as $site_id){
 		                
-		            }
-		        }
-		    }
+    		                foreach($tokens as $t){
+    		                    $user->addTokenById($t->getId(), $site_id);
+                            }
+		                
+    		            }
+    		        }
+    		    }
         
+            }
+        
+        }else{
+            $this->addUserMessageToNextRequest("You don't have permission to add new user accounts", SmartestUserMessage::ACCESS_DENIED);
         }
     
 		$this->formForward(); 
@@ -163,6 +172,7 @@ class Users extends SmartestSystemApplication{
             
             $this->send($this->getUser()->hasToken('modify_user_permissions'), 'show_tokens_edit_tab');
             $this->send($this->getUser()->hasToken('require_user_password_change'), 'require_password_changes');
+            $this->send($this->getUser()->hasToken('modify_usernames'), 'allow_username_change');
         
         }else{
             
@@ -294,20 +304,25 @@ class Users extends SmartestSystemApplication{
 	
 	public function transferTokens($get, $post){
     	
-    	if($this->getUser()->hasToken('modify_user_permissions')){
+    	if(($this->getRequestParameter('user_id') != $this->getUser()->getId() && $this->getUser()->hasToken('modify_user_permissions')) || ($this->getRequestParameter('user_id') == $this->getUser()->getId() && $this->getUser()->hasToken('modify_user_own_permissions'))){
     	    
     	    $user = new SmartestSystemUser;
     	    
-    	    if($user->find($post['user_id'])){
+    	    if($user->find($this->getRequestParameter('user_id'))){
     	        
     	        if($post['transferAction'] == 'add'){
 			        foreach($post['tokens'] as $token_id){
-			            $user->addTokenById($token_id, $post['site_id']);
+			            $user->addTokenById($token_id, $this->getRequestParameter('site_id'));
 			        }
 		        }else{
 		            foreach($post['sel_tokens'] as $token_id){
-			            $user->removeTokenById($token_id, $post['site_id']);
+			            $user->removeTokenById($token_id, $this->getRequestParameter('site_id'));
 			        }
+		        }
+		        
+		        if($this->getRequestParameter('user_id') == $this->getUser()->getId()){
+		            // if the user is editing his or her own permissions, refresh current user's tokens
+		            $this->getUser()->reloadTokens();
 		        }
 		    
 	        }else{
@@ -318,7 +333,11 @@ class Users extends SmartestSystemApplication{
 		
 	    }else{
 	        
-	        $this->addUserMessageToNextRequest('You do not have the permissions needed to modify the permissions of other users.', SmartestUserMessage::ERROR);
+	        if($this->getRequestParameter('user_id') == $this->getUser()->getId()){
+	            $this->addUserMessageToNextRequest('You do not have the permissions needed to modify your own permissions.', SmartestUserMessage::ACCESS_DENIED);
+	        }else{
+	            $this->addUserMessageToNextRequest('You do not have the permissions needed to modify the permissions of other users.', SmartestUserMessage::ACCESS_DENIED);
+            }
 	        
 	    }
 		
@@ -328,26 +347,34 @@ class Users extends SmartestSystemApplication{
 	
 	public function deleteUser($get){
 	    
-    	$user = new SmartestUser;
-    	$user_id = (int) $get['user_id'];
-    	
-    	if($user_id == $this->getUser()->getId()){
-    	
-    	    $this->addUserMessageToNextRequest("You can't delete your own account.", SmartestUserMessage::WARNING);
-    	
-    	}else{
-    	
-    	    if($user->hydrate($user_id)){
-    	        
-    	        $this->addUserMessageToNextRequest("The user '".$user->getUsername()."' was successfully deleted.", SmartestUserMessage::SUCCESS);
-		        $user->delete();
-		
-	        }else{
-	            
-	            $this->addUserMessageToNextRequest("The user ID was not recognized.", SmartestUserMessage::ERROR);
-	            
-	        }
+	    if($this->getUser()->hasToken('delete_users')){
 	    
+        	$user = new SmartestUser;
+        	$user_id = (int) $get['user_id'];
+    	
+        	if($user_id == $this->getUser()->getId()){
+    	
+        	    $this->addUserMessageToNextRequest("You can't delete your own account.", SmartestUserMessage::WARNING);
+    	
+        	}else{
+    	
+        	    if($user->hydrate($user_id)){
+    	        
+        	        $this->addUserMessageToNextRequest("The user '".$user->getUsername()."' was successfully deleted.", SmartestUserMessage::SUCCESS);
+    		        $user->delete();
+		
+    	        }else{
+	            
+    	            $this->addUserMessageToNextRequest("The user ID was not recognized.", SmartestUserMessage::ERROR);
+	            
+    	        }
+	    
+            }
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest('You do not have the permissions needed to delete users.', SmartestUserMessage::ACCESS_DENIED);
+            
         }
 		
 		$this->formForward();
@@ -367,9 +394,18 @@ class Users extends SmartestSystemApplication{
     		    $user->setWebsite($post['user_website']);
     		    $user->setBio(addslashes($post['user_bio']));
     		    
+    		    if($this->getRequestParameter('username') && SmartestStringHelper::toUsername($this->getRequestParameter('username')) && SmartestStringHelper::toUsername($this->getRequestParameter('username')) != $user->getUsername()){
+    		        if($this->getUser()->hasToken('modify_usernames')){
+    		            $user->setUsername(SmartestStringHelper::toUsername($this->getRequestParameter('username')));
+    		        }else{
+    		            // attempt at changing the username without having permission
+    		        }
+		        }
+    		    
     		    if(isset($post['password']) && strlen($post['password']) && $post['password'] == $post['passwordconfirm']){
     		        $user->setPasswordWithSalt($post['password'], SmartestStringHelper::random(40));
     		        $this->addUserMessageToNextRequest("The user has been updated, including a new password.");
+    		        $user->setPasswordChangeRequired(0);
     	        }else{
     		        $this->addUserMessageToNextRequest("The user has been updated.");
     		        if($this->getUser()->hasToken('require_user_password_change')){

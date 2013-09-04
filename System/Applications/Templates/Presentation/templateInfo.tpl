@@ -75,7 +75,7 @@
       </tr>
       <tr>
         <td class="field-name">Original site:</td>
-        <td>{$template.site.label}</td>
+        <td>{$template.site.internal_label}</td>
       </tr>
       <tr>
         <td class="field-name">Shared with other sites:</td>

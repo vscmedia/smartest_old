@@ -47,8 +47,17 @@ class SmartestPageRenderingDataRequestHandler implements ArrayAccess{
     
     public function offsetGet($offset){
         
-        switch($offset){
+        if($this->_page instanceof SmartestItemPage){
+            $model_varname = SmartestStringHelper::toVarName($this->_page->getPrincipalItem()->getModel()->getName());
+        }else{
+            $model_varname = '_X_';
+        }
         
+        switch($offset){
+            
+            case "tag":
+            return $this->_page->getTag();
+            
             case "page":
             return $this->_page;
         
@@ -71,6 +80,8 @@ class SmartestPageRenderingDataRequestHandler implements ArrayAccess{
             return $this->getNavigationDataRequestHandler();
         
             case "principal_item":
+            case "item":
+            case $model_varname:
             return $this->getPrincipalItem();
         
             case "is_item":

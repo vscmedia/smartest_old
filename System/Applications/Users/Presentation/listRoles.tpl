@@ -24,15 +24,15 @@
 
 <ul class="invisible-actions-list" id="item-specific-actions" style="display:none">
   <li><strong>Selected Role</strong></li>
-  <li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){workWithItem('editRoleTokens');}{/literal}" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Edit Role Tokens</a></li>
-  <li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteRole');}{/literal}"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> Delete Role</a></li>
+  <li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage){workWithItem('editRoleTokens');}{/literal}" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/vcard_edit.png"> Edit Role Tokens</a></li>
+  <li class="permanent-action"><a href="javascript:nothing()" onclick="{literal}if(selectedPage && confirm('Are you sure you want to delete this page?')){workWithItem('deleteRole');}{/literal}"><img border="0" src="{$domain}Resources/Icons/vcard_delete.png"> Delete Role</a></li>
 </ul>
 
 <ul class="actions-list">
    <li><strong>Users &amp; Permissions</strong></li>
-   <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/user_roles/add'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add role</a></li>
+   <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/user_roles/add'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/vcard_add.png"> Add role</a></li>
    <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users/add'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> Add user</a></li>
-   <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user_add.png"> List users</a></li>
+   <li class="permanent-action"><a href="javascript:nothing()" onclick="window.location='{$domain}smartest/users'" class="right-nav-link"><img border="0" src="{$domain}Resources/Icons/user.png"> List users</a></li>
 </ul>
 
 </div>

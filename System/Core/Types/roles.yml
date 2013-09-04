@@ -8,6 +8,7 @@ roles:
     label: Sub-Editor
     tokens:
       - add_new_pages
+      - author_credit
       - add_items
       - modify_page_properties
       - modify_draft_pages
@@ -30,3 +31,36 @@ roles:
       - site_access
       - modify_assets
       - create_assets # users can always delete assets that they have created
+  developer:
+    label: Developer
+    tokens:
+      - modify_system_settings
+      - add_new_pages
+      - remove_pages
+      - create_models
+      - create_remove_properties
+      - add_items
+      - delete_items
+      - modify_page_properties
+      - modify_draft_pages
+      - edit_model
+      - modify_site_parameters
+      - site_access
+      - grant_site_access
+      - create_sites
+      - clear_pages_cache
+      - create_users
+      - edit_page_name
+      - edit_item_name
+      - see_server_speed
+      - test_server_speed
+      - edit_model_plural_name
+      - delete_models
+      - edit_file_group_names
+      - edit_template_group_names
+      - edit_file_names
+      - edit_template_names
+      - edit_set_name
+      - enable_site
+      - disable_site
+      - edit_pagegroup_name

@@ -49,9 +49,7 @@ class SmartestCmsLink extends SmartestHelper{
         $this->_markup_attributes->absorb($extra_markup_attributes);
         
         if($this->_destination_properties->hasParameter('hash')){
-            // echo "Hash: ".$this->_destination_properties->getParameter('hash');
             $this->_hash = $this->_destination_properties->getParameter('hash');
-            // var_dump($this->_hash);
         }
         
         if($this->_markup_attributes->hasParameter('hash')){
@@ -265,7 +263,7 @@ class SmartestCmsLink extends SmartestHelper{
             $this->_destination = $d;
         
         }else{
-            return $this->error("A metapage was not found for the item provided: ".$item->getName().')');
+            return $this->error("A metapage was not found for the ".strtolower($item->getModel()->getName()).": '".$item->getName().'\'');
         }
         
     }
@@ -470,6 +468,10 @@ class SmartestCmsLink extends SmartestHelper{
         return $this->_has_error;
     }
     
+    public function getError(){
+        return $this->_error_message;
+    }
+    
     ///// END NEW API FUNCTIONS /////
     
     public function shouldOmitAnchorTag($draft_mode=false){
@@ -550,10 +552,6 @@ class SmartestCmsLink extends SmartestHelper{
                 } */
                 
                 // return $a->render($draft_mode);
-                
-                // echo SM_ROOT_DIR.'Public/Resources/Images/'.substr($this->_render_data->getParameter('with'), 6).' ';
-                
-                // print_r($this->_render_data->getParameters());
                 
                 if($this->_render_data->getParameter('with') instanceof SmartestImage){
                     

@@ -169,7 +169,7 @@ class SmartestTag extends SmartestBaseTag{
         
     }
     
-    public function getItems($site_id=null, $model_id=null){
+    public function getItems($site_id=null, $model_id=null, $metapage_models_only=false){
         
         if(!$this->_item_lookup_attempted['site_'.$site_id]){
         
@@ -181,6 +181,14 @@ class SmartestTag extends SmartestBaseTag{
             
             if($model_id && is_numeric($model_id)){
                 $sql .= ' AND Items.item_itemclass_id=\''.$model_id.'\'';
+            }else if($metapage_models_only && $site_id){
+                $du = new SmartestDataUtility;
+                $model_ids = $du->getModelIdsWIthMetapageOnSiteId($site_id);
+                if(count($model_ids)){
+                    $sql .= ' AND Items.item_itemclass_id IN (\''.implode("','", $model_ids).'\')';
+                }else{
+                    return array();
+                }
             }
             
             if(!$this->getDraftMode()){
@@ -296,8 +304,11 @@ class SmartestTag extends SmartestBaseTag{
         
         $master_array = array();
         
+        $du = new SmartestDataUtility;
+        $du->getModelsWIthMetapageOnSiteId($site_id);
+        
         $pages = $this->getPages($site_id, $draft);
-        $items = $this->getItems($site_id, $draft);
+        $items = $this->getItems($site_id, $draft, true);
         
         foreach($pages as $p){
             

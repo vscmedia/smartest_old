@@ -23,7 +23,7 @@ id:type:scope:code:category:description
 18:p:s:publish_all_pages:SM_USERTOKEN_PAGES:Publish changed pages without needing approval
 19:p:s:publish_all_items:SM_USERTOKEN_ITEMS:Publish changed items without needing approval
 20:p:s:modify_site_parameters:SM_USERTOKEN_SITES:Edit site parameters
-21:p:s:site_access:SM_USERTOKEN_SITES:See the contents of the site; to open it in order to work on it
+21:p:s:site_access:SM_USERTOKEN_SITES:See the site upon login and be able to open it
 22:p:s:modify_other_user_details:SM_USERTOKEN_USERS:Edit the details of other users
 23:p:s:grant_site_access:SM_USERTOKEN_USERS:Grant access to a site to another user
 24:p:g:grant_global_permissions:SM_USERTOKEN_USERS:Permission to grant permissions that will persist across all sites
@@ -53,3 +53,6 @@ id:type:scope:code:category:description
 48:p:s:enable_site:SM_USERTOKEN_SITES:Enable a disabled site
 49:p:s:disable_site:SM_USERTOKEN_SITES:Disable an enabled site
 50:p:s:edit_pagegroup_name:SM_USERTOKEN_PAGES:Edit page group short name
+51:p:s:modify_user_own_permissions:SM_USERTOKEN_USERS:Edit one's own permissions
+52:p:s:modify_usernames:SM_USERTOKEN_USERS:Change a user's login username
+52:p:s:delete_users:SM_USERTOKEN_USERS:Delete user accounts
