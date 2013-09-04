@@ -37,7 +37,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		$this->security = true;
 		$this->security_settings['PHP_HANDLING'] = false;
 		$this->security_settings['PHP_TAGS'] = false;
-		$this->security_settings['MODIFIER_FUNCS'] = array();
+		$this->security_settings['MODIFIER_FUNCS'] = array('strtolower', 'strtoupper');
+		$this->security_settings['IF_FUNCS'] = array('strlen', 'empty', 'count');
 		$this->security_settings['INCLUDE_ANY'] = true;
 
 	}
