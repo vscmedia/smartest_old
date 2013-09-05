@@ -42,6 +42,16 @@ class SmartestEngine extends Smarty{
 		
 		$this->_tpl_vars['random'] = new SmartestRandomNumberGenerator;
 		
+		// Sergiy: Deny access to PHP world from frontend tpls
+        // (foolproof and the case of marginally trusted template editor).
+        // Marcus: moved this to SmartestEngine so that all templates are affected
+		$this->security = true;
+		$this->security_settings['PHP_HANDLING'] = false;
+		$this->security_settings['PHP_TAGS'] = false;
+		$this->security_settings['MODIFIER_FUNCS'] = array('strtolower', 'strtoupper', 'trim', 'addslashes', 'stripslashes');
+		$this->security_settings['IF_FUNCS'] = array('strlen', 'empty', 'count', 'in_array', 'array');
+		$this->security_settings['INCLUDE_ANY'] = true;
+		
 	}
 	
 	public function startChildProcess($pid, $type='', $caching=false){
@@ -56,19 +66,18 @@ class SmartestEngine extends Smarty{
         
 	    $cp = new $engine_type($pid);
 	    
-	    $cp->template_dir = $this->templates_dir;
+	    $cp->template_dir = isset($this->templates_dir) ? $this->templates_dir : null;
 		$cp->compile_dir = $this->compile_dir;
 		$cp->cache_dir = $this->cache_dir;
 		$cp->config_dir = $this->config_dir;
 		
-		$cp->assign('section', $this->_tpl_vars['section']);
-		$cp->assign('module', $this->_tpl_vars['module']);
-		$cp->assign('module_dir', $this->_tpl_vars['module_dir']);
-		$cp->assign('method', $this->_tpl_vars['method']);
+		$cp->assign('section', isset($this->_tpl_vars['section']) ? $this->_tpl_vars['section'] : null);
+		$cp->assign('module', isset($this->_tpl_vars['module']) ? $this->_tpl_vars['module'] : null);
+		$cp->assign('module_dir', isset($this->_tpl_vars['module_dir']) ? $this->_tpl_vars['module_dir'] : null);
+		$cp->assign('method', isset($this->_tpl_vars['method']) ? $this->_tpl_vars['method'] : null);
 		$cp->assign('domain', $this->_tpl_vars['domain']);
-		$cp->assign('class', $this->_tpl_vars['class']);
-		$cp->assign('sm_admin_email', $this->_tpl_vars['sm_admin_email']);
-		$cp->assign('sm_user_agent', $this->_tpl_vars['sm_user_agent']);
+		$cp->assign('class', isset($this->_tpl_vars['class']) ? $this->_tpl_vars['class'] : null);
+		$cp->assign('sm_user_agent', isset($this->_tpl_vars['sm_user_agent']) ? $this->_tpl_vars['sm_user_agent'] : null);
 		$cp->assign('request_parameters', $this->_request_data->getParameter('request_parameters'));
 		$cp->caching = (bool) $caching;
 		

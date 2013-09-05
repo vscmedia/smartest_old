@@ -20,6 +20,7 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	
 	$limit = (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : 0;
 	$char_limit = (isset($params['char_limit']) && is_numeric($params['char_limit'])) ? $params['char_limit'] : 0;
+	if(!isset($length)){$length = 0;}
 	
 	// echo $smartest_engine->_repeat_char_length_aggr;
 	
@@ -47,7 +48,7 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
     	
 	}
 	
-	$item = $items[$index];
+	$item = isset($items[$index]) ? $items[$index] : null;
 	$check_length=($length == 0 or $index < $length);
 	
 	if(is_string($item)){
@@ -56,6 +57,8 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	    $char_length_incr = strlen($item->getName());
 	}else if($item instanceof SmartestUser){
 	    $char_length_incr = strlen($item->getFullName());
+	}else{
+	    $char_length_incr = 0;
 	}
 	
 	$smartest_engine->_repeat_char_length_aggr+=$char_length_incr;

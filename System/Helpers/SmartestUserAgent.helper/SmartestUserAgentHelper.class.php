@@ -142,12 +142,12 @@ class SmartestUserAgentHelper extends SmartestHelper{
         	}
     	}
 	    
-	    return $this->browser['appVersion'];
+	    return isset($this->browser['appVersion']) ? $this->browser['appVersion'] : null;
 	}
 	
 	public function getAppVersionInteger(){
 	    $this->getAppVersion();
-	    return $this->browser['appVersionInteger'];
+	    return isset($this->browser['appVersionInteger']) ? $this->browser['appVersionInteger'] : null;
 	}
 	
 	public function getRenderingEngineName(){

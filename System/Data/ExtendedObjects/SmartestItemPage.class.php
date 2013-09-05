@@ -213,9 +213,17 @@ class SmartestItemPage extends SmartestPage{
             return $this->_properties['title'];
         }else{
             if(is_object($this->_principal_item)){
-                return $this->_principal_item->getName();
+                if((bool) $this->_principal_item->getItem()->getUseAltTitleTag()){
+                    return $this->_principal_item->getItem()->getAltTitleTag();
+                }else{
+                    return $this->_principal_item->getName();
+                }
             }else{
-                return $this->_simple_item->getName();
+                if((bool) $this->_simple_item->getUseAltTitleTag()){
+                    return $this->_simple_item->getAltTitleTag();
+                }else{
+                    return $this->_simple_item->getName();
+                }
             }
         }
     }
@@ -274,10 +282,17 @@ class SmartestItemPage extends SmartestPage{
 	
 	public function offsetGet($offset){
 	    
+	    if($this->_principal_item instanceof SmartestCmsItem){
+            $model_varname = SmartestStringHelper::toVarName($this->_principal_item->getModel()->getName());
+        }else{
+            $model_varname = '_X_';
+        }
+	    
 	    switch($offset){
 	        
 	        case "item":
 	        case "principal_item":
+	        case $model_varname:
 	        return $this->_principal_item;
 	        
 	        case "fallback_url":

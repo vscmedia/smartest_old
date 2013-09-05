@@ -16,19 +16,23 @@ class SmartestManyToManyLookupType{
         $this->_return = $type['return'];
         $this->_label = $type['label'];
         $this->_method = $type['method'];
-        $this->_usesInstances = SmartestStringHelper::toRealBool($type['instances']);
+        $this->_usesInstances = isset($type['instances']) ? SmartestStringHelper::toRealBool($type['instances']) : false;
         
         // build entity objects
         
-        $entities = $type['entity'];
+        if($type['method'] == 'SM_MTMLOOKUPMETHOD_MAP'){
         
-        if(is_array($entities) && $type['method'] == 'SM_MTMLOOKUPMETHOD_MAP'){
+            $entities = $type['entity'];
+        
+            if(is_array($entities)){
             
-            foreach($entities as $e){
-                $this->_entities[$e['index']] = new SmartestManyToManyEntity($e['table'], $e['foreignkey'], $e['index'], $e['class'], SmartestStringHelper::toRealBool($e['required']));
-                if(isset($e['defaultsort'])) $this->_entities[$e['index']]->setDefaultSort($e['defaultsort']);
+                foreach($entities as $e){
+                    $this->_entities[$e['index']] = new SmartestManyToManyEntity($e['table'], $e['foreignkey'], $e['index'], $e['class'], SmartestStringHelper::toRealBool($e['required']));
+                    if(isset($e['defaultsort'])) $this->_entities[$e['index']]->setDefaultSort($e['defaultsort']);
+                }
+            
             }
-            
+        
         }
         
         if($type['method'] == 'SM_MTMLOOKUPMETHOD_NETWORK' && isset($type['network'])){

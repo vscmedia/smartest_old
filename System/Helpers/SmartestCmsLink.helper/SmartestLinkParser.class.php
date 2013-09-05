@@ -143,7 +143,9 @@ class SmartestLinkParser{
             $l = new SmartestParameterHolder("Parsed Link Destination Properties: ".$m[0]);
             $l->setParameter('destination', $m[1]);
             $l->setParameter('scope', SM_LINK_SCOPE_EXTERNAL);
-            $l->setParameter('text', $m[2]);
+            if(isset($m[2])){
+                $l->setParameter('text', $m[2]);
+            }
             $l->setParameter('format', SM_LINK_FORMAT_URL);
         
         }else if(strlen($string) && $string{0} == '@'){

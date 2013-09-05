@@ -64,7 +64,7 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
             return $this->hydrateByValueWithDropdownId($matches[2], $matches[1]);
         }
         
-        $d = unserialize($v);
+        $d = @unserialize($v);
         
         if(is_array($d)){
             return $this->hydrateByValueWithDropdownId($d['value'], $d['dropdown_id']);

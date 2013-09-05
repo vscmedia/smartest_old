@@ -1026,7 +1026,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	
 	public function getPageFieldDefinitions(){
 	    
-	    if(!count($this->_field_definitiones)){
+	    if(!count($this->_field_definitions)){
 	    
     	    $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->_properties['site_id']."'";
     	    $result = $this->database->queryToArray($sql);
@@ -1056,11 +1056,11 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
     	        }
     	    }
 	    
-    	    $this->_field_definitiones = $definitions;
+    	    $this->_field_definitions = $definitions;
         
         }
 	    
-	    return $this->_field_definitiones;
+	    return $this->_field_definitions;
     
 	    /* 
         

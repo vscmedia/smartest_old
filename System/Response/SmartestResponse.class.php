@@ -164,8 +164,8 @@ class SmartestResponse{
 		SmartestInfo::$revision = $sd['system']['info']['revision'];
         define('SM_INFO_VERSION_NUMBER', $sd['system']['info']['version']);
         SmartestInfo::$version = $sd['system']['info']['version'];
-        define('SM_INFO_BUILD_NUMBER', $sd['system']['info']['build']);
-        SmartestInfo::$build = $sd['system']['info']['build'];
+        /* define('SM_INFO_BUILD_NUMBER', $sd['system']['info']['build']);
+        SmartestInfo::$build = $sd['system']['info']['build']; */
         
         try{
 	        
@@ -279,7 +279,7 @@ class SmartestResponse{
 		}
 		
 		try{
-		    if(is_object($GLOBALS['_site'])){
+		    if(isset($GLOBALS['_site']) && is_object($GLOBALS['_site'])){
 		        SmartestQuery::init(true, $GLOBALS['_site']->getId());
 	        }else{
 	            SmartestQuery::init(true);
@@ -432,7 +432,6 @@ class SmartestResponse{
 		    $this->_error_stack->recordError($e->getMessage(), false);
 		}
 		
-		$this->_smarty->assign("sm_admin_email", SM_OPTIONS_ADMIN_EMAIL);
 		$this->_smarty->assign("sm_user_agent_json", $this->_browser->getSimpleClientSideObjectAsJson());
 		$this->_smarty->assign("sm_user_agent", $this->_browser->__toArray());
 		
@@ -595,7 +594,7 @@ class SmartestResponse{
 		} */
 		
 		// $this->_smarty->assign("template", $this->_main_template);
-		$this->_smarty->assign("sm_app_templates_dir", SM_SYSTEM_APP_TEMPLATES_DIR);
+		$this->_smarty->assign("sm_app_templates_dir", SM_CONTROLLER_MODULE_PRES_DIR);
 		$this->_smarty->assign("sm_navigation", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/navigation.tpl");
 		$this->_smarty->assign("sm_header", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/header.tpl");
 		$this->_smarty->assign("sm_frame", SM_ROOT_DIR.SM_SYSTEM_SYS_TEMPLATES_DIR."InterfaceBuilder/frame.tpl");
@@ -618,7 +617,7 @@ class SmartestResponse{
 	    
 	}
 	
-	public function fetch(){
+	public function fetch($fragment_only=false){
 	    
 	    // Last chance to display any errors before trying to render the page
 		$this->_error_stack->display();
@@ -629,7 +628,7 @@ class SmartestResponse{
 		return $output;
 	}
 	
-	private function getUnfilteredOutput($fragment_only = false){
+	private function getUnfilteredOutput($fragment_only=false){
 		
 	    try{
 	        if($fragment_only){

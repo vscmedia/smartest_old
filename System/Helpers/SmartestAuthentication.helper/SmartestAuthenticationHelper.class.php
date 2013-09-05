@@ -50,7 +50,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
 		        
 		        if(strlen($userObj->getPasswordSalt())){
 		            
-		            if($userObj->getPassword() == md5($password.$userObj->getPasswordSalt())){
+		            if($userObj->getPassword() === md5($password.$userObj->getPasswordSalt())){
 		            
     			        $userObj->getTokens();
     			        SmartestSession::set('user:isAuthenticated', true);
@@ -71,7 +71,7 @@ class SmartestAuthenticationHelper extends SmartestHelper{
     			
 			    }else{
 			        
-			        if($userObj->getPassword() == md5($password)){
+			        if($userObj->getPassword() === md5($password)){
 			            
 			            $userObj->getTokens();
 			            $userObj->setPasswordWithSalt($password, SmartestStringHelper::random(40), true);

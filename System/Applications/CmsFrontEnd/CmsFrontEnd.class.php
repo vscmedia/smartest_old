@@ -378,7 +378,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
     	    $ph = new SmartestWebPagePreparationHelper($this->_page);
 	    
     	    $overhead_finish_time = microtime(true);
-    		$overhead_time_taken = number_format(($overhead_finish_time - SM_START_TIME)*1000, 2, ".", "");
+    	    $overhead_time_taken = number_format(($overhead_finish_time - SmartestPersistentObject::get('timing_data')->getParameter('start_time'))*1000, 2, ".", "");
 		
     		if($this->_page instanceof SmartestItemPage){
     		    $this->_page->addHit();
@@ -386,6 +386,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 		
     		define("SM_OVERHEAD_TIME", $overhead_time_taken);
     		SmartestPersistentObject::get('timing_data')->setParameter('overhead_time', microtime(true));
+    		SmartestPersistentObject::get('timing_data')->setParameter('overhead_time_taken', $overhead_time_taken);
 	    
     	    $html = $ph->fetch($draft_mode);
 	        

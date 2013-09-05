@@ -402,6 +402,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     $filtered_data = $value_obj->getStorableFormat();
                 }
             }else{
+                $filtered_data = null;
                 SmartestLog::getInstance('system')->log("Could not set content of SmartestItemPropertyValue object, because a value object was not given and none could be created.");
             }
         }

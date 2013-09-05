@@ -45,6 +45,10 @@ class SmartestPageRenderingDataRequestHandler implements ArrayAccess{
         return $this->_page instanceof SmartestItemPage;
     }
     
+    public function getFieldDefinitions(){
+        return $this->_page->getPageFieldDefinitions();
+    }
+    
     public function offsetGet($offset){
         
         if($this->_page instanceof SmartestItemPage){

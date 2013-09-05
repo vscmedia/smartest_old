@@ -26,32 +26,45 @@
  * -------------------------------------------------------------
  */
 
-function smarty_block_rss ($params, $content, &$smarty,&$repeat) {
+function smarty_block_rss ($params, $content, &$smarty, &$repeat) {
 
-  if ($repeat) {
-   require_once "XML/RSS.php";
-   $rss =& new XML_RSS($params["file"]);
-   $rss->parse();
-   $res=$rss->getItems();
-   $index=0;
-   if($params['length']>0){
-     $res=array_slice($res,0,$params['length']);
-   }
+    if ($repeat) {
+        
+        // require_once "XML/RSS.php";
+        
+        $rss = new SmartestExternalFeed($params["file"]);
+        // $rss->parse();
+        $res = $rss->getItems();
+        $index = 0;
+        
+        if(!count($res)){
+            return '';
+        }
+        
+        if($params['length']>0){
+            $res = array_slice($res,0,$params['length']);
+        }
 
-  }else{
-    $res=array_pop($smarty->_RSS_parse_res);
-    $index=array_pop($smarty->_RSS_parse_index)+1;
-  }
-  $item=$res[$index];
-  $check_length=($length==0 or $index<$length);
-  $repeat=!empty($item);
+    }else{
+        if(is_array($smarty->_RSS_parse_res) && count($smarty->_RSS_parse_res)){
+            $res = array_pop($smarty->_RSS_parse_res);
+            $index = array_pop($smarty->_RSS_parse_index)+1;
+        }else{
+            return '';
+        }
+    }
+  
+    $item = $res[$index];
+    $check_length = ($length==0 or $index<$length);
+    $repeat = !empty($item);
 
-  if($item){
-     $smarty->assign("rss_index", $index);
-     $smarty->assign("rss_item", $item);
-     $smarty->_RSS_parse_res[]=&$res;
-     $smarty->_RSS_parse_index[]=&$index;
-  }
-  return $content;
+    if($item){
+        $smarty->assign("rss_index", $index);
+        $smarty->assign("rss_item", $item);
+        $smarty->_RSS_parse_res[] = &$res;
+        $smarty->_RSS_parse_index[] = &$index;
+    }
+  
+    return $content;
+    
 }
-?>

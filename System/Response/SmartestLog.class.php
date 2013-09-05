@@ -57,7 +57,7 @@ class SmartestLog{
     
     public static function getInstance($log_name){
         
-        if (self::$_instances[$log_name] == null) {
+        if (!isset(self::$_instances[$log_name])) {
           
             self::init();
             
@@ -199,8 +199,8 @@ class SmartestLog{
         $message = $this->getType()->getFormatProcessed();
         $message = str_replace('%LEVEL%', self::translateSeverity($level), $message);
         $message = str_replace('%MESSAGE%', $m, $message);
-        $message = str_replace('%FILE%', $bt['file'], $message);
-        $message = str_replace('%LINE%', $bt['line'], $message);
+        $message = str_replace('%FILE%', (isset($bt['file']) ? $bt['file'] : 'Unknown'), $message);
+        $message = str_replace('%LINE%', (isset($bt['line']) ? $bt['line'] : 'Unknown'), $message);
         $message = str_replace('%CLASS%', $bt['class'], $message);
         $message = str_replace('%CALLTYPE%', $bt['type'], $message);
         $message = str_replace('%FUNCTION%', $bt['function'], $message);

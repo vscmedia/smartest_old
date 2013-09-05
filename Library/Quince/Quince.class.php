@@ -384,7 +384,9 @@ class QuinceRequest{
     }
     
     final public function getMeta($m){
-        return $this->_metas[$m];
+        if(isset($this->_metas[$m])){
+            return $this->_metas[$m];
+        }
     }
     
     final public function getModuleDirectory(){
@@ -1353,10 +1355,10 @@ class Quince{
 	            array_shift($matches);
 	            $argvalues = ($matches);
 	            
-	            $this->alias_shortcuts[$rs] = array();
-	            $this->alias_shortcuts[$rs]['module'] = $alias['module'];
-	            $this->alias_shortcuts[$rs]['action'] = $alias['action'];
-	            $this->alias_shortcuts[$rs]['url_vars'] = array();
+	            self::$alias_shortcuts[$rs] = array();
+	            self::$alias_shortcuts[$rs]['module'] = $alias['module'];
+	            self::$alias_shortcuts[$rs]['action'] = $alias['action'];
+	            self::$alias_shortcuts[$rs]['url_vars'] = array();
 	            
 	            $this->_current_request->setModule($alias['module']);
 	            $this->_current_request->setAction($alias['action']);
@@ -1371,7 +1373,7 @@ class Quince{
 	            
 	            foreach($argnames as $i => $n){
     	            $this->_current_request->setRequestParameter($n, $argvalues[$i]);
-    	            $this->alias_shortcuts[$rs]['url_vars'][$n] = $argvalues[$i];
+    	            self::$alias_shortcuts[$rs]['url_vars'][$n] = $argvalues[$i];
     	        }
     	        
     	        break;
@@ -1438,7 +1440,7 @@ class Quince{
             $this->handleException($e);
         }
         
-        QuinceUtilities::cacheSet('alias_url_shortcuts', $this->alias_shortcuts);
+        QuinceUtilities::cacheSet('alias_url_shortcuts', self::$alias_shortcuts);
         
         return $this->_current_request;
 	    

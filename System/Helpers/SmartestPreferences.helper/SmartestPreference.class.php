@@ -14,6 +14,10 @@ class SmartestPreference{
             $this->_name = $array_data['name'];
         }
         
+        if(isset($array_data['description'])){
+            $this->_description = $array_data['description'];
+        }
+        
         if(isset($array_data['application_id'])){
             $this->_application_id = $array_data['application_id'];
         }
@@ -35,19 +39,19 @@ class SmartestPreference{
     }
     
     public function getApplicationId(){
-        return $this->_application_specific;
+        return $this->_application_id;
     }
     
-    public function setApplicationId(){
-        return $this->_application_specific;
+    public function setApplicationId($id){
+        $this->_application_id = $id;
     }
     
     public function isApplicationSpecific(){
-        return $this->_application == '_GLOBAL' ? false : true;
+        return $this->_application_id == '_GLOBAL' ? false : true;
     }
     
     public function getDescription(){
-        return $this->_application_specific;
+        return $this->_description;
     }
     
     public function isUserSpecific(){

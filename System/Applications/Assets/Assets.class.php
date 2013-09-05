@@ -422,9 +422,10 @@ class Assets extends SmartestSystemApplication{
     		    $this->send($asset_type, 'wanted_type');
     		    $this->setTitle("File type not recognized");
     		    $form_include = "add.default.tpl";
+    		    $this->send($form_include, 'form_include'); 
     		}
 
-    		$this->send($form_include, 'form_include'); 
+    		
             
         }else{
             
@@ -449,10 +450,14 @@ class Assets extends SmartestSystemApplication{
 	                $types = $group->getTypes();
 	                $this->send(true, 'require_type_selection');
 	            }
+	            
+	            $this->send($types, 'types');
+	            
             }else{
                 $types = $alh->getTypes(array('templates'));
                 $this->send(true, 'require_type_selection');
                 $this->setTitle("Choose file type");
+                $this->send($types, 'types');
             }
             
         }
@@ -476,6 +481,7 @@ class Assets extends SmartestSystemApplication{
                                 if($this->getRequestParameter('item_id')) $fwd .= '&item_id='.$this->getRequestParameter('item_id');
                                 $this->redirect($fwd);
                             }
+                            $this->send($types, 'types');
                         }
                         
                         $this->send($placeholder, 'placeholder');
@@ -534,6 +540,7 @@ class Assets extends SmartestSystemApplication{
                                 if($this->getRequestParameter('item_id')) $fwd .= '&item_id='.$this->getRequestParameter('item_id');
                                 $this->redirect($fwd);
                             }
+                            $this->send($types, 'types');
                         }
                     }
                     
@@ -577,8 +584,6 @@ class Assets extends SmartestSystemApplication{
             }
             
         }
-        
-        $this->send($types, 'types');
 		
 	}
 	

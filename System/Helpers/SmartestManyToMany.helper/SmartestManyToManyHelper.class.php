@@ -54,8 +54,8 @@ class SmartestManyToManyHelper{
     	        if(!defined($raw_type['id'])){
     	            define($raw_type['id'], $raw_type['id']);
     	        }
-	        
-    	        if(is_array($types[$raw_type['id']]['entity'])){
+	            
+	            if($types[$raw_type['id']]['method'] == 'SM_MTMLOOKUPMETHOD_MAP' && is_array($types[$raw_type['id']]['entity'])){
 	            
     	            if(isset($types[$raw_type['id']]['entity']['table'])){
 	                

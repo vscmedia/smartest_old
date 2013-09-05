@@ -719,9 +719,9 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	
 	public function getConditions(){
 	    
-	    if($this->getType != 'STATIC'){
-	        
-	        $this->_conditions = array();
+	    $this->_conditions = array();
+	    
+	    if($this->getType() != 'STATIC'){
 	        
 	        $sql = "SELECT * FROM SetRules WHERE setrule_set_id='".$this->getId()."'";
 	        $result = $this->database->queryToArray($sql);

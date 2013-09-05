@@ -10,7 +10,7 @@ class SmartestExternalFeed extends SmartestExternalUrl implements SmartestBasicT
             case "data":
             return $this->getFeedData();
             case "items":
-            return $this->getItems();
+            return new SmartestArray($this->getItems());
             case "has_error":
             return (bool) $this->_feed_error;
             case "error_message":
@@ -67,7 +67,7 @@ class SmartestExternalFeed extends SmartestExternalUrl implements SmartestBasicT
     public function getItems($maximum=10){
         
         if($this->getFeedData()){
-            return new SmartestArray($this->getFeedData()->get_items(0, $maximum));
+            return $this->getFeedData()->get_items(0, $maximum);
         }else{
             return array();
         }

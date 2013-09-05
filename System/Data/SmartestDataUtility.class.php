@@ -736,9 +736,9 @@ class SmartestDataUtility{
         	            define($raw_type['id'], $raw_type['id']);
         	        }
 	        
-        	        if(!is_array($types[$raw_type['id']]['accept'])){
+        	        if(!isset($types[$raw_type['id']]['accept']) || !is_array($types[$raw_type['id']]['accept'])){
 	            
-        	            $types[$raw_type['id']]['accept'] = array($types[$raw_type['id']]['accept']);
+        	            $types[$raw_type['id']]['accept'] = isset($types[$raw_type['id']]['accept']) ? array($types[$raw_type['id']]['accept']) : array();
 	        
                     }
             

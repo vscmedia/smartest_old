@@ -215,34 +215,17 @@ class SmartestBaseApplication extends QuinceBase{
 	private function _prepareManagers(){
 	    
 	    /////////////// MANAGERS CODE WILL BE DEPRECATED SOON - FUNCTIONALITIES IN MANAGERS ARE BEING MOVED TO HELPERS ////////////////
-		// Detect to see if manager classes exist and initiate them, if configured to do so
-		$managerClassFile = SM_ROOT_DIR.'Managers/'.$this->getRequest()->getMeta('_php_class')."Manager.class.php";
+		// Detect to see if manager classes exist and instantiate them, if configured to do so
+		
 		$managerClass = $this->getRequest()->getMeta('_module_php_class')."Manager";
-		
-		define("SM_MANAGER_CLASS", $managerClass);
-		
-		/* if(is_file(SM_ROOT_DIR.'Managers/'.$managerClass.".class.php")){
-		
-			define("SM_MANAGER_CLASS_FILE", SM_ROOT_DIR.'Managers/'.$managerClass.".class.php");
-			include_once(SM_MANAGER_CLASS_FILE);
-		
-			if(class_exists(SM_MANAGER_CLASS)){
-				
-				$this->manager = new $managerClass($this->database);
-				
-			}
-			
-		}else */
 		
 		if(is_file($this->getRequest()->getMeta('_module_dir').$managerClass.".class.php")){
 			
-			// define("SM_MANAGER_CLASS_FILE", $this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
-		    include_once($this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
-			// echo SM_MANAGER_CLASS_FILE;
+			include_once($this->getRequest()->getMeta('_module_dir').$managerClass.".class.php");
 			
 			if(class_exists($managerClass)){
 			
-				$this->manager = new $managerClass($this->database);
+				$this->manager = new $managerClass(SmartestDatabase::getInstance('SMARTEST'));
 			
 			}
 			

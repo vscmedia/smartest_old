@@ -298,7 +298,7 @@ class SmartestQuery{
 			
 			}
 		
-		    return $this->createResultSet($conditions, $set_item_draft_mode);
+		    return $this->createResultSet($this->conditions, $set_item_draft_mode);
 		    
 		}else{
 		    

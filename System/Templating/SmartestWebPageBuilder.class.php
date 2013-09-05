@@ -9,6 +9,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	protected $_items = array();
 	protected $_single_item_template_path;
 	
+	public $_RSS_parse_res; // For RSS printouts
+	
 	public function __construct($pid){
 	    
 	    parent::__construct($pid);
@@ -32,14 +34,6 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		}
 		
 		$this->caching = false;
-		// Sergiy: Deny access to PHP world from frontend tpls
-        // (foolproof and the case of marginally trusted template editor).
-		$this->security = true;
-		$this->security_settings['PHP_HANDLING'] = false;
-		$this->security_settings['PHP_TAGS'] = false;
-		$this->security_settings['MODIFIER_FUNCS'] = array('strtolower', 'strtoupper');
-		$this->security_settings['IF_FUNCS'] = array('strlen', 'empty', 'count');
-		$this->security_settings['INCLUDE_ANY'] = true;
 
 	}
 	
@@ -263,6 +257,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 	    }
         
         $directories = array('Presentation/Layouts/');
+        
+        $file_found = false;
         
         foreach($directories as $dir){
             if(is_file(SM_ROOT_DIR.$dir.$requested_file)){
@@ -580,8 +576,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     public function renderField($field_name, $params){
         
         // if($this->_page_rendering_data['fields']->hasParameter($field_name)){
-    
-            $value = $this->_page_rendering_data['fields'][$field_name];
+            $fields = $this->_tpl_vars['this']->getFieldDefinitions();
+            $value = $fields[$field_name];
         
             if($this->getDraftMode()){
 			    $edit_link = $this->renderEditFieldButton($field_name, $params);
@@ -603,11 +599,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     
     public function renderEditFieldButton($field_name, $params){
         
-        if($this->_page_rendering_data['fields'] instanceof SmartestParameterHolder){
+        if($this->_tpl_vars['this']->getFieldDefinitions() instanceof SmartestParameterHolder){
         
             $markup = '<!--edit link-->';
         
-            if($this->_page_rendering_data['fields']->hasParameter($field_name)){
+            if($this->_tpl_vars['this']->getFieldDefinitions()->hasParameter($field_name)){
         
                 if($this->_request_data->g('action') == "renderEditableDraftPage"){
     		        $markup = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".$this->_request_data->g('domain')."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
@@ -626,6 +622,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         $list = new SmartestCmsItemList;
         
         if($list->load($list_name, $this->getPage(), $this->getDraftMode())){
+            
+            $content = '';
             
             if($list->hasRepeatingTemplate($this->getDraftMode())){
                 
@@ -1085,7 +1083,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             
             
         // for rendering the properties of the principal item of a meta-page
-        if(!isset($params['context']) || $params['principal_item']){
+        if(!isset($params['context']) || isset($params['principal_item'])){
         
             if(is_object($this->page) && $this->page instanceof SmartestItemPage){
                 

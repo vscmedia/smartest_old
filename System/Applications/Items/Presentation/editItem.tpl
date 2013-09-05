@@ -38,7 +38,7 @@
 
 {if $request_parameters.from}<input type="hidden" name="from" value="{$smarty.get.from}" />{/if}
 
-{if $item._model.item_name_field_visible}
+{if $item._model.item_name_field_visible || count($metapages)}
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} {$item._model.item_name_field_name}</div>
   <input type="text" name="item_name" value="{$item.name|escape_double_quotes}" />

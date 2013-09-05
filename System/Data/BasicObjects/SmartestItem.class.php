@@ -34,7 +34,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	
 	public function getModel(){
 	    
-	    if(!is_object($this_model)){
+	    if(!is_object($this->_model)){
 	        $m = new SmartestModel;
 	        $m->find($this->_properties['itemclass_id']);
 	        $this->_model = $m;

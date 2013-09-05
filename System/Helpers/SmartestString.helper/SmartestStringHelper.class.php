@@ -494,8 +494,6 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	public static function endsWith($word, $symbol){
 	    
-	    $string = self::convertObject($s);
-	    
 	    if(mb_strlen($word)){
 	        $pos = (mb_strlen($word) - 1);
 	        if($word{$pos} == $symbol){
@@ -663,6 +661,8 @@ class SmartestStringHelper extends SmartestHelper{
 	    if(!is_array($array)){
 	        return '';
 	    }else{
+	        
+	        $string = '';
 	        
 	        foreach($array as $key=>$value){
 	            $string .= ' '.$key.'="'.$value.'"';

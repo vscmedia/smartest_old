@@ -188,10 +188,6 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    if($offset == 'name'){
 	        return new SmartestString($this->getName());
 	    }
-        // Sergiy: +if
-        else if($offset == 'related') {
-            return $this->_item->getRelatedContentForRender($this->getDraftMode());
-        }
 	    
 	    if($this->_item->offsetExists($offset)){
 	        
@@ -235,24 +231,23 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            
 	            case 'label':
 	            return $this->getItem()->getName();
-	            break;
+	            
+	            case 'related':
+	            // Sergiy - Moved your if statement to here: (Marcus)
+	            return $this->getItem()->getRelatedContentForRender($this->getDraftMode());
 	            
 	            case 'comments':
 	            return $this->getItem()->getPublicComments();
-	            break;
 	            
 	            case 'num_comments':
 	            return $this->getItem()->getNumApprovedPublicComments();
-	            break;
 	            
 	            case '_php_class':
 	            return get_class($this);
-	            break;
 	            
 	            case 'url':
 	            case 'permalink':
 	            return $this->getUrl();
-	            break;
 	            
 	            case 'absolute_uri':
 	            case 'absolute_url':
@@ -261,31 +256,24 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            case 'description':
 	            case '_description':
 	            return $this->getDescriptionFieldContents();
-	            break;
 	            
 	            case '_auto_date':
 	            return $this->getDate();
-	            break;
 	            
 	            case '_is_published':
 	            return new SmartestBoolean($this->isPublished());
-	            break;
 	            
 	            case '_byline':
 	            return SmartestStringHelper::toCommaSeparatedList($this->getItem()->getAuthors());
-	            break;
 	            
 	            case '_model':
 	            return $this->getModel();
-	            break;
 	            
 	            case '_properties':
 	            return $this->getProperties();
-	            break;
 	            
 	            case '_editable_properties':
 	            return $this->getProperties();
-	            break;
 	            
 	            case '_draft_mode':
 	            return new SmartestBoolean($this->_draft_mode);
@@ -302,6 +290,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
                 case 'empty':
                 return !is_numeric($this->_item->getId());
 	            
+	        }
+	        
+	        $infn = SmartestStringHelper::toVarName($this->getModel()->getItemNameFieldName());
+	        if($offset == $infn){
+	            return new SmartestString($this->getName());
 	        }
 	        
 	    }
@@ -586,6 +579,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        
 	        if($this->_model_built){
 	            foreach($this->_properties as &$p){
+	                // print_r($record);
 	                // $p is an itempropertyvalueholder object
 	                $p->hydrateValueFromIpvArray($record[$p->getId()], $this); // Sergiy: &$this=>$this for PHP 5.4
 	            }
