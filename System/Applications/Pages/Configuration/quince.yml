@@ -22,6 +22,9 @@ module:
     new_page:
       action: addPage
       url: /smartest/page/new
+    update_page:
+      action: updatePage
+      url: /smartest/page/update
     page_groups:
       action: pageGroups
       url: /smartest/pagegroups

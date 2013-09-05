@@ -34,7 +34,7 @@
   <div class="warning">Warning: This page is currently in the trash.</div>
 {/if}
 
-<form id="updatePage" name="updatePage" action="{$domain}{$section}/updatePage" method="post" style="margin:0px">
+<form id="updatePage" name="updatePage" action="{$domain}smartest/page/update" method="post" style="margin:0px">
   
   <input type="hidden" name="page_id" value="{$page.webid}">
   <input type="hidden" name="page_webid" value="">
@@ -45,8 +45,6 @@
     <div class="form-section-label">Type</div>
     {if $page.type == "ITEMCLASS"}Object Meta-Page{else}Regular Web-Page{/if}
   </div>
-  
-  
   
   {if $page.type == "ITEMCLASS"}
   {* <div class="edit-form-row">

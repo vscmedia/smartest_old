@@ -25,6 +25,7 @@ CREATE TABLE `AssetClasses` (
   `assetclass_name` varchar(32) NOT NULL DEFAULT '',
   `assetclass_label` varchar(32) NOT NULL DEFAULT 'Untitled Asset Class',
   `assetclass_site_id` int(11) NOT NULL DEFAULT '1',
+  `assetclass_is_sitewide` tinyint(1) NOT NULL DEFAULT '0',
   `assetclass_shared` tinyint(1) NOT NULL DEFAULT '1',
   `assetclass_type` varchar(64) NOT NULL DEFAULT '',
   `assetclass_info` text NOT NULL,
@@ -33,8 +34,7 @@ CREATE TABLE `AssetClasses` (
   `assetclass_filter_type` varchar(64) CHARACTER SET ascii NOT NULL DEFAULT 'SM_ASSETCLASS_FILTERTYPE_NONE',
   `assetclass_filter_value` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `assetclass_is_system` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`assetclass_id`),
-  UNIQUE KEY `assetclass_name` (`assetclass_name`)
+  PRIMARY KEY (`assetclass_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -44,13 +44,14 @@ CREATE TABLE `AssetClasses` (
 --
 
 CREATE TABLE `AssetIdentifiers` (
-  `assetidentifier_id` int(9) unsigned NOT NULL AUTO_INCREMENT,
+  `assetidentifier_id` int(20) unsigned NOT NULL AUTO_INCREMENT,
   `assetidentifier_draft_asset_id` int(9) unsigned NOT NULL DEFAULT '0',
   `assetidentifier_live_asset_id` mediumint(9) unsigned NOT NULL DEFAULT '0',
   `assetidentifier_assetclass_id` int(9) unsigned NOT NULL DEFAULT '0',
   `assetidentifier_instance_name` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'default',
   `assetidentifier_page_id` mediumint(9) unsigned NOT NULL DEFAULT '0',
   `assetidentifier_item_id` mediumint(9) unsigned DEFAULT NULL,
+  `assetidentifier_site_id` mediumint(9) DEFAULT NULL,
   `assetidentifier_draft_render_data` text COLLATE utf8_unicode_ci NOT NULL,
   `assetidentifier_live_render_data` text COLLATE utf8_unicode_ci NOT NULL,
   `assetidentifier_language` varchar(8) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'eng',
@@ -65,7 +66,7 @@ CREATE TABLE `AssetIdentifiers` (
 
 CREATE TABLE `Assets` (
   `asset_id` int(9) unsigned NOT NULL AUTO_INCREMENT,
-  `asset_webid` varchar(32) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `asset_webid` varchar(36) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `asset_label` varchar(255) NOT NULL,
   `asset_stringid` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `asset_url` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
@@ -81,6 +82,7 @@ CREATE TABLE `Assets` (
   `asset_parent_id` int(11) NOT NULL,
   `asset_variant_id` int(9) NOT NULL,
   `asset_model_id` int(11) NOT NULL,
+  `asset_thumbnail_id` int(11) NOT NULL,
   `asset_parameter_defaults` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `asset_info` text NOT NULL,
   `asset_is_held` tinyint(1) NOT NULL DEFAULT '0',
@@ -88,6 +90,8 @@ CREATE TABLE `Assets` (
   `asset_is_approved` tinyint(1) NOT NULL DEFAULT '0',
   `asset_is_subbed` tinyint(1) NOT NULL,
   `asset_is_archived` tinyint(1) NOT NULL DEFAULT '0',
+  `asset_submitted_from_public` tinyint(1) NOT NULL DEFAULT '0',
+  `asset_public_status_trusted` tinyint(1) NOT NULL DEFAULT '0',
   `asset_is_system` tinyint(1) NOT NULL DEFAULT '0',
   `asset_is_hidden` tinyint(1) NOT NULL,
   `asset_search_field` text NOT NULL,
@@ -155,7 +159,7 @@ CREATE TABLE `DropDownValues` (
 CREATE TABLE `ItemClasses` (
   `itemclass_id` int(9) unsigned NOT NULL AUTO_INCREMENT,
   `itemclass_type` varchar(32) NOT NULL DEFAULT 'SM_ITEMCLASS_MODEL',
-  `itemclass_webid` varchar(16) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `itemclass_webid` varchar(36) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `itemclass_parent_id` int(9) NOT NULL DEFAULT '0',
   `itemclass_name` varchar(40) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `itemclass_plural_name` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT '',
@@ -169,6 +173,7 @@ CREATE TABLE `ItemClasses` (
   `itemclass_default_thumbnail_property_id` int(11) NOT NULL,
   `itemclass_primary_property_id` int(11) NOT NULL,
   `itemclass_settings` text NOT NULL,
+  `itemclass_blog_mode` tinyint(1) NOT NULL DEFAULT '0',
   `itemclass_uses_draft_properties` tinyint(1) NOT NULL DEFAULT '1',
   `itemclass_userid` int(11) NOT NULL DEFAULT '0',
   `itemclass_rating_max_score` smallint(3) NOT NULL DEFAULT '5',
@@ -186,7 +191,7 @@ CREATE TABLE `ItemClasses` (
 
 CREATE TABLE `ItemProperties` (
   `itemproperty_id` int(9) unsigned NOT NULL AUTO_INCREMENT,
-  `itemproperty_webid` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `itemproperty_webid` varchar(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `itemproperty_name` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `itemproperty_varname` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `itemproperty_required` varchar(16) CHARACTER SET utf8 NOT NULL DEFAULT 'FALSE',
@@ -212,10 +217,11 @@ CREATE TABLE `ItemProperties` (
 --
 
 CREATE TABLE `ItemPropertyValues` (
-  `itempropertyvalue_id` int(20) NOT NULL AUTO_INCREMENT,
+  `itempropertyvalue_id` int(20) unsigned NOT NULL AUTO_INCREMENT,
   `itempropertyvalue_item_id` int(9) NOT NULL DEFAULT '0',
   `itempropertyvalue_property_id` int(9) NOT NULL DEFAULT '0',
   `itempropertyvalue_name` varchar(64) NOT NULL,
+  `itempropertyvalue_parent_value_id` int(20) NOT NULL,
   `itempropertyvalue_draft_content` text CHARACTER SET utf8 NOT NULL,
   `itempropertyvalue_content` text CHARACTER SET utf8 NOT NULL,
   `itempropertyvalue_draft_info` text NOT NULL,
@@ -232,12 +238,13 @@ CREATE TABLE `ItemPropertyValues` (
 
 CREATE TABLE `Items` (
   `item_id` int(11) NOT NULL AUTO_INCREMENT,
-  `item_webid` varchar(32) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `item_webid` varchar(36) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `item_itemclass_id` int(9) unsigned NOT NULL DEFAULT '0',
   `item_site_id` int(11) unsigned NOT NULL DEFAULT '0',
   `item_shared` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `item_name` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `item_slug` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `item_type` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'SM_ITEMTYPE_NORMAL',
   `item_alt_title_tag` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `item_use_alt_title_tag` tinyint(1) NOT NULL DEFAULT '0',
   `item_public` enum('FALSE','TRUE') CHARACTER SET utf8 NOT NULL DEFAULT 'FALSE',
@@ -252,6 +259,8 @@ CREATE TABLE `Items` (
   `item_changes_approved` tinyint(1) NOT NULL DEFAULT '0',
   `item_createdby_userid` int(11) NOT NULL DEFAULT '0',
   `item_is_archived` tinyint(1) NOT NULL DEFAULT '0',
+  `item_submitted_from_public` tinyint(1) NOT NULL DEFAULT '0',
+  `item_public_status_trusted` tinyint(1) NOT NULL DEFAULT '0',
   `item_language` varchar(8) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `item_num_hits` bigint(20) NOT NULL DEFAULT '0',
   `item_num_ratings` int(11) NOT NULL DEFAULT '0',
@@ -292,7 +301,7 @@ CREATE TABLE `Lists` (
 --
 
 CREATE TABLE `ManyToManyLookups` (
-  `mtmlookup_id` int(20) NOT NULL AUTO_INCREMENT,
+  `mtmlookup_id` int(20) unsigned NOT NULL AUTO_INCREMENT,
   `mtmlookup_type` varchar(64) NOT NULL DEFAULT '',
   `mtmlookup_instance_name` varchar(64) NOT NULL DEFAULT '',
   `mtmlookup_context_data` text NOT NULL,
@@ -322,6 +331,7 @@ CREATE TABLE `PageLayoutPresetDefinitions` (
   `plpd_element_type` varchar(32) NOT NULL DEFAULT '',
   `plpd_element_id` mediumint(9) NOT NULL DEFAULT '0',
   `plpd_element_value` varchar(255) NOT NULL DEFAULT '0',
+  `plpd_template_id` int(11) NOT NULL,
   PRIMARY KEY (`plpd_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -351,6 +361,7 @@ CREATE TABLE `PageLayoutPresets` (
 CREATE TABLE `PageProperties` (
   `pageproperty_id` mediumint(9) NOT NULL AUTO_INCREMENT,
   `pageproperty_site_id` mediumint(9) NOT NULL DEFAULT '0',
+  `pageproperty_is_sitewide` tinyint(1) NOT NULL DEFAULT '0',
   `pageproperty_name` varchar(64) NOT NULL DEFAULT '',
   `pageproperty_label` varchar(64) NOT NULL DEFAULT '',
   `pageproperty_type` varchar(64) NOT NULL DEFAULT '',
@@ -368,9 +379,11 @@ CREATE TABLE `PagePropertyValues` (
   `pagepropertyvalue_id` mediumint(9) unsigned NOT NULL AUTO_INCREMENT,
   `pagepropertyvalue_page_id` mediumint(9) unsigned NOT NULL DEFAULT '0',
   `pagepropertyvalue_item_id` int(9) NOT NULL,
+  `pagepropertyvalue_site_id` mediumint(9) DEFAULT NULL,
   `pagepropertyvalue_pageproperty_id` mediumint(9) unsigned NOT NULL DEFAULT '0',
   `pagepropertyvalue_live_value` varchar(255) NOT NULL DEFAULT '',
   `pagepropertyvalue_draft_value` varchar(255) NOT NULL DEFAULT '',
+  `pagepropertyvalue_language` varchar(3) NOT NULL,
   PRIMARY KEY (`pagepropertyvalue_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -382,15 +395,15 @@ CREATE TABLE `PagePropertyValues` (
 
 CREATE TABLE `Pages` (
   `page_id` int(11) NOT NULL AUTO_INCREMENT,
-  `page_webid` varchar(32) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `page_webid` varchar(36) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `page_site_id` mediumint(9) unsigned NOT NULL DEFAULT '0',
   `page_dataset_id` mediumint(9) DEFAULT NULL,
   `page_name` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `page_title` varchar(48) CHARACTER SET utf8 NOT NULL DEFAULT 'Untitled Page',
   `page_icon_image` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT '',
-  `page_icon_image_id` int(11) UNSIGNED NOT NULL,
+  `page_icon_image_id` int(11) unsigned NOT NULL,
   `page_parent` int(11) NOT NULL DEFAULT '0',
-  `page_order_index` int(9) UNSIGNED NOT NULL DEFAULT '1',
+  `page_order_index` int(9) unsigned NOT NULL DEFAULT '1',
   `page_search_field` text CHARACTER SET utf8 NOT NULL,
   `page_is_held` tinyint(1) NOT NULL DEFAULT '0',
   `page_held_by` int(9) DEFAULT NULL,
@@ -411,7 +424,8 @@ CREATE TABLE `Pages` (
   `page_keywords` text CHARACTER SET utf8 NOT NULL,
   `page_meta_description` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `page_description` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
-  `page_createdby_userid` int(11) UNSIGNED NOT NULL DEFAULT '0',
+  `page_createdby_userid` int(11) NOT NULL DEFAULT '0',
+  `page_pdf_version_asset_id` int(11) NOT NULL,
   PRIMARY KEY (`page_id`),
   KEY `page_webid` (`page_webid`),
   KEY `page_name` (`page_name`)
@@ -425,15 +439,19 @@ CREATE TABLE `Pages` (
 
 CREATE TABLE `PageUrls` (
   `pageurl_id` mediumint(9) NOT NULL AUTO_INCREMENT,
+  `pageurl_name` varchar(64) NOT NULL,
   `pageurl_page_id` mediumint(9) NOT NULL DEFAULT '0',
   `pageurl_item_id` int(11) NOT NULL,
   `pageurl_site_id` int(11) NOT NULL,
+  `pageurl_asset_id` int(11) NOT NULL,
   `pageurl_url` varchar(255) NOT NULL DEFAULT '',
   `pageurl_type` varchar(64) NOT NULL DEFAULT 'SM_PAGEURL_NORMAL',
   `pageurl_redirect_type` varchar(32) NOT NULL,
   `pageurl_destination` varchar(255) NOT NULL DEFAULT '',
   `pageurl_is_default` tinyint(1) NOT NULL DEFAULT '0',
   `pageurl_num_hits` int(11) unsigned NOT NULL,
+  `pageurl_language` varchar(3) NOT NULL,
+  `pageurl_expires` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`pageurl_id`),
   KEY `pageurl_page_id` (`pageurl_page_id`),
   KEY `pageurl_url` (`pageurl_url`)
@@ -489,8 +507,10 @@ CREATE TABLE `SetRules` (
 
 CREATE TABLE `Sets` (
   `set_id` int(11) NOT NULL AUTO_INCREMENT,
+  `set_webid` varchar(36) NOT NULL,
   `set_name` varchar(64) NOT NULL DEFAULT '',
   `set_label` varchar(64) NOT NULL DEFAULT '',
+  `set_cover_asset_id` int(11) NOT NULL,
   `set_itemclass_id` int(11) NOT NULL DEFAULT '0',
   `set_site_id` int(11) unsigned NOT NULL DEFAULT '0',
   `set_shared` int(11) unsigned NOT NULL DEFAULT '0',
@@ -500,6 +520,9 @@ CREATE TABLE `Sets` (
   `set_type` varchar(32) NOT NULL DEFAULT 'DYNAMIC',
   `set_sort_field` varchar(32) NOT NULL DEFAULT '',
   `set_sort_direction` varchar(4) NOT NULL DEFAULT 'ASC',
+  `set_feed_sort_field` varchar(32) NOT NULL,
+  `set_feed_sort_direction` varchar(4) NOT NULL DEFAULT 'DESC',
+  `set_feed_nonce` varchar(16) NOT NULL,
   `set_varname` varchar(64) NOT NULL DEFAULT '',
   `set_lookup_source` varchar(32) NOT NULL DEFAULT '',
   `set_filter_type` varchar(64) NOT NULL DEFAULT '',
@@ -514,7 +537,7 @@ CREATE TABLE `Sets` (
 --
 
 CREATE TABLE `SetsItemsLookup` (
-  `setlookup_id` mediumint(9) NOT NULL AUTO_INCREMENT,
+  `setlookup_id` int(20) unsigned NOT NULL AUTO_INCREMENT,
   `setlookup_set_id` mediumint(9) NOT NULL DEFAULT '0',
   `setlookup_item_id` mediumint(9) NOT NULL DEFAULT '0',
   `setlookup_order` mediumint(9) NOT NULL DEFAULT '0',
@@ -553,14 +576,13 @@ CREATE TABLE `Sites` (
   `site_is_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `site_title_format` varchar(255) NOT NULL DEFAULT '$site | $page',
   `site_domain` varchar(128) NOT NULL DEFAULT '',
-  `site_root` varchar(100) NOT NULL DEFAULT '',
+  `site_url_prefix` varchar(32) NOT NULL,
   `site_directory_name` varchar(64) NOT NULL DEFAULT '',
   `site_admin_email` varchar(64) NOT NULL DEFAULT '',
   `site_top_page_id` mediumint(9) NOT NULL DEFAULT '0',
   `site_tag_page_id` int(11) unsigned NOT NULL DEFAULT '0',
   `site_search_page_id` int(11) unsigned NOT NULL DEFAULT '0',
   `site_error_page_id` int(11) NOT NULL DEFAULT '0',
-  `site_logo_image_file` varchar(64) NOT NULL DEFAULT '',
   `site_logo_image_asset_id` int(11) NOT NULL,
   PRIMARY KEY (`site_id`),
   UNIQUE KEY `site_domain` (`site_domain`)
@@ -576,7 +598,9 @@ CREATE TABLE `Tags` (
   `tag_id` int(9) unsigned NOT NULL AUTO_INCREMENT,
   `tag_name` varchar(64) NOT NULL DEFAULT '',
   `tag_label` varchar(64) NOT NULL DEFAULT '',
+  `tag_site_id` int(11) NOT NULL,
   `tag_language` varchar(8) NOT NULL DEFAULT 'eng',
+  `tag_type` varchar(64) NOT NULL DEFAULT 'SM_TAGTYPE_TAG',
   PRIMARY KEY (`tag_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -587,7 +611,7 @@ CREATE TABLE `Tags` (
 --
 
 CREATE TABLE `TagsObjectsLookup` (
-  `taglookup_id` int(9) unsigned NOT NULL AUTO_INCREMENT,
+  `taglookup_id` int(20) unsigned NOT NULL AUTO_INCREMENT,
   `taglookup_tag_id` int(9) unsigned NOT NULL DEFAULT '0',
   `taglookup_object_id` int(9) unsigned NOT NULL DEFAULT '0',
   `taglookup_type` varchar(32) NOT NULL DEFAULT 'SM_PAGE_TAG_LINK',
@@ -604,7 +628,7 @@ CREATE TABLE `TagsObjectsLookup` (
 
 CREATE TABLE `TextFragments` (
   `textfragment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `textfragment_webid` varchar(16) NOT NULL DEFAULT '',
+  `textfragment_webid` varchar(36) NOT NULL DEFAULT '',
   `textfragment_asset_id` mediumint(9) NOT NULL DEFAULT '0',
   `textfragment_content` text NOT NULL,
   `textfragment_file` varchar(128) NOT NULL DEFAULT '',
@@ -664,8 +688,15 @@ CREATE TABLE `Users` (
   `user_profile_pic_asset_id` int(9) unsigned NOT NULL,
   `user_register_date` int(11) NOT NULL DEFAULT '0',
   `user_last_visit` int(11) NOT NULL DEFAULT '0',
-  `user_activated` tinyint(10) NOT NULL DEFAULT '1',
+  `user_activated` tinyint(1) NOT NULL DEFAULT '1',
   `user_is_smartest_account` tinyint(1) NOT NULL DEFAULT '0',
+  `user_info` text CHARACTER SET utf8 NOT NULL,
+  `user_oauth_consumer_token` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `user_oauth_consumer_secret` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `user_oauth_access_token` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `user_oauth_access_token_secret` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `user_oauth_service_id` varchar(64) CHARACTER SET utf8 NOT NULL,
+  `user_type` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT 'SM_USERTYPE_SYSTEM_USER',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
@@ -684,13 +715,14 @@ CREATE TABLE `UsersTokensLookup` (
   `utlookup_is_global` tinyint(1) NOT NULL DEFAULT '0',
   `utlookup_order_index` int(9) NOT NULL DEFAULT '0',
   `utlookup_granted_timestamp` int(11) NOT NULL DEFAULT '0',
+  `utlookup_granted_by_user_id` int(11) NOT NULL,
   PRIMARY KEY (`utlookup_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 INSERT INTO `Settings` (`setting_id`, `setting_parent_id`, `setting_site_id`, `setting_user_id`, `setting_application_id`, `setting_type`, `setting_name`, `setting_value`) VALUES
-(1, 0, 0, 0, '', 'SM_SETTINGTYPE_SYSTEM_META', 'database_minimum_revision', '474'),
-(2, 0, 0, 0, '', 'SM_SETTINGTYPE_SYSTEM_META', 'database_version', '18');
+(1, 0, 0, 0, '', 'SM_SETTINGTYPE_SYSTEM_META', 'database_minimum_revision', '584'),
+(2, 0, 0, 0, '', 'SM_SETTINGTYPE_SYSTEM_META', 'database_version', '21');
 
 INSERT INTO `AssetClasses` (`assetclass_name`, `assetclass_label`, `assetclass_site_id`, `assetclass_shared`, `assetclass_type`, `assetclass_is_system`) VALUES
 ('page_specific_stylesheet', 'Page-specific Stylesheet', 1, 1, 'SM_ASSETCLASS_STYLESHEET', 1),

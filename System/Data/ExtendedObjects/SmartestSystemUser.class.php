@@ -387,6 +387,10 @@ class SmartestSystemUser extends SmartestUser{
 	    $utl->setTokenId($token_id);
 	    $utl->setGrantedTimestamp(time());
 	    
+	    if(is_object(SmartestSession::get('user'))){
+	        $utl->setGrantedByUserId(SmartestSession::get('user')->getId());
+	    }
+	    
 	    if($site_id == "GLOBAL"){
 	        $utl->setIsGlobal(1);
 	        
