@@ -40,26 +40,24 @@ function setVarName(){
   
   {if $show_full_form}
   
-  <form action="{$domain}{$section}/insertItemClassProperty" method="post">
+  <form action="{$domain}{$section}/insertItemClassProperty" method="post" id="new-property-form">
     
     <input type="hidden" name="class_id" value="{$model.id}" />
     <input type="hidden" name="itemproperty_datatype" value="{$property.datatype}" />
 
     <div class="edit-form-row">
-      <div class="form-section-label">Name</div>
+      <div class="form-section-label">Property name</div>
       <input type="text" value="" name="itemproperty_name" id="itemproperty_name" />
       <div class="form-hint">Property names must be three chars or longer and start with a letter.</div>
     </div>
     
 {if $foreign_key_filter_select}
-    <div class="edit-form-row">
       {include file=$filter_select_template}
-    </div>
 {/if}
     
     <div class="edit-form-row">
       <div class="form-section-label">Requirement</div>
-      <input type="checkbox" name="itemproperty_required" id="is-required" value="TRUE" /><label for="is-required">Check if this property is required</label>
+      <input type="checkbox" name="itemproperty_required" id="is-required" value="TRUE" /> <label for="is-required">Check here if values for this property will be required</label>
     </div>
     
     <div class="edit-form-row">
@@ -71,6 +69,14 @@ function setVarName(){
     </div>
 
   </form>
+  
+  <script type="text/javascript">
+{literal}
+    
+    
+    
+{/literal}
+  </script>
   
   {else}
   

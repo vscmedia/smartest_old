@@ -60,7 +60,7 @@ class SmartestInit{
 		self::setIncludePaths();
 		
 		// error reporting control
-        error_reporting(E_ALL ^ E_NOTICE);
+        error_reporting(E_ERROR | E_WARNING | E_PARSE);
         
         if(is_writable(SM_ROOT_DIR.'System/Logs/')){
             // If PHP error messages can be logged, they should be.

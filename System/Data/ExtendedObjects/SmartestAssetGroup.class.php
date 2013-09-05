@@ -105,13 +105,11 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
             $memberships = $this->getMemberships($mode, $site_id, $refresh);
 	        
-	        $assets = array();
+	        $this->_members = array();
 	        
 	        foreach($memberships as $m){
-	            $assets[] = $m->getAsset();
+	            $this->_members[] = $m->getAsset();
 	        }
-	        
-	        $this->_members = $assets;
         
         }
         
@@ -365,7 +363,7 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
     
     public function addAssetById($id, $strict_checking=true){
         
-        if(!$strict_checking || !in_array($id, $this->getMemberIds())){
+        if(!$strict_checking || !$this->hasAssetId($id)){
             
             if($this->getIsGallery()){
                 $m = new SmartestAssetGalleryMembership;
@@ -382,6 +380,10 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
             
         }
         
+    }
+    
+    public function hasAssetId($asset_id){
+        return in_array($asset_id, $this->getMemberIds());
     }
     
     public function removeAssetById($id){

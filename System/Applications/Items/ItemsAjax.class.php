@@ -224,6 +224,28 @@ class ItemsAjax extends SmartestSystemApplication{
                         
                         $item->setPropertyValueByNumericKey($property->getId(), $new_item->getId());
                         
+                        // handle cases where items are limited to one dataset
+                        if($property->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_DATASET'){
+                            $dataset_id = $property->getOptionSetid();
+                            $dataset = new SmartestCmsItemSet();
+                            if($dataset->find($dataset_id)){
+                                if($dataset->getItemclassId() == $model->getId()){
+                                    $dataset->setRetrieveMode(SM_STATUS_CURRENT);
+                                    if($dataset->getType() == 'STATIC'){
+                                        $dataset->addItem($new_item->getId());
+                                    }else if($dataset->getType() == 'DYNAMIC'){
+                                        if(!$dataset->hasItem('id', $new_item->getId())){
+                                            $property->addTemporaryForeignKeyOptionById($new_item->getId());
+                                        }
+                                    }
+                                }else{
+                                    // the property appears to point to a dataset that has a different model from the item just created
+                                }
+                            }else{
+                                // the property appears to point to a set that does not exist
+                            }
+                        }
+                        
                     }
                 }
                 
@@ -290,6 +312,31 @@ class ItemsAjax extends SmartestSystemApplication{
         }
         
         exit;
+	    
+	}
+	
+	public function getItemClassSetSelectorForNewPropertyForm(){
+	    
+	    if(is_numeric($this->getRequestParameter('class_id'))){
+	        
+	        $model_id = $this->getRequestParameter('class_id');
+	        $model = new SmartestModel;
+	        
+	        if($model->find($model_id)){
+	        
+	            $sets = $model->getDataSets($this->getSite()->getId());
+	        
+	            $this->send(new SmartestArray($sets), 'sets');
+    		    $this->send($model, 'model');
+    		
+		    }else{
+		        
+		        $this->addUserMessageToNextRequest("The model ID was not recognized.", SmartestUserMessage::ERROR);
+		        $this->redirect('smartest/models');
+		        
+		    }
+	        
+	    }
 	    
 	}
 

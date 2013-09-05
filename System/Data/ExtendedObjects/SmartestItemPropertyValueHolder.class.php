@@ -26,6 +26,26 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
         }
 	}
 	
+	public function getPossibleValues(){
+	    
+	    if($this->_value && $this->isForeignKey()){
+	        
+	        if($this->getDatatype() == 'SM_DATATYPE_ASSET'){
+	            if(is_object($this->_value->getDraftContent())){
+	                $this->addTemporaryForeignKeyOptionById($this->_value->getDraftContent()->getId());
+                }
+	        }else if($this->getDatatype() == 'SM_DATATYPE_CMS_ITEM'){
+	            if(is_object($this->_value->getDraftContent())){
+	                $this->addTemporaryForeignKeyOptionById($this->_value->getDraftContent()->getId());
+                }
+	        }
+	        
+	    }
+	    
+	    return parent::getPossibleValues();
+	    
+	}
+	
 	public function getDataType(){
 	    return $this->_properties['datatype'];
 	}

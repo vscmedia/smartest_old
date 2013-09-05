@@ -8,6 +8,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	protected $_option_set;
 	protected $_model;
 	protected $_property_info;
+	protected $_temporary_additional_foreign_key_options = array();
 	
 	protected function __objectConstruct(){
 		
@@ -55,7 +56,21 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	
 	public function delete($rebuild_cache=true){
 	    
-	    // clean up now-disused values for this property
+	    if($this->getDataType() == 'SM_DATATYPE_CMS_ITEM'){
+    	    // Find auto-query properties that point to this property
+    	    $sql = "SELECT * FROM ItemProperties WHERE itemproperty_foreign_key_filter='".$this->getId()."' AND itemproperty_datatype='SM_DATATYPE_AUTO_ITEM_FK'";
+    	    $result = $this->database->queryToArray($sql);
+	    
+    	    if(count($result)){
+    	        foreach($result as $raw){
+	                $property = new SmartestItemProperty;
+	                $property->hydrate($raw);
+	                $property->delete();
+    	        }
+    	    }
+        }
+	    
+	    // Clean up now-disused values for this property
 	    $sql = "DELETE FROM ItemPropertyValues WHERE itempropertyvalue_property_id='".$this->getId()."'";
 	    $this->database->rawQuery($sql);
 	    
@@ -87,11 +102,21 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	        if(array_key_exists($this->getDatatype(), $datatypes)){
 	            $this->_type_info = $datatypes[$this->getDatatype()];
+            }else{
+                if($this->getId()){
+                    throw new SmartestException('Property "'.$this->getName().'" (ID: '.$this->getId().') has a data type '.$this->getDatatype().' that does not exist.');
+                }
             }
         
         }
         
         return $this->_type_info;
+	    
+	}
+	
+	public function addTemporaryForeignKeyOptionById($id){
+	    
+	    $this->_temporary_additional_foreign_key_options[] = $id;
 	    
 	}
 	
@@ -285,6 +310,29 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
                                 }
                                 
                                 $this->_possible_values = $this->_option_set->getMembers(1, $this->getCurrentSiteId(), false);
+                                
+                                if(count($this->_temporary_additional_foreign_key_options)){
+                                    
+                                    $extra_files_to_retrieve = array();
+	                            
+    	                            foreach($this->_temporary_additional_foreign_key_options as $tafko){
+	                                
+    	                                if(!$this->_option_set->hasAssetId($tafko)){
+    	                                    $extra_files_to_retrieve[] = $tafko;
+    	                                }
+	                                
+    	                            }
+    	                            
+    	                            $easql = "SELECT * FROM Assets WHERE Assets.asset_id IN ('".implode("','", $extra_files_to_retrieve)."')";
+    	                            $earesult = $this->database->queryToArray($easql);
+	                            
+    	                            foreach($earesult as $raw){
+    	                                $extra_asset = new SmartestAsset;
+    	                                $extra_asset->hydrate($raw);
+    	                                $this->_possible_values[] = $extra_asset;
+    	                            }
+                                    
+                                }
                             
                             }else{
                                 
@@ -339,16 +387,47 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	                }else if($this->getDatatype() == 'SM_DATATYPE_CMS_ITEM' || $this->getDatatype() == 'SM_DATATYPE_CMS_ITEM_SELECTION'){
 	                    
 	                    if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
+	                        
 	                        $model = new SmartestModel;
+	                        
 	                        if($model->find($filter)){
 	                            $this->_possible_values = $model->getSimpleItems($this->getCurrentSiteId(), SM_STATUS_CURRENT);
 	                        }else{
 	                            // Model id not recognized
 	                        }
+	                        
 	                    }else if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_DATASET'){
+	                        
 	                        $set = new SmartestCmsItemSet;
+	                        
 	                        if($set->find($this->getOptionSetId())){
-	                            $this->_possible_values = $set->getSimpleMembers(SM_QUERY_ALL_DRAFT_CURRENT);
+	                            
+	                            $this->_option_set = $set;
+	                            $this->_possible_values = $this->_option_set->getSimpleMembers(SM_QUERY_ALL_DRAFT);
+	                            
+	                            if(count($this->_temporary_additional_foreign_key_options)){
+	                            
+    	                            $extra_items_to_retrieve = array();
+	                            
+    	                            foreach($this->_temporary_additional_foreign_key_options as $tafko){
+	                                
+    	                                if(!$this->_option_set->hasItem('id', $tafko)){
+    	                                    $extra_items_to_retrieve[] = $tafko;
+    	                                }
+	                                
+    	                            }
+	                            
+    	                            $eisql = "SELECT * FROM Items WHERE Items.item_id IN ('".implode("','", $extra_items_to_retrieve)."')";
+    	                            $eiresult = $this->database->queryToArray($eisql);
+	                            
+    	                            foreach($eiresult as $raw){
+    	                                $extra_item = new SmartestItem;
+    	                                $extra_item->hydrate($raw);
+    	                                $this->_possible_values[] = $extra_item;
+    	                            }
+	                            
+                                }
+	                            
 	                        }else{
 	                            // Set Id not recognized
 	                        }

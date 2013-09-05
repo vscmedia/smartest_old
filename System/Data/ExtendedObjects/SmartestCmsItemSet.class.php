@@ -604,8 +604,8 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	            
     	            // get members if the set is dynamic
     	            $q = new SmartestQuery($model->getId());
-	            
-    	            $data_source = $this->getDataSourceSiteId();
+	                
+	                $data_source = $this->getDataSourceSiteId();
 	            
     	            $site_id = $this->getCurrentSiteId();
                 
@@ -647,8 +647,8 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     	            }
 	            
     	            $result = $q->doSelect($mode);
-	            
-		            if($this->getSortField()){
+	                
+	                if($this->getSortField()){
     	                $result->sort($this->getSortField(), $this->getSortDirection());
     	            }
 	            

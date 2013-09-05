@@ -2351,7 +2351,7 @@ class Items extends SmartestSystemApplication{
                             foreach($tag_labels as $tag_label){
                                 
                                 $tag_label = trim($tag_label);
-                                $tag_slug = SmartestStringHelper::toSlug($tag_label);
+                                $tag_slug = SmartestStringHelper::toSlug($tag_label, true);
                                 $tag_object = new SmartestTag;
                                 
                                 if(!$tag_object->findBy('name', $tag_slug)){
@@ -2625,7 +2625,18 @@ class Items extends SmartestSystemApplication{
             		    $property->setForeignKeyFilter($this->getRequestParameter('foreign_key_filter'));
             		}
             		
-            		if($this->getRequestParameter('create_group')){
+            		if($this->getRequestParameter('foreign_key_option_set_id')){
+            		    
+            		    if($this->getRequestParameter('itemproperty_datatype') == 'SM_DATATYPE_CMS_ITEM'){
+            		        
+            		        if(substr($this->getRequestParameter('foreign_key_option_set_id'), 0, 4) == 'SET:'){
+            		            $property->setOptionSetType('SM_PROPERTY_FILTERTYPE_DATASET');
+            		            $property->setOptionSetId(substr($this->getRequestParameter('foreign_key_option_set_id'), 4));
+        		            }
+            		        
+            		    }
+            		    
+            		}else if($this->getRequestParameter('create_group')){
             		    
             		    if($this->getRequestParameter('itemproperty_datatype') == 'SM_DATATYPE_ASSET'){
             		    
@@ -2680,7 +2691,32 @@ class Items extends SmartestSystemApplication{
             	    SmartestObjectModelHelper::buildAutoClassFile($model->getId(), $model->getName());
     	    
             	    SmartestLog::getInstance('site')->log($this->getUser()->__toString()." added a property called $new_property_name to model ".$model->getName().".", SmartestLog::USER_ACTION);
-	    
+	                
+	                if($this->getRequestParameter('itemproperty_datatype') == 'SM_DATATYPE_CMS_ITEM'){
+	                    
+	                    if($this->getRequestParameter('create_aq_property')){
+            		        
+            		        $foreign_model = new SmartestModel;
+            		        if($foreign_model->find($this->getRequestParameter('foreign_key_filter'))){
+            		            
+            		            $aqp = new SmartestItemProperty;
+            		            $aqp->setWebid(SmartestStringHelper::random(16));
+                    		    $aqp->setOrderIndex($foreign_model->getNextPropertyOrderIndex());
+            		            $aqp->setItemClassId($foreign_model->getId());
+            		            $aqp->setDatatype('SM_DATATYPE_AUTO_ITEM_FK');
+            		            $aqp->setForeignKeyFilter($property->getId());
+            		            $aqp->setName($this->getRequestParameter('aq_property_name'));
+            		            $aqp->setVarName(SmartestStringHelper::toVarName($this->getRequestParameter('aq_property_name')));
+            		            
+            		            $aqp->save();
+            		            
+            		            SmartestCache::clear('model_properties_'.$foreign_model->getId(), true);
+                        	    SmartestObjectModelHelper::buildAutoClassFile($foreign_model->getId(), $foreign_model->getName());
+            		            
+            		        }
+            		    }
+            		}
+	                
             	    $this->addUserMessageToNextRequest("Your new property has been added.", SmartestUserMessage::SUCCESS);
 	    
         	        if($this->getRequestParameter('continue') == 'NEW_PROPERTY'){
@@ -2711,10 +2747,10 @@ class Items extends SmartestSystemApplication{
 		
 		if($this->getUser()->hasToken('create_remove_properties')){
 		
-		    $name=$get["name"];
-    		$sel_id=$get["sel_id"];
-    		$type=$get["type"];
-    		$model_id=$get["class_id"];
+		    $name=$this->getRequestParameter('name');;
+    		$sel_id=$this->getRequestParameter('sel_id');;
+    		$type=$this->getRequestParameter('type');;
+    		$model_id=$this->getRequestParameter('class_id');;
 		
     		$model = new SmartestModel;
     		
@@ -2743,7 +2779,7 @@ class Items extends SmartestSystemApplication{
     		            if(($data_type['valuetype'] == 'foreignkey' || $data_type['valuetype'] == 'manytomany') && isset($data_type['filter']['typesource'])){
     		                
     		                if(is_file($data_type['filter']['typesource']['template'])){
-    		                    $this->send(SmartestDataUtility::getForeignKeyFilterOptions($data_type_code), 'foreign_key_filter_options');
+    		                    $this->send(new SmartestArray(SmartestDataUtility::getForeignKeyFilterOptions($data_type_code)), 'foreign_key_filter_options');
     		                    $this->send(SM_ROOT_DIR.$data_type['filter']['typesource']['template'], 'filter_select_template');
     		                }else{
     		                    $this->send($data_type['filter']['typesource']['template'], 'intended_file');
