@@ -89,7 +89,9 @@ class SmartestCmsItemsHelper{
         $raw_items = $this->_hydrateUniformListFromIdsArray($ids, $model_id, $draft_mode);
         
         foreach($ids as $id){
-            $items[] = $raw_items[$id];
+            if(isset($raw_items[$id])){
+                $items[] = $raw_items[$id];
+            }
         }
         
         return $items;
@@ -98,21 +100,35 @@ class SmartestCmsItemsHelper{
     
     public function getRawDbDataFromIdsArray($ids, $model_id=''){
         
-        $sql = "SELECT * FROM Items, ItemPropertyValues WHERE Items.item_deleted !=1 AND Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND ItemPropertyValues.itempropertyvalue_item_id IN ('".implode("','", $ids)."')";
-        
-        if(is_numeric($model_id)){
-            $sql .= " AND Items.item_itemclass_id='".$model_id."'";
+        if(!count($ids)){
+            // If no IDs are given, don't bother running a query
+            return array();
         }
         
-        return $this->database->queryToArray($sql);
+        if(is_numeric($model_id)){
+            // a model is specified
+            $pre_sql = "SELECT itemproperty_id FROM ItemProperties WHERE itemproperty_itemclass_id='".$model_id."'";
+            $r = $this->database->queryToArray($pre_sql);
+            if(count($r)){
+                // The model has properties
+                $sql = "SELECT * FROM Items, ItemPropertyValues WHERE Items.item_deleted !=1 AND Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND Items.item_id IN ('".implode("','", $ids)."') AND Items.item_itemclass_id='".$model_id."'";
+                return $this->database->queryToArray($sql);
+            }else{
+                // The model does not have properties
+                $sql = "SELECT * FROM Items WHERE Items.item_deleted !=1 AND Items.item_id IN ('".implode("','", $ids)."') AND Items.item_itemclass_id='".$model_id."'";
+                return $this->database->queryToArray($sql);
+            }
+        }else{
+            // a model is not specified
+            $sql = "SELECT * FROM Items, ItemPropertyValues WHERE Items.item_deleted !=1 AND Items.item_id=ItemPropertyValues.itempropertyvalue_item_id AND Items.item_id IN ('".implode("','", $ids)."')";
+            return $this->database->queryToArray($sql);
+        }
         
     }
     
     public function getSquareDbDataFromIdsArray($ids, $model_id=''){
         
         $included_item_ids = array();
-        // echo count($this->getRawDbDataFromIdsArray($ids));
-        
         $items = array();
         
         foreach($this->getRawDbDataFromIdsArray($ids, $model_id) as $result){

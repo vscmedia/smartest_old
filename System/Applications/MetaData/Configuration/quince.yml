@@ -20,3 +20,9 @@ module:
   meta:
     system: true
     author: Marcus Gilroy-Ware
+  namespaces:
+    ajax:
+      class: MetaDataAjax
+      meta:
+        template: _blank.tpl
+        presentation_subfolder: Ajax/

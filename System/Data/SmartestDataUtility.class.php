@@ -187,12 +187,13 @@ class SmartestDataUtility{
 		}
 		
 		if(is_numeric($site_id)){
-		    $sql .= " WHERE (set_site_id='".$site_id."' OR set_shared='1') AND (set_data_source_site_id='".$site_id."' OR set_data_source_site_id='CURRENT' OR set_data_source_site_id='ALL')";
+		    // $sql .= " WHERE (set_site_id='".$site_id."' OR set_shared='1') AND (set_data_source_site_id='".$site_id."' OR set_data_source_site_id='CURRENT' OR set_data_source_site_id='ALL')";
+		    $sql .= " WHERE (set_site_id='".$site_id."' OR set_shared='1')";
 		}
 		
 		$sql .= " AND set_type IN ('DYNAMIC', 'STATIC', 'SM_SET_ITEMS_DYNAMIC', 'SM_SET_ITEMS_STATIC')";
 		
-		$sql .= " ORDER BY set_name";
+		$sql .= " ORDER BY set_label";
 		
 		$result = $this->database->queryToArray($sql);
 		

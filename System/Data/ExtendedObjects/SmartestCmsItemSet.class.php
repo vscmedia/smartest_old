@@ -15,6 +15,9 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
     
     public function __objectConstruct(){
         // This prevents SmartestSet::__objectConstruct from being called, so do not delete.
+        if(!strlen($this->getWebId())){
+            $this->setWebId(SmartestStringHelper::random(32));
+        }
     }
     
     public function setType($type){
@@ -265,7 +268,7 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    }
 	    
 	    $draft = $mode < 6;
-	    
+	    // echo $this->getType();
 	    if($refresh || !$this->_fetch_attempted){
 	    
 	        if($this->getType() == 'STATIC'){

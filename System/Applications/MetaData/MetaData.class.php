@@ -32,13 +32,13 @@ class MetaData extends SmartestSystemApplication{
 		
 	}
 	
-	public function deletePageProperty($get,$post){
+	public function deletePageProperty(){
 		
-		$field_id = $get['field_id'];
+		$field_id = $this->getRequestParameter('field_id');
 		
 		$property = new SmartestPageField;
 		
-		if($property->hydrate($field_id)){
+		if($property->find($field_id)){
 		    $property->clearAllDefinitions();
 		    $property->delete();
 		    $this->addUserMessageToNextRequest('The property has been deleted.', SmartestUserMessage::SUCCESS);
@@ -51,18 +51,18 @@ class MetaData extends SmartestSystemApplication{
 		
 	}
 	
-	public function viewPageFieldDefinitions($get){
+	public function viewPageFieldDefinitions(){
 	    
 	    $field = new SmartestPageField;
 	    
-	    if($field->hydrate($get['field_id'])){
+	    if($field->find($this->getRequestParameter('field_id'))){
 	        // $definitions = $field->getDefinitionsAsArrays();
 	        // print_r($definitions);
 	        $this->setTitle('Page Field Definitions | '.$field->getLabel());
-	        $definitions =  $this->manager->getAllFieldDefinitions($get['field_id']);
+	        $definitions =  $this->manager->getAllFieldDefinitions($this->getRequestParameter('field_id'));
 	        // $definition = new SmartestPageFieldDefinition;
 	        // $definition->
-	        $this->send($field->__toArray(), 'field');
+	        $this->send($field, 'field');
 	        $this->send($definitions, 'definitions');
 	    }else{
 	        $this->addUserMessageToNextRequest("The field ID was not recognised.", SmartestUserMessage::ERROR);
@@ -71,9 +71,9 @@ class MetaData extends SmartestSystemApplication{
 	    
 	}
 	
-	public function clearFieldOnAllPages($get){
+	public function clearFieldOnAllPages(){
 	    
-	    $field_id = $get['field_id'];
+	    $field_id = $this->getRequestParameter('field_id');
 		
 		$property = new SmartestPageField;
 		
@@ -88,11 +88,11 @@ class MetaData extends SmartestSystemApplication{
 		$this->formForward();
 	}
 	
-	public function defineFieldOnPage($get){
+	public function defineFieldOnPage(){
 		
 		if($this->getUser()->hasToken('modify_page_properties')){
 		
-    		$page_webid = $get['page_id'];
+    		$page_webid = $this->getRequestParameter('page_id');
 		
     		$page = new SmartestPage;
 		
@@ -100,17 +100,17 @@ class MetaData extends SmartestSystemApplication{
 		
     		    $field = new SmartestPageField;
 		
-        		if(!empty($get['assetclass_id'])){
-        			// $pageproperty_name = $get['assetclass_id'];
-        			// $pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $get['assetclass_id'], "PageProperties");
+        		if($this->requestParameterIsSet('assetclass_id')){
+        			// $pageproperty_name = $this->getRequestParameter('assetclass_id');
+        			// $pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $this->getRequestParameter('assetclass_id'), "PageProperties");
         			// $field->hydrateBy();
         			$lookup_field = 'pageproperty_name';
-        			$value = $get['assetclass_id'];
+        			$value = $this->getRequestParameter('assetclass_id');
         		}else{
-        			// $pageproperty_id = $get['pageproperty_id'];
+        			// $pageproperty_id = $this->getRequestParameter('pageproperty_id');
         			// $pageproperty_name = $this->manager->database->specificQuery("pageproperty_name", "pageproperty_id", $pageproperty_id, "PageProperties");
         			$lookup_field = 'pageproperty_id';
-        			$value = $get['pageproperty_id'];
+        			$value = $this->getRequestParameter('pageproperty_id');
         		}
 		    
     		    $db = SmartestPersistentObject::get('db:main');
@@ -119,31 +119,12 @@ class MetaData extends SmartestSystemApplication{
 		    
         		if(count($result)){
 		        
-    		        // $field->hydrateBy($lookup_field, $value)
     		        $field->hydrate($result[0]);
 		        
-        		    // print_r($field);
-		
-            		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");
-            		// $sql = "SELECT pagepropertyvalue_draft_value FROM PagePropertyValues WHERE pagepropertyvalue_page_id ='$page_id' AND pagepropertyvalue_pageproperty_id='$pageproperty_id'";
-		
-            		// $result = $this->manager->database->queryToArray($sql);
-            		// $pageproperty_value = $result[0];
-    		
-            		$def = new SmartestPageFieldDefinition;
+        		    $def = new SmartestPageFieldDefinition;
             		$def->loadForUpdate($field, $page);
         		
-            		// print_r($def);
-		
-        		    /* return array(
-            			"page_id" => $page_webid,
-            			"pageproperty_id" => $pageproperty_id,
-            			"pageproperty_name" => $pageproperty_name,
-            			"pageproperty_value" => $pageproperty_value,
-        			    "pagepropertyvalue_id" => $pagepropertyvalue_id
-        		    ); */
-    		    
-        		    if($field->getType() == 'SM_DATATYPE_DROPDOWN_MENU'){
+            		if($field->getType() == 'SM_DATATYPE_DROPDOWN_MENU'){
         		        $dropdown_id = $field->getForeignKeyFilter();
         		        $dropdown = new SmartestDropdown;
         		        $dropdown->find($dropdown_id);
@@ -155,6 +136,7 @@ class MetaData extends SmartestSystemApplication{
         		    $this->send($field->getName(), 'field_name');
         		    $this->send($field->getType(), 'field_type');
         		    $this->send($field->getId(), 'field_id');
+        		    $this->send($field, 'field');
         		    $this->send($page->getId(), 'page_id');
 		
         	    }else{
@@ -180,16 +162,16 @@ class MetaData extends SmartestSystemApplication{
 		
 	}
 	
-	public function setLiveProperty($get){
+	/* public function setLiveProperty(){
 		
-		$page_webid = $get['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		$page_id = $this->manager->getPageIdFromPageWebId($page_webid);
 		
-		if(!empty($get['assetclass_id'])){
-			$pageproperty_name = $get['assetclass_id'];
-			$pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $get['assetclass_id'], "PageProperties");
+		if($this->requestParameterIsSet('assetclass_id')){
+			$pageproperty_name = $this->getRequestParameter('assetclass_id');
+			$pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $this->getRequestParameter('assetclass_id'), "PageProperties");
 		}else{
-			$pageproperty_id = $get['pageproperty_id'];
+			$pageproperty_id = $this->getRequestParameter('pageproperty_id');
 			$pageproperty_name = $this->manager->database->specificQuery("pageproperty_name", "pageproperty_id", $pageproperty_id, "PageProperties");
 		}
 		
@@ -198,74 +180,43 @@ class MetaData extends SmartestSystemApplication{
 		$this->manager->setLiveProperty($pagepropertyvalue_id);
 		$this->formForward();
 		
-	}
+	} */
 	
-	public function updatePagePropertyValue($get, $post){
+	public function updatePagePropertyValue(){
 		
-		$page_webid = $post['page_id'];
-		
-		// $page_id = $this->manager->getPageIdFromPageWebId($page_webid);
-		
+		$page_webid = $this->getRequestParameter('page_id');
 		$page = new SmartestPage;
 		
 		if($page->hydrate($page_webid)){
 		
 		    $field = new SmartestPageField;
 		
-    		if(!empty($post['field_id'])){
-    			// $pageproperty_name = $get['assetclass_id'];
-    			// $pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $get['assetclass_id'], "PageProperties");
-    			// $field->hydrateBy();
+    		if($this->requestParameterIsSet('field_id')){
     			$lookup_field = 'id';
-    			$value = $post['field_id'];
+    			$value = $this->getRequestParameter('field_id');
     		}
     		
-    		//else{
-    			// $pageproperty_id = $get['pageproperty_id'];
-    			// $pageproperty_name = $this->manager->database->specificQuery("pageproperty_name", "pageproperty_id", $pageproperty_id, "PageProperties");
-    		//	$lookup_field = 'id';
-    		//	$value = $post['pageproperty_id'];
-    		//}
-		
     		if($field->findBy($lookup_field, $value)){
 		
-    		    // print_r($field);
-		
-        		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");
-        		// $sql = "SELECT pagepropertyvalue_draft_value FROM PagePropertyValues WHERE pagepropertyvalue_page_id ='$page_id' AND pagepropertyvalue_pageproperty_id='$pageproperty_id'";
-		
-        		// $result = $this->manager->database->queryToArray($sql);
-        		// $pageproperty_value = $result[0];
-    		
-        		$def = new SmartestPageFieldDefinition;
+    		    $def = new SmartestPageFieldDefinition;
         		$def->loadForUpdate($field, $page);
-        		$def->setDraftValue($post['field_content']);
-        		$def->setPageId($page->getId());
+        		$def->setDraftValue($this->getRequestParameter('field_content'));
+        		
+        		if($field->getIsSitewide()){
+        		    $def->setSiteId($page->getSiteId());
+        		}else{
+        		    $def->setPageId($page->getId());
+    		    }
+    		    
         		$def->setPagepropertyId($field->getId());
         		$def->save();
         		
         		$this->addUserMessageToNextRequest('The page field has been updated', SmartestUserMessage::SUCCESS);
     	        $this->formForward();
-        		
-        		// print_r($def);
-		
-    		    /* return array(
-        			"page_id" => $page_webid,
-        			"pageproperty_id" => $pageproperty_id,
-        			"pageproperty_name" => $pageproperty_name,
-        			"pageproperty_value" => $pageproperty_value,
-    			    "pagepropertyvalue_id" => $pagepropertyvalue_id
-    		    ); */
-    		    
-    		    // $this->send($def->getDraftValue(), 'value');
-    		    // $this->send($field->getName(), 'field_name');
-    		    // $this->send($page->getId(), 'page_id');
 		
     	    }else{
     	        
-    	        
     	        $this->addUserMessageToNextRequest('The specified field doesn\'t exist', SmartestUserMessage::INFO);
-    	        // $this->formForward();
     	        
     	    }
 	    
@@ -276,23 +227,23 @@ class MetaData extends SmartestSystemApplication{
             
         }
 		
-		/* $page_webid = $post['page_id'];
+		/* $page_webid = $this->getRequestParameter('page_id');
 		$page_id = $this->manager->getPageIdFromPageWebId($page_webid);
-		$pageproperty_id = $post['pageproperty_id'];
-		$propertyValue = $post['page_property'];
-		$pagepropertyvalue_id = $post['pagepropertyvalue_id'];
+		$pageproperty_id = $this->getRequestParameter('pageproperty_id');
+		$propertyValue = $this->getRequestParameter('page_property');
+		$pagepropertyvalue_id = $this->getRequestParameter('pagepropertyvalue_id');
 		
 		$this->manager->updatePropertyValue($page_id,$pageproperty_id,$propertyValue,$pagepropertyvalue_id);
 		$this->formForward(); */
 		
 	}
 	
-	public function savePagePropertyValue($get, $post){
+	/* public function savePagePropertyValue(){
 		
-		$page_webid = $post['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		$page_id = $this->manager->getPageIdFromPageWebId($page_webid);
-		$pageproperty_id = $post['pageproperty_id'];
-		$propertyValue = $post['page_property'];
+		$pageproperty_id = $this->getRequestParameter('pageproperty_id');
+		$propertyValue = $this->getRequestParameter('page_property');
 		
 		if($this->manager->getPropertyDefinitionExists($pageproperty_id, $page_id)){
 			// definition already exists
@@ -304,11 +255,11 @@ class MetaData extends SmartestSystemApplication{
 		
 		$this->formForward();
 		
-	}
+	} */
 	
-	public function addPageProperty($get){
+	public function addPageProperty(){
 	    
-		$site_id = $get['site_id'];
+		$site_id = $this->getRequestParameter('site_id');
 		$propertyTypes = $this->manager->getPropertyTypes();
 		
 		$types = SmartestDataUtility::getDataTypes('field');
@@ -316,52 +267,26 @@ class MetaData extends SmartestSystemApplication{
 		
 		$acceptable_types = array_keys($types);
 		
-		if(isset($get['name'])){
-		    $this->send(SmartestStringHelper::toVarName($get['name']), 'field_name');
+		if($this->requestParameterIsSet('name')){
+		    $this->send(SmartestStringHelper::toVarName($this->getRequestParameter('name')), 'field_name');
 	    }
 	    
-	    if(isset($get['type'])){
-		    
-		    if(in_array($get['type'], $acceptable_types)){
-		        
-		        $data_type_code = $get['type'];
-		        $data_type = $types[$data_type_code];
-		        $this->send($data_type_code, 'selected_type');
-		        
-		        if($data_type['valuetype'] == 'foreignkey' && isset($data_type['filter']['typesource'])){
-	                
-	                if(is_file($data_type['filter']['typesource']['template'])){
-	                    $this->send(SmartestDataUtility::getForeignKeyFilterOptions($data_type_code), 'foreign_key_filter_options');
-	                    $this->send(SM_ROOT_DIR.$data_type['filter']['typesource']['template'], 'filter_select_template');
-	                }else{
-	                    $this->send($data_type['filter']['typesource']['template'], 'intended_file');
-	                    $this->send(SM_ROOT_DIR.'System/Applications/Items/Presentation/FKFilterSelectors/filtertype.unknown.tpl', 'filter_select_template');
-	                }
-	                
-	                $this->send(true, 'foreign_key_filter_select');
-	            }
-		        
-		        $this->send(true, 'show_full_form');
-		        $this->send($this->getSite()->getId(), 'site_id');
-		    }
-		    
-	    }
-	    
-		// return array("site_id"=>$site_id, "propertytypes"=>$propertyTypes, "name"=>$name);
+	    $this->send($this->getSite(), 'site');
 		
 	}
 	
-	public function insertPageProperty($get, $post){
+	public function insertPageProperty(){
 		
 		$property = new SmartestPageField;
-		$property_name = $post['property_name'];
+		$property_name = $this->getRequestParameter('property_name');
 		$property->setLabel($property_name);
 		$property->setSiteId($this->getSite()->getId());
-		$property->setType($post['pageproperty_type']);
+		$property->setType($this->getRequestParameter('pageproperty_type'));
 		$property->setName(SmartestStringHelper::toVarName($property_name));
+		$property->setIsSitewide($this->getRequestParameter('property_sitewide', '0'));
 		
-		if(isset($post['foreign_key_filter'])){
-		    $property->setForeignKeyFilter($post['foreign_key_filter']);
+		if($this->requestParameterIsSet('foreign_key_filter')){
+		    $property->setForeignKeyFilter($this->getRequestParameter('foreign_key_filter'));
 		}
 		
 		$property->save();
@@ -369,43 +294,43 @@ class MetaData extends SmartestSystemApplication{
 		$this->formForward();
 	}
 	
-	public function addPagePropertyValue($get,$post){
+	public function addPagePropertyValue(){
 		
-		$page_webid = $post['page_id'];
+		$page_webid = $this->getRequestParameter('page_id');
 		$page_id = $this->manager->getPageIdFromPageWebId($page_webid);
-		$pageproperty_id = $post['pageproperty_id'];
-		$propertyValue = $post['page_property'];
+		$pageproperty_id = $this->getRequestParameter('pageproperty_id');
+		$propertyValue = $this->getRequestParameter('page_property');
 		
 		$this->manager->insertPropertyValue($page_id, $pageproperty_id, $propertyValue);
 		$this->formForward();
 		
 	}
 	
-	public function undefinePageProperty($get){
+	public function undefinePageProperty(){
 		
-		$page_webid =$get['page_id'];
+		$page_webid =$this->getRequestParameter('page_id');
 		$page_id = $this->manager->getPageIdFromPageWebId($page_webid);
 		
 		$field = new SmartestPageField;
 		
-		if(!empty($get['assetclass_id'])){
-		    $field_name = SmartestStringHelper::toVarName($get['assetclass_id']);
-			// $pageproperty_name = $get['assetclass_id'];
-			// $pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $get['assetclass_id'], "PageProperties");
+		if($this->requestParameterIsSet('assetclass_id')){
+		    $field_name = SmartestStringHelper::toVarName($this->getRequestParameter('assetclass_id'));
+			// $pageproperty_name = $this->getRequestParameter('assetclass_id');
+			// $pageproperty_id = $this->manager->database->specificQuery("pageproperty_id", "pageproperty_name", $this->getRequestParameter('assetclass_id'), "PageProperties");
 			$field->hydrateBy('name', $field_name);
 		}else{
-		    $field_id = $get['pageproperty_id'];
+		    $field_id = $this->getRequestParameter('pageproperty_id');
 		    $field->hydrate($field_id);
-			// $pageproperty_id = $get['pageproperty_id'];
+			// $pageproperty_id = $this->getRequestParameter('pageproperty_id');
 			// $pageproperty_name = $this->manager->database->specificQuery("pageproperty_name", "pageproperty_id", $pageproperty_id, "PageProperties");
 		}
 		
-		// $pageproperty_id = $get['pageproperty_id'];
+		// $pageproperty_id = $this->getRequestParameter('pageproperty_id');
 		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");
 		
 		$pagepropertyvalue_id = $this->manager->getPropertyValueId($page_id, $field->getId());
 		
-		// $pageproperty_id = $get['pageproperty_id'];
+		// $pageproperty_id = $this->getRequestParameter('pageproperty_id');
 		// $pagepropertyvalue_id = $this->manager->database->specificQuery("pagepropertyvalue_id", "pagepropertyvalue_pageproperty_id", $pageproperty_id, "PagePropertyValues");
 		
 		$this->manager->undefinePageProperty($pagepropertyvalue_id);
@@ -442,7 +367,7 @@ class MetaData extends SmartestSystemApplication{
 	    
 	}
 	
-	public function insertTag($get, $post){
+	public function insertTag(){
 	    
 	    $proposed_tags = SmartestStringHelper::fromCommaSeparatedList($this->getRequestParameter('tag_label'));
 	    
@@ -529,7 +454,7 @@ class MetaData extends SmartestSystemApplication{
 	    
 	}
 	
-	public function getTaggedObjects($get){
+	public function getTaggedObjects(){
 	    
 	    $tag_identifier = SmartestStringHelper::toSlug($this->getRequestParameter('tag'));
 	    $tag = new SmartestTag;

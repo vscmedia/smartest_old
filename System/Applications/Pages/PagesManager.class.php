@@ -483,18 +483,31 @@ class PagesManager{
 		
 		$fieldNames = $this->getTemplateFieldNames($template_file_path);
 			
-		if(is_array($fieldNames)){
+		if(is_array($fieldNames) && count($fieldNames)){
+			
+			$fields_sql = "SELECT * FROM PageProperties WHERE pageproperty_name IN ('".implode("','", $fieldNames)."') AND pageproperty_site_id='".$site_id."'";
+			$fields_result = $this->database->queryToArray($fields_sql);
+			$fields = array();
+			
+			foreach($fields_result as $r){
+			    $f = new SmartestPageField;
+			    $f->hydrate($r);
+			    $fields[$r['pageproperty_name']] = $f;
+			}
 			
 			foreach($fieldNames as $fieldName){
                 
-                $field = new SmartestPageField;
-                // a simple 'hydrateBy' did not take into account that fields are not cross-site and multiple fields may exist of the same name (one for each site)
-                $correct_sql = "SELECT * FROM PageProperties WHERE pageproperty_name='".$fieldName."' AND pageproperty_site_id='".$site_id."'";
-                $result = $this->database->queryToArray($correct_sql);
-                $field->hydrate($result[0]);
+                if(isset($fields[$fieldName])){
+                    $field = $fields[$fieldName];
+                    $info[$i]['info']['exists'] = 'true';
+                    $info[$i]['info']['defined'] = $field->getStatusOnPage($page);
+                }else{
+                    $field = new SmartestPageField;
+                    $info[$i]['info']['exists'] = 'false';
+                    $info[$i]['info']['defined'] = 'UNDEFINED';
+                }
                 
-				$info[$i]['info']['exists'] = (count($result) > 0) ? 'true' : 'false';
-				$info[$i]['info']['defined'] = $this->getFieldDefinedOnPage($fieldName, $page->getId());
+				// = $this->getFieldDefinedOnPage($fieldName, $page->getId());
 				$info[$i]['info']['assetclass_name'] = $fieldName;
 				$info[$i]['info']['assetclass_id'] = 'field_'.$field->getId();
 				

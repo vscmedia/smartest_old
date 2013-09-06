@@ -364,6 +364,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    
 	    $sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
 		$this->database->rawQuery($sql);
+		
+		// This should be fixed so as not to be dependent on the existence of site_id, or its absence from other per-page definitions
+		$sql = "UPDATE PagePropertyValues SET pagepropertyvalue_live_value=pagepropertyvalue_draft_value WHERE pagepropertyvalue_site_id='".$this->_properties['site_id']."'";
+		$this->database->rawQuery($sql);
 	    
 	}
 	
@@ -1039,6 +1043,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
     	        $property->hydrate($p);
     	        $fields[$property->getId()] = $property;
     	        $definitions->setParameter($p['pageproperty_name'], null);
+    	        // echo $p['pageproperty_name'].' ';
     	    }
 	    
     	    $sql = "SELECT * FROM `PagePropertyValues` WHERE pagepropertyvalue_page_id='".$this->_properties['id']."'";
@@ -1047,7 +1052,20 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
     	    foreach($result as $pfda){
     	        if(isset($fields[$pfda['pagepropertyvalue_pageproperty_id']])){
     	            if($this->getDraftMode()){
-    	                // echo $pfda['pagepropertyvalue_draft_value'];
+    	                $value = SmartestDataUtility::objectize($pfda['pagepropertyvalue_draft_value'], $fields[$pfda['pagepropertyvalue_pageproperty_id']]->getType());
+                    }else{
+                        $value = SmartestDataUtility::objectize($pfda['pagepropertyvalue_live_value'], $fields[$pfda['pagepropertyvalue_pageproperty_id']]->getType());
+                    }
+                    $definitions->setParameter($fields[$pfda['pagepropertyvalue_pageproperty_id']]->getName(), $value);
+    	        }
+    	    }
+    	    
+    	    $sql = "SELECT * FROM PagePropertyValues, PageProperties WHERE PagePropertyValues.pagepropertyvalue_pageproperty_id=PageProperties.pageproperty_id AND PageProperties.pageproperty_is_sitewide='1' AND PagePropertyValues.pagepropertyvalue_site_id='".$this->_properties['site_id']."'";
+    	    $result = $this->database->queryToArray($sql);
+	    
+    	    foreach($result as $pfda){
+    	        if(isset($fields[$pfda['pagepropertyvalue_pageproperty_id']])){
+    	            if($this->getDraftMode()){
     	                $value = SmartestDataUtility::objectize($pfda['pagepropertyvalue_draft_value'], $fields[$pfda['pagepropertyvalue_pageproperty_id']]->getType());
                     }else{
                         $value = SmartestDataUtility::objectize($pfda['pagepropertyvalue_live_value'], $fields[$pfda['pagepropertyvalue_pageproperty_id']]->getType());
@@ -1440,11 +1458,13 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        
 	    }
 	    
+	    if(parent::offsetExists($offset)){
+	        return parent::offsetGet($offset);
+	    }
+	    
 	    if($this->getPageFieldDefinitions()->hasParameter($offset)){
 	        return $this->getPageFieldDefinitions()->getParameter($offset);
 	    }
-	    
-	    return parent::offsetGet($offset);
 	    
 	}
 	

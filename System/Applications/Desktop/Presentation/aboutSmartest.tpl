@@ -1,4 +1,14 @@
 <div id="work-area">
+  
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {ldelim}
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&appId=416379105107063";
+    fjs.parentNode.insertBefore(js, fjs);
+  {rdelim}(document, 'script', 'facebook-jssdk'));</script>
+  
   <h3>About Smartest</h3>
   
   {literal}<style type="text/css">p{margin:0 0 5px 0;}</style>{/literal}

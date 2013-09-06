@@ -64,15 +64,6 @@
   </head>
   <body>
     
-    <div id="fb-root"></div>
-    <script>(function(d, s, id) {ldelim}
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&appId=416379105107063";
-      fjs.parentNode.insertBefore(js, fjs);
-    {rdelim}(document, 'script', 'facebook-jssdk'));</script>
-    
     <div id="top-strip" style="background-image:url({$domain}Resources/System/Images/admin_top_bar_bg.gif)">
       <img src="{$domain}Resources/System/Images/admin_top_bar_logo.gif" alt="Smartest" border="0" />
     </div>

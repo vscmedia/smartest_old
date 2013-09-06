@@ -8,7 +8,6 @@ class SmartestPageFieldDefinition extends SmartestBasePageFieldDefinition{
 		
 		$this->_table_prefix = 'pagepropertyvalue_';
 		$this->_table_name = 'PagePropertyValues';
-		// $this->addPropertyAlias('VarName', 'varname');
 		
 	}
 	
@@ -18,19 +17,31 @@ class SmartestPageFieldDefinition extends SmartestBasePageFieldDefinition{
             
             $this->_page = $page;
             
-            // $field = new SmartestPageField;
-            
-            // if($field->hydrateBy('name', $name)){
-            
-                $sql = "SELECT * FROM PagePropertyValues WHERE pagepropertyvalue_page_id='".$this->_page->getId()."' AND pagepropertyvalue_pageproperty_id='".$field->getId()."'";
-                $result = $this->database->queryToArray($sql);
+            if($field->getIsSitewide()){
                 
-                // echo $sql;
+                $sql = "SELECT * FROM PagePropertyValues WHERE pagepropertyvalue_site_id='".$this->_page->getSiteId()."' AND pagepropertyvalue_pageproperty_id='".$field->getId()."'";
+                $result = $this->database->queryToArray($sql);
                 
                 if(count($result)){
                     $this->hydrate($result[0]);
                 }
-            //}
+                
+            }else{
+            
+                $sql = "SELECT * FROM PagePropertyValues WHERE pagepropertyvalue_page_id='".$this->_page->getId()."' AND pagepropertyvalue_pageproperty_id='".$field->getId()."'";
+                $result = $this->database->queryToArray($sql);
+                
+                if(count($result)){
+                    $this->hydrate($result[0]);
+                }
+            }
         }
 	}
+	
+	public function getPage(){
+	    
+	    return $this->_page;
+	    
+	}
+	
 }

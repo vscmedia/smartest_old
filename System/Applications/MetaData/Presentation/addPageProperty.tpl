@@ -1,49 +1,33 @@
 <div id="work-area">
-<h3 id="definePageProperty">Add a New Page Field</h3>
+<h3>Add a new page field</h3>
 
   <div id="edit-form-layout">
     
-    <form id="type_chooser" action="{$domain}{$section}/addPageProperty" method="get" style="margin:0px">
+    <form id="definePageProperty" name="definePageProperty" action="{$domain}{$section}/insertPageProperty" method="post" style="margin:0px">
       
-      {if $field_name}<input type="hidden" name="name" value="{$field_name}" />{/if}
+      <input type="hidden" name="site_id" value="{$site_id}" />
+      
+      <div class="edit-form-row">
+        <div class="form-section-label">Field Name: </div>
+        {if $field_name}<input type="hidden" name="property_name" value="{$field_name}" />{$field_name}{else}<input type="text" name="property_name" value="unnamed_property" id="property-name" class="unfilled" />{/if}
+      </div>
       
       <div class="edit-form-row">
         <div class="form-section-label">Field Type: </div>
-        <select name="type" id="pageproperty_type" onchange="$('type_chooser').submit()">
+        <select name="pageproperty_type" id="pageproperty_type">
           <option value="">Select A Type</option>
         	{foreach from=$property_types item="type"}
           <option value="{$type.id}"{if $type.id==$selected_type} selected="selected"{/if}>{$type.label}</option>
           {/foreach}
         </select>
       </div>
-  
-  {if !$show_full_form}
-      <div class="edit-form-row">
-        <div class="buttons-bar">
-          <input type="button" value="Cancel" onclick="cancelForm();" />
-        </div>
-      </div>
-  {/if}
-  
-    </form>
-
-  {if $show_full_form}
-
-    <form id="definePageProperty" name="definePageProperty" action="{$domain}{$section}/insertPageProperty" method="post" style="margin:0px">
-
-      <input type="hidden" name="site_id" value="{$site_id}" />
-      <input type="hidden" name="pageproperty_type" value="{$selected_type}" />
-
-      <div class="edit-form-row">
-        <div class="form-section-label">Field Name: </div>
-        {if $field_name}<input type="hidden" name="property_name" value="{$field_name}" />{$field_name}{else}<input type="text" name="property_name" value="" />{/if}
-      </div>
       
-      {if $foreign_key_filter_select}
-          <div class="edit-form-row">
-            {include file=$filter_select_template}
-          </div>
-      {/if}
+      <div id="foreign-key-filter-selector-container"></div>
+      
+      <div class="edit-form-row">
+        <div class="form-section-label">Global: </div>
+        <input type="checkbox" name="property_sitewide" id="property-sitewide" value="1" /> <label for="property-sitewide">Making a field global means the definition will be the same on all pages</label>
+      </div>
       
       <div class="edit-form-row">
         <div class="buttons-bar">
@@ -51,10 +35,64 @@
           <input type="submit" name="action" value="Save" />
         </div>
       </div>
-
+  
     </form>
-
-  {/if}
+    
+    <script type="text/javascript">
+{literal}
+      
+      $('pageproperty_type').observe('change', function(e){
+        new Ajax.Updater('foreign-key-filter-selector-container', sm_domain+'ajax:metadata/getForeignKeyFilterSelector', {
+          parameters: {type: $('pageproperty_type').value}
+        });
+      });
+      
+      $('definePageProperty').observe('submit', function(e){
+        
+        if($('property-name')){
+            
+            if(!$('property-name').value || $('property-name').value == 'unnamed_property'){
+                $('property-name').addClassName('error');
+                e.stop();
+            }
+            
+        }
+        
+        if(!$('pageproperty_type').value){
+            $('pageproperty_type').addClassName('error');
+            e.stop();
+        }
+        
+      });
+      
+      if($('property-name')){
+          
+          $('property-name').observe('focus', function(){
+              if($('property-name').value == 'unnamed_property'){
+                  $('property-name').value = '';
+              }
+              $('property-name').removeClassName('unfilled');
+          });
+          
+          $('property-name').observe('blur', function(){
+              if($('property-name').value == ''){
+                  $('property-name').value = 'unnamed_property';
+                  $('property-name').addClassName('unfilled');
+              }else if($('property-name').value && $('property-name').value != 'unnamed_property'){
+                  $('property-name').removeClassName('error');
+              }
+          });
+          
+      }
+      
+      $('pageproperty_type').observe('change', function(){
+          if($('pageproperty_type').value){
+              $('pageproperty_type').removeClassName('error');
+          }
+      });
+      
+{/literal}    
+    </script>
 
   </div>
 

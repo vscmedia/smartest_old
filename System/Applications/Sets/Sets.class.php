@@ -33,7 +33,7 @@ class Sets extends SmartestSystemApplication{
 	        
 	            $sets = $model->getDataSets($this->getSite()->getId());
 	        
-	            $this->setTitle("Data Sets");
+	            $this->setTitle("Sets of ".$model->getPluralName());
     		    $this->send($sets, 'sets');
     		    $this->send($model, 'model');
     		

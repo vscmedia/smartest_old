@@ -140,9 +140,9 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    return SmartestSystemSettingHelper::load('item_parent_metapage_'.$metapage_id.'_'.$this->_properties['id'].'_site_'.$this->getCurrentSiteId());
 	}
 	
-	public function setParentItemForMetaPage($metapage_id, $parent_item_id){
+	/* public function setParentItemForMetaPage($metapage_id, $parent_item_id){
 	    
-	}
+	} */
 	
 	public function delete($remove=false){
 	    if($remove){
