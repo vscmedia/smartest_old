@@ -2334,7 +2334,7 @@ class Items extends SmartestSystemApplication{
         		
                 if($new_values['_name']){
                 
-                    $item->hydrateNewFromRequest($new_values);
+                    $item->hydrateNewFromRequest($new_values, $this->getSite()->getId());
                     $item->setSiteId($this->getSite()->getId());
                 
                     if($success = $item->save()){

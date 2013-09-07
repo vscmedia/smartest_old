@@ -424,7 +424,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    
 	}
 	
-	public function hydrateNewFromRequest($request_data){
+	public function hydrateNewFromRequest($request_data, $site_id=''){
 	    
 	    if(is_array($request_data)){
 	            
@@ -434,7 +434,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             $this->_item->setPublic('FALSE');
             
             $this->_item->setItemclassId($this->_model_id);
-            $this->_item->setSlug(SmartestStringHelper::toSlug($this->_item->getName(), true));
+            $this->_item->setSlug(SmartestStringHelper::toSlug($this->_item->getName(), true), $site_id);
             $this->_item->setWebid(SmartestStringHelper::random(32));
             $this->_item->setCreated(time());
             $this->_item->setModified(time()+2); // this is to make it show up on the approval todo list
