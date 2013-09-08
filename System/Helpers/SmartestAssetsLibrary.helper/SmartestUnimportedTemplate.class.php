@@ -138,6 +138,10 @@ class SmartestUnimportedTemplate implements ArrayAccess{
 	public function delete(){
 	    return $this->_file->delete();
 	}
+	
+	public function getLabel(){
+	    return $this->_file->getFileName();
+	}
     
     public function offsetGet($offset){
         switch($offset){
