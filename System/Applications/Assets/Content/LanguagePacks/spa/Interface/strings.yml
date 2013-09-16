@@ -24,6 +24,11 @@ strings:
     view_by_type: Ver todos los tipos de archivo
     view_file_groups: Ver grupos de archivos
     detect_uploads: Detectar nuevos archivos subidos
+    file_info: Sobre este archivo
+  file_groups_box:
+    label: Grupos de archivos
+    none: eliminar
+    none: Archivo no agrupado
   tabs:
     file_types: Tipo de archivos
     file_groups: Organizar

@@ -24,6 +24,11 @@ strings:
     view_by_type: View all files by type
     view_file_groups: View file groups
     detect_uploads: Detect newly uploaded files
+    file_info: About this file
+  file_groups_box:
+    label: File groups
+    none: remove
+    none: None
   tabs:
     file_types: Files by type
     file_groups: Organise

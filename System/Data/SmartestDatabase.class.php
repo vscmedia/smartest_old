@@ -2,12 +2,14 @@
 
 class SmartestDatabase{
     
-    private static $dbc;
+    private static $dbc = array();
     
     public static function getInstance($connection_name, $throw_db_exception=false){
         
-        if(!isset($dbc[$connection_name])){
+        // $connection_name .= "_new";
         
+        // if(!isset(self::$dbc[$connection_name])){
+            
             $config = self::readConfiguration($connection_name);
             $class = $config['class'];
         
@@ -16,7 +18,7 @@ class SmartestDatabase{
                 try{
                     $object = new $class($config);
                 }catch(SmartestDatabaseException $e){
-                    SmartestCache::clear('dbc_'.$connection_name, true);
+                    // SmartestCache::clear('dbc_'.$connection_name, true);
                     if($throw_db_exception){
                         throw $e;
                     }else{
@@ -24,16 +26,16 @@ class SmartestDatabase{
                     }
                 }
                 
-                $dbc[$connection_name] = $object;
+                self::$dbc[$connection_name] = $object;
                 
             }else{
                 SmartestCache::clear('dbc_'.$connection_name, true);
                 throw new SmartestException("Database connection '".$connection_name."' does not have a valid class, e.g. SmartestMysql", SM_ERROR_CONFIG);
             }
         
-        }
+        // }
         
-        return $dbc[$connection_name];
+        return self::$dbc[$connection_name];
         
     }
     

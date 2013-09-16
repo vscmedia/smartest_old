@@ -63,14 +63,14 @@
                 <ul>
                     <?php $i=0; foreach($error->getBackTrace() as $clue): ?>
                     <li><?php echo $clue['class'].$clue['type'].$clue['function'].'() in '.basename($clue['file']).' on line '.$clue['line']; ++$i; ?></li>
-                    <?php if($i > 6){break;} ?>
+                    <?php if($i > 8){break;} ?>
                 <?php endforeach; ?>
                 </ul>
             <?php endif; ?></td>
         </tr>
 <?php endforeach; ?>
       </table>
-      <p>Smartest v<?php echo $smartest_version; ?>.<?php echo $smartest_revision; ?></p>
+      <p>Smartest v.<?php echo $smartest_version; ?>.<?php echo $smartest_revision; ?></p>
     </div>
     </div>
 <?php endif; ?>

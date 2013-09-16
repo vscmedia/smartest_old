@@ -5,7 +5,7 @@
 
   <head>
   
-    <title>Smartest&trade; Web Platform{if $_interface_title} | {$_interface_title}{/if}</title>
+    <title>Smartest&trade; {if $_interface_title} | {$_interface_title}{/if}</title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="icon" href="{$domain}Resources/System/Images/favicon.ico" type="image/x-icon">

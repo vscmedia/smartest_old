@@ -134,7 +134,7 @@ class SmartestResponse{
         	'System/Data/SmartestSortableItemReferenceSet.class.php',
         	'System/Data/SmartestManyToManyQuery.class.php',
         	'System/Data/SmartestObjectModelHelper.class.php',
-        	'Library/Quince/Quince.class.php',
+        	'System/Library/Quince/Quince.class.php',
         	'System/Templating/SmartestEngine.class.php',
         	'System/Templating/SmartestInterfaceBuilder.class.php',
         	'System/Templating/SmartyManager.class.php',

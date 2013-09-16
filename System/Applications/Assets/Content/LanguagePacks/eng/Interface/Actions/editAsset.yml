@@ -1,0 +1,11 @@
+strings:
+  main_h3:
+    before_filename: "Edit file:"
+    after_filename: 
+  you_are_editing:
+    before_file: You are editing
+    after_file: 
+  in_trash_warning:
+    before_filetype: "Warning: This "
+    after_filetype: " is currently in the trash."
+  

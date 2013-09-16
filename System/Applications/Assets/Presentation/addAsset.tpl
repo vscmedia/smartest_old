@@ -216,6 +216,13 @@ function validateUploadSuffix(){
     The directory <strong><code>{$path}</code></strong> is not writable by the web server, so <strong>{$new_asset_type_info.label}</strong> files cannot currently be created or uploaded via Smartest.
   </div>
   
+  <div class="buttons-bar">
+    <input type="button" id="cancel-asset-create" value="Cancel" />
+    <script type="text/javascript">
+      $('cancel-asset-create').observe('click', cancelForm);
+    </script>
+  </div>
+  
     {/if}
     
   {/if}

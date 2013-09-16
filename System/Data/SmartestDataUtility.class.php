@@ -308,6 +308,9 @@ class SmartestDataUtility{
 	    
 	    return $tags;
 	    
+	    // TODO: find a way to use this SQL to see the most popular tags. Right now it is neight site-specific nor limited by content type
+	    // SELECT Tags.*, (SELECT COUNT(taglookup_id) FROM TagsObjectsLookup WHERE taglookup_tag_id=tag_id) as tag_num_objects FROM Tags ORDER BY tag_num_objects DESC
+	    
 	}
 	
 	public function getTagsAsArrays(){

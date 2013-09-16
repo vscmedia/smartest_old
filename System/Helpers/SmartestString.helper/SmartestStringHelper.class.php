@@ -4,11 +4,13 @@ SmartestHelper::register('String');
 
 define("SM_OPTIONS_MAGIC_QUOTES", (bool) ini_get('magic_quotes_gpc'));
 
-require_once(SM_ROOT_DIR.'Library/Textile/classTextile.php');
+require_once(SM_ROOT_DIR.'System/Library/Textile/classTextile.php');
 
 class SmartestStringHelper extends SmartestHelper{
     
     const EMAIL_ADDRESS = '/[A-Z0-9._%-]+@[A-Z0-9-]+\.[\w]{2,4}/i';
+    const US_ZIP_CODE = '/(\d{5})(-\d{4})?/';
+    const UK_POST_CODE = '/([A-Z][A-Z]?\d\d?[A-Z]?)\s*(\d[A-Z][A-Z])?/i';
     
     public static function convertObject($data){
         if(is_object($data)){
@@ -282,7 +284,7 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 		
 		// takes a string, splits it by -, _, or '', and returns it lowercase with the first letter of each 'word' being uppercase
-		$string = self::toSlug($string);
+		$string = self::toSlug($string, true);
 		$words = preg_split('/[_-]/', $string);
 		$final = '';
 		
@@ -367,11 +369,13 @@ class SmartestStringHelper extends SmartestHelper{
 		    $was_object = false;
 		}
 	    
-        $non_capitalised_words = array('to', 'the', 'and', 'in', 'of', 'with', 'a', 'an');
+        $non_capitalised_words = array('to', 'the', 'and', 'in', 'of', 'with', 'a', 'an', 'at');
         $words = explode(' ', $string);
         
         $new_string = '';
         $modified_words = array();
+        
+        $k = 0;
         
         foreach($words as $key=>$word){
             
@@ -384,6 +388,8 @@ class SmartestStringHelper extends SmartestHelper{
             }else{
                 $modified_words[] = self::capitalizeFirstLetter($word);
             }
+            
+            $k++;
                 
         }
         
@@ -443,27 +449,27 @@ class SmartestStringHelper extends SmartestHelper{
 	
 	public static function toHmacSha1($key, $data){
 	  
-      // Adjust key to exactly 64 bytes
-      if (strlen($key) > 64) {
-          $key = str_pad(sha1($key, true), 64, chr(0));
-      }
+        // Adjust key to exactly 64 bytes
+        if (strlen($key) > 64) {
+            $key = str_pad(sha1($key, true), 64, chr(0));
+        }
       
-      if (strlen($key) < 64) {
-          $key = str_pad($key, 64, chr(0));
-      }
+        if (strlen($key) < 64) {
+            $key = str_pad($key, 64, chr(0));
+        }
 
-      // Outter and Inner pad
-      $opad = str_repeat(chr(0x5C), 64);
-      $ipad = str_repeat(chr(0x36), 64);
+        // Outter and Inner pad
+        $opad = str_repeat(chr(0x5C), 64);
+        $ipad = str_repeat(chr(0x36), 64);
 
-      // Xor key with opad & ipad
-      for ($i = 0; $i < strlen($key); $i++) {
-          $opad[$i] = $opad[$i] ^ $key[$i];
-          $ipad[$i] = $ipad[$i] ^ $key[$i];
-      }
+        // Xor key with opad & ipad
+        for ($i = 0; $i < strlen($key); $i++) {
+            $opad[$i] = $opad[$i] ^ $key[$i];
+            $ipad[$i] = $ipad[$i] ^ $key[$i];
+        }
 
-      return sha1($opad.sha1($ipad.$data, true));
-  }
+        return sha1($opad.sha1($ipad.$data, true));
+    }
 	
 	public static function isMd5Hash($string){
 		if(preg_match("/^[0-9a-f]{32}$/", $string)){ // if

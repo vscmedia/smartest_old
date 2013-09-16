@@ -586,6 +586,9 @@ class Desktop extends SmartestSystemApplication{
             $id = $r[0]['page_id'];
         
             $test_start_time = microtime(true);
+            
+            $p1 = new SmartestPage;
+            $p1->find($id);
         
             for($i=0;$i<2000;$i++){
             
@@ -595,6 +598,8 @@ class Desktop extends SmartestSystemApplication{
             
                 // access it via ArrayAccess
                 $d = $p['title'];
+                
+                // $ft = $p1['formatted_title'];
             
             }
             

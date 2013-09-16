@@ -31,7 +31,7 @@
       <p><strong>Operating System</strong>: {$linux_version}</p>
       <p><strong>Is SVN checkout</strong>: {$is_svn_checkout.english}</p>
       {/if}
-      <p style="margin-top:15px"><strong>Credits</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Dr. Chris Brauer, Eddie Tejeda, Rebecca Lewis Smith, Marcus Hemsley, Dr. Mariann Hardey, Sereen Joseph, Nancy Arnold, Matt Asay, the wisdom of Professor Lawrence Lessig, PG, VW, many dear friends, a few brave MA Journalism students at City University London, early adopters everywhere, and last but not least, {$_user.full_name}.</p>
+      <p style="margin-top:15px"><strong>Credits</strong>: Designed and developed by Marcus Gilroy-Ware. Originally devised by Marcus Gilroy-Ware and Eddie Tejeda. Many thanks to Eddie Tejeda, Dr. Chris Brauer, Rebecca Lewis Smith, Marcus Hemsley, Dr. Mariann Hardey, Sergiy Berezin, Demelsa González, Sereen Joseph, Nancy Arnold, Matt Asay, the wisdom of Professor Lawrence Lessig, PG, VW, many dear friends, a few brave MA Journalism students at City University London, early adopters everywhere, and last but not least, {$_user.full_name}.</p>
       <p>This is {help id="desktop:freesoftware"}Free &amp; Open Source Software{/help} and always will be.</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="donate-form">
         <input type="hidden" name="cmd" value="_s-xclick" />

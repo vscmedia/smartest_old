@@ -1120,9 +1120,13 @@ class SmartestAssetsLibraryHelper{
 	    
 	}
 	
-	public function getImportedFilenamesByType($type_code, $append_dir=false){
+	public function getImportedFilenamesByType($type_codes, $append_dir=false){
 	    
 	    $types = $this->getTypes();
+	    
+	    if(!is_array($type_codes)){
+	        $type_codes = array($type_codes);
+	    }
 	    
 	    if(isset($types[$type_code])){
 	        

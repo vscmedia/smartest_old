@@ -27,7 +27,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	protected $displayPagesIndex = 0;
 	protected $displayPages = array();
 	protected $_site;
-	protected $_parent_site;
+	protected $_parent_site = null;
 	
 	const NOT_CHANGED = 100;
 	const AWAITING_APPROVAL = 101;
@@ -1031,8 +1031,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	public function getPageFieldDefinitions(){
 	    
 	    if(!count($this->_field_definitions)){
-	    
-    	    $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->_properties['site_id']."'";
+	        
+	        $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->_properties['site_id']."'";
     	    $result = $this->database->queryToArray($sql);
     	    $fields = array();
     	    
@@ -1074,8 +1074,8 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
     	        }
     	    }
 	    
-    	    $this->_field_definitions = $definitions;
-        
+	        $this->_field_definitions = $definitions;
+            
         }
 	    
 	    return $this->_field_definitions;
@@ -1362,7 +1362,6 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        
 	        case 'date':
             return $this->getDate();
-            break;
 	        
 	        case "urls":
 	        return $this->getUrls();
@@ -1440,6 +1439,9 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
             case "placeholders":
             if(!$this->_placeholders) $this->loadAssetClassDefinitions();
             return $this->_placeholders;
+            
+            case "fields":
+            return $this->getPageFieldDefinitions();
             
             case "section":
             return $this->getSectionPage();
@@ -2266,7 +2268,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    }
 	    
 	    if(!$this->_parent_site){
-	        
+	        // echo "Searched for parent site";
 	        $sql = "SELECT * FROM Sites WHERE Sites.site_id='".$this->getSiteId()."'";
 	        $result = $this->database->queryToArray($sql);
 	        
