@@ -64,6 +64,7 @@ class Items extends SmartestSystemApplication{
     		$this->send($model, 'model');
     		$this->send($definition, 'definition');
     		$create_remove_properties = $this->getUser()->hasToken('create_remove_properties');
+    		$this->send((bool) count($model->getMetaPages()), 'has_metapages');
 		
     		// At some point these will be separated
     		$this->send($create_remove_properties, 'can_add_properties');
@@ -88,7 +89,8 @@ class Items extends SmartestSystemApplication{
 	    
 	    if($model->find($this->getRequestParameter('class_id'))){
 	        $this->send($model, 'model');
-	        $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
+	        $this->send((bool) count($model->getMetaPages()), 'has_metapages');
+		    $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
 	        $this->send($model->getProperties(), 'properties');
 	    }
 	    
@@ -172,9 +174,13 @@ class Items extends SmartestSystemApplication{
                 
   	        }
   	        
+  	        $all_items = $model->getSimpleItems($this->getSite()->getId(), 0);
   	        $items = $model->getSimpleItems($this->getSite()->getId(), $mode, $query);
   	        $allow_create_new = ($this->getUser()->hasToken('add_items') && $class_exists);
   	        
+  	        $items_exist = (bool) count($all_items);
+  	        
+  	        $this->send($items_exist, 'items_exist');
   	        $this->setTitle($model->getPluralName());
   	        $this->send($allow_create_new, 'allow_create_new');
   	        $this->send($items, 'items');
@@ -226,6 +232,7 @@ class Items extends SmartestSystemApplication{
             $this->send($model, 'model');
             $this->send($status, 'show');
             $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
+            $this->send((bool) count($model->getMetaPages()), 'has_metapages');
             
         }else{
             $this->addUserMessageToNextRequest('The model ID was not recognized', SmartestUserMessage::ERROR);
@@ -1151,7 +1158,9 @@ class Items extends SmartestSystemApplication{
 	    if($model->find($model_id)){
 	        
 	        $this->send($model, 'model');
-	        $this->send($model->getMetaPages(), 'metapages');
+	        $metapages = $model->getMetaPages();
+	        $this->send($metapages, 'metapages');
+	        $this->send((bool) count($metapages), 'has_metapages');
 	        
 	        $num_items_on_site = count($model->getSimpleItems($this->getSite()->getId()));
 	        $num_items_all_sites = count($model->getSimpleItems());

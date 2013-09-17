@@ -9,7 +9,7 @@
     <li class="top-level{if $section == "users"} on{else} off{/if}"><a href="{$domain}smartest/users">{$_l10n_global_strings.main_nav.users}</a></li>
     <li class="top-level{if $section == "metadata" || $section == "dropdowns"} on{else} off{/if}"><a href="{$domain}smartest/metadata">{$_l10n_global_strings.main_nav.metadata}</a></li>
     {else}
-    <li class="site-top-level{if $section == "desktop" && $method != 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}smartest' >Your websites</a></li>
+    <li class="site-top-level{if $section == "desktop" && $method != 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}smartest' >{$_l10n_global_strings.main_nav.websites}</a></li>
     {/if}
     <li class="break top-level{if $section == "desktop" && $method == 'aboutSmartest'} on{else} off{/if}"><a href='{$domain}smartest/about'>{$_l10n_global_strings.main_nav.about}</a></li>
     <li class="top-level off"><a href='{$domain}smartest/logout'>{$_l10n_global_strings.main_nav.sign_out}</a></li>

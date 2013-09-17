@@ -218,9 +218,9 @@
         <option{if $model.long_id_format == "_STD"} selected="selected"{/if} value="_STD">Standard 32-char mixed random</option>
         <option{if $model.long_id_format == "_UUID"} selected="selected"{/if} value="_UUID">UUID (ISO/IEC 9834-8:2012)</option>
         <option{if $model.long_id_format == "NNNNNNNNNNNNNNNN"} selected="selected"{/if} value="NNNNNNNNNNNNNNNN">16 digits</option>
+        <option{if $model.long_id_format == "NNNNNNNN"} selected="selected"{/if} value="NNNNNNNN">8 digits</option>
         <option{if $model.long_id_format == "my-NNNNNNNNNNNN"} selected="selected"{/if} value="my-NNNNNNNNNNNN">MMYY-12 digits</option>
         <option{if $model.long_id_format == "my-NNNNNNNN"} selected="selected"{/if} value="my-NNNNNNNN">MMYY-8 digits</option>
-        <option{if $model.long_id_format == "NNNNNNNN"} selected="selected"{/if} value="NNNNNNNN">8 digits</option>
         <option{if $model.long_id_format == "CCCCCC"} selected="selected"{/if} value="CCCCCC">Standard record locator (6 digits or uppercase letters)</option>
         <option{if $model.long_id_format_custom} selected="selected"{/if} value="_CUSTOM">Custom (advanced)</option>
       </select>
@@ -241,9 +241,9 @@
         {if $model.long_id_format == "_STD"}Standard 32-char mixed random{/if}
         {if $model.long_id_format == "_UUID"}UUID (ISO/IEC 9834-8:2012){/if}
         {if $model.long_id_format == "NNNNNNNNNNNNNNNN"}16 digits{/if}
+        {if $model.long_id_format == "NNNNNNNN"}8 digits{/if}
         {if $model.long_id_format == "my-NNNNNNNNNNNN"}MMYY-12 digits{/if}
         {if $model.long_id_format == "my-NNNNNNNN"}MMYY-8 digits{/if}
-        {if $model.long_id_format == "NNNNNNNN"}8 digits{/if}
         {if $model.long_id_format == "CCCCCC"}Standard record locator (6 digits or uppercase letters){/if}
         {if $model.long_id_format_custom}Custom{/if}
       {/if}
@@ -287,12 +287,14 @@
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder_old.png" /> View data sets for this model</a></li>
     {* <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/importData?class_id={$itemBaseValues.itemclass_id}';"><img border="0" src="{$domain}Resources/Icons/page_code.png" /> Import data from CSV</a></li> *}
     </ul>
-    
+
+{if count($recent_items)}
     <ul class="actions-list" id="non-specific-actions">
       <li><span style="color:#999">Recently edited {$model.plural_name|strtolower}</span></li>
       {foreach from=$recent_items item="recent_item"}
       <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_item.action_url}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label|summary:"28"}</a></li>
       {/foreach}
     </ul>
-    
+{/if}
+
 </div>

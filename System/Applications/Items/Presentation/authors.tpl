@@ -6,7 +6,7 @@
     
     <div class="instruction">Check the boxes next to the users you'd like to link to this page as authors.</div>
     
-    <div class="warning">Are people missing from this list? Users must now have the 'author_credit' {help id="users:tokens"}token{/help} to be credited as the author of an item.{if $provide_tokens_link} <a href="{$domain}smartest/users">Click here</a> to edit user tokens.{/if}</div>
+    <div class="warning">Are people missing from this list? Users must have the 'author_credit' {help id="users:tokens"}token{/help} to be credited as the author of an item.{if $provide_tokens_link} <a href="{$domain}smartest/users">Click here</a> to edit user tokens.{/if}</div>
     
     <form action="{$domain}{$section}/updateAuthors" method="post">
     

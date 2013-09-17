@@ -34,6 +34,9 @@ function openPage(pageAction){
 {load_interface file="model_list_tabs.tpl"}
 
 <h3><a href="{$domain}smartest/models">Items</a> &gt; {$model.plural_name}</h3>
+
+{if $items_exist}
+
 <a name="top"></a>
 <div class="instruction">Double click one of the {$model.plural_name|strtolower} below to edit it, or click once and choose from the options on the right.</div>
 
@@ -82,6 +85,8 @@ function openPage(pageAction){
     {/literal}
   </script>
 
+
+
 <div id="options-view-chooser">
   Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/if}. View as:
   <a href="#" onclick="return itemList.setView('list', 'item_list_style')">List</a> /
@@ -95,12 +100,20 @@ function openPage(pageAction){
         {if $item.public == 'TRUE'}<img src="{$domain}Resources/Icons/item.png" border="0" class="grid" /><img border="0" src="/Resources/Icons/package_small.png" class="list" />{else}<img src="{$domain}Resources/Icons/item_grey.png" border="0" class="grid" /><img border="0" src="/Resources/Icons/package_small_grey.png" class="list" />{/if}{$item.name}</a></li>
 {/foreach}
   </ul>
-
+  
+{else}
+  
+  <div class="special-box">
+      There are no {$model.plural_name|lower} yet. {if $allow_create_new}<a href="{$domain}{$section}/addItem?class_id={$model.id}">Click here</a> to create one.{else}Your user account does not have permission to create them.{/if}
+  </div>
+  
+{/if}
 
 </div>
 
 <div id="actions-area">
 
+{if $items_exist}
 <ul class="actions-list" id="item-specific-actions" style="display:none">
   <li><b><span class="item_name_field">{$model.name}</span></b></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/pencil.png"> <a href="{dud_link}" onclick="itemList.workWithItem('openItem');">Open</a></li>
@@ -113,8 +126,8 @@ function openPage(pageAction){
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('toggleItemArchived');"><span class="archive_action_name">Archive/Un-archive<span></a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_white_copy.png"> <a href="{dud_link}" onclick="itemList.workWithItem('duplicateItem');">Duplicate</a></li>
   <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/package_delete.png"> <a href="{dud_link}" onclick="itemList.workWithItem('deleteItem', {ldelim}confirm: 'Are you sure you want to delete this {$model.name|lower} ?'{rdelim});">Delete</a></li>
-{* <li class="permanent-action"><img border="0" src="{$domain}Resources/Icons/page_code.png"> <a href="{dud_link}" onclick="itemList.workWithItem('duplicateItem');">Duplicate</a></li> *}
 </ul>
+{/if}
 
 <ul class="actions-list" id="non-specific-actions">
   <li><b>Model Options</b></li>
@@ -123,17 +136,18 @@ function openPage(pageAction){
   <li class="permanent-action"><a href="{dud_link}" onclick="MODALS.load('datamanager/modelInfo?class_id={$model.id}', 'Model info');"><img border="0" src="{$domain}Resources/Icons/information.png" /> Model info</a></li>
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/addSet?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png" /> Create a new set from this model</a></li>
   {if $can_edit_properties}<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/getItemClassProperties?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/tag_blue_edit.png" /> Edit model properties</a></li>
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editItemClassPropertyOrder?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/arrow_switch.png" /> Edit property order</a></li>{/if}
-  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editModel?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/pencil.png" /> Edit model</a></li>
+  <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/editItemClassPropertyOrder?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/arrow_switch.png" /> Edit property order</a></li>{/if}  
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}sets/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder_old.png" /> View data sets for this model</a></li>
 {* <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}{$section}/importData?class_id={$itemBaseValues.itemclass_id}';"><img border="0" src="{$domain}Resources/Icons/page_code.png" /> Import data from CSV</a></li> *}
 </ul>
 
+{if count($recent_items)}
 <ul class="actions-list" id="non-specific-actions">
   <li><span style="color:#999">Recently edited {$model.plural_name|strtolower}</span></li>
   {foreach from=$recent_items item="recent_item"}
   <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$recent_item.action_url}'"><img border="0" src="{$recent_item.small_icon}" /> {$recent_item.label|summary:"28"}</a></li>
   {/foreach}
 </ul>
+{/if}
 
 </div>

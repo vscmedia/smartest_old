@@ -6,6 +6,7 @@ strings:
     templates: Templates
     users: Users
     metadata: "Meta-data"
+    websites: Your websites
     about: About Smartest
     sign_out: Sign out
   top_bar:

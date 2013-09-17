@@ -10,6 +10,7 @@
   <input type="hidden" name="set_id" id="item_id_input" value="" />
 </form>
 
+{if count($sets)}
 
 <ul class="{if $content.itemClassMemberCount > 10}options-list{else}options-grid{/if}" id="{if $content.itemClassMemberCount > 10}options_list{else}options_grid{/if}">
 {foreach from=$sets key="key" item="set"}
@@ -20,12 +21,21 @@
 			  {$set.name} ({$set.type|lower})</a></li>
 {/foreach}
 </ul>
+
+{else}
+
+<div class="special-box">
+    There are no sets of {$model.plural_name|lower} yet. <a href="{$domain}{$section}/addSet?class_id={$model.id}">Click here</a> to create one.
+</div>
+
+{/if}
+
 </div>
 
 <div id="actions-area">
   
 <ul class="actions-list" id="static-specific-actions" style="display:none">
-  <li><b>Selected Data Set</b></li>
+  <li><b>Selected Set</b></li>
   <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editSet');}{/literal}"><img border="0" src="{$domain}Resources/Icons/folder_edit.png"> Change contents</a></li>
   <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('previewSet');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_go.png"> Browse items</a></li>
   <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editStaticSetOrder');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/arrow_switch.png"> Change order</a></li>
@@ -35,7 +45,7 @@
 </ul>
 
 <ul class="actions-list" id="dynamic-specific-actions" style="display:none">
-  <li><b>Selected Dynamic Data Set</b></li>
+  <li><b>Selected Dynamic Set</b></li>
   <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editSet');}{/literal}"><img border="0" src="{$domain}Resources/Icons/folder_edit.png"> Change Contents</a></li>
   <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('previewSet');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_go.png"> Browse items</a></li>
 {* <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('copySet');}{/literal}"><img border="0" src="{$domain}Resources/Icons/page_code.png"> Duplicate<!--structure, not template because it does not propigate back to template--></a></li> *}
@@ -43,9 +53,8 @@
 </ul>
 
 <ul class="actions-list">
-  <li><b>Data Options</b></li>
-  <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addSet?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/folder_add.png"> Make a new set of {$model.plural_name|lower}</a></li>  
-  <li class="permanent-action"><a href="{$domain}datamanager/getItemClassMembers?class_id={$model.id}"><img border="0" src="{$domain}Resources/Icons/package.png" style="width:16px;height:18px"> Browse all {$model.plural_name|lower}</a></li>
+  <li><b>Set options</b></li>
+  <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/addSet?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/add.png"> Make a new set of {$model.plural_name|lower}</a></li>
 </ul>
 
 </div>
