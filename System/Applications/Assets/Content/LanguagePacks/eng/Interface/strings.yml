@@ -12,6 +12,7 @@ strings:
   groups:
     group_tabs:
       browse: Browse files
+      browse_reorder: "Browse &amp; reorder files"
       add_remove_files: "Add &amp; remove files"
       group_info: Group info
       gallery_info: Gallery info

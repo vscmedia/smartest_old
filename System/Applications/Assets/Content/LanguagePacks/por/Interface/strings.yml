@@ -12,6 +12,7 @@ strings:
   groups:
     group_tabs:
       browse: Olhar arquivos
+      browse_reorder: Olhar arquivos e mudar ordem
       add_remove_files: "Addicionar e remover arquivos"
       group_info: Informação sobre o grupo
       gallery_info: Informação sobre a galeria

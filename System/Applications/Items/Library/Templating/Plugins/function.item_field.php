@@ -28,6 +28,7 @@ function smarty_function_item_field($params, &$smarty){
             $input_data->setParameter('required', SmartestStringHelper::toRealBool($params['property']['required']));
             
             if(is_file(constant('SM_CONTROLLER_MODULE_PRES_DIR').$file)){
+                // echo constant('SM_CONTROLLER_MODULE_PRES_DIR').$file;
                 $smarty->_smarty_include(array('smarty_include_tpl_file'=>constant('SM_CONTROLLER_MODULE_PRES_DIR').$file, 'smarty_include_vars'=>array('value'=>$value, 'property'=>$params['property'], '_input_data'=>$input_data)));
             }else{
                 return constant('SM_CONTROLLER_MODULE_PRES_DIR').$file;
