@@ -541,7 +541,7 @@ class SmartestCmsLink extends SmartestHelper{
         if($this->_render_data->hasParameter('with')){
             // if the with="" attribute is specified
             
-            if($this->_render_data->getParameter('with') instanceof SmartestImage || substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
+            if($this->_render_data->getParameter('with') instanceof SmartestImage || ($this->_render_data->getParameter('with') instanceof SmartestAsset && $this->_render_data->getParameter('with')->isImage()) || substr($this->_render_data->getParameter('with'), 0, 6) == 'image:'){
                 // return $this->_render_data->getParameter('with')->render();
                 
                 /* $a = new SmartestRenderableAsset;
@@ -556,7 +556,11 @@ class SmartestCmsLink extends SmartestHelper{
                 if($this->_render_data->getParameter('with') instanceof SmartestImage){
                     
                     $img = $this->_render_data->getParameter('with');
+                
+                }else if($this->_render_data->getParameter('with') instanceof SmartestAsset){
                     
+                    $img = $this->_render_data->getParameter('with')->getImage();
+                
                 }else{
                 
                     $img = new SmartestImage;

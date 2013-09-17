@@ -50,10 +50,11 @@ class SmartestStringHelper extends SmartestHelper{
 	    $lowercase_letters = array("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 	    $hex_letters = array("a", "b", "c", "d", "e", "f");
 	    $numbers = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-	    $symbols = array("-", "*", "^", "!", "(", ")");
+	    $symbols = array("-", "*", "^", "!", "(", ")", "$", "%");
 	    
 	    $all_letters = array_merge($uppercase_letters, $lowercase_letters);
 	    $random_chars = array_merge($all_letters, $numbers);
+	    $all_chars_balanced = array_merge($uppercase_letters, $numbers);
 	    $all_hex = array_merge($hex_letters, $numbers);
 	    
 	    $all = array_merge($random_chars, $symbols);
@@ -61,25 +62,37 @@ class SmartestStringHelper extends SmartestHelper{
 	    $l = strlen($format);
 	    $s = '';
 	    
-	    for($i=0;$i<$l;$i++){
+	    for($i=0; $i<$l; $i++){
 	        $c = $format{$i};
 	        
 	        if($c == "L"){
-	            $nl = $uppercase_letters[rand(0, count($uppercase_letters)-1)];
+	            $nl = $uppercase_letters[mt_rand(0, count($uppercase_letters)-1)];
+	        }else if($c == "C"){
+	            $nl = $all_chars_balanced[mt_rand(0, count($all_chars_balanced)-1)];
+	        }else if($c == "c"){
+	            $nl = strtolower($all_chars_balanced[mt_rand(0, count($all_chars_balanced)-1)]);
 	        }else if($c == "l"){
-	            $nl = $lowercase_letters[rand(0, count($lowercase_letters)-1)];
+	            $nl = $lowercase_letters[mt_rand(0, count($lowercase_letters)-1)];
 	        }else if($c == "a" || $c == "A"){
-	            $nl = $all_letters[rand(0, count($all_letters)-1)];
+	            $nl = $all_letters[mt_rand(0, count($all_letters)-1)];
 	        }else if($c == "h" || $c == "H"){
-	            $nl = $all_hex[rand(0, count($all_hex)-1)];
+	            $nl = $all_hex[mt_rand(0, count($all_hex)-1)];
 	        }else if($c == "n" || $c == "N"){
-    	        $nl = $numbers[rand(0, 9)];
+    	        $nl = $numbers[mt_rand(0, 9)];
     	    }else if($c == "r" || $c == "R"){
-    	        $nl = $random_chars[rand(0, count($random_chars)-1)];
+    	        $nl = $random_chars[mt_rand(0, count($random_chars)-1)];
     	    }else if($c == "s" || $c == "S"){
-    	        $nl = $symbols[rand(0, count($symbols)-1)];
-    	    }else if($c == "*"){
-    	        $nl = $all[rand(0, count($all)-1)];
+    	        $nl = $symbols[mt_rand(0, count($symbols)-1)];
+    	    }else if($c == "y"){
+    	        $nl = date('y');
+    	    }else if($c == "Y"){
+        	    $nl = date('Y');
+        	}else if($c == "m"){
+        	    $nl = date('m');
+        	}else if($c == "d"){
+        	    $nl = date('d');
+        	}else if($c == "*"){
+    	        $nl = $all[mt_rand(0, count($all)-1)];
     	    }else{
     	        $nl = $c;
     	    }
@@ -778,7 +791,7 @@ class SmartestStringHelper extends SmartestHelper{
 		}
 	}
 	
-	public static function toCommaSeparatedList($array, $grammatical=true){
+	public static function toCommaSeparatedList($array, $grammatical=true, $use_bold=false){
 	    
 	    if(is_array($array)){
 	        
@@ -796,7 +809,11 @@ class SmartestStringHelper extends SmartestHelper{
 	                }
 	            }
 	            
-	            $string .= $word;
+	            if($use_bold){
+	                $string .= '<strong>'.$word.'</strong>';
+                }else{
+                    $string .= $word;
+                }
 	            
 	        }
 	        

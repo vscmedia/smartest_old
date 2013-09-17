@@ -435,7 +435,6 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             
             $this->_item->setItemclassId($this->_model_id);
             $this->_item->setSlug(SmartestStringHelper::toSlug($this->_item->getName(), true), $site_id);
-            $this->_item->setWebid(SmartestStringHelper::random(32));
             $this->_item->setCreated(time());
             $this->_item->setModified(time()+2); // this is to make it show up on the approval todo list
             
@@ -456,6 +455,24 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	                // TODO: decide what to do here and implement it here
 	            }
 	        } */
+	        
+	        switch($this->getModel()->getLongIdFormat()){
+	            
+	            case '_STD':
+	            case '':
+	            $webid = SmartestStringHelper::random(32);
+	            break;
+	            
+	            case '_UUID':
+	            $webid = SmartestStringHelper::generateUUID();
+	            break;
+	            
+	            default:
+	            $webid = SmartestStringHelper::randomFromFormat($this->getModel()->getLongIdFormat());
+	            
+	        }
+	        
+	        $this->_item->setWebid($webid);
 	        
 	        foreach($this->getModel()->getProperties() as $p){
                 if(isset($request_data[$p->getId()])){
@@ -1115,7 +1132,24 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		    if(!$this->_item->getWebId()){
 		    
 		        // create web id for SmartestItem object first
-		        $webid = SmartestStringHelper::random(32);
+		        // $webid = SmartestStringHelper::random(32);
+		        
+		        switch($this->getModel()->getLongIdFormat()){
+
+    	            case '_STD':
+    	            case '':
+    	            $webid = SmartestStringHelper::random(32);
+    	            break;
+
+    	            case '_UUID':
+    	            $webid = SmartestStringHelper::generateUUID();
+    	            break;
+
+    	            default:
+    	            $webid = SmartestStringHelper::randomFromFormat($this->getModel()->getLongIdFormat());
+
+    	        }
+		        
 		        $this->_item->setWebId($webid);
 		    
 	        }
@@ -1208,7 +1242,25 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    $dupe = new $class;
 	    $dupe->setItemForDuplicate($this->getItem()->duplicateWithoutSaving());
 	    $dupe->setName($name);
-	    $dupe->getItem()->setWebId(SmartestStringHelper::random(32));
+	    
+	    switch($this->getModel()->getLongIdFormat()){
+            
+            case '_STD':
+            case '':
+            $webid = SmartestStringHelper::random(32);
+            break;
+            
+            case '_UUID':
+            $webid = SmartestStringHelper::generateUUID();
+            break;
+            
+            default:
+            $webid = SmartestStringHelper::randomFromFormat($this->getModel()->getLongIdFormat());
+            
+        }
+        
+        $this->_item->setWebid($webid);
+	    $dupe->getItem()->setWebId($webid);
 	    $dupe->getItem()->setSlug($this->getItem()->getSlug());
 	    $dupe->getItem()->save();
 	    

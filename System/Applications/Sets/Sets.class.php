@@ -36,6 +36,7 @@ class Sets extends SmartestSystemApplication{
 	            $this->setTitle("Sets of ".$model->getPluralName());
     		    $this->send($sets, 'sets');
     		    $this->send($model, 'model');
+    		    $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
     		
 		    }else{
 		        

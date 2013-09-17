@@ -1,6 +1,6 @@
 <div id="work-area">
 
-{load_interface file="edit_model_tabs.tpl"}
+{load_interface file="model_list_tabs.tpl"}
 
 <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Properties</h3>
 

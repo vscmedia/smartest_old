@@ -24,7 +24,7 @@
 
 <div id="work-area">
   
-  {load_interface file="edit_model_tabs.tpl"}
+  {load_interface file="model_list_tabs.tpl"}
   
   <h3><a href="{$domain}smartest/models">Items</a> &gt; <a href="{$domain}{$section}/getItemClassMembers?class_id={$model.id}">{$model.plural_name}</a> &gt; Edit model</h3>
   
@@ -46,6 +46,9 @@
       
       <div class="edit-form-row">
         <div class="form-section-label">Shared on all sites</div>
+        
+        {if $can_edit_model}
+        
         <input type="checkbox" name="itemclass_shared" id="itemclass-shared" value="1"{if $shared} checked="checked"{/if}{if !$allow_sharing_toggle} disabled="disabled"{/if} />
         
             {if $shared}
@@ -81,6 +84,12 @@
                 <div><code>{$unwritable_file}</code></div>
                 {/foreach}
               </div>
+            {/if}
+            
+            {else}
+            
+            {if $shared}Yes{else}No{/if}
+            
             {/if}
             
       </div>
@@ -201,19 +210,57 @@
               {/if}
               {/if}
             </div>
+            
+    <div class="edit-form-row">
+      <div class="form-section-label">Long ID format for new items</div>
+      {if $can_edit_model}
+      <select name="itemclass_long_id_format" id="long-id-format-changer">
+        <option{if $model.long_id_format == "_STD"} selected="selected"{/if} value="_STD">Standard 32-char mixed random</option>
+        <option{if $model.long_id_format == "_UUID"} selected="selected"{/if} value="_UUID">UUID (ISO/IEC 9834-8:2012)</option>
+        <option{if $model.long_id_format == "NNNNNNNNNNNNNNNN"} selected="selected"{/if} value="NNNNNNNNNNNNNNNN">16 digits</option>
+        <option{if $model.long_id_format == "my-NNNNNNNNNNNN"} selected="selected"{/if} value="my-NNNNNNNNNNNN">MMYY-12 digits</option>
+        <option{if $model.long_id_format == "my-NNNNNNNN"} selected="selected"{/if} value="my-NNNNNNNN">MMYY-8 digits</option>
+        <option{if $model.long_id_format == "NNNNNNNN"} selected="selected"{/if} value="NNNNNNNN">8 digits</option>
+        <option{if $model.long_id_format == "CCCCCC"} selected="selected"{/if} value="CCCCCC">Standard record locator (6 digits or uppercase letters)</option>
+        <option{if $model.long_id_format_custom} selected="selected"{/if} value="_CUSTOM">Custom (advanced)</option>
+      </select>
+      <input type="text" name="itemclass_long_id_custom_format" value="{if $model.long_id_format_custom}{$model.long_id_format}{/if}" id="long-id-custom-format" style="display:{if $model.long_id_format_custom}inline{else}none{/if}" />
+      <div class="form-hint">Does not affect items already created</div>
+      <script type="text/javascript">
+      {literal}
+      $('long-id-format-changer').observe('change', function(){
+          if($('long-id-format-changer').value == '_CUSTOM'){
+              $('long-id-custom-format').show();
+          }else{
+              $('long-id-custom-format').hide();
+          }
+      });
+      {/literal}
+      </script>
+      {else}
+        {if $model.long_id_format == "_STD"}Standard 32-char mixed random{/if}
+        {if $model.long_id_format == "_UUID"}UUID (ISO/IEC 9834-8:2012){/if}
+        {if $model.long_id_format == "NNNNNNNNNNNNNNNN"}16 digits{/if}
+        {if $model.long_id_format == "my-NNNNNNNNNNNN"}MMYY-12 digits{/if}
+        {if $model.long_id_format == "my-NNNNNNNN"}MMYY-8 digits{/if}
+        {if $model.long_id_format == "NNNNNNNN"}8 digits{/if}
+        {if $model.long_id_format == "CCCCCC"}Standard record locator (6 digits or uppercase letters){/if}
+        {if $model.long_id_format_custom}Custom{/if}
+      {/if}
+    </div>
       
-      <div class="edit-form-row">
+      {* <div class="edit-form-row">
           <div class="form-section-label">Color</div>
           {if $can_edit_model}
           <input type="text" class="color" name="itemclass_color" value="{$model.color}" />
           {else}
           <span style="color:#{$model.color.hex};font-weight:bold">#{$model.color.hex}</span>
           {/if}
-        </div>
+        </div> *}
       
         <div class="edit-form-row">
           <div class="form-section-label">Static sets to which new items should automatically be added</div>
-          <div id="model-set-auto-add-ajax-field">[List of sets] {if $can_edit_model}<a href="{$domain}{$section}/editModelAutomaticSets?model_id={$model.id}">Edit</a>{/if}</div>
+          <div id="model-set-auto-add-ajax-field">{if $automatic_sets_list._count}{$automatic_sets_list._count} set{if $automatic_sets_list._count > 1}s{/if}: {$automatic_sets_list}{else}None{/if} {if $can_edit_model}<a href="{$domain}{$section}/editModelAutomaticSets?model_id={$model.id}">Edit</a>{/if}</div>
         </div>
       
       {if $can_edit_model}<div class="edit-form-row">

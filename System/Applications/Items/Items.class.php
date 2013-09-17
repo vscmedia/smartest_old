@@ -225,6 +225,7 @@ class Items extends SmartestSystemApplication{
             $this->send(count($comments), 'num_comments');
             $this->send($model, 'model');
             $this->send($status, 'show');
+            $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
             
         }else{
             $this->addUserMessageToNextRequest('The model ID was not recognized', SmartestUserMessage::ERROR);
@@ -1203,6 +1204,9 @@ class Items extends SmartestSystemApplication{
             }else{
                 $this->send(false, 'allow_main_site_switch');
             }
+            
+            $automatic_static_sets = $model->getAutomaticSetsForNewItem($this->getSite()->getId());
+            $this->send(new SmartestArray($automatic_static_sets), 'automatic_sets_list');
 	        
 	        $this->send($model->getAvailableDescriptionProperties(), 'description_properties');
 	        $this->send($model->getAvailableSortProperties(), 'sort_properties');
@@ -1326,22 +1330,22 @@ class Items extends SmartestSystemApplication{
                     }
                 }
                 
-                if($this->getUser()->hasToken('edit_model')){
-                    $model->setItemNameFieldName($this->getRequestParameter('itemclass_item_name_field_name'));
-                }
-            
+                // if($this->getUser()->hasToken('edit_model')){
+                    
+                $model->setItemNameFieldName($this->getRequestParameter('itemclass_item_name_field_name'));
+                
                 if(is_numeric($this->getRequestParameter('itemclass_default_description_property_id')) && $this->getRequestParameter('itemclass_default_description_property_id') > 1){
                     $model->setDefaultDescriptionPropertyId($this->getRequestParameter('itemclass_default_description_property_id'));
                 }
-                
+
                 if(is_numeric($this->getRequestParameter('itemclass_default_sort_property_id'))){
                     $model->setDefaultSortPropertyId($this->getRequestParameter('itemclass_default_sort_property_id'));
                 }
-                
+
                 if(is_numeric($this->getRequestParameter('itemclass_default_thumbnail_property_id'))){
                     $model->setDefaultThumbnailPropertyId($this->getRequestParameter('itemclass_default_thumbnail_property_id'));
                 }
-            
+                
                 if($this->getRequestParameter('itemclass_primary_property_id')){
                     if(is_numeric($this->getRequestParameter('itemclass_primary_property_id'))){
                         $model->setPrimaryPropertyId($this->getRequestParameter('itemclass_primary_property_id'));
@@ -1350,7 +1354,18 @@ class Items extends SmartestSystemApplication{
                     }
                 }
             
-                $model->setColor($this->getRequestParameter('itemclass_color'));
+                if($this->getRequestParameter('itemclass_long_id_format')){
+                    if($this->getRequestParameter('itemclass_long_id_format') == '_CUSTOM'){
+                        if(strlen($this->getRequestParameter('itemclass_long_id_custom_format')) > 3){
+                            $model->setLongIdFormat($this->getRequestParameter('itemclass_long_id_custom_format'));
+                        }
+                    }else{
+                        $model->setLongIdFormat($this->getRequestParameter('itemclass_long_id_format'));
+                    }
+                }
+        
+                // $model->setColor($this->getRequestParameter('itemclass_color'));
+                // }
             
                 if($model->isUsedOnMultipleSites()){
                 

@@ -1,6 +1,6 @@
 <?php
 
-require('Smarty.class.php');
+require(SM_ROOT_DIR.'System/Library/Smarty2/Smarty.class.php');
 
 class SmartestEngine extends Smarty{
 

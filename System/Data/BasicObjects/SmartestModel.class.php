@@ -301,6 +301,12 @@ class SmartestModel extends SmartestBaseModel{
 	        case "item_name_field_visible":
 	        return $this->getItemNameFieldVisible();
 	        
+	        case "long_id_format":
+	        return $this->getLongIdFormat();
+	        
+	        case "long_id_format_custom":
+	        return $this->getLongIdFormatIsCustom();
+	        
 	        case "properties":
 	        return new SmartestArray($this->getProperties());
 	        
@@ -1042,6 +1048,23 @@ class SmartestModel extends SmartestBaseModel{
         
         return $this->setSettingValue('item_name_field_name', $sf);
         
+    }
+    
+    public function setLongIdFormat($format){
+        return $this->setSettingValue('item_long_id_format', $format);
+    }
+    
+    public function getLongIdFormat(){
+        $format = $this->getSettingValue('item_long_id_format');
+        if(strlen($format)){
+            return $format;
+        }else{
+            return '_STD';
+        }
+    }
+    
+    public function getLongIdFormatIsCustom(){
+        return !in_array($this->getLongIdFormat(), array('_STD', '_UUID', 'NNNNNNNNNNNNNNNN', 'my-NNNNNNNNNNNN', 'my-NNNNNNNN', 'NNNNNNNN', 'CCCCCC'));
     }
     
     public function getItemNameFieldVisible(){

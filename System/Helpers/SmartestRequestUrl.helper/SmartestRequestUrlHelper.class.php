@@ -362,10 +362,10 @@ class SmartestRequestUrlHelper{
 		$url = str_replace("/", "\/", $url);
 		$url = str_replace(".", "\.", $url);
 		$url = str_replace(':id', "(\d+)", $url);
-		$url = str_replace(':long_id', "(\w{32})", $url);
+		$url = str_replace(':long_id', "([\w\*\^\$\(\)\.%\!_-]{4,36})", $url);
 		$url = str_replace(':name', "([^\/\s]+)", $url);
 		// TODO: arbitrary url variables
-		// $url = preg_replace('/(:[\w_-]+)/', "([^\/\s]+)", $url);
+		// $url = preg_replace('/(:([\w_-]+))/', "([^\/\s]+)", $url);
 		// $url .= '(\.[\w]+)?';
 		$url = "/^".$url."\/?$/i";
 		

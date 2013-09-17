@@ -30,7 +30,7 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
     
     public function __toString(){
         if(count($this->_data)){
-            return SmartestStringHelper::toCommaSeparatedList(array_slice($this->_data, 0, 10));
+            return SmartestStringHelper::toCommaSeparatedList(array_slice($this->_data, 0, 10), true, true);
         }else{
             return 'Empty SmartestArray';
         }
