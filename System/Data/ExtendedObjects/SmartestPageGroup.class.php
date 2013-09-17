@@ -81,7 +81,7 @@ class SmartestPageGroup extends SmartestSet{
         if($s->find($this->getSiteId())){
         
             $member_ids = $this->getMemberIds($draft_mode);
-        
+            
             $all_pages = $s->getNormalPagesList($draft_mode);
         
             foreach($all_pages as $key=>$value){
@@ -90,7 +90,6 @@ class SmartestPageGroup extends SmartestSet{
                 }
             }
             
-            // print_r($all_pages);
             return array_values($all_pages);
         
         }
@@ -115,7 +114,7 @@ class SmartestPageGroup extends SmartestSet{
         
         $id = (int) $id;
         
-        if(in_array($id, $this->getMemberIds(0, null))){
+        if(in_array($id, $this->getMemberIds(true, null))){
             
             $sql = "DELETE FROM ManyToManyLookups WHERE mtmlookup_type='SM_MTMLOOKUP_PAGE_GROUP_MEMBERSHIP' AND mtmlookup_entity_1_foreignkey='".$id."' AND mtmlookup_entity_2_foreignkey='".$this->getId()."' LIMIT 1";
             $this->database->rawQuery($sql);

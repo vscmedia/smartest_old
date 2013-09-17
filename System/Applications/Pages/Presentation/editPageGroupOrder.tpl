@@ -6,10 +6,10 @@
   
   <div class="instruction">Drag the pages in this group into the order you would like</div>
   
-  {if count($pages)}
+  {if count($members)}
   
   <ul class="re-orderable-list div1" id="page-group-order" style="padding-top:10px">
-    {foreach from=$pages item="membership" key="key"}
+    {foreach from=$members item="membership" key="key"}
     <li id="page_{$membership.page.id}">{$membership.page.title}</li>
     {/foreach}
   </ul>
@@ -21,6 +21,7 @@
   <script type="text/javascript" src="{$domain}Resources/System/Javascript/scriptaculous/src/dragdrop.js"></script>
     
     <script type="text/javascript">
+    
       var url = sm_domain+'ajax:websitemanager/updatePageGroupOrder';
       var groupId = {$group.id};
     {literal}
@@ -35,7 +36,6 @@
             IDs_string = IDs.join(',');
             $('submit-ajax').value = 'Save new order';
             $('submit-ajax').disabled=false;
-            // alert(sm_domain+'ajax:websitemanager/updatePageGroupOrder?group_id='+groupId+'&page_ids='+IDs_string);
           },
           
           constraint: false,

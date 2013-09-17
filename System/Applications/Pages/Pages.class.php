@@ -4305,7 +4305,7 @@ class Pages extends SmartestSystemApplication{
 	    if($group->find($this->getRequestParameter('group_id'))){
 	        // $group->fixOrderIndices();
 	        $this->send($group, 'group');
-	        $this->send($group->getNonMembers(), 'non_members');
+	        $this->send($group->getNonMembers(true), 'non_members');
 	        $this->send($group->getMemberships(true, true), 'members');
 	        $this->send($this->getUser()->hasToken('edit_pagegroup_name'), 'allow_name_edit');
 	    }
@@ -4319,7 +4319,7 @@ class Pages extends SmartestSystemApplication{
 	    if($group->find($this->getRequestParameter('group_id'))){
 	        // $group->fixOrderIndices();
 	        $this->send($group, 'group');
-	        $this->send($group->getMemberships(true, true), 'pages');
+	        $this->send($group->getMemberships(true, true), 'members');
 	    }
 	    
 	}
