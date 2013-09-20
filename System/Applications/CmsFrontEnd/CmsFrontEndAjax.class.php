@@ -56,7 +56,7 @@ class CmsFrontEndAjax extends SmartestSystemApplication{
     		                $item->setDraftMode($draft_mode);
     		                $page->setPrincipalItem($item);
     		                header('Content-type: application/json');
-    		                echo $page->__toJson();;
+    		                echo $page->__toJson();
     		                exit;
     		            }else{
     		                // item could not be found
@@ -99,6 +99,8 @@ class CmsFrontEndAjax extends SmartestSystemApplication{
     		}else{
     		    $draft_mode = false;
     		}
+    		
+    		// var_dump($this->getRequestParameter('draft'));
 
     		if(isset($type_index[$page_webid])){
     		    if($type_index[$page_webid] == 'ITEMCLASS' && $this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){

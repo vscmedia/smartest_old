@@ -15,6 +15,7 @@ class SmartestBasicRenderer extends SmartestEngine{
 	    $this->left_delimiter = '<'.'?sm:';
 		$this->right_delimiter = ':?'.'>';
 		$this->caching = false;
+		$this->_tpl_vars['sm_draft_mode'] = false;
         
     }
     
@@ -24,6 +25,7 @@ class SmartestBasicRenderer extends SmartestEngine{
     
     public function setDraftMode($mode){
         $this->draft_mode = SmartestStringHelper::toRealBool($mode);
+        $this->_tpl_vars['sm_draft_mode'] = $this->draft_mode;
     }
     
     public function assignAsset(SmartestAsset $asset){
@@ -63,7 +65,7 @@ class SmartestBasicRenderer extends SmartestEngine{
                             $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
                         }
                         
-                        if($this->_request_data->g('action') == "renderEditableDraftPage"){
+                        if($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment"){
             			    $attachment['edit_link'] = "<a title=\"Click to edit definition for attachment: ".$name."\" href=\"".$this->_request_data->g('domain')."assets/defineAttachment?attachment=".$name."&amp;asset_id=".$asset->getId()."&amp;from=pagePreviewDirectEdit\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Attach a different file--></a>";
             		    }else{
             			    $attachment['edit_link'] = "<!--edit link-->";
@@ -215,7 +217,7 @@ class SmartestBasicRenderer extends SmartestEngine{
                 $show_preview_edit_link = SmartestStringHelper::toRealBool($render_data->getParameter('show_preview_edit_link'));
             }
             
-            if($this->_request_data->g('action') == "renderEditableDraftPage" && $path == 'none' && $show_preview_edit_link){
+            if(($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment") && $path == 'none' && $show_preview_edit_link){
 			    
 			    if(isset($asset_type_info['editable']) && SmartestStringHelper::toRealBool($asset_type_info['editable'])){
 			        $edit_link = '';

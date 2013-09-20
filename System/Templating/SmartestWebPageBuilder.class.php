@@ -73,6 +73,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     public function setDraftMode($mode){
         
         $this->draft_mode = SmartestStringHelper::toRealBool($mode);
+        $this->_tpl_vars['sm_draft_mode'] = $this->draft_mode;
         
         if($this->page){
             $this->page->setDraftMode($mode);
@@ -180,6 +181,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 $container_def = $this->getPage()->getContainerDefinition($container_name, $this->getDraftMode());
                 
+                $this->_tpl_vars['sm_draft_mode'] = $this->getDraftMode();
                 $this->run($container_def->getTemplateFilePath(), array());
                 
                 if($this->_request_data->g('action') == "renderEditableDraftPage"){
@@ -210,7 +212,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
             }else{
                 
-                
+                // container is undefined
                 
             }
             
