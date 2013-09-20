@@ -23,6 +23,12 @@ class Items extends SmartestSystemApplication{
 		
 		$du = new SmartestDataUtility;
 		$models = $du->getModels(false, $this->getSite()->getId(), true);
+		
+		if(count($models) == 1){
+		    $this->setRequestParameter('class_id', $models[0]->getId());
+		    $this->forward('datamanager', 'getItemClassMembers');
+		}
+		
 		$this->send($models, 'models');
 		
 		$this->send($this->getUser()->hasToken('create_models'), 'allow_create_models');
