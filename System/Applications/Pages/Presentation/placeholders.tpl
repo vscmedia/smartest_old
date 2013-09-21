@@ -24,9 +24,9 @@
     	<li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('editPlaceholder');" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt="" /> Edit this placeholder</a></li>
     </ul>
     
-    <ul class="actions-list" id="non-specific-actions">
+    {* <ul class="actions-list" id="non-specific-actions">
         <li><b>Options</b></li>
         <li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/pages';" class="right-nav-link"> <img src="{$domain}Resources/Icons/page.png" border="0" alt="" /> Go back to pages</a></li>
-    </ul>
+    </ul> *}
     
 </div>

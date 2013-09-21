@@ -63,7 +63,7 @@ class Items extends SmartestSystemApplication{
     		$model = new SmartestModel;
     		$model->find($itemclassid);
 		
-    		$this->setTitle("Model Properties | ".$model->getName());
+    		$this->setTitle("Model properties | ".$model->getName());
 		
     		$definition = $model->getProperties();
 		
@@ -96,6 +96,7 @@ class Items extends SmartestSystemApplication{
 	    if($model->find($this->getRequestParameter('class_id'))){
 	        $this->send($model, 'model');
 	        $this->send((bool) count($model->getMetaPages()), 'has_metapages');
+	        $this->setTitle("Arrange property order | ".$model->getPluralName());
 		    $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
 	        $this->send($model->getProperties(), 'properties');
 	    }
@@ -121,6 +122,7 @@ class Items extends SmartestSystemApplication{
   	    
   	    $this->send($this->getApplicationPreference('item_list_style', 'grid'), 'list_view');
   	    $this->send($this->getUser()->hasToken('create_remove_properties'), 'can_edit_properties');
+  	    $this->send($this->getUser()->hasToken('modify_items'), 'can_edit_items');
   	    
   	    $this->setFormReturnUri();
   	    
@@ -1167,6 +1169,7 @@ class Items extends SmartestSystemApplication{
 	        $metapages = $model->getMetaPages();
 	        $this->send($metapages, 'metapages');
 	        $this->send((bool) count($metapages), 'has_metapages');
+	        $this->setTitle('Edit model | '.$model->getName());
 	        
 	        $num_items_on_site = count($model->getSimpleItems($this->getSite()->getId()));
 	        $num_items_all_sites = count($model->getSimpleItems());

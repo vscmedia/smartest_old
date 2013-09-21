@@ -1053,8 +1053,6 @@ class Pages extends SmartestSystemApplication{
 		    $stage = 1;
 		}
 		
-		// echo $this->getRequestParameter('stage');
-		
 		if($this->getSite() instanceof SmartestSite){
 		    $site_id = $this->getSite()->getId();
 		    $site_info = $this->getSite();
@@ -1110,7 +1108,8 @@ class Pages extends SmartestSystemApplication{
 		        $this->forward('websitemanager', 'addPage');
 		        
 			}else{
-			    SmartestSession::get('__newPage')->setTitle(htmlentities($this->getRequestParameter('page_title'), ENT_COMPAT, 'UTF-8'));
+			    // SmartestSession::get('__newPage')->setTitle(htmlentities($this->getRequestParameter('page_title'), ENT_COMPAT, 'UTF-8'));
+			    SmartestSession::get('__newPage')->setTitle($this->getRequestParameter('page_title'));
 			}
 			
 			$type = in_array($this->getRequestParameter('page_type'), array('NORMAL', 'ITEMCLASS', 'LIST', 'TAG')) ? $this->getRequestParameter('page_type') : 'NORMAL';
@@ -1262,8 +1261,10 @@ class Pages extends SmartestSystemApplication{
                 // if so, apply those definitions
                 if($preset->find($preset_id)){
                     SmartestSession::get('__newPage')->setDraftTemplate($preset->getMasterTemplateName());
-                    $newPage['preset_label'] = $preset->getLabel();
-    				$newPage['draft_template'] = SmartestSession::get('__newPage')->getDraftTemplate();
+                    // $newPage['preset_label'] = $preset->getLabel();
+                    $this->send($preset->getLabel(), 'page_preset_label');
+    				// $newPage['draft_template'] = SmartestSession::get('__newPage')->getDraftTemplate();
+    				$this->send(SmartestSession::get('__newPage')->getDraftTemplate(), 'page_draft_template');
                 }
             }
 			

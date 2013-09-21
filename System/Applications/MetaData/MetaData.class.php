@@ -34,18 +34,24 @@ class MetaData extends SmartestSystemApplication{
 	
 	public function deletePageProperty(){
 		
-		$field_id = $this->getRequestParameter('field_id');
+		if($this->getUser()->hasToken('delete_page_property')){
 		
-		$property = new SmartestPageField;
+    		$field_id = $this->getRequestParameter('field_id');
 		
-		if($property->find($field_id)){
-		    $property->clearAllDefinitions();
-		    $property->delete();
-		    $this->addUserMessageToNextRequest('The property has been deleted.', SmartestUserMessage::SUCCESS);
-		}else{
-		    $this->addUserMessageToNextRequest('The property ID was not recognised.', SmartestUserMessage::ERROR);
+    		$property = new SmartestPageField;
+		
+    		if($property->find($field_id)){
+    		    $property->clearAllDefinitions();
+    		    $property->delete();
+    		    $this->addUserMessageToNextRequest('The property has been deleted.', SmartestUserMessage::SUCCESS);
+    		}else{
+    		    $this->addUserMessageToNextRequest('The property ID was not recognised.', SmartestUserMessage::ERROR);
 		    
-		}
+    		}
+		
+	    }else{
+	        $this->addUserMessageToNextRequest('You do not have permission to delete fields', SmartestUserMessage::ACCESS_DENIED);
+	    }
 		
 		$this->formForward();
 		
@@ -73,17 +79,23 @@ class MetaData extends SmartestSystemApplication{
 	
 	public function clearFieldOnAllPages(){
 	    
-	    $field_id = $this->getRequestParameter('field_id');
+	    if($this->getUser()->hasToken('clear_pageproperty_all_definitions')){
+	    
+    	    $field_id = $this->getRequestParameter('field_id');
 		
-		$property = new SmartestPageField;
+    		$property = new SmartestPageField;
 		
-		if($property->hydrate($field_id)){
-		    $property->clearAllDefinitions();
-		    $this->addUserMessageToNextRequest('All values of the property have been deleted.', SmartestUserMessage::SUCCESS);
-		}else{
-		    $this->addUserMessageToNextRequest('The property ID was not recognised.', SmartestUserMessage::ERROR);
+    		if($property->find($field_id)){
+    		    $property->clearAllDefinitions();
+    		    $this->addUserMessageToNextRequest('All values of the property have been deleted.', SmartestUserMessage::SUCCESS);
+    		}else{
+    		    $this->addUserMessageToNextRequest('The property ID was not recognised.', SmartestUserMessage::ERROR);
 		    
-		}
+    		}
+		
+	    }else{
+	        $this->addUserMessageToNextRequest('You do not have permission to clear all the definitions of a field', SmartestUserMessage::ACCESS_DENIED);
+	    }
 		
 		$this->formForward();
 	}

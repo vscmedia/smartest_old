@@ -1,6 +1,6 @@
-{literal}
-
 <script language="javascript">
+
+{literal}
 
 function showUploader(){
 	document.getElementById('tplUploader').style.display = 'block';
@@ -45,9 +45,9 @@ function addField(input_id, field_name){
 	}
 }
 
-</script>
-
 {/literal}
+
+</script>
 
 <div id="work-area">
 

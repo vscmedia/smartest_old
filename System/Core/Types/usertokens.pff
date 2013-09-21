@@ -16,7 +16,7 @@ id:type:scope:code:category:description
 # Number 12 was formerly a setting for seeing the advanced page edit screen
 12:p:s:edit_model:SM_USERTOKEN_ITEMS:Edit the basic attributes of models
 13:p:s:modify_user_permissions:SM_USERTOKEN_USERS:Edit the permissions of other users
-14:p:s:modify_items:SM_USERTOKEN_ITEMS:Edit Items that do not belong to the user
+14:p:s:modify_items:SM_USERTOKEN_ITEMS:Edit Items
 15:p:s:approve_item_changes:SM_USERTOKEN_ITEMS:Approve changes to items that do not belong to the user
 16:p:s:publish_approved_pages:SM_USERTOKEN_PAGES:Publish changes to pages that have been modified, and those modifications accepted
 17:p:s:publish_approved_items:SM_USERTOKEN_ITEMS:Publish changes to items that have been modified, and those modifications accepted
@@ -55,4 +55,6 @@ id:type:scope:code:category:description
 50:p:s:edit_pagegroup_name:SM_USERTOKEN_PAGES:Edit page group short name
 51:p:s:modify_user_own_permissions:SM_USERTOKEN_USERS:Edit one's own permissions
 52:p:s:modify_usernames:SM_USERTOKEN_USERS:Change a user's login username
-52:p:s:delete_users:SM_USERTOKEN_USERS:Delete user accounts
+53:p:s:delete_users:SM_USERTOKEN_USERS:Delete user accounts
+54:p:s:delete_page_property:SM_USERTOKEN_PAGES:Delete page fields
+55:p:s:clear_pageproperty_all_definitions:SM_USERTOKEN_PAGES:Clear all the values of a page field

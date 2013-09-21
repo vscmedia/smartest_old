@@ -550,6 +550,7 @@ class Users extends SmartestSystemApplication{
 	    $this->send($this->getUser(), 'user');
 	    $this->send($this->getUser()->hasToken('allow_username_change'), 'allow_username_change');
 	    $this->send($this->getUser()->getTwitterHandle(), 'twitter_handle');
+	    $this->setTitle('Edit your profile');
 	    
 	}
 	
@@ -593,6 +594,7 @@ class Users extends SmartestSystemApplication{
 	
 	public function setMyPassword(){
 	    
+	    $this->setTitle('Change your password');
 	    
 	}
 	
