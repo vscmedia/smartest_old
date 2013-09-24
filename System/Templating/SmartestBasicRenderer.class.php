@@ -65,7 +65,7 @@ class SmartestBasicRenderer extends SmartestEngine{
                             $file = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/attachment.tpl';
                         }
                         
-                        if($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment"){
+                        if($this->_request_data->g('action') == "renderEditableDraftPage" || ($this->_request_data->g('action') == "pageFragment" && $this->getDraftMode())){
             			    $attachment['edit_link'] = "<a title=\"Click to edit definition for attachment: ".$name."\" href=\"".$this->_request_data->g('domain')."assets/defineAttachment?attachment=".$name."&amp;asset_id=".$asset->getId()."&amp;from=pagePreviewDirectEdit\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Attach a different file--></a>";
             		    }else{
             			    $attachment['edit_link'] = "<!--edit link-->";
@@ -217,7 +217,7 @@ class SmartestBasicRenderer extends SmartestEngine{
                 $show_preview_edit_link = SmartestStringHelper::toRealBool($render_data->getParameter('show_preview_edit_link'));
             }
             
-            if(($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment") && $path == 'none' && $show_preview_edit_link){
+            if(($this->_request_data->g('action') == "renderEditableDraftPage" || ($this->_request_data->g('action') == "pageFragment" && $this->getDraftMode())) && $path == 'none' && $show_preview_edit_link){
 			    
 			    if(isset($asset_type_info['editable']) && SmartestStringHelper::toRealBool($asset_type_info['editable'])){
 			        $edit_link = '';
@@ -294,7 +294,7 @@ class SmartestBasicRenderer extends SmartestEngine{
         $render_template = SM_ROOT_DIR.'System/Presentation/WebPageBuilder/display.image.tpl';
         
         ob_start();
-        $this->run($render_template, array('asset_info'=>$this->_asset, 'render_data'=>$render_data, 'image'=>$this->_image));
+        $this->run($render_template, array('render_data'=>$render_data, 'image'=>$this->_image));
         $content = ob_get_contents();
         ob_end_clean();
         
@@ -305,7 +305,7 @@ class SmartestBasicRenderer extends SmartestEngine{
     public function renderSmartestCreditButton(){
 	    
 	    $target = $this->getDraftMode() ? ' target="_blank"' : '';
-	    return "<a href=\"http://sma.rte.st/\" title=\"This website is powered by Smartest\"".$target."><img src=\"".$this->_request_data->g('domain')."Resources/System/Images/smartest_credit_button.png\" alt=\"Powered by Smartest - Content Management System Software\" style=\"border:0px\" /></a>";
+	    return "<a href=\"http://sma.rte.st/\" title=\"This website is powered by Smartest\"".$target."><img src=\"".$this->_request_data->g('domain')."Resources/System/Images/smartest_credit_button.png\" alt=\"Powered by Smartest - Content Management System to the Stars\" style=\"border:0px\" /></a>";
 	    
 	}
     

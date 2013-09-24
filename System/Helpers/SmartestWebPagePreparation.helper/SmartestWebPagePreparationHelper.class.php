@@ -80,7 +80,7 @@ class SmartestWebPagePreparationHelper{
             $filename = SM_ROOT_DIR.'System/Cache/Pages/'.$this->_page->getCacheFileName();
 		
 		    if(!SmartestFileSystemHelper::save($filename, $content, true)){
-			    SmartestLog::getInstance('system')->log("Page cache failed to build for page: ".$this->_page->getTitle());
+			    SmartestLog::getInstance('system')->log("Page cache failed to build for page: ".$this->_page->getTitle().'. Could not write file to '.$filename);
 		    }
 		
 	    }
@@ -115,11 +115,8 @@ class SmartestWebPagePreparationHelper{
         
         $b->prepareForRender();
         
-        // echo $container_name;
-        
         if($this->_page->hasContainerDefinition($container_name)){
             
-            // echo $container_name;
             $container_def = $this->_page->getContainerDefinition($container_name, $draft_mode);
             
             ob_start();
@@ -132,7 +129,7 @@ class SmartestWebPagePreparationHelper{
         }else{
             
             if($draft_mode){
-                echo "Smartest: Container '".$container_name."' not defined";
+                echo "Smartest: Container '".$container_name."' not yet defined";
             }   
             exit;
             
