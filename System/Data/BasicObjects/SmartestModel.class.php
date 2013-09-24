@@ -310,6 +310,12 @@ class SmartestModel extends SmartestBaseModel{
 	        case "properties":
 	        return new SmartestArray($this->getProperties());
 	        
+	        case 'default_sort_property':
+	        return $this->getDefaultSortProperty();
+	        
+	        case 'default_sort_property_dir':
+	        return $this->getDefaultSortPropertyDirection();
+	        
 	        case '_english_indefinite_article':
 	        $n = $this->getName();
             $p = in_array(strtolower($n{0}), array('a', 'e', 'i', 'o', 'u')) ? 'An' : 'A';
@@ -749,6 +755,28 @@ class SmartestModel extends SmartestBaseModel{
     public function setDefaultMetaPageId($site_id, $id){
         // TODO: this functionality should be stored in the database
         return SmartestSystemSettingHelper::save('model_'.$this->_properties['id'].'_default_metapage_site_'.$site_id, $id);
+    }
+    
+    public function getDefaultSortProperty(){
+        
+        $property_id = $this->getDefaultSortPropertyId();
+        $property = new SmartestItemProperty;
+        
+        if($property->find($property_id)){
+            return $property;
+        }else{
+            return null;
+        }
+        
+    }
+    
+    public function getDefaultSortPropertyDirection(){
+        return $this->getSettingValue('default_sort_property_dir');
+    }
+    
+    public function setDefaultSortPropertyDirection($dir){
+        $direction = in_array(strtoupper($dir), array('ASC', 'DESC')) ? $dir : 'ASC';
+        return $this->setSettingValue('default_sort_property_dir', $direction);
     }
     
     public function clearDefaultMetaPageId($site_id){

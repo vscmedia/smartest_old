@@ -582,8 +582,18 @@ class SmartestResponse{
 		    $default_tpl = '_default.tpl';
 		}
 		
-		if($this->_controller->getCurrentRequest()->getNamespace() == 'plain' || $this->_controller->getCurrentRequest()->getNamespace() == 'modal'){
+		if($this->_controller->getCurrentRequest()->getNamespace() == 'plain'){
 		    $this->_main_template = $this->_ui_template;
+		}else if($this->_controller->getCurrentRequest()->getNamespace() == 'modal'){
+		    if($subfolder == ''){
+		        if(is_file($this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/Modals/'.$this->_controller->getCurrentRequest()->getAction().".tpl")){
+		            $this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/Modals/'.$this->_controller->getCurrentRequest()->getAction().".tpl";
+		        }else{
+		            $this->_main_template = $this->_ui_template;
+		        }
+		    }else{
+		        $this->_main_template = $this->_ui_template;
+		    }
 		}else{
 		    $this->_main_template = $this->_controller->getCurrentRequest()->getMeta('_module_dir').'Presentation/'.$subfolder.$default_tpl;
 		}

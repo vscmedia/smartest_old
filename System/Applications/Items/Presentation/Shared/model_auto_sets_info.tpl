@@ -1,0 +1,1 @@
+{if $automatic_sets_list._count}{$automatic_sets_list._count} set{if $automatic_sets_list._count > 1}s{/if}: {$automatic_sets_list}{else}None{/if}

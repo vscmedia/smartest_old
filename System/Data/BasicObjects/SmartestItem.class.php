@@ -340,6 +340,8 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
         foreach($ids_array as $item_id){
 	        $ds->insertItemId($item_id);
 	    }
+	    
+	    $ds->sort();
     
         return $ds->getItems();
 	    
@@ -350,6 +352,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    $q = new SmartestManyToManyQuery('SM_MTMLOOKUP_RELATED_ITEMS');
 	    $q->setCentralNodeId($this->_properties['id']);
 	    $q->addSortField('Items.item_created');
+	    $q->addForeignTableConstraint('Items.item_deleted', '0');
 	    
 	    if(!$draft_mode){
 	        $q->addForeignTableConstraint('Items.item_public', 'TRUE');
@@ -420,6 +423,8 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        foreach($ids_array as $item_id){
 		        $ds->insertItemId($item_id);
 		    }
+		    
+		    $ds->sort();
 	    
 	        return $ds->getItems();
 	    

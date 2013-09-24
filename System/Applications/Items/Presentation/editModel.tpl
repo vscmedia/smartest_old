@@ -1,27 +1,3 @@
-<script type="text/javascript">
-
-  // Smartest.AjaxModalViewer.variables.responseTableLinks = {$link_urls.truefalse}
-  
-  var savePageUrlChanges = function(){ldelim}
-
-    $('saver-gif').show();
-
-    $('editUrl').request({ldelim}
-      onComplete: function(){ldelim}
-        // $('page-urls').update('');
-        new Ajax.Updater('page-urls', '{$domain}ajax:websitemanager/pageUrls', {ldelim}
-          parameters: {ldelim}page_id: '{$page.webid}'{if $item.id}, item_id: {$item.id}{/if}, responseTableLinks: {$link_urls.truefalse}{rdelim}
-        {rdelim});
-        MODALS.hideViewer();
-      {rdelim}
-    {rdelim});
-
-    return true;
-
-  {rdelim}
-
-</script>
-
 <div id="work-area">
   
   {load_interface file="model_list_tabs.tpl"}
@@ -192,6 +168,19 @@
         </div>
         
         <div class="edit-form-row">
+              <div class="form-section-label">Default sort direction</div>
+              {if $can_edit_model}
+              <select name="itemclass_default_sort_direction">
+                <option value="ASC"{if $model.default_sort_property_dir == 'ASC'} selected="selected"{/if}>Ascending</option>
+                <option value="DESC"{if $model.default_sort_property_dir == 'DESC'} selected="selected"{/if}>Descending</option>
+              </select>
+              <div class="form-hint">This is used only when the default sort property above is used.</div>
+              {else}
+                {if $model.default_sort_property_dir == 'DESC'}Descending{else}Ascending{/if}
+              {/if}
+            </div>
+        
+        <div class="edit-form-row">
               <div class="form-section-label">Default thumbnail property</div>
               {if $can_edit_model}
               <select name="itemclass_default_thumbnail_property_id">
@@ -260,7 +249,15 @@
       
         <div class="edit-form-row">
           <div class="form-section-label">Static sets to which new items should automatically be added</div>
-          <div id="model-set-auto-add-ajax-field">{if $automatic_sets_list._count}{$automatic_sets_list._count} set{if $automatic_sets_list._count > 1}s{/if}: {$automatic_sets_list}{else}None{/if} {if $can_edit_model}<a href="{$domain}{$section}/editModelAutomaticSets?model_id={$model.id}">Edit</a>{/if}</div>
+          <div><span id="model-set-auto-add-ajax-field">{load_interface file="model_auto_sets_info.tpl"}</span> {if $can_edit_model}<a href="#edit-automatic-sets" id="edit-automatic-sets-link">Edit</a>{/if}</div>
+          <script type="text/javascript">
+            
+            $('edit-automatic-sets-link').observe('click', function(e){ldelim}
+                MODALS.load('{$section}/editModelAutomaticSets?model_id={$model.id}', 'Choose static sets');
+                e.stop();
+            {rdelim});
+
+          </script>
         </div>
       
       {if $can_edit_model}<div class="edit-form-row">

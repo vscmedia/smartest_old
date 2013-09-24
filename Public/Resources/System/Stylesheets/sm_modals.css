@@ -169,3 +169,10 @@ div#modal-work-area div.buttons-bar{
     background:none;
     border:0px;
 }
+
+ul.modal-basic-list{
+    list-style-type:disc;
+    list-style-image:url('../Images/generic_bullet.gif');
+    padding:5px 10px 5px 30px;
+    margin:5px 5px 5px 0;
+}

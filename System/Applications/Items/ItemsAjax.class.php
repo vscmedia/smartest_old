@@ -339,5 +339,75 @@ class ItemsAjax extends SmartestSystemApplication{
 	    }
 	    
 	}
+	
+	public function modelAutomaticSetsInfo(){
+	    
+	    $model_id = $this->getRequestParameter('model_id');
+        $model = new SmartestModel;
+        
+        if($model->find($model_id)){
+        
+            $automatic_static_sets = $model->getAutomaticSetsForNewItem($this->getSite()->getId());
+            $this->send(new SmartestArray($automatic_static_sets), 'automatic_sets_list');
+		
+	    }
+	    
+	}
+	
+	public function getRelatedItemsForItemByModel(){
+	    
+	    $item_id = $this->getRequestParameter('item_id');
+	    
+	    if($item = SmartestCmsItem::retrieveByPk($item_id)){
+	        
+	        $model_id = $this->getRequestParameter('model_id');
+	        $model = new SmartestModel;
+	        
+	        if($model->find($model_id)){
+	        
+    	        if($item->getItem()->getModelId() == $model->getId()){
+	                $related_items = $item->getItem()->getRelatedItems(true);
+	                $this->send($model, 'item_model');
+    	        }else{
+    	            $related_items = $item->getItem()->getRelatedForeignItems(true, $model->getId());
+    	            $this->send($item->getModel(), 'item_model');
+    	        }
+    	        
+    	        $this->send($related_items, 'related_items');
+    	        $this->send($model, 'model');
+	        
+            }
+	        
+	    }
+	    
+	}
+	
+	public function getRelatedPagesForItem(){
+	    
+	    $item_id = $this->getRequestParameter('item_id');
+	    
+	    if($item = SmartestCmsItem::retrieveByPk($item_id)){
+	        
+	        // $model_id = $this->getRequestParameter('model_id');
+	        // $model = new SmartestModel;
+	        
+	        // if($model->find($model_id)){
+	        
+    	        /* if($item->getItem()->getModelId() == $model->getId()){
+	                $related_items = $item->getItem()->getRelatedItems(true);
+	                $this->send($model, 'item_model');
+    	        }else{ */
+    	            $related_pages = $item->getItem()->getRelatedPages(true);
+    	            $this->send($item->getModel(), 'item_model');
+    	        // }
+    	        
+    	        $this->send($related_pages, 'related_pages');
+    	        // $this->send($model, 'model');
+	        
+            // }
+	        
+	    }
+	    
+	}
 
 }

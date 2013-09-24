@@ -31,7 +31,24 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
 		return $new_array;
 	}
 	
-	public function sort($field, $direction='ASC'){
+	public function sort($field='_DEFAULT', $direction='ASC'){
+	    
+	    if($field == '_DEFAULT'){
+	        if(is_numeric($this->_model->getDefaultSortPropertyId())){
+	            if($sort_property = $this->_model->getDefaultSortProperty()){
+	                $field = $sort_property->getId();
+	                $direction = $this->_model->getDefaultSortPropertyDirection();
+	            }else{
+	                $field = SmartestCmsItem::NAME;
+	            }
+            }else{
+                if(strlen($this->_model->getDefaultSortPropertyId())){
+                    $field = $this->_model->getDefaultSortPropertyId();
+                }else{
+                    $field = SmartestCmsItem::NAME;
+                }
+            }
+	    }
 	    
 	    if(count($this->_item_ids)){
 	        

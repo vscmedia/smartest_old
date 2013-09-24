@@ -1,2 +1,2 @@
-<input type="radio" name="{$_input_data.name}" value="TRUE" id="{$_input_data.id}-on"{if $_input_data.value == true} checked="checked"{/if} />&nbsp;<label for="{$_input_data.id}-on">On</label>&nbsp;&nbsp;
-<input type="radio" name="{$_input_data.name}" value="FALSE" id="{$_input_data.id}-off"{if $_input_data.value === false} checked="checked"{/if} />&nbsp;<label for="{$_input_data.id}-off">Off</label>
+<input type="radio" name="{$_input_data.name}" value="TRUE" id="{$_input_data.id}-on"{if $_input_data.value} checked="checked"{/if} />&nbsp;<label for="{$_input_data.id}-on">On</label>&nbsp;&nbsp;
+<input type="radio" name="{$_input_data.name}" value="FALSE" id="{$_input_data.id}-off"{if !$_input_data.value} checked="checked"{/if} />&nbsp;<label for="{$_input_data.id}-off">Off</label>

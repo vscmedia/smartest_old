@@ -733,8 +733,8 @@ class Items extends SmartestSystemApplication{
 	        
 	        $this->send($model, 'model');
 	        
-	        $related_items_this_model = $item->getItem()->getRelatedItemsAsArrays(true);
-	        $related_pages = $item->getItem()->getRelatedPagesAsArrays(true);
+	        $related_items_this_model = $item->getItem()->getRelatedItems(true);
+	        $related_pages = $item->getItem()->getRelatedPages(true);
 	        
 	        $this->send($related_items_this_model, 'related_items_this_model');
 	        $this->send($related_pages, 'related_pages');
@@ -747,7 +747,7 @@ class Items extends SmartestSystemApplication{
 	            if($m['id'] == $model->getId()){
 	                unset($models[$key]);
 	            }else{
-	                $related_foreign_items[$key] = $item->getItem()->getRelatedForeignItemsAsArrays(true, $m['id']);
+	                $related_foreign_items[$key] = $item->getItem()->getRelatedForeignItems(true, $m['id']);
                 }
 	        }
 	        
@@ -1356,8 +1356,9 @@ class Items extends SmartestSystemApplication{
                     $model->setDefaultDescriptionPropertyId($this->getRequestParameter('itemclass_default_description_property_id'));
                 }
 
-                if(is_numeric($this->getRequestParameter('itemclass_default_sort_property_id'))){
+                if($this->getRequestParameter('itemclass_default_sort_property_id')){
                     $model->setDefaultSortPropertyId($this->getRequestParameter('itemclass_default_sort_property_id'));
+                    $model->setDefaultSortPropertyDirection($this->getRequestParameter('itemclass_default_sort_direction'));
                 }
 
                 if(is_numeric($this->getRequestParameter('itemclass_default_thumbnail_property_id'))){
