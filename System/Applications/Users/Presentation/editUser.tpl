@@ -16,6 +16,8 @@
 
 <div id="work-area">
 
+{load_interface file="edit_user_tabs.tpl"}
+
 <h3 id="user">Edit user: {if $user.id == $_user.id}You{else}{$user.fullname}{/if}</h3>
 
 <form id="addUser" name="addUser" action="{$domain}{$section}/updateUser" method="post">
