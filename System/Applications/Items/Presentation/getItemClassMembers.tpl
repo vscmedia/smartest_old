@@ -85,8 +85,6 @@ function openPage(pageAction){
     {/literal}
   </script>
 
-
-
 <div id="options-view-chooser">
   Found {$num_items} {if $num_items != 1}{$model.plural_name}{else}{$model.name}{/if}. View as:
   <a href="#" onclick="return itemList.setView('list', 'item_list_style')">List</a> /

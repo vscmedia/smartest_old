@@ -339,6 +339,8 @@ class SmartestRequestUrlHelper{
         		        $new_url = $url.'/';
         		    }
         		    
+        		    // TODO: URLS corresponding to models that are missing a final slash or have one when they shouldn't, should be matched here
+        		    
         		    $sql = "SELECT Pages.* FROM Pages, PageUrls WHERE Pages.page_id=PageUrls.pageurl_page_id AND page_type='ITEMCLASS' AND Pages.page_site_id='".$site_id."' AND PageUrls.pageurl_url='$new_url' AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
             		$page = $this->database->queryToArray($sql);
 

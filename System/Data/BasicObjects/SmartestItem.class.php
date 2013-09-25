@@ -7,6 +7,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	protected $_meta_page_id;
 	protected $_meta_page;
 	protected $_current_sets = array();
+	protected $_ipvs = array();
 	protected $_temporary_fields = null;
 	
 	protected function __objectConstruct(){
@@ -131,6 +132,45 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    return parent::offsetExists($offset) || in_array($offset, array('created', 'modified', 'last_published', 'title', 'link_contents', 'class', 'model', 'tags', 'authors'));
 	    
 	}
+	
+	/* public function getPropertyValueByNumericKey($key, $draft=false){
+	    
+	    if(isset($this->_ipvs[$key])){
+	        return $this->_ipvs[$key];
+	    }else{
+	        
+	    }
+	    
+	    if(array_key_exists($key, $this->_properties)){
+	        
+	        try{
+	            
+	            if(!$this->_properties[$key]->getData()->hasItem()){
+	                $this->_properties[$key]->getData()->setItem($this);
+	            }
+    	        
+    	        if($this->getDraftMode()){
+    	            $raw_value = $this->_properties[$key]->getData()->getDraftContent();
+                }else{
+                    $raw_value = $this->_properties[$key]->getData()->getContent();
+                }
+            
+            }catch(SmartestException $e){
+                echo $e->getMessage();
+            }
+            
+            if(is_object($raw_value)){
+                $r = $raw_value;
+            }else if($value_ob = SmartestDataUtility::objectize($raw_value, $this->_properties[$key]->getDatatype())){
+                $r = $value_obj;
+            }
+            
+            return $r;
+            
+	    }else{
+	        return null;
+	    }
+	} */
 	
 	public function getHomeSite(){
 	    return $this->getSiteWhereObjectCreated();
@@ -726,7 +766,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	
 	public function getPropertyByNumericKey($key){
 	    
-	    /* $this->getProperties(); */
+	    $this->getProperties();
 	    
 	    if(!$this->_model_properties[$key]){
 	    
@@ -749,12 +789,11 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    }
 	}
 	
-	public function getPropertyValueByNumericKey($key, $draft=false){
+	/* public function getPropertyValueByNumericKey($key, $draft=false){
 	    
 	    if(array_key_exists($key, $this->_model_properties)){
 	        
 	        $property_value_object = $this->_model_properties[$key]->getData();
-	        // print_r($property_value_object);
 	        
 	        if(is_object($property_value_object)){
 	            if($draft){
@@ -769,7 +808,7 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    }else{
 	        return null;
 	    }
-	}
+	} */
 	
 	public function getCacheFiles(){
 	    

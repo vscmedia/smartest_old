@@ -2,9 +2,7 @@
 
 function smarty_function_byline($params, &$smartest_engine){
     
-    $authors = $smartest_engine->_tpl_vars['this']['authors'];
-    
-    // print_r(array_keys($authors));
+    $authors = array_values($smartest_engine->_tpl_vars['this']['authors']);
     
     $num_authors = count($authors);
     $byline = '';
@@ -24,6 +22,7 @@ function smarty_function_byline($params, &$smartest_engine){
     }
     
     if($num_authors){
+        
         for($i=0;$i<$num_authors;$i++){
             
             if($links_possible){
@@ -39,6 +38,7 @@ function smarty_function_byline($params, &$smartest_engine){
             if(isset($authors[$i+2])){
                 $byline .= ', ';
             }else if(isset($authors[$i+1])){
+                // var_dump($authors[$i+1]);
                 $byline .= ' and ';
             }
             

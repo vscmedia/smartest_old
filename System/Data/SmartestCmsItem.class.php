@@ -281,8 +281,12 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            case '_meta_page':
 	            if($p = $this->getMetaPage()){
 	                return $p;
+                }else{
+                    break;
                 }
-                break;
+                
+                case '_thumbnail':
+                return $this->getDefaultThumbnailImage();
                 
                 case '_site':
                 return $this->getSite();
@@ -416,6 +420,12 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    
 	    return $this->_item->getMetapage();
 	    
+	}
+	
+	public function getDefaultThumbnailImage(){
+	    if($propertyid = $this->getModel()->getDefaultThumbnailPropertyId()){
+	        return $this->getPropertyValueByNumericKey($propertyid, true);
+	    }
 	}
 	
 	public function getItemSpaceDefinitions($draft=false){
@@ -989,7 +999,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    }
 	}
 	
-	public function getPropertyValueByNumericKey($key, $draft=false, $for_template_layer=false){
+	public function getPropertyValueByNumericKey($key, $draft=false){
 	    
 	    if(array_key_exists($key, $this->_properties)){
 	        
