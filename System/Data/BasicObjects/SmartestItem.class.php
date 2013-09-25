@@ -91,7 +91,11 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	        return new SmartestDateTime($this->getModified());
 	        
 	        case 'last_published':
-	        return new SmartestDateTime($this->getLastPublished());
+	        if($this->getLastPublished()){
+	            return new SmartestDateTime($this->getLastPublished());
+            }else{
+                return new SmartestDateTime(SmartestDateTime::NEVER);
+            }
 	        
 	        case "class":
 	        return $this->getModel()->getClassName();

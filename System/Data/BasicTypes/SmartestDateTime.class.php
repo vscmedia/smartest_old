@@ -7,9 +7,15 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     protected $_time_format = "g:ia";
     protected $_day_format = "l jS F, Y";
     protected $_sync_value_to_now = false;
+    protected $_is_never = false;
+    
+    const NEVER = '%NEVER%';
+    const NOW = '%NOW%';
     
     public function __construct($date=''){
-        if((bool) $date){
+        if($date == self::NEVER){
+            $this->_is_never = true;
+        }else if((bool) $date){
             $this->setValue($date);
         }else{
             $this->_value = time();
@@ -18,10 +24,12 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     
     public function setValue($v){
         
-        if($v == '%NOW%'){
+        if($v == self::NOW){
             $this->_value = time();
             $this->_sync_value_to_now = true;
             return true;
+        }else if($v == self::NEVER){
+            $this->_is_never = true;
         }else if(is_array($v)){
             $this->setValueFromUserInputArray($v);
             return true;
@@ -44,7 +52,7 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     }
     
     public function isPresent(){
-        return (bool) $this->_value;
+        return (bool) $this->_value && !$this->_is_never;
     }
     
     public function setValueFromUserInputArray($v){
@@ -60,6 +68,10 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     }
     
     public function getUnixFormat(){
+        if($this->_is_never){
+            return null;
+        }
+        
         if($this->_sync_value_to_now){
             return time();
         }else{
@@ -83,6 +95,11 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     */
     
     public function __toString(){
+        
+        if($this->_is_never){
+            return 'Never';
+        }
+        
         if($this->_all_day){
             if($this->_sync_value_to_now){
                 return date($this->_day_format, time());
@@ -100,8 +117,13 @@ class SmartestDateTime implements SmartestBasicType, ArrayAccess, SmartestStorab
     
     // The next two methods are for the SmartestStorableValue interface
     public function getStorableFormat(){
+        
+        if($this->_is_never){
+            return self::NEVER;
+        }
+        
         if($this->_sync_value_to_now){
-            return '%NOW%';
+            return self::NOW;
         }else{
             return $this->_value;
         }

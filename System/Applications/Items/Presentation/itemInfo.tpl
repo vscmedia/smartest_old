@@ -73,12 +73,12 @@
       {$item.modified}
     </div>
     {/if}
-    {if $item.last_published.unix > 0}
+    
     <div class="edit-form-row">
       <div class="form-section-label">Last published:</div>
       {$item.last_published}
     </div>
-    {/if}
+
   {* <div id="sets" class="special-box">
        Sets: {if count($sets)}{foreach from=$sets item="set"}<a href="{$domain}sets/previewSet?set_id={$set.id}">{$set.label}</a> (<a href="{$domain}sets/transferSingleItem?item_id={$item.id}&amp;set_id={$set.id}&amp;transferAction=remove">remove</a>), {/foreach}{else}<em style="color:#666">None</em>{/if}
    {if count($possible_sets)}
