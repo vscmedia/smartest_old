@@ -74,6 +74,7 @@
   	</table>
 
 	</div>
+	
 	<a href="{$domain}{$section}/addPageUrl?page_id={$page.webid}">{if count($page.urls) || $ishomepage == "true"}Add another url{else}Give this page a nicer URL{/if}</a><br />
 	<img src="{$domain}Resources/Images/spacer.gif" width="1" height="10" />
 </div>
@@ -153,5 +154,3 @@
   {/literal}
   </script>
 </div>
-
-{$page.urls._count}

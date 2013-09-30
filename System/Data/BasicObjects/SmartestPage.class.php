@@ -734,7 +734,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		
 		if(!count($this->_urls)){
 		
-		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id ='".$this->_properties['id']."'";
+		    $sql = "SELECT * FROM PageUrls WHERE pageurl_page_id ='".$this->_properties['id']."' AND pageurl_type IN ('SM_PAGEURL_NORMAL', 'SM_PAGEURL_INTERNAL_FORWARD')";
 		    $pageUrls = $this->database->queryToArray($sql);
 		
 		    foreach($pageUrls as $key => $url){
