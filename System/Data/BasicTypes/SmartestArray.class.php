@@ -11,7 +11,7 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
         if(count($d) == 1 && is_array($d[0])){
             $this->_data = $d[0];
         }else{
-            $this->_data = func_get_args();
+            $this->_data = $d;
         }
         
     }
@@ -75,7 +75,7 @@ class SmartestArray implements ArrayAccess, IteratorAggregate, Countable, Smarte
     public function getIds(){
         $ids = array();
         foreach($this->_data as $item){
-            if(is_object($item) && method_exists($item, 'getId()')){
+            if(is_object($item) && method_exists($item, 'getId')){
                 $ids[] = $item->getId();
             }
         }

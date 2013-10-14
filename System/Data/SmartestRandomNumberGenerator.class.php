@@ -21,6 +21,10 @@ class SmartestRandomNumberGenerator implements ArrayAccess{
         
     }
     
+    public function getRandomBoolean(){
+        
+    }
+    
     public function getSameAgain(){
         return $this->_last;
     }
