@@ -13,6 +13,7 @@ INSERT INTO `Settings` (`setting_parent_id` ,`setting_site_id` ,`setting_user_id
 
 INSERT INTO `UsersTokensLookup` (`utlookup_user_id`, `utlookup_token_id`, `utlookup_site_id`, `utlookup_is_global`, `utlookup_granted_timestamp`) VALUES (1, 0, NULL, 1, %NOW%);
 INSERT INTO `UsersTokensLookup` (`utlookup_user_id`, `utlookup_token_id`, `utlookup_site_id`, `utlookup_is_global`, `utlookup_granted_timestamp`) VALUES (1, 13, NULL, 1, %NOW%);
+INSERT INTO `UsersTokensLookup` (`utlookup_user_id`, `utlookup_token_id`, `utlookup_site_id`, `utlookup_is_global`, `utlookup_granted_timestamp`) VALUES (1, 21, NULL, 1, %NOW%);
 INSERT INTO `UsersTokensLookup` (`utlookup_user_id`, `utlookup_token_id`, `utlookup_site_id`, `utlookup_is_global`, `utlookup_granted_timestamp`) VALUES (1, 51, NULL, 1, %NOW%);
 
 INSERT INTO `ManyToManyLookups` (`mtmlookup_type`, `mtmlookup_entity_1_foreignkey`, `mtmlookup_entity_2_foreignkey`) VALUES('SM_MTMLOOKUP_PAGE_AUTHORS', 1, 1);
