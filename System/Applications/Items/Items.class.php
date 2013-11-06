@@ -2534,6 +2534,21 @@ class Items extends SmartestSystemApplication{
 		    $tlh = new SmartestTemplatesLibraryHelper;
             $templates = $tlh->getMasterTemplates($this->getSite()->getId());
             $this->send($templates, 'templates');
+            
+            $site_om_dir = SM_ROOT_DIR.'Sites/'.$this->getSite()->getDIrectoryName().'/Library/ObjectModel/';
+            $this->send($site_om_dir, 'site_om_dir');
+            $this->send(is_writable($site_om_dir), 'site_om_dir_is_writable');
+            
+            $central_om_dir = SM_ROOT_DIR.'Library/ObjectModel/';
+            $this->send($central_om_dir, 'central_om_dir');
+            $this->send(is_writable($central_om_dir), 'central_om_dir_is_writable');
+            
+            $cache_om_dir = SM_ROOT_DIR.'System/Cache/ObjectModel/Models/';
+            $this->send($cache_om_dir, 'cache_om_dir');
+            $this->send(is_writable($cache_om_dir), 'cache_om_dir_is_writable');
+            
+            $permissions_issue = !(is_writable($site_om_dir) && is_writable($central_om_dir) && is_writable($cache_om_dir));
+            $this->send($permissions_issue, 'permissions_issue');
 		
 	    }else{
 	        

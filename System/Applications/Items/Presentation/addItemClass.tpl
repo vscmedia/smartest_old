@@ -22,6 +22,17 @@ function turnOffAutoPlural(){
 
 <h3><a href="{$domain}smartest/models">Items</a> &gt; Build a new model</h3>
 
+{if $permissions_issue}
+<div class="warning">
+  <p>The following directories need to be writeable before you can save models.</p>
+  <ul>
+{if !$site_om_dir_is_writable}<li><code>{$site_om_dir}</code></li>{/if}
+{if !$central_om_dir_is_writable}<li><code>{$central_om_dir}</code></li>{/if}
+{if !$cache_om_dir_is_writable}<li><code>{$cache_om_dir}</code></li>{/if}
+  </ul>
+</div>
+{/if}
+
 <div class="special-box">Unsure about what "models" are? {help id="datamanager:models"}click here{/help} before you go any further.</div>
 
 <form name="searchform" onsubmit="return liveSearchSubmit()" method="post" action="{$domain}{$section}/insertItemClass">
@@ -82,14 +93,11 @@ function turnOffAutoPlural(){
       </select>
 </div> *}
 
-{* <div class="edit-form-row">
-    <div class="form-section-label">How many properties?</div>
-    <input id="plural" type="text" name="num_properties" style="width:200px" />
-</div> *}
-    
-
+{if $permissions_issue}
+<div class="buttons-bar"><input type="button" onclick="cancelForm();" value="Cancel" /></div>
+{else}
 <div class="buttons-bar"><input type="submit" value="Next &gt;&gt;" /></div>
-
+{/if}
 
 </form>
 
