@@ -143,6 +143,18 @@ class SmartestRgbColor implements ArrayAccess, SmartestBasicType, SmartestStorab
         return $this->_blue;
     }
     
+    public function getRedInt(){
+        return (int) (string) $this->_red;
+    }
+    
+    public function getGreenInt(){
+        return (int) (string) $this->_green;
+    }
+    
+    public function getBlueInt(){
+        return (int) (string) $this->_blue;
+    }
+    
     public function getBrightness(){
         // Brightness calculation constants © 2006 Darel Rex Finley http://alienryderflex.com/hsp.html
         $raw = sqrt( .299*pow($this->_red->getValue(), 2) + .587*pow($this->_green->getValue(), 2) + .114*pow($this->_blue->getValue(), 2));

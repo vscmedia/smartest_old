@@ -439,6 +439,8 @@ class SmartestResponse{
 		
 		$cth = 'Content-Type: '.$this->_controller->getCurrentRequest()->getContentType().'; charset='.$this->_controller->getCurrentRequest()->getCharSet();
 	    header($cth);
+	    
+	    SmartestHelper::loadApplicationHelpers();
 		
 		// Push controller and execute the user action
 		try{

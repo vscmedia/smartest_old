@@ -210,7 +210,12 @@ class SmartestQuery{
 		$allow_draft_items = $mode < 6;
 		
 		if(count($this->conditions)){
-		
+		    
+		    // This makes it unnecessary to call $query->setSiteId() when querying items from a model that isn't shared
+		    if(!$this->getModel()->getShared()){
+		        $this->setSiteId($this->getModel()->getSiteId());
+		    }
+		    
 		    foreach($this->conditions as $condition){
 			
 				if($condition->getProperty()->getId() == SmartestCmsItem::ID){
@@ -292,6 +297,7 @@ class SmartestQuery{
 			    if(is_numeric($limit)){
 			        $sql .= ' LIMIT '.$limit;
 			    }
+			    
 			    // echo $sql;
 			    $result = $this->database->queryToArray($sql);
 			    $condition->setIdsArray($this->getSimpleIdsArray($result));

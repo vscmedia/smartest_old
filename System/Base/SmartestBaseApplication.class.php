@@ -141,7 +141,7 @@ class SmartestBaseApplication extends QuinceBase{
 		    
 		    try{
                 
-                if($this->_site = $rh->getSiteByDomain($_SERVER['HTTP_HOST'], $this->getRequest()->getRequestStringWithVars())){
+                if($this->_site = $rh->getSiteByDomain(SmartestStringHelper::toValidDomain($_SERVER['HTTP_HOST']), $this->getRequest()->getRequestStringWithVars())){
                     return true;
         	    }else{
         	        return false;

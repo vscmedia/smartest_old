@@ -1150,9 +1150,11 @@ class SmartestModel extends SmartestBaseModel{
         
         // Do constants first
 	    $constant_name = SmartestStringHelper::toCamelCase($this->getName());
+	    $new_constant_name = strtoupper(SmartestStringHelper::toVarName('Model '.$this->getName(), true));
 		
-	    if(!defined($constant_name)){
+		if(!defined($constant_name)){
 			define($constant_name, $this->getId(), true);
+			define($new_constant_name, $this->getId(), true);
 		}
 		
 		// if(is_file(SM_ROOT_DIR.'System/Cache/ObjectModel/Models/auto'.$class_name.'.class.php')){

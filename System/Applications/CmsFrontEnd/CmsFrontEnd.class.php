@@ -361,6 +361,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        
             }else{
                 
+                header("HTTP/1.1 503 Service Unavailable");
                 echo "Site not enabled";
                 
             }
@@ -395,6 +396,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
     	    $fc->setDraftMode($draft_mode);
 	        $html = $fc->execute($html);
 	        
+	        header('X-Powered-By: Smartest v'.SmartestInfo::$version.' ('.SmartestInfo::$revision.')');
 	        $cth = 'Content-Type: '.$this->getRequest()->getContentType().'; charset='.$this->getRequest()->getCharSet();
 	        header($cth);
 	        
@@ -407,6 +409,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	    
         }else{
             
+            header("HTTP/1.1 503 Service Unavailable");
             echo "Site not enabled";
             exit;
             

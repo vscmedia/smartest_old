@@ -43,16 +43,22 @@ class SmartestRequestUrlHelper{
 	
 	public function getSiteByPageWebId($page_webid){
 	    
-	    $sql = "SELECT Sites.* FROM Sites, Pages WHERE Pages.page_webid='{$page_webid}' AND Pages.page_site_id=Sites.site_id";
-	    $result = $this->database->queryToArray($sql);
-	    
-	    if(count($result)){
-	        $site = new SmartestSite;
-	        $site->hydrate($result[0]);
-	        return $site;
-	    }else{
-	        return false;
-	    }
+	    if(preg_match('/[a-zA-Z0-9\$-]{32}/', $page_webid)){
+	        
+	        $sql = "SELECT Sites.* FROM Sites, Pages WHERE Pages.page_webid='{$page_webid}' AND Pages.page_site_id=Sites.site_id";
+	        $result = $this->database->queryToArray($sql);
+	        
+	        if(count($result)){
+    	        $site = new SmartestSite;
+    	        $site->hydrate($result[0]);
+    	        return $site;
+    	    }else{
+    	        return false;
+    	    }
+	        
+        }else{
+            return false;
+        }
 	    
 	}
 	
@@ -123,7 +129,7 @@ class SmartestRequestUrlHelper{
 	    $sql .= " AND page_deleted !='TRUE'";
 	    
 	    if(strlen($site_domain)){
-	        $sql .= " AND Pages.page_site_id=Sites.site_id AND Sites.site_domain='".$site_domain."'";
+	        $sql .= " AND Pages.page_site_id=Sites.site_id AND Sites.site_domain='".SmartestStringHelper::toValidDomain($site_domain)."'";
 	    }
 	    
 	    $page = $this->database->queryToArray($sql);
@@ -205,6 +211,8 @@ class SmartestRequestUrlHelper{
 	public function getItemClassPageByUrl($url, $site_id){
 		
 		$url = mysql_real_escape_string(SmartestStringHelper::sanitize(urldecode($url)));
+		
+		$site_id = (int) $site_id;
 		
 		$sql = "SELECT Pages.page_id, Pages.page_webid, Pages.page_name, PageUrls.pageurl_url, PageUrls.pageurl_type, PageUrls.pageurl_redirect_type, PageUrls.pageurl_page_id, PageUrls.pageurl_item_id FROM Pages, PageUrls WHERE (Pages.page_type='ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_ITEMCLASS' OR Pages.page_type='SM_PAGETYPE_DATASET') AND Pages.page_site_id='".$site_id."' AND Pages.page_id = PageUrls.pageurl_page_id AND Pages.page_is_published='TRUE' AND Pages.page_deleted !='TRUE'";
 		$dataset_pages = $this->database->queryToArray($sql);

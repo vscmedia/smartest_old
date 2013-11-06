@@ -752,7 +752,7 @@ class SmartestDataObject implements ArrayAccess{
 	    return $this->_request;
 	}
 	
-	protected function getCurrentSiteId(){
+	public function getCurrentSiteId(){
 	    
 	    if($this->getRequest()->getModule() == 'website'){
 	        // This is mostly for when objects are used on web pages

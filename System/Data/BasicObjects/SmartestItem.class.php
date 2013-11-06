@@ -203,6 +203,16 @@ class SmartestItem extends SmartestBaseItem implements SmartestSystemUiObject{
 	    }
 	}
 	
+	public function save(){
+	    
+	    if(!$this->getSiteId()){
+            $this->setSiteId($this->getCurrentSiteId());
+        }
+        
+	    parent::save();
+	    
+	}
+	
 	public function getInfoForPageTree($draft){
 	    
 	    $item = array();

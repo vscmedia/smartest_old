@@ -326,7 +326,8 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 			    
 			    // return $this->_properties[$this->_properties_lookup[$field_name]];
 			    if($this->_properties[$this->_properties_lookup[$field_name]]->getData() instanceof SmartestItemPropertyValue){
-		            if($draft){
+			        
+			        if($draft){
 		                return $this->_properties[$this->_properties_lookup[$field_name]]->getData()->getDraftContent();
 		            }else{
 		                return $this->_properties[$this->_properties_lookup[$field_name]]->getData()->getContent();
@@ -340,6 +341,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
         	            $ipv->setPropertyId($this->_properties[$this->_properties_lookup[$field_name]]->getId());
         	            $ipv->setItemId($this->getItem()->getId());
         	            $ipv->setDraftContentId($this->_properties[$this->_properties_lookup[$field_name]]->getDefaultValue());
+        	            // var_dump($this->_properties[$this->_properties_lookup[$field_name]]->getDefaultValue());
         	            $ipv->save();
     	            
         	            if($draft){
@@ -507,73 +509,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		
 		if($this->_item->find($id)){
 		    
-		    $this->_came_from_database = true;
-		    
-		    if(!$this->_model_built){
-		        $this->_model_id = $this->_item->getItemclassId();
-		        $this->generateModel();
-		    }
-		    
-		    if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
-			    $properties_result = SmartestCache::load('model_properties_'.$this->_model_id, true);
-		    }else{
-			    // gotta get that from the database too
-			    $properties_sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_model_id."' AND itemproperty_varname !='hydrate'";
-			    $properties_result = $this->database->queryToArray($sql);
-			    SmartestCache::save('model_properties_'.$this->_model_id, $result, -1, true);
-		    }
-		    
-		    // loop through properties first time, just setting up empty holder items
-		    foreach($properties_result as $property){
-		        
-		        if(!isset($this->_properties[$property['itemproperty_id']]) || !is_object($this->_properties[$property['itemproperty_id']])){
-		            SmartestCache::clear('model_properties_'.$this->_model_id, true);
-		            $this->_properties[$property['itemproperty_id']] = new SmartestItemPropertyValueHolder;
-		        }
-		        
-			    $this->_properties[$property['itemproperty_id']]->hydrate($property);
-			    $this->_properties[$property['itemproperty_id']]->setItem($this);// Sergiy: &$this=>$this for PHP 5.4
-			    // $this->_properties[$property['itemproperty_id']]->setContextualItemId($this->_item->getId());
-		    }
-		    
-		    $values_sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_item_id='$id'";
-		    $result = $this->database->queryToArray($values_sql);
-		    
-		    // then loop through properties again, making sure all are given either a ipv from the last db query, or given a new one if none was found.
-		    // these ifs and buts shouldn't run very often if everything is working as it should
-			
-			foreach($result as $propertyvalue){
-			    
-			    $ipv = new SmartestItemPropertyValue;
-			    $ipv->hydrate($propertyvalue);
-			    $ipv->setItem($this);
-			    
-                // if the property object does not exist, create and hydrate it
-                
-                if(!isset($this->_properties[$ipv->getPropertyId()]) || !is_object($this->_properties[$ipv->getPropertyId()])){
-                    $this->_properties[$ipv->getPropertyId()] = new SmartestItemPropertyValueHolder;
-			    }
-			    
-			    if(!$this->_properties[$ipv->getPropertyId()]->hasData()){
-			        $this->_properties[$ipv->getPropertyId()]->hydrateValueFromIpvObject($ipv);
-	            }
-			    
-			    // give the property the current item id, so that it knows which ItemPropertyValue record to retrieve in any future operations (though it isn't needed in this one)
-			    // $this->_properties[$ipv->getPropertyId()]->setContextualItemId($this->_item->getId());
-			    
-			    // $this->_properties[$ipv->getPropertyId()]->hydrateValueFromIpvArray($propertyvalue);
-			    
-		    } 
-		    
-		    // all properties should now be represented.
-		    // last jobs are:
-		    //// 1. to make sure all property objects have value objects
-		    //// 2. to give the value objects info about their properties, without doing more queries.
-		    foreach($this->_properties as $pid=>$p){
-		        // this function will automatically crate a value and save it
-		        $p->getData()->hydratePropertyFromExteriorArray($p->getOriginalDbRecord());
-		    }
-		    
+		    $this->_runPostSimpleItemFind($id, $draft);
 		    return true;
 		
 	    }else{
@@ -582,6 +518,92 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        
 	    }
 		
+	}
+	
+	public function findBy($field, $id, $draft=false){
+		
+		if($this->_item->findBy($field, $id)){
+		    
+		    $this->_runPostSimpleItemFind($id, $draft);
+		    return true;
+		
+	    }else{
+	        
+	        return false;
+	        
+	    }
+		
+	}
+	
+	private function _runPostSimpleItemFind($id, $draft){
+	    
+	    $this->_came_from_database = true;
+	    
+	    if(!$this->_model_built){
+	        $this->_model_id = $this->_item->getItemclassId();
+	        $this->generateModel();
+	    }
+	    
+	    if(SmartestCache::hasData('model_properties_'.$this->_model_id, true)){
+		    $properties_result = SmartestCache::load('model_properties_'.$this->_model_id, true);
+	    }else{
+		    // gotta get that from the database too
+		    $properties_sql = "SELECT * FROM ItemProperties WHERE itemproperty_itemclass_id='".$this->_model_id."' AND itemproperty_varname !='hydrate'";
+		    $properties_result = $this->database->queryToArray($sql);
+		    SmartestCache::save('model_properties_'.$this->_model_id, $result, -1, true);
+	    }
+	    
+	    // loop through properties first time, just setting up empty holder items
+	    foreach($properties_result as $property){
+	        
+	        if(!isset($this->_properties[$property['itemproperty_id']]) || !is_object($this->_properties[$property['itemproperty_id']])){
+	            SmartestCache::clear('model_properties_'.$this->_model_id, true);
+	            $this->_properties[$property['itemproperty_id']] = new SmartestItemPropertyValueHolder;
+	        }
+	        
+		    $this->_properties[$property['itemproperty_id']]->hydrate($property);
+		    $this->_properties[$property['itemproperty_id']]->setItem($this);// Sergiy: &$this=>$this for PHP 5.4
+		    // $this->_properties[$property['itemproperty_id']]->setContextualItemId($this->_item->getId());
+	    }
+	    
+	    $values_sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_item_id='$id'";
+	    $result = $this->database->queryToArray($values_sql, true);
+	    
+	    // then loop through properties again, making sure all are given either a ipv from the last db query, or given a new one if none was found.
+	    // these ifs and buts shouldn't run very often if everything is working as it should
+		
+		foreach($result as $propertyvalue){
+		    
+		    $ipv = new SmartestItemPropertyValue;
+		    $ipv->hydrate($propertyvalue);
+		    $ipv->setItem($this);
+		    
+            // if the property object does not exist, create and hydrate it
+            
+            if(!isset($this->_properties[$ipv->getPropertyId()]) || !is_object($this->_properties[$ipv->getPropertyId()])){
+                $this->_properties[$ipv->getPropertyId()] = new SmartestItemPropertyValueHolder;
+		    }
+		    
+		    if(!$this->_properties[$ipv->getPropertyId()]->hasData()){
+		        $this->_properties[$ipv->getPropertyId()]->hydrateValueFromIpvObject($ipv);
+            }
+		    
+		    // give the property the current item id, so that it knows which ItemPropertyValue record to retrieve in any future operations (though it isn't needed in this one)
+		    // $this->_properties[$ipv->getPropertyId()]->setContextualItemId($this->_item->getId());
+		    
+		    // $this->_properties[$ipv->getPropertyId()]->hydrateValueFromIpvArray($propertyvalue);
+		    
+	    } 
+	    
+	    // all properties should now be represented.
+	    // last jobs are:
+	    //// 1. to make sure all property objects have value objects
+	    //// 2. to give the value objects info about their properties, without doing more queries.
+	    foreach($this->_properties as $pid=>$p){
+	        // this function will automatically crate a value and save it
+	        $p->getData()->hydratePropertyFromExteriorArray($p->getOriginalDbRecord());
+	    }
+	    
 	}
 	
 	public function hydrate($id, $draft=false){
@@ -1055,6 +1077,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	}
 	
 	public function getPropertyValueByVarName($varname){
+	    
 	    if(array_key_exists($varname, $this->_varnames_lookup)){
 	        /* if($this->getDraftMode()){
 	            return $this->_properties[$this->_varnames_lookup[$varname]]->getData()->getDraftContent();
@@ -1163,6 +1186,9 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		        $this->_item->setWebId($webid);
 		    
 	        }
+	        
+	        // If the item is new, a site_id is also automatically assigned by SmartestItem::save()
+	        
 	    }
 	    
 	    if($this->_item->getName()){
@@ -1393,6 +1419,35 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             return null;
         }
     }
+    
+    // builds a fully populated object of the correct type from just the primary key or webid
+    /* public static function retrieveByName($item_id, $dont_bother_with_class=false){
+        
+        if(__CLASS__ == 'SmartestCmsItem'){
+        
+            if(!$dont_bother_with_class){
+                $className = self::getModelClassName($item_id);
+            }
+        
+            if(!$dont_bother_with_class && class_exists($className)){
+                $object = new $className;
+            }else{
+                $object = new SmartestCmsItem;
+            }
+        
+        }else{
+            
+            $className = __CLASS__;
+            $object = new $className;
+            
+        }
+        
+        if($object->find($item_id)){
+            return $object;
+        }else{
+            return null;
+        }
+    } */
     
     public static function createNewByModelId($id){
         

@@ -160,6 +160,18 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
         
     }
     
+    public function hasAsset($draft=false){
+        
+        $this->getAsset($draft);
+        
+        if(!$this->_asset){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+    
     public function getDefaultAssetRenderData($draft=false){
         
         $asset = $this->getAsset($draft);
@@ -219,6 +231,12 @@ class SmartestPlaceholderDefinition extends SmartestAssetIdentifier{
             return $this->_page;
             case "placeholder":
             return $this->_asset_class;
+            case "empty":
+            // TODO: $draft should be set according to draft mode
+            $draft = false;
+            // var_dump($this->hasAsset($draft));
+            return $this->hasAsset($draft);
+            
         }
         
         return parent::offsetGet($offset);

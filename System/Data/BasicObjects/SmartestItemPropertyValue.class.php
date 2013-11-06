@@ -275,11 +275,11 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     
     public function publish(){
         
-        if(is_object(SmartestSession::get('user'))){
+        // if(is_object(SmartestSession::get('user'))){
             
-            $user = SmartestSession::get('user');
+            // $user = SmartestSession::get('user');
             
-            if($user->hasToken('publish_approved_items') || $user->hasToken('publish_all_items')){
+            // if($user->hasToken('publish_approved_items') || $user->hasToken('publish_all_items')){
                 
                 if($this->getProperty()->isManyToMany()){
                     
@@ -310,11 +310,10 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     }
                     
                 }
-            }
+            // }
             
             
-            
-        }
+        // }
     }
     
     public function getContent(){
@@ -403,7 +402,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                 }
             }else{
                 $filtered_data = null;
-                SmartestLog::getInstance('system')->log("Could not set content of SmartestItemPropertyValue object, because a value object was not given and none could be created.");
+                SmartestLog::getInstance('system')->log("Could not set content of SmartestItemPropertyValue object, because a value object was not given and none could be created from the raw value given: '".$data."'.");
             }
         }
         
