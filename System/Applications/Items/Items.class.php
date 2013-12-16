@@ -2535,9 +2535,16 @@ class Items extends SmartestSystemApplication{
             $templates = $tlh->getMasterTemplates($this->getSite()->getId());
             $this->send($templates, 'templates');
             
-            $site_om_dir = SM_ROOT_DIR.'Sites/'.$this->getSite()->getDIrectoryName().'/Library/ObjectModel/';
-            $this->send($site_om_dir, 'site_om_dir');
-            $this->send(is_writable($site_om_dir), 'site_om_dir_is_writable');
+            $site_lib_dir = SM_ROOT_DIR.'Sites/'.$this->getSite()->getDIrectoryName().'/Library/';
+            $site_om_dir = $site_lib_dir.'ObjectModel/';
+            
+            if(is_dir($site_om_dir)){
+                $this->send($site_om_dir, 'site_om_dir');
+                $this->send(is_writable($site_om_dir), 'site_om_dir_is_writable');
+            }else{
+                $this->send($site_lib_dir, 'site_om_dir');
+                $this->send(is_writable($site_lib_dir), 'site_om_dir_is_writable');
+            }
             
             $central_om_dir = SM_ROOT_DIR.'Library/ObjectModel/';
             $this->send($central_om_dir, 'central_om_dir');
@@ -2547,7 +2554,12 @@ class Items extends SmartestSystemApplication{
             $this->send($cache_om_dir, 'cache_om_dir');
             $this->send(is_writable($cache_om_dir), 'cache_om_dir_is_writable');
             
-            $permissions_issue = !(is_writable($site_om_dir) && is_writable($central_om_dir) && is_writable($cache_om_dir));
+            if(is_dir($site_om_dir)){
+                $permissions_issue = !(is_writable($site_om_dir) && is_writable($central_om_dir) && is_writable($cache_om_dir));
+            }else{
+                $permissions_issue = !(is_writable($site_lib_dir) && is_writable($central_om_dir) && is_writable($cache_om_dir));
+            }
+            
             $this->send($permissions_issue, 'permissions_issue');
 		
 	    }else{
