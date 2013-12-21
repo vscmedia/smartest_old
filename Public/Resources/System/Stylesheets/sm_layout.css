@@ -249,6 +249,7 @@ div.buttons-bar{
 	margin:0px;
 	padding:4px;
 	text-align:right;
+	clear:both;
 }
 
 div.special-box, div.warning{

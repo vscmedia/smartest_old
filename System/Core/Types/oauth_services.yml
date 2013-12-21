@@ -1,0 +1,22 @@
+services:
+  SM_OAUTHSERVICE_TWITTER:
+    id: SM_OAUTHSERVICE_TWITTER
+    shortname: twitter
+    label: Twitter
+    token_request_url: https://api.twitter.com/oauth/request_token
+    client_register_url: http://dev.twitter.com/apps/new
+    oauth_version: 1.0
+  SM_OAUTHSERVICE_INSTAGRAM:
+    id: SM_OAUTHSERVICE_INSTAGRAM
+    shortname: instagram
+    label: Instagram
+    token_request_url: https://api.instagram.com/oauth/authorize/
+    client_register_url: http://instagram.com/developer/clients/manage/
+    oauth_version: 2.0
+  SM_OAUTHSERVICE_BITLY:
+    id: SM_OAUTHSERVICE_BITLY
+    shortname: bitly
+    label: Bit.ly
+    token_request_url: https://bitly.com/oauth/authorize
+    client_register_url: https://bitly.com/a/oauth_apps
+    oauth_version: 2.0

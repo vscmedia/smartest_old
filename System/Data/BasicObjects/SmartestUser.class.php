@@ -6,6 +6,7 @@ class SmartestUser extends SmartestBaseUser{
 	protected $_site_ids = array();
 	protected $_model_plural_names = array();
 	protected $_parameters; // Only useful when the user is being stored in the session
+	protected $_user_info;
 	
 	protected function __objectConstruct(){
 	    
@@ -19,6 +20,8 @@ class SmartestUser extends SmartestBaseUser{
 		}
 		
 		$this->_preferences_helper = SmartestPersistentObject::get('prefs_helper');
+		
+		$this->_user_info = new SmartestParameterHolder("User info");
 		
 	}
 	
@@ -85,6 +88,14 @@ class SmartestUser extends SmartestBaseUser{
 				return false;
 			}
 		}
+	}
+	
+	public function __postHydrationAction(){
+	    
+	    if(!$this->_user_info){
+	        $this->_user_info = new SmartestParameterHolder("Info for user '".$this->_properties['username']."'");
+        }
+	    
 	}
 	
 	public function getUsername(){
@@ -434,6 +445,27 @@ class SmartestUser extends SmartestBaseUser{
             return true;
         }
     }
+    
+    public function setInfoValue($field, $new_data){
+	    
+	    $field = SmartestStringHelper::toVarName($field);
+	    // URL Encoding is being used to work around a bug in PHP's serialize/unserialize. No actual URLS are necessarily in use here:
+	    $this->_user_info->setParameter($field, rawurlencode(utf8_decode($new_data)));
+	    // $this->_user_info_modified = true;
+	    $this->_modified_properties['settings'] = SmartestStringHelper::sanitize(serialize($this->_user_info->getArray()));
+	    
+	}
+	
+	public function getInfoValue($field){
+	    
+	    $field = SmartestStringHelper::toVarName($field);
+	    
+	    if($this->_user_info->hasParameter($field)){
+	        return utf8_encode(stripslashes(rawurldecode($this->_user_info->getParameter($field))));
+	    }else{
+	        return null;
+	    }
+	}
     
     public function delete(){
         

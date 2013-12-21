@@ -37,7 +37,7 @@ class SmartestUsersHelper extends SmartestHelper{
     
     public function getSystemUsers(){
         
-        $raw_users = $this->database->queryToArray("SELECT Users.*, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname FROM Users WHERE username != 'smartest' ORDER BY user_fullname");
+        $raw_users = $this->database->queryToArray("SELECT Users.*, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname FROM Users WHERE username != 'smartest' AND user_type='SM_USERTYPE_SYSTEM_USER' ORDER BY user_fullname");
         $users = array();
         
         foreach($raw_users as $ru){
