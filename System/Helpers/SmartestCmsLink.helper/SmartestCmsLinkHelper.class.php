@@ -24,6 +24,8 @@ class SmartestCmsLinkHelper extends SmartestHelper{
             $link = self::createLinkFromPage($to, $markup_attributes);
         }else if($to instanceof SmartestTag){
             $link = self::createLinkFromTag($to, $markup_attributes);
+        }else if($to instanceof SmartestUser){
+            $link = self::createLinkFromAuthor($to, $markup_attributes);
         }else{
             $properties = SmartestLinkParser::parseSingle($to);
             $link = new SmartestCmsLink($properties, $markup_attributes);
@@ -62,6 +64,18 @@ class SmartestCmsLinkHelper extends SmartestHelper{
         $properties = new SmartestParameterHolder('Link to tag page');
         $properties->setParameter('from_tag', true);
         $properties->setParameter('tag', $tag);
+        
+        $link = new SmartestCmsLink($properties, $markup_attributes);
+        
+        return $link;
+        
+    }
+    
+    public static function createLinkFromAuthor(SmartestUser $author, $markup_attributes){
+        
+        $properties = new SmartestParameterHolder('Link to author page');
+        $properties->setParameter('from_author', true);
+        $properties->setParameter('author', $author);
         
         $link = new SmartestCmsLink($properties, $markup_attributes);
         

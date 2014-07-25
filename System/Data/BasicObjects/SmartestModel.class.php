@@ -567,6 +567,32 @@ class SmartestModel extends SmartestBaseModel{
     }
     
     public function getItems($site_id='', $mode=9){
+        return $this->getAllItems($site_id, $mode);
+    }
+    
+    public function getAllItems($site_id='', $mode=9){
+        
+        // Retrieve all item IDs
+        $ids = $this->getItemIds($site_id, $mode);
+        
+        // Define whether items should be set to draft mode or not
+        if(in_array($mode, array(0,1,2,6,7,8))){
+		    $set_item_draft_mode = true;
+		}else{
+		    $set_item_draft_mode = false;
+		}
+        
+        // Create new set from the item IDs
+        $set = new SmartestSortableItemReferenceSet($this, $set_item_draft_mode);
+        
+        // Sort the items by their default sort property, or by name if this is not defined
+        if($default_property_id = $this->getDefaultSortPropertyId()){
+            $set->sort($this->$default_property_id, $this->getDefaultSortPropertyDirection());
+        }else{
+            $set->sort(SmartestCmsItem::NAME);
+        }
+        
+        return $set;
         
     }
     
@@ -1292,8 +1318,12 @@ class SmartestModel extends SmartestBaseModel{
 		    $constants .= $new_constant;
 		
 		}
-	    
-	    $file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt');
+		
+	    if($this->getType() == 'SM_ITEMCLASS_MODEL'){
+	        $file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autoobject_template.txt');
+	    }else if($this->getType() == 'SM_ITEMCLASS_USER_PROFILE_SERVICE'){
+	        $file = file_get_contents(SM_ROOT_DIR.'System/Data/ObjectModelTemplates/autouserprofile_template.txt');
+	    }
 		
 		$functions = $this->buildAutoClassFunctionCode();
 		$varnames_lookup = $this->buildAutoClassVarnameLookupCode();

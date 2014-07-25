@@ -19,7 +19,11 @@ function smarty_function_date_format($params, &$smartest_engine){
         
         $format = isset($params['format']) ? $params['format'] : 'l jS F, Y';
         
-        return date($format, $raw);
+        if(isset($params['assign']) && $params['assign'] != 'this'){
+            $smartest_engine->assign($params['assign'], date($format, $raw));
+        }else{
+            return date($format, $raw);
+        }
         
     }else{
         return $smartest_engine->raiseError("date_format: date='' parameter must be set");

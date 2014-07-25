@@ -84,14 +84,45 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         }
     }
     
+    public function getFirstFile($mode=1, $site_id='AUTO'){
+        
+        if($site_id == 'AUTO'){
+            $site_id = $this->getCurrentSiteId();
+        }
+        
+        $files = array_values($this->getMembers($mode, $site_id));
+        
+        return $files[0];
+        
+    }
+    
+    public function getFirstMembership($mode=1, $site_id='AUTO'){
+        
+        if($site_id == 'AUTO'){
+            $site_id = $this->getCurrentSiteId();
+        }
+        
+        $site_id = $this->getCurrentSiteId();
+        $files = array_values($this->getMemberships($mode, $site_id));
+        
+        return $files[0];
+        
+    }
+    
+    public function getFirst($mode=1, $site_id='AUTO'){
+        if($this->getIsGallery()){
+            return $this->getFirstMembership($mode, $site_id);
+        }else{
+            return $this->getFirstFile($mode, $site_id);
+        }
+    }
+    
     public function fixOrderIndices(){
         if($this->getIsGallery()){
             foreach($this->getMemberships(0, $this->getSiteId(), true) as $k => $m){
-                // echo $k.' ';
                 $m->setOrderIndex($k);
                 $m->save();
             }
-            // print_r($this->database->getDebugInfo());
         }
     }
     
@@ -99,6 +130,10 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
         
         if($this->getIsGallery()){
             // return $this->getMemberships();
+        }
+        
+        if(!is_numeric($site_id == 'AUTO')){
+            $site_id = $this->getCurrentSiteId();
         }
         
         if($refresh || !count($this->_members)){
@@ -118,6 +153,10 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
     }
     
     public function getMemberships($mode=1, $site_id='', $refresh=false, $approved_only=false, $numeric_indices=true){
+        
+        if(!is_numeric($site_id == 'AUTO')){
+            $site_id = $this->getCurrentSiteId();
+        }
         
         $q = new SmartestManyToManyQuery($this->getMembershipType());
         $q->setTargetEntityByIndex(1);
@@ -442,6 +481,22 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
     
     public function offsetGet($offset){
         
+        if(is_numeric($offset)){
+            
+            $offset = (string) $offset;
+            
+            if($this->getIsGallery()){
+                $items = $this->getMemberships();
+            }else{
+                $items = $this->getMembers();
+            }
+            
+            if(isset($items[$offset])){
+                return $items[$offset];
+            }
+            
+        }
+        
         switch($offset){
             
             case "types":
@@ -467,6 +522,24 @@ class SmartestAssetGroup extends SmartestSet implements SmartestSetApi, Smartest
                 return new SmartestArray($this->getMembers());
             }
             break;
+            
+            case "first":
+            return $this->getFirst();
+            
+            case "first_membership":
+            if($this->getIsGallery()){
+                return $this->getFirstMembership();
+            }else{
+                break;
+            }
+            
+            case "first_file":
+            return $this->getFirstFile();
+            
+            case "num_members":
+            case "member_count":
+            return count($this->getMemberships());
+            
         }
         
         return parent::offsetGet($offset);

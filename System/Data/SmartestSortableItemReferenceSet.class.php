@@ -19,6 +19,18 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
 		$this->database = SmartestPersistentObject::get('db:main');
 	}
 	
+	public function getModelId(){
+	    return $this->_model->getId();
+	}
+	
+	public function getModel(){
+	    return $this->_model();
+	}
+	
+	public function getDraftMode(){
+	    return $this->_is_draft();
+	}
+	
 	private function getSimpleIdsArray($array){
 		
 		$new_array = array();
@@ -143,7 +155,7 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
     		
     		    }
     		    
-        		$result = $this->database->queryToArray($sql);
+    		    $result = $this->database->queryToArray($sql);
         		
         		$ids = array();
 	
@@ -176,6 +188,19 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
 	public function insertItemId($id){
 	    if(!in_array($id, $this->_item_ids)){
 	        $this->_item_ids[] = $id;
+	    }
+	}
+	
+	public function loadItemIds($ids, $overwrite=false){
+	    if(is_array($ids)){
+	        if($overwrite){
+	            $this->_item_ids = array();
+	        }
+	        foreach($ids as $item_id){
+	            if(($overwrite || !in_array($this->_item_ids)) && is_numeric($item_id)){
+	                $this->_item_ids[] = $item_id;
+	            }
+	        }
 	    }
 	}
 	
@@ -234,6 +259,11 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
 	    return $this->_item_ids;
 	}
 	
+	// For consistency/ease of use
+	public function getItemIds(){
+	    return $this->getIds();
+	}
+	
 	public function getSimpleItemsPreservingOrder($limit=0){
 	    
 	    $items = $this->_getSimpleItems($limit);
@@ -286,11 +316,15 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
 	    
 	}
 	
+	/* public function getNumPages($page_size=10){
+	    
+	} */
+	
 	public function getItems($limit=null, $start=null){
 	        
         $cardinality = 0;
         
-        $this->_items = array();
+        // $this->_items = array();
         
         $ids = $this->_item_ids;
         
@@ -313,7 +347,8 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
 	}
 	
 	public function count(){
-        return count($this->_data);
+	    // echo "counting";
+        return count($this->_item_ids);
     }
 
     public function offsetGet($offset){
@@ -327,33 +362,42 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
             case "_objects":
             return $this->getData();
             case "_count":
-            return count($this->_data);
+            return count($this->_item_ids);
             case "_keys":
-            return array_keys($this->_data);
+            if(!$this->_items_retrieval_attempted){
+                $this->getItems();
+            }
+            return array_keys($this->_items);
             case "_first":
-            return reset($this->_data);
+            if(!$this->_items_retrieval_attempted){
+                $this->getItems();
+            }
+            return reset($this->_items);
             case "_last":
-            return end($this->_data);
+            if(!$this->_items_retrieval_attempted){
+                $this->getItems();
+            }
+            return end($this->_items);
         
         }
     
-        return $this->_data[$offset];
+        return $this->_items[$offset];
     }
 
     public function offsetExists($offset){
-        return isset($this->_data[$offset]);
+        return isset($this->_items[$offset]);
     }
 
     public function offsetSet($offset, $value){
         if($offset){
-            $this->_data[$offset] = $value;
+            $this->_items[$offset] = $value;
         }else{
-            $this->_data[] = $value;
+            $this->_items[] = $value;
         }
     }
 
     public function offsetUnset($offset){
-        unset($this->_data[$offset]);
+        unset($this->_items[$offset]);
     }
 
     /* public function next(){
@@ -377,7 +421,7 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
     } */
 
     public function &getIterator(){
-        return new ArrayIterator($this->_data);
+        return new ArrayIterator($this->getItems());
     }
 
     /* public function current(){
@@ -391,29 +435,113 @@ class SmartestSortableItemReferenceSet implements ArrayAccess, IteratorAggregate
     public function rewind(){
         reset($this->_data);
     } */
+    
+    public function mergeWith(SmartestSortableItemReferenceSet $set){
+        
+        $ids_array = array_unique(array_merge($this->getItemIds(), $set->getItemIds()));
+        
+        if($set->getModelId() == $this->getModelId()){
+            $s = new SmartestSortableItemReferenceSet($this->_model, $this->_is_draft);
+            $s->loadItemIds($ids_array, true);
+            return $s;
+        }else{
+            throw new SmartestException('SmartestSortableItemReferenceSet of model '.$this->_model->getName().' merged with SmartestSortableItemReferenceSet of model '.$set->getModel()->getName());
+        }
+    }
+    
+    public static function mergeSeveral(){
+        
+        $sets = func_get_args();
+        $num_sets = count($sets);
+        
+        if($num_sets){
+        
+            $primary_set = $sets[0];
+        
+            for($i=1;$i<$num_sets;$i++){
+            
+                if(isset($sets[$i])){
+                
+                    if($sets[$i] instanceof SmartestSortableItemReferenceSet){
+                        $primary_set = $primary_set->mergeWith($sets[$i]);
+                    }else{
+                        throw new SmartestException('Argument no '.($i+1).' provided to SmartestSortableItemReferenceSet::mergeSeveral() was not an instance of SmartestSortableItemReferenceSet.');
+                    }
+                
+                }
+            
+            }
+            
+            return $primary_set;
+        
+        }
+        
+    }
+    
+    public function remove(SmartestSortableItemReferenceSet $set){
+        
+        $ids_array = array_diff($this->getItemIds(), $set->getItemIds());
+        
+        if($set->getModelId() == $this->getModelId()){
+            $s = new SmartestSortableItemReferenceSet($this->_model, $this->_is_draft);
+            $s->loadItemIds($ids_array, true);
+            return $s;
+        }else{
+            throw new SmartestException('SmartestSortableItemReferenceSet of model '.$set->getModel()->getName().' removed from SmartestSortableItemReferenceSet of model '.$this->_model->getName());
+        }
+        
+    }
+    
+    public function intersectWith(SmartestSortableItemReferenceSet $set){
+        
+        $ids_array = array_unique(array_intersect($this->getItemIds(), $set->getItemIds()));
+        
+        if($set->getModelId() == $this->getModelId()){
+            $s = new SmartestSortableItemReferenceSet($this->_model, $this->_is_draft);
+            $s->loadItemIds($ids_array, true);
+            return $s;
+        }else{
+            throw new SmartestException('SmartestSortableItemReferenceSet of model '.$this->_model->getName().' intersected with SmartestSortableItemReferenceSet of model '.$set->getModel()->getName());
+        }
+    }
 
     public function append($value){
-        $this->_data[] = $value;
+        $this->_items[] = $value;
     }
 
     public function asort(){
-        sort($this->_data);
+        if(!$this->_items_retrieval_attempted){
+            $this->getItems();
+        }
+        sort($this->_items);
     }
 
     public function ksort(){
-        ksort($this->_data);
+        if(!$this->_items_retrieval_attempted){
+            $this->getItems();
+        }
+        ksort($this->_items);
     }
 
     public function natcasesort(){
-        natcasesort($this->_data);
+        if(!$this->_items_retrieval_attempted){
+            $this->getItems();
+        }
+        natcasesort($this->_items);
     }
 
     public function natsort(){
-        natsort($this->_data);
+        if(!$this->_items_retrieval_attempted){
+            $this->getItems();
+        }
+        natsort($this->_items);
     }
 
     public function reverse(){
-        return array_reverse($this->_data);
+        if(!$this->_items_retrieval_attempted){
+            $this->getItems();
+        }
+        return array_reverse($this->_items);
     }
 
 }

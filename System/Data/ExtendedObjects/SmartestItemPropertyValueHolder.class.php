@@ -77,7 +77,7 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	            
 	            // try to find value
 	            $sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_property_id='".$this->getId()."' AND itempropertyvalue_item_id='".$this->_contextual_item_id."'";
-	            $result = $this->database->queryToArray($sql);
+	            $result = $this->database->queryToArray($sql, true);
 	            
 	            if(count($result)){
 	                
@@ -123,6 +123,8 @@ class SmartestItemPropertyValueHolder extends SmartestItemProperty{
 	        return $this->_value;
 	        case "value":
 	        return $this->_value->getContent();
+	        case "_editor_value":
+	        return $this->_value->getDraftContent();
 	        case "info":
 	        return $this->_value->getInfo();
 	    }

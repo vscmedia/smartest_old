@@ -74,6 +74,7 @@
 
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Options</b></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}templates/importNewTemplateForContainerDefinition?container_id={$container.id}&amp;page_id={$page.id}{if $show_item_options}&amp;item_id={$item.id}{/if}';" class="right-nav-link"><img src="{$domain}Resources/Icons/layout_add.png" border="0" alt=""> Import new template...</a></li>
     <li class="permanent-action"><a href="#" onclick="window.location=sm_cancel_uri;" class="right-nav-link"><img src="{$domain}Resources/Icons/cross.png" border="0" alt=""> Cancel</a></li>
   </ul>
   

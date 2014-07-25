@@ -14,6 +14,7 @@
       <input type="checkbox" name="tag_item" value="1" checked="checked" id="tag_item_checkbox" />
       <label for="tag_item_checkbox">Tag '{$item.name}' with new tags I create here</label>
       <input type="hidden" name="item_id" value="{$item.id}" />
+      {if $page_webid}<input type="hidden" name="page_webid" value="{$page_webid}" />{/if}
     </div>
     {/if}
     {if $page.id}

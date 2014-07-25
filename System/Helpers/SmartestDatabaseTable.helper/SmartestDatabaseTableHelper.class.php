@@ -22,7 +22,7 @@ class SmartestDatabaseTableHelper{
         
         $cache_name = strtolower($this->database->getConnectionName()).'_tables';
         
-        if(SmartestCache::hasData($cache_name, true)){
+        if(SmartestCache::hasData($cache_name, true) && count(SmartestCache::load($cache_name, true))){
 			$tables = SmartestCache::load($cache_name, true);
 		}else{
 			$tables = $this->database->getTables();

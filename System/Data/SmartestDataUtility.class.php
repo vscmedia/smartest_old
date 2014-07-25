@@ -7,6 +7,9 @@ class SmartestDataUtility{
 	public static $data_types;
 	public static $asset_types;
 	public static $assetclass_types;
+	
+	public static $models_class_names;
+	
 	private static $_type_to_class_converter = array();
 	
 	public function __construct($connection_name = ''){
@@ -27,8 +30,10 @@ class SmartestDataUtility{
 	    
 	    if(is_numeric($site_id)){
 	        $cache_name = 'models_query_site_'.$site_id;
+	        $models_holder_key = $site_id;
 	    }else{
 	        $cache_name = 'models_query';
+	        $models_holder_key = 'all';
 	    }
 	    
 	    if(!SmartestCache::hasData($cache_name, true) || $force_regenerate || $simple){
@@ -81,6 +86,27 @@ class SmartestDataUtility{
 	    }
 	    
 	    return $ids;
+	    
+	}
+	
+	public static function getModelClassNames(){
+	    
+	    if(!is_array(self::$models_class_names)){
+	        
+	        self::$models_class_names = array();
+	        
+	        $db = SmartestDatabase::getInstance('SMARTEST');
+	        $result = $db->queryToArray('SELECT * FROM ItemClasses WHERE itemclass_type=\'SM_ITEMCLASS_MODEL\'');
+	        
+	        foreach($result as $r){
+	            $m = new SmartestModel;
+	            $m->hydrate($r);
+	            self::$models_class_names[$m->getId()] = $m->getClassName();
+	        }
+	        
+	    }
+	    
+	    return self::$models_class_names;
 	    
 	}
 	
@@ -352,6 +378,14 @@ class SmartestDataUtility{
 	    }
 	    
 	    return $arrays;
+	    
+	}
+	
+	public function getUsers(){
+	    
+	}
+	
+	public function getSystemUsers(){
 	    
 	}
 	
@@ -862,16 +896,29 @@ class SmartestDataUtility{
 	    
 	}
 	
-	public static function getClassForDataType($as_type){
+	public static function getClassForDataType($as_type, $fk_filter=null){
 	    
 	    $types = self::getDataTypes();
 	    
 	    if(isset(self::$_type_to_class_converter[$as_type])){
-            return self::$_type_to_class_converter[$as_type];
+	        return self::$_type_to_class_converter[$as_type];
         }else{
+            
             if(isset($types[$as_type]) && isset($types[$as_type]['class'])){
-                self::$_type_to_class_converter[$as_type] = $types[$as_type]['class'];
-    	        return $types[$as_type]['class'];
+                
+                if($as_type == 'SM_DATATYPE_CMS_ITEM' && is_numeric($fk_filter)){
+                    
+                    $classes = self::getModelClassNames();
+                    if(isset($classes[$fk_filter])){
+                        return $classes[$fk_filter];
+                    }else{
+                        throw new SmartestException('Class could not be found for model with ID '.$fk_filter);
+                    }
+                }else{
+                    self::$_type_to_class_converter[$as_type] = $types[$as_type]['class'];
+        	        return $types[$as_type]['class'];
+                }
+                
             }else{
                 return null;
             }
@@ -879,9 +926,9 @@ class SmartestDataUtility{
 	    
 	}
 	
-	public static function getBlankObjectForDataType($as_type){
+	public static function getBlankObjectForDataType($as_type, $fk_filter=null){
 	    
-	    if($class = self::getClassForDataType($as_type)){
+	    if($class = self::getClassForDataType($as_type, $fk_filter)){
 	        
 	        if(!class_exists($class)){
                 throw new SmartestException("Class ".$class." required for handling properties of type ".$t['id']." does not exist.");
@@ -897,9 +944,9 @@ class SmartestDataUtility{
 	    
 	}
 	
-	public static function objectize($value, $as_type, $fk_field='id'){
+	public static function objectize($value, $as_type, $fk_filter=null){
 	    
-	    if($object = self::getBlankObjectForDataType($as_type)){
+	    if($object = self::getBlankObjectForDataType($as_type, $fk_filter)){
 	        
 	        if($object instanceof SmartestStorableValue){
 	            
@@ -908,6 +955,7 @@ class SmartestDataUtility{
 	            }else{
 	                // object couldn't be hydrated
 	            }
+	            
 	        }else{
 	            throw new SmartestException("Class ".get_class($object)." must implement interface SmartestStorableValue");
 	        }
@@ -943,20 +991,53 @@ class SmartestDataUtility{
 	    
 	} */
 	
-	public static function objectizeFromRawFormData($value, $as_type, $fk_field='id'){
+	public static function objectizeFromNewRawDataGivenToItemPropertyValue($value, $as_type, $fk_filter=null){
 	    
-	    if($object = self::getBlankObjectForDataType($as_type)){
+	    if($object = self::getBlankObjectForDataType($as_type, $fk_filter)){
+	        
+	        if($object instanceof SmartestStorableValue){
+	            
+	            try{
+	                if($object->hydrateFromFormData($value, $fk_filter)){
+    	                return $object;
+    	            }else{
+    	                
+    	            }
+	            }catch(SmartestException $e){
+	                
+	            }
+	            
+	        }else{
+	            throw new SmartestException("Class ".get_class($object)." must implement interface SmartestStorableValue");
+	        }
+	        
+	    }else{
+	        
+	        throw new SmartestException("Could not objectize value ".$value." as type '".$as_type."'");
+	        
+	    }
+	    
+	}
+	
+	public static function objectizeFromRawFormData($value, $as_type, $fk_filter=null){
+	    
+	    if($object = self::getBlankObjectForDataType($as_type, $fk_filter)){
 	        
 	        if($object instanceof SmartestStorableValue){
 	            // echo get_class($object);
 	            // var_dump($value);
-	            if($object->hydrateFromFormData($value)){
-	                // print_r($object);
-	                return $object;
-	            }else{
-	                // object couldn't be hydrated
-	                // echo "#fail";
+	            try{
+	                if($object->hydrateFromFormData($value)){
+    	                // print_r($object);
+    	                return $object;
+    	            }else{
+    	                // object couldn't be hydrated
+    	                // echo "#fail";
+    	            }
+	            }catch(SmartestException $e){
+	                
 	            }
+	            
 	        }else{
 	            throw new SmartestException("Class ".get_class($object)." must implement interface SmartestStorableValue");
 	        }

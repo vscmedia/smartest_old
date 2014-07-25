@@ -205,5 +205,58 @@ class PagesAjax extends SmartestSystemApplication{
 		}
 	    
 	}
+	
+	public function clearPagesCache(){
+	    
+	    if($this->getSite() instanceof SmartestSite){
+	        
+	        if($this->getUser()->hasToken('clear_pages_cache')){
+            
+                $page_prefix = 'site'.$this->getSite()->getId().'_';
+            
+                $cache_files = SmartestFileSystemHelper::load(SM_ROOT_DIR.'System/Cache/Pages/');
+            
+                if(is_array($cache_files)){
+                
+                    $deleted_files = array();
+                    $failed_files = array();
+                    $untouched_files = array();
+                
+                    foreach($cache_files as $f){
+                    
+                        $path = SM_ROOT_DIR.'System/Cache/Pages/'.$f;
+                    
+                        if(strlen($f) && $page_prefix == substr($f, 0, strlen($page_prefix))){
+                            // echo "deleting ".$path.'...<br />';
+                            if(@unlink($path)){
+                                $deleted_files[] = $f;
+                            }else{
+                                $failed_files[] = $f;
+                            }
+                        }else{
+                            $untouched_files = $f;
+                        }
+                    }
+                    
+                    SmartestLog::getInstance('site')->log("{$this->getUser()} cleared the pages cache. ".count($deleted_files)." files were removed.", SmartestLog::USER_ACTION);
+                    
+                    $this->send(true, 'show_result');
+                    $this->send($deleted_files, 'deleted_files');
+                    $this->send(count($deleted_files), 'num_deleted_files');
+                    $this->send($failed_files, 'failed_files');
+                    $this->send($untouched_files, 'untouched_files');
+                    $this->send(SM_ROOT_DIR.'System/Cache/Pages/', 'cache_path');
+                
+                }else{
+                
+                    $this->send(false, 'show_result');
+                
+                }
+            
+            }
+            
+        }
+	    
+	}
 
 }

@@ -118,10 +118,23 @@ class SmartestEngine extends Smarty{
 	    return $this->controller;
 	}
 	
+	public function hasTemplateVariable($varname){
+	    return isset($this->_tpl_vars[$varname]);
+	}
+	
+	public function getTemplateVariable($varname){
+	    if(isset($this->_tpl_vars[$varname])){
+	        return $this->_tpl_vars[$varname];
+        }else{
+            return null;
+        }
+	}
+	
 	public function getUrlFor($route_name){
 	    try{
 	        return $this->controller->getUrlFor($route_name);
         }catch(QuinceException $e){
+            // echo $e->getmessage();
             $this->raiseError($e->getMessage());
         }
 	}
@@ -144,6 +157,14 @@ class SmartestEngine extends Smarty{
 	public function setProperty($property_name, $value){
 	    $property_name = SmartestStringHelper::toVarName($property_name);
 	    $this->_abstractPropertyHolder[$property_name] = $value;
+	}
+	
+	public function getVariable($variable_name){
+	    
+	    if(isset($this->_tpl_vars[$variable_name])){
+	        return $this->_tpl_vars[$variable_name];
+	    }
+	    
 	}
 	
 	public function run($template, $data){

@@ -1,6 +1,6 @@
 <?php
 
-class Smartest8BitInteger implements SmartestBasicType, SmartestStorableValue, SmartestSubmittableValue{
+class Smartest8BitInteger implements SmartestBasicType, SmartestStorableValue, SmartestSubmittableValue, ArrayAccess{
     
     protected $_value;
     

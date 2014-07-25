@@ -189,11 +189,15 @@ class SmartestRenderableAsset extends SmartestAsset implements SmartestDualModed
 	    if(is_array($info)){
 	        foreach($info as $key=>$value){
 	            if(!$not_empty_only || ($not_empty_only && strlen($value))){
-	                $this->_render_data->setParameter($key, $value);
+	                $this->setSingleAdditionalRenderDataParameter($key, $value);
                 }
 	        }
 	    }
 	    
+	}
+	
+	public function setSingleAdditionalRenderDataParameter($name, $value){
+	    $this->_render_data->setParameter($name, $value);
 	}
 	
 	public function getRenderData(){

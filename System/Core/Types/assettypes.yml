@@ -186,6 +186,26 @@ type:
       - {name: style, label: "Style attribute", type: SM_DATATYPE_SL_TEXT,  required: false}
       - {name: link_href, label: Link destination, type: SM_DATATYPE_URL, required: false}
       
+  SM_ASSETTYPE_INSTAGRAM_IMAGE:
+    id: SM_ASSETTYPE_INSTAGRAM_IMAGE
+    category: image
+    label: Instagram image
+    description: Exterally hosted image on Instagram
+    class: SmartestExternallyHostedVideoAsset
+    parsable: false
+    input_options:
+      - SM_ASSETINPUTTYPE_URL_INPUT
+    url_translation:
+      format: "^https?:\/\/((instagram\.com)|(instagr\.am))\/p\/([\w_-]+).*"
+      id_position: 4
+    storage:
+      type: external_translated
+    render:
+      template: System/Presentation/WebPageBuilder/display.instagram.tpl
+    param:
+      - {name: width, label: "Width", type: SM_DATATYPE_NUMERIC, required: true, default: 500}
+      - {name: height, label: "Height", type: SM_DATATYPE_NUMERIC, required: true, default: 598}
+
   SM_ASSETTYPE_SVG_IMAGE:
     id: SM_ASSETTYPE_SVG_IMAGE
     category: image
@@ -419,7 +439,7 @@ type:
     input_options:
       - SM_ASSETINPUTTYPE_URL_INPUT
     url_translation:
-      format: "^https?:\/\/(((www\.)?youtube\.com\/watch\?v=)|(youtu\.be\/))([\w]+).*"
+      format: "^https?:\/\/(((www\.)?youtube\.com\/watch\?v=)|(youtu\.be\/))([\w_-]+).*"
       id_position: 5
     storage:
       type: external_translated
@@ -561,6 +581,7 @@ type:
     class: SmartestAsset
     parsable: false
     icon: page_white_acrobat.png
+    html_friendly: false
     input_options:
       - SM_ASSETINPUTTYPE_BROWSER_UPLOAD
       - SM_ASSETINPUTTYPE_FTP_UPLOAD
@@ -578,6 +599,7 @@ type:
     label: Archive
     description: An archived folder or document
     class: SmartestAsset
+    html_friendly: false
     parsable: false
     input_options:
       - SM_ASSETINPUTTYPE_FTP_UPLOAD
@@ -598,6 +620,7 @@ type:
     label: Microsoft Word
     description: A document in Microsoft Word format
     class: SmartestAsset
+    html_friendly: false
     parsable: false
     icon: page_word.png
     input_options:
@@ -618,6 +641,7 @@ type:
     label: Microsoft Excel Spreadsheet
     description: A document in XLS Spreadsheet format
     class: SmartestAsset
+    html_friendly: false
     parsable: false
     icon: page_excel.png
     input_options:
@@ -638,6 +662,7 @@ type:
     label: Microsoft Powerpoint
     description: A document in Microsoft Powerpoint format
     class: SmartestAsset
+    html_friendly: false
     parsable: false
     icon: page_white_powerpoint.png
     input_options:

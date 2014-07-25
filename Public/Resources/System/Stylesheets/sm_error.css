@@ -1,0 +1,49 @@
+body{
+    text-align:center;
+    background-color:#999;
+    margin:0px;
+    padding:0px;
+    font-size:100%;
+    padding-top:20px;
+    font-family:Helvetica, Arial, sans-serif;
+}
+
+a img{
+    border:0px;
+}
+
+div.breaker{
+    clear:both;
+    height:0px;
+    width:auto;
+}
+
+#fixed-width{
+    
+    width:980px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:left;
+    background-color:#fff;
+    padding:10px;
+    
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    
+    box-shadow: 0px 10px 22px #444;
+    -moz-box-shadow: 0px 10px 22px #444;
+    -webkit-box-shadow: 0px 10px 22px #444;
+    
+}
+
+#fixed-width h1{
+    margin:0 0 10px 0;
+}
+
+#fixed-width p{
+    margin:0 0 7px 0;
+}
+
+#fixed-width p.technical{
+    color:#c20;
+}

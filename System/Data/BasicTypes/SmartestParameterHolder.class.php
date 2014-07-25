@@ -12,18 +12,22 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
     }
     
     public function loadArray($array, $create_phobjects=true){
-        foreach($array as $key=>$value){
-            if(is_array($value)){
-                if($create_phobjects){
-                    $data = new SmartestParameterHolder('Param: '.$key, $this->_read_only);
-                    $data->loadArray($value, true);
-                    $this->setParameter($key, $data);
+        if(is_array($array)){
+            foreach($array as $key=>$value){
+                if(is_array($value)){
+                    if($create_phobjects){
+                        $data = new SmartestParameterHolder('Param: '.$key, $this->_read_only);
+                        $data->loadArray($value, true);
+                        $this->setParameter($key, $data);
+                    }else{
+                        $this->setParameter($key, $value);
+                    }
                 }else{
                     $this->setParameter($key, $value);
                 }
-            }else{
-                $this->setParameter($key, $value);
             }
+        }else{
+            // tried to load something that wasn't an array. Log?
         }
     }
     
@@ -35,6 +39,7 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
         $this->loadArray($d->getParameters());
     }
     
+    // This function is part of the SmartestBasicType API
     public function setValue($value){
         if(is_array($value)){
             $this->_data = $value;
@@ -43,6 +48,7 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
         }
     }
     
+    // This function is part of the SmartestBasicType API
     public function getValue(){
         return $this->getData();
     }
@@ -79,6 +85,15 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
         $v = $this->getParameter($n);
         if(is_object($v) && $v instanceof SmartestBasicType){
             return $v->isPresent() ? $v : false;
+        }else{
+            return $v;
+        }
+    }
+    
+    public function getParameterOrNull($n){
+        $v = $this->getParameter($n);
+        if(is_object($v) && $v instanceof SmartestBasicType){
+            return $v->isPresent() ? $v : null;
         }else{
             return $v;
         }
@@ -189,7 +204,10 @@ class SmartestParameterHolder implements ArrayAccess, IteratorAggregate, Countab
             return "<code>".print_r($this->_data, true)."</code>";
         }
         
-        return $this->getParameterOrFalse($offset);
+        if($this->hasParameter($offset)){
+            return $this->getParameter($offset);
+        }
+        // return $this->getParameterOrNull($offset);
     }
     
     public function offsetExists($offset){

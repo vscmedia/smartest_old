@@ -9,9 +9,9 @@
  * @author     Your name here
  */
 
-class SmartestApplication extends SmartestBaseApplication{
+class SmartestApplication extends SmartestUserApplication{
 
-	// Add any custom API functionality here and it will be common to all your applications
+	// Add any custom API functionality here and it will be common to all your custom applications
 	
 	protected function __myConstructor(){
 	    

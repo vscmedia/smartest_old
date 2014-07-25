@@ -181,6 +181,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                 $container_def = $this->getPage()->getContainerDefinition($container_name, $this->getDraftMode());
                 
+                $this->_tpl_vars['this'] = new SmartestPageRenderingDataRequestHandler($this->page);
                 $this->_tpl_vars['sm_draft_mode'] = $this->getDraftMode();
                 $this->run($container_def->getTemplateFilePath(), array());
                 
@@ -193,13 +194,13 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
 		                // print_r($container_def->getTemplate());
 		                    
     	    		    if(is_object($container_def->getTemplate())){
-        			        $edit_link .= "<a title=\"Click to edit template: ".$container_def->getTemplate()->getUrl()."\" href=\"".$this->_request_data->g('domain')."templates/editTemplate?template=".$container_def->getTemplate()->getId()."&amp;type=SM_ASSETTYPE_CONTAINER_TEMPLATE&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this template--></a>";
+        			        $edit_link .= "<a class=\"sm-edit-button\" title=\"Click to edit template: ".$container_def->getTemplate()->getUrl()."\" href=\"".$this->_request_data->g('domain')."templates/editTemplate?template=".$container_def->getTemplate()->getId()."&amp;type=SM_ASSETTYPE_CONTAINER_TEMPLATE&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\">&nbsp;<img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this template--></a>";
         			    }
 	                    
 	                    if($this->getPage() instanceOf SmartestItemPage){
-    			            $edit_link .= "<a title=\"Click to edit definition for container: ".$container_name."\" href=\"".$this->_request_data->g('domain')."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;item_id=".$this->getPage()->getSimpleItem()->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_red.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+    			            $edit_link .= "<a class=\"sm-edit-button\" title=\"Click to edit definition for container: ".$container_name."\" href=\"".$this->_request_data->g('domain')."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;item_id=".$this->getPage()->getSimpleItem()->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\">&nbsp;<img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_red.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
 			            }else{
-			                $edit_link .= "<a title=\"Click to edit definition for container: ".$container_name."\" href=\"".$this->_request_data->g('domain')."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_red.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+			                $edit_link .= "<a class=\"sm-edit-button\" title=\"Click to edit definition for container: ".$container_name."\" href=\"".$this->_request_data->g('domain')."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\">&nbsp;<img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_red.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
 			            }
 
 			        }
@@ -213,6 +214,26 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             }else{
                 
                 // container is undefined
+                
+                if($this->_request_data->g('action') == "renderEditableDraftPage"){
+		    
+    			    $edit_link = '';
+    			    
+    			    if(constant("SM_OPTIONS_ALLOW_CONTAINER_EDIT_PREVIEW_SCREEN")){
+    			        
+		                if($this->getPage() instanceOf SmartestItemPage){
+    			            $edit_link .= "<a class=\"sm-edit-button\" title=\"Click to edit definition for container: ".$container_name."\" href=\"".$this->_request_data->g('domain')."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;item_id=".$this->getPage()->getSimpleItem()->getId()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\">&nbsp;<img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_red.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+			            }else{
+			                $edit_link .= "<a class=\"sm-edit-button\" title=\"Click to edit definition for container: ".$container_name."\" href=\"".$this->_request_data->g('domain')."websitemanager/defineContainer?assetclass_id=".$container_name."&amp;page_id=".$this->page->getWebid()."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\">&nbsp;<img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_red.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+			            }
+
+			        }
+		    
+    		    }else{
+    			    $edit_link = "<!--edit link-->";
+    		    }
+    		    
+    		    return $edit_link;
                 
             }
             
@@ -287,6 +308,47 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
     }
     
     public function renderPlaceholder($placeholder_name, $params, $parent){
+        
+        if(isset($params['display']) && SmartestStringHelper::isFalse($params['display'])){
+            
+            if($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment"){
+            
+                $ph = new SmartestPlaceholder;
+                
+                if(isset($params['showcontrol']) && SmartestStringHelper::isFalse($params['showcontrol'])){
+                    
+                }else{
+                    
+                    if($ph->findBy('name', $placeholder_name)){
+                        
+                        $show_edit_link = isset($params['showeditbutton']) ? (SmartestStringHelper::toRealBool($params['showeditbutton']) && $this->_request_data->g('action') == "renderEditableDraftPage") : ($ph->isEditableFromPreview() && $this->_request_data->g('action') == "renderEditableDraftPage");
+                        
+                        if($show_edit_link){
+                        
+                            if($this->getPage() instanceOf SmartestItemPage){
+                                $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid().'&amp;item_id='.$this->getPage()->getSimpleItem()->getId();
+                            }else{
+                                $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid();
+                            }
+                        
+                            $edit_link = "<a class=\"sm-edit-button\" title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
+                            return $edit_link;
+                        
+                        }
+                        
+                    }else{
+                        
+                        $edit_link = "<a class=\"sm-edit-button\" title=\"Placeholder ".$placeholder_name." does not exist. Click to create.\" href=\"".$this->_request_data->g('domain')."websitemanager/addPlaceholder?placeholder_name=".$placeholder_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/error.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+                        return $edit_link;
+                        
+                    }
+                
+                }
+            
+            }
+            
+            return;
+        }
         
         $assetclass_types = SmartestDataUtility::getAssetClassTypes();
         
@@ -412,7 +474,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                         }else{
                             $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$placeholder->getPlaceholder()->getName()."&amp;page_id=".$this->page->getWebid();
                         }
-    			        $edit_link = "<a title=\"Click to edit definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
+    			        $edit_link = "<a class=\"sm-edit-button\" title=\"Click to edit definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
     			        // $edit_link .= "<a title=\"Click to clear definition for placeholder: ".$placeholder->getPlaceholder()->getLabel()." (".$placeholder->getPlaceholder()->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
     		        }else{
     			        $edit_link = "<!--edit link-->";
@@ -426,11 +488,11 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             
         }else{
             
-            if($this->_request_data->g('action') == "renderEditableDraftPage"){
+            if($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment"){
             
                 $ph = new SmartestPlaceholder;
                 
-                if(isset($params['showcontrol']) && SmartestStringHelper::isFalse($params['showcontrol'])){
+                if((isset($params['showcontrol']) && SmartestStringHelper::isFalse($params['showcontrol'])) || (isset($params['display']) && SmartestStringHelper::isFalse($params['display']))){
                     
                 }else{
                     
@@ -446,14 +508,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                                 $edit_url = $this->_request_data->g('domain')."websitemanager/definePlaceholder?assetclass_id=".$ph->getName()."&amp;page_id=".$this->page->getWebid();
                             }
                         
-                            $edit_link = "<a title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
+                            $edit_link = "<a class=\"sm-edit-button\" title=\"Click to edit definition for placeholder: ".$ph->getLabel()." (".$ph->getType().")\" href=\"".$edit_url."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Swap this file--></a>";
                             return $edit_link;
                         
                         }
                         
                     }else{
                         
-                        $edit_link = "<a title=\"Placeholder ".$placeholder_name." does not exist. Click to create.\" href=\"".$this->_request_data->g('domain')."websitemanager/addPlaceholder?placeholder_name=".$placeholder_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/error.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+                        $edit_link = "<a class=\"sm-edit-button\" title=\"Placeholder ".$placeholder_name." does not exist. Click to create.\" href=\"".$this->_request_data->g('domain')."websitemanager/addPlaceholder?placeholder_name=".$placeholder_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/error.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
                         return $edit_link;
                         
                     }
@@ -470,11 +532,13 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
         if($this->_context == SM_CONTEXT_CONTENT_PAGE){
             
+            $itemspace_name = SmartestStringHelper::toVarName($itemspace_name);
+            
             if($this->getPage()->hasItemSpaceDefinition($itemspace_name, $this->getDraftMode())){
             
                 $def = $this->getPage()->getItemSpaceDefinition($itemspace_name, $this->getDraftMode());
                 
-                $item_name = isset($params['item_name']) ? $params['item_name'] : 'item';
+                $item_name = isset($params['item_name']) ? SmartestStringHelper::toVarName($params['item_name']) : 'item';
                 
                 // Tell Smartest that this particular item appears on this page.
                 // Strictly speaking, this information is already stored as the itemspace def, 
@@ -515,7 +579,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     $this->_comment("ItemSpace '".$itemspace_name."' does not use a template.");
                     $item = $def->getItem(false, $this->getDraftMode());
         	        $item->setDraftMode($this->getDraftMode());
-        	        $this->assign($itemspace_name.'_item', $item);
+        	        $item_name = isset($params['item_name']) ? SmartestStringHelper::toVarName($params['item_name']) : $itemspace_name.'_item';
+        	        $this->assign($item_name, $item);
         	        return $this->renderItemEditButton($item->getId()).$this->renderItemSpaceDefineButton($itemspace_name);
                 
                 }
@@ -545,7 +610,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 $url .= '&amp;from=pagePreview&amp;page_webid='.$this->_request_data->g('request_parameters')->g('page_id');
             }
             // print_r($this->_request_data);
-            $html = '<a href="'.$url.'" target="_top" title="Edit item ID '.$item_id.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/package_small.png" alt="Edit item ID '.$item_id.'" /></a>';
+            $html = '<a class="sm-edit-button" href="'.$url.'" target="_top" title="Edit item ID '.$item_id.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/package_small.png" alt="Edit item ID '.$item_id.'" /></a>';
         }else{
             $html = '';
         }
@@ -566,7 +631,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 $url .= '&amp;from=pagePreview&amp;page_id='.$this->_request_data->g('request_parameters')->g('page_id');
             }
             
-            $html = '<a href="'.$url.'" target="_top" title="Edit itemspace '.$itemspace_name.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/arrow_refresh_blue.png" alt="Edit itemspace'.$itemspace_name.'" /></a>';
+            $html = '<a class="sm-edit-button" href="'.$url.'" target="_top" title="Edit itemspace '.$itemspace_name.'"><img src="'.$this->_request_data->g('domain').'Resources/Icons/arrow_refresh_blue.png" alt="Edit itemspace'.$itemspace_name.'" /></a>';
         }else{
             $html = '';
         }
@@ -581,7 +646,9 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             $fields = $this->_tpl_vars['this']->getFieldDefinitions();
             $value = $fields[$field_name];
         
-            if($this->getDraftMode()){
+            $show_edit_link = !(isset($params['showcontrol']) && SmartestStringHelper::isFalse($params['showcontrol']));
+            
+            if($this->getDraftMode() && $show_edit_link){
 			    $edit_link = $this->renderEditFieldButton($field_name, $params);
 		    }else{
 			    $edit_link = '';
@@ -605,10 +672,10 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         
             $markup = '<!--edit link-->';
         
-            if($this->_tpl_vars['this']->getFieldDefinitions()->hasParameter($field_name)){
+            if($this->getPage()->getSite()->fieldExists($field_name)/* $this->_tpl_vars['this']->getFieldDefinitions()->hasParameter($field_name) */){
         
-                if($this->_request_data->g('action') == "renderEditableDraftPage"){
-    		        $markup = "&nbsp;<a title=\"Click to edit definitions for field: ".$field_name."\" href=\"".$this->_request_data->g('domain')."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
+                if($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment"){
+    		        $markup = "<a class=\"sm-edit-button\" title=\"Click to edit definitions for field: ".$field_name."\" href=\"".$this->_request_data->g('domain')."metadata/defineFieldOnPage?page_id=".$this->getPage()->getWebid()."&amp;assetclass_id=".$field_name."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\">&nbsp;<img src=\"".$this->_request_data->g('domain')."Resources/Icons/pencil.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /></a>";
     	        }
 	    
             }
@@ -641,8 +708,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 
                     foreach($data as $item){
                         
-                        if($this->_request_data->g('action') == "renderEditableDraftPage"){
-        				    $edit_link = "<a title=\"Click to edit ".$item['_model']['name'].": ".$item['name']."\" href=\"".$this->_request_data->g('domain')."datamanager/editItem?item_id=".$item['id']."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this item--></a>";
+                        if($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment"){
+        				    $edit_link = "<a class=\"sm-edit-button\" title=\"Click to edit ".$item['_model']['name'].": ".$item['name']."\" href=\"".$this->_request_data->g('domain')."datamanager/editItem?item_id=".$item['id']."&amp;from=pagePreview\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_small.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this item--></a>";
         			    }else{
         				    $edit_link = "<!--edit link-->";
         			    }
@@ -686,8 +753,8 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             
             // echo 'hello';
             
-            if($this->_request_data->g('action') == "renderEditableDraftPage"){
-			    $edit_link = "<a title=\"Click to edit definitions for embedded list: ".$list->getName()."\" href=\"".$this->_request_data->g('domain')."websitemanager/defineList?assetclass_id=".$list->getName()."&amp;page_id=".$this->getPage()->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_blue.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this list--></a>";
+            if($this->_request_data->g('action') == "renderEditableDraftPage" || $this->_request_data->g('action') == "pageFragment"){
+			    $edit_link = "<a class=\"sm-edit-button\" title=\"Click to edit definitions for embedded list: ".$list->getName()."\" href=\"".$this->_request_data->g('domain')."websitemanager/defineList?assetclass_id=".$list->getName()."&amp;page_id=".$this->getPage()->getWebid()."\" style=\"text-decoration:none;font-size:11px\" target=\"_top\"><img src=\"".$this->_request_data->g('domain')."Resources/Icons/arrow_refresh_blue.png\" alt=\"edit\" style=\"display:inline;border:0px;\" /><!-- Edit this list--></a>";
 		    }else{
 			    $edit_link = "<!--edit link-->";
 		    }
@@ -820,7 +887,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         $this->caching = false;
         $this->_repeat_char_length_aggr = 0;
         
-        if(is_array($params['from']) || $params['from'] instanceof SmartestArray){
+        if(is_array($params['from']) || $params['from'] instanceof SmartestArray || $params['from'] instanceof SmartestCmsItemSet || ($params['from'] instanceof SmartestAssetGroup && $params['from']->isGallery())){
             return $params['from'];
         }
         
@@ -853,15 +920,14 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                 break;
             
             case "gallery":
-            // zxczcxzc
             $g = new SmartestAssetGroup;
             if($g->findBy('name', $name, $this->page->getSiteId())){
                 
                 if($g->getIsGallery()){
-                    if(isset($params['skip_memberships']) && !SmartestStringHelper::toRealBool($params['skip_memberships'])){
-                        return $g->getMemberships();
-                    }else{
+                    if(isset($params['skip_memberships']) && SmartestStringHelper::toRealBool($params['skip_memberships'])){
                         return $g->getMembers();
+                    }else{
+                        return $g->getMemberships();
                     }
                 }else{
                     // the file group is not a gallery
@@ -877,6 +943,12 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
             
             $g = new SmartestPageGroup;
             if($g->findBy('name', $name, $this->page->getSiteId())){
+                if(isset($params['assignhighlight'])){
+                    $highlighted_page = $g->determineHighlightedMemberOnPage($this->page, $this->getDraftMode());
+                    if($highlighted_page){
+                        $this->assign($params['assignhighlight'], $highlighted_page);
+                    }
+                }
                 return $g->getMembers($this->getDraftMode());
             }else{
                 // no file group with that name
@@ -932,7 +1004,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
                     $limit = null;
                 }
                 
-                if($set->findBy('name', $name, $this->page->getSiteId()) || $this->getDataSetsHolder()->h($name)){
+                if($set->findBy('name', $name, $this->page->getSiteId()) || $this->getDataSetsHolder()->h((string) $name)){
         		    
         		    // echo "site ".$this->page->getSiteId();
         		    $dah = new SmartestDataAppearanceHelper;
@@ -945,6 +1017,7 @@ class SmartestWebPageBuilder extends SmartestBasicRenderer{
         		    
         		}else if(preg_match('/^all_/', $name)){
         		    $model_varname = substr($name, 4);
+        		    // TODO: if the set name is not found, but begins with 'all_', get all the items of the model whose name follows, if any
         		}else{
         		    $items = array();
         		}

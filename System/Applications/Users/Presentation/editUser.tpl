@@ -36,9 +36,10 @@
   </div>
 
   <div class="edit-form-row">
-    <div class="form-section-label">Username </div>
-    {if $allow_username_change}
-    <input type="text" style="width:200px" name="username" id="username" autocomplete="off" value="{$user.username}" /><div class="form-hint">Letters, numbers, dots and underscores only please</div>
+    <div class="form-section-label"><script type="text/javascript">document.write('&#x55;&#x73;&#x65;');document.write('&#x72;&#x6e;&#x61;&#x6d;&#x65;')</script> </div>
+    <input type="text" name="username" style="position:absolute;top:-100px" />
+	{if $allow_username_change}
+    <input type="text" style="width:200px" name="thing_that_aint_u5ern4me" id="thing-that-aint-u5ern4me" autocomplete="off" value="{$user.username}" /><div class="form-hint">Letters, numbers, dots and underscores only please</div>
     {else}{$user.username}{/if}
   </div>
   
@@ -54,7 +55,7 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">Email address </div>
-    <input type="text" name="user_email" id="user_email" value="{$user.email}" />
+    <input type="text" name="email" id="email" value="{$user.email}" />
   </div>
   
   <div class="edit-form-row">
@@ -64,7 +65,7 @@
   
   <div class="edit-form-row">
     <div class="form-section-label">About the user </div>
-    <textarea name="user_bio" style="width:500px;height:60px">Share a little biographical information to fill out your profile. This may be shown publicly.</textarea>
+    <textarea name="user_bio" style="width:500px;height:60px">{$user.bio}</textarea>
   </div>
   
 {if $require_password_changes && $user.id != $_user.id}

@@ -113,6 +113,13 @@ var itemsList = Sortable.create('options_grid', {
 	<li class="permanent-action"><a href="#" onclick="assets.workWithItem('downloadAsset');" class="right-nav-link"><img src="{$domain}Resources/Icons/disk.png" border="0" alt="" /> Download This File</a></li>
 </ul>
 
+{if $request_parameters.item_id && $request_parameters.from}
+<ul class="actions-list">
+  <li><b>Workflow options</b></li>
+  <li class="permanent-action"><a href="#" onclick="window.location='{$domain}datamanager/editItem?item_id={$request_parameters.item_id}'"><img border="0" src="{$domain}Resources/Icons/tick.png"> Return to editing item</a></li>
+</ul>
+{/if}
+
 <ul class="actions-list" id="non-specific-actions">
   <li><b>File group options</b></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}smartest/file/new?group_id={$group.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/add.png" border="0" alt="" /> Add a file to this group</a></li>

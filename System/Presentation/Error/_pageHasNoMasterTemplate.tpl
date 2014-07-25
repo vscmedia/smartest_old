@@ -5,7 +5,7 @@
   <head>
   	<title>Welcome to Smartest!</title>
   	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-  	<link rel="stylesheet" href="<?sm:$domain:?>Resources/System/Stylesheets/sm_welcome.css" />
+  	<link rel="stylesheet" href="<?sm:$domain:?>Resources/System/Stylesheets/sm_error.css" />
   </head>
   <body>
 

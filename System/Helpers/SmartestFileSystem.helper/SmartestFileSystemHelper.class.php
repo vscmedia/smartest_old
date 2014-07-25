@@ -8,7 +8,7 @@ define('SM_DIR_SCAN_DIRECTORIES', 2);
 
 class SmartestFileSystemHelper extends SmartestHelper{
 
-	static function getDirectoryContents($directory, $show_invisible=false, $type=0){
+	public static function getDirectoryContents($directory, $show_invisible=false, $type=0){
 	
 		$files = array();
 		
@@ -38,11 +38,11 @@ class SmartestFileSystemHelper extends SmartestHelper{
 		}
 	}
 	
-	static function include_all($directory, $recursive=false, $exclusions=''){
+	public static function include_all($directory, $recursive=false, $exclusions=''){
 		$items = self::getDirectoryContents($directory);
 	}
 	
-	static function include_group(){
+	public static function include_group(){
 		
 		$files = func_get_args();
 		
@@ -94,17 +94,17 @@ class SmartestFileSystemHelper extends SmartestHelper{
 		
 	}
 	
-	static function getFileName($path, $s='/'){ // sysnonym for PHP's basename(), but works on non-existent files
+	public static function getFileName($path, $s='/'){ // sysnonym for PHP's basename(), but works on non-existent files
 	    $separator = in_array($s, array('/', '\\', ':')) ? $s : '/';
 		$fp = explode($separator, $path);
 		return end($fp);
 	}
 	
-	static function getDirectoryName($file){
+	public static function getDirectoryName($file){
 		
 	}
 	
-	static function getFileSize($file_path){
+	public static function getFileSize($file_path){
 	    if(file_exists(utf8_decode($file_path))){
 	        $size = filesize(utf8_decode($file_path));
 	        return $size;
@@ -113,7 +113,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function getFileSizeFormatted($file_path){
+	public static function getFileSizeFormatted($file_path){
 	    
 	    $size = self::getFileSize($file_path);
 	    
@@ -157,7 +157,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function isSafeFileName($file_path, $intended_dir=''){
+	public static function isSafeFileName($file_path, $intended_dir=''){
 	    
 	    if(!strlen($intended_dir)){
 	        $intended_dir = constant('SM_ROOT_DIR');
@@ -188,7 +188,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    
 	}
 	
-	static function load($path, $binary_safe=false){
+	public static function load($path, $binary_safe=false){
 	    
 	    if(is_dir(utf8_decode($path))){
 	        return self::getDirectoryContents($path);
@@ -218,7 +218,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function copy($old_path, $new_path){
+	public static function copy($old_path, $new_path){
 	    if(@copy(utf8_decode($old_path), $new_path)){
 	        return true;
 	    }else{
@@ -226,7 +226,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function move($old_path, $new_path){
+	public static function move($old_path, $new_path){
 	    if(@copy(utf8_decode($old_path), $new_path)){
 	        return unlink($old_path);
 	    }else{
@@ -234,7 +234,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    }
 	}
 	
-	static function save($path, $data, $binary_safe=false){
+	public static function save($path, $data, $binary_safe=false){
 	    
 	    if($binary_safe){
             $mode = 'wb';
@@ -256,7 +256,19 @@ class SmartestFileSystemHelper extends SmartestHelper{
         }
 	}
 	
-	static function getUniqueFileName($full_path){
+	public static function saveToNewFile($path, $data, $binary_safe=false){
+	    
+	    $file_name = self::getUniqueFileName($path);
+	    
+	    if(self::save($file_name, $data, $binary_safe)){
+	        return $file_name;
+	    }else{
+	        return false;
+	    }
+	    
+	}
+	
+	public static function getUniqueFileName($full_path){
 	    
 	    if(!strlen($full_path)){
 	        $full_path = SM_ROOT_DIR.'Public'.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'Assets'.DIRECTORY_SEPARATOR.'Untitled_File.tmp';
@@ -338,15 +350,15 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    
 	}
 	
-	static function removeDotSuffix($file){
+	public static function removeDotSuffix($file){
 	    return SmartestStringHelper::removeDotSuffix($file);
 	}
 	
-	static function getDotSuffix($file){
+	public static function getDotSuffix($file){
 		return SmartestStringHelper::getDotSuffix($file);
 	}
 	
-	static function hasDotSuffix($file){
+	public static function hasDotSuffix($file){
 	    return (bool) strlen(SmartestStringHelper::getDotSuffix($file));
 	}
 	
@@ -371,7 +383,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
     
         curl_close ($ch);
     
-        return self::save($local_path, $rawdata);
+        return self::saveToNewFile($local_path, $rawdata, true);
         
 	}
 	
@@ -382,7 +394,7 @@ class SmartestFileSystemHelper extends SmartestHelper{
 	    return substr($file_path, 0, $end);
 	}
 	
-	static function setSuffix(){
+	public static function setSuffix(){
 		
 	}
 

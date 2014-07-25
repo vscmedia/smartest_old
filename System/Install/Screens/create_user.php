@@ -32,6 +32,8 @@
         <input type="password" name="smartest_password_2" />
     </div>
     
+    <div class="v-spacer"></div>
+    
     <div class="form-section-label">Personal Details</div>
     
     <div class="hint" style="padding-bottom:10px">These details help Smartest to be a bit more friendly and personalized.</div>

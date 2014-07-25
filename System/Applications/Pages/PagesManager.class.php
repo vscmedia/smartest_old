@@ -391,7 +391,9 @@ class PagesManager{
 	public function getPageTemplateAssetClasses($page_id, $version="draft", $item_id=false){
 		
 		$page_id = $this->getPageIdFromPageWebId($page_id);
-		$tree = $this->getPageAssetClassTree($page_id, $version, $item_id);
+		$unused_field_defs = $this->getUnusedFieldDefinitions($page_id);
+		$tree = array_merge($this->getUnusedFieldDefinitions($page_id), $this->getPageAssetClassTree($page_id, $version, $item_id));
+		// print_r($tree);
 		return array("tree"=>$tree, "list"=>array());
 		
 	}
@@ -399,7 +401,6 @@ class PagesManager{
 	public function getPageAssetClassTree($page_id, $version, $item_id=false){
 	
 		// $field = ($version == "live") ? "page_live_template" : "page_draft_template";
-		
 		// $template = $this->database->specificQuery($field, "page_id", $page_id, "Pages");
 		$page = new SmartestPage;
 		
@@ -1478,13 +1479,21 @@ class PagesManager{
 		}
 	}
 	
+	public function getUnusedFieldDefinitions($page_id){
+	    $defs = array();
+	    return $defs;
+	}
 	
 	public function getTemplateFieldNames($template_file_path){
 		if(is_file($template_file_path)){
 			if($template_contents = file_get_contents($template_file_path)){
+				
 				$regexp = preg_match_all("/<\?sm:(edit_)?field.+name=\"([\w-_]+?)\".*:\?>/i", $template_contents, $matches);
-
-				$foundClasses = $matches[2];
+                $foundClasses = $matches[2];
+                
+                // echo  $template_contents;
+                // $regexp2 = preg_match_all("/\$this\.fields\.([a-z0-9_]+)/i", $template_contents, $matches2);
+                // print_r($matches2[1]);
 
 				return $foundClasses;
 			}else{

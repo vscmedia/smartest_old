@@ -93,7 +93,7 @@ class SmartestItemPage extends SmartestPage{
 	            $url = '';
 	        }else{
 	            // Return a dynamic one.
-	            $url = 'website/renderPageFromId?page_id='.$this->getWebid().'&amp;item_id='.$this->_simple_item->getId();
+	            $url = 'website/renderPageFromId?page_id='.$this->getWebid().'&amp;item_id='.$this->_simple_item->getWebId();
             }
             
             return $url;
@@ -164,7 +164,7 @@ class SmartestItemPage extends SmartestPage{
                 if($this->getType() == 'ITEMCLASS' || $this->getType() == 'SM_PAGETYPE_ITEMCLASS'){
                 
                     $sql = "SELECT * FROM Items WHERE item_".$this->_identifying_field_name."='".$this->_identifying_field_value."'";
-            
+                    
                     // if($this->getType() == 'ITEMCLASS'){
                         $sql .= " AND item_itemclass_id='".$this->getDataSetId()."'";
                     // }
@@ -175,8 +175,8 @@ class SmartestItemPage extends SmartestPage{
                         $sql .= " AND item_public='TRUE'";
                     }
         
-                    $sql .= " AND item_deleted !='1' LIMIT 1";
-            
+                    $sql .= " AND item_deleted !='1' ORDER BY item_id DESC LIMIT 1";
+                    
                     $result = $this->database->queryToArray($sql);
             
                     if(count($result)){
@@ -296,7 +296,7 @@ class SmartestItemPage extends SmartestPage{
 	        return $this->_principal_item;
 	        
 	        case "fallback_url":
-	        return "website/renderPageFromId?page_id=".$this->getWebid().'&item_id='.$this->_simple_item->getId();
+	        return "website/renderPageFromId?page_id=".$this->getWebid().'&item_id='.$this->_simple_item->getWebId();
 	        
 	        case "link_code":
 	        return "[[".SmartestStringHelper::toVarName($this->_simple_item->getModel()->getName()).":".$this->_simple_item->getSlug()."]]";

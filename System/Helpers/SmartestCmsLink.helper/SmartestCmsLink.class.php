@@ -68,6 +68,10 @@ class SmartestCmsLink extends SmartestHelper{
             
             $this->setDestinationFromProvidedTag($this->_destination_properties->getParameter('tag'));
             
+        }else if($this->_destination_properties->getParameter('from_author')){
+          
+            $this->setDestinationFromProvidedAuthor($this->_destination_properties->getParameter('author'));
+        
         }else{
         
             $this->setTypeFromNameSpace($this->_destination_properties->getParameter('namespace'));
@@ -94,12 +98,14 @@ class SmartestCmsLink extends SmartestHelper{
                 
                     case "page":
                     $this->setType(SM_LINK_TYPE_PAGE);
+                    $this->addClass('sm-link-internal');
                     break;
                 
                     case "metapage":
                     case "item":
                     $this->setType(SM_LINK_TYPE_METAPAGE);
                     $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_AUTO);
+                    $this->addClass('sm-link-internal');
                     break;
                 
                     case "image":
@@ -110,6 +116,7 @@ class SmartestCmsLink extends SmartestHelper{
                     case "download":
                     case "dl":
                     $this->setType(SM_LINK_TYPE_DOWNLOAD);
+                    $this->addClass('sm-link-download');
                     break;
                 
                     case "tag":
@@ -124,6 +131,7 @@ class SmartestCmsLink extends SmartestHelper{
                     
                     case "mailto":
                     $this->setType(SM_LINK_TYPE_MAILTO);
+                    $this->addClass('sm-link-mailto');
                     break;
                     
                 }
@@ -136,6 +144,7 @@ class SmartestCmsLink extends SmartestHelper{
 
                 $this->setType(SM_LINK_TYPE_METAPAGE);
                 $this->setNamespace($ns);
+                $this->addClass('sm-link-internal');
                 $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_USER);
             
                 return true;
@@ -144,6 +153,7 @@ class SmartestCmsLink extends SmartestHelper{
             
                 if(substr($this->_destination_properties->getParameter('destination'), 0, 4) == 'http'){
                     $this->setType(SM_LINK_TYPE_EXTERNAL);
+                    $this->addClass('sm-link-external');
                     $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_URL);
                     return true;
                 }
@@ -209,6 +219,14 @@ class SmartestCmsLink extends SmartestHelper{
         return $this->_markup_attributes->getParameter($attribute_name);
     }
     
+    public function setMarkupAttribute($attribute_name, $attribute_value){
+        return $this->_markup_attributes->setParameter($attribute_name, $attribute_value);
+    }
+    
+    public function clearMarkupAttribute($attribute_name){
+        return $this->_markup_attributes->clearParameter($attribute_name);
+    }
+    
     public function getDestinationProperties(){
         return $this->_destination_properties;
     }
@@ -259,6 +277,7 @@ class SmartestCmsLink extends SmartestHelper{
             
             $d = $item->getMetaPage();
             $d->setPrincipalItem($item);
+            $this->addClass('sm-link-internal');
         
             $this->_destination = $d;
         
@@ -273,6 +292,7 @@ class SmartestCmsLink extends SmartestHelper{
         $this->setType(SM_LINK_TYPE_PAGE);
         $this->setNamespace('page');
         $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_AUTO);
+        $this->addClass('sm-link-internal');
         
         $this->_destination = $page;
         
@@ -283,6 +303,7 @@ class SmartestCmsLink extends SmartestHelper{
         $this->setType(SM_LINK_TYPE_TAG);
         $this->setNamespace('tag');
         $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_AUTO);
+        $this->addClass('sm-link-internal');
         
         $this->_destination = $tag;
         
@@ -293,6 +314,7 @@ class SmartestCmsLink extends SmartestHelper{
         $this->setType(SM_LINK_TYPE_AUTHOR);
         $this->setNamespace('author');
         $this->_destination_properties->setParameter('format', SM_LINK_FORMAT_AUTO);
+        $this->addClass('sm-link-internal');
         
         $this->_destination = $user;
         
@@ -314,6 +336,44 @@ class SmartestCmsLink extends SmartestHelper{
         
         if($s->find($this->getSiteId())){
             return $s;
+        }
+        
+    }
+    
+    public function addClass($class_name){
+        
+        $classes = explode(' ', $this->getMarkupAttribute('class'));
+        
+        if(in_array($class_name, $classes)){
+            // class was already applied
+            return false;
+        }else{
+            // class was added
+            $classes[] = $class_name;
+            $this->setMarkupAttribute('class', trim(implode(' ', $classes)));
+            return true;
+        }
+        
+    }
+    
+    public function removeClass($class_name){
+        
+        $classes = explode(' ', $this->getMarkupAttribute('class'));
+        
+        if(in_array($class_name, $classes)){
+            
+            $key = array_search($class_name, $classes);
+            unset($classes[$key]);
+            if(count($classes)){
+                $this->setMarkupAttribute('class', trim(implode(' ', $classes)));
+                return true;
+            }else{
+                $this->clearMarkupAttribute('class');
+            }
+            
+        }else{
+            // class not applied
+            return false;
         }
         
     }
@@ -476,7 +536,7 @@ class SmartestCmsLink extends SmartestHelper{
     
     public function shouldOmitAnchorTag($draft_mode=false){
         // return !$this->_preview_mode && ($this->isInternalPage() && $this->shouldGoCold() && is_object($this->_host_page) && $this->_page->getId() == $this->_host_page->getId());
-        if(!$this->_destination_properties->getParameter('from_item') && !$this->_destination_properties->getParameter('from_page') && !$this->_destination_properties->getParameter('from_tag') && (!$this->_destination_properties->getParameter('destination') || $this->_destination_properties->getParameter('destination') == '#')){
+        if(!$this->_destination_properties->getParameter('from_item') && !$this->_destination_properties->getParameter('from_page') && !$this->_destination_properties->getParameter('from_tag') && !$this->_destination_properties->getParameter('from_author') && (!$this->_destination_properties->getParameter('destination') || $this->_destination_properties->getParameter('destination') == '#')){
             return true;
         }else{
             if($this->getHostPage()){
@@ -552,8 +612,8 @@ class SmartestCmsLink extends SmartestHelper{
                 } */
                 
                 // return $a->render($draft_mode);
-                
-                if($this->_render_data->getParameter('with') instanceof SmartestImage){
+								
+								if($this->_render_data->getParameter('with') instanceof SmartestImage){
                     
                     $img = $this->_render_data->getParameter('with');
                 
@@ -574,31 +634,96 @@ class SmartestCmsLink extends SmartestHelper{
                     
                 }
                 
+				// print_r($this->_render_data->getParameter('img_scale_ratio'));
+				
                 if(is_numeric($this->_render_data->getParameter('img_width')) && is_numeric($this->_render_data->getParameter('img_height'))){
                     
-                    if($this->_render_data->hasParameter('img_scale') && !SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_scale'))){
-                        $img = $img->getResizedVersionNoScale($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
-                    }else if($this->_render_data->hasParameter('img_scale') && $this->_render_data->getParameter('img_scale') == 'constrain'){
-                        $img = $img->getConstrainedVersionWithin($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
-                    }else{
-                        $img = $img->resizeAndCrop($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
-                    }
+					if(!$this->_render_data->hasParameter('create_resized_image') || SmartestStringHelper::toRealBool($this->_render_data->getParameter('create_resized_image'))){
+	                    
+						if($this->_render_data->hasParameter('img_scale') && !SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_scale'))){
+	                        $img = $img->getResizedVersionNoScale($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
+	                    }else if($this->_render_data->hasParameter('img_scale') && $this->_render_data->getParameter('img_scale') == 'constrain'){
+	                        $img = $img->getConstrainedVersionWithin($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
+	                    }else{
+	                        $img = $img->resizeAndCrop($this->_render_data->getParameter('img_width'), $this->_render_data->getParameter('img_height'));
+	                    }
+						
+					}else{
+						
+						// if($this->_render_data->hasParameter('img_width')){
+							$img->setMarkupRenderWidth($this->_render_data->getParameter('img_width'));
+						// }
+						
+						// if($this->_render_data->hasParameter('img_height')){
+							$img->setMarkupRenderHeight($this->_render_data->getParameter('img_height'));
+						// }
+					}
                     
                 }else if(is_numeric($this->_render_data->getParameter('img_width'))){
                     
-                    if($this->_render_data->getParameter('img_square') && SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_square'))){
-                        $img = $img->getSquareVersion($this->_render_data->getParameter('img_width'));
-                    }else{
-                        $img = $img->restrictToWidth($this->_render_data->getParameter('img_width'));
-                    }
+					if(!$this->_render_data->hasParameter('create_resized_image') || SmartestStringHelper::toRealBool($this->_render_data->getParameter('create_resized_image'))){
+					
+                    	if($this->_render_data->getParameter('img_square') && SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_square'))){
+                    	    $img = $img->getSquareVersion($this->_render_data->getParameter('img_width'));
+                    	}else{
+                    	    $img = $img->restrictToWidth($this->_render_data->getParameter('img_width'));
+                    	}
+					
+					}else{
+						
+						$actual_height = $img->getHeight();
+						$new_height = (int) ($actual_height*$this->_render_data->getParameter('img_width')/$img->getWidth());
+						$img->setMarkupRenderWidth($this->_render_data->getParameter('img_width'));
+						$img->setMarkupRenderHeight($new_height);
+						
+					}
                     
                 }else if(is_numeric($this->_render_data->getParameter('img_height'))){
                     
-                    if($this->_render_data->getParameter('img_square') && SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_square'))){
-                        $img = $img->getSquareVersion($this->_render_data->getParameter('img_height'));
-                    }else{
-                        $img = $img->restrictToHeight($this->_render_data->getParameter('img_height'));
-                    }
+					if(!$this->_render_data->hasParameter('create_resized_image') || SmartestStringHelper::toRealBool($this->_render_data->getParameter('create_resized_image'))){
+					
+	                    if($this->_render_data->getParameter('img_square') && SmartestStringHelper::toRealBool($this->_render_data->getParameter('img_square'))){
+	                        $img = $img->getSquareVersion($this->_render_data->getParameter('img_height'));
+	                    }else{
+	                        $img = $img->restrictToHeight($this->_render_data->getParameter('img_height'));
+	                    }
+					
+					}else{
+						
+						$actual_width = $img->getWidth();
+						$new_width = (int) ($actual_width*$this->_render_data->getParameter('img_height')/$img->getHeight());
+						$img->setMarkupRenderHeight($this->_render_data->getParameter('img_height'));
+						$img->setMarkupRenderWidth($new_width);
+						
+					}
+					
+                }else if($this->_render_data->hasParameter('img_scale_ratio')){
+                	
+					if(strpos($this->_render_data->getParameter('img_scale_ratio'), '%') !== false){
+						preg_match('/^(\d+)%$/', $this->_render_data->getParameter('img_scale_ratio'), $scalematches);
+						$percentage = $scalematches[1];
+						$ratio = $percentage/100;
+					}else if(is_numeric($this->_render_data->hasParameter('img_scale_ratio'))){
+						$ratio = $this->_render_data->getParameter('img_scale_ratio');
+					}
+					
+					$actual_height = $img->getHeight();
+					$actual_width = $img->getWidth();
+					
+					$new_width = $actual_width*$ratio;
+					$new_height = $actual_height*$ratio;
+					
+					if(!$this->_render_data->hasParameter('create_resized_image') || SmartestStringHelper::toRealBool($this->_render_data->getParameter('create_resized_image'))){
+						
+						$img = $img->resizeAndCrop($new_width, $new_height);
+						
+					}else{
+						
+						$img->setMarkupRenderWidth($new_width);
+						$img->setMarkupRenderHeight($new_height);
+						
+					}
+					
                 }
                 
                 if($this->_render_data->hasParameter('img_alt')){
@@ -612,7 +737,10 @@ class SmartestCmsLink extends SmartestHelper{
                 return $img->render();
                 
             }else{
-                return $this->_render_data->getParameter('with');
+							
+				$fa_prefix = $this->_render_data->hasParameter('fa_iconname') ? '<i class="fa fa-'.SmartestStringHelper::toSlug($this->_render_data->getParameter('fa_iconname')).'"> </i>' : '';
+				return $fa_prefix.$this->_render_data->getParameter('with');
+                
             }
             
         }else if($this->_destination_properties->getParameter('text') && ($this->_destination_properties->getParameter('text') != SmartestLinkParser::LINK_TARGET_TITLE)){
@@ -621,12 +749,14 @@ class SmartestCmsLink extends SmartestHelper{
         }else{
             // otherwise guess
             
+			$fa_prefix = $this->_render_data->hasParameter('fa_iconname') ? '<i class="fa fa-'.SmartestStringHelper::toSlug($this->_render_data->getParameter('fa_iconname')).'"> </i>' : '';
+						
             if($this->getType() == SM_LINK_TYPE_EXTERNAL){
                 
-                if($this->_render_data->hasParameter('hide_protocol') && SmartestStringHelper::toRealBool($this->_render_data->hasParameter('hide_protocol'))){
-                    return SmartestStringHelper::toUrlStringWithoutProtocol($this->_destination_properties->getParameter('destination'));
+				if($this->_render_data->hasParameter('hide_protocol') && SmartestStringHelper::toRealBool($this->_render_data->hasParameter('hide_protocol'))){
+                    return $fa_prefix.SmartestStringHelper::toUrlStringWithoutProtocol($this->_destination_properties->getParameter('destination'));
                 }else{
-                    return $this->_destination_properties->getParameter('destination');
+                    return $fa_prefix.$this->_destination_properties->getParameter('destination');
                 }
                 
             }else{
@@ -640,15 +770,15 @@ class SmartestCmsLink extends SmartestHelper{
                     switch($this->getType()){
 
                         case SM_LINK_TYPE_PAGE:
-                        return SmartestStringHelper::toXmlEntities($this->_destination->getTitle());
+                        return $fa_prefix.SmartestStringHelper::toXmlEntities($this->_destination->getTitle());
                         break;
 
                         case SM_LINK_TYPE_METAPAGE:
                 
                         if($this->_destination->getForceStaticTitle() == 1){
-                            return SmartestStringHelper::toXmlEntities($this->_destination->getTitle(true));
+                            return $fa_prefix.SmartestStringHelper::toXmlEntities($this->_destination->getTitle(true));
                         }else{
-                            return SmartestStringHelper::toXmlEntities($this->_destination->getTitle());
+                            return $fa_prefix.SmartestStringHelper::toXmlEntities($this->_destination->getTitle());
                         }
                 
                         break;
@@ -658,15 +788,19 @@ class SmartestCmsLink extends SmartestHelper{
                         break;
                 
                         case SM_LINK_TYPE_TAG:
-                        return SmartestStringHelper::toXmlEntities($this->_destination->getLabel());
+                        return $fa_prefix.SmartestStringHelper::toXmlEntities($this->_destination->getLabel());
+                        break;
+                        
+                        case SM_LINK_TYPE_AUTHOR:
+                        return $fa_prefix.SmartestStringHelper::toXmlEntities($this->_destination->getFullName());
                         break;
                 
                         case SM_LINK_TYPE_DOWNLOAD:
-                        return $this->_destination->getUrl();
+                        return $fa_prefix.$this->_destination->getUrl();
                         break;
                         
                         case SM_LINK_TYPE_MAILTO:
-                        return $this->_destination->toHtmlEncoded();
+                        return $fa_prefix.$this->_destination->toHtmlEncoded();
                         break;
                         
                     }
@@ -741,14 +875,18 @@ class SmartestCmsLink extends SmartestHelper{
                 return $url;
             }else{
                 if(($this->_destination->getIsPublishedAsBoolean() && $this->_destination->getPrincipalItem()->isPublished()) || $ignore_status){
+                    
                     $template_url = $this->_request->getDomain().$this->_destination->getDefaultUrl();
                     $url = str_replace(':id', $this->_destination->getPrincipalItem()->getId(), $template_url);
                     $url = str_replace(':long_id', $this->_destination->getPrincipalItem()->getWebid(), $url);
                     $url = str_replace(':name', $this->_destination->getPrincipalItem()->getSlug(), $url);
+                    
                     if(strlen($this->_hash)){
                         $url .= '#'.$this->_hash;
                     }
+                    
                     return $url;
+                    
                 }else{
                     return '#';
                 }
@@ -771,6 +909,24 @@ class SmartestCmsLink extends SmartestHelper{
             }else{
                 if($this->_destination){
                     return $this->_request->getDomain().'tags/'.$this->_destination->getName().'.html';
+                }else{
+                    return '#';
+                }
+            }
+            
+            break;
+            
+            case SM_LINK_TYPE_AUTHOR:
+            
+            if($draft_mode){
+                if($this->_request->getRequestParameter('hide_newwin_link')){
+                    return $this->_request->getDomain().'website/renderEditableDraftPage?page_id='.$this->getSite()->getUserPage()->getWebId().'&amp;hide_newwin_link=true&amp;author_id='.$this->_destination->getId();
+                }else{
+                    return $this->_request->getDomain().'websitemanager/preview?page_id='.$this->getSite()->getUserPage()->getWebId().'&amp;author_id='.$this->_destination->getId();
+                }
+            }else{
+                if($this->_destination){
+                    return $this->_request->getDomain().'author/'.$this->_destination->getUserName();
                 }else{
                     return '#';
                 }
@@ -819,12 +975,22 @@ class SmartestCmsLink extends SmartestHelper{
                 $this->_markup_attributes->setParameter('target', '_blank');
             }
             
+            $this->_markup_attributes->setParameter('rel', 'external');
+            
+        }else if($this->getType() == SM_LINK_TYPE_TAG){
+            
+            $this->_markup_attributes->setParameter('rel', 'tag');
+            
+        }else if($this->getType() == SM_LINK_TYPE_AUTHOR){
+            
+            $this->_markup_attributes->setParameter('rel', 'author');
+            
         }
         
         $url = $this->getUrl($draft_mode);
         $contents = $this->getContent();
         
-        if($draft_mode && ($this->getType() == SM_LINK_TYPE_PAGE || $this->getType() == SM_LINK_TYPE_METAPAGE || $this->getType() == SM_LINK_TYPE_TAG) && $url != '#'){
+        if($draft_mode && ($this->getType() == SM_LINK_TYPE_PAGE || $this->getType() == SM_LINK_TYPE_METAPAGE || $this->getType() == SM_LINK_TYPE_TAG || $this->getType() == SM_LINK_TYPE_AUTHOR) && $url != '#'){
             $this->_markup_attributes->setParameter('target', '_top');
         }
         

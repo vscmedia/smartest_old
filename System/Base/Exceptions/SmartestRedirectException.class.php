@@ -48,7 +48,13 @@ class SmartestRedirectException extends SmartestException{
 	    }
 	    
 	    header("HTTP/1.1 ".$status_code." ".$this->_status_codes[$status_code]);
-        header("Location: ".$this->getRedirectUrl());
+	    
+	    // Only send a location header if the status code is of the 3xx variety
+	    // $status_code must be converted to a string in order to access individual characters
+	    $status_code = (string) $status_code;
+	    if($status_code{0} == '3'){
+            header("Location: ".$this->getRedirectUrl());
+        }
 	    
 	}
 	

@@ -485,7 +485,9 @@ class SmartestDataObject implements ArrayAccess{
 	            }
 	        }
 	        
-	        $this->__postHydrationAction();
+            if(method_exists($this, '__postHydrationAction')){
+                $this->__postHydrationAction();
+            }
 			
 			if($dup){
 			    $this->_came_from_database = false;
@@ -508,11 +510,11 @@ class SmartestDataObject implements ArrayAccess{
 		
 	}
 	
-	public function find($id, $site_id=''){
+	public function find($id, $site_id='', $include_trash_items=false){
 	    
 	    if(strlen($id)){
         
-            $sql = $this->getRetrievalSqlQuery((int) $id, 'id', $site_id);
+            $sql = $this->getRetrievalSqlQuery((int) $id, 'id', $site_id, $include_trash_items);
 	        
 	        $this->_last_query = $sql;
 	        $result = $this->database->queryToArray($sql);
@@ -531,8 +533,8 @@ class SmartestDataObject implements ArrayAccess{
 			    $this->_came_from_database = true; */
 			    
 			    $this->hydrate($result[0]);
-		    
-			    return true;
+                
+                return true;
 		    }else{
 			    return false;
 		    }
@@ -549,7 +551,7 @@ class SmartestDataObject implements ArrayAccess{
 	    
 	}
 	
-	public function findBy($field, $value, $site_id=''){
+	public function findBy($field, $value, $site_id='', $include_trash_items=false){
 	    
 	    if(isset($this->_no_prefix[$field])){
 		    $column_name = $field;
@@ -557,8 +559,8 @@ class SmartestDataObject implements ArrayAccess{
 			$column_name = $this->_table_prefix.$field;
 		}
 	    
-	    $sql = $this->getRetrievalSqlQuery($value, $field, $site_id);
-	    
+	    $sql = $this->getRetrievalSqlQuery($value, $field, $site_id, $include_trash_items);
+	    // echo $sql;
 	    $result = $this->database->queryToArray($sql);
 	    $this->_last_query = $sql;
 	    
@@ -573,6 +575,10 @@ class SmartestDataObject implements ArrayAccess{
 		    }
 	
 		    $this->_came_from_database = true;
+            
+            if(method_exists($this, '__postHydrationAction')){
+                $this->__postHydrationAction();
+            }
 		    
 		    return true;
 	    }else{
@@ -585,7 +591,7 @@ class SmartestDataObject implements ArrayAccess{
 	    return get_class($this);
 	}
 	
-	protected function getRetrievalSqlQuery($value, $field='id', $site_id=''){
+	protected function getRetrievalSqlQuery($value, $field='id', $site_id='', $include_trash_items=false){
 	    
 	    if(isset($this->_no_prefix[$field])){
 		    $column_name = $field;
@@ -605,6 +611,14 @@ class SmartestDataObject implements ArrayAccess{
                 $sql .= " AND ".$this->_table_prefix."site_id='".$site_id."'";
             }
 	    }
+	    
+	    /* if(isset($this->_properties['deleted'])){
+	    
+	        if(!$include_trash_items){
+	            $sql .= ' AND '.$this->_table_prefix.'deleted != 1 AND '.$this->_table_prefix.'deleted != \'TRUE\''; 
+	        }
+	    
+        } */
 	    
 	    return $sql;
 	    
@@ -757,12 +771,12 @@ class SmartestDataObject implements ArrayAccess{
 	    if($this->getRequest()->getModule() == 'website'){
 	        // This is mostly for when objects are used on web pages
             $site_id = constant('SM_CMS_PAGE_SITE_ID');
-        }else if(is_object($this->getSite())){
+        }else if(isset($GLOBALS['_site']) && is_object($GLOBALS['_site'])){
+            $site_id = $GLOBALS['_site']->getId();
+        }else if(is_object(SmartestSession::get('current_open_project'))){
             // This is mostly for when objects are used within the Smartest backend
             // make sure the site object exists
-            $site_id = $this->getSite()->getId();
-        }else if(is_object($GLOBALS['_site'])){
-            $site_id = $GLOBALS['_site']->getId();
+            $site_id = SmartestSession::get('current_open_project')->getId();
         }
         
         return $site_id;

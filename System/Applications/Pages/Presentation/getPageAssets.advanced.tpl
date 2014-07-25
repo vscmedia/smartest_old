@@ -123,9 +123,10 @@ var elementTree = new Smartest.UI.OptionSet('pageViewForm', 'item_id_input', 'pa
 		{else}
 		  <img border="0" style="width:16px;height:16px;" title="This {$assetclass.info.type} has not yet been defined" src="{$domain}Resources/Icons/undefined_{$assetclass.info.type|lower}.gif" />
 		{/if}
-	
+	  
+	  {if $assetclass.info.type != 'asset' && $assetclass.info.type != 'template'}
 	  <b>{$assetclass.info.assetclass_name|end|escape:html}</b>
-	  {if $assetclass.info.type == 'placeholder'}{/if}
+	  {/if}
 	  
 	  {if $assetclass.info.filename != ""}
 	    {$assetclass.info.filename}

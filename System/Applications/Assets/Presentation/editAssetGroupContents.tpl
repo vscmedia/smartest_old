@@ -80,6 +80,13 @@ function executeTransfer(){
 
 <div id="actions-area">
   
+  {if $request_parameters.item_id && $request_parameters.from}
+  <ul class="actions-list">
+    <li><b>Workflow options</b></li>
+    <li class="permanent-action"><a href="#" onclick="window.location='{$domain}datamanager/editItem?item_id={$request_parameters.item_id}'"><img border="0" src="{$domain}Resources/Icons/tick.png"> Return to editing item</a></li>
+  </ul>
+  {/if}
+  
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Group options</b></li>
   	<li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}assets/browseAssetGroup?group_id={$group.id}'" class="right-nav-link"><img src="{$domain}Resources/Icons/folder_magnify.png" border="0" alt="" style="width:16px;height:16px" /> Browse this group</a></li>

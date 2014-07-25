@@ -21,9 +21,12 @@ class SmartestImage extends SmartestFile{
     const SQUARE = 'sq';
     const PORTRAIT = 'pr';
     
-    public function __construct(){
+    public function __construct($img_path=null){
         parent::__construct();
         $this->_render_data = new SmartestParameterHolder('Image render data');
+        if($img_path){
+            $this->loadFile($img_path);
+        }
     }
     
     public function __toString(){
@@ -204,7 +207,7 @@ class SmartestImage extends SmartestFile{
     }
     
     public function getAssetTypeFromSuffix(){
-        switch($this->getSuffix()){
+        switch(strtolower($this->getSuffix())){
             case "jpeg":
             case "jpg":
             return "SM_ASSETTYPE_JPEG_IMAGE";
@@ -731,6 +734,9 @@ class SmartestImage extends SmartestFile{
 	        case "web_path":
 	        return $this->getWebPath();
 	        
+	        case "og_meta":
+	        return '';
+	        
 	        case "_ui_preview":
 	        $prev = $this->getSquarePreviewForUI();
 	        if($this->_resource){
@@ -761,7 +767,27 @@ class SmartestImage extends SmartestFile{
 	    
 	}
 	
-	public function render(){
+	public function setMarkupRenderWidth($h){
+		$this->_render_data['width'] = $h;
+	}
+	
+	public function setMarkupRenderHeight($h){
+		$this->_render_data['height'] = $h;
+	}
+	
+	public function getMarkupRenderWidth(){
+		if(!$this->_render_data['width']){
+			return $this->getWidth();
+		}
+	}
+	
+	public function getMarkupRenderHeight(){
+		if(!$this->_render_data['height']){
+			return $this->getHeight();
+		}
+	}
+	
+	public function render($og_meta=false){
 	    
 	    $sm = new SmartyManager('BasicRenderer');
         $r = $sm->initialize($this->getShortHash());

@@ -1,6 +1,6 @@
 <?php
 
-class SmartestTag extends SmartestBaseTag{
+class SmartestTag extends SmartestBaseTag implements SmartestStorableValue, SmartestSubmittableValue{
     
     protected $_draft_mode = false;
     
@@ -19,12 +19,12 @@ class SmartestTag extends SmartestBaseTag{
     
     protected $_is_attached = false; // Used when building the tags screen
     
-    protected function __objectConstruct(){
+    /* protected function __objectConstruct(){
         
         $this->_table_prefix = 'tag_';
 		$this->_table_name = 'Tags';
         
-    }
+    } */
     
     public function getPages($site_id='', $d='USE_DEFAULT'){
         
@@ -173,50 +173,56 @@ class SmartestTag extends SmartestBaseTag{
         
         if(!$this->_item_lookup_attempted['site_'.$site_id]){
         
-            $sql = "SELECT Items.item_id FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK' AND Items.item_deleted='0'";
-            
-            if($site_id && is_numeric($site_id)){
-                $sql .= ' AND Items.item_site_id=\''.$site_id.'\'';
-            }
-            
-            if($model_id && is_numeric($model_id)){
-                $sql .= ' AND Items.item_itemclass_id=\''.$model_id.'\'';
-            }else if($metapage_models_only && $site_id){
-                $du = new SmartestDataUtility;
-                $model_ids = $du->getModelIdsWIthMetapageOnSiteId($site_id);
-                if(count($model_ids)){
-                    $sql .= ' AND Items.item_itemclass_id IN (\''.implode("','", $model_ids).'\')';
-                }else{
-                    return array();
-                }
-            }
-            
-            if(!$this->getDraftMode()){
-                $sql .= " AND item_public='TRUE'";
-            }
-            
-            $result = $this->database->queryToArray($sql);
-            
-            $ids = array();
-            
-            foreach($result as $r){
-                $ids[] = $r['item_id'];
-            }
-            
-            $h = new SmartestCmsItemsHelper;
-            
-            if($model_id && is_numeric($model_id)){
-                $items = $h->hydrateUniformListFromIdsArray($ids, $model_id, $this->getDraftMode());
-            }else{
-                $items = $h->hydrateMixedListFromIdsArray($ids, $this->getDraftMode());
-                $this->_item_lookup_attempted['site_'.$site_id] = true;
-            }
-            
-            $this->_items = $items;
+            $this->_items = $this->_getItems($site_id, $model_id, $metapage_models_only);;
         
         }
         
         return $this->_items;
+        
+    }
+    
+    protected function _getItems($site_id=null, $model_id=null, $metapage_models_only=false){
+        
+        $sql = "SELECT Items.item_id FROM TagsObjectsLookup, Items WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=item_id AND taglookup_type='SM_ITEM_TAG_LINK' AND Items.item_deleted='0'";
+        
+        if($site_id && is_numeric($site_id)){
+            $sql .= ' AND Items.item_site_id=\''.$site_id.'\'';
+        }
+        
+        if($model_id && is_numeric($model_id)){
+            $sql .= ' AND Items.item_itemclass_id=\''.$model_id.'\'';
+        }else if($metapage_models_only && $site_id){
+            $du = new SmartestDataUtility;
+            $model_ids = $du->getModelIdsWIthMetapageOnSiteId($site_id);
+            if(count($model_ids)){
+                $sql .= ' AND Items.item_itemclass_id IN (\''.implode("','", $model_ids).'\')';
+            }else{
+                return array();
+            }
+        }
+        
+        if(!$this->getDraftMode()){
+            $sql .= " AND item_public='TRUE'";
+        }
+        
+        $result = $this->database->queryToArray($sql);
+        
+        $ids = array();
+        
+        foreach($result as $r){
+            $ids[] = $r['item_id'];
+        }
+        
+        $h = new SmartestCmsItemsHelper;
+        
+        if($model_id && is_numeric($model_id)){
+            $items = $h->hydrateUniformListFromIdsArray($ids, $model_id, $this->getDraftMode());
+        }else{
+            $items = $h->hydrateMixedListFromIdsArray($ids, $this->getDraftMode());
+            $this->_item_lookup_attempted['site_'.$site_id] = true;
+        }
+        
+        return $items;
         
     }
     
@@ -229,8 +235,6 @@ class SmartestTag extends SmartestBaseTag{
             if(is_numeric($site_id)){
                 $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1)";
             }
-            
-            // echo $sql.' ';
             
             $result = $this->database->queryToArray($sql);
             
@@ -254,6 +258,34 @@ class SmartestTag extends SmartestBaseTag{
         }
         
         return $this->_assets;
+        
+    }
+    
+    public function getImages($site_id=null){
+        
+        $sql = "SELECT Assets.* FROM TagsObjectsLookup, Assets WHERE taglookup_tag_id='".$this->getId()."' AND taglookup_object_id=asset_id AND taglookup_type='SM_ASSET_TAG_LINK' AND asset_deleted=0 AND asset_type IN('SM_ASSETTYPE_JPEG_IMAGE','SM_ASSETTYPE_PNG_IMAGE','SM_ASSETTYPE_GIF_IMAGE')";
+        
+        if(is_numeric($site_id)){
+            $sql .= " AND (asset_site_id='".$site_id."' OR asset_shared=1)";
+        }
+        
+        $result = $this->database->queryToArray($sql);
+        
+        $assets = array();
+    
+        foreach($result as $asset_array){
+            
+            $asset = new SmartestRenderableAsset;
+            $asset->hydrate($asset_array);
+            $assets[] = $asset;
+            
+            if($asset->getId() && !in_array($asset->getId(), $this->_asset_ids)){
+                $this->_asset_ids[] = $asset->getId();
+            }
+            
+        }
+        
+        return $assets;
         
     }
     
@@ -366,6 +398,7 @@ class SmartestTag extends SmartestBaseTag{
         
         switch($offset){
             
+            case "all":
             case "objects":
             return $this->getObjectsOnSite($this->getCurrentSiteId(), $this->_draft_mode);
             
@@ -378,20 +411,22 @@ class SmartestTag extends SmartestBaseTag{
             case "attached":
             return $this->_is_attached;
             
-            default:
+            case "pages":
+            return new SmartestArray($this->getPages($this->getCurrentSiteId()));
             
-            $du = new SmartestDataUtility;
-            $models = $du->getModelPluralNamesLowercase();
+            case "images":
+            return new SmartestArray($this->getImages($this->getCurrentSiteId()));
             
-            if(isset($models[$offset])){
-                // TODO: Model-specific tagged objects retrieval by model name
-                
-            }else{
-                return parent::offsetGet($offset);
-            }
-            
-            break;
-            
+        }
+        
+        $du = new SmartestDataUtility;
+        $models = $du->getModelPluralNamesLowercase();
+        
+        if(isset($models[$offset])){
+            // Model-specific tagged items retrieval by model name
+            return new SmartestArray($this->_getItems($this->getCurrentSiteId(), $models[$offset], false));
+        }else{
+            return parent::offsetGet($offset);
         }
         
     }
@@ -412,6 +447,22 @@ class SmartestTag extends SmartestBaseTag{
     
     public function getDraftMode(){
         return $this->_draft_mode;
+    }
+    
+    public function getStorableFormat(){
+        return $this->getId();
+    }
+    
+    public function hydrateFromStorableFormat($raw){
+        return $this->find($raw);
+    }
+    
+    public function hydrateFromFormData($raw){
+        return $this->find($raw);
+    }
+    
+    public function renderInput($params){
+        
     }
     
 }

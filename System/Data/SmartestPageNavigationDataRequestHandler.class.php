@@ -4,7 +4,6 @@ class SmartestPageNavigationDataRequestHandler implements ArrayAccess{
     
     protected $_page;
     
-    
     public function __construct(SmartestPage $page){
         $this->assignPage($page);
     }
@@ -72,16 +71,21 @@ class SmartestPageNavigationDataRequestHandler implements ArrayAccess{
             return $this->getParentLevelPages();
         
             case "child_pages":
-            return $this->_page->getPageChildrenForWeb();
+            $pages = $this->_page->getPageChildrenForWeb();
+            return $pages;
         
             case "main_sections":
             return $this->getMainSections();
         
             case "related":
-            return $this->_page->getRelatedContentForRender();
+            $related = $this->_page->getRelatedContentForRender();
+            return $related;
         
             case "is_home_page":
             return $this->_page->isHomePage();
+            
+            case "_php_class":
+            return __CLASS__;
         
         }
         

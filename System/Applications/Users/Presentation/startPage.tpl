@@ -9,6 +9,11 @@
 
 <div class="instruction">Double click a user to edit or choose from the options on the right.</div>
 
+<ul class="tabset">
+  <li{if $active_tab == 'system'} class="current"{/if}><a href="{$domain}smartest/users/system">System users</a></li>
+  <li{if $active_tab == 'ordinary'} class="current"{/if}><a href="{$domain}smartest/users/ordinary">Other users</a></li>
+</ul>
+
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="user_id" id="item_id_input" value="" />
 </form>
@@ -17,7 +22,7 @@
 {foreach from=$users key=key item=user}
   <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/editUser?user_id={$user.id}'">
     <a href="#" class="option" id="item_{$user.id}" onclick="setSelectedItem('{$user.id}'); return false;" >
-      <img border="0" src="{$domain}Resources/Icons/user.png">
+      <img border="0" src="{$domain}Resources/Icons/user{if $active_tab == 'ordinary'}_red{/if}.png">
   {$user.fullname}</a></li>
 {/foreach}
 </ul>

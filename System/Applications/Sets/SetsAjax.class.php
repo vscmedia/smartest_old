@@ -4,6 +4,17 @@ class SetsAjax extends SmartestSystemApplication{
     
     public function newConditionOperatorSelect(){
         $this->send($this->getRequestParameter('aspect'), 'aspect');
+        if(is_numeric($this->getRequestParameter('aspect'))){
+            $property = new SmartestItemProperty;
+            if($property->find($this->getRequestParameter('aspect'))){
+                $this->send($property, 'property');
+                $this->send(true, 'ordinary_property_available');
+            }else{
+                $this->send(false, 'ordinary_property_available');
+            }
+        }else{
+            $this->send(false, 'ordinary_property_available');
+        }
     }
     
     public function newConditionValueSelect(){

@@ -30,8 +30,10 @@ VSC.Effect.DisplayProgressively = Class.create({
         this.vertical = params && params.vertical ? true : false;
         this.letters = params && params.individualizeLetters ? true : false;
         this.transition = params && params.transition ? params.transition : Effect.Transitions.linear;
-        this.interval = params && params.interval ? params.interval : 300;
+        this.interval = params && params.interval ? params.interval/1000 : 0.3;
         this.duration = params && params.duration ? params.duration : 1.0;
+        this.onComplete = params && params.onComplete ? params.onComplete : function(){};
+        this.descriptor = descriptor;
         
         if(params && params.effect && (params.effect == 'appear' || params.effect == 'grow' || params.effect == 'blindDown')){
             this.effect = params.effect;
@@ -39,14 +41,15 @@ VSC.Effect.DisplayProgressively = Class.create({
             this.effect = 'appear';
         }
         
-        var myID = this.id;
+        /* var myID = this.id;
         instances[myID] = this;
-        this.executer = setInterval(function(){instances[myID].showNextElement()}, this.interval);
+        this.executer = setInterval(function(){instances[myID].showNextElement()}, this.interval); */
         
-    },
-    
-    cancel: function(){
-        clearInterval(this.executer);
+        var next = this.showNextElement.bind(this);
+        var freq = this.interval;
+        this.showNextElement();
+        this.heartbeat = new PeriodicalExecuter(next, freq);
+        
     },
     
     showNextElement: function(){
@@ -79,7 +82,9 @@ VSC.Effect.DisplayProgressively = Class.create({
             
         }else{
             
-            clearInterval(this.executer);
+            // clearInterval(this.executer);
+            this.onComplete(this.descriptor);
+            this.heartbeat.stop();
             
         }
 

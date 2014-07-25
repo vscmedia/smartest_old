@@ -6,7 +6,7 @@
 
 {if $item.deleted}<div class="warning">Warning: This {$item._model.name|strtolower} is currently in the trash.</div>{/if}
 
-<div id="instruction">You are editing the draft property values of this item</div>
+<div id="instruction">You are editing the draft property values of the {$item._model.name|strtolower} &quot;<strong>{$item.name}</strong>&quot;</div>
 
 <div id="sets" class="special-box">
      Sets: {if count($sets)}{foreach from=$sets item="set"}<a href="{$domain}sets/previewSet?set_id={$set.id}">{$set.label}</a> (<a href="{$domain}sets/transferSingleItem?item_id={$item.id}&amp;set_id={$set.id}&amp;transferAction=remove&amp;returnTo=editItem">remove</a>), {/foreach}{else}<em style="color:#666">None (<a href="{$domain}sets/addSet?class_id={$item._model.id}&amp;add_item={$item.id}">Create one</a>)</em>{/if}
@@ -28,6 +28,20 @@
  {/if}
 </div>
 
+{if $item.has_metapage}
+
+<div class="special-box">
+  
+  {if $item.public == 'TRUE'}
+  The primary web address for this {$item._model.name|strtolower} is <a href="{$item.absolute_url}" target="_blank">{$item.absolute_url}</a>
+  {else}
+  The primary web address for this {$item._model.name|strtolower} will be <strong>{$item.absolute_url}</strong>
+  {/if}
+  
+</div>
+
+{/if}
+
 <form action="{$domain}{$section}/updateItem" enctype="multipart/form-data" method="post">
 
 <input type="hidden" name="class_id" value="{$item._model.id}" />
@@ -44,6 +58,8 @@
   <input type="text" name="item_name" value="{$item.name|escape_double_quotes}" />
 </div>{/if}
 
+{if $item.has_metapage || $allow_edit_item_slug}
+
 <div class="edit-form-row">
   <div class="form-section-label">{$item._model.name} short name (Used in links and URLS)</div>
   {if $allow_edit_item_slug}
@@ -53,6 +69,8 @@
   {/if}
   {if $allow_edit_item_slug && $item.public == "TRUE" && count($metapages)}<div class="warning">Warning: This {$item._model.name|strtolower} is live. Editing its short name may cause links to it to break.</div>{/if}
 </div>
+
+{/if}
 
 <div class="edit-form-row">
   <div class="form-section-label">Current status</div>
@@ -104,6 +122,13 @@
   </div>
 </div>
 
+</form>
+
+<form id="item-autosave-form" method="post" action="{$domain}ajax:datamanager/autoSaveItem">
+  <input type="hidden" name="item_name" value="" />
+{foreach from=$item._editable_properties key="pid" item="property"}
+  
+{/foreach}
 </form>
 
 </div>

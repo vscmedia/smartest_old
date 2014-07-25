@@ -39,9 +39,31 @@ class SmartestDatabase{
         
     }
     
+    public static function testConnection($connection_name){
+        
+        $config = self::readConfiguration($connection_name);
+        $class = $config['class'];
+        
+        if(strlen($class)){
+            
+            try{
+                $object = new $class($config);
+            }catch(SmartestDatabaseException $e){
+                throw $e;
+            }
+            
+        }
+        
+    }
+    
     public static function readConfiguration($connection_name){
         
-        if($d = SmartestCache::load('dbc_'.$connection_name, true)){ // SmartestCache::clear('dbc_'.$connection_name, true);
+        $actual_md5 = md5_file(SM_ROOT_DIR."Configuration/database.ini");
+        $stored_md5 = SmartestCache::load('db_config_file_md5');
+        
+        $config_file_changed = ($actual_md5 != $stored_md5);
+        
+        if(!$config_file_changed && $d = SmartestCache::load('dbc_'.$connection_name, true)){ // SmartestCache::clear('dbc_'.$connection_name, true);
             
             return $d;
             
@@ -60,11 +82,12 @@ class SmartestDatabase{
     		    $ph->setParameter('short_name', $connection_name);
 		        
 		        SmartestCache::save('dbc_'.$connection_name, $ph, -1, true);
+		        SmartestCache::save('db_config_file_md5', $actual_md5);
     		    return $ph;
 		
     	    }else{
 	        
-    	        throw new SmartestDatabaseException("Unknown database connection name: ".$connection_name, SmartestDatabaseException::INVALID_CONNECTION_NAME);
+    	        throw new SmartestDatabaseException("Unknown database connection configuration name: ".$connection_name, SmartestDatabaseException::INVALID_CONNECTION_NAME);
 	        
     	    }
     	    

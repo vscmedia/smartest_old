@@ -225,7 +225,7 @@ class SmartestAssetsLibraryHelper{
     
     public function getGalleryAssetGroups($site_id){
         
-        $sql = "SELECT * FROM Sets WHERE Sets.set_type='SM_SET_ASSETGROUP' AND (Sets.set_site_id = '".$site_id."' OR Sets.set_shared = '1') AND set_is_hidden != '1' AND set_is_system != '1'";
+        $sql = "SELECT * FROM Sets WHERE Sets.set_type='SM_SET_ASSETGALLERY' AND (Sets.set_site_id = '".$site_id."' OR Sets.set_shared = '1') AND set_is_hidden != '1' AND set_is_system != '1'";
         $sql .= " AND ((Sets.set_filter_type = 'SM_SET_FILTERTYPE_ASSETCLASS' AND Sets.set_filter_value IN ('".implode("','", $this->getGalleryPlaceholderTypeCodes())."')) OR (Sets.set_filter_type = 'SM_SET_FILTERTYPE_ASSETTYPE' AND Sets.set_filter_value IN ('".implode("','", $this->getGalleryAssetTypeIds())."')))";
         $result = $this->database->queryToArray($sql);
         
@@ -296,6 +296,21 @@ class SmartestAssetsLibraryHelper{
 	    }
 	    
 	}
+	
+	/* public function getTypeCodesByPlaceholderType(){
+	    
+	    $ptypes = SmartestDataUtility::getAssetClassTypes();
+	    
+	    if(isset($ptypes[$type])){
+	        $atypes = $ptypes[$type]['accept'];
+	        if(is_array($atypes)){
+	            return $atypes;
+	        }else{
+	            return array();
+	        }
+	    }
+	    
+	} */
     
     public function getUploadLocations(){
         
@@ -332,6 +347,20 @@ class SmartestAssetsLibraryHelper{
         }
         
         return $location_types;
+        
+    }
+    
+    public function getTypeCodesHavingStorageLocation($location){
+        
+        $locations = $this->getTypeCodesByStorageLocation();
+        
+        $location = str_replace(SM_ROOT_DIR, '', $location);
+        
+        if(isset($locations[$location])){
+            return $locations[$location];
+        }else{
+            return array();
+        }
         
     }
     
@@ -794,9 +823,13 @@ class SmartestAssetsLibraryHelper{
 	    
 	}
 	
-	public function getAssetGroups($site_id=''){
+	public function getAssetGroups($site_id='', $groups_only=false){
 	    
-	    $sql = "SELECT * FROM Sets WHERE (set_type='SM_SET_ASSETGROUP' OR set_type='SM_SET_ASSETGALLERY') AND set_is_hidden = '0'";
+	    if($groups_only){
+	        $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP' AND set_is_hidden = '0'";
+        }else{
+            $sql = "SELECT * FROM Sets WHERE (set_type='SM_SET_ASSETGROUP' OR set_type='SM_SET_ASSETGALLERY') AND set_is_hidden = '0'";
+        }   
 	    
 	    if(is_numeric($site_id)){
 	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared=1)";
@@ -895,9 +928,59 @@ class SmartestAssetsLibraryHelper{
 	        $types = array($types);
 	    }
 	    
+	    // print_r($types);
+	    
 	    if(count($types)){
 	        
 	        $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGROUP' AND set_is_hidden=0";
+	        
+	        if(is_numeric($site_id)){
+    	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared='1')";
+    	    }
+    	    
+    	    if(count($types) > 1){
+	            
+	            // more than one type is being supplied
+	            // find only groups that accept ALL of the given types
+	            $ok_assetclass_types = $this->getAssetClassCodesThatAcceptType($types);
+	            $ok_types = array_merge($ok_assetclass_types, $types);
+	            $sql .=  " AND (set_filter_type='SM_SET_FILTERTYPE_NONE' OR set_filter_value IN ('".implode($ok_types, "', '")."'))";
+	            
+	        }else{
+	            
+	            // just one type
+	            $ok_assetclass_types = $this->getAssetClassCodesThatAcceptType($types);
+	            $sql .=  " AND (set_filter_type='SM_SET_FILTERTYPE_NONE' OR (set_filter_type='SM_SET_FILTERTYPE_ASSETTYPE' AND set_filter_value='".$types[0]."') OR set_filter_value IN ('".implode($ok_assetclass_types, "', '")."'))";
+	            
+	        }
+	        
+	        // echo $sql;
+	        
+	        $result = $this->database->queryToArray($sql);
+	        // echo count($result);
+	        $groups = array();
+	        
+	        foreach($result as $r){
+	            $g = new SmartestAssetGroup;
+	            $g->hydrate($r);
+	            $groups[] = $g;
+	        }
+	        
+	        return $groups;
+	        
+        }
+	    
+	}
+	
+	public function getGalleryAssetGroupsThatAcceptType($types, $site_id=''){
+	    
+	    if(!is_array($types)){
+	        $types = array($types);
+	    }
+	    
+	    if(count($types)){
+	        
+	        $sql = "SELECT * FROM Sets WHERE set_type='SM_SET_ASSETGALLERY' AND set_is_hidden=0";
 	        
 	        if(is_numeric($site_id)){
     	        $sql .= " AND (set_site_id='".$site_id."' OR set_shared='1')";
@@ -917,6 +1000,8 @@ class SmartestAssetsLibraryHelper{
 	            $sql .=  " AND (set_filter_type='SM_SET_FILTERTYPE_NONE' OR (set_filter_type='SM_SET_FILTERTYPE_ASSETTYPE' AND set_filter_value='".$types[0]."') OR set_filter_value IN ('".implode($ok_assetclass_types, "', '")."'))";
 	            
 	        }
+	        
+	        // $sql .= " AND ((Sets.set_filter_type = 'SM_SET_FILTERTYPE_ASSETCLASS' AND Sets.set_filter_value IN ('".implode("','", $this->getGalleryPlaceholderTypeCodes())."')) OR (Sets.set_filter_type = 'SM_SET_FILTERTYPE_ASSETTYPE' AND Sets.set_filter_value IN ('".implode("','", $this->getGalleryAssetTypeIds())."')))";
 	        
 	        $result = $this->database->queryToArray($sql);
 	        $groups = array();
@@ -1076,9 +1161,12 @@ class SmartestAssetsLibraryHelper{
 	        if($type['storage']['type'] == "file"){
 	            
 	            $dir = SM_ROOT_DIR.$type['storage']['location'];
+	            
+	            $type_codes = $this->getAssetTypeCodesThatShareSuffixAndLocation($type_code);
+	            
 	            $files = SmartestFileSystemHelper::load($dir);
 	            $regex = $this->getSuffixTestRegex($type_code);
-	            $imported = $this->getImportedFilenamesByType($type_code);
+	            $imported = $this->getImportedFilenamesByType($type_codes);
 	            
 	            $unimported = array();
 	            
@@ -1099,15 +1187,55 @@ class SmartestAssetsLibraryHelper{
 	public function getAssetTypeCodesThatShareSuffix($type_code){
 	    
 	    $types = $this->getTypes();
+	    $sharing_types = array();
 	    
 	    if(isset($types[$type_code])){
 	        
-	        $type = $types[$type_code];
-	        $sharing_types = array();
+	        $principal_type = $types[$type_code];
 	        
-	        foreach($type['suffix'] as $suffix){
-	            $sharing_types = array_merge();
-	        }
+	        if(is_array($principal_type['suffix'])){
+                
+                $principal_type_suffixes = array();
+                
+                foreach($principal_type['suffix'] as $principal_type_suffix){
+                    $principal_type_suffixes[] = $principal_type_suffix['_content'];
+                }
+                
+                foreach($types as $check_type){
+
+	                if(is_array($check_type['suffix'])){
+
+	                    foreach($check_type['suffix'] as $check_type_suffix){
+    	                    
+    	                    if(in_array($check_type_suffix['_content'], $principal_type_suffixes)){
+    	                        $sharing_types[] = $check_type['id'];
+    	                    }
+    	                }
+
+                    }
+
+                }
+                
+                return array_unique($sharing_types);
+                
+            }else{
+                return array();
+            }
+	        
+	    }
+	    
+	}
+	
+	public function getAssetTypeCodesThatShareSuffixAndLocation($type_code){
+	    
+	    $types = $this->getTypes();
+	    
+	    if(isset($types[$type_code])){
+	        
+	        $share_suffix_codes = $this->getAssetTypeCodesThatShareSuffix($type_code);
+	        $share_location_codes = $this->getTypeCodesHavingStorageLocation($types[$type_code]['storage']['location']);
+    	    
+    	     return array_intersect($share_suffix_codes, $share_location_codes);
 	        
 	    }
 	    
@@ -1128,26 +1256,31 @@ class SmartestAssetsLibraryHelper{
 	        $type_codes = array($type_codes);
 	    }
 	    
-	    if(isset($types[$type_code])){
+	    $names = array();
+	    
+	    foreach($type_codes as $type_code){
+	    
+    	    if(isset($types[$type_code])){
 	        
-	        $type = $types[$type_code];
-	        $sql = "SELECT Assets.asset_url FROM Assets WHERE asset_type='".$type_code."'";
-	        $result = $this->database->queryToArray($sql);
-	        $names = array();
+    	        $type = $types[$type_code];
+    	        $sql = "SELECT DISTINCT Assets.asset_url FROM Assets WHERE asset_type='".$type_code."'";
+    	        $result = $this->database->queryToArray($sql);
 	        
-	        if($append_dir && $type['storage']['type'] == 'file'){
-	            foreach($result as $n){
-	                $names[] = SM_ROOT_DIR.$type['storage']['location'].$n['asset_url'];
-	            }
-	        }else{
-	            foreach($result as $n){
-	                $names[] = $n['asset_url'];
-	            }    
-	        }
+	            if($append_dir && $type['storage']['type'] == 'file'){
+    	            foreach($result as $n){
+    	                $names[] = SM_ROOT_DIR.$type['storage']['location'].$n['asset_url'];
+    	            }
+    	        }else{
+    	            foreach($result as $n){
+    	                $names[] = $n['asset_url'];
+    	            }    
+    	        }
 	        
-	        return $names;
-	        
-	    }
+    	    }
+	    
+        }
+        
+        return $names;
 	    
 	}
 	

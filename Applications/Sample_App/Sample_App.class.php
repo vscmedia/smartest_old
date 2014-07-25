@@ -7,7 +7,7 @@
 // not strictly required if you like to do everything by hand, but no good reason not to.
 // Gives access to many aspects of Smartest API that would otherwise be unavailable
 // Gives access to Controller values and templating object
-class Sample_App extends SmartestApplication{
+class Sample_App extends SmartestUserApplication{
   
 	// declare any vars/constants/whatever, as normal
 	protected $_foo;

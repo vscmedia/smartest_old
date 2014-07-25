@@ -153,8 +153,13 @@ class SmartestRequestUrlHelper{
 	
 	public function getItemClassPageByWebId($web_id, $item_id, $draft_mode=false, $site_domain=''){
 	    
-	    $web_id = mysql_real_escape_string(SmartestStringHelper::sanitize($web_id));
-	    $item_id = (int) $item_id;
+	    $web_id = mysql_real_escape_string(SmartestStringHelper::toWebId(SmartestStringHelper::sanitize($web_id)));
+	    
+	    if(is_numeric($item_id)){
+	        $item_id = (int) $item_id;
+	    }else{
+	        $item_id = SmartestStringHelper::toWebId($item_id);
+	    }
 	    
 	    $sql = "SELECT * FROM Pages";
 	    
@@ -300,7 +305,7 @@ class SmartestRequestUrlHelper{
             							$page->setIdentifyingFieldName("webid");
             							$page->setIdentifyingFieldValue($actual_url_parts[$i]);
             						}
-        						
+            						
             						$page->setUrlNameValuePair($url_var_matches[2], $actual_url_parts[$i]);
 
             						$i++;

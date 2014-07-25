@@ -45,11 +45,11 @@ class SmartestQuery{
 	
 	public function __construct($model_id, $site_id=''){
 		
-		$this->database =& SmartestPersistentObject::get('db:main');
+		$this->database = SmartestPersistentObject::get('db:main');
 		
 		$this->setSiteId($site_id);
 		
-		$models = SmartestCache::load('model_id_name_lookup', true);
+		// $models = SmartestCache::load('model_id_name_lookup', true);
 		
 		$m = new SmartestModel;
 		
@@ -58,7 +58,7 @@ class SmartestQuery{
 		    $this->_properties = $m->getPropertiesForQueryEngine();
 		}else{
 		    // ERROR: using non-existent model
-		    throw new SmartestException("The specified model $model_id was not recognized.");
+		    throw new SmartestException("The specified model '$model_id' was not recognized.");
 		}
 		
 	}
@@ -97,7 +97,7 @@ class SmartestQuery{
 	        $p = $this->_properties[$property_id];
 	        
 	        try{
-	            if($value_obj = SmartestDataUtility::objectize($value, $p->getDataType())){
+	            if($value_obj = SmartestDataUtility::objectizeFromNewRawDataGivenToItemPropertyValue($value, $p->getDataType(), $p->getForeignKeyFilter())){
 	                $c = new SmartestQueryCondition($value_obj, $p, $operator);
 	                $this->conditions[] = $c;
 	            }else{
@@ -108,13 +108,18 @@ class SmartestQuery{
 	            }
 	        }catch(SmartestException $e){
 	            // value not understood - log and skip?
+	            
+	            /* if(is_array()){
+	                
+	            } */
+	            // echo "value ".$value." not understood for property ID ".$property_id;
 	        }
 	        
-	    }else if($property_id == SmartestCmsItem::NAME){
+	    }else if($property_id == SmartestCmsItem::NAME || $property_id == SmartestCmsItem::WEB_ID){
 	        
 	        $value_obj = new SmartestString($value);
 	        $p = new SmartestPseudoItemProperty;
-	        $p->setId(SmartestCmsItem::NAME);
+	        $p->setId($property_id);
 	        $c = new SmartestQueryCondition($value_obj, $p, $operator);
 	        $this->conditions[] = $c;
 	        
@@ -171,8 +176,9 @@ class SmartestQuery{
 			$array_values = array_values($this->conditions);
 			
 			$ids_array = $this->conditions[0]->getIdsArray();
-			
-			for($i=1; $i < count($array_values); $i++){
+			// print_r(count($this->conditions));
+			for($i=0; $i < count($array_values); $i++){
+			    // print_r(array_intersect($ids_array, $array_values[$i]->getIdsArray()));
 			    $new_ids_array = array_intersect($ids_array, $array_values[$i]->getIdsArray());
 			    $ids_array = $new_ids_array;
 			}
@@ -180,6 +186,8 @@ class SmartestQuery{
 			foreach($ids_array as $item_id){
 			    $ds->insertItemId($item_id);
 			}
+			
+			// print_r($ids_array);
 			
 		}else{
 			// no conditions specified - return all items of the model
@@ -221,7 +229,11 @@ class SmartestQuery{
 				if($condition->getProperty()->getId() == SmartestCmsItem::ID){
 			
 				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_id ";
-			
+			    
+			    }else if($condition->getProperty()->getId() == SmartestCmsItem::WEB_ID){
+			        
+			        $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_webid ";
+			        
 				}else if($condition->getProperty()->getId() == SmartestCmsItem::NAME){
 			
 				    $sql = "SELECT DISTINCT itempropertyvalue_item_id FROM Items, ItemPropertyValues WHERE Items.item_itemclass_id='".$this->_model->getId()."' AND ItemPropertyValues.itempropertyvalue_item_id=Items.item_id AND Items.item_name ";
@@ -300,6 +312,8 @@ class SmartestQuery{
 			    
 			    // echo $sql;
 			    $result = $this->database->queryToArray($sql);
+			    // echo count($result);
+			    // print_r($this->getSimpleIdsArray($result));
 			    $condition->setIdsArray($this->getSimpleIdsArray($result));
 			
 			}
@@ -336,6 +350,7 @@ class SmartestQuery{
 		        $sql .= ' LIMIT '.$limit;
 		    }
 		    
+		    // echo $sql;
 		    $result = $this->database->queryToArray($sql);
 		    return $this->createResultSet(array(), $draft);
 		    
@@ -343,12 +358,12 @@ class SmartestQuery{
 
 	}
 	
-	public function convertOperator(){
+	/* public function convertOperator(){
 	    
-	}
+	} */
 	
-	public function doSelectOne(){
-		
+	public function doSelectOne($mode=9){
+		return $this->doSelect($mode, 1);
 	}
 	
 	//////////////////////////////// INIT FUNCTION //////////////////////////////////

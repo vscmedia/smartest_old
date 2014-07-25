@@ -7,7 +7,9 @@ class SmartestInstallationStatusHelper{
     public static function checkStatus($purge=false){
         
         // Add this in a few installlations time SmartestSystemSettingsHelper::load('successful_install') === true
-        if(SmartestCache::load('installation_status', true) === SM_INSTALLSTATUS_COMPLETE && !$purge && (is_file(SM_ROOT_DIR.'Public/.htaccess') && is_file(SM_ROOT_DIR.'Configuration/controller.xml') && is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
+        // if(SmartestCache::load('installation_status', true) === SM_INSTALLSTATUS_COMPLETE && !$purge && (is_file(SM_ROOT_DIR.'Public/.htaccess') && is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
+        if(!$purge && (is_file(SM_ROOT_DIR.'Public/.htaccess') && is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
+            // echo "installed";
             return SmartestCache::load('installation_status', true);
         }else{
         // if(SmartestCache::load('installation_status', true) !== SM_INSTALLSTATUS_COMPLETE || $purge || (!is_file(SM_ROOT_DIR.'Public/.htaccess') || !is_file(SM_ROOT_DIR.'Configuration/controller.xml') || !is_file(SM_ROOT_DIR.'Configuration/database.ini'))){
@@ -44,26 +46,57 @@ class SmartestInstallationStatusHelper{
 
                     case 'createConfigs':
                     
+                    $fve = new SmartestParameterHolder("User creation form validator errors");
                     $ph = new SmartestParameterHolder("New database connection parameters");
-                    $ph->setParameter('username', $_POST['db_username']);
-                    $ph->setParameter('password', $_POST['db_password']);
-                    $ph->setParameter('database', $_POST['db_database']);
-                    $ph->setParameter('host', $_POST['db_host']);
                     
-                    $installer = new SmartestInstaller;
-                    $installer->createNewDatabaseConfig($ph);
-                    
-                    if(isset($_POST['controller_domain'])){
-                        $controller_domain = $_POST['controller_domain'];
-                        if(substr($controller_domain, -1, 1) != '/'){
-                            $controller_domain .= '/';
-                        }
+                    if(strlen($_POST['db_username'])){
+                        $ph->setParameter('username', $_POST['db_username']);
                     }else{
-                        $controller_domain = '';
+                        $fve->setParameter('username', "You did not provide a username.");
                     }
                     
-                    // $installer->createQuinceControllerFile($controller_domain);
-                    $installer->createHtAccessFile('/'.$controller_domain);
+                    if(strlen($_POST['db_password'])){
+                        $ph->setParameter('password', $_POST['db_password']);
+                    }else{
+                        $fve->setParameter('password', "You did not provide a password.");
+                    }
+                    
+                    if(strlen($_POST['db_database'])){
+                        $ph->setParameter('database', $_POST['db_database']);
+                    }else{
+                        $fve->setParameter('database', "You did not provide the name of a database where Smartest can store your stuff.");
+                    }
+                    
+                    if(strlen($_POST['db_host'])){
+                        $ph->setParameter('host', $_POST['db_host']);
+                    }else{
+                        $fve->setParameter('host', "You did not provide the name of a database host. Try 'localhost'.");
+                    }
+                    
+                    if($fve->hasData()){
+                        $nie = new SmartestNotInstalledException(SM_INSTALLSTATUS_DB_DATA_INVALID);
+                        $nie->setValidationErrors($fve);
+                        throw $nie;
+                    }else{
+                        
+                        $installer = new SmartestInstaller;
+                        $installer->createNewDatabaseConfig($ph);
+
+                        if(isset($_POST['controller_domain'])){
+                            $controller_domain = $_POST['controller_domain'];
+                            if(substr($controller_domain, -1, 1) != '/'){
+                                $controller_domain .= '/';
+                            }
+                        }else{
+                            $controller_domain = '';
+                        }
+                        
+                        SmartestCache::save('controller_domain_temp', $controller_domain, -1, true);
+
+                        // $installer->createQuinceControllerFile($controller_domain);
+                        // $installer->createHtAccessFile('/'.$controller_domain);
+                        
+                    }
                     
                     break;
                     
@@ -170,7 +203,7 @@ class SmartestInstallationStatusHelper{
                         $sitename = SmartestStringHelper::sanitize($_POST['site_name']);
                         $sitename = str_replace("'", "\'", $sitename);
                         $hostname = SmartestStringHelper::sanitize($_POST['site_host']);
-                        $template = ($_POST['site_initial_tpl'] == '_DEFAULT') ? SmartestStringHelper::toVarName($_POST['site_name']).'.tpl' : SmartestStringHelper::sanitize($_POST['site_initial_tpl']);
+                        $template = ($_POST['site_initial_tpl'] == '_DEFAULT') ? SmartestStringHelper::toVarName($_POST['site_name'], true).'.tpl' : SmartestStringHelper::sanitize($_POST['site_initial_tpl']);
                         
                         // SIte creation SQL
                         // Todo: This should be replaced with a call to SmartestSIteCreationHelper
@@ -221,13 +254,30 @@ class SmartestInstallationStatusHelper{
                         
                         if($_POST['site_initial_tpl'] == '_DEFAULT' && !$siteCreationErrors){
                             if(is_writable(SM_ROOT_DIR.'Presentation/Masters/')){
-                                copy(SM_ROOT_DIR.'System/Install/Samples/default.tpl', SM_ROOT_DIR.'Presentation/Masters/'.$template);
+                                $master_template_contents = str_replace('%DEFAULTTEMPLATENAME%.tpl', $template, file_get_contents(SM_ROOT_DIR.'System/Install/Samples/default.tpl'));
+                                file_put_contents(SM_ROOT_DIR.'Presentation/Masters/'.$template, $master_template_contents);
                             }else{
                                 SmartestLog::getInstance('installer')->log('Could not move default template into position because Presentation/Masters/ is not writable.', SM_LOG_ERROR);
                             }
                         }
                         
-                        $cd = SmartestSystemSettingHelper::load('htaccess_rewrite_base');
+                        $controller_domain_cache = SmartestCache::load('controller_domain_temp', -1, true);
+                        
+                        if($controller_domain_cache && strlen($controller_domain_cache)){
+                            $controller_domain = $controller_domain_cache;
+                            if(substr($controller_domain, -1, 1) != '/'){
+                                $controller_domain .= '/';
+                            }
+                        }else{
+                            $controller_domain = '';
+                        }
+                        
+                        $installer = new SmartestInstaller;
+                        $installer->createHtAccessFile('/'.$controller_domain);
+                        $installer->moveEssentialFilesIntoPlace();
+                        
+                        // $cd = SmartestSystemSettingHelper::load('htaccess_rewrite_base');
+                        $cd = '/'.$controller_domain;
                         
                         if(strlen($cd) && $cd != '/'){
                             $location = $cd.'smartest/login#welcome';

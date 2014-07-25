@@ -10,6 +10,14 @@ class SmartestSystemApplication extends SmartestBaseApplication{
     
     public function __systemModulePreConstruct(){
         
+        if(!$this->getUser() instanceof SmartestSystemUserApi){
+            SmartestSession::set('user:isAuthenticatedToCms', false);
+            // if($this->getRequest()->getAction() != 'loginScreen' && $this->getRequest()->getAction() != 'doAuth'){
+            if(!$this->isPublicMethod()){
+                $this->redirect('/smartest/login#reauth');
+            }
+        }
+        
         // transfer messages left over from the last request.
 		$this->transferUserMessages();
 	    
@@ -46,9 +54,9 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	        $this->send($this->getUser()->hasToken('modify_site_parameters'), '_user_allow_site_edit');
 	    }
 	    
-	    if(SmartestSession::get('user:isAuthenticated')){
+	    if(SmartestSession::get('user:isAuthenticatedToCms')){
 
-            $this->send($this->getUser()->hasGlobalPermission('create_sites'), '_user_allow_site_create');
+            $this->send($this->getUser()->hasGlobalToken('create_sites'), '_user_allow_site_create');
 
 	        if($this->getUser()->getPasswordChangeRequired() == '1'){
 	        
@@ -125,8 +133,12 @@ class SmartestSystemApplication extends SmartestBaseApplication{
 	///// Authentication Stuff /////
 	
 	protected function requireAuthenticatedUser(){
-		if(!$this->_auth->getUserIsLoggedIn()){
-			$this->redirect($this->domain."smartest/login#session");
+		if($this->_auth->getUserIsLoggedIn()){
+			if(!$this->_auth->getSystemUserIsLoggedIn()){
+			    $this->redirect($this->domain."smartest/login#unauthorized");
+			}
+		}else{
+		    $this->redirect($this->domain."smartest/login#session");
 		}
 	}
 	

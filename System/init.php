@@ -62,13 +62,14 @@ class SmartestInit{
 		self::setIncludePaths();
 		
 		// error reporting control
-        error_reporting(E_ALL ^ E_NOTICE);
+        error_reporting(E_ERROR|E_WARNING);
         
         if(is_writable(SM_ROOT_DIR.'System/Logs/')){
             // If PHP error messages can be logged, they should be.
             ini_set('error_log', SM_ROOT_DIR.'System/Logs/php_errors_no_date.log');
             ini_set('log_errors', true);
-            ini_set('display_errors', false);  // Sergiy: Totally breaks displaying of pages on PHP 5.4 when uncommented,
+            ini_set('display_errors', true);  // Sergiy: Totally breaks displaying of pages on PHP 5.4 when uncommented,
+
                                                 // since fires so many E_STRICT and E_NOTICE and their details.
                                                 // IMHO, it should be enabled only in optional debug/dev mode up to
                                                 // admin or developer preference and probably better from php.ini only

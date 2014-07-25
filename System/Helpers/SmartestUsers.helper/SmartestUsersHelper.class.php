@@ -33,6 +33,17 @@ class SmartestUsersHelper extends SmartestHelper{
     
     public function getUsers(){
         
+        $raw_users = $this->database->queryToArray("SELECT Users.*, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname FROM Users WHERE username != 'smartest' AND user_type!='SM_USERTYPE_OAUTH_CLIENT_INTERNAL' ORDER BY user_fullname");
+        $users = array();
+        
+        foreach($raw_users as $ru){
+            $u = new SmartestUser;
+            $u->hydrate($ru);
+            $users[] = $u;
+        }
+        
+        return $users;
+        
     }
     
     public function getSystemUsers(){
@@ -42,6 +53,21 @@ class SmartestUsersHelper extends SmartestHelper{
         
         foreach($raw_users as $ru){
             $u = new SmartestSystemUser;
+            $u->hydrate($ru);
+            $users[] = $u;
+        }
+        
+        return $users;
+        
+    }
+    
+    public function getOrdinaryUsers(){
+        
+        $raw_users = $this->database->queryToArray("SELECT Users.*, CONCAT(Users.user_lastname,Users.user_firstname) AS user_fullname FROM Users WHERE username != 'smartest' AND user_type='SM_USERTYPE_ORDINARY_USER' ORDER BY user_fullname");
+        $users = array();
+        
+        foreach($raw_users as $ru){
+            $u = new SmartestUser;
             $u->hydrate($ru);
             $users[] = $u;
         }
@@ -389,6 +415,29 @@ class SmartestUsersHelper extends SmartestHelper{
         }
         
         return in_array($role, $role_names);
+        
+    }
+    
+    //////////////////////// NEW USER PROFILE STUFF/////////////////////////
+    
+    public function getProfileServices(){
+        
+    }
+    
+    public function getProfileServiceNames(){
+        
+    }
+    
+    public function userHasProfileForService($user_id, $service_name){
+        
+        
+        
+    }
+    
+    public function getDefaultService(){
+        
+        // retrieves the default service or creates it if it does not exist
+        // default service is never site-specific
         
     }
     

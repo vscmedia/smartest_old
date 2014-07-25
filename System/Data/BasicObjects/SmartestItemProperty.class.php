@@ -114,6 +114,14 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    
 	}
 	
+	public function getClass(){
+	    
+	    /* var_dump($this->getId());
+	    echo $this->getForeignKeyFilter(); */
+	    return SmartestDataUtility::getClassForDataType($this->getDatatype(), $this->getForeignKeyFilter());
+	    
+	}
+	
 	public function addTemporaryForeignKeyOptionById($id){
 	    
 	    $this->_temporary_additional_foreign_key_options[] = $id;
@@ -281,17 +289,19 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	public function getPossibleValues(){
 	    
 	    if($this->_possible_values_retrieval_attempted){
-	    
+	        
 	        return $this->_possible_values;
-	    
+	        
         }else{
             
             if($this->isForeignKey() || $this->isManyToMany()){
 	            
 	            $info = $this->getTypeInfo();
 	            $filter = $this->getForeignKeyFilter();
-	            
+	            // echo $this->getDatatype();
 	            if($info['filter']['entitysource']['type'] == 'db'){
+	                
+	                // echo $this->getDatatype();
 	                
 	                if($this->getDatatype() == 'SM_DATATYPE_ASSET' || $this->getDatatype() == 'SM_DATATYPE_ASSET_SELECTION'){
 	                    
@@ -384,6 +394,38 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	                    $this->_possible_values = $alh->getAssetsByTypeCode('SM_ASSETTYPE_SINGLE_ITEM_TEMPLATE', $site_id, 1);
 	                    // Todo: take account of template groups here
 	                    
+	                }else if($this->getDatatype() == 'SM_DATATYPE_ASSET_GROUP' || $this->getDatatype() == 'SM_DATATYPE_ASSET_GALLERY'){
+	                    
+	                    $alh = new SmartestAssetsLibraryHelper;
+	                    
+	                    if(strlen($this->getForeignKeyFilter())){
+	                        
+	                        if(substr($this->getForeignKeyFilter(), 0, 13) == 'SM_ASSETCLASS'){
+                                // Assets are limited to a placeholder type, so multiple asset types
+                                $ach = new SmartestAssetClassesHelper;
+                                $types = $ach->getAssetTypeCodesFromAssetClassType($this->getForeignKeyFilter());
+                            }else{
+                                $types = array($this->getForeignKeyFilter());
+                            }
+                            
+                            // get galleries or groups that match foreign key filter
+	                        if($this->getDatatype() == 'SM_DATATYPE_ASSET_GROUP'){
+	                            $this->_possible_values = $alh->getAssetGroupsThatAcceptType($types, $this->getCurrentSiteId());
+	                            // echo count($this->_possible_values);
+	                        }else if($this->getDatatype() == 'SM_DATATYPE_ASSET_GALLERY'){
+	                            $this->_possible_values = $alh->getGalleryAssetGroupsThatAcceptType($types, $this->getCurrentSiteId());
+	                        }
+	                        
+	                    }else{
+	                        
+	                        // get all galleries or groups
+	                        if($this->getDatatype() == 'SM_DATATYPE_ASSET_GROUP'){
+	                            $this->_possible_values = $alh->getAssetGroups($this->getCurrentSiteId(), true);
+	                        }else if($this->getDatatype() == 'SM_DATATYPE_ASSET_GALLERY'){
+	                            $this->_possible_values = $alh->getGalleryAssetGroups($this->getCurrentSiteId());
+	                        }
+	                    }
+	                    
 	                }else if($this->getDatatype() == 'SM_DATATYPE_CMS_ITEM' || $this->getDatatype() == 'SM_DATATYPE_CMS_ITEM_SELECTION'){
 	                    
 	                    if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE'){
@@ -446,7 +488,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	                        if($this->getOptionSetType() == 'SM_PROPERTY_FILTERTYPE_NONE' || !isset($info['filter']['optionsettype'][$this->getOptionSetType()])){
 	                
         	                    $sql = $this->getForeignKeySelectSql($info, $filter, $site_id);
-                                
+                                // echo $sql;
                                 $result = $this->database->queryToArray($sql);
         	                    $options = array();
         	                    $class = $info['filter']['entitysource']['class'];
@@ -819,6 +861,7 @@ class SmartestItemProperty extends SmartestBaseItemProperty implements SmartestT
 	    }
 	    
 	    $parameters->setParameter('name',  $form_name);
+	    $parameters->setParameter('id', SmartestStringHelper::toSlug($this->getName()));
 	    
 	    if(!$existing_value){
 	        $existing_value = $this->getDefaultValue();

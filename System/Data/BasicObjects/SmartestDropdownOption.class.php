@@ -58,9 +58,11 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
         return $this->getDropdownId().':'.$this->getValue();
     }
     
-    public function hydrateFromStorableFormat($v){
+    public function hydrateFromStorableFormat($v, $dropdown_id=null){
         
-        if(preg_match('/(\d+):([\w_-]+)/', $v, $matches)){
+        if(is_numeric($dropdown_id)){
+            return $this->hydrateByValueWithDropdownId($v, $dropdown_id);
+        }else if(preg_match('/(\d+):([\w_-]+)/', $v, $matches)){
             return $this->hydrateByValueWithDropdownId($matches[2], $matches[1]);
         }
         
@@ -79,8 +81,12 @@ class SmartestDropdownOption extends SmartestBaseDropdownOption implements Smart
         return new SmartestString($this->_properties['value']);
     }
     
-    public function hydrateFromFormData($v){
-        return $this->searchForMatchingValue($v);
+    public function hydrateFromFormData($v, $dropdown_id=null){
+        if(is_numeric($dropdown_id)){
+            return $this->hydrateByValueWithDropdownId($v, $dropdown_id);
+        }else{
+            return $this->searchForMatchingValue($v);
+        }
     }
     
     public function renderInput($params){

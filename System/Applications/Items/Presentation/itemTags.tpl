@@ -21,7 +21,7 @@
   
   <ul class="actions-list" id="non-specific-actions">
     <li><b>Tagging Options</b></li>
-    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}metadata/addTag?item_id={$item.id}'"><img src="{$domain}Resources/Icons/tag_blue.png" />Add Tag</a></li>    
+    <li class="permanent-action"><a href="{dud_link}" onclick="window.location='{$domain}metadata/addTag?item_id={$item.id}{if $request_parameters.page_id}&amp;page_webid={$request_parameters.page_id}{/if}'"><img src="{$domain}Resources/Icons/tag_blue.png" />Add Tag</a></li>    
   </ul>
 
   <ul class="actions-list" id="non-specific-actions">

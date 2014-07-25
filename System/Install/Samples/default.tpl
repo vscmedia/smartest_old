@@ -1,18 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 
-<head>
-	<title><?sm:$this.page.formatted_title:?></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="keywords" content="<?sm:$this.page.meta_keywords:?>" />
-	<meta name="description" content="<?sm:$this.page.meta_description:?>" />
-	<?sm:placeholder name="page_specific_javascript" editbutton="false":?>
-	<?sm:placeholder name="page_specific_stylesheet":?>
-</head>
+<html>
 
-<body>
-  <p style="text-align:center;margin-top:60px">Edit or Replace Me (Presentation/Masters/default.tpl), Then Re-Publish Me!</p>
-  <?sm:container name="page_layout":?>
-</body>
+  <head>
+  	<title><?sm:$this.page.formatted_title:?></title>
+  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  	<meta name="keywords" content="<?sm:$this.page.meta_keywords:?>" />
+  	<meta name="description" content="<?sm:$this.page.meta_description:?>" />
+  	<?sm:placeholder name="page_specific_javascript" editbutton="false":?>
+  	<?sm:placeholder name="page_specific_stylesheet":?>
+  </head>
+
+  <body>
+    <p style="text-align:center;margin-top:60px">Edit or Replace Me (Presentation/Masters/%DEFAULTTEMPLATENAME%.tpl), Then Re-Publish Me!</p>
+    <?sm:container name="page_layout":?>
+  </body>
 
 </html>

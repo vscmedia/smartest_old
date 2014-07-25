@@ -175,7 +175,7 @@ class Pages extends SmartestSystemApplication{
 	        
 	        if($this->getUser()->hasToken('clear_pages_cache')){
             
-                $page_prefix = 'site'.$this->getSite()->getId().'_';
+                /* $page_prefix = 'site'.$this->getSite()->getId().'_';
             
                 $cache_files = SmartestFileSystemHelper::load(SM_ROOT_DIR.'System/Cache/Pages/');
             
@@ -214,7 +214,7 @@ class Pages extends SmartestSystemApplication{
                 
                     $this->send(false, 'show_result');
                 
-                }
+                } */
             
             }else{
                 
@@ -658,6 +658,76 @@ class Pages extends SmartestSystemApplication{
 	    
 	}
 	
+	public function editContainer(){
+	    
+	    $container = new SmartestContainer;
+	    
+	    if($this->requestParameterIsSet('assetclass_id')){
+	        $found = $container->findBy('name', $this->getRequestParameter('assetclass_id'));
+	    }else{
+	        $container_id = (int) $this->getRequestParameter('container_id');
+	        $found = $container->find($container_id);
+	    }
+	    
+	    if($found){
+	        
+	        $this->send($container, 'container');
+	        $tlh = new SmartestTemplatesLibraryHelper;
+    		// $groups = $tlh->getTemplateGroups('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId());
+	        $this->send($tlh->getTemplateGroups('SM_ASSETTYPE_CONTAINER_TEMPLATE', $this->getSite()->getId()), 'possible_groups');
+	        // $definitions = $placeholder->getDefinitions(true, $this->getSite()->getId());
+	        // $this->send((count($definitions) == 0), 'allow_type_change');
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The container ID wasn't recognized.", SmartestUserMessage::ERROR);
+	        $this->formForward();
+	        
+	    }
+	    
+	}
+	
+	public function updateContainer(){
+	    
+	    $container_id = (int) $this->getRequestParameter('container_id');
+	    $container = new SmartestContainer;
+	    
+	    if($container->find($container_id)){
+	        
+	        $container->setLabel($this->getRequestParameter('container_label'));
+	        
+	        if($this->getRequestParameter('container_filter')){
+	            if($this->getRequestParameter('container_filter') == 'NONE'){
+	                $container->setFilterType('SM_ASSETCLASS_FILTERTYPE_NONE');
+	                $container->setFilterValue('');
+	            }else{
+	                
+	                $group = new SmartestTemplateGroup;
+	                
+	                if($group->find($this->getRequestParameter('container_filter'))){
+	                    if($group->getFilterValue() == 'SM_ASSETTYPE_CONTAINER_TEMPLATE'){
+	                        $group->setShared(1);
+	                        $group->save();
+	                        $container->setFilterType('SM_ASSETCLASS_FILTERTYPE_TEMPLATEGROUP');
+	                        $container->setFilterValue($this->getRequestParameter('container_filter'));
+                        }
+                    }
+	            }
+	        }
+	        
+	        $container->save();
+	        $this->addUserMessageToNextRequest("The container was updated.", SmartestUserMessage::SUCCESS);
+	        
+	    }else{
+	        
+	        $this->addUserMessageToNextRequest("The container ID wasn't recognized.", SmartestUserMessage::ERROR);
+	        
+	    }
+	    
+	    $this->formForward();
+	    
+	}
+	
 	public function placeholderDefinitions($get){
 	    
 	    $placeholder_id = (int) $this->getRequestParameter('placeholder_id');
@@ -704,7 +774,6 @@ class Pages extends SmartestSystemApplication{
 	    }else{
 	        
 	        $this->addUserMessageToNextRequest("The placeholder ID wasn't recognized.", SmartestUserMessage::ERROR);
-	        
 	        
 	    }
 	    
@@ -1021,6 +1090,8 @@ class Pages extends SmartestSystemApplication{
         
         $this->send($pagesTree, "tree");
         $this->send($site_id, "site_id");
+        $this->send($this->getSite(), "site");
+        $this->send($this->getSite()->getHomePage(true), "home_page");
         $this->send(true, "site_recognised");
         
         $recent = $this->getUser()->getRecentlyEditedPages($this->getSite()->getId());
@@ -2696,6 +2767,65 @@ class Pages extends SmartestSystemApplication{
             
         }
         
+	}
+	
+	public function definePlaceholderWithNewFile(){
+	    
+	    $placeholder_name = $this->getRequestParameter('assetclass_id');
+	    $page_webid = $this->getRequestParameter('page_id');
+	    
+	    $helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getSite()->getId());
+    
+	    if(isset($type_index[$page_webid])){
+	    
+		    if($type_index[$page_webid] == 'ITEMCLASS'){
+		        $page = new SmartestItemPage;
+		    }else{
+		        $page = new SmartestPage;
+		    }
+		    
+		}else{
+		    $page = new SmartestPage; // this is needed to prevent a fatal error when page is looked up via hydrateBy
+		}
+		
+		if($page->hydrateBy('webid', $page_webid)){
+        
+	        $placeholder = new SmartestPlaceholder;
+        
+	        if($placeholder->hydrateBy('name', $placeholder_name)){
+	            
+	            $redirect_url = '/assets/startNewFileCreationForPlaceholderDefinition?placeholder_id='.$placeholder->getId().'&page_id='.$page->getId();
+	            
+	            if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+	                $redirect_url .= '&item_id='.$this->getRequestParameter('item_id');
+	            }
+	            
+	            $this->redirect($redirect_url);
+	            
+	        }else{
+	            
+	            // placeholder with that name was not found
+	            
+	            $redirect_url = '/websitemanager/pageAssets?page_id='.$page->getWebid();
+	            
+	            if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+	                $redirect_url .= '&item_id='.$this->getRequestParameter('item_id');
+	            }
+	            
+	            $this->addUserMessageToNextRequest('A placeholder with that name was not found', SmartestUserMessage::ERROR);
+	            $this->redirect($redirect_url);
+	            
+	        }
+	    
+	    }else{
+	        // page with that webid was not found
+	        
+	        $this->addUserMessageToNextRequest('A page with that ID was not found', SmartestUserMessage::ERROR);
+	        $this->redirect('/smartest/pages');
+	        
+	    }
+	    
 	}
 	
 	public function updatePlaceholderDefinition($get, $post){

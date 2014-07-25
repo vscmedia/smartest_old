@@ -14,3 +14,4 @@ twitter_consumer_key:1:0:Twitter Consumer Key
 twitter_consumer_secret:1:0:Twitter Consumer Secret
 twitter_access_token:1:0:Twitter Access Token
 twitter_access_token_secret:1:0:Twitter Access Token Secret
+hide_facebook_like_box:0:1:No longer display the Facebook "Likes" box on the About Smartest page

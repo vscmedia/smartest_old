@@ -5,5 +5,5 @@
 <?sm:else:?>
 <?sm:_asset_from_object object=$_textattachment.asset_object style="margin:5px 0 5px 0!important;display:inline-block":?>
 <?sm:/if:?>
-<?sm:if strlen($_textattachment.caption) :?><div class="attachment-caption" style="text-align:<?sm:$_textattachment.caption_alignment :?>;display:block; margin:5px;font-size:11px;<?sm:if $_textattachment.float && $_textattachment.alignment != 'center' :?>width:<?sm:$_textattachment.asset.width :?>px<?sm:/if:?>"><?sm:$_textattachment.caption:?> <?sm:$_textattachment.edit_link:?></div><?sm:else:?><?sm:$_textattachment.edit_link:?><?sm:/if:?>
+<?sm:if strlen($_textattachment.caption) || strlen($_textattachment.asset_object.credit) :?><div class="attachment-caption" style="text-align:<?sm:$_textattachment.caption_alignment :?>;display:block; margin:5px;font-size:11px;<?sm:if $_textattachment.float && $_textattachment.alignment != 'center' :?>width:<?sm:$_textattachment.asset.width :?>px<?sm:/if:?>"><?sm:$_textattachment.caption:?> <?sm:if strlen($_textattachment.asset_object.credit):?>Image: <?sm:$_textattachment.asset_object.credit:?><?sm:/if:?> <?sm:$_textattachment.edit_link:?></div><?sm:else:?><?sm:$_textattachment.edit_link:?><?sm:/if:?>
 </div>

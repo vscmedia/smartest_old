@@ -21,7 +21,8 @@ class SmartestInterfaceBuilder extends SmartestEngine{
 	    // $_render_data = new SmartestParameterHolder('Input Render Data: '.$name);
 	    // $_render_data->setParameter('options', $values);
 	    // $_render_data->setParameter('name', $name);
-	    $this->run(SM_ROOT_DIR.$info['input']['template'], $p);
+	    // print_r($p);
+	    $this->run(SM_ROOT_DIR.$info['input']['template'], array('_input_data'=>$p));
 	}
     
 }

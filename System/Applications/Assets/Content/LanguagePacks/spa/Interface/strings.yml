@@ -16,6 +16,7 @@ strings:
       add_remove_files: "Add &amp; eliminar archivos"
       group_info: Información del grupo
       gallery_info: Información de galería
+      gallery_arrange: Organizar contentido de la galería
     group_files: "Archivos en grupo: "
     gallery_files: "Archivos en galería: "
   sidebar_options:

@@ -45,6 +45,9 @@
     <accept>SM_ASSETTYPE_YOUTUBE_CLIP</accept>
     <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
     <accept>SM_ASSETTYPE_MP3</accept>
     <accept>SM_ASSETTYPE_OGG_VORBIS</accept>
     <gallery>true</gallery>
@@ -58,9 +61,39 @@
     <accept>SM_ASSETTYPE_YOUTUBE_CLIP</accept>
     <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
     <accept>SM_ASSETTYPE_MP3</accept>
     <accept>SM_ASSETTYPE_OGG_VORBIS</accept>
     <gallery>true</gallery>
+  </type>
+  
+  <type id="SM_ASSETCLASS_RESOURCE">
+    <label>Resource - Text, Image, PDF, Embedded Video or MS office</label>
+    <setfrompreview>true</setfrompreview>
+    <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+    <accept>SM_ASSETTYPE_TEXTILE_TEXT</accept>
+    <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_GIF_IMAGE</accept>
+    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
+    <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
+    <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
+    <accept>SM_ASSETTYPE_PDF</accept>
+    <accept>SM_ASSETTYPE_MS_WORD</accept>
+    <accept>SM_ASSETTYPE_MS_EXCEL</accept>
+    <accept>SM_ASSETTYPE_MS_POWERPOINT</accept>
+  </type>
+  
+  <type id="SM_ASSETCLASS_TEXT_RESOURCE">
+    <label>Text resource</label>
+    <accept>SM_ASSETTYPE_RICH_TEXT</accept>
+    <accept>SM_ASSETTYPE_TEXTILE_TEXT</accept>
+    <accept>SM_ASSETTYPE_PDF</accept>
+    <accept>SM_ASSETTYPE_MS_WORD</accept>
+    <setfrompreview>true</setfrompreview>
+    <descriptive>false</descriptive>
   </type>
   
   <type id="SM_ASSETCLASS_MOVIE">
@@ -81,6 +114,8 @@
     <accept>SM_ASSETTYPE_SHOCKWAVE_FLASH</accept>
     <accept>SM_ASSETTYPE_QUICKTIME_MOVIE</accept>
     <accept>SM_ASSETTYPE_VIMEO_CLIP</accept>
+    <accept>SM_ASSETTYPE_YOUTUBE_CLIP</accept>
+    <accept>SM_ASSETTYPE_HTML_FRAGMENT</accept>
     <accept>SM_ASSETTYPE_JPEG_IMAGE</accept>
     <accept>SM_ASSETTYPE_PNG_IMAGE</accept>
     <accept>SM_ASSETTYPE_SVG_IMAGE</accept>

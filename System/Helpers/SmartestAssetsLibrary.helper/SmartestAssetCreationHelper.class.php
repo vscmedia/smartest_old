@@ -6,6 +6,7 @@ class SmartestAssetCreationHelper{
     protected $_asset;
     protected $_asset_type;
     protected $_guess_asset_type_on_upload;
+    protected $_thumbnail_asset = null;
     
     public function __construct($asset_type='_GUESS'){
         
@@ -35,6 +36,12 @@ class SmartestAssetCreationHelper{
         
         if($this->_asset_type['storage']['type'] == 'database'){
             $this->_asset->getTextFragment()->save();
+        }
+        
+        if(is_object($this->_thumbnail_asset)){
+            $this->_thumbnail_asset->save();
+            $this->_asset->setThumbnailId($this->_thumbnail_asset->getId());
+            $this->_asset->save();
         }
         
         return $this->_asset;
@@ -95,14 +102,14 @@ class SmartestAssetCreationHelper{
 		            // $this->addUserMessageToNextRequest(sprintf("Could not move %s to %s. Please check file permissions.", $new_temp_file, $final_file_name));
 		            $message = sprintf("Could not move %s to %s. Please check file permissions.", basename($new_temp_file), basename($final_file_name));
 		            throw new SmartestAssetCreationException($message);
-		            SmartestLog::getInstance('site')->log($message, SmartestLog::ERROR);
-		            SmartestLog::getInstance('site')->log("File that failed to move to final location is still stored at: ".$new_temp_file, SmartestLog::NOTICE);
+		            SmartestLog::getInstance('system')->log($message, SmartestLog::ERROR);
+		            SmartestLog::getInstance('system')->log("File that failed to move to final location is still stored at: ".$new_temp_file, SmartestLog::NOTICE);
 		        }
 	        
 	        }else{
                 
                 throw new SmartestAssetCreationException("Temporary upload ".$new_temp_file." was unexpectedly not created.");
-                SmartestLog::getInstance('site')->log("Temporary upload ".$new_temp_file." was unexpectedly not created.", SmartestLog::ERROR);
+                SmartestLog::getInstance('system')->log("Temporary upload ".$new_temp_file." was unexpectedly not created.", SmartestLog::ERROR);
                 
             }
             
@@ -127,6 +134,46 @@ class SmartestAssetCreationHelper{
             $this->_asset->setUserId(SmartestSession::get('user')->getId());
             $this->_asset->setType($this->_asset_type['id']);
             $this->_asset->setUrl($url->getValue());
+            
+            $og_metas = SmartestHttpRequestHelper::getOpenGraphMetas($url->getValue());
+            
+            if(count($og_metas) && isset($og_metas['og:image'])){
+                
+                $og_url = new SmartestExternalUrl($og_metas['og:image']);
+                
+                $filename = end(explode('/', $og_url->getValue()));
+                
+                if($saved_thumbnail_file = SmartestFileSystemHelper::saveRemoteBinaryFile($og_metas['og:image'], SM_ROOT_DIR.'Public/Resources/Images/'.$filename)){
+                    
+                    $img = new SmartestImage($saved_thumbnail_file);
+                    $type = $img->getAssetTypeFromSuffix();
+                    
+                    // var_dump($saved_thumbnail_file);
+                    // var_dump($type);
+                    
+                    $this->_thumbnail_asset = new SmartestAsset;
+                    $this->_thumbnail_asset->setLabel("Thumbnail for ".$asset_label);
+                    $this->_thumbnail_asset->setWebid(SmartestStringHelper::random(32));
+                    $this->_thumbnail_asset->setCreated(time());
+                    $this->_thumbnail_asset->setStringId(SmartestStringHelper::toVarName($this->_thumbnail_asset->getLabel()));
+                    $this->_thumbnail_asset->setUserId(SmartestSession::get('user')->getId());
+                    $this->_thumbnail_asset->setType($type);
+                    $this->_thumbnail_asset->setUrl(end(explode('/', $saved_thumbnail_file)));
+                    
+                }else{
+                    
+                    // OG Image meta was defined but the image could not be downloaded for some reason
+                    SmartestLog::getInstance('system')->log("Thumbnail image was not created as OG Image meta was defined (".$og_metas['og:image'].") but the image could not be downloaded to ".SM_ROOT_DIR.'Public/Resources/Images/'.$filename." for some reason", SmartestLog::ERROR);
+                    
+                }
+                
+            }else{
+                
+                // there were no Open Graph Metas available
+                SmartestLog::getInstance('system')->log("Thumbnail image was not created as there were no Open Graph Metas available at ".$url->getValue(), SmartestLog::ERROR);
+                
+            }
+            
             return true;
         // }
         

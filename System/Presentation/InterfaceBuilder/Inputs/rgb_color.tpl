@@ -1,1 +1,1 @@
-<input type="text" class="color" name="{$_input_data.name}" value="{$_input_data.value}" id="{$_input_data.id}" />
+<input type="text" class="color" name="{$_input_data.name}" value="{$_input_data.value}" id="{$_input_data.id}" /> <a href="http://www.colourlovers.com/color/{$_input_data.value}" target="_blank">Find on COLOURLovers</a>

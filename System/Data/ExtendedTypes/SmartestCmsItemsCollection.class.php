@@ -20,6 +20,14 @@ class SmartestCmsItemsCollection extends SmartestArray implements SmartestSubmit
         return $ids;
     }
     
+    public function getItemIds(){
+        return $this->getIds();
+    }
+    
+    public function getSimpleIdsArray(){
+        return $this->getIds();
+    }
+    
     /* public function getStorableFormat(){
         return implode(',', $this->getIds());
     }

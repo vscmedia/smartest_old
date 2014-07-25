@@ -24,6 +24,14 @@ if($stage->getParameter('db_connection_parameters')){
 
 ?>
 
+<?php if($stage->hasParameter('errors') && $stage->getParameter('errors')->hasData()): ?>
+<ul class="errors-list">
+    <?php foreach($stage->getParameter('errors')->getParameters() as $error): ?>
+    <li><?php echo $error ?></li>
+    <?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
 <p>Step 2 of 4: Basic configuration</p>
 
 <form action="" method="post" id="installerForm">

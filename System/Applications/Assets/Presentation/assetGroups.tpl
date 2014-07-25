@@ -25,7 +25,7 @@
   {foreach from=$groups key="key" item="group"}
     <li style="list-style:none;" ondblclick="window.location='{$domain}{$section}/browseAssetGroup?group_id={$group.id}'">
   			<a class="option" id="item_{$group.id}" onclick="setSelectedItem('{$group.id}', 'fff');" >
-  			  <img border="0" src="{$domain}Resources/Icons/folder.png">
+  			  {if $group.is_gallery}<img src="{$domain}Resources/Icons/folder.png" border="0" class="grid" /><img border="0" src="/Resources/Icons/photos.png" class="list" />{else}<img src="{$domain}Resources/Icons/folder.png" border="0" class="grid" /><img border="0" src="/Resources/Icons/folder.png" class="list" />{/if}
   			  {$group.label}</a></li>
   {/foreach}
   </ul>
@@ -35,6 +35,7 @@
 <div id="actions-area">
   <ul class="actions-list" id="item-specific-actions" style="display:none">
     <li><b>{$_l10n_action_strings.sidebar_options.selected_group_heading}</b></li>
+    <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('addAsset');}{/literal}"><img src="{$domain}Resources/Icons/add.png" border="0" alt="" /> Add a new file to this file</a></li>
     <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editAssetGroup');}{/literal}"><img border="0" src="{$domain}Resources/Icons/information.png"> {$_l10n_action_strings.sidebar_options.selected_group_info}</a></li>
     <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('editAssetGroupContents');}{/literal}"><img border="0" src="{$domain}Resources/Icons/folder_edit.png"> {$_l10n_action_strings.sidebar_options.selected_group_edit_contents}</a></li>
     <li class="permanent-action"><a href="#" onclick="{literal}if(selectedPage){workWithItem('browseAssetGroup');}{/literal}" ><img border="0" src="{$domain}Resources/Icons/folder_magnify.png"> {$_l10n_action_strings.sidebar_options.selected_group_contents}</a></li>

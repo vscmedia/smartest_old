@@ -10,16 +10,33 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	
 	$dah = new SmartestDataAppearanceHelper;
 	
-	if($params['from'] == '_authors'){
-        $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "author";
-    }else if($params['from'] instanceof SmartestPageGroup || substr($params['from'], 0, 6) == 'pagegr' || substr($params['from'], 0, 6) == 'page_g'){
-        $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_page";
+	if(is_string($params['from'])){
+	    if($params['from'] == '_authors'){
+            $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "author";
+        }else if($params['from'] instanceof SmartestPageGroup || substr($params['from'], 0, 6) == 'pagegr' || substr($params['from'], 0, 6) == 'page_g'){
+            $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_page";
+        }else{
+	        $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_item";
+        }
     }else{
-	    $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_item";
+        if($params['from'] instanceof SmartestPageGroup){
+            $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_page";
+        }else if($params['from'] instanceof SmartestAssetGroup){
+            $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_asset";
+        }else{
+	        $item_name = (isset($params['item']) && strlen($params['item'])) ? SmartestStringHelper::toVarName($params['item']) : "repeated_item";
+        }
     }
 	
 	$limit = (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : 0;
 	$char_limit = (isset($params['char_limit']) && is_numeric($params['char_limit'])) ? $params['char_limit'] : 0;
+	
+	if(isset($params['key'])){
+	    $custom_key_name = SmartestStringHelper::toVarName($params['key']);
+	}else{
+	    $custom_key_name = null;
+	}
+	
 	if(!isset($length)){$length = 0;}
 	
 	// echo $smartest_engine->_repeat_char_length_aggr;
@@ -30,6 +47,14 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 		
 		if($items instanceof SmartestArray){
 		    $items = $items->getValue();
+		}
+		
+		if($items instanceof SmartestAssetGroup){
+		    $items = $items->getMemberships();
+		}
+		
+		if($items instanceof SmartestCmsItemSet){
+		    $items = $items->getMembers();
 		}
 		
 		$smartest_engine->assign("first", $items[0]);
@@ -81,6 +106,10 @@ function smarty_block_repeat($params, $content, &$smartest_engine, &$repeat){
 	    $smartest_engine->assign("repeated_item_object", $item); // legacy support
 	    $smartest_engine->assign("key", $index);
 	    $smartest_engine->assign("iteration", $index+1);
+	    
+	    if($custom_key_name){
+	        $smartest_engine->assign($custom_key_name, $index);
+	    }
 	    
 	    if(!isset($items[$index+1]) || ($limit && $limit == $index+1)){
 	        $smartest_engine->assign("next_key", false);

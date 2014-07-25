@@ -2,7 +2,7 @@
 
 class SmartestCookiesHelper{
     
-    public function getCookie($name){
+    public static function getCookie($name){
         
         if(isset($_COOKIE[$name])){
             return urldecode($_COOKIE[$name]);
@@ -12,7 +12,11 @@ class SmartestCookiesHelper{
         
     }
     
-    public function setCookie($name, $value, $duration=30, $domain='_C', $secure=false){ // default duration is 30 days
+    public static function cookieExists($name){
+        return isset($_COOKIE[$name]);
+    }
+    
+    public static function setCookie($name, $value, $duration=30, $domain='_C', $secure=false){ // default duration is 30 days
         
         $expire = time() + 86400 * (int) $duration; // 86400 is the number of seconds in one day
         $domain = ($domain == '_C') ? $_SERVER['HTTP_HOST'] : $domain;
@@ -20,7 +24,7 @@ class SmartestCookiesHelper{
         
     }
     
-    public function clearCookie($name, $domain='_C', $secure=false){
+    public static function clearCookie($name, $domain='_C', $secure=false){
         
         // $expire = time() - 86400; // now, minus one day
         $domain = ($domain == '_C') ? $_SERVER['HTTP_HOST'] : $domain;

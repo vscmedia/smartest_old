@@ -131,6 +131,8 @@ var set_id = {$set.id};
   
   <input type="hidden" id="transferAction" name="transferAction" value="" /> 
   <input type="hidden" name="set_id" value="{$set.id}" />
+  {if $request_parameters.item_id}<input type="hidden" name="item_id" value="{$request_parameters.item_id}" />{/if}
+  {if $request_parameters.from}<input type="hidden" name="from" value="{$request_parameters.from}" />{/if}
   
   <table width="100%" border="0" cellpadding="0" cellspacing="5" style="border:1px solid #ccc">
     <tr>
@@ -140,7 +142,7 @@ var set_id = {$set.id};
 
 		<select name="available_items[]"  id="available_items" size="2" multiple style="width:270px; height:300px;">
         {foreach from=$non_members key="key" item="item"}
-		<option value="{$item.id}" >{$item.name}</option>
+		<option value="{$item.id}" >{if $item.public == "FALSE"}* {/if}{$item.name}</option>
 		{/foreach}
 		</select>
 		
@@ -154,7 +156,7 @@ var set_id = {$set.id};
         <div style="text-align:left">{$model.plural_name} that <strong>are</strong> in this set</div>
  	<select name="used_items[]"  id='used_items' size="2" multiple style="width:270px; height:300px" >	
 	  {foreach from=$members key="key" item="item"}
-		<option value="{$item.id}" >{$item.name}</option>
+		<option value="{$item.id}" >{if $item.public == "FALSE"}* {/if}{$item.name}</option>
 		{/foreach}
         </select>
 	</td>
@@ -174,8 +176,9 @@ var set_id = {$set.id};
 		
 		<ul class="actions-list">
 		  <li><b>Options</b></li>
-            <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/folder_explore.png"> Browse set contents</a></li>
-            <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/deleteSetConfirm?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/cross.png"> Delete this set</a></li>
+		  {if $request_parameters.item_id && $request_parameters.from}<li class="permanent-action"><a href="#" onclick="window.location='{$domain}datamanager/editItem?item_id={$request_parameters.item_id}'"><img border="0" src="{$domain}Resources/Icons/tick.png"> Return to editing item</a></li>{/if}
+      <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/previewSet?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/folder_explore.png"> Browse set contents</a></li>
+      <li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/deleteSetConfirm?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/cross.png"> Delete this set</a></li>
 			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}{$section}/editStaticSetOrder?set_id={$set.id}'"><img border="0" src="{$domain}Resources/Icons/arrow_switch.png"> Change the order of this set</a></li>
 			<li class="permanent-action">{if $model.id}<a href="#" onclick="window.location='{$domain}{$section}/getItemClassSets?class_id={$model.id}'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Browse sets of {$model.plural_name|strtolower}</a>{else}<a href="#" onclick="window.location='{$domain}smartest/sets'"><img border="0" src="{$domain}Resources/Icons/package_add.png"> Back to data sets</a></li>{/if}		
 			<li class="permanent-action"><a href="#" onclick="window.location='{$domain}smartest/models'"><img border="0" src="{$domain}Resources/Icons/package_small.png"> Browse all items</a></li>

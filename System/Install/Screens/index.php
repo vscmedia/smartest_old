@@ -10,10 +10,10 @@ $screen = $stage->getParameter('screen');
 $message = $stage->getParameter('message');
 
 ?>
-<?php echo "<"."?xml version=\"1.0\"?".">\n"; ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!DOCTYPE html>
+
+<html lang="en">
   <head>
     
     <title>Install Smartest</title>
@@ -23,8 +23,8 @@ $message = $stage->getParameter('message');
   <body>
   	<div id="pagewidth">
  
-  	  <div id="top-strip" style="background-image:url('Resources/System/Images/admin_top_bar_bg.gif')">
-        <img src="Resources/System/Images/admin_top_bar_logo.gif" alt="Smartest" border="0" />
+  	  <div id="top-strip">
+        <a href="http://sma.rte.st/" target="_blank"><img src="Resources/System/Images/smartest-ui-logo-topleft.png" alt="Smartest" border="0" /></a>
       </div>
       
       <div id="container">
@@ -34,6 +34,8 @@ $message = $stage->getParameter('message');
         <?php endif; ?>
         <?php include SM_ROOT_DIR.'System/Install/Screens/'.$screen; ?>
       </div>
+      
+      <div class="v-spacer"></div>
 
     </div>
   </body>

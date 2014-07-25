@@ -9,7 +9,17 @@ class Users extends SmartestSystemApplication{
 		$this->setTitle('User accounts');
 		
 		$h = new SmartestUsersHelper;
-		$users = $h->getSystemUsers();
+		
+		if($this->getRequestParameter('_show_ordinary') && SmartestStringHelper::toRealBool($this->getRequestParameter('_show_ordinary'))){
+		    $users = $h->getOrdinaryUsers();
+		    $active_tab = "ordinary";
+		}else{
+		    $users = $h->getSystemUsers();
+		    $active_tab = "system";
+		}
+		
+		$this->send($active_tab, 'active_tab');
+		
 		// $database = SmartestDatabase::getInstance('SMARTEST');
 		// $users = $database->queryToArray("SELECT * FROM Users WHERE username != 'smartest'");
 		$this->send($users, 'users');
@@ -74,77 +84,88 @@ class Users extends SmartestSystemApplication{
         		$user->setEmail($email);
         		$user->setWebsite($website);
         		$user->setRegisterDate(time());
-        		$user->setIsSmartestAccount(1);
+        		
+        		if($this->getRequestParameter('user_service') == 'SMARTEST'){
+        		    $user->setIsSmartestAccount(1);
+        		    $user->setType('SM_USERTYPE_SYSTEM_USER');
+    		    }else{
+    		        $user->setIsSmartestAccount(0);
+    		        $user->setType('SM_USERTYPE_ORDINARY_USER');
+    		    }
     		
         		$user->save();
 		    
         		// add user tokens
     		
         		// print_r($this->getRequestParameter('user_role'));
+        		
+        		if($this->getRequestParameter('user_service') == 'SMARTEST'){
     		
-        		if(is_numeric($this->getRequestParameter('user_role'))){
+            		if(is_numeric($this->getRequestParameter('user_role'))){
                 
-                    // User-created role is being used to assign tokens
-                    $role = new SmartestRole;
+                        // User-created role is being used to assign tokens
+                        $role = new SmartestRole;
                 
-                    if($role->find($this->getRequestParameter('user_role'))){
-                        $tokens = $role->getTokens();
-                    }else{
-                        $tokens = array();
-                    }
-                
-                    $l = new SmartestManyToManyLookup;
-        	        $l->setType('SM_MTMLOOKUP_USER_INITIAL_ROLE');
-        	        $l->setEntityForeignKeyValue(1, $user->getId());
-        	        $l->setEntityForeignKeyValue(2, $this->getRequestParameter('user_role'));
-        	        $l->save();
-            
-                }else if(substr($this->getRequestParameter('user_role'), 0, 7) == 'system:'){
-                
-                    $role_id = substr($this->getRequestParameter('user_role'), 7);
-                    $h = new SmartestUsersHelper;
-                    $system_roles = $h->getSystemRoles();
-                
-                    if(isset($system_roles[$role_id])){
-                        $role = $system_roles[$role_id];
-                        $tokens = $role->getTokens();
-                    }else{
-                        $tokens = array();
-                    }
-                
-                }else{
-                
-                    $tokens = array();
-                
-                }
-    		
-        		if($this->getRequestParameter('global_site_access')){
-        		    if($this->getUser()->hasToken('grant_global_permissions')){
-    		        
-        		        // Add tokens from role globally
-        		        foreach($tokens as $t){
-                            $user->addTokenById($t->getId(), 'GLOBAL');
+                        if($role->find($this->getRequestParameter('user_role'))){
+                            $tokens = $role->getTokens();
+                        }else{
+                            $tokens = array();
                         }
-                    
-        		    }else{
-        		        $this->addUserMessageToNextRequest('You do not have permission to grant global site access or other tokens');
-        		    }
-    		    }else{
-		        
-    		        $site_ids = $this->getRequestParameter('user_sites');
-		        
-    		        if(is_array($site_ids)){
-		            
-    		            // Add tokens from role for each site
-    		            foreach($site_ids as $site_id){
-		                
-    		                foreach($tokens as $t){
-    		                    $user->addTokenById($t->getId(), $site_id);
+                
+                        $l = new SmartestManyToManyLookup;
+            	        $l->setType('SM_MTMLOOKUP_USER_INITIAL_ROLE');
+            	        $l->setEntityForeignKeyValue(1, $user->getId());
+            	        $l->setEntityForeignKeyValue(2, $this->getRequestParameter('user_role'));
+            	        $l->save();
+            
+                    }else if(substr($this->getRequestParameter('user_role'), 0, 7) == 'system:'){
+                
+                        $role_id = substr($this->getRequestParameter('user_role'), 7);
+                        $h = new SmartestUsersHelper;
+                        $system_roles = $h->getSystemRoles();
+                
+                        if(isset($system_roles[$role_id])){
+                            $role = $system_roles[$role_id];
+                            $tokens = $role->getTokens();
+                        }else{
+                            $tokens = array();
+                        }
+                
+                    }else{
+                
+                        $tokens = array();
+                
+                    }
+    		
+            		if($this->getRequestParameter('global_site_access')){
+            		    if($this->getUser()->hasToken('grant_global_permissions')){
+    		        
+            		        // Add tokens from role globally
+            		        foreach($tokens as $t){
+                                $user->addTokenById($t->getId(), 'GLOBAL');
                             }
+                    
+            		    }else{
+            		        $this->addUserMessageToNextRequest('You do not have permission to grant global site access or other tokens');
+            		    }
+        		    }else{
+		        
+        		        $site_ids = $this->getRequestParameter('user_sites');
+		        
+        		        if(is_array($site_ids)){
+		            
+        		            // Add tokens from role for each site
+        		            foreach($site_ids as $site_id){
 		                
-    		            }
-    		        }
-    		    }
+        		                foreach($tokens as $t){
+        		                    $user->addTokenById($t->getId(), $site_id);
+                                }
+		                
+        		            }
+        		        }
+        		    }
+    		    
+		        }
         
             }
         
@@ -169,6 +190,8 @@ class Users extends SmartestSystemApplication{
                 $this->addUserMessageToNextRequest("The User ID was not recognised.");
                 $this->formForward();
             }
+			
+			// echo SmartestStringHelper::toHtmlEncoded('Username');
             
             $this->send($this->getUser()->hasToken('modify_user_permissions'), 'show_tokens_edit_tab');
             $this->send($this->getUser()->hasToken('require_user_password_change'), 'require_password_changes');
@@ -273,14 +296,51 @@ class Users extends SmartestSystemApplication{
 		
     		if($user->find($this->getRequestParameter('user_id'))){
     		    
-    		    if($this->getRequestParameter('profile_pic_asset_id')){
+    		    if($this->getRequestParameter('profile_pic_asset_id') == 'NEW' && SmartestUploadHelper::uploadExists('new_picture_input')){
+    		        
+    		        $alh = new SmartestAssetsLibraryHelper;
+    	            $upload = new SmartestUploadHelper('new_picture_input');
+                    $upload->setUploadDirectory(SM_ROOT_DIR.'System/Temporary/');
+                    $types = $alh->getPossibleTypesBySuffix($upload->getDotSuffix());
+
+                    if(count($types)){
+                        $t = $types[0]['type']['id'];
+
+                        $ach = new SmartestAssetCreationHelper($t);
+                        $ach->createNewAssetFromFileUpload($upload, "User profile picture for ".$user->getFullName().' - '.date('M d Y'));
+
+                        $file = $ach->finish();
+                        $file->setShared(1);
+                        $file->setIsSystem(1);
+                        $file->setIsHidden(1);
+                        $file->setUserId($user->getId());
+                        $file->save();
+
+                        $user->setProfilePicAssetId($file->getId());
+                        $user->save();
+                        
+                        $uh = new SmartestUsersHelper;
+
+            		    if($g = $uh->getUserProfilePicsGroup()){
+
+                            $g->addAssetById($file->getId());    
+                        
+                        }
+                        
+                        $this->addUserMessageToNextRequest("Your profile picture was successfully uploaded", SmartestUserMessage::SUCCESS);
+                        
+                        $this->formForward();
+                        
+                    }
+    		        
+    		    }else if(is_numeric($this->getRequestParameter('profile_pic_asset_id'))){
     		        $a = new SmartestAsset;
     		        if($a->find($this->getRequestParameter('profile_pic_asset_id'))){
     		            $user->setProfilePicAssetId($this->getRequestParameter('profile_pic_asset_id'));
     		            $user->save();
     		            $this->formForward();
     		        }else{
-    		            
+    		            $this->formForward();
     		        }
 		        }else{
 		            
@@ -390,13 +450,13 @@ class Users extends SmartestSystemApplication{
 		    
     		    $user->setFirstname($post['user_firstname']);
     		    $user->setLastname($post['user_lastname']);
-    		    $user->setEmail($post['user_email']);
+    		    $user->setEmail($post['email']);
     		    $user->setWebsite($post['user_website']);
     		    $user->setBio(addslashes($post['user_bio']));
     		    
-    		    if($this->getRequestParameter('username') && SmartestStringHelper::toUsername($this->getRequestParameter('username')) && SmartestStringHelper::toUsername($this->getRequestParameter('username')) != $user->getUsername()){
+    		    if($this->getRequestParameter('thing_that_aint_u5ern4me') && SmartestStringHelper::toUsername($this->getRequestParameter('thing_that_aint_u5ern4me')) && SmartestStringHelper::toUsername($this->getRequestParameter('thing_that_aint_u5ern4me')) != $user->getUsername()){
     		        if($this->getUser()->hasToken('modify_usernames')){
-    		            $user->setUsername(SmartestStringHelper::toUsername($this->getRequestParameter('username')));
+    		            $user->setUsername(SmartestStringHelper::toUsername($this->getRequestParameter('thing_that_aint_u5ern4me')));
     		        }else{
     		            // attempt at changing the username without having permission
     		        }

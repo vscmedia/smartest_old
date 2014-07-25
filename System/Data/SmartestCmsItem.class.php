@@ -90,6 +90,9 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	
 	const NAME = '_SMARTEST_ITEM_NAME';
 	const ID = '_SMARTEST_ITEM_ID';
+	const WEB_ID = '_SMARTEST_ITEM_WEBID';
+	const WEBID = '_SMARTEST_ITEM_WEBID';
+	const LONG_ID = '_SMARTEST_ITEM_WEBID';
 	const NUM_COMMENTS = '_SMARTEST_ITEM_NUM_COMMENTS';
 	const NUM_HITS = '_SMARTEST_ITEM_NUM_HITS';
 	const AVERAGE_RATING = '_SMARTEST_ITEM_AVG_RATING';
@@ -106,6 +109,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		$this->generateModel();
 		// $this->generatePropertiesLookup();
 		$this->_request = SmartestPersistentObject::get('controller')->getCurrentRequest();
+		
+		/* if(get_class($this) == 'SmartestCmsItem'){
+		    throw new SmartestException('here');
+		} */
 		
 	}
 	
@@ -128,6 +135,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		        
 		        $property = new SmartestItemPropertyValueHolder;
 		        $property->hydrate($raw_property);
+		        
+		        if($property->getDatatype() == 'SM_DATATYPE_CMS_ITEM'){
+		            // print_r($property->getOriginalDbRecord());
+		        }
+		        
 		        $this->_properties[$raw_property['itemproperty_id']] = $property;
 		        
 		    }
@@ -168,6 +180,11 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
     public function hydrateFromFormData($v){
         $r = $this->find((int) $v);
         return $r;
+    }
+    
+    // Convenience function to provide controller instance internally
+    protected function getController(){
+        return SmartestPersistentObject::get('controller');
     }
     
     public function disableTemplateProperty($property_id){
@@ -248,6 +265,9 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            case 'url':
 	            case 'permalink':
 	            return $this->getUrl();
+	            
+	            case 'tags_cs_string':
+	            return $this->_item->getTagsAsCommaSeparatedString();
 	            
 	            case 'absolute_uri':
 	            case 'absolute_url':
@@ -524,7 +544,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 		
 		if($this->_item->findBy($field, $id)){
 		    
-		    $this->_runPostSimpleItemFind($id, $draft);
+		    $this->_runPostSimpleItemFind($this->_item->getId(), $draft);
 		    return true;
 		
 	    }else{
@@ -559,6 +579,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	        if(!isset($this->_properties[$property['itemproperty_id']]) || !is_object($this->_properties[$property['itemproperty_id']])){
 	            SmartestCache::clear('model_properties_'.$this->_model_id, true);
 	            $this->_properties[$property['itemproperty_id']] = new SmartestItemPropertyValueHolder;
+	            
 	        }
 	        
 		    $this->_properties[$property['itemproperty_id']]->hydrate($property);
@@ -729,7 +750,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    $link = $this->getLinkObject();
 	    
 	    if($link->hasError()){
-	        echo $link->getError();
+	        // echo $link->getError();
 	        return '#';
 	    }else{
 	        return $link->getUrl(false, true);
@@ -758,6 +779,10 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    
 	    return $this->_model;
 	    
+	}
+	
+	public function getModelId(){
+	    return $this->_item->getItemclassId();
 	}
 	
 	public function getDescriptionField(){
@@ -994,15 +1019,19 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	}
 	
 	public function getTags(){
-	    
 	    return $this->_item->getTags();
-	    
 	}
 	
 	public function getTagsAsArrays(){
-	    
 	    return $this->_item->getTagsAsArrays();
-	    
+	}
+	
+	public function updateTagsFromStringsArray($strings_array){
+	    $this->_item->updateTagsFromStringsArray($strings_array);
+	}
+	
+	public function getTagsAsCommaSeparatedString(){
+	    return $this->_item->getTagsAsCommaSeparatedString();
 	}
 	
 	public function getAuthors(){
@@ -1025,6 +1054,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    
 	    if(array_key_exists($key, $this->_properties)){
 	        
+	        // echo "test";
 	        try{
 	            
 	            if(!$this->_properties[$key]->getData()->hasItem()){
@@ -1041,15 +1071,53 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
                 }else{
                     $raw_value = $this->_properties[$key]->getData()->getContent();
                 }
+                
+                // echo get_class($raw_value);
             
             }catch(SmartestException $e){
                 echo $e->getMessage();
             }
             
+            $t = $this->_properties[$key]->getTypeInfo();
+            
+            if($t['valuetype'] == 'auto'){
+                
+                if($t['id'] == 'SM_DATATYPE_AUTO_ITEM_FK'){
+                
+                    $class = $t['class'];
+                    
+                    $ids = array();
+                
+                    $field = $draft ? 'itempropertyvalue_draft_content' : 'itempropertyvalue_content';
+                
+                    $sql = "SELECT item_id FROM Items, ItemProperties, ItemPropertyValues WHERE item_deleted !=1 AND item_itemclass_id=itemproperty_itemclass_id AND itempropertyvalue_item_id=item_id AND itempropertyvalue_property_id = itemproperty_id AND ".$field."='".$this->getId()."' AND itemproperty_id='".$this->_properties[$key]->getForeignKeyFilter()."'";
+                    $result = $this->database->queryToArray($sql);
+                    
+                    foreach($result as $r){
+                        $ids[] = $r['item_id'];
+                    }
+                    
+                    $obj = new $class;
+                    $obj->hydrateFromStoredIdsArray($ids, $draft);
+                    return $obj;
+                
+                }
+                
+            }
+            
+            // var_dump();
+            // echo "test";
+            // var_dump($raw_value);
             if(is_object($raw_value)){
                 $r = $raw_value;
-            }else if($value_ob = SmartestDataUtility::objectize($raw_value, $this->_properties[$key]->getDatatype())){
+                // echo get_class($raw_value);
+                // echo "Object";
+            }else if($value_ob = SmartestDataUtility::objectize($raw_value, $this->_properties[$key]->getDatatype(), $this->_properties[$key]->getForeignKeyFilter())){
                 $r = $value_obj;
+                // echo get_class($value_obj);
+                // echo "Not Object";
+            }else if(is_null($raw_value) && $c = SmartestDataUtility::getClassForDataType($this->_properties[$key]->getDatatype(), $this->_properties[$key]->getForeignKeyFilter())){
+                $r = new $c;
             }
             
             return $r;
@@ -1104,7 +1172,7 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	    }
 	}
 	
-	public function setPropertyValueByNumericKey($key, $value){
+	public function setPropertyValueByNumericKey($key, $raw_value){
 	    
 	    if(array_key_exists($key, $this->_properties)){
 	        
@@ -1116,9 +1184,15 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
 	            $this->_properties[$key]->getData()->setItemId($this->getId());
 	        }
 	        
-	        // var_dump(get_class($this->_properties[$key]->getData()));
+	        // var_dump($raw_value);
 	        
-	        return $this->_properties[$key]->getData()->setContent($value);
+	        // var_dump(get_class($this->_properties[$key]->getData()));
+	        // echo $key;
+	        
+	        $this->_properties[$key]->getData()->setContent($raw_value);
+	        // print_r($this->_properties[$key]->getData()->getDraftContent());
+	        
+	        // return $this->_properties[$key]->getData()->setContent($raw_value);
 	        
 	        // echo $this->_properties[$key]->getDatatype();
 	        
@@ -1239,6 +1313,13 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
             return true;
         }
         
+	}
+	
+	public function saveAndPublish(){
+	    
+	    $this->save();
+	    $this->publish();
+	    
 	}
 	
 	public function getSaveErrors(){
@@ -1418,6 +1499,23 @@ class SmartestCmsItem implements ArrayAccess, SmartestGenericListedObject, Smart
         }else{
             return null;
         }
+    }
+    
+    public static function all($mode=9, $site_id=null){
+        
+        if(__CLASS__ == 'SmartestCmsItem'){
+        
+            // Error - all() must be called on a specific model
+        
+        }else{
+            
+            $className = __CLASS__;
+            $object = new $className;
+            $model = $object->getModel();
+            return $model->getAllItems($site_id, $mode);
+            
+        }
+        
     }
     
     // builds a fully populated object of the correct type from just the primary key or webid

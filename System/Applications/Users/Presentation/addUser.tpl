@@ -149,9 +149,33 @@
 <h3 id="user">Add new User</h3>
 
 <form id="addUser" name="addUser" action="{$domain}{$section}/insertUser" method="post" style="margin:0px">
-
-{if $sites._count > 1}
   <div class="edit-form-row">
+    <div class="form-section-label">Service</div>
+    <select name="user_service" id="service-changer">
+      <option value="SMARTEST">Smartest CMS account</option>
+      <option value="ORDINARY">Ordinary user account</option>
+    </select>
+    <script type="text/javascript">
+    {literal}
+      $('service-changer').observe('change', function(){
+        
+        if($('service-changer').value == 'SMARTEST'){
+          if($('sites-chooser')){
+            $('sites-chooser').show();
+          }
+          $('role-chooser').show();
+        }else{
+          if($('sites-chooser')){
+            $('sites-chooser').hide();
+          }
+          $('role-chooser').hide();
+        }
+      });
+    {/literal}
+    </script>
+  </div>
+{if $sites._count > 1}
+  <div class="edit-form-row" id="sites-chooser">
     <div class="form-section-label">Site</div>
     
     <div style="display:inline-block;width:auto">
@@ -317,7 +341,7 @@
   
   </div>
   
-  <div class="edit-form-row">
+  <div class="edit-form-row" id="role-chooser">
     <div class="form-section-label">Role </div>
     <select name="user_role">
       {foreach from=$roles item="role"}

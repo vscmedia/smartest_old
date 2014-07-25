@@ -625,6 +625,153 @@ class Templates extends SmartestSystemApplication{
 	    
 	}
 	
+	public function importNewTemplateForContainerDefinition(){
+	    
+	    if($this->getRequestParameter('container_id') && $this->getRequestParameter('page_id')){
+            
+            $page = new SmartestPage;
+            
+            if($page->find($this->getRequestParameter('page_id'))){
+            
+                $container = new SmartestContainer;
+            
+                if($container->find($this->getRequestParameter('container_id'))){
+                        
+                    $alh = new SmartestAssetsLibraryHelper;
+                    $potential_templates = $alh->getUnimportedFilesByType('SM_ASSETTYPE_CONTAINER_TEMPLATE');
+                    
+                    $this->send($potential_templates, 'potential_templates');
+                    $this->send((bool) count($potential_templates), 'potential_templates_exist');
+                    
+                    $this->send($container, 'container');
+                    $this->send($page, 'page');
+                    
+                    if(is_numeric($this->getRequestParameter('item_id'))){
+                        $this->send($this->getRequestParameter('item_id'), 'item_id');
+                    }
+                        
+                        // print_r($potential_templates);
+                        
+                    /* if(!$this->getRequestParameter('asset_type')){
+                        
+                        $types = $placeholder->getPossibleFileTypes();
+                        $this->send($types, 'types');
+                        
+                        if(count($types) == 1){
+                            $url = '/smartest/file/new?for=placeholder&asset_type='.$types[0]['id'].'&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId();
+                        }else{
+                            $url = '/smartest/file/new?for=placeholder&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId();
+                        }
+                        
+                        if($this->getRequestParameter('item_id')) $url .= '&item_id='.$this->getRequestParameter('item_id');
+                        
+                        $this->redirect($url);
+                        
+                    } */
+                    
+                }else{
+                    $this->addUserMessageToNextRequest("The placeholder ID was not recognised.", SmartestUserMessage::ERROR);
+                    $this->redirect('/smartest/files');
+                }
+            
+            }else{
+                
+                $this->addUserMessageToNextRequest("The page ID was not recognised.", SmartestUserMessage::ERROR);
+                $this->redirect('/smartest/pages');
+                
+            }
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("Both page and placeholder IDs must be provided.", SmartestUserMessage::ERROR);
+            $this->redirect('/smartest/pages');
+            
+        }
+	    
+	}
+	
+	public function finishNewTemplateImportToContainerDefinition(){
+	    
+	    if($this->getRequestParameter('container_id') && $this->getRequestParameter('page_id')){
+            
+            $page = new SmartestPage;
+            
+            if($page->find($this->getRequestParameter('page_id'))){
+            
+                $container = new SmartestContainer;
+            
+                if($container->find($this->getRequestParameter('container_id'))){
+                    
+                    // first create container template
+                    
+                    $template = new SmartestTemplateAsset;
+                    $template->setLabel($this->getRequestParameter('new_template_label'));
+                    $template->setStringId(SmartestStringHelper::toVarName($this->getRequestParameter('new_template_label')));
+                    $template->setUserId($this->getUser()->getId());
+                    $template->setUrl($this->getRequestParameter('chosen_file'));
+                    $template->setType('SM_ASSETTYPE_CONTAINER_TEMPLATE');
+                    $template->setSiteId($this->getSite()->getId());
+                    $template->setCreated(time());
+                    $template->save();
+                    
+                    // Next create Container definition
+                    
+                    $def = new SmartestContainerDefinition;
+                    $def->setPageId($page->getId());
+                    $def->setAssetClassId($container->getId());
+                    $def->setDraftAssetId($template->getId());
+                        
+                    if(is_numeric($this->getRequestParameter('item_id'))){
+                        // $this->send($this->getRequestParameter('item_id'), 'item_id');
+                        $def->setItemId($this->getRequestParameter('item_id'));
+                    }
+                    
+                    $def->save();
+                    
+                    // TODO: Add the template to a group if the container is limited to one.
+                    
+                    $this->formForward();
+                        
+                    // print_r($potential_templates);
+                        
+                    /* if(!$this->getRequestParameter('asset_type')){
+                        
+                        $types = $placeholder->getPossibleFileTypes();
+                        $this->send($types, 'types');
+                        
+                        if(count($types) == 1){
+                            $url = '/smartest/file/new?for=placeholder&asset_type='.$types[0]['id'].'&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId();
+                        }else{
+                            $url = '/smartest/file/new?for=placeholder&placeholder_id='.$placeholder->getId().'&page_id='.$page->getId();
+                        }
+                        
+                        if($this->getRequestParameter('item_id')) $url .= '&item_id='.$this->getRequestParameter('item_id');
+                        
+                        $this->redirect($url);
+                        
+                    } */
+                    
+                }else{
+                    $this->addUserMessageToNextRequest("The placeholder ID was not recognised.", SmartestUserMessage::ERROR);
+                    $this->redirect('/smartest/files');
+                }
+            
+            }else{
+                
+                $this->addUserMessageToNextRequest("The page ID was not recognised.", SmartestUserMessage::ERROR);
+                $this->redirect('/smartest/pages');
+                
+            }
+        
+        }else{
+            
+            $this->addUserMessageToNextRequest("Both page and placeholder IDs must be provided.", SmartestUserMessage::ERROR);
+            $this->redirect('/smartest/pages');
+            
+        }
+	    
+	}
+	
 	public function addSingleTemplateToDatabase($get, $post){
 	    
 	    $tlh = new SmartestTemplatesLibraryHelper;
@@ -717,7 +864,7 @@ class Templates extends SmartestSystemApplication{
 	                $t->setType($post['new_type']);
 	                $t->save();
 	                $this->addUserMessageToNextRequest("The template was successfully converted to type: \"".$types[$post['new_type']]['label']."\"", SmartestUserMessage::SUCCESS);
-	                SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} changed template '{$template->getLabel()}' to type '".$types[$post['new_type']]['label']."'.", SmartestLog::USER_ACTION);
+	                SmartestLog::getInstance('site')->log("{$this->getUser()->getFullname()} changed template '{$t->getLabel()}' to type '".$types[$post['new_type']]['label']."'.", SmartestLog::USER_ACTION);
                 }else{
                     $this->addUserMessageToNextRequest("The new type was not recognized", SmartestUserMessage::ERROR);
                 }

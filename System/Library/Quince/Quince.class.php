@@ -466,12 +466,20 @@ class QuinceBase{
                 $destination = $r->fetchRouteUrl($to, $matches);
             }
             
+            // print_r($matches);
+            
 		}else if(preg_match('/^@(\w+)(\?(.*))?$/', $to, $matches)){
+		    
+		    // print_r($matches);
+		    
             $r = new QuinceRouter;
             $r->setRequest($this->_request);
             if($r->routeExists($this->_request->getModule().':'.$matches[1])){
                 $destination = $r->fetchRouteUrl('@'.$this->_request->getModule().':'.$matches[1].$matches[2]);
             }
+            
+            // print_r($matches);
+            
 		}else{
 		    $destination = $to;
 		}
@@ -688,6 +696,10 @@ class QuinceRouter{
                         throw new QuinceException('Route @'.$route['module'].':'.$route['name'].' requires a missing \''.$rp.'\' parameter.');
                     }
                 }
+                
+                if(count($params)){
+                    $url .= '?'.$this->toUrlParameterString($params);
+                }
             
                 return str_replace('+_NSS+', ':', $url);
             
@@ -713,6 +725,25 @@ class QuinceRouter{
             
         }
     }
+    
+    public function toUrlParameterString($array){
+	    if(!is_array($array)){
+	        return '';
+	    }else{
+	        
+	        $i = 0;
+	        
+	        foreach($array as $key=>$value){
+	            
+	            if($i > 0) $string .= '&';
+	            $string .= $key.'='.urlencode($value);
+                $i++;
+                
+	        }
+	        
+	        return $string;
+	    }
+	}
     
 }
 
@@ -772,6 +803,7 @@ class QuinceRedirectException extends QuinceException{
 	public function redirect($sc=303, $exit=true){
 	    
 	    header("HTTP/1.1 ".$sc." ".$this->_status_codes[$sc]);
+	    // var_dump($this->getRedirectUrl());
         header("Location: ".$this->getRedirectUrl());
         
         if($exit){
@@ -892,6 +924,8 @@ class Quince{
 	    
 	    $test_url = $url{(strlen($url)-1)} == '/' ? substr($url, 0, -1) : $url;
 	    
+		// var_dump($test_url);
+		
 	    // Calculate the domain
 	    $dr = realpath($_SERVER["DOCUMENT_ROOT"]).'/';
 	    $hdp = explode('/', $test_url);
@@ -1185,6 +1219,8 @@ class Quince{
                 }
             }
             
+			// print_r($aliases);
+			
             // write one long list of the aliases to cache
             QuinceUtilities::cacheSet('all_aliases', $aliases);
             self::$raw_aliases = $aliases;
@@ -1219,10 +1255,12 @@ class Quince{
             self::$alias_shortcuts = QuinceUtilities::cacheGet('alias_url_shortcuts');
             self::$routes = QuinceUtilities::cacheGet('routes');
             
-            // print_r(self::$modules);
+            // 
             
             $this->module_shortnames = QuinceUtilities::cacheGet('module_shortnames');
         }
+		
+		// print_r(self::$modules);
 	    
 	    if(!in_array($this->_default_module_name, $this->module_shortnames)){
             $this->handleException(new QuinceException("The specified default module, '{$this->_default_module_name}', does not exist."));

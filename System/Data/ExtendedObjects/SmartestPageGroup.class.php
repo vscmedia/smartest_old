@@ -110,6 +110,46 @@ class SmartestPageGroup extends SmartestSet{
         
     }
     
+    public function determineHighlightedMemberOnPage(SmartestPage $page, $draft_mode=false){
+        
+        $members = $this->getMembers($draft_mode);
+        $home_page = $page->getParentSite()->getHomePage($draft_mode);
+        
+        // first of all, are any of the actual pages in the group the same page as the one we are on?
+        foreach($members as $m){
+            if($m->getId() == $page->getId()){
+                // if so, the page that should be highlighted is that page
+                return $page;
+            }
+        }
+        
+        // if not, which pages in the group are section pages? make a sub group of them, and figure out which of them the current highlighted page is closest to
+        $sections = array();
+        $section_ids = array();
+        // harvest member ids along the way for any checking that is needed later
+        $member_ids = array();
+        
+        foreach($members as $m){
+            $member_ids[] = $m->getId();
+            if($m->isSection()){
+                $sections[] = $m;
+                $section_ids[] = $m->getId();
+            }
+        }
+        
+        /* if(in_array($home_page->getId(), $member_ids) && !in_array($home_page->getId(), $section_ids)){
+            $sections[] = $home_page;
+            $section_ids[] = $home_page->getId();
+        } */
+        
+        foreach($page->getPageSections() as $s){
+            if(in_array($s->getId(), $section_ids)){
+                return $s;
+            }
+        }
+        
+    }
+    
     public function removePageById($id){
         
         $id = (int) $id;

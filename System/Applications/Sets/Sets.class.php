@@ -105,6 +105,45 @@ class Sets extends SmartestSystemApplication{
 		                }
 		            }
 	            }
+	            
+	            if($this->getRequestParameter('from')){
+	                
+	                if($this->getRequestParameter('from') == 'editItem'){
+	                    
+	                    if(is_numeric($this->getRequestParameter('itemproperty_id'))){
+	                        
+	                        $property = new SmartestItemProperty;
+	                        
+	                        if($property->find($this->getRequestParameter('itemproperty_id'))){
+	                            
+	                            if($property->getDatatype() == 'SM_DATATYPE_CMS_ITEM_SET'){
+	                                
+	                                // var_dump($model->getId());
+	                                
+	                                $item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('item_id'));
+	                                
+	                                if($property->getItemclassId() == $item->getModelId()){
+	                                    $this->send($item, 'item');
+	                                    $this->send($property, 'property');
+	                                }else{
+	                                    $this->addUserMessage('The property you have selected is for a different model than the item selected.', SmartestUserMessage::WARNING);
+	                                }
+	                                
+	                            }else{
+	                                $this->addUserMessage('The property you have selected is not a data set property', SmartestUserMessage::WARNING);
+	                            }
+	                            
+	                        }else{
+	                            
+	                            $this->addUserMessage('The property you have selected cannot be found', SmartestUserMessage::ERROR);
+	                            
+	                        }
+	                        
+	                    }
+	                    
+	                }
+	                
+	            }
 		        
 	        }else{
 	            $models = $du->getModels();
@@ -133,29 +172,77 @@ class Sets extends SmartestSystemApplication{
 	    $new_set_name = SmartestStringHelper::toVarName($this->getRequestParameter('set_name'));
 	    
 	    $set = new SmartestCmsItemSet;
+	    $model = new SmartestModel;
 	    
 	    if(strlen($new_set_name) && !$set->hydrateBy('name', $new_set_name)){
 	        
-	        $set->setName($new_set_name);
-	        $set->setLabel($this->getRequestParameter('set_name'));
-	        $set->setType($this->getRequestParameter('set_type'));
-	        $set->setItemclassId($this->getRequestParameter('set_model_id'));
-	        $set->setSiteId($this->getSite()->getId());
-	        $shared = $this->getRequestParameter('set_shared') ? 1 : 0;
-	        $set->setShared($shared);
-	        $set->save();
+	        if($model->find($this->getRequestParameter('set_model_id'))){
 	        
-	        if($set->getType() == 'DYNAMIC'){
-	            $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to give it some rules.", SmartestUserMessage::SUCCESS);
+	            $set->setName($new_set_name);
+	            $set->setLabel($this->getRequestParameter('set_name'));
+	            $set->setType($this->getRequestParameter('set_type'));
+	            $set->setItemclassId($this->getRequestParameter('set_model_id'));
+	            $set->setSiteId($this->getSite()->getId());
+	            $shared = $this->getRequestParameter('set_shared') ? 1 : 0;
+	            $set->setShared($shared);
+	            $set->save();
+	        
             }else{
-                if($this->getRequestParameter('add_item_id')){
-                    $item_id = (int) $this->getRequestParameter('add_item_id');
-                    // add the item to the set
-                    $set->addItems(array($item_id));
-                    $this->redirect('/datamanager/editItem?item_id='.$item_id);
-                }else{
-                    $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to decide what goes in there.", SmartestUserMessage::SUCCESS);
+                
+                $this->addUserMessageToNextRequest('The specified model ID was not found', SmartestUserMessage::ERROR);
+                $this->formForward();
+                
+            }
+	        
+	        if($this->getRequestParameter('from') == 'editItem'){
+                
+                if(is_numeric($this->getRequestParameter('for_item_property_id'))){
+                    
+                    $property = new SmartestItemProperty;
+                    
+                    if($property->find($this->getRequestParameter('for_item_property_id'))){
+                        
+                        if($property->getDatatype() == 'SM_DATATYPE_CMS_ITEM_SET'){
+                            
+                            $item = SmartestCmsItem::retrieveByPk($this->getRequestParameter('for_item_id'));
+                            
+                            if($property->getItemclassId() == $item->getModelId()){
+                                $item->setPropertyValueByNumericKey($property->getId(), $set->getId());
+                                $item->save();
+                                $this->redirect('/datamanager/editItem?item_id='.$item->getId());
+                            }else{
+                                $this->addUserMessageToNextRequest('The property you are adding a set for is for a different model than the item selected.', SmartestUserMessage::WARNING);
+                                $this->redirect('/datamanager/editItem?item_id='.$item->getId());
+                            }
+                            
+                        }else{
+                            $this->addUserMessageToNextRequest('The property for which you are adding a set is not a data set property', SmartestUserMessage::WARNING);
+                            $this->formForward();
+                        }
+                        
+                    }else{
+                        
+                        // $this->addUserMessage('The property you have selected cannot be found', SmartestUserMessage::ERROR);
+                        
+                    }
+                    
                 }
+                
+            }else{
+	        
+    	        if($set->getType() == 'DYNAMIC'){
+    	            $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to give it some rules.", SmartestUserMessage::SUCCESS);
+                }else{
+                    if($this->getRequestParameter('add_item_id')){
+                        $item_id = (int) $this->getRequestParameter('add_item_id');
+                        // add the item to the set
+                        $set->addItems(array($item_id));
+                        $this->redirect('/datamanager/editItem?item_id='.$item_id);
+                    }else{
+                        $this->addUserMessageToNextRequest("Your set has been successfully created. Now you probably want to decide what goes in there.", SmartestUserMessage::SUCCESS);
+                    }
+                }
+            
             }
             
 	        $this->redirect('/sets/editSet?set_id='.$set->getId());
@@ -366,6 +453,7 @@ class Sets extends SmartestSystemApplication{
         	        $c->setItempropertyId($property_id);
         	        $c->setOperator($this->getRequestParameter('new_condition_operator'));
         	        $c->setValue($this->getRequestParameter('new_condition_value'));
+        	        
         	        $c->save();
 	        
         	    }
@@ -428,7 +516,17 @@ class Sets extends SmartestSystemApplication{
 	            
 	        }
 	        
-		    $this->redirect('/sets/editSet?set_id='.$set_id);
+	        $url = '/sets/editSet?set_id='.$set_id;
+	        
+	        if($this->getRequestParameter('from')){
+	            $url .= '&from='.$this->getRequestParameter('from');
+	        }
+	        
+	        if($this->getRequestParameter('item_id')){
+	            $url .= '&item_id='.$this->getRequestParameter('item_id');
+	        }
+	        
+		    $this->redirect($url);
 		    exit;
 		    
 	    }else{

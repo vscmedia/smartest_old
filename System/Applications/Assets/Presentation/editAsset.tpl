@@ -5,10 +5,12 @@
   
   {if $asset.deleted}<div class="warning">{$_l10n_action_strings.in_trash_warning.before_filetype} {$asset.type_info.label} {$_l10n_action_strings.in_trash_warning.after_filetype}</div>{/if}
   
-  {if !$file_is_writable && $asset.type_info.editable}
-    <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
-  {elseif !$dir_is_writable}
-    <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
+  {if $asset.type_info.storage.type != "external_translated"}
+    {if !$file_is_writable && $asset.type_info.editable}
+      <div class="warning">This file is not currently writable by the web server, so it cannot be edited directly in Smartest.</div>
+    {elseif !$dir_is_writable}
+      <div class="warning">The directory where this file is stored is not currently writable by the web server, so this file cannot be edited directly in Smartest.</div>
+    {/if}
   {/if}
   
   {* if $asset.is_too_large}<div class="warning">At {$asset.dimensions} pixels and {$asset.size}, this image seems quite large to use on a website. <a href="{$domain}assets/resizeImageAsset?asset_id={$asset.id}">Click here</a> to resize it.</div>{/if *}

@@ -165,6 +165,10 @@ class SmartestCmsItemSet extends SmartestSet implements SmartestSetApi, Smartest
 	    }
 	}
 	
+	public function getRetrieveMode(){
+	    return $this->_retrieve_mode;
+	}
+	
 	public function getLookups($mode='DEF'){
 	    
 	    if(!is_numeric($mode)){

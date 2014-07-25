@@ -999,6 +999,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    
 	}
 	
+	public function isSection(){
+	    return (bool) $this->getIsSection();
+	}
+	
 	public function getPageFields(){
 	    
 	    $sql = "SELECT * FROM `PageProperties` WHERE pageproperty_site_id='".$this->_properties['site_id']."'";
@@ -1241,6 +1245,10 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    return (bool) $this->_properties['changes_approved'];
 	}
 	
+	public function isPublished(){
+	    return SmartestStringHelper::toRealBool($this->_properties['is_published']);
+	}
+	
 	public function isEditableByUserId($user_id){
 	    if($this->getIsHeld() == '0' || ($this->getIsHeld() == '1' && $this->getHeldBy() == $user_id)){
             // The page isn't held, or it's held by the user
@@ -1359,6 +1367,17 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        
 	        case "fallback_url":
 	        return "website/renderPageFromId?page_id=".$this->getWebid();
+            
+            case "preview_safe_url":
+            if($this->getDraftMode()){
+                if(isset($_GET['hide_newwin_link'])){
+                    return "website/renderEditableDraftPage?page_id=".$this->getWebid().'&hide_newwin_link=true';
+                }else{
+                    return "websitemanager/preview?page_id=".$this->getWebid();
+                }
+            }else{
+                return $this->getUrl();
+            }
 	        
 	        case 'date':
             return $this->getDate();
@@ -1744,7 +1763,7 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	        foreach($ids_array as $item_id){
 		        $ds->insertItemId($item_id);
 		    }
-	    
+	        
 	        return new SmartestArray($ds->getItems());
 	    
         }else{
@@ -2090,7 +2109,14 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
     
         foreach($models as $m){
             $key = SmartestStringHelper::toVarName($m->getPluralName());
-            $data->setParameter($key, $this->getRelatedItems($m->getId()));
+            $related = $this->getRelatedItems($m->getId());
+            /* foreach($related as $r){
+                if(!is_object($r)){
+                    var_dump($r);
+                }
+            } */
+            // var_dump($key.': '.count($related));
+            $data->setParameter($key, $related);
         }
         
         $data->setParameter('pages', $this->getRelatedPages());
@@ -2129,6 +2155,44 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 		
 		krsort($breadcrumbs);
 		$result = array_values($breadcrumbs);
+		
+		return $result;
+		
+	}
+	
+	public function getPageSections(){
+		
+		$helper = new SmartestPageManagementHelper;
+		$type_index = $helper->getPageTypesIndex($this->getParentSite()->getId());
+		
+		$home_page = $this->getParentSite()->getHomePage($this->getDraftMode());
+		$sections = array();
+		
+		$limit = 100;
+		
+		$page = &$this;
+		
+		$section_index = 0;
+		
+		while($home_page->getId() != $page->getId() && $limit > 0){
+		    
+		    if($page->isSection() && ($page->isPublished() || $this->getDraftMode())){
+    		    $page->setDraftMode($this->getDraftMode());
+    		    $sections[] = $page;
+    			$section_index++;
+		    }
+		    
+		    $page = $page->getParentPage();
+		    $limit--;
+			
+		}
+		
+		$this->_level = $section_index;
+		
+		$sections[] = $home_page;
+		
+		ksort($sections);
+		$result = array_values($sections);
 		
 		return $result;
 		
@@ -2339,42 +2403,42 @@ class SmartestPage extends SmartestBasePage implements SmartestSystemUiObject, S
 	    return $title;
 	}
 	
-	public function getCacheFileName(){
+	public function getCacheFileName($platform='SM_PLATFORMTYPE_PC'){
 	    
+	    $page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id'].$this->getCacheFileNameDatePart();
+	    
+	    if($this->getType() == "ITEMCLASS" && $this->_principal_item){
+			$page_cache_name .= "__id".$this->_principal_item->getId();
+		}
+	    
+	    return $page_cache_name.'.html';
+	    
+	}
+	
+	public function getCacheFileNameDatePart(){
+	
 	    switch($this->getCacheInterval()){
 	        
 			case "MONTHLY":
-			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m");
-			break;
+			return "_m".date("m");
 			
 			case "DAILY":
-			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m")."_d".date("d");
-			break;
+			return "_m".date("m")."_d".date("d");
 			
 			case "HOURLY":
-			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m")."_d".date("d")."_H".date("H");
-			break;
+			return "_m".date("m")."_d".date("d")."_H".date("H");
 			
 			case "MINUTE":
-			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m")."_d".date("d")."_H".date("H")."_i".date("i");
-			break;
+			return "_m".date("m")."_d".date("d")."_H".date("H")."_i".date("i");
 			
 			case "SECOND":
-			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id']."_m".date("m")."_d".date("d")."_H".date("H")."_i".date("i")."_s".date("s");
-			break;
+			return "_m".date("m")."_d".date("d")."_H".date("H")."_i".date("i")."_s".date("s");
 			
 			case "PERMANENT":
 			default:
-			$page_cache_name = "site".$this->_properties['site_id']."_cms_page_".$this->_properties['id'];
-			break;
+			return '';
 			
 		}
-		
-		if($this->getType() == "ITEMCLASS" && $this->_principal_item){
-			$page_cache_name .= "__id".$this->_principal_item->getId();
-		}
-		
-		return $page_cache_name.'.html';
 		
 	}
 	

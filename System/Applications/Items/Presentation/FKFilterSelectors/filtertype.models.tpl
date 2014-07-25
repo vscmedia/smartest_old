@@ -16,6 +16,8 @@
   </div>
 </div>
 
+{if $request_parameters.itemproperty_datatype == "SM_DATATYPE_CMS_ITEM"}
+
 <script type="text/javascript">
 var model_id = {$model.id};
 var waitingHTML = '<img src="{$domain}Resources/System/Images/ajax-loader.gif" alt="" />';
@@ -42,6 +44,8 @@ var waitingHTML = '<img src="{$domain}Resources/System/Images/ajax-loader.gif" a
   });
 {/literal}
 </script>
+
+{/if}
 
 {if $request_parameters.itemproperty_datatype == "SM_DATATYPE_CMS_ITEM"}
 <div class="edit-form-row">

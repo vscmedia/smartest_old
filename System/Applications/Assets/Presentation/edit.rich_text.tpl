@@ -30,18 +30,27 @@
         
 </form>
 
-<script language="javascript" type="text/javascript" src="{$domain}Resources/System/Javascript/tiny_mce/tiny_mce.js"></script>
+<!--<script language="javascript" type="text/javascript" src="{$domain}Resources/System/Javascript/tiny_mce/tiny_mce.js"></script>-->
+<script src="{$domain}Resources/System/Javascript/tinymce4/tinymce.min.js"></script>
 
 <script language="javascript" type="text/javascript">
-
 {literal}
 
-tinyMCE.init({
-  entity_encoding : "raw",
+tinymce.init({
+    selector: "#tpl_textArea",
+    plugins: [
+        "advlist autolink lists charmap print preview anchor",
+        "searchreplace visualblocks code fullscreen",
+        "media table contextmenu paste link wordcount"
+    ],
+    paste_word_valid_elements: "b,strong,i,em,h1,h2,h3,h4,p",
+    toolbar: "insertfile undo redo | styleselect | bold italic | link unlink | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | code"
+});
+
+/* tinyMCE.init({
 	mode : "exact",
 	elements : "tpl_textArea",
 	theme : "advanced",
-	verify_html: false,
 	plugins : "paste",
 	theme_advanced_buttons3_add : "paste,pasteword,selectall",
 	theme_advanced_disable : "image,styleprops",
@@ -58,10 +67,12 @@ tinyMCE.init({
 {/literal}  document_base_url : "{$domain}" {literal}
   
 });
-
-var AutoSaver = new PeriodicalExecuter(function(pe){
-  // autosave routine
-}, 5);
-
+  */
+  
+  var AutoSaver = new PeriodicalExecuter(function(pe){
+    // autosave routine
+  }, 5);
+  
 {/literal}
+
 </script>

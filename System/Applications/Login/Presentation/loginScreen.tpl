@@ -122,6 +122,8 @@
       <p class="login-message notify" id="message-badauth" style="display:none">The username or password you provided were wrong.</p>
       <p class="login-message notify" id="message-session" style="display:none">Your session has timed out. Please log back into Smartest</p>
       <p class="login-message notify" id="message-welcome" style="display:none">Welcome to Smartest. Submit the username and password you just chose to log in.</p>
+      <p class="login-message notify" id="message-unauthorized" style="display:none">The user you are logged in as is not authorized to access the Smartest backend.</p>
+      <p class="login-message notify" id="message-reauth" style="display:none">You need to re-authenticate using this login form.</p>
 
       <form name="loginform" id="loginform" action="{$domain}smartest/login/check" method="post">
 

@@ -46,6 +46,11 @@ document.observe('dom:loaded', function(){
   
   <form id="new-set-form" method="post" action="{$domain}{$section}/insertSet">
       {if $add_item_id}<input type="hidden" name="add_item_id" value="{$add_item_id}" />{/if}
+      {if $request_parameters.from == 'editItem'}
+      <input type="hidden" name="from" value="editItem" />
+        {if $item}<input type="hidden" name="for_item_id" value="{$item.id}" />{/if}
+        {if $property}<input type="hidden" name="for_item_property_id" value="{$property.id}" />{/if}
+      {/if}
   
     <div class="edit-form-layout">
     

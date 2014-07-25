@@ -57,6 +57,11 @@ class SmartestBaseApplication extends QuinceBase{
 	
 	public function __pre(){
 	    
+	    if(in_array($this->getRequest()->getAction(), array('__moduleConstruct', '__pre', '__post', 'lookupSiteDomain', '__moduleDestruct', '__smartestApplicationInit', '__destruct', '__construct', '__call', 'formForward'))){
+	        echo "not allowed";
+	        exit;
+	    }
+	    
 	    $this->_callOptionalConstructors();
 	    $this->_loadApplicationSpecificTemplatePlugins();
 	    
@@ -130,6 +135,14 @@ class SmartestBaseApplication extends QuinceBase{
 	    $rp = new SmartestParameterHolder('Final request parameters');
 	    $rp->loadArray($this->getRequest()->getRequestParameters());
 	    $this->getPresentationLayer()->assign('request_parameters', $rp);
+	    $this->send($this->userIsLoggedIn(), 'user_logged_in');
+	    $this->send($this->userIsLoggedInToCms(), 'system_user_logged_in');
+	    
+	}
+	
+	public function __call($method, $arguments){
+	    
+	    throw new SmartestException('The action or method \''.$method.'\' does not exist.');
 	    
 	}
 	
@@ -155,11 +168,32 @@ class SmartestBaseApplication extends QuinceBase{
 	    
 	}
 	
+	/* protected function setDefaultPage($page_name){
+	    
+	    $p = new SmartestPage;
+	    
+	    if($p->findBy('name', $page_name)){
+	        $GLOBALS['user_action_page'] = $p;
+	        $GLOBALS['user_action_has_page'] = true;
+	        
+	        $this->getPresentationLayer()->assignPage($p);
+	        
+	    }else{
+	        // echo "Page not found";
+	    }
+	    
+	} */
+	
 	private function _callOptionalConstructors(){
 	    
 	    // Called by all system applications
 	    if($this->isSystemApplication() && method_exists($this, "__systemModulePreConstruct")){
 		    $this->__systemModulePreConstruct();
+	    }
+	    
+	    // Called by all system applications
+	    if($this->isUserApplication() && method_exists($this, "__userModulePreConstruct")){
+		    $this->__userModulePreConstruct();
 	    }
 	    
 	    // Called by the individual applications
@@ -253,6 +287,11 @@ class SmartestBaseApplication extends QuinceBase{
 	    return $this->getRequest()->getMeta('_module_dir').'Configuration/strings.yml';
 	}
 	
+	// Convenience function to provide controller instance internally
+	protected function getController(){
+        return SmartestPersistentObject::get('controller');
+    }
+	
 	final public function __destruct(){
 		
 		if(method_exists($this, "__moduleDestruct")){
@@ -264,6 +303,12 @@ class SmartestBaseApplication extends QuinceBase{
 	final public function isSystemApplication(){
 	    
 	    return ((bool) $this->getRequest()->getMeta('system') ? true : false) && ($this instanceof SmartestSystemApplication);
+	    
+	}
+	
+	final public function isUserApplication(){
+	    
+	    return !($this instanceof SmartestSystemApplication);
 	    
 	}
 	
@@ -311,6 +356,16 @@ class SmartestBaseApplication extends QuinceBase{
 	    
 	}
 	
+	protected function userIsLoggedIn(){
+	    $helper = new SmartestAuthenticationHelper;
+	    return $helper->getUserIsLoggedIn();
+	}
+	
+	protected function userIsLoggedInToCms(){
+	    $helper = new SmartestAuthenticationHelper;
+	    return $helper->getSystemUserIsLoggedIn();
+	}
+	
 	/* 
 	protected function requireAuthenticatedUser($authservicename){
 		if(!$this->_auth->getUserIsLoggedIn()){
@@ -347,6 +402,10 @@ class SmartestBaseApplication extends QuinceBase{
 	    return SmartestPersistentObject::get('presentationLayer');
 	}
 	
+	protected function getPresentationLayerVariable($variable_name){
+	    return SmartestPersistentObject::get('presentationLayer')->getVariable($variable_name);
+	}
+	
 	protected function getUserAgent(){
 	    return SmartestPersistentObject::get('userAgent');
 	}
@@ -365,6 +424,10 @@ class SmartestBaseApplication extends QuinceBase{
     		$this->_resultIndex++;
     	}
     }
+    
+    final protected function sent($varname){
+	    return $this->getPresentationLayer()->hasTemplateVariable($varname);
+	}
     
     ///// Preferences/Settings Access //////
     
@@ -430,7 +493,7 @@ class SmartestBaseApplication extends QuinceBase{
         
     }
     
-    protected function getGlobalPreference($preference_name){
+    protected function getGlobalPreference($preference_name, $default=null){
         
         $name = SmartestStringHelper::toVarName($preference_name);
         
@@ -438,8 +501,13 @@ class SmartestBaseApplication extends QuinceBase{
             return $this->_cached_global_preferences->getParameter($name);
         }else{
             $value = $this->_preferences_helper->getGlobalPreference($name, $this->getUserIdOrZero(), $this->getSiteIdOrZero());
+        }
+        
+        if(isset($value) && strlen($value)){
             $this->_cached_global_preferences->setParameter($name, $value);
             return $value;
+        }else{
+            return $default;
         }
         
     }

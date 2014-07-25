@@ -121,6 +121,9 @@ function validateUploadSuffix(){
         <input type="hidden" name="for" value="ipv" />
         <input type="hidden" name="property_id" value="{$property.id}" />
         {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
+      {elseif $for=='filegroup'}
+        <input type="hidden" name="for" value="filegroup" />
+        <input type="hidden" name="group_id" value="{$group.id}" />
       {/if}
     {/if}
     
@@ -140,11 +143,12 @@ function validateUploadSuffix(){
         <input type="hidden" name="for" value="placeholder" />
         <input type="hidden" name="placeholder_id" value="{$placeholder.id}" />
         <input type="hidden" name="page_id" value="{$page.id}" />
-        {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
       {elseif $for=='ipv'}
         <input type="hidden" name="for" value="ipv" />
         <input type="hidden" name="property_id" value="{$property.id}" />
-        {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
+      {elseif $for=='filegroup'}
+        <input type="hidden" name="for" value="filegroup" />
+        <input type="hidden" name="group_id" value="{$group.id}" />
       {/if}
       
       <input type="hidden" name="input_method" value="{$input_method}">
@@ -175,19 +179,47 @@ function validateUploadSuffix(){
       {/if}
       
       {if $for=='placeholder'}
-        <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be used to define placeholder <strong>'{$placeholder.label}'</strong> on {if $item}meta-page <strong>'{$page.title}'</strong> for item <strong>'{$item.name}'</strong>.{else}page <strong>'{$page.title}'</strong>.{/if}</div>
+        <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be used to define placeholder <strong>'{$placeholder.label}'</strong> on {if $item}meta-page <strong>'{$page.title}'</strong><span id="item-specificity"> for {$item._model.name|lower} <strong>'{$item.name}'</strong></span>.{else}page <strong>'{$page.title}'</strong>.{/if}</div>
       {elseif $for=='ipv'}
         {if $item}
           <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be used to define property <strong>'{$property.name}'</strong> of {$property._model.name|strtolower} <strong>'{$item.name}'</strong>.</div>
         {else}
           <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be used as the value for property <strong>'{$property.name}'</strong> for a new <strong>{$property._model.name|strtolower}</strong>.</div>
         {/if}
+      {elseif $for=='filegroup'}
+        <div class="instruction">The {$new_asset_type_info.label|strtolower} file you are creating will be added to </div>
       {/if}
       
       <div class="edit-form-row">
         <div class="form-section-label">{$name_instruction}</div>
         <input type="text" name="asset_label" value="{if $suggested_name}{$suggested_name}{else}{$start_name}{/if}" {if !$suggested_name}class="unfilled"{/if} id="new-asset-name" />
       </div>
+
+      {if $for=='placeholder'}
+        {if $item}
+        <div class="edit-form-row">
+          <div class="form-section-label">Scope</div>
+          <select name="item_id" id="item-id">
+            <option value="{$item.id}">Use only when viewing {$item._model.name|lower} {$item.name}</option>
+            <option value="ALL">Use on this meta-page for all {$item._model.plural_name|lower}.</option>
+          </select>
+          <input type="hidden" name="continue_item_id" value="{$item.id}" />
+        </div>
+        <script type="text/javascript">
+          {literal}
+          $('item-id').observe('change', function(e){
+            if($('item-id').value == 'ALL'){
+              $('item-specificity').hide();
+            }else{
+              $('item-specificity').show();
+            }
+          });
+          {/literal}
+        </script>
+        {/if}
+      {elseif $for=='ipv'}
+        {if $item}<input type="hidden" name="item_id" value="{$item.id}" />{/if}
+      {/if}
       
     {load_interface file="$interface_file"}
     

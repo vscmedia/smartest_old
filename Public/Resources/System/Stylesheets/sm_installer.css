@@ -1,47 +1,73 @@
 body{
     font-family:lucida grande,verdana,sans-serif;
-    font-size:11px;
+    font-size:100%;
     margin:0px;
+    padding-bottom:20px;
+}
+
+a img{
+    border:0px;
+}
+
+@font-face {
+    font-family: "source-sans";
+    src: url(../Fonts/SourceSansPro-ExtraLight.otf.woff);
+}
+
+@font-face {
+    font-family: "source-sans";
+    src: url(../Fonts/SourceSansPro-Semibold.otf.woff);
+    font-weight: bold;
 }
 
 form{
     margin:0px;
 }
 
-div#pagewidth{
-    width:100%;
-}
-
-div#container{
-    width:600px;
-    padding-top:20px;
-    margin-left:auto;
-    margin-right:auto
-}
-
 h1{
     margin:0px;
     margin-bottom:15px;
     color:#333;
+    font-family: "source-sans";
 }
 
 h3{
     margin:0px;
     margin-top:30px;
     color:#333;
+    font-family: "source-sans";
 }
 
-div#top-strip{
-	background-color:#333;
-	height:38px;
-	color:#eee;
+#pagewidth{
+    width:100%;
+}
+
+#top-strip{
+	background-color:#000;
+	height:48px;
 	border:0px;
+	padding-left:5px;
 }
 
-div#top-strip h3{
-	font-size:0.8em;
-	height:25px;
-	
+#container{
+    width:750px;
+    padding-top:20px;
+    padding-bottom:20px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#container p, #container li{
+    font-size:0.8em;
+}
+
+#container p code{
+    font-size:1.5em;
+}
+
+div.v-spacer{
+    clear:both;
+    height:20px;
 }
 
 ul.errors-list{
@@ -65,7 +91,19 @@ ul.errors-list{
 
 .form-row-label{
     float:left;
-    width:140px;
+    width:160px;
+    color:#999;
+}
+
+input[type="text"], input[type="password"]{
+    width:300px;
+    height:22px;
+    font-size:1.1em;
+    color:#333;
+    padding:3px;
+    border-radius:3px;
+    -moz-border-radius:3px;
+    border:1px solid #ccc;
 }
 
 .button{

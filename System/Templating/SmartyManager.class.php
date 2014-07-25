@@ -80,7 +80,7 @@ class SmartyManager{
     	}else if($this->context == 'SingleItemTemplateRenderer'){
         	$smartyObj = new SmartestSingleItemTemplateRenderer($pid);
         }else if($this->context == 'UserAppBuilder'){
-    	    $smartyObj = new SmartestBasicRenderer('_main');
+    	    $smartyObj = new SmartestUserAppBuilder('_main');
     	}else{
 		    $smartyObj = new SmartestEngine('_main');
 		}

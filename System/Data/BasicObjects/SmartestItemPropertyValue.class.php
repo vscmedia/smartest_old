@@ -8,6 +8,10 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
     
     const OMISSION_ERROR = 100;
     
+    /* public function __construct(){
+        parent::__construct();
+    } */
+    
     public function init($item_id, $property_id){
         
         /* $sql = "SELECT * FROM ItemPropertyValues WHERE itempropertyvalue_item_id='".$item_id."' AND itempropertyvalue_property_id='".$property_id."'";
@@ -33,7 +37,7 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
         
         if(!$this->_property){
             $property = new SmartestItemProperty;
-            $property->hydrate($this->_properties['property_id']);
+            $property->find($this->_properties['property_id']);
             $this->_property = $property;
         }
         
@@ -100,16 +104,19 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                 }
                 
                 if($t['valuetype'] == 'foreignkey'){
-                
+                    
                     // these first two options are both hacks, but will be fixed in the future
                     if($class == 'SmartestCmsItem'){
+                        
                         // get model id
                         $model_id = $this->getProperty()->getForeignKeyFilter();
                         $model = new SmartestModel;
-                        $model->hydrate($model_id);
-                        $class = $model->getClassName();
+                        
+                        if($model->find($model_id)){
+                            $class = $model->getClassName();
+                        }
                     }
-                
+                    
                     $obj = new $class;
                 
                     if($obj instanceof SmartestDualModedObject){
@@ -127,6 +134,10 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                         if($obj instanceof SmartestCmsItem){
                             // only bother trying to hydrate the SmartestCmsItem subclass if we have an actual foreign key to use:
                             if(strlen($raw_data) && is_numeric($raw_data)){
+                                if($this->getProperty()->getDatatype() == 'SM_DATATYPE_CMS_ITEM'){
+                                    // echo $raw_data.' ';
+                                    // print_r($this->getOriginalDbRecord());
+                                }
                                 $obj->find($raw_data);
                             }
                         }else{
@@ -300,18 +311,26 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
                     
                     if($this->getProperty()->getDatatype() == 'SM_DATATYPE_ASSET'){
 
-                        $asset = new SmartestAsset;
-                        $asset->hydrate($this->_properties['content']);
+                        if($this->_properties['content'] instanceof SmartestAsset){
+                            
+                            if($this->_properties['content']->isEditable() && $this->_properties['content']->isParsable()){
+                                $this->_properties['content']->getTextFragment()->publish();
+                            }
+                            
+                        }else{
+                            $asset = new SmartestAsset;
+                            $asset->hydrate($this->_properties['content']);
 
-                        if($asset->isEditable() && $asset->isParsable()){
-                            $asset->getTextFragment()->publish();
+                            if($asset->isEditable() && $asset->isParsable()){
+                                $asset->getTextFragment()->publish();
+                            }
                         }
 
                     }
                     
                 }
+                
             // }
-            
             
         // }
     }
@@ -389,22 +408,27 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
 	    }
 	} */
     
-    public function setContent($data, $save=true, $force_live=false){
+    public function setContent($raw_data, $save=true, $force_live=false){
         
-        if(is_object($data)){
-            $filtered_data = $data->getStorableFormat();
+        if(is_object($raw_data) && ($raw_data instanceof SmartestStorableValue)){
+            $filtered_data = $raw_data->getStorableFormat();
+            $this->_value_object = $raw_data;
         }else{
-            if($value_obj = SmartestDataUtility::objectizeFromRawFormData($data, $this->getProperty()->getDatatype())){
+            
+            if($value_obj = SmartestDataUtility::objectizeFromNewRawDataGivenToItemPropertyValue($raw_data, $this->getProperty()->getDatatype(), $this->getProperty()->getForeignKeyFilter())){
                 if($this->getProperty()->isManyToMany()){
                     
                 }else{
                     $filtered_data = $value_obj->getStorableFormat();
                 }
+                $this->_value_object = $value_obj;
             }else{
                 $filtered_data = null;
-                SmartestLog::getInstance('system')->log("Could not set content of SmartestItemPropertyValue object, because a value object was not given and none could be created from the raw value given: '".$data."'.");
+                SmartestLog::getInstance('system')->log("Could not set content of SmartestItemPropertyValue object, because a value object was not given and none could be created from the raw value given: '".$raw_data."'.");
             }
         }
+        
+        // print_r($value_obj);
         
         if($this->getProperty()->isManyToMany()){
             
@@ -413,13 +437,14 @@ class SmartestItemPropertyValue extends SmartestBaseItemPropertyValue{
             $r->setCentralEntityObjectId($this->getId());
             $r->setCentralEntityByIndex($this->getProperty()->getManyToManyRelationshipItemEntityIndex());
             $r->setTargetEntityByIndex($this->getProperty()->getManyToManyRelationshipMappedObjectEntityIndex());
-            $r->updateTo($data);
+            $r->updateTo($raw_data);
             
         }else{
             
             $field = $force_live ? 'content' : 'draft_content';
             
-            $this->_properties[$field] = $data;
+            // $this->_properties[$field] = $raw_data;
+            $this->_properties[$field] = $filtered_data;
             $this->_modified_properties[$field] = addslashes($filtered_data);
 
             if(isset($this->_properties['item_id']) && is_numeric($this->_properties['item_id']) && $save){

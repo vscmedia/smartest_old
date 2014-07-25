@@ -27,6 +27,7 @@ function smartest_filter_preview($html, $filter){
         $r->assign('total_time', SmartestPersistentObject::get('timing_data')->getParameter('full_time_taken'));
         $r->assign('liberate_link_url', $preview_url);
         $r->assign('preview_link_url', $smartest_preview_url);
+        $r->assign('page_webid', $request_data->getParameter('request_parameters')->getParameter('page_id'));
         $r->assign('hide_liberate_link', SmartestStringHelper::toRealBool(SmartestPersistentObject::get('request_data')->getParameter('request_parameters')->getParameter('hide_newwin_link')));
         
         if($request_data->getParameter('request_parameters')->hasParameter('item_id')){

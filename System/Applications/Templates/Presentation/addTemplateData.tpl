@@ -1,6 +1,6 @@
 <div id="work-area">
   <h3>New Templates</h3>
-  <form action="{$domain}{$section}/createTemplateAssetsFromFiles" method="post">
+  <form action="{$domain}{$section}/createTemplateAssetsFromFiles" method="post" id="create-template-records-form">
   <ul style="padding:0px;margin:0px;list-style-type:none">
   {foreach from=$files item="file" name="files"}
     <li style="padding:10px;background-color:#{cycle values="fff,ddd"}">
@@ -11,9 +11,9 @@
       
       {if count($file.possible_types) > 1}
         {if $file.suffix_recognized}
-        <select name="new_files[{$smarty.foreach.files.index}][type]">{foreach from=$file.possible_types item="ptype"}<option value="{$ptype.type.id}"{if $file.current_directory == $ptype.storage_location} selected="selected"{/if}>{$ptype.type.label}{if $file.current_directory != $ptype.storage_location} (will be moved to /{$ptype.storage_location}{$file.filename}){/if}</option>{/foreach}</select>
+        <select name="new_files[{$smarty.foreach.files.index}][type]" class="template-type-select"><option value="NONE">Please choose...</option>{foreach from=$file.possible_types item="ptype"}<option value="{$ptype.type.id}">{$ptype.type.label}{if $file.current_directory != $ptype.storage_location} (will be moved to /{$ptype.storage_location}{$file.filename}){/if}</option>{/foreach}</select>
         {else}
-        <select name="new_files[{$smarty.foreach.files.index}][type]">{foreach from=$file.possible_types item="ptype"}<option value="{$ptype.type.id}">{$ptype.type.label} (will be renamed {$ptype.filename})</option>{/foreach}</select>
+        <select name="new_files[{$smarty.foreach.files.index}][type]" class="template-type-select"><option value="NONE">Please choose...</option>{foreach from=$file.possible_types item="ptype"}<option value="{$ptype.type.id}">{$ptype.type.label} (will be renamed {$ptype.filename})</option>{/foreach}</select>
         {/if}
       {else}
         {$file.possible_types[0].type.label}{if $file.current_directory != $file.possible_types[0].storage_location} (file will be moved to <code>{$file.possible_types[0].storage_location}{$file.filename}</code>){/if}<input type="hidden" name="new_files[{$smarty.foreach.files.index}][type]" value="{$file.possible_types[0].type.id}" />
@@ -39,4 +39,41 @@
     <input type="submit" value="Finish" />
   </div>
   </form>
+  <script type="text/javascript">
+  {literal}
+    document.observe('dom:loaded', function(){
+        
+        $('create-template-records-form').observe('submit', function(e){
+
+            /* if(($('new-asset-name').getValue() == itemNameFieldDefaultValue) || $('new-asset-name').getValue() == ''){
+                $('new-asset-name').addClassName('error');
+                e.stop();
+            } */
+            
+            $$('select.template-type-select').each(function(select){
+
+                if(select.getValue() == 'NONE'){
+                    select.addClassName('error');
+                    e.stop();
+                }
+
+            });
+
+        });
+        
+        $$('select.template-type-select').each(function(select){
+
+            select.observe('change', function(){
+                
+                if(select.getValue() != 'NONE'){
+                    select.removeClassName('error');
+                }
+                
+            });
+
+        });
+
+    });
+  {/literal}
+  </script>
 </div>

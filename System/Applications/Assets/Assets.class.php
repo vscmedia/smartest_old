@@ -414,6 +414,7 @@ class Assets extends SmartestSystemApplication{
     		        break;
     		        
     		        case "SM_ASSETINPUTTYPE_URL_INPUT":
+    		        $this->send(SmartestHttpRequestHelper::curlInstalled(), 'curl_installed');
     		        break;
     		        
     		    }
@@ -583,6 +584,10 @@ class Assets extends SmartestSystemApplication{
 
             }
             
+        }else if($this->getRequestParameter('for') == 'filegroup'){ // If the point of this is to add a new file to a gallery
+            
+            
+            
         }
 		
 	}
@@ -735,7 +740,8 @@ class Assets extends SmartestSystemApplication{
         		        // insert URL only
         		        case 'SM_ASSETINPUTTYPE_URL_INPUT':
         		        $url = new SmartestExternalUrl($this->getRequestParameter('asset_url'));
-        		        $ach->createNewAssetFromUrl($url, $this->getRequestParameter('asset_label'));
+        		        $create_thumbnail = (bool) $this->getRequestParameter('retrieve_thumbnail');
+        		        $ach->createNewAssetFromUrl($url, strip_tags($this->getRequestParameter('asset_label')), $create_thumbnail);
         		        $asset = $ach->finish();
         		        break;
     		        
@@ -832,8 +838,10 @@ class Assets extends SmartestSystemApplication{
                                     
                                         // load or create placeholder definition
                                         $definition = new SmartestPlaceholderDefinition;
+                                        
+                                        $item_id = is_numeric($this->getRequestParameter('item_id')) ? $this->getRequestParameter('item_id') : null;
                                     
-                                        if($definition->loadForUpdate($placeholder->getName(), $page, $this->getRequestParameter('item_id'))){
+                                        if($definition->loadForUpdate($placeholder->getName(), $page, $item_id)){
 
                     	                    // update placeholder
                     	                    $definition->setDraftAssetId($asset->getId());
@@ -847,7 +855,7 @@ class Assets extends SmartestSystemApplication{
                     	                    $definition->setInstanceName('default');
                     	                    $definition->setPageId($page->getId());
                 	                    
-                    	                    if($this->getRequestParameter('item_id')){
+                    	                    if($item_id){
                     	                        $definition->setItemId($this->getRequestParameter('item_id'));
                     	                    }
                 	                    
@@ -873,9 +881,15 @@ class Assets extends SmartestSystemApplication{
                                     // forward back to placeholder def screen
                                     
                                     $url = '/websitemanager/definePlaceholder?assetclass_id='.$placeholder->getName().'&page_id='.$page->getWebid();
-                                    if($this->getRequestParameter('item_id')) $url .= '&item_id='.$this->getRequestParameter('item_id');
+                                    
+                                    if($this->getRequestParameter('item_id') && is_numeric($this->getRequestParameter('item_id'))){
+                                        $url .= '&item_id='.$this->getRequestParameter('item_id');
+                                    }else if($this->getRequestParameter('continue_item_id') && is_numeric($this->getRequestParameter('continue_item_id'))){
+                                        $url .= '&item_id='.$this->getRequestParameter('continue_item_id');
+                                    }
                                     
                                     $this->redirect($url);
+                                    
                                 }else{
                                     $this->addUserMessageToNextRequest("The placeholder ID was not recognised.", SmartestUserMessage::ERROR);
                                 }
@@ -929,7 +943,7 @@ class Assets extends SmartestSystemApplication{
                                         }
                                     }
                                     
-                                    // forward back to item edit screen
+                                    // redirect back to item edit screen
                                     $this->redirect('/datamanager/openItem?item_id='.$item->getId());
                                     
                                 }else{
@@ -943,6 +957,10 @@ class Assets extends SmartestSystemApplication{
 		                }else{
                             $this->addUserMessageToNextRequest("A property ID was not provided.", SmartestUserMessage::ERROR);
                         }
+		                
+		            }else if($this->getRequestParameter('for') == 'filegroup'){ // add file directly to file group
+		                
+		                // Add file to the group or gallery
 		                
 		            }
 		            
@@ -1527,6 +1545,7 @@ class Assets extends SmartestSystemApplication{
 	public function updateAssetGalleryMembership(){
 	    
 	    $membership = new SmartestAssetGalleryMembership;
+	    
 	    if($membership->find($this->getRequestParameter('membership_id'))){
 	        $membership->setCaption($this->getRequestParameter('membership_caption'));
 	        $membership->setThumbnailAssetId($this->getRequestParameter('membership_thumbnail_image_id'));
@@ -1534,7 +1553,28 @@ class Assets extends SmartestSystemApplication{
 	    }else{
 	        $this->addUserMessageToNextRequest('The membership ID was not found');
 	    }
+	    
 	    $this->formForward();
+	}
+	
+	public function arrangeAssetGallery(){
+	    
+	    $group_id = $this->getRequestParameter('group_id');
+	    
+	    if($this->getRequestParameter('from') != 'editItem'){
+	        $this->setFormReturnUri();
+	        $this->setFormReturnDescription('gallery');
+        }
+        
+        $group = new SmartestAssetGroup;
+	    
+	    if($group->find($group_id)){
+	        
+	        $this->send($group->getMemberships(0, $this->getSite()->getId()), 'assets');
+	        $this->send($group, 'group');
+	        
+	    }
+	    
 	}
 	
 	/** End Asset Group Stuff **/
@@ -1556,6 +1596,10 @@ class Assets extends SmartestSystemApplication{
 		    $this->send($asset->getGroups(), 'groups');
 		    $this->send($asset->getPossibleGroups(), 'possible_groups');
 		    $this->send(new SmartestArray($asset->getOtherPointers()), 'pointers');
+		    
+		    $helper = new SmartestAssetsLibraryHelper;
+    	    $attachable_files = $helper->getAttachableFiles($this->getSite()->getId());
+    	    $this->send($attachable_files, 'thumbnail_files');
 		    
 		    if(isset($data['type_info']['source_editable']) && SmartestStringHelper::toRealBool($data['type_info']['source_editable'])){
 		        $this->send(true, 'allow_source_edit');

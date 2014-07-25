@@ -6,12 +6,18 @@ module:
   default_action: startPage
   aliases:
     - {url: /smartest/account, action: editMyProfile}
+    - {url: /smartest/users/system, action: startPage}
   meta:
     system: true
   routes:
     home:
       action: startPage
       url: /smartest/users
+    home_ou:
+      action: startPage
+      url: /smartest/users/ordinary
+      params:
+        _show_ordinary: true
     add_user:
       action: addUser
       url: /smartest/users/add

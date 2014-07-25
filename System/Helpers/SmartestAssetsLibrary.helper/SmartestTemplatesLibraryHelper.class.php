@@ -153,6 +153,40 @@ class SmartestTemplatesLibraryHelper{
         
     }
     
+    public function getUnimportedTemplatesByType($type_code){
+        
+        $types = $this->getTypes();
+	    
+	    if(isset($types[$type_code])){
+	        
+	        $type = $types[$type_code];
+	        
+	        if($type['storage']['type'] == "file"){
+	            
+	            $dir = SM_ROOT_DIR.$type['storage']['location'];
+	            
+	            $type_codes = $this->getAssetTypeCodesThatShareLocation($type_code);
+	            
+	            $files = SmartestFileSystemHelper::load($dir);
+	            $regex = '/\.tpl$/';
+	            $imported = $this->getImportedFilenamesByType($type_codes);
+	            
+	            $unimported = array();
+	            
+	            foreach($files as $f){
+	                if(!in_array($f, $imported) && preg_match($regex, $f)){
+	                    $unimported[] = $f;
+	                }
+	            }
+	            
+	            return $unimported;
+	            
+	        }
+	        
+	    }
+        
+    }
+    
     public function hydrateMasterTemplateByFileName($filename, $site_id=''){
         
         $sql = "SELECT * FROM Assets WHERE asset_url='".$filename."' AND asset_type='SM_ASSETTYPE_MASTER_TEMPLATE' AND asset_deleted='0'";

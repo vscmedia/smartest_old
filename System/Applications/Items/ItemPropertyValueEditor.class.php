@@ -17,6 +17,7 @@ class ItemPropertyValueEditor extends SmartestSystemApplication{
                 $this->send($property, 'property');
                 
                 if($property->getItemClassId() == $item->getItem()->getModelId()){
+                    
                     $this->send($property->getPossibleValues(), 'options');
                     $item->getPropertyValueByNumericKey($property->getId());
                     $this->send($item->getPropertyValueByNumericKey($property->getId())->getIds(), 'selected_ids');

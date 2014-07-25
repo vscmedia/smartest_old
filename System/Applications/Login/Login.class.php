@@ -22,38 +22,38 @@ class Login extends SmartestSystemApplication{
 		}    
 	} */
 	
-	public function loginScreen($get){
+	public function loginScreen(){
 		
-		if($this->getUser() && $this->getUser()->isAuthenticated()){
+		if($this->getUser() && $this->getUser()->isAuthenticated() && $this->_auth->getSystemUserIsLoggedIn()){
 		    $this->redirect('/smartest');
 		}
 		
-		if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING']) && isset($get['from'])){
+		/*if(isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING']) && $this->requestParameterIsSet('from')){
 		    
-		    /* $vars = array();
+		     $vars = array();
 		    
 		    foreach($get as $key => $refer_var){
 		        if($key != 'from'){
 		            $vars[$key] = strip_tags($refer_var);
 		            $vars[$key] = preg_replace('/[^\w&\._\/-]/', '', $refer_var);
 	            }
-		    } */
+		    } 
 		    
 		}else{
 		    // $this->send('', 'refer');
-		}
+		} */
 		
 	}
 	
-	public function doAuth($get, $post){
+	public function doAuth(){
 		
-		if(array_key_exists('service', $post) && strlen($post['service'])){
+		if($this->requestParameterIsSet('service') && strlen($this->getRequestParameter('service'))){
 		    $service = $this->getRequestParameter('service');
 		}else{
 		    $service = 'SMARTEST';
 		}
 		
-		if($this->getUser() && $this->getUser()->isAuthenticated()){
+		if($this->getUser() && $this->getUser()->isAuthenticated() && $this->_auth->getSystemUserIsLoggedIn()){
 		    $this->redirect('/smartest');
 		}
 		
@@ -74,7 +74,8 @@ class Login extends SmartestSystemApplication{
     	                
     	                if(strlen($this->getCookie('SMARTEST_RET'))){
     	                    
-    	                    $url = '/'.$this->getCookie('SMARTEST_RET');
+    	                    // $url = '/'.$this->getCookie('SMARTEST_RET');
+    	                    $url = $this->getCookie('SMARTEST_RET');
                             $this->clearCookie('SMARTEST_RET');
     	                    
     	                    // user still has access to last edited site, so return to what they were last doing

@@ -63,6 +63,10 @@ class SmartestDownloadHelper extends SmartestHelper{
         return $this->_download_filename;
     }
     
+    public function getSafeDownloadFilename(){
+        return preg_replace('/[^\w_\.-]/', '', SmartestStringHelper::toAscii($this->_download_filename));
+    }
+    
     public function getType(){
         return $this->_type;
     }
@@ -92,7 +96,7 @@ class SmartestDownloadHelper extends SmartestHelper{
         header('Pragma: public');
         header("Content-Type: ".$this->_mime_type."; charset=utf-8\r\n");
         header("Content-Length: ".$this->getDownloadSize()."\r\n");
-        header('Content-Disposition: attachment; filename='.$this->_download_filename." \r\n");
+        header('Content-Disposition: attachment; filename='.$this->getSafeDownloadFilename()." \r\n");
         echo $this->getDowloadableContent();
         exit;
     }

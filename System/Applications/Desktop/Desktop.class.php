@@ -29,7 +29,7 @@ class Desktop extends SmartestSystemApplication{
             if(count($sites) == 1 && !$this->getUser()->hasToken('create_sites')){
                 
                 $this->getUser()->openSiteById($sites[0]->getId());
-                // This is like a reload, except a new request is not needed.
+                // This is like a redirect, except a new request is not needed.
                 $this->forward('desktop', 'startPage');
                 
             }else{
@@ -131,7 +131,7 @@ class Desktop extends SmartestSystemApplication{
     	        $site->setName($this->getRequestParameter('site_name'));
     	        $site->setInternalLabel($this->getRequestParameter('site_internal_label'));
     	        $site->setTitleFormat($this->getRequestParameter('site_title_format'));
-    	        $site->setDomain($this->getRequestParameter('site_domain'));
+    	        $site->setDomain(SmartestStringHelper::toValidDomain(preg_replace('/^https?:\/\//i', '', $this->getRequestParameter('site_domain'))));
     	        $site->setTagPageId($this->getRequestParameter('site_tag_page'));
     	        $site->setSearchPageId($this->getRequestParameter('site_search_page'));
     	        $site->setErrorPageId($this->getRequestParameter('site_error_page'));
@@ -574,6 +574,10 @@ class Desktop extends SmartestSystemApplication{
         
         // Version control
         $this->send(new SmartestBoolean(is_dir(SM_ROOT_DIR.'.svn/')), 'is_svn_checkout');
+        
+        // Show Facebook Box?
+        $this->send($this->getGlobalPreference('hide_facebook_like_box', 0), 'hide_fb_likes_box');
+        
     }
     
     public function testServerSpeed(){

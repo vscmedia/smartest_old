@@ -28,7 +28,7 @@ function smarty_function_boolean($params, &$smartest_engine){
         if(isset($params['type']) && in_array($params['type'], array('radio', 'select', 'checkbox'))){
             $tpl = SM_ROOT_DIR.'System/Presentation/InterfaceBuilder/Inputs/boolean_'.$params['type'].'.tpl';
         }else{
-            $tpl = SM_ROOT_DIR.'System/Presentation/InterfaceBuilder/Inputs/boolean_radio.tpl';
+            $tpl = SM_ROOT_DIR.'System/Presentation/InterfaceBuilder/Inputs/boolean_switch.tpl';
         }
         
         $smartest_engine->assign('_input_data', $boolean);

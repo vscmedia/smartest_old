@@ -4,18 +4,35 @@ class SmartestSearchPage extends SmartestPage{
     
     protected $_results = array();
     protected $_query;
+    protected $_results_retrieved = false;
     
     public function setSearchQuery($query){
         $this->_query = $query;
+        $this->_results_retrieved = false;
+    }
+    
+    public function getSearchQuery(){
+        return strip_tags($this->_query);
     }
     
     public function getResults(){
-        if($this->_query && !count($this->_results)){
-            $this->_results = $this->getSite()->getSearchResults($this->_query);
+        // echo count($this->_results);
+        if($this->_query){
+            if(!$this->_results_retrieved){
+                $this->_results = $this->getSite()->getSearchResults($this->_query);
+                $this->_results_retrieved = true;
+                
+            }
             return $this->_results;
         }else{
             return array();
         }
+    }
+    
+    public function getLastSearchTimeTaken(){
+        
+        return $this->getSite()->getLastSearchTimeTaken();
+        
     }
     
     public function getResultsAsArrays(){

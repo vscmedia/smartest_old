@@ -321,7 +321,7 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	        
 	            $database = SmartestDatabase::getInstance('SMARTEST');
 	        
-    	        $asset_url = urldecode($this->getRequestParameter('url'));
+    	        $asset_url = addslashes(urldecode($this->getRequestParameter('url')));
     	        $asset_webid = $this->getRequestParameter('key');
 	        
     	        $sql = "SELECT * FROM Assets WHERE (asset_site_id='".$this->_site->getId()."' OR asset_shared='1') AND asset_url='".$asset_url."' AND asset_webid='".$asset_webid."'";
@@ -366,6 +366,11 @@ class CmsFrontEnd extends SmartestSystemApplication{
                 
             }
 	    
+        }else{
+
+            include SM_ROOT_DIR."System/Response/ErrorPages/nosuchdomain.php";
+            exit;
+
         }
         
         exit;
@@ -375,8 +380,8 @@ class CmsFrontEnd extends SmartestSystemApplication{
 	private function renderPage($draft_mode=false){
 	    
 	    if($draft_mode || (is_object($this->_site) && (bool) $this->_site->getIsEnabled())){
-	    
-    	    $ph = new SmartestWebPagePreparationHelper($this->_page);
+	        
+	        $ph = new SmartestWebPagePreparationHelper($this->_page);
 	    
     	    $overhead_finish_time = microtime(true);
     	    $overhead_time_taken = number_format(($overhead_finish_time - SmartestPersistentObject::get('timing_data')->getParameter('start_time'))*1000, 2, ".", "");

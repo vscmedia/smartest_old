@@ -12,6 +12,8 @@ function smarty_function_stylesheet($params, &$smartest_engine){
             
             $a = new SmartestRenderableAsset;
             
+            // var_dump(SmartestPersistentObject::get('request_data')->g('domain'));
+            
             if($a->findBy('url', $file)){
                 return $a->render();
             }else{

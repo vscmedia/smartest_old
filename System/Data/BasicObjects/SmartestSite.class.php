@@ -5,10 +5,12 @@ class SmartestSite extends SmartestBaseSite{
     protected $_home_page = null;
     protected $_containers = array();
     protected $_placeholders = array();
+    protected $_field_names = array();
     protected $_sets = array();
     protected $_models = array();
     protected $displayPages = array();
     protected $displayPagesIndex = 0;
+    protected $_last_search_time_taken = 0;
     
     public static $special_page_ids = array();
     
@@ -136,6 +138,7 @@ class SmartestSite extends SmartestBaseSite{
 	    
 	    $search_query_words = preg_split('/[^\w]+/', $query);
 	    $h = new SmartestCmsItemsHelper;
+	    $search_start_time = microtime(true);
 	    
 	    $pages = array();
 	    $pages_sql = "SELECT Pages.* FROM Pages WHERE page_site_id='".$this->getId()."' AND page_deleted != 'TRUE' AND page_id !='".$this->getSearchPageId()."' AND page_id !='".$this->getTagPageId()."' AND page_type='NORMAL' AND page_is_published='TRUE'";
@@ -156,6 +159,13 @@ class SmartestSite extends SmartestBaseSite{
 	        $pages_sql .= "(page_search_field LIKE '%".$word."%' OR page_title LIKE '%".$word."%') ";
 	        $items_sql .= "(item_search_field LIKE '%".$word."%' OR item_name LIKE '%".$word."%') ";
 	        
+        }
+        
+        $du = new SmartestDataUtility;
+        $model_ids = $du->getModelIdsWithMetapageOnSiteId($this->getId());
+        
+        if(count($model_ids)){
+            $items_sql .= ' AND Items.item_itemclass_id IN (\''.implode("','", $model_ids).'\')';
         }
         
         if(count($search_query_words)){
@@ -196,27 +206,43 @@ class SmartestSite extends SmartestBaseSite{
             foreach($items as $i){
 
                 $key = $i->getDate();
+                
+                if($key instanceof SmartestDateTime){
+                    $key = $key->getUnixFormat();
+                }
 
                 if(in_array($key, array_keys($master_array))){
                     while(in_array($key, array_keys($master_array))){
                         $key++;
                     }
                 }
-
+                
                 $master_array[$key] = $i;
 
             }
 
             ksort($master_array);
             
+            $search_end_time = microtime(true);
+            
+            $this->_last_search_time_taken = ($search_end_time - $search_start_time)*1000;
+            
+            // echo count($master_array);
+            
             // print_r($this->database->getDebugInfo());
 
-            return new SmartestArray($master_array);
+            return $master_array;
             
         }else{
             // no search terms were entered so no serch results come back
             return array();
         }
+	    
+	}
+	
+	public function getLastSearchTimeTaken(){
+	    
+	    return $this->_last_search_time_taken;
 	    
 	}
 	
@@ -325,6 +351,34 @@ class SmartestSite extends SmartestBaseSite{
 	    
 	}
 	
+	public function getFieldNames(){
+	    
+	    // $names = array();
+	    
+	    if(!count($this->_field_names)){
+	    
+    	    $sql = "SELECT pageproperty_name FROM PageProperties WHERE pageproperty_site_id='".$this->getId()."'";
+    	    $result = $this->database->queryToArray($sql);
+    	    $names = array();
+	    
+    	    foreach($result as $r){
+    	        $names[] = $r['pageproperty_name'];
+    	    }
+	    
+    	    $this->_field_names = $names;
+	    
+        }
+	    
+	    return $this->_field_names;
+	    
+	}
+	
+	public function fieldExists($field_name){
+        
+        return in_array(SmartestStringHelper::toVarName($field_name), $this->getFieldNames());
+        
+    }
+	
 	public function getFullDirectoryPath(){
 	    return SM_ROOT_DIR.'Sites/'.$this->getDirectoryName().'/';
 	}
@@ -421,20 +475,31 @@ class SmartestSite extends SmartestBaseSite{
     public function offsetGet($offset){
         
         switch($offset){
+            
             case "unique_id":
             return $this->getUniqueId();
+            
             case "user_page_id":
             return $this->getUserPageId();
+            
             case "tag_page_id":
             return $this->getTagPageId();
+            
             case "error_page_id":
             return $this->getErrorPageId();
+            
             case "search_page_id":
             return $this->getSearchPageId();
+            
             case "logo":
             return $this->getLogoAsset();
+            
             case "language_code":
             return $this->getLanguageCode();
+            
+            case "home_page":
+            return $this->getHomePage();
+            
         }
         
         return parent::offsetGet($offset);
@@ -451,6 +516,13 @@ class SmartestSite extends SmartestBaseSite{
     public function setUserPageId($id){
         $ph = new SmartestPreferencesHelper;
         return $ph->setGlobalPreference('site_user_page_id', $id, null, $this->getId());
+    }
+    
+    public function getUserPage(){
+        $upid = $this->getUserPageId();
+        $p = new SmartestPage;
+        $p->find($upid);
+        return $p;
     }
     
     /** Tag Page **/

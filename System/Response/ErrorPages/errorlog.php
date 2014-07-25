@@ -61,8 +61,19 @@
             <?php if(count($error->getBackTrace()) > 2): ?>
                 <br clear="all" />
                 <ul>
-                    <?php $i=0; foreach($error->getBackTrace() as $clue): ?>
-                    <li><?php echo $clue['class'].$clue['type'].$clue['function'].'() in '.basename($clue['file']).' on line '.$clue['line']; ++$i; ?></li>
+                    <?php $i=0; $errors = $error->getBackTrace(); foreach($errors as $clue): ?>
+                    <?php
+                    
+                    if($clue['file'] == null && isset($errors[$i+1]['function']) && $errors[$i+1]['function'] == 'call_user_func_array'){
+                        $file = 'call_user_func_array() in '.basename($errors[$i+1]['file']);
+                        $line = $errors[$i+1]['line'];
+                    }else{
+                        $file = basename($clue['file']);
+                        $line = $clue['line'];
+                    }
+                    
+                    ?>
+                    <li><?php echo $clue['class'].$clue['type'].$clue['function'].'() in '.$file.' on line '.$line; ++$i; ?></li>
                     <?php if($i > 8){break;} ?>
                 <?php endforeach; ?>
                 </ul>

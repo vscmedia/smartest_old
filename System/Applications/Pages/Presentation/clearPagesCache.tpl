@@ -24,42 +24,49 @@
 
 <div id="work-area">
   
-  <h3>Clear Pages Cache</h3>
+  <h3>Clear pages cache</h3>
   
-  {if $show_result}
-  
-  {if count($deleted_files) || count($failed_files) || count($untouched_files)}
-  
-  <div class="instruction">Result: {$num_deleted_files} page{if $num_deleted_files == 1} was{else}s were{/if} cleared from the cache. <a href="javascript:toggleCacheResultDetails()" id="show-details-link">Show Details</a></div>
-  
-  <div id="cache-details" style="display:none">
-  
-    <ul class="basic-list">
-      {foreach from=$deleted_files item="file"}
-        <li>Deleted: {$cache_path}{$file}</li>
-      {/foreach}
-      {foreach from=$failed_files item="file"}
-        <li>Failed to Delete: {$cache_path}{$file}</li>
-      {/foreach}
-      {foreach from=$untouched_files item="file"}
-        <li>Left Alone: {$cache_path}{$file}</li>
-      {/foreach}
-    </ul>
-  
+  <div class="instruction">
+    
+    To make Smartest even faster for your site visitors, some web pages are saved to a cache so that they can be sent instantly, without any pages needing to be built again from your templates.
+    
   </div>
   
-  {else}
+  <input type="button" id="clear-cache-button" value="Clear the cache" />
+  <img src="{$domain}Resources/System/Images/ajax-loader.gif" alt="" id="loader" style="display:none" />
+  <script type="text/javascript">
+    
+    var url = '{$domain}ajax:{$section}/clearPagesCache';
+{literal}
+
+    $('clear-cache-button').observe('click', function(){
+        
+        $('loader').show();
+        $('clear-cache-button').disabled = true;
+        
+        new Ajax.Updater('cache-details', url, {onComplete: function(){
+            
+            new Effect.Morph('cache-details', {style: 'height:300px'});
+            $('loader').hide();
+            
+        }});
+        
+    });
+
+{/literal}
+    
+  </script>
   
-  <p>The cache is currently empty.</p>
+  <div id="cache-details" style="height:1px;border:1px solid #ccc;padding:5px;margin-top:20px;overflow-y:scroll"></div>
   
-  {/if}
-  
-  {/if}
-  
-  <div class="edit-form-row">
-    <div class="buttons-bar">
-      <input type="button" value="OK" onclick="window.location='{$domain}smartest/pages'" />
-    </div>
-  </div>
-  
+</div>
+
+<div id="actions-area">
+    
+  <ul class="actions-list" id="non-specific-actions">
+    
+    <li class="permanent-action"><a href="#" onclick="cancelForm();" class="right-nav-link"><img src="{$domain}Resources/Icons/tick.png" border="0" alt=""> Done</a></li>
+    
+  </ul>
+    
 </div>

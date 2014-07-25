@@ -12,7 +12,7 @@ class SmartestTwitterAccountName extends SmartestString{
         
     }
     
-    public function getUrl($secure=false){
+    public function getUrl($secure=true){
         
         $p = $secure ? 'https' : 'http';
         return new SmartestExternalUrl($p.'://twitter.com/'.$this->_string);
@@ -23,9 +23,8 @@ class SmartestTwitterAccountName extends SmartestString{
         
         switch($offset){
             case "url":
-            return $this->getUrl();
             case "secure_url":
-            return $this->getUrl(true);
+            return $this->getUrl();
             case "link":
             $p = new SmartestParameterHolder('Twitter account link parameters: @'.$this->_string);
             $p->setParameter('with', '@'.$this->_string);

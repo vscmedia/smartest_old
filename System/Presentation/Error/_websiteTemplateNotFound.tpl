@@ -1,10 +1,14 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<title>Error: Master Template Not Found</title>
-</head>
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+  	<title>Error: Master Template Not Found</title>
+  	<link rel="stylesheet" href="<?sm:$domain:?>Resources/System/Stylesheets/sm_error.css" />
+  </head>
 <body>
-<p>The template specified as the master template, '<?sm:$required_template:?>' for this page does not exist.</p>
+  <div id="fixed-width">
+    <h1>Master template not found</h1>
+    <p>The template specified as the master template, '<code><?sm:$required_template:?></code>' for this page does not exist or is not readable.</p>
+  </div>
 </body>
 </html>

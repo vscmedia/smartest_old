@@ -66,6 +66,35 @@
         <td>{$asset.modified|date_format:"%A %B %e, %Y, %l:%M%p"}</span></td>
       </tr>
       {/if}
+      {if !$asset.is_image}
+      <tr>
+        <td style="width:150px;background-color:#fff" class="field-name">Thumbnail image file:</td>
+        <td>
+          <select name="asset_thumbnail_image" style="width:300px" id="asset-thumbnail">
+            <option value="NONE">None</option>
+{foreach from=$thumbnail_files item="thumbnail_file"}
+            <option value="{$thumbnail_file.id}"{if $thumbnail_file.id == $asset.thumbnail_id} selected="selected"{/if}>{$thumbnail_file.label}</option>
+{/foreach}
+          </select><img src="{$domain}Resources/System/Images/ajax-loader.gif" src="" id="thumbnail-loader" style="display:none" />
+          <br /><span class="form-hint">An image that is used to represent this file when a static image is necessary in templates.</span>
+          <script type="text/javascript">
+          {literal}
+          $('asset-thumbnail').observe('change', function(){
+            var url = sm_domain+'ajax:assets/setAssetThumbnailId';
+            $('thumbnail-loader').show();
+            new Ajax.Request(url, {
+              method: 'post',
+              parameters: {'asset_id': asset_id, 'thumbnail_id': $('asset-thumbnail').value},
+              onSuccess: function(){
+                 $('thumbnail-loader').hide();
+              }
+            });
+          });
+          {/literal}
+          </script>
+        </td>
+      </tr>
+      {/if}
       <tr>
         <td valign="middle" class="field-name">Owner:</td>
         <td>
@@ -74,13 +103,18 @@
             <option value="{$p_owner.id}"{if $asset.owner.id == $p_owner.id} selected="selected"{/if}>{$p_owner.fullname} ({$p_owner.id})</option>
   {/foreach}
           </select>
+          <img src="{$domain}Resources/System/Images/ajax-loader.gif" src="" id="owner-loader" style="display:none" />
           <script type="text/javascript">
           {literal}
           $('asset-owner').observe('change', function(){
+            $('owner-loader').show();
             var url = sm_domain+'ajax:assets/setAssetOwnerById';
             new Ajax.Request(url, {
               method: 'post',
-              parameters: {'asset_id': asset_id, 'owner_id': $('asset-owner').value}
+              parameters: {'asset_id': asset_id, 'owner_id': $('asset-owner').value},
+              onSuccess: function(){
+                 $('owner-loader').hide();
+              }
             });
           });
           {/literal}
@@ -96,14 +130,19 @@
             <option value="{$langcode}"{if $asset.language == $langcode} selected="selected"{/if}>{$lang.label}</option>
         {/foreach}
           </select>
+          <img src="{$domain}Resources/System/Images/ajax-loader.gif" src="" id="language-loader" style="display:none" />
           
           <script type="text/javascript">
           {literal}
           $('asset-language').observe('change', function(){
             var url = sm_domain+'ajax:assets/setAssetLanguage';
+            $('language-loader').show();
             new Ajax.Request(url, {
               method: 'post',
-              parameters: {'asset_id': asset_id, 'asset_language': $('asset-language').value}
+              parameters: {'asset_id': asset_id, 'asset_language': $('asset-language').value},
+              onSuccess: function(){
+                 $('language-loader').hide();
+              }
             });
           });
           {/literal}

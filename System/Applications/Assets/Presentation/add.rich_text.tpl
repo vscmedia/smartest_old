@@ -1,13 +1,3 @@
-{*  <div style="display:none;margin-top:8px;margin-bottom:8px" id="uploader" class="special-box">
-    Upload file: <input type="file" name="new_file" /><br />
-    <a href="javascript:hideUploader();">never mind</a>
-  </div>
-  
-  <div class="edit-form-row">
-    <div class="form-section-label">Name this file</div>
-    <input type="text" name="string_id" value="{$suggested_name}" />
-  </div> *}
-  
   <div class="edit-form-row">
     <div style="width:100%" id="text_window">
       <textarea name="content" id="tpl_textArea" wrap="virtual"></textarea>
@@ -16,12 +6,24 @@
 
   {* <div id="uploader_link" class="special-box">or, alternatively, <a href="javascript:showUploader();">upload a file</a>.</div> *}
 
-<script language="javascript" type="text/javascript" src="{$domain}Resources/System/Javascript/tiny_mce/tiny_mce.js"></script>
+<!--<script language="javascript" type="text/javascript" src="{$domain}Resources/System/Javascript/tiny_mce/tiny_mce.js"></script>-->
+<script src="{$domain}Resources/System/Javascript/tinymce4/tinymce.min.js"></script>
 
 <script language="javascript" type="text/javascript">
 {literal}
 
-tinyMCE.init({
+tinymce.init({
+    selector: "#tpl_textArea",
+    plugins: [
+        "advlist autolink lists charmap print preview anchor",
+        "searchreplace visualblocks code fullscreen",
+        "media table contextmenu paste link wordcount"
+    ],
+    paste_word_valid_elements: "b,strong,i,em,h1,h2,h3,h4,p",
+    toolbar: "insertfile undo redo | styleselect | bold italic | link unlink | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | code"
+});
+
+/* tinyMCE.init({
 	mode : "exact",
 	elements : "tpl_textArea",
 	theme : "advanced",
@@ -41,6 +43,6 @@ tinyMCE.init({
 {/literal}  document_base_url : "{$domain}" {literal}
   
 });
-
+  */
 {/literal}
 </script>

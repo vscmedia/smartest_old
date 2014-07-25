@@ -1,19 +1,16 @@
 <?php
 
-class SmartestUser extends SmartestBaseUser{
+class SmartestUser extends SmartestBaseUser implements SmartestBasicType, SmartestStorableValue, SmartestSubmittableValue{
 	
 	protected $_tokens = array();
 	protected $_site_ids = array();
 	protected $_model_plural_names = array();
 	protected $_parameters; // Only useful when the user is being stored in the session
 	protected $_user_info;
+    protected $_user_info_modified;
 	
 	protected function __objectConstruct(){
 	    
-		/* $this->_table_prefix = 'user_';
-		$this->_table_name = 'Users';
-		$this->_no_prefix = array('username'=>1, 'password'=>1); */
-		
 		if(method_exists($this, '__myConstructor')){
 		    $args = func_get_args();
 		    $this->__myConstructor($args);
@@ -21,7 +18,7 @@ class SmartestUser extends SmartestBaseUser{
 		
 		$this->_preferences_helper = SmartestPersistentObject::get('prefs_helper');
 		
-		$this->_user_info = new SmartestParameterHolder("User info");
+		$this->_user_info = new SmartestDbStorageParameterHolder("User info");
 		
 	}
 	
@@ -47,6 +44,10 @@ class SmartestUser extends SmartestBaseUser{
 				if($bother_with_tokens){
 				    $this->getTokens();
 			    }
+                
+                if(method_exists($this, '__postHydrationAction')){
+                    $this->__postHydrationAction();
+                }
 				
 				return true;
 			
@@ -82,6 +83,9 @@ class SmartestUser extends SmartestBaseUser{
 				}
 			
 				$this->_came_from_database = true;
+                if(method_exists($this, '__postHydrationAction')){
+                    $this->__postHydrationAction();
+                }
 				return true;
 				
 			}else{
@@ -93,8 +97,10 @@ class SmartestUser extends SmartestBaseUser{
 	public function __postHydrationAction(){
 	    
 	    if(!$this->_user_info){
-	        $this->_user_info = new SmartestParameterHolder("Info for user '".$this->_properties['username']."'");
+	        $this->_user_info = new SmartestDbStorageParameterHolder("Info for user '".$this->_properties['username']."'");
         }
+        
+        $this->_user_info->loadArray(unserialize($this->_properties['info']));
 	    
 	}
 	
@@ -121,10 +127,14 @@ class SmartestUser extends SmartestBaseUser{
 		if(SmartestStringHelper::isMd5Hash($password)){
 			$this->_properties['password'] = $password;
 			$this->_modified_properties['password'] = $password;
+			return true;
 		}else{
 			if(strlen($password) > 3){
 				$this->_properties['password'] = md5($password);
 				$this->_modified_properties['password'] = md5($password);
+				return true;
+			}else{
+			    return false;
 			}
 		}
 	}
@@ -184,12 +194,9 @@ class SmartestUser extends SmartestBaseUser{
 	    
 	    $offset = strtolower($offset);
 	    
-	    if(in_array($offset, array_keys($this->getModelPluralNames()))){
-            return $this->getCreditedItemsOnCurrentSite($this->_model_plural_names[$offset]);
-        }
-	    
 	    switch($offset){
 	        case "password":
+	        case "password_salt":
 	        return null;
 	        
 	        case "full_name":
@@ -203,20 +210,64 @@ class SmartestUser extends SmartestBaseUser{
 	        return $this->getProfilePicAssetId();
 	        
 	        case "bio":
-	        return $this->getBio();
+	        return new SmartestString($this->getBio());
 	        
 	        case "website":
 	        case "website_url":
 	        $url = new SmartestExternalUrl($this->_properties['website']);
 	        return $url;
 	        
+	        case "email":
+	        return new SmartestEmailAddress($this->_properties['email']);
+	        
+	        case "has_twitter_handle":
+	        case "has_twitter_account":
+	        case "has_twitter_acct":
+	        case "has_twitter_username":
+	        return (bool) strlen($this->getTwitterHandle());
+	        
+	        case "twitter_account_object":
+	        case "twitter_handle_object":
+	        if(strlen($this->getTwitterHandle())){
+	            return new SmartestTwitterAccountName($this->getTwitterHandle());
+            }else{
+                break;
+            }
+            
+            case "info":
+            return $this->_user_info;
+	        
+	        default:
+	        if(in_array($offset, array_keys($this->getModelPluralNames()))){
+                return $this->getCreditedItemsOnCurrentSite($this->_model_plural_names[$offset]);
+            }else if($this->_user_info->hasParameter($offset)){
+                return $this->_user_info->getParameter($offset);
+            }else{
+                return parent::offsetGet($offset);
+            }
+	        
 	    }
-	    
-	    return parent::offsetGet($offset);
 	    
 	}
 	
-	public function getCreditedItemsOnCurrentSite($model_id=null, $mode=9){
+	public function setDraftMode($mode){
+	    $this->_draft_mode = (bool) $mode;
+	}
+	
+	public function getDraftMode(){
+	    return $this->_draft_mode;
+	}
+	
+	public function getCreditedItemsOnCurrentSite($model_id=null, $mode='DEFAULT_MODE'){
+	    
+	    if($mode == 'DEFAULT_MODE'){
+	        if($this->getDraftMode()){
+	            $mode = 0;
+	        }else{
+	            $mode = 9;
+	        }
+	    }
+	    
 	    if($site_id = $this->getCurrentSiteId()){
             return $this->getCreditedItems($site_id, $model_id, $mode);
         }
@@ -451,17 +502,17 @@ class SmartestUser extends SmartestBaseUser{
 	    $field = SmartestStringHelper::toVarName($field);
 	    // URL Encoding is being used to work around a bug in PHP's serialize/unserialize. No actual URLS are necessarily in use here:
 	    $this->_user_info->setParameter($field, rawurlencode(utf8_decode($new_data)));
-	    // $this->_user_info_modified = true;
-	    $this->_modified_properties['settings'] = SmartestStringHelper::sanitize(serialize($this->_user_info->getArray()));
+        $this->_user_info_modified = true;
+	    $this->_modified_properties['info'] = SmartestStringHelper::sanitize(serialize($this->_user_info->getArray()));
 	    
 	}
 	
 	public function getInfoValue($field){
 	    
 	    $field = SmartestStringHelper::toVarName($field);
-	    
-	    if($this->_user_info->hasParameter($field)){
-	        return utf8_encode(stripslashes(rawurldecode($this->_user_info->getParameter($field))));
+        
+        if($this->_user_info->hasParameter($field)){
+            return $this->_user_info->getParameter($field);
 	    }else{
 	        return null;
 	    }
@@ -498,6 +549,154 @@ class SmartestUser extends SmartestBaseUser{
             parent::delete();
         
         }
+        
+    }
+    
+    public function getStorableFormat(){
+        return $this->getId();
+    }
+    
+    public function hydrateFromStorableFormat($v){
+        return $this->find($v);
+    }
+    
+    public function hydrateFromFormData($v){
+        return $this->find($v);
+    }
+    
+    public function renderInput($params){}
+    
+    public function setValue($v){
+        if(is_numeric($v)){
+            return $this->find($v);
+        }else if(SmartestStringHelper::isValidUsername($v)){
+            return $this->findBy('username', $v);
+        }else{
+            return false;
+        }
+    }
+    
+    public function getValue(){
+        return $this->getId();
+    }
+    
+    // Note - __toString() is above
+    
+    public function isPresent(){
+        return $this->_came_from_database || count($this->_modified_properties);
+    }
+    
+    ////////////////////////////////// Todo list stuff ///////////////////////////////////////
+	
+	public function assignTodo($type_code, $entity_id, $assigner_id=0, $input_message='', $send_email=false){
+	    
+	    /* $type = SmartestTodoListHelper::getType($type_code);
+	    
+	    if(isset($message{1})){
+	        $input_message = SmartestStringHelper::sanitize($message);
+	    }else{
+	        $input_message = $type->getDescription();
+	    } */
+	    
+	    $task = new SmartestTodoItem;
+	    $task->setReceivingUserId((int) $this->_properties['id']);
+	    $task->setAssigningUserId((int) $assigner_id);
+	    $task->setForeignObjectId((int) $entity_id);
+	    $task->setTimeAssigned(time());
+	    $task->setDescription(strip_tags(SmartestStringHelper::sanitize($input_message)));
+	    $task->setType($type_code);
+	    $task->save();
+	    
+	    /* if($send_email){
+	        // code goes in here to send notification email to user
+	    } */
+	    
+	}
+	
+	public function hasTodo($type, $entity_id){
+	    $id = (int) $entity_id;
+	    $type = SmartestStringHelper::sanitize($type);
+	    $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_foreign_object_id='".$id."' AND todoitem_type='".$type."' AND todoitem_is_complete !=1";
+	    return (bool) count($this->database->queryToArray($sql));
+	    
+	}
+	
+	public function getTodo($type, $entity_id){
+	    
+	    $id = (int) $entity_id;
+	    $type = SmartestStringHelper::sanitize($type);
+	    $sql = "SELECT * FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_foreign_object_id='".$id."' AND todoitem_type='".$type."' AND todoitem_is_complete !=1";
+	    $result = $this->database->queryToArray($sql);
+	    
+	    if(isset($result[0])){
+	        $todo = new SmartestTodoItem;
+	        $todo->hydrate($result[0]);
+	        return $todo;
+        }else{
+            return false;
+        }
+	    
+	}
+	
+	public function getNumTodoItems($get_assigned=false){
+	    
+	    if($get_assigned){
+	        $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_assigning_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1";
+	    }else{
+	        $sql = "SELECT todoitem_id FROM TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1";
+        }
+	    
+	    return count($this->database->queryToArray($sql));
+	    
+	}
+	
+	public function getTodoItems($get_assigned=false){
+	    
+	    if($get_assigned){
+	        $sql = "SELECT * FROM Users, TodoItems WHERE todoitem_assigning_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 AND TodoItems.todoitem_receiving_user_id=Users.user_id ORDER BY todoitem_time_assigned DESC";
+	    }else{
+	        $sql = "SELECT * FROM Users, TodoItems WHERE todoitem_receiving_user_id='".$this->_properties['id']."' AND todoitem_is_complete !=1 AND TodoItems.todoitem_assigning_user_id=Users.user_id ORDER BY todoitem_time_assigned DESC";
+        }
+	    
+	    $result = $this->database->queryToArray($sql);
+	    $tasks = array();
+	    
+	    if(count($result)){
+	        foreach($result as $t){
+	            $task = new SmartestTodoItem;
+	            $task->hydrate($t);
+	            $tasks[] = $task;
+	        }
+	    }
+	    
+	    return $tasks;
+	    
+	}
+	
+	public function getTodoItemsAsArrays($get_assigned=false, $get_foreign_object_info=false){
+	    
+	    $tasks = $this->getTodoItems($get_assigned);
+	    $arrays = array();
+	    
+	    foreach($tasks as $t){
+	        $arrays[] = $t->__toArray($get_foreign_object_info);
+	    }
+	    
+	    return $arrays;
+	    
+	}
+    
+    public function clearCompletedTodos(){
+	    
+	    $sql = "DELETE FROM TodoItems WHERE todoitem_is_complete=1 AND todoitem_receiving_user_id=".$this->getId()."";
+	    
+	}
+    
+    //////////////////////// NEW USER PROFILE STUFF/////////////////////////
+    
+    public function getProfile($service_name='_default'){
+        
+        
         
     }
 	

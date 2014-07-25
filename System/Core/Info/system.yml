@@ -1,7 +1,7 @@
 system:
   info:
     version: "0.5"
-    revision: 606
+    revision: 651
     minimum_php_version: 5.2
     minimum_database_version: 19
     default_timezone: Europe/London
@@ -18,11 +18,9 @@ system:
     - Pages
     - Sets
     - Templates
-    - Vocabulary
-    - Feed
-    - Schemas
+#    - Feed
     - Settings
-    - XmlData
+#    - XmlData
   public_methods:
     - loginscreen/loginScreen
     - loginscreen/doAuth
@@ -67,7 +65,6 @@ system:
     always:
       - Sites/
       - Library/ObjectModel/
-      - System/Cache/SmartestEngine/
       - System/Cache/Smarty/
       - System/Cache/Pages/
       - System/Cache/Data/
@@ -101,6 +98,7 @@ system:
       - Configuration/
       - Presentation/Masters/
       - Public/Resources/Stylesheets/
+      - Public/Resources/Images/
   regularizable_types:
     - SM_DATATYPE_DROPDOWN_MENU
     - SM_DATATYPE_DATE

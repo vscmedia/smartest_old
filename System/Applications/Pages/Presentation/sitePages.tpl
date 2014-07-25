@@ -20,7 +20,7 @@ function viewPage(){
 
 <div id="work-area">
     
-    {load_interface file="cms_elements_tabs.tpl"}
+{load_interface file="cms_elements_tabs.tpl"}
 
 <h3>Site structure</h3>
 <a name="top"></a>
@@ -29,23 +29,6 @@ function viewPage(){
 <form id="pageViewForm" method="get" action="">
   <input type="hidden" name="page_id" id="item_id_input" value="" />
 </form>
-
-{* <table cellpadding="0" cellspacing="0" border="0" style="width:100%;border:0px;">
-  <tr class="mainpanel-row-ccf">
-    <td style="padding-left:10px" id="pageNameField" class="text">Sitemap: Pages in site "{$content.data[0].info.site_name}"</td></tr>
-{foreach from=$content.data item=page key=key}
-{capture name=indent assign=indent}{math equation="x*y+z" x=30 y=$page.treeLevel z=10}{/capture}
-{capture name=indent assign=doubleIndent}{math equation="x*y+z" x=30 y=$page.treeLevel z=40}{/capture}
-{if isset($content.data[0].info.site_name) }
-  <tr class="mainpanel-row-{cycle values="ddd,fff"}" id="page_{$page.info.webid}" ondblclick="window.location='{$domain}{$section}/getPageAssets?page_id={$page.info.webid}&amp;site_id={$content.data[0].info.site_id}'"><!-- onmouseover="this.style.backgroundColor='#f90'" onmouseout="this.style.backgroundColor='{cycle name="return" values="fff,ddd"}'-->
-    <td style="padding-left:{$indent}px;cursor:pointer" onclick="setSelectedItem('{$page.info.webid}', '{$page.info.title|escape:quotes}', '{cycle name="returnValue" values="ddd,fff"}');" class="text"><img src="{$domain}Resources/System/Images/spacer.gif" style="width:1px;height:22px;display:inline" border="0" alt="" />{if $page.info.type != "NORMAL"}<img src="{$domain}Resources/Icons/page_gear.gif" border="0" alt="">{else}{if $page.treeLevel == 0}<img src="{$domain}Resources/Icons/world.png" border="0" alt="">{else}<img src="{$domain}Resources/Icons/page.gif" border="0" alt="">{/if}{/if} <a href="javascript:void(0);" class="mainpanel-link">{$page.info.title}</a>{if $page.treeLevel == 1 && $page.info.type == "NORMAL"} (Section page){/if}</td></tr>
-{else}
-  <tr style="background-color:#{cycle values="ddd,fff"};height:22px">
-    <td><img src="{$domain}Resources/System/Images/spacer.gif" style="width:1px;height:22px;display:inline" border="0" alt="" />There are no pages yet. Click <a href="{$domain}{$section}addPage">here</a> to add one.</td></tr>
-{/if}
-{/foreach}
-
-</table> *}
 
 <ul class="tree-parent-node-open" id="tree-root">
   {defun name="menurecursion" list=$tree}
@@ -63,7 +46,7 @@ function viewPage(){
       {/if}
       
       <a id="item_{$page.info.webid}" class="option" href="#" onclick="setSelectedItem('{$page.info.webid}', '{$page.info.title|escape:quotes}', '{if $page.info.type == 'ITEMCLASS'}meta-page{else}static-page{/if}');return false;" ondblclick="window.location='{$domain}{$section}/openPage?page_id={$page.info.webid}&amp;site_id={$content.data[0].info.site_id}'">		 
-        {if $page.info.type == 'ITEMCLASS'}<img border="0" src="{$domain}Resources/Icons/page_gear.png" />{else}<img border="0" src="{$domain}Resources/Icons/page.png" />{/if}
+        {if $page.info.type == 'ITEMCLASS'}<img border="0" src="{$domain}Resources/Icons/page_gear.png" />{elseif $page.info.is_section == '1'}<img border="0" src="{$domain}Resources/Icons/page_red.png" />{else}<img border="0" src="{$domain}Resources/Icons/page.png" />{/if}
         <span>{$page.info.title}</span>
         <span style="color:#aaa">{if $page.info.is_published == "TRUE"}(published){else}(not published){/if}</span>
       </a>
@@ -109,7 +92,7 @@ function viewPage(){
 	<li><b>Static Page Options</b></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('openPage'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/pencil.png" border="0" alt=""> Edit this page</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="workWithItem('addPage');" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add a new page under this one</a></li>
-  <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('publishPageConfirm'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_lightning.png" border="0" alt=""> Publish this page</a></li>
+    <li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('publishPageConfirm'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/page_lightning.png" border="0" alt=""> Publish this page</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('preview'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/eye.png" border="0" alt=""> Preview This Page</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('movePageUp'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/arrow_up.png" border="0" alt=""> Move Up</a></li>
 	<li class="permanent-action"><a href="{dud_link}" onclick="{literal}if(selectedPage){ workWithItem('movePageDown'); }{/literal}" class="right-nav-link"><img src="{$domain}Resources/Icons/arrow_down.png" border="0" alt=""> Move Down</a></li>
@@ -138,6 +121,7 @@ function viewPage(){
 
 <ul class="actions-list" id="non-specific-actions">
     <li><b>Site Options</b></li>
+    <li class="permanent-action"><a href="{$domain}website/renderEditableDraftPage?page_id={$home_page.webid}&amp;hide_newwin_link=true"><img src="{$domain}Resources/Icons/eye.png" border="0" alt=""> Enter site preview mode</a></li>
     <li class="permanent-action"><a href="{$domain}smartest/page/new" class="right-nav-link"><img src="{$domain}Resources/Icons/page_add.png" border="0" alt=""> Add page</a></li>
     <li class="permanent-action"><a href="{$domain}websitemanager/releaseCurrentUserHeldPages" class="right-nav-link"><img src="{$domain}Resources/Icons/lock_open.png" border="0" alt=""> Release all pages</a></li>
     <li class="permanent-action"><a href="{$domain}smartest/pagegroups" class="right-nav-link"><img src="{$domain}Resources/Icons/page_white_stack.png" border="0" alt=""> Page groups</a></li>

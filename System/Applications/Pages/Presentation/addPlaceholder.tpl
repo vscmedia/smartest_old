@@ -82,7 +82,7 @@ $('new-placeholder-form').observe('submit', function(e){
       <select name="placeholder_type" id="type-select">
         <option value="">Choose...</option>
         {foreach from=$types item="type"}
-        <option value="{$type.id}"{if $type.id == $selected_type || (!$selected_type && $suggested_type == $type.id)} selected="selected"{/if}>{$type.label}{if !$selected_type && $suggested_type == $type.id && type_suggestion_automatic} (Automatically suggested){/if}</option>
+        <option value="{$type.id}"{if $type.id == $selected_type || (!$selected_type && $suggested_type == $type.id)} selected="selected"{/if}>{$type.label}{if !$selected_type && $suggested_type == $type.id && $type_suggestion_automatic} (Automatically suggested){/if}</option>
         {/foreach}
       </select>
   </div>
